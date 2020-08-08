@@ -1,0 +1,113 @@
+:root {
+  --fg-color: #fff;
+  --bg-color: #000;
+  --transition-time: 1s;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  box-sizing: border-box;
+  padding: 0; margin: 0;
+  font-family: "better-serif", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+#netnet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -30;
+}
+
+#nn-output {
+  position: absolute;
+  z-index: -20;
+}
+
+#nn-output > iframe {
+  /* HACK: at 100% it creates scrollbars for some reason */
+  height: 99.7% !important;
+}
+
+#nn-window {
+  position: absolute;
+  border: 4px solid var(--fg-color);
+  background-color: rgba(0, 0, 0, 0);
+}
+
+#nn-window > #nn-bg-canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+}
+
+#nn-window > #nn-menu {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  padding: 15px 15px 5px 5px;
+  color: var(--fg-color);
+}
+
+#nn-window > #nn-menu > #face  {
+  cursor: pointer;
+  transition: font-size var(--transition-time);
+}
+
+#nn-window > #nn-menu > #face > span {
+  display: inline-block;
+  transform-origin: center;
+  padding: 0px 2px 0px 5px;
+}
+
+#nn-window > #nn-editor {
+  overflow-y: scroll;
+  height: calc(100% - 60px);
+  scrollbar-width: none;
+  scrollbar-color: var(--fg-color) rgba(0,0,0,0);
+}
+
+.text-bubble {
+  width: 340px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.text-bubble-triangle {
+  width: 20px;
+  height: 20px;
+  background-color: var(--fg-color);
+  -webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  position: absolute;
+}
+
+.widget {
+  position: absolute;
+  color: var(--fg-color);
+  background-color: var(--bg-color);
+  padding: 15px;
+  border: 4px solid var(--fg-color);
+  border-radius: 15px;
+}
+
+.widget > .w-top-bar {
+  min-width: 100px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.widget > .w-top-bar > .close {
+  margin-left: 40px;
+}

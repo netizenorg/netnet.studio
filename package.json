@@ -1,0 +1,30 @@
+{
+  "name": "netnet.studio",
+  "version": "0.0.1",
+  "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web’s creative potential.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
+    "env-file": "echo \"PORT = 8001\" > .env"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netizenorg/netnet.studio.git"
+  },
+  "author": "netizen <hi@netizen.org>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/netizenorg/netnet.studio/issues"
+  },
+  "homepage": "https://github.com/netizenorg/netnet.studio#readme",
+  "dependencies": {
+    "standard": "^14.3.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "netitor": "git+https://github.com/netizenorg/netitor.git",
+    "Maths": "git+https://github.com/nbriz/Maths.git",
+    "Color": "git+https://github.com/nbriz/Color.git"
+  }
+}
