@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
-    "env-file": "echo \"PORT = 8001\" > .env"
+    "env-file": "echo \"PORT = 8001\" > .env",
+    "update-netitor": "rm -rf node_modules/netitor/; npm install"
   },
   "repository": {
     "type": "git",
