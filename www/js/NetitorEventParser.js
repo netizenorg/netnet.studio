@@ -1,4 +1,4 @@
-/* global nnm, nne */
+/* global NNM, NNE */
 const NetitorEventParser = {}
 
 NetitorEventParser.js = function (eve) {
@@ -66,8 +66,8 @@ NetitorEventParser.toContentArray = function (eve) {
     clr = err.type === 'error' ? 'rgba(255,0,0,0.25)' : 'rgba(255, 255, 0, 0.25)'
     const opts = {
       'ok i\'ll fix it': () => {
-        nnm.hideTextBubble()
-        nne.highlight(0)
+        NNM.hideTextBubble()
+        NNE.highlight(0)
       }
     }
     if (eve.length > 1) {

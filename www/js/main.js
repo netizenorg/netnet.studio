@@ -1,6 +1,6 @@
 /* global Netitor, WindowManager, Menu, Widget, NetitorEventParser */
 
-const nne = new Netitor({
+const NNE = new Netitor({
   ele: '#nn-editor',
   render: '#nn-output',
   background: false,
@@ -24,11 +24,11 @@ const nne = new Netitor({
   `
 })
 
-const nnw = new WindowManager({
+const NNW = new WindowManager({
   layout: 'separate-window'
 })
 
-const nnm = new Menu({
+const NNM = new Menu({
   ele: '#nn-menu',
   radius: 100,
   items: {
@@ -42,7 +42,7 @@ const nnm = new Menu({
     },
     save: {
       path: 'images/menu/save.png',
-      click: () => { nne.saveToHash() }
+      click: () => { NNE.saveToHash() }
     },
     open: {
       path: 'images/menu/open.png',
@@ -54,17 +54,17 @@ const nnm = new Menu({
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
-nne.on('lint-error', (eve) => {
-  nne.marker()
-  nnm.clearAlerts()
-  nne.highlight(0)
-  if (nnm.opened && nnm.opened.type === 'textbubble') nnm.hideTextBubble()
+NNE.on('lint-error', (eve) => {
+  NNM.clearAlerts()
+  NNE.marker(null)
+  NNE.highlight(null)
+  if (NNM.opened && NNM.opened.type === 'textbubble') NNM.hideTextBubble()
   if (eve.length > 0) {
     const err = eve[0]
     const clr = err.type === 'error' ? 'red' : 'yellow'
     const clr2 = err.type === 'error'
       ? 'rgba(255,0,0,0.25)' : 'rgba(255, 255, 0, 0.25)'
-    nne.marker(err.line, clr)
+    NNE.marker(err.line, clr)
     const content = (eve.length > 1)
       ? NetitorEventParser.toContentArray(eve)
       : {
@@ -72,16 +72,16 @@ nne.on('lint-error', (eve) => {
         highlight: err.line,
         highlightColor: clr2
       }
-    nnm.showAlert(err.type, content)
+    NNM.showAlert(err.type, content)
   }
 })
 
-nne.on('edu-info', (eve) => {
+NNE.on('edu-info', (eve) => {
   if (!eve) {
-    if (nnm.opened && nnm.opened.sub === 'information') nnm.hideAlert()
+    if (NNM.opened && NNM.opened.sub === 'information') NNM.hideAlert()
   } else if (eve.nfo) {
     const nfo = NetitorEventParser.toHTMLStr(eve)
-    nnm.showAlert('information', nfo)
+    NNM.showAlert('information', nfo)
   }
 })
 
@@ -89,24 +89,24 @@ nne.on('edu-info', (eve) => {
 
 window.addEventListener('DOMContentLoaded', (e) => {
   // if there is code saved in the URL load it to the editor
-  if (nne.hasCodeInHash) nne.loadFromHash()
+  if (NNE.hasCodeInHash) NNE.loadFromHash()
 })
 
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    nne.saveToHash()
+    NNE.saveToHash()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
-    nnw.nextLayout()
+    NNW.nextLayout()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
     e.preventDefault()
-    nnw.prevLayout()
+    NNW.prevLayout()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    nnw.opacity = nnw.opacity > 0 ? nnw.opacity - 0.05 : 0
+    NNW.opacity = NNW.opacity > 0 ? NNW.opacity - 0.05 : 0
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    nnw.opacity = nnw.opacity < 1 ? nnw.opacity + 0.05 : 1
+    NNW.opacity = NNW.opacity < 1 ? NNW.opacity + 0.05 : 1
   }
 })
