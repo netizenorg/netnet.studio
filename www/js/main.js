@@ -62,9 +62,16 @@ nne.on('lint-error', (eve) => {
   if (eve.length > 0) {
     const err = eve[0]
     const clr = err.type === 'error' ? 'red' : 'yellow'
+    const clr2 = err.type === 'error'
+      ? 'rgba(255,0,0,0.25)' : 'rgba(255, 255, 0, 0.25)'
     nne.marker(err.line, clr)
     const content = (eve.length > 1)
-      ? NetitorEventParser.toContentArray(eve) : err.friendly || err.message
+      ? NetitorEventParser.toContentArray(eve)
+      : {
+        content: err.friendly || err.message,
+        highlight: err.line,
+        highlightColor: clr2
+      }
     nnm.showAlert(err.type, content)
   }
 })
