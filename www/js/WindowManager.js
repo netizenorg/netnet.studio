@@ -1,4 +1,4 @@
-/* global Maths, Color, nnm, nne */
+/* global Maths, Color, NNM, NNE */
 /*
   -----------
      info
@@ -23,12 +23,12 @@
     opacity: 0.5 // the window's opacity
   })
 
-  nnw.layout = 'dock-left' // adjusts layout
-  nnw.opacity = 0.5 // adjusts the opacity of the netnet window
+  NNW.layout = 'dock-left' // adjusts layout
+  NNW.opacity = 0.5 // adjusts the opacity of the netnet window
 
-  nnw.nextLayout() // adjusts to next layout in layoutTypes
-  nnw.prevLayout() // adjusts to preveious layout in layoutTypes
-  nnw.updateTheme('light') // updates the theme
+  NNW.nextLayout() // adjusts to next layout in layoutTypes
+  NNW.prevLayout() // adjusts to preveious layout in layoutTypes
+  NNW.updateTheme('light') // updates the theme
 
 */
 class WindowManager {
@@ -48,7 +48,7 @@ class WindowManager {
     this.opacity = this._opacity
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
-    nne.on('render-update', () => this._bubbleUpiFrameEvents())
+    NNE.on('render-update', () => this._bubbleUpiFrameEvents())
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
     window.addEventListener('mouseup', (e) => this._mouseUp(e), true)
     window.addEventListener('mousedown', (e) => this._mouseDown(e), true)
@@ -102,32 +102,32 @@ class WindowManager {
   nextLayout () {
     if (this._transitionHold) return
     this._transitionHold = true
-    if (nnm.opened) nnm.fadeOut()
+    if (NNM.opened) NNM.fadeOut()
     let idx = this.layoutTypes.indexOf(this.layout)
     idx = idx < this.layoutTypes.length - 1 ? idx + 1 : 0
     this.layout = this.layoutTypes[idx]
     this._whenCSSTransitionFinished(() => {
       this._transitionHold = false
-      nnm.fadeIn()
+      NNM.fadeIn()
     })
   }
 
   prevLayout () {
     if (this._transitionHold) return
     this._transitionHold = true
-    if (nnm.opened) nnm.fadeOut()
+    if (NNM.opened) NNM.fadeOut()
     let idx = this.layoutTypes.indexOf(this.layout)
     idx = idx > 0 ? idx - 1 : this.layoutTypes.length - 1
     this.layout = this.layoutTypes[idx]
     this._whenCSSTransitionFinished(() => {
       this._transitionHold = false
-      nnm.fadeIn()
+      NNM.fadeIn()
     })
   }
 
   updateTheme (theme, background) {
-    nne.theme = theme || 'dark'
-    nne.background = background || false
+    NNE.theme = theme || 'dark'
+    NNE.background = background || false
     const de = document.documentElement
     const fg = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
     document.documentElement.style.setProperty('--fg-color', fg)
@@ -163,7 +163,7 @@ class WindowManager {
   _bubbleUpiFrameEvents () {
     // see: https://stackoverflow.com/a/38442439/1104148
     const callback = (event, type) => {
-      const boundingClientRect = nne.iframe.getBoundingClientRect()
+      const boundingClientRect = NNE.iframe.getBoundingClientRect()
       const o = { bubbles: true, cancelable: false }
       const e = new window.CustomEvent(type, o)
       e.clientX = event.clientX + boundingClientRect.left
@@ -171,17 +171,17 @@ class WindowManager {
       e.keyCode = event.keyCode
       e.ctrlKey = event.ctrlKey
       e.metaKey = event.metaKey
-      nne.iframe.dispatchEvent(e)
+      NNE.iframe.dispatchEvent(e)
     }
-    nne.iframe.contentWindow
+    NNE.iframe.contentWindow
       .addEventListener('mousemove', (e) => callback(e, 'mousemove'))
-    nne.iframe.contentWindow
+    NNE.iframe.contentWindow
       .addEventListener('mouseup', (e) => callback(e, 'mouseup'))
-    nne.iframe.contentWindow
+    NNE.iframe.contentWindow
       .addEventListener('keydown', (e) => callback(e, 'keydown'))
     // match the page's background color to that of the iframe's backgroundColor
     // w/out it the netnet's rounded border's create a white space
-    const iframeBody = nne.iframe.contentDocument.body
+    const iframeBody = NNE.iframe.contentDocument.body
     const bg = window.getComputedStyle(iframeBody).backgroundColor
     document.body.style.backgroundColor = bg
   }
@@ -243,13 +243,13 @@ class WindowManager {
       const w = window.innerWidth - e.clientX
       this.rndr.style.width = w + 'px'
       this.rndr.style.left = e.clientX + 'px'
-      nnm.updatePosition()
+      NNM.updatePosition()
     } else if (this.layout === 'separate-window' && this.cursor !== 'move') {
       this.win.style.width = e.clientX - parseInt(this.win.style.left) + 'px'
       this.win.style.height = e.clientY - parseInt(this.win.style.top) + 'px'
-      nnm.updatePosition()
+      NNM.updatePosition()
     }
-    nne.code = nne.cm.getValue()
+    NNE.code = NNE.cm.getValue()
     this._canvasResize(e)
   }
 
@@ -297,7 +297,7 @@ class WindowManager {
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        nne.code = nne.cm.getValue()
+        NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'dock-left') {
@@ -314,7 +314,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 15px 15px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        nne.code = nne.cm.getValue()
+        NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'full-screen') {
@@ -331,7 +331,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 1px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        nne.code = nne.cm.getValue()
+        NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'separate-window') {
@@ -341,7 +341,7 @@ class WindowManager {
       this.rndr.style.left = '0px'
       this.rndr.style.top = '0px'
       const wf = window.innerWidth / 2
-      const eh = nne.code.split('\n').length * 25
+      const eh = NNE.code.split('\n').length * 25
       const hf = window.innerHeight / 2 < eh + 75
         ? window.innerHeight / 2 : eh + 75
       this.win.style.width = wf + 'px'
@@ -352,7 +352,7 @@ class WindowManager {
       this.win.style.borderRadius = '25px 25px 1px 1px'
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._whenCSSTransitionFinished(() => {
-        nne.code = nne.cm.getValue()
+        NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     }

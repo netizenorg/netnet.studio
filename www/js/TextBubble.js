@@ -1,4 +1,4 @@
-/* global Maths, nnw, nne, nnm */
+/* global Maths, NNW, NNE, NNM */
 /*
   -----------
      info
@@ -152,8 +152,8 @@ class TextBubble {
 
       if (o.highlight) {
         const c = o.highlightColor || '#E6DB6F69'
-        nne.highlight(o.highlight, c)
-      } else nne.highlight(0)
+        NNE.highlight(o.highlight, c)
+      } else NNE.highlight(0)
     }
 
     if (!this.opened) this.fadeIn(250)
@@ -167,7 +167,7 @@ class TextBubble {
       opts = {}
       if (this._hasPrev()) opts.previous = () => { this.prev() }
       if (this._hasNext()) opts.next = () => { this.next() }
-      if (this._onLast()) opts.ok = () => { nnm.hideTextBubble() }
+      if (this._onLast()) opts.ok = () => { NNM.hideTextBubble() }
     }
 
     for (const key in opts) {
@@ -226,7 +226,7 @@ class TextBubble {
   }
 
   updatePosition () {
-    if (nnw.layout === 'dock-left') {
+    if (NNW.layout === 'dock-left') {
       const offY = 29 + this.ele.offsetHeight
       this.ele.style.transform = `translate(362px, ${offY}px)`
       this.tri.style.top = '13px'
@@ -234,7 +234,7 @@ class TextBubble {
       this.tri.style.right = null
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(270deg)'
-    } else if (nnw.layout === 'full-screen') {
+    } else if (NNW.layout === 'full-screen') {
       const offY = 92 + this.ele.offsetHeight
       this.ele.style.transform = `translate(-20px, ${offY}px)`
       this.tri.style.top = '-18px'

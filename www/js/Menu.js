@@ -1,4 +1,4 @@
-/* global MenuItem, TextBubble, nnw, nne */
+/* global MenuItem, TextBubble, NNW, NNE */
 /*
   -----------
      info
@@ -36,30 +36,30 @@
     }
   })
 
-  nnm.opened // if the menu is currently opened this will return an object like:
+  NNM.opened // if the menu is currently opened this will return an object like:
   // { type: 'alert', content: '...' }
   // { type: 'textbubble', content: '...' }
   // { type: 'alert', sub: 'error', content: '...' }
 
-  nnm.toggleMenu()      // toggle's the main menu
-  nnm.showMainMenu()    // displays the main menu
-  nnm.hideMainMenu()    // hides the main menu
+  NNM.toggleMenu()      // toggle's the main menu
+  NNM.showMainMenu()    // displays the main menu
+  NNM.hideMainMenu()    // hides the main menu
 
-  nnm.clearAlerts()     // clears all alerts from internal history stack
-  nnm.hideAlert()       // hides the currently displayed alert
-  nnm.showAlert(t,c)    // displays an alert of specified [t]ype,
+  NNM.clearAlerts()     // clears all alerts from internal history stack
+  NNM.hideAlert()       // hides the currently displayed alert
+  NNM.showAlert(t,c)    // displays an alert of specified [t]ype,
                         // when clicked it will display a textBubble w/the
                         // specified [c]ontent
 
-  nnm.showTextBubble(c) // displays a text bubble w/the [c]ontent passed into it
-  nnm.hideTextBubble()  // hides the currently displayed text bubble
+  NNM.showTextBubble(c) // displays a text bubble w/the [c]ontent passed into it
+  NNM.hideTextBubble()  // hides the currently displayed text bubble
 
-  nnm.fadeIn(ms, callback)  // fades all the menus in && displays them
-  nnm.fadeOut(ms, callback) // fades all the menus out && hides them
-  nnm.updatePosition()      // reposition's the menu's to match nnw.layout
+  NNM.fadeIn(ms, callback)  // fades all the menus in && displays them
+  NNM.fadeOut(ms, callback) // fades all the menus out && hides them
+  NNM.updatePosition()      // reposition's the menu's to match NNW.layout
 
-  nnm.getFace()         // returns an array w/current unicode face chars
-  nnm.setFace(l,m,r,t)  // update's netnet's face given a unicode char for it
+  NNM.getFace()         // returns an array w/current unicode face chars
+  NNM.setFace(l,m,r,t)  // update's netnet's face given a unicode char for it
                         //  [l]eft eye, [m]outh && [r]ight eye
                         //  [t] is an optional boolean which determines whether
                         //  or not to turn/spin netnet's eyes on mouse move
@@ -107,7 +107,7 @@ class Menu {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   toggleMenu () {
-    if (nnw.layout === 'welcome') return window.alert('open alt menu') // TODO
+    if (NNW.layout === 'welcome') return window.alert('open alt menu') // TODO
     else if (this.opened && this.opened.type === 'mainmenu') this.hideMainMenu()
     else this.showMainMenu()
   }
@@ -200,7 +200,7 @@ class Menu {
         content.options = {
           ok: () => {
             this.hideTextBubble()
-            if (content.highlight) nne.highlight(0)
+            if (content.highlight) NNE.highlight(0)
           }
         }
       }
@@ -222,7 +222,7 @@ class Menu {
       this._toggleRadialMenuItems(true)
     }
     this._fadeIn(ms, callback, 'tis')
-    if (nnw.layout === 'welcome') {
+    if (NNW.layout === 'welcome') {
       this.setFace('◕', '◞', '◕')
     } else {
       if (this.opened) this.setFace(...this._tempFace)
@@ -235,7 +235,7 @@ class Menu {
     this._fadeOut(ms, callback, 'mis')
     this._fadeOut(ms, callback, 'ais')
     this._fadeOut(ms, callback, 'tis')
-    if (nnw.layout !== 'welcome') {
+    if (NNW.layout !== 'welcome') {
       this._tempFace = this.getFace()
     }
     this.setFace('◕', '◞', '◕')
@@ -430,30 +430,30 @@ class Menu {
 
   _toggleAlertItem (show) {
     // 75, null, Math.PI
-    if (nnw.layout === 'dock-left') {
+    if (NNW.layout === 'dock-left') {
       this.alertBubble.toggle(show, 75, null, Math.PI * 2)
-    } else if (nnw.layout === 'dock-bottom') {
+    } else if (NNW.layout === 'dock-bottom') {
       this.alertBubble.toggle(show, 75, null, Math.PI)
-    } else if (nnw.layout === 'separate-window') {
+    } else if (NNW.layout === 'separate-window') {
       this.alertBubble.toggle(show, 75, null, Math.PI)
-    } else if (nnw.layout === 'full-screen') {
+    } else if (NNW.layout === 'full-screen') {
       this.alertBubble.toggle(show, 75, null, Math.PI * 2)
-    } else if (show && nnw.layout === 'welcome') {
+    } else if (show && NNW.layout === 'welcome') {
       this.alertBubble.toggle(false)
     }
   }
 
   _toggleRadialMenuItems (show) {
     this.items.forEach(mi => {
-      if (nnw.layout === 'dock-left') {
+      if (NNW.layout === 'dock-left') {
         mi.toggle(show, this.radius, 0.5, Math.PI * 1.6)
-      } else if (nnw.layout === 'dock-bottom') {
+      } else if (NNW.layout === 'dock-bottom') {
         mi.toggle(show, this.radius, 0.5, Math.PI)
-      } else if (nnw.layout === 'separate-window') {
+      } else if (NNW.layout === 'separate-window') {
         mi.toggle(show, this.radius * 0.8, 1, Math.PI)
-      } else if (nnw.layout === 'full-screen') {
+      } else if (NNW.layout === 'full-screen') {
         mi.toggle(show, this.radius * 1.33, 0.32, Math.PI * 1.54)
-      } else if (show && nnw.layout === 'welcome') {
+      } else if (show && NNW.layout === 'welcome') {
         mi.toggle(false)
       }
     })
