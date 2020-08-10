@@ -1,4 +1,4 @@
-/* global Netitor, WindowManager, Menu, Widget, NetitorEventParser */
+/* global Netitor, WindowManager, MenuManager, Widget, NetitorEventParser */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -28,7 +28,7 @@ const NNW = new WindowManager({
   layout: 'separate-window'
 })
 
-const NNM = new Menu({
+const NNM = new MenuManager({
   ele: '#nn-menu',
   radius: 100,
   items: {

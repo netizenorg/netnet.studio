@@ -21,7 +21,7 @@
      usage
   -----------
 
-  const nnm = new Menu({
+  const nnm = new MenuManager({
     ele: '#nn-menu', // id of the element to inject the menu system into
     radius: 100, // radius of the radial circle of menu options when opened
     items: {
@@ -64,7 +64,7 @@
                         //  [t] is an optional boolean which determines whether
                         //  or not to turn/spin netnet's eyes on mouse move
 */
-class Menu {
+class MenuManager {
   constructor (opts) {
     this.tis = null // parent element for text bubble navigation
     this.ais = null // parent element for alert bubbles
@@ -460,4 +460,4 @@ class Menu {
   }
 }
 
-window.Menu = Menu
+window.Menu = MenuManager
