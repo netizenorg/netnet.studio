@@ -18,7 +18,7 @@
      usage
   -----------
 
-  const nnw = new WindowManager({
+  const NNW = new WindowManager({
     layout: 'separate-window', // see layoutTypes below
     opacity: 0.5 // the window's opacity
   })

@@ -21,7 +21,7 @@
      usage
   -----------
 
-  const nnm = new MenuManager({
+  const NNM = new MenuManager({
     ele: '#nn-menu', // id of the element to inject the menu system into
     radius: 100, // radius of the radial circle of menu options when opened
     items: {
