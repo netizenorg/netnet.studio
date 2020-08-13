@@ -23,7 +23,7 @@ router.get('/Color.js', (req, res) => {
 })
 
 router.get('/api/widgets', (req, res) => {
-  fs.readdir(path.join(__dirname, '../www/js/widgets'), (err, list) => {
+  fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     else res.json(list)
   })
