@@ -81,21 +81,9 @@ body {
   width: 340px;
   color: var(--netizen-meta);
   background-color: var(--bg-color);
-  padding: 1px 14px 13px;
+  padding: 14px;
   border-radius: 15px;
   border: 7px solid var(--fg-color);
-}
-
-.text-bubble:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 30px;
-
-  background-color: var(--fg-color);
 }
 
 .text-bubble > section > *:first-of-type {
@@ -107,9 +95,8 @@ body {
   display: inline-block;
   position: relative;
   width: auto;
-  margin-bottom: 20px;
-  color: var(--bg-color);
-  /*font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;*/
+  margin-bottom: 12px;
+  color: var(--fg-color);
   font-size: 20px;
   line-height: 1.2em;
   font-weight: 400;
@@ -122,15 +109,10 @@ body {
   display: inline-block;
   position: relative;
   width: auto;
-  color: var(--bg-color);
+  color: var(--fg-color);
   text-decoration: none;
-  /*font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;*/
   transition: color .2s ease;
 }
-
-/*.text-bubble > section h1 a code {
-  font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}*/
 
 .text-bubble > section h1:before {
   content: '';
@@ -195,7 +177,7 @@ body {
 }
 
 .text-bubble > section p {
-  margin-bottom: 10px;
+  margin: 0;
   font-size: 16px;
   line-height: 1.4em;
 }
@@ -227,7 +209,8 @@ body {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-end;
-  margin-bottom: 4px;
+  margin-top: 12px;
+  margin-bottom: 2px;
   margin-right: 2px;
 }
 .text-bubble > .text-bubble-options > button {
