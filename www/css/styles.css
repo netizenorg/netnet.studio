@@ -81,9 +81,21 @@ body {
   width: 340px;
   color: var(--netizen-meta);
   background-color: var(--bg-color);
-  padding: 13px 14px;
+  padding: 1px 14px 13px;
   border-radius: 15px;
   border: 7px solid var(--fg-color);
+}
+
+.text-bubble:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 30px;
+
+  background-color: var(--fg-color);
 }
 
 .text-bubble > section > *:first-of-type {
@@ -95,24 +107,25 @@ body {
   display: inline-block;
   position: relative;
   width: auto;
-  margin-bottom: 15px;
-  color: var(--netizen-meta);
+  margin-bottom: 18px;
+  color: var(--bg-color);
   font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 20px;
   line-height: 1.2em;
   font-weight: 400;
   transform: skew(0);
   transition: color .2s ease;
+  z-index: 1;
 }
 
 .text-bubble > section h1 a {
   display: inline-block;
   position: relative;
   width: auto;
-  color: var(--netizen-meta);
+  color: var(--bg-color);
   text-decoration: none;
   font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  transition: color .6s ease;
+  transition: color .2s ease;
 }
 
 .text-bubble > section h1 a code {
@@ -151,6 +164,7 @@ body {
   height: 95%;
 
   background-color: var(--fg-color);
+  background-color: #ffffff;
 
   animation: blink 1.5s infinite steps(1);
   transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -169,6 +183,9 @@ body {
 .text-bubble > section h1:hover {
   color: var(--fg-color);
   transform: skew(-5deg);
+}
+.text-bubble > section h1:hover a {
+  color: var(--fg-color);
 }
 .text-bubble > section h1:hover:before {
   transform: scaleX(1);
