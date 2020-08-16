@@ -111,12 +111,12 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   open () {
-    if (STORE) STORE.dispatch('SHOW_WIDGET', this)
+    if (STORE) STORE.dispatch('OPEN_WIDGET', this)
     else this.ele.style.display = 'block'
   }
 
   close () {
-    if (STORE) STORE.dispatch('HIDE_WIDGET', this)
+    if (STORE) STORE.dispatch('CLOSE_WIDGET', this)
     else this.ele.style.display = 'none'
   }
 

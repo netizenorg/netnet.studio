@@ -1,29 +1,32 @@
 window.TUTORIAL = {
   steps: [
     {
-      id: 'begin',
-      code: '<!DOCTYPE html>',
-      edit: false, // prevent user from editing code until end of content Array
-      content: 'Would you like to experiment a bit more?',
+      content: 'HTML isn\'t the only type of markup language.',
       options: {
-        'yes please': (e) => { e.goTo('more-experimenting') },
-        'naw, i\'m good': (e) => { e.goTo('finished') }
+        'oh no? what others are there?': (e) => { e.next() }
       }
     },
     {
-      id: 'more-experimenting',
-      content: 'Ok great, dont\'t forget about the helpful widgets!',
+      content: 'There\'s <a href="https://developer.mozilla.org/en-US/docs/Web/MathML" target="_blank">MathML</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/SVG" target="_blank">SVG</a>.',
       options: {
-        'open color widget': () => { window.alert('widget') },
-        'open other widget': () => { window.alert() },
-        'ok, i\'m done': (e) => { e.goTo('finished') }
+        'you don\'t say! Are there more?': (e) => { e.next() },
+        'wait a sec, go back.': (e) => { e.prev() }
       }
     },
     {
-      id: 'finished',
-      content: 'Great! Nick want\'s to tell u something',
+      content: 'Oh yes! Artists like the Graffiti Research Lab have even made their own.',
       options: {
-        'ok, what?': (e) => { e.goTo('nick') }
+        'really? What\'s it called?': (e) => { e.next() },
+        'wait a sec, go back.': (e) => { e.prev() }
+      }
+    },
+    {
+      content: 'It\'s called GML or <a href="https://en.wikipedia.org/wiki/Graffiti_Markup_Language" target="_blank">Graffiti Markup Language</a>.',
+      options: {
+        'wait a sec, go back.': (e) => { e.prev() },
+        'cool thnx for the info!': () => {
+          STORE.dispatch('TUTORIAL_FINISHED')
+        }
       }
     }
   ]

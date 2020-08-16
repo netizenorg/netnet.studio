@@ -49,15 +49,17 @@ class TutorialManager {
   }
 
   next () {
-    // TODO
+    const index = Number(STORE.state.tutorial.id)
+    STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
   }
 
   prev () {
-    // TODO
+    const index = Number(STORE.state.tutorial.id)
+    STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
   }
 
   goTo (id) {
-    console.log(id)
+    STORE.dispatch('TUTORIAL_GOTO', id)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -84,32 +86,55 @@ class TutorialManager {
 
   _updateState () {
     if (typeof TUTORIAL === 'object') {
+      // update tutorial data
       if (!(TUTORIAL.steps instanceof Array)) return this._err('steps')
-      const first = this._createStartObj()
-      TUTORIAL.steps = [first, ...TUTORIAL.steps]
       const steps = this._mapData(TUTORIAL.steps)
-
-      // const key = TUTORIAL.steps[0].id || '0'
+      steps.__START__ = this._createStartObj()
       // this.state.video = TUTORIAL.steps[0].video || null // TODO...
       const editable = (typeof TUTORIAL.steps[0].edit === 'boolean')
         ? TUTORIAL.steps[0].edit : true
+      STORE.dispatch('TUTORIAL_DATA', { steps, id: '__START__', editable })
 
-      STORE.dispatch('TUTORIAL_DATA', { steps, key: '___START___', editable })
+      // update global widgets
+      if (typeof TUTORIAL.widgets === 'object') {
+        STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
+      }
     } else this._err('tutObj')
   }
 
   _createStartObj () {
     const m = this.metadata
+    const i = TUTORIAL.steps[0].id || 0
     return {
       id: '___START___',
       content: `I've loaded a tutorial by ${m.author}
       called ${m.title}, ${m['sub-title']}, shall we get started?`,
       options: {
-        'yes, let\'s do it!': (e) => { e.goTo('start') },
-        'no, i changed my mind': (e) => { e.goTo('end') }
+        'yes, let\'s do it!': (e) => { e.goTo(i) },
+        'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
       },
       scope: this
     }
+  }
+
+  _mapData (steps) {
+    let dict = {}
+    if (this._isLinear(steps)) {
+      dict = { length: steps.length }
+      steps.forEach((o, i) => {
+        o.scope = this
+        o.options = o.options || this._defaultOpts(i, steps)
+        dict[i] = o
+      })
+    } else {
+      dict = {}
+      steps.forEach((o, i) => {
+        const id = o.id || i
+        o.scope = this
+        dict[id] = o
+      })
+    }
+    return dict
   }
 
   _isLinear (arr) {
@@ -120,20 +145,18 @@ class TutorialManager {
     return linear
   }
 
-  _mapData (steps) {
-    let dict = {}
-    if (this._isLinear(steps)) {
-      dict = { length: steps.length }
-      steps.forEach((o, i) => { o.scope = this; dict[i] = o })
-    } else {
-      dict = {}
-      steps.forEach((o, i) => {
-        const key = o.id || i
-        o.scope = this
-        dict[key] = o
-      })
+  _defaultOpts (i, arr) {
+    const opts = {}
+    if (i > 0) {
+      opts.previous = () => { STORE.dispatch('TUTORIAL_PREV_STEP', i - 1) }
     }
-    return dict
+    if (i < arr.length - 1) {
+      opts.next = () => { STORE.dispatch('TUTORIAL_NEXT_STEP', i + 1) }
+    }
+    if (i === arr.length - 1) {
+      opts.ok = () => { STORE.dispatch('TUTORIAL_FINISHED') }
+    }
+    return opts
   }
 }
 

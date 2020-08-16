@@ -60,7 +60,7 @@ class StateManager {
       menu: false, // displaying main menu or not
       eduinfo: { display: false, payload: null },
       errors: { display: false, index: -1, list: [] },
-      tutorial: { display: false, key: null, steps: {} }
+      tutorial: { display: false, id: null, steps: {} }
     }
     this.log = opts.log || false
     this.logRenders = opts.logRenders || false
@@ -98,7 +98,12 @@ class StateManager {
       'PREV_ERROR' // (no-data-required)
     ]
     this.tutorialActionTypes = [
-      'TUTORIAL_DATA' // { steps, key, editable }
+      'TUTORIAL_DATA', // { steps, id, editable }
+      'TUTORIAL_NEXT_STEP', // id, of the initiated step
+      'TUTORIAL_PREV_STEP', // id, of the initiated step
+      'TUTORIAL_GOTO', // id, of the initiated step
+      'HIDE_TUTORIAL_TEXT', // (no-data-required)
+      'TUTORIAL_FINISHED' // (no-data-required)
     ]
   }
 
@@ -154,15 +159,15 @@ class StateManager {
     // CREATE ACTION
     let act, ren
     if (type.includes('_LAYOUT')) {
-      act = this.changeLayout(type, data); ren = 'layout'
+      act = this.changeLayout(type, data); ren = 'window'
     } else if (type.includes('_OPACITY')) {
-      act = this.changeOpacity(type, data); ren = 'opacity'
+      act = this.changeOpacity(type, data); ren = 'window'
     } else if (type === 'SHARE_URL') {
-      act = { type, data: 'has-hash' }; ren = 'hash'
+      act = { type, data: 'has-hash' }; ren = 'netitor-hash'
     } else if (type.includes('_EDITING')) {
-      act = this.updateEditing(type); ren = 'editing'
+      act = this.updateEditing(type); ren = 'window'
     } else if (type === 'CHANGE_THEME') {
-      act = this.updateTheme(type, data); ren = 'theme'
+      act = this.updateTheme(type, data); ren = 'netitor'
     } else if (type.includes('_WIDGET')) {
       act = this.updateWidgets(type, data); ren = 'widgets'
     } else if (type === 'TOGGLE_MENU') {
@@ -251,9 +256,12 @@ class StateManager {
       for (const key in data) {
         if (WIDGETS[key]) {
           return console.error(`StateManager: WIDGETS.${key} already exists`)
+        } else if (!(data[key] instanceof Widget)) {
+          return console.error(`StateManager: ${key} is not a Widget`)
+        } else {
+          WIDGETS[key] = data[key]
+          arr.push({ ref: WIDGETS[key], visible: false })
         }
-        WIDGETS[key] = data[key]
-        arr.push({ ref: WIDGETS[key], visible: false })
       }
       return { type, data: arr }
     }
@@ -301,9 +309,13 @@ class StateManager {
   }
 
   updateTutorial (type, data) {
-    if (type === 'TUTORIAL_DATA') {
-      return { type, data }
-    }
+    if (type === 'TUTORIAL_FINISHED') {
+      return {
+        type, data: { display: false, id: null, steps: {} }
+      }
+    } else if (type === 'HIDE_TUTORIAL_TEXT') {
+      return { type, data: false }
+    } else return { type, data }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -311,18 +323,38 @@ class StateManager {
 
   layout (state, action) {
     if (action.type.includes('_LAYOUT')) return action.data
-    else return state
+    else if (this.tutorialActionTypes.includes(action.type)) {
+      if (action.type.includes('STEP') || action.type.includes('GOTO')) {
+        const layout = this.state.tutorial.steps[action.data].layout
+        if (typeof layout === 'string') return layout
+        else return state
+      } else return state
+    } else return state
   }
 
   opacity (state, action) {
     if (action.type.includes('_OPACITY')) return action.data
-    else return state
+    else if (this.tutorialActionTypes.includes(action.type)) {
+      if (action.type.includes('STEP') || action.type.includes('GOTO')) {
+        const opacity = this.state.tutorial.steps[action.data].opacity
+        if (typeof opacity === 'number') return opacity
+        else return state
+      } else return state
+    } else return state
   }
 
   editable (state, action) {
     if (action.type.includes('_EDITING')) return action.data
-    else if (action.type === 'TUTORIAL_DATA') return action.data.editable
-    else return state
+    else if (this.tutorialActionTypes.includes(action.type)) {
+      if (action.type === 'TUTORIAL_DATA') return action.data.editable
+      else if (action.type === 'TUTORIAL_FINISHED') return true
+      else if (action.type === 'HIDE_TUTORIAL_TEXT') return true
+      else {
+        const e = this.state.tutorial.steps[action.data].edit
+        if (typeof e === 'boolean') return e
+        else return true
+      }
+    } else return state
   }
 
   theme (state, action) {
@@ -423,37 +455,43 @@ class StateManager {
       // if we triggered a tutorial event, hide errors for now
       state.display = false
       state.index = -1
-      // if (state.list.length > 0) { // ...&& there are still errors present
-      //   state.display = 'alert' // ...show error alert
-      //   state.index = -1
-      // }
       return state
     } else return state
   }
 
   tutorial (s, action) {
     // clone old tutorial state
-    const state = { display: s.display, key: s.key, steps: s.steps }
+    const state = { display: s.display, id: s.id, steps: s.steps }
     // ...
     if (action.type === 'TOGGLE_MENU') {
-      state.display = false
+      if (action.data) state.display = false
+      else if (state.id !== null) state.display = 'text' // TODO or video?
       return state
-    } else if (this.errorActionTypes.includes(action.type)) {
+    } else if (this.errorActionTypes.includes(action.type) ||
+      this.eduActionTypes.includes(action.type)) {
       if (action.type.includes('SHOW')) {
         state.display = false
         return state
-      } else return state
-    } else if (this.eduActionTypes.includes(action.type)) {
-      if (action.type.includes('SHOW')) {
-        state.display = false
+      } else if (action.type.includes('HIDE') ||
+        action.type.includes('CLEAR')) {
+        if (state.id !== null) state.display = 'text' // TODO or video?
         return state
       } else return state
     } else if (this.tutorialActionTypes.includes(action.type)) {
       if (action.type === 'TUTORIAL_DATA') {
         return {
-          display: 'text', key: action.data.key, steps: action.data.steps
+          display: 'text', id: action.data.id, steps: action.data.steps
         }
-      } else return state
+      } else if (action.type === 'HIDE_TUTORIAL_TEXT') {
+        state.display = action.data
+        return state
+      } else if (action.type === 'TUTORIAL_FINISHED') {
+        return action.data
+      } else { // NEXT, PREV, GOTO
+        state.id = action.data
+        if (state.id !== null) state.display = 'text' // TODO or video?
+        return state
+      }
     } else return state
   }
 
@@ -499,7 +537,7 @@ class StateManager {
     }
   }
 
-  updateMenuManager () {
+  renderMenuManager () {
     if (!this.is('SHOWING')) { // if nothing should be showing...
       // ...hide anything that was previously being shown.
       if (NNM.opened === 'mis') NNM.hideMenu()
@@ -532,7 +570,7 @@ class StateManager {
         NNM.showAlert(type, data)
       }
     } else if (this.is('SHOWING_TEXT')) { // if a text should be showing...
-      const tut = this.state.tutorial.key
+      const tut = this.state.tutorial.id
       const idx = this.state.errors.index >= 0
         ? this.state.errors.index : 0
       const data = this.is('SHOWING_ERROR_TEXT')
@@ -551,36 +589,64 @@ class StateManager {
     }
   }
 
-  render (change) {
-    if (change === 'hash') {
-      NNE.saveToHash()
-    } else if (change === 'layout') {
+  renderWindowManager () {
+    const s = this.state
+    if (s.layout !== NNW.layout) {
       if (this.holding) return
       this.holding = true
       if (NNM.opened) NNM.fadeOut()
       NNW.layout = this.state.layout
       NNW._whenCSSTransitionFinished(() => {
         this.holding = false
+        this.renderNetitor()
         NNM.fadeIn()
       })
-    } else if (change === 'opacity') {
+    }
+    if (s.opacity !== NNW.opacity) {
       NNW.opacity = this.state.opacity
-    } else if (change === 'editing') {
-      NNE.cm.setOption('readOnly', !this.state.editable)
-    } else if (change === 'theme') {
+    }
+  }
+
+  renderNetitor (change) {
+    const s = this.state
+    const t = s.tutorial.id !== null ? s.tutorial.steps[s.tutorial.id] : null
+    if (change && change.includes('hash')) {
+      NNE.saveToHash()
+    }
+    if (s.theme !== NNE.theme) {
       NNW.updateTheme(this.state.theme, this.state.background)
+    }
+    if (s.editable === NNE.cm.getOption('readOnly')) {
+      NNE.cm.setOption('readOnly', !this.state.editable)
+    }
+    if (t && t.highlight) {
+      if (typeof t.highlight === 'object') NNE.highlight(t.highlight)
+      else NNE.highlight(t.highlight, '#81c99444')
+    }
+  }
+
+  renderWidgets () {
+    this.state.widgets.forEach(w => {
+      if (w.visible) w.ref.ele.style.display = 'block'
+      else w.ref.ele.style.display = 'none'
+    })
+  }
+
+  render (change) {
+    if (change.includes('netitor')) {
+      this.renderNetitor(change)
+    } else if (change === 'window') {
+      this.renderWindowManager()
     } else if (change === 'widgets') {
-      this.state.widgets.forEach(w => {
-        if (w.visible) w.ref.ele.style.display = 'block'
-        else w.ref.ele.style.display = 'none'
-      })
+      this.renderWidgets()
     } else if (change === 'netnet') {
-      this.updateMenuManager()
+      this.renderMenuManager()
       this.resetErrorMarkers()
     } else if (change === 'tutorial') {
-      this.updateMenuManager()
+      this.renderMenuManager()
       this.resetErrorMarkers()
-      // this.updateTutorialManager()
+      this.renderWindowManager()
+      this.renderNetitor()
     }
   }
 }
