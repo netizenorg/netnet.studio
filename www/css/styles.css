@@ -107,7 +107,7 @@ body {
   display: inline-block;
   position: relative;
   width: auto;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   color: var(--bg-color);
   /*font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;*/
   font-size: 20px;
@@ -195,22 +195,19 @@ body {
 }
 
 .text-bubble > section p {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 16px;
   line-height: 1.4em;
 }
 
 .text-bubble > section > p code {
   position: relative;
-  top: -0.15em;
-  padding: 0.3em;
+  top: -0.05em;
+  padding: 0.25em 0.3em;
   border-radius: 6px;
   border: 1px solid var(--fg-color);
   color: var(--netizen-meta);
   background-color: var(--netizen-hint-shadow);
-  /*border: 1px solid var(--netizen-atom);
-  color: var(--netizen-match-color);
-  background-color: var(--netizen-hint-shadow);*/
   font-size: 14px;
   line-height: 1.4em;
 }
