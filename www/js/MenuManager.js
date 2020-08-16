@@ -1,4 +1,4 @@
-/* global MenuItem, TextBubble, NNW, NNE */
+/* global MenuItem, TextBubble, NNW, STORE */
 /*
   -----------
      info
@@ -21,31 +21,16 @@
      usage
   -----------
 
-  const NNM = new MenuManager({
-    ele: '#nn-menu', // id of the element to inject the menu system into
-    radius: 100, // radius of the radial circle of menu options when opened
-    items: {
-      menuOptionName: {
-        path: 'path/to/icon.png', // icon to display in menu item
-        click: () => { } // function to call when menu item is clicked
-      },
-      anotherOptionName: {
-        path: 'path/to/icon.png',
-        click: () => { }
-      }
-    }
-  })
+  const NNM = new MenuManager()
 
-  NNM.opened // if the menu is currently opened this will return an object like:
-  // { type: 'alert', content: '...' }
-  // { type: 'textbubble', content: '...' }
-  // { type: 'alert', sub: 'error', content: '...' }
+  NNM.opened // if the menu is currently opened
+             // returns false, or 'mis' for main menu items,
+             // 'ais' for alert menu item, 'tis' for textBubble item
 
   NNM.toggleMenu()      // toggle's the main menu
   NNM.showMainMenu()    // displays the main menu
   NNM.hideMainMenu()    // hides the main menu
 
-  NNM.clearAlerts()     // clears all alerts from internal history stack
   NNM.hideAlert()       // hides the currently displayed alert
   NNM.showAlert(t,c)    // displays an alert of specified [t]ype,
                         // when clicked it will display a textBubble w/the
@@ -65,70 +50,88 @@
                         //  or not to turn/spin netnet's eyes on mouse move
 */
 class MenuManager {
-  constructor (opts) {
+  constructor () {
+    this.ele = document.querySelector('#nn-menu')
     this.tis = null // parent element for text bubble navigation
     this.ais = null // parent element for alert bubbles
     this.mis = null // parent element for main menu items
-    this.radius = opts.radius || 100 // radius of main menu circle
+
     this.items = [] // main menu items
+    this.radius = 100 // radius of main menu circle
+    // TODO: determine radius size based on item length
 
-    // keeps track of previously opened menu items
-    this.history = []
+    this._opened = false
+    this.itemOpts = {
+      search: {
+        path: 'images/menu/search.png',
+        click: () => { window.alert('open search') }
+      },
+      settings: {
+        path: 'images/menu/settings.png',
+        click: () => { STORE.dispatch('OPEN_WIDGET', 'functions') }
+      },
+      save: {
+        path: 'images/menu/save.png',
+        click: () => { STORE.dispatch('SHARE_URL') }
+      },
+      open: {
+        path: 'images/menu/open.png',
+        click: () => { window.alert('open project') }
+      }
+    }
 
-    this._setupNetnetFace(opts)
-    this._setupMenuItems(opts)
-    this._setupAlertItems()
-    this._setupTextBubbles()
+    this._setupNetnetFace()
+    this._setupMenuItems()
+    this._setupAlertItem()
+    this._setupTextBubble()
     this.updatePosition() // to match netnet window placement
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
 
     window.addEventListener('mousemove', (e) => this._moveEyes(e))
 
-    this.ele.querySelector('#face')
-      .addEventListener('click', () => this.toggleMenu())
+    this.ele.querySelector('#face').addEventListener('click', () => {
+      STORE.dispatch('TOGGLE_MENU')
+    })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ properties
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  get opened () {
-    const lastMenuItem = this.history[this.history.length - 1]
-    return lastMenuItem || false
-  }
-
-  set opened (v) {
-    return console.error('Menu: opened property is read only')
-  }
+  get opened () { return this._opened }
+  set opened (v) { return console.error('Menu: opened property is read only') }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•.¸ public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
   toggleMenu () {
-    if (NNW.layout === 'welcome') return window.alert('open alt menu') // TODO
-    else if (this.opened && this.opened.type === 'mainmenu') this.hideMainMenu()
-    else this.showMainMenu()
+    if (this.opened === 'mis') this.hideMenu()
+    else this.showMenu()
   }
 
-  showMainMenu (viaHistory) {
-    if (!viaHistory) this._updateHistory({ type: 'mainmenu' })
+  showMenu () {
     this.updatePosition()
     this.setFace('◕', '✖', '◕')
     this._toggleRadialMenuItems(true)
+    this._opened = 'mis'
   }
 
-  hideMainMenu (removedItem) {
-    if (removedItem) {
-      this.setFace('◕', '◞', '◕')
-      this._toggleRadialMenuItems(false)
-    } else this._userCalledHide('mainmenu')
+  hideMenu () {
+    this.setFace('◕', '◞', '◕')
+    this._toggleRadialMenuItems(false)
+    if (this._opened === 'mis') this._opened = false
+  }
+
+  hideAll () {
+    this.hideMenu()
+    this.hideAlert()
+    this.hideTextBubble()
   }
 
   // ~ * ~
 
-  showAlert (type, content, viaHistory) {
+  showAlert (type, content) {
     const types = ['error', 'warning', 'information']
     if (!types.includes(type)) {
       const m = 'Menu: showAlert expecting one of the following types as the first argument'
@@ -138,12 +141,19 @@ class MenuManager {
       return console.error(m)
     }
 
-    if (!viaHistory) this._updateHistory({ type: 'alert', sub: type, content })
+    // if (this.opened) this.hideAll()
     this.updatePosition()
+    this._opened = 'ais'
 
     this.alertBubble.icon = `images/alerts/${type}.png`
     this.alertBubble.title = type
-    this.alertBubble._click = () => { this.showTextBubble(content) }
+    this.alertBubble.click = () => {
+      if (type === 'information') {
+        STORE.dispatch('SHOW_EDU_TEXT', content)
+      } else if (type === 'error' || type === 'warning') {
+        STORE.dispatch('SHOW_ERROR_TEXT', content)
+      }
+    }
     this._toggleAlertItem(true)
 
     if (type === 'error') {
@@ -155,90 +165,78 @@ class MenuManager {
     }
   }
 
-  hideAlert (removedItem) {
-    if (removedItem) {
-      this.alertBubble.toggle(false)
-      this.setFace('◕', '◞', '◕')
-    } else this._userCalledHide('alert')
-  }
-
-  clearAlerts () {
-    let had = false
-    for (let i = this.history.length - 1; i >= 0; i--) {
-      if (this.history[i].type === 'alert') {
-        had = true
-        this.history.splice(i, 1)
-      }
-    }
-    if (had) {
-      this.alertBubble.toggle(false)
-      this.setFace('◕', '◞', '◕')
-    }
+  hideAlert () {
+    this.alertBubble.toggle(false)
+    this.setFace('◕', '◞', '◕')
+    if (this._opened === 'ais') this._opened = false
   }
 
   // ~ * ~
 
-  showTextBubble (content, viaHistory) {
+  showTextBubble (content) {
     if (!content) {
       const m = 'Menu: showTextBubble requires a content argument'
       return console.error(m)
     }
 
-    if (!viaHistory) this._updateHistory({ type: 'textbubble', content })
+    // if (this.opened) this.hideAll()
     this.updatePosition()
     this.setFace('◕', '◞', '◕')
+    this._opened = 'tis'
 
-    if (typeof content === 'string' || content instanceof window.HTMLElement) {
-      this.textBubble.update({
-        content: content,
-        options: {
-          ok: () => { this.hideTextBubble() }
-        }
-      })
-    } else { // assuming object or array of objs
-      if (!content.options) {
-        content.options = {
-          ok: () => {
-            this.hideTextBubble()
-            if (content.highlight) NNE.highlight(0)
-          }
-        }
-      }
-      this.textBubble.update(content)
-    }
+    this.textBubble.update({
+      content: content.content,
+      options: content.options,
+      scope: content.scope
+    })
   }
 
   hideTextBubble (removedItem) {
-    if (removedItem) {
-      this.textBubble.fadeOut()
-      this.setFace('◕', '◞', '◕')
-    } else this._userCalledHide('textbubble')
+    this.textBubble.fadeOut()
+    this.setFace('◕', '◞', '◕')
+    if (this._opened === 'tis') this._opened = false
   }
 
   // ~ * ~
 
   fadeIn (ms, callback) {
-    if (this.opened && this.opened.type === 'mainmenu') {
-      this._toggleRadialMenuItems(true)
-    }
-    this._fadeIn(ms, callback, 'tis')
-    if (NNW.layout === 'welcome') {
-      this.setFace('◕', '◞', '◕')
-    } else {
-      if (this.opened) this.setFace(...this._tempFace)
-      this._fadeIn(ms, callback, 'mis')
-      this._fadeIn(ms, callback, 'ais')
+    const t = ms || 250
+    const menu = this._opened
+    const welc = NNW.layout === 'welcome'
+    const exceptWelcome = (welc && menu === 'tis') || (!welc)
+    if (welc) this.setFace('◕', '◞', '◕')
+    else if (this._tempFace) this.setFace(...this._tempFace)
+    if (this.opened === 'mis') this._toggleRadialMenuItems(true)
+    else if (this.opened === 'ais') this._toggleAlertItem(true)
+    if (menu && exceptWelcome) {
+      this[menu].style.transition = `opacity ${t}ms`
+      this[menu].style.display = 'block'
+      if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
+      setTimeout(() => {
+        this.updatePosition()
+        this[menu].style.opacity = 1
+      }, 100)
+      this[menu + '_fading'] = setTimeout(() => {
+        if (callback) callback()
+      }, t + 100)
     }
   }
 
   fadeOut (ms, callback) {
-    this._fadeOut(ms, callback, 'mis')
-    this._fadeOut(ms, callback, 'ais')
-    this._fadeOut(ms, callback, 'tis')
-    if (NNW.layout !== 'welcome') {
-      this._tempFace = this.getFace()
-    }
+    const t = ms || 250
+    const menu = this._opened
+    const welc = NNW.layout === 'welcome'
+    if (!welc) this._tempFace = this.getFace()
     this.setFace('◕', '◞', '◕')
+    if (this.opened === 'mis') this._toggleRadialMenuItems(false)
+    else if (this.opened === 'ais') this._toggleAlertItem(false)
+    this[menu].style.transition = `opacity ${t}ms`
+    if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
+    setTimeout(() => { this[menu].style.opacity = 0 }, 10)
+    this[menu + '_fading'] = setTimeout(() => {
+      this[menu].style.display = 'none'
+      if (callback) callback()
+    }, t + 5)
   }
 
   updatePosition () {
@@ -250,7 +248,7 @@ class MenuManager {
     const win = document.querySelector('#nn-window')
     this.tis.style.bottom = win.offsetHeight + 20 + 'px'
     this.tis.style.left = win.offsetWidth - 340 - 4 + 'px'
-    this.textBubble.updatePosition()
+    if (this.opened === 'tis') this.textBubble.updatePosition()
   }
 
   setFace (leftEye, mouth, rightEye, spinEyes) {
@@ -277,8 +275,7 @@ class MenuManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•* private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _setupNetnetFace (opts) {
-    this.ele = document.querySelector(opts.ele)
+  _setupNetnetFace () {
     this.ele.innerHTML = `
       <div id="face">
         <span>◕</span>
@@ -289,20 +286,20 @@ class MenuManager {
     this._spinEyes = true
   }
 
-  _setupMenuItems (opts) {
+  _setupMenuItems () {
     this.mis = document.createElement('div')
     this.mis.id = 'menu-items-parent'
     this.ele.appendChild(this.mis)
     this.mis.style.position = 'absolute'
 
     let index = 0
-    for (const key in opts.items) {
+    for (const key in this.itemOpts) {
       const mi = new MenuItem({
         title: key,
-        icon: opts.items[key].path,
-        click: opts.items[key].click,
+        icon: this.itemOpts[key].path,
+        click: this.itemOpts[key].click,
         index: index,
-        total: Object.keys(opts.items).length
+        total: Object.keys(this.itemOpts).length
       })
       this.mis.appendChild(mi.ele)
       this.items.push(mi)
@@ -310,7 +307,7 @@ class MenuManager {
     }
   }
 
-  _setupAlertItems () {
+  _setupAlertItem () {
     this.ais = document.createElement('div')
     this.ais.id = 'alert-items-parent'
     this.ele.appendChild(this.ais)
@@ -325,18 +322,12 @@ class MenuManager {
     this.ais.appendChild(this.alertBubble.ele)
   }
 
-  _setupTextBubbles () {
+  _setupTextBubble () {
     this.tis = document.createElement('div')
     this.tis.id = 'text-bubbles-parent'
     this.ele.appendChild(this.tis)
     this.tis.style.position = 'absolute'
-
-    const de = document.documentElement
-    const t = window.getComputedStyle(de).getPropertyValue('--transition-time')
-    this.tis.style.transition = `bottom ${t}, left  ${t}`
-
     this.textBubble = new TextBubble()
-
     this.tis.appendChild(this.textBubble.ele)
   }
 
@@ -368,66 +359,6 @@ class MenuManager {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _fadeIn (ms, callback, menu) {
-    const t = ms || 250
-    this[menu].style.transition = `opacity ${t}ms`
-    this[menu].style.display = 'block'
-    if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
-    setTimeout(() => {
-      this.updatePosition()
-      this[menu].style.opacity = 1
-    }, 100)
-    this[menu + '_fading'] = setTimeout(() => {
-      if (callback) callback()
-    }, t + 100)
-  }
-
-  _fadeOut (ms, callback, menu) {
-    const t = ms || 250
-    this[menu].style.transition = `opacity ${t}ms`
-    if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
-    setTimeout(() => { this[menu].style.opacity = 0 }, 10)
-    this[menu + '_fading'] = setTimeout(() => {
-      this[menu].style.display = 'none'
-      if (callback) callback()
-    }, t + 5)
-  }
-
-  _userCalledHide (type) {
-    if (this.opened && this.opened.type === type) {
-      this._updateHistory('pop')
-    } else {
-      console.warn(`Menu: attempted to hide ${type} but no ${type} was present`)
-    }
-  }
-
-  _updateHistory (obj) {
-    if (obj === 'pop') {
-      const last = this.history.pop()
-      if (last.type === 'mainmenu') this.hideMainMenu(last)
-      else if (last.type === 'textbubble') this.hideTextBubble(last)
-      else if (last.type === 'alert') this.hideAlert(last)
-
-      if (this.opened) {
-        if (this.opened.type === 'mainmenu') this.showMainMenu(true)
-        else if (this.opened.type === 'alert') {
-          this.showAlert(this.opened.sub, this.opened.content, true)
-        } else if (this.opened.type === 'textbubble') {
-          this.showTextBubble(this.opened.content, true)
-        }
-      }
-    } else if (typeof obj === 'object') {
-      const last = this.opened
-      const tb = last.type === 'textbubble'
-      if (this.opened) {
-        if (this.opened.type === 'mainmenu') this.hideMainMenu(last)
-        else if (this.opened.type === 'textbubble' && !tb) this.hideTextBubble(last)
-        else if (this.opened.type === 'alert') this.hideAlert(last)
-      }
-      this.history.push(obj)
-    }
-  }
-
   _toggleAlertItem (show) {
     // 75, null, Math.PI
     if (NNW.layout === 'dock-left') {
@@ -439,6 +370,8 @@ class MenuManager {
     } else if (NNW.layout === 'full-screen') {
       this.alertBubble.toggle(show, 75, null, Math.PI * 2)
     } else if (show && NNW.layout === 'welcome') {
+      this.alertBubble.toggle(false)
+    } else if (!show) {
       this.alertBubble.toggle(false)
     }
   }
@@ -454,6 +387,8 @@ class MenuManager {
       } else if (NNW.layout === 'full-screen') {
         mi.toggle(show, this.radius * 1.33, 0.32, Math.PI * 1.54)
       } else if (show && NNW.layout === 'welcome') {
+        mi.toggle(false)
+      } else if (!show) {
         mi.toggle(false)
       }
     })

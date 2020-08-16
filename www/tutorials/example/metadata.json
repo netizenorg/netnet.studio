@@ -1,0 +1,24 @@
+{
+  "title": "New Media Art",
+  "sub-title": "understanding digital art as a metamedia",
+  "author": "Nick Briz",
+  "preferred-name": "Nick",
+  "main": "main.js",
+  "checkpoints": [
+    "defining new media",
+    "new media as a metamedium",
+    "taxonomies && properties",
+    "new media as a cultural movement",
+    "new media as an ecology"
+  ],
+  "endnotes": [
+    {
+      "note": "'Murray, Janet H.\"Inventing the Medium\" The New Media Reader. Ed. Noah Wardrip-Fruin & Nick Montfort. MIT Press, 2003.",
+      "url": "http://www.newmediareader.com/book_samples/nmr-intro-murray-excerpt.pdf"
+    },
+    {
+      "note": "Kay, Alan & Adele Goldberg. \"Personal Dynamic Computer\" Computer 10(3):31-41. March 1977",
+      "url": "http://www.newmediareader.com/book_samples/nmr-26-kay.pdf"
+    }
+  ]
+}

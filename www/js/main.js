@@ -1,4 +1,12 @@
-/* global Netitor, WindowManager, MenuManager, Widget, NetitorEventParser */
+/* global
+  StateManager, Netitor,
+  TutorialManager, WindowManager, MenuManager,
+  NetitorErrorHandler, NetitorEduInfoHandler
+*/
+
+const STORE = new StateManager({
+  log: true
+})
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -24,89 +32,64 @@ const NNE = new Netitor({
   `
 })
 
-const NNW = new WindowManager({
-  layout: 'separate-window'
-})
-
-const NNM = new MenuManager({
-  ele: '#nn-menu',
-  radius: 100,
-  items: {
-    search: {
-      path: 'images/menu/search.png',
-      click: () => { window.alert('open search') }
-    },
-    settings: {
-      path: 'images/menu/settings.png',
-      click: new Widget({ title: 'settings' })
-    },
-    save: {
-      path: 'images/menu/save.png',
-      click: () => { NNE.saveToHash() }
-    },
-    open: {
-      path: 'images/menu/open.png',
-      click: () => { window.alert('open project') }
-    }
-  }
-})
+window.NNT = new TutorialManager()
+window.NNW = new WindowManager()
+window.NNM = new MenuManager()
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
-NNE.on('lint-error', (eve) => {
-  NNM.clearAlerts()
-  NNE.marker(null)
-  NNE.highlight(null)
-  if (NNM.opened && NNM.opened.type === 'textbubble') NNM.hideTextBubble()
-  if (eve.length > 0) {
-    const err = eve[0]
-    const clr = err.type === 'error' ? 'red' : 'yellow'
-    const clr2 = err.type === 'error'
-      ? 'rgba(255,0,0,0.25)' : 'rgba(255, 255, 0, 0.25)'
-    NNE.marker(err.line, clr)
-    const content = (eve.length > 1)
-      ? NetitorEventParser.toContentArray(eve)
-      : {
-        content: err.friendly || err.message,
-        highlight: err.line,
-        highlightColor: clr2
-      }
-    NNM.showAlert(err.type, content)
-  }
+NNE.on('lint-error', (e) => {
+  const errz = NetitorErrorHandler.parse(e)
+  if (errz) STORE.dispatch('SHOW_ERROR_ALERT', errz)
+  else if (!errz && STORE.is('SHOWING_ERROR')) STORE.dispatch('CLEAR_ERROR')
 })
 
-NNE.on('edu-info', (eve) => {
-  if (!eve) {
-    if (NNM.opened && NNM.opened.sub === 'information') NNM.hideAlert()
-  } else if (eve.nfo) {
-    const nfo = NetitorEventParser.toHTMLStr(eve)
-    NNM.showAlert('information', nfo)
-  }
+NNE.on('cursor-activity', (e) => {
+  if (STORE.is('SHOWING_EDU_ALERT')) STORE.dispatch('HIDE_EDU_ALERT')
+})
+
+NNE.on('edu-info', (e) => {
+  const edu = NetitorEduInfoHandler.parse(e)
+  if (edu) STORE.dispatch('SHOW_EDU_ALERT', edu)
 })
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
 window.addEventListener('DOMContentLoaded', (e) => {
-  // if there is code saved in the URL load it to the editor
+  // if there is code saved in the URL's hash, load it to the netitor
   if (NNE.hasCodeInHash) NNE.loadFromHash()
+  // if their are URL parameters...
+  const url = new URL(window.location)
+  // ...check for a tutorial
+  const tut = url.searchParams.get('tutorial')
+  if (tut) window.NNT.load(tut)
+  // ...check for a layout
+  const lay = url.searchParams.get('layout')
+  if (lay) STORE.dispatch('CHANGE_LAYOUT', lay)
+  // ...check for an opacity
+  const opa = url.searchParams.get('opacity')
+  if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
+  // ...check for a theme
+  const the = url.searchParams.get('theme')
+  if (the) STORE.dispatch('CHANGE_THEME', the)
 })
 
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    NNE.saveToHash()
+    STORE.dispatch('SHARE_URL')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
-    NNW.nextLayout()
+    STORE.dispatch('NEXT_LAYOUT')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
     e.preventDefault()
-    NNW.prevLayout()
+    STORE.dispatch('PREV_LAYOUT')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    NNW.opacity = NNW.opacity > 0 ? NNW.opacity - 0.05 : 0
+    STORE.dispatch('DECREASE_OPACITY', 0.05)
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    NNW.opacity = NNW.opacity < 1 ? NNW.opacity + 0.05 : 1
+    STORE.dispatch('INCREASE_OPACITY', 0.05)
   }
 })
