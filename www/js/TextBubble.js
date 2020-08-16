@@ -209,7 +209,7 @@ class TextBubble {
 
   fadeIn (ms) {
     const t = ms || 2000
-    this.ele.style.transition = `opacity ${t}ms ease-out`
+    this.ele.style.transition = `opacity ${t}ms cubic-bezier(0.165, 0.84, 0.44, 1)`
     this.ele.style.display = 'block'
     this.updatePosition()
     setTimeout(() => { this.ele.style.opacity = 1 }, 100)
@@ -217,7 +217,7 @@ class TextBubble {
 
   fadeOut (ms, callback) {
     const t = ms || 250
-    this.ele.style.transition = `opacity ${t}ms ease-out`
+    this.ele.style.transition = `opacity ${t}ms cubic-bezier(0.165, 0.84, 0.44, 1)`
     setTimeout(() => { this.ele.style.opacity = 0 }, 10)
     setTimeout(() => {
       this.ele.style.display = 'none'
@@ -230,24 +230,24 @@ class TextBubble {
       const offY = 29 + this.ele.offsetHeight
       this.ele.style.transform = `translate(362px, ${offY}px)`
       this.tri.style.top = '13px'
-      this.tri.style.left = '-17px'
+      this.tri.style.left = '-24px'
       this.tri.style.right = null
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(270deg)'
     } else if (NNW.layout === 'full-screen') {
       const offY = 92 + this.ele.offsetHeight
       this.ele.style.transform = `translate(-20px, ${offY}px)`
-      this.tri.style.top = '-18px'
+      this.tri.style.top = '-21px'
       this.tri.style.left = null
-      this.tri.style.right = '22px'
+      this.tri.style.right = '15px'
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(0deg)'
     } else {
       this.ele.style.transform = 'translate(0,0)'
       this.tri.style.top = null
       this.tri.style.left = null
-      this.tri.style.right = '40px'
-      this.tri.style.bottom = '-17px'
+      this.tri.style.right = '25px'
+      this.tri.style.bottom = '-21px'
       this.tri.style.transform = 'rotate(180deg)'
     }
   }

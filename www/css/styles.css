@@ -74,21 +74,103 @@ body {
   scrollbar-color: var(--fg-color) rgba(0,0,0,0);
 }
 
+
+/* styles for text bubble */
 .text-bubble {
   width: 340px;
-  color: var(--bg-color);
-  background-color: var(--fg-color);
-  padding: 15px;
+  color: var(--netizen-meta);
+  background-color: var(--bg-color);
+  padding: 13px 14px;
   border-radius: 15px;
+  border: 7px solid var(--fg-color);
 }
 
+.text-bubble > section > *:first-of-type {
+  margin-top: 0;
+}
+
+
+/* styles for all text inside text bubble */
+.text-bubble > section h1 {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  color: var(--netizen-meta);
+}
+
+.text-bubble > section h1 a {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  color: var(--netizen-meta);
+  text-decoration: none;
+}
+
+.text-bubble > section h1:hover {
+  color: var(--bg-color);
+}
+
+.text-bubble > section p {
+  font-size: 16px;
+  line-height: 1.4em;
+}
+
+.text-bubble > section > p code {
+  position: relative;
+  top: -0.15em;
+  padding: 0.3em;
+  border-radius: 6px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--netizen-meta);
+  font-size: 14px;
+  line-height: 1.4em;
+}
+.text-bubble > section > p b {
+  
+}
+.text-bubble > section > p i {
+  
+}
+.text-bubble > section > p a {
+  
+}
+
+
+/* styles for text bubble buttons */
+.text-bubble > .text-bubble-options {
+}
+.text-bubble > .text-bubble-options > button {
+  color: var(--fg-color);
+  text-shadow: none;
+  border: none;
+  background: transparent;
+}
+
+
+/* styles for text bubble arrow */
 .text-bubble-triangle {
-  width: 20px;
-  height: 20px;
-  background-color: var(--fg-color);
-  -webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-bottom: 15px solid var(--fg-color);
+  z-index: 1;
+}
+
+.text-bubble-triangle:after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 11px solid var(--bg-color);
+  z-index: 2;
 }
 
 .widget {
