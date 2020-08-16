@@ -91,7 +91,7 @@ class MenuManager {
     window.addEventListener('mousemove', (e) => this._moveEyes(e))
 
     this.ele.querySelector('#face').addEventListener('click', () => {
-      STORE.dispatch('TOGGLE_MENU')
+      if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
     })
   }
 
