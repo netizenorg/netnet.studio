@@ -235,7 +235,7 @@ body {
 }
 .text-bubble > .text-bubble-options > button {
   position: relative;
-  border: none;
+  border: 1px solid var(--fg-color);
   border-radius: 25px;
   padding: 5px 15px;
 
@@ -247,6 +247,11 @@ body {
   text-shadow: none;
 
   cursor: pointer;
+
+  transition: all .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.text-bubble > .text-bubble-options > button:not(:last-of-type) {
+  margin-right: 10px;
 }
 
 .text-bubble > .text-bubble-options > button:after {
@@ -261,20 +266,22 @@ body {
   border-radius: 25px;
 }
 
+.text-bubble > .text-bubble-options > button:hover {
+  border: 1px solid var(--netizen-match-color);
+  color: var(--netizen-match-color);
+  background-color: var(--netizen-hint-shadow);
+}
+
 .text-bubble > .text-bubble-options > button:focus {
   outline: none;
   box-shadow: none;
 }
-
 .text-bubble > .text-bubble-options > button:focus:after {
   border: 1px solid var(--netizen-match-color);
   outline: none;
   box-shadow: none;
 }
 
-.text-bubble > .text-bubble-options > button:not(:last-of-type) {
-  margin-right: 10px;
-}
 
 
 /* styles for text bubble arrow */
