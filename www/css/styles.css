@@ -1,7 +1,8 @@
 :root {
   --fg-color: #fff;
   --bg-color: #000;
-  --transition-time: 1s;
+  --layout-transition-time: 1s;
+  --menu-fades-time: 500ms;
 }
 
 * { box-sizing: border-box; }
@@ -58,7 +59,7 @@ body {
 
 #nn-window > #nn-menu > #face  {
   cursor: pointer;
-  transition: font-size var(--transition-time);
+  transition: font-size var(--layout-transition-time);
 }
 
 #nn-window > #nn-menu > #face > span {
