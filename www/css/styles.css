@@ -109,7 +109,7 @@ body {
   width: auto;
   margin-bottom: 18px;
   color: var(--bg-color);
-  font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  /*font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;*/
   font-size: 20px;
   line-height: 1.2em;
   font-weight: 400;
@@ -124,13 +124,13 @@ body {
   width: auto;
   color: var(--bg-color);
   text-decoration: none;
-  font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  /*font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;*/
   transition: color .2s ease;
 }
 
-.text-bubble > section h1 a code {
+/*.text-bubble > section h1 a code {
   font-family: -system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
+}*/
 
 .text-bubble > section h1:before {
   content: '';
