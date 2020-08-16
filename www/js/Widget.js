@@ -1,4 +1,4 @@
-/* global Maths, HTMLElement */
+/* global Maths, HTMLElement, STORE */
 /*
   -----------
      info
@@ -111,11 +111,13 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   open () {
-    this.ele.style.display = 'block'
+    if (STORE) STORE.dispatch('SHOW_WIDGET', this)
+    else this.ele.style.display = 'block'
   }
 
   close () {
-    this.ele.style.display = 'none'
+    if (STORE) STORE.dispatch('HIDE_WIDGET', this)
+    else this.ele.style.display = 'none'
   }
 
   position (x, y, z) {

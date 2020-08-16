@@ -1,4 +1,4 @@
-/* global Maths, Widget */
+/* global Maths */
 /*
   -----------
      info
@@ -40,12 +40,14 @@ class MenuItem {
   constructor (opts) {
     this._title = opts.title || ''
     this._icon = opts.icon || ''
-    this._click = opts.click
+    this.click = opts.click
     this.index = opts.index || 0
     this.total = opts.total || 1
     this.opened = false
 
-    this.transitionTime = 500
+    const t = window.getComputedStyle(document.documentElement)
+      .getPropertyValue('--menu-fades-time')
+    this.transitionTime = t.includes('ms') ? parseInt(t) : parseInt(t) * 1000
     this.offset = opts.offset || -20
 
     this._setupElement()
@@ -88,20 +90,12 @@ class MenuItem {
       this.ele.style.left = this._oldPos.left
       this.ele.style.top = this._oldPos.top
       this.ele.style.opacity = 0
-      const time = this.transitionTime - 200
+      const time = this.transitionTime
       clearTimeout(this._toggleTO)
       this._toggleTO = setTimeout(() => {
         this.ele.style.display = 'none'
         this.opened = false
       }, time)
-    }
-  }
-
-  click () {
-    if (typeof this._click === 'function') {
-      this._click()
-    } else if (typeof this._click === 'object') {
-      if (this._click instanceof Widget) this._click.open()
     }
   }
 
@@ -128,8 +122,10 @@ class MenuItem {
       display: 'none', /* or flex */
       justifyContent: 'center',
       alignItems: 'center',
-      transition: `left ${this.transitionTime}ms, top ${this.transitionTime}ms, opacity 0.5s`
+      transition: `left ${this.transitionTime}ms, top ${this.transitionTime}ms, opacity ${this.transitionTime}ms`
     })
+
+    this._oldPos = { left: this.ele.style.left, top: this.ele.style.top }
 
     this.img = document.createElement('img')
     this.img.setAttribute('src', this._icon)

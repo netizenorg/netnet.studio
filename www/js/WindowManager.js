@@ -1,4 +1,4 @@
-/* global Maths, Color, NNM, NNE */
+/* global Maths, Color, NNM, NNE, Widget */
 /*
   -----------
      info
@@ -18,16 +18,10 @@
      usage
   -----------
 
-  const NNW = new WindowManager({
-    layout: 'separate-window', // see layoutTypes below
-    opacity: 0.5 // the window's opacity
-  })
+  const NNW = new WindowManager()
 
   NNW.layout = 'dock-left' // adjusts layout
   NNW.opacity = 0.5 // adjusts the opacity of the netnet window
-
-  NNW.nextLayout() // adjusts to next layout in layoutTypes
-  NNW.prevLayout() // adjusts to preveious layout in layoutTypes
   NNW.updateTheme('light') // updates the theme
 
 */
@@ -42,10 +36,8 @@ class WindowManager {
     this.layoutTypes = [
       'welcome', 'separate-window', 'dock-left', 'dock-bottom', 'full-screen'
     ]
-    this._layout = opts.layout || 'welcome'
-    this.layout = this._layout
-    this._opacity = opts.opacity || 1
-    this.opacity = this._opacity
+    this.layout = this._layout = 'welcome'
+    this.opacity = this._opacity = 1
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
     NNE.on('render-update', () => this._bubbleUpiFrameEvents())
@@ -99,32 +91,6 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  nextLayout () {
-    if (this._transitionHold) return
-    this._transitionHold = true
-    if (NNM.opened) NNM.fadeOut()
-    let idx = this.layoutTypes.indexOf(this.layout)
-    idx = idx < this.layoutTypes.length - 1 ? idx + 1 : 0
-    this.layout = this.layoutTypes[idx]
-    this._whenCSSTransitionFinished(() => {
-      this._transitionHold = false
-      NNM.fadeIn()
-    })
-  }
-
-  prevLayout () {
-    if (this._transitionHold) return
-    this._transitionHold = true
-    if (NNM.opened) NNM.fadeOut()
-    let idx = this.layoutTypes.indexOf(this.layout)
-    idx = idx > 0 ? idx - 1 : this.layoutTypes.length - 1
-    this.layout = this.layoutTypes[idx]
-    this._whenCSSTransitionFinished(() => {
-      this._transitionHold = false
-      NNM.fadeIn()
-    })
-  }
-
   updateTheme (theme, background) {
     NNE.theme = theme || 'dark'
     NNE.background = background || false
@@ -143,15 +109,24 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _loadWidgets () {
+    // load all extended widget classes
     function loadWidget (filename) {
       const s = document.createElement('script')
-      s.setAttribute('src', `js/widgets/${filename}`)
+      s.setAttribute('src', `widgets/${filename}`)
       document.body.appendChild(s)
     }
 
     window.fetch('api/widgets', { method: 'GET' })
       .then(res => res.json())
       .then(json => json.forEach(loadWidget))
+      .then(() => this._initWidgets())
+  }
+
+  _initWidgets () {
+    // create initial widget instances
+    window.WIDGETS = {
+      functions: new Widget({ title: 'functions' })
+    }
   }
 
   _adjustOpacity (v) {
@@ -178,7 +153,10 @@ class WindowManager {
     NNE.iframe.contentWindow
       .addEventListener('mouseup', (e) => callback(e, 'mouseup'))
     NNE.iframe.contentWindow
-      .addEventListener('keydown', (e) => callback(e, 'keydown'))
+      .addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) e.preventDefault()
+        callback(e, 'keydown')
+      })
     // match the page's background color to that of the iframe's backgroundColor
     // w/out it the netnet's rounded border's create a white space
     const iframeBody = NNE.iframe.contentDocument.body
@@ -205,8 +183,9 @@ class WindowManager {
   }
 
   _mouseDown (e) {
+    const mw = (this.layout === 'separate-window' || this.layout === 'welcome')
     if (e.target.id === 'nn-window') this.mousedown = true
-    else if (e.target.id === 'nn-menu' && this.layout === 'separate-window') {
+    else if (e.target.id === 'nn-menu' && mw) {
       this.mousedown = true
       this.cursor = 'move'
       this.win.style.cursor = this.cursor
@@ -360,7 +339,7 @@ class WindowManager {
 
   _whenCSSTransitionFinished (callback) {
     const de = document.documentElement
-    let t = window.getComputedStyle(de).getPropertyValue('--transition-time')
+    let t = window.getComputedStyle(de).getPropertyValue('--layout-transition-time')
     const unit = t.includes('ms') ? 'ms' : 's'
     t = Number(t.substr(0, t.indexOf(unit)))
     if (unit === 's') t *= 1000
@@ -375,23 +354,29 @@ class WindowManager {
     if (show) {
       this.edtr.style.display = 'block'
       if (face) face.style.fontSize = 'inherit'
+      if (face) face.style.margin = '0'
       this.menu.style.alignItems = 'flex-end'
       // this.menu.style.width = 'auto'
       this.menu.style.margin = 'auto'
+      this.menu.style.height = 'auto'
+      // this.menu.style.cursor = 'auto'
     } else {
       this.edtr.style.display = 'none'
       if (face) face.style.fontSize = '44px'
+      if (face) face.style.margin = '95px auto'
       this.menu.style.alignItems = 'center'
       // this.menu.style.width = '60%'
-      this.menu.style.margin = '30% auto'
+      this.menu.style.margin = 'none'
+      this.menu.style.height = '100%'
+      // this.menu.style.cursor = 'grab'
     }
   }
 
   _toggleTransition (bool) {
     if (bool) {
-      this.win.style.transition = 'all var(--transition-time)'
-      this.menu.style.transition = 'all var(--transition-time)'
-      this.rndr.style.transition = 'all var(--transition-time)'
+      this.win.style.transition = 'all var(--layout-transition-time)'
+      this.menu.style.transition = 'all var(--layout-transition-time)'
+      this.rndr.style.transition = 'all var(--layout-transition-time)'
     } else {
       this.win.style.transition = 'none'
       this.menu.style.transition = 'none'
