@@ -1,4 +1,7 @@
-/* global Maths, Color, NNM, NNE, Widget */
+/*
+  global Maths, Color, NNM, NNE,
+  MenuFunctions, MenuWidgets, MenuTutorials
+*/
 /*
   -----------
      info
@@ -33,7 +36,7 @@ class WindowManager {
     this.menu = document.querySelector('#nn-menu')
     this.canv = document.querySelector('#nn-bg-canvas')
 
-    this.layoutTypes = [
+    this.layouts = [
       'welcome', 'separate-window', 'dock-left', 'dock-bottom', 'full-screen'
     ]
     this.layout = this._layout = 'welcome'
@@ -70,8 +73,8 @@ class WindowManager {
 
   get layout () { return this._layout }
   set layout (v) {
-    if (!this.layoutTypes.includes(v)) {
-      const options = this.layoutTypes.join(', ')
+    if (!this.layouts.includes(v)) {
+      const options = this.layouts.join(', ')
       return this.err({
         type: 'invalid-prop-value', prop: 'layout', opts: options
       })
@@ -109,23 +112,38 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _loadWidgets () {
+    const self = this
+    // create initial global WIDGETS dictionary object
+    window.WIDGETS = {
+      'functions-menu': null,
+      'widgets-menu': null,
+      'tutorials-menu': null
+    }
     // load all extended widget classes
     function loadWidget (filename) {
       const s = document.createElement('script')
       s.setAttribute('src', `widgets/${filename}`)
+      s.onload = () => self._initMenuWidget(filename)
       document.body.appendChild(s)
     }
 
     window.fetch('api/widgets', { method: 'GET' })
       .then(res => res.json())
       .then(json => json.forEach(loadWidget))
-      .then(() => this._initWidgets())
   }
 
-  _initWidgets () {
-    // create initial widget instances
-    window.WIDGETS = {
-      functions: new Widget({ title: 'functions' })
+  _initMenuWidget (filename) {
+    // instantiate menu widgets
+    const name = filename.split('.')[0]
+    const classes = ['MenuFunctions', 'MenuWidgets', 'MenuTutorials']
+    if (classes.includes(name)) {
+      if (name === 'MenuFunctions') {
+        window.WIDGETS['functions-menu'] = new MenuFunctions()
+      } else if (name === 'MenuWidgets') {
+        window.WIDGETS['widgets-menu'] = new MenuWidgets()
+      } else if (name === 'MenuTutorials') {
+        window.WIDGETS['tutorials-menu'] = new MenuTutorials()
+      }
     }
   }
 

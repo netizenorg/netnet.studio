@@ -21,6 +21,7 @@
   "homepage": "https://github.com/netizenorg/netnet.studio#readme",
   "dependencies": {
     "Color": "git+https://github.com/nbriz/Color.git",
+    "FileUploader": "git+https://github.com/nbriz/FileUploader.git",
     "Maths": "git+https://github.com/nbriz/Maths.git",
     "averigua": "git+https://github.com/nbriz/Averigua.git",
     "dotenv": "^8.2.0",

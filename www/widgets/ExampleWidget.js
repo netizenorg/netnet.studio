@@ -11,7 +11,7 @@
   -----------
 
   const w = new ExampleWidget({
-    quote: 'motivational quote' // (required) quote to display as content
+    quote: 'motivational quote' // (required) quote to display as innerHTML
     author: 'Nick Briz',        // (optional) quote attribution
     x: 20,                      // (optional) left position
     y: 20,                      // (optional) top positon
@@ -20,7 +20,7 @@
     height: 500                 // (optional) widget's height
   })
 
-  w.content = element
+  w.innerHTML = element
   w.title = 'settings'
   w.x = 20
   w.y = '50vh'
@@ -48,7 +48,7 @@ class ExampleWidget extends Widget {
 
   _createContent (quote, author) {
     const attribution = author || 'Anonymous'
-    this.content = `
+    this.innerHTML = `
       <blockquote>
         ${quote}
         <span>—${attribution}</span>

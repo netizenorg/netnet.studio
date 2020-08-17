@@ -18,7 +18,7 @@
 
   const w = new Widget({
     title: 'settings', // required
-    content: element,  // optional html string or HTMLElement
+    innerHTML: element,  // optional html string or HTMLElement
     x: 20,             // optional
     y: 20,             // optional
     z: 100,            // optional (make sure it's always between 100 && 200?)
@@ -26,7 +26,7 @@
     height: 500        // optional
   })
 
-  w.content = element
+  w.innerHTML = element
   w.title = 'settings'
   w.x = 20
   w.y = '50vh'
@@ -42,8 +42,9 @@
 */
 class Widget {
   constructor (opts) {
+    opts = opts || {}
     this._title = opts.title || 'netnet widget'
-    this._content = opts.content || ''
+    this._innerHTML = opts.innerHTML || ''
     this._x = opts.x || 20
     this._y = opts.y || 20
     this._z = opts.z || 100
@@ -92,14 +93,14 @@ class Widget {
     }
   }
 
-  get content () { return this._content }
-  set content (v) {
+  get innerHTML () { return this._innerHTML }
+  set innerHTML (v) {
     if (typeof v !== 'string' && !(v instanceof HTMLElement)) {
       const m = 'html string or an instanceof HTMLElement'
-      return console.error('Widget: content property must be an ' + m)
+      return console.error('Widget: innerHTML property must be an ' + m)
     } else {
-      this._content = v
-      const c = this.ele.querySelector('.w-content')
+      this._innerHTML = v
+      const c = this.ele.querySelector('.w-innerHTML')
       c.innerHTML = ''
       if (typeof v === 'string') c.innerHTML = v
       else if (v instanceof HTMLElement) c.appendChild(v)
@@ -111,13 +112,11 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   open () {
-    if (STORE) STORE.dispatch('OPEN_WIDGET', this)
-    else this.ele.style.display = 'block'
+    STORE.dispatch('OPEN_WIDGET', this)
   }
 
   close () {
-    if (STORE) STORE.dispatch('CLOSE_WIDGET', this)
-    else this.ele.style.display = 'none'
+    STORE.dispatch('CLOSE_WIDGET', this)
   }
 
   position (x, y, z) {
@@ -132,7 +131,7 @@ class Widget {
   }
 
   $ (selector) {
-    const e = this.ele.querySelector('.w-content').querySelectorAll(selector)
+    const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
     if (e.length > 1) return e
     else return e[0]
   }
@@ -155,6 +154,10 @@ class Widget {
     this.ele.style[prop] = (typeof val === 'number') ? `${val}px` : val
   }
 
+  _display (value) {
+    this.ele.style.display = value
+  }
+
   _createWindow () {
     this.ele = document.createElement('div')
     this.ele.className = 'widget'
@@ -163,7 +166,7 @@ class Widget {
         <span>${this._title}</span>
         <span class="close">✖</span>
       </div>
-      <div class="w-content">${this.content}</div>
+      <div class="w-innerHTML">${this.innerHTML}</div>
     `
     document.body.appendChild(this.ele)
     this.ele.style.display = 'none'

@@ -66,9 +66,9 @@ class MenuManager {
         path: 'images/menu/search.png',
         click: () => { window.alert('open search') }
       },
-      settings: {
+      functions: {
         path: 'images/menu/settings.png',
-        click: () => { STORE.dispatch('OPEN_WIDGET', 'functions') }
+        click: () => { STORE.dispatch('OPEN_WIDGET', 'functions-menu') }
       },
       save: {
         path: 'images/menu/save.png',

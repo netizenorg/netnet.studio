@@ -26,6 +26,10 @@ router.get('/Averigua.js', (req, res) => {
   res.sendFile(path.join(__dirname, '../node_modules/averigua/Averigua.js'))
 })
 
+router.get('/FileUploader.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../node_modules/FileUploader/FileUploader.js'))
+})
+
 router.get('/api/widgets', (req, res) => {
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)

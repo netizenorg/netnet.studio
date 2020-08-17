@@ -63,9 +63,12 @@ class StateManager {
       tutorial: { display: false, id: null, steps: {} }
     }
     this.log = opts.log || false
-    this.logRenders = opts.logRenders || false
     this.holding = false // if true, prevent state change
-    this.history = { states: [], actions: [] }
+    this.listeners = {}
+    this.history = {
+      states: [{ ...this.state }],
+      actions: [{ type: 'PAGE_LOAD' }]
+    }
     this.generalActionTypes = [
       'NEXT_LAYOUT', // (no-data-required)
       'PREV_LAYOUT', // (no-data-required)
@@ -107,8 +110,62 @@ class StateManager {
     ]
   }
 
-  get prior () { return this.history.states[this.history.states.length - 1] }
-  set prior (v) { console.error('StateManager: .prior is read-only') }
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  get prior () {
+    if (this.history.states.length - 2 < 0) return this.state
+    return this.history.states[this.history.states.length - 2]
+  }
+
+  set prior (v) {
+    console.error('StateManager: .prior is read-only')
+  }
+
+  didChange (p) {
+    const equalArr = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+    const prior = p.includes('.')
+      ? this.prior[p.split('.')[0]][p.split('.')[1]] : this.prior[p]
+    const current = p.includes('.')
+      ? this.state[p.split('.')[0]][p.split('.')[1]] : this.state[p]
+
+    if (current instanceof Array) {
+      return !equalArr(prior, current)
+    } else if (typeof current === 'object') {
+      let changed = false
+      for (const k in current) {
+        if (typeof current[k] === 'object') {
+          if (!equalArr(current[k], prior[k])) {
+            changed = true; break
+          }
+        } else if (current[k] !== prior[k]) {
+          changed = true; break
+        }
+      }
+      return changed
+    } else {
+      return prior !== current
+    }
+  }
+
+  updateSubscribers () {
+    for (const prop in this.listeners) {
+      if (this.didChange(prop)) {
+        this.listeners[prop].forEach(cb => {
+          if (prop.includes('.')) {
+            const p = prop.split('.')
+            cb(this.state[p[0]][p[1]])
+          } else cb(this.state[prop])
+        })
+      }
+    }
+  }
+
+  subscribe (prop, callback) {
+    if (!this.listeners[prop]) this.listeners[prop] = []
+    this.listeners[prop].push(callback)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   is (type) {
     const s = this.state
@@ -188,6 +245,8 @@ class StateManager {
     // UPDATE HISTORY
     this.history.actions.push(act)
     this.history.states.push(state)
+    // LET SUBSCRIBERS KNOW STATE CHANGED
+    this.updateSubscribers()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -195,15 +254,15 @@ class StateManager {
 
   changeLayout (type, data) {
     if (type === 'NEXT_LAYOUT') {
-      let idx = NNW.layoutTypes.indexOf(NNW.layout)
-      idx = idx < NNW.layoutTypes.length - 1 ? idx + 1 : 0
-      return { type, data: NNW.layoutTypes[idx] }
+      let idx = NNW.layouts.indexOf(NNW.layout)
+      idx = idx < NNW.layouts.length - 1 ? idx + 1 : 0
+      return { type, data: NNW.layouts[idx] }
     } else if (type === 'PREV_LAYOUT') {
-      let idx = NNW.layoutTypes.indexOf(NNW.layout)
-      idx = idx > 0 ? idx - 1 : NNW.layoutTypes.length - 1
-      return { type, data: NNW.layoutTypes[idx] }
+      let idx = NNW.layouts.indexOf(NNW.layout)
+      idx = idx > 0 ? idx - 1 : NNW.layouts.length - 1
+      return { type, data: NNW.layouts[idx] }
     } else if (type === 'CHANGE_LAYOUT') {
-      if (!NNW.layoutTypes.includes(data)) {
+      if (!NNW.layouts.includes(data)) {
         return console.error(`StateManager: ${data} is not a layout type`)
       }
       return { type, data: data }
@@ -255,9 +314,9 @@ class StateManager {
       const arr = [...this.state.widgets]
       for (const key in data) {
         if (WIDGETS[key]) {
-          return console.error(`StateManager: WIDGETS.${key} already exists`)
+          console.warn(`StateManager: WIDGETS.${key} already exists`)
         } else if (!(data[key] instanceof Widget)) {
-          return console.error(`StateManager: ${key} is not a Widget`)
+          console.warn(`StateManager: ignoring ${key}, it's not a Widget`)
         } else {
           WIDGETS[key] = data[key]
           arr.push({ ref: WIDGETS[key], visible: false })
@@ -392,6 +451,7 @@ class StateManager {
   }
 
   eduinfo (state, action) {
+    state = { ...state } // clone old errors state
     if (action.type === 'TOGGLE_MENU') {
       // if we toggle the menu dismiss any prior edu-info
       return { display: false, payload: null }
@@ -412,9 +472,8 @@ class StateManager {
     } else return state
   }
 
-  errors (s, action) {
-    // clone old errors state
-    let state = { display: s.display, index: s.index, list: s.list }
+  errors (state, action) {
+    state = { ...state } // clone old errors state
     // ...
     if (action.type === 'TOGGLE_MENU') {
       // if we open the menu, hide errors for now
@@ -459,9 +518,8 @@ class StateManager {
     } else return state
   }
 
-  tutorial (s, action) {
-    // clone old tutorial state
-    const state = { display: s.display, id: s.id, steps: s.steps }
+  tutorial (state, action) {
+    state = { ...state } // clone old errors state
     // ...
     if (action.type === 'TOGGLE_MENU') {
       if (action.data) state.display = false
@@ -627,8 +685,8 @@ class StateManager {
 
   renderWidgets () {
     this.state.widgets.forEach(w => {
-      if (w.visible) w.ref.ele.style.display = 'block'
-      else w.ref.ele.style.display = 'none'
+      if (w.visible) w.ref._display('block')
+      else w.ref._display('none')
     })
   }
 
