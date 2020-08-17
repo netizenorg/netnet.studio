@@ -1,32 +1,25 @@
 window.TUTORIAL = {
+  widgets: {
+    'color wheel': new Widget({
+      title: 'color wheel',
+      content: `<img src="https://cdn.sparkfun.com/assets/learn_tutorials/7/1/0/TertiaryColorWheel_Chart.png" alt="color wheel" style="width: 400px">`
+    })
+  },
   steps: [
     {
-      content: 'HTML isn\'t the only type of markup language.',
-      options: {
-        'oh no? what others are there?': (e) => { e.next() }
-      }
+      content: 'Take a look at this line of code, notice anything?',
+      highlight: 10
     },
     {
-      content: 'There\'s <a href="https://developer.mozilla.org/en-US/docs/Web/MathML" target="_blank">MathML</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/SVG" target="_blank">SVG</a>.',
-      options: {
-        'you don\'t say! Are there more?': (e) => { e.next() },
-        'wait a sec, go back.': (e) => { e.prev() }
-      }
+      content: 'We\'ve changed the way we\'re defining colors.'
     },
     {
-      content: 'Oh yes! Artists like the Graffiti Research Lab have even made their own.',
+      content: 'There are even more ways to specify colors in CSS.',
       options: {
-        'really? What\'s it called?': (e) => { e.next() },
-        'wait a sec, go back.': (e) => { e.prev() }
-      }
-    },
-    {
-      content: 'It\'s called GML or <a href="https://en.wikipedia.org/wiki/Graffiti_Markup_Language" target="_blank">Graffiti Markup Language</a>.',
-      options: {
-        'wait a sec, go back.': (e) => { e.prev() },
-        'cool thnx for the info!': () => {
-          STORE.dispatch('TUTORIAL_FINISHED')
-        }
+        'launch color widget': () => {
+          STORE.dispatch('OPEN_WIDGET', 'color wheel')
+        },
+        'cool, i\'ll experiment': (e) => e.hide()
       }
     }
   ]

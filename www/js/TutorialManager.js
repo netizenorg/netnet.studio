@@ -58,9 +58,13 @@ class TutorialManager {
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
   }
 
-  goTo (id) {
-    STORE.dispatch('TUTORIAL_GOTO', id)
-  }
+  goTo (id) { STORE.dispatch('TUTORIAL_GOTO', id) }
+
+  hide () { STORE.dispatch('HIDE_TUTORIAL_TEXT') }
+
+  end () { STORE.dispatch('TUTORIAL_FINISHED') }
+
+  fin () { STORE.dispatch('TUTORIAL_FINISHED') }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -78,10 +82,23 @@ class TutorialManager {
   _loadScript (json, root) {
     this.metadata = json // TODO: validate metadata....
     const s = document.createElement('script')
-    s.setAttribute('src', `${root}/${json.main}`)
-    s.onerror = (e) => { this._err('main') }
-    s.onload = () => this._updateState()
-    document.body.appendChild(s)
+    if (root.indexOf('tutorials/') === 0) {
+      // internally hosted
+      s.setAttribute('src', `${root}/${json.main}`)
+      s.setAttribute('type', 'text/javascript')
+      s.onerror = (e) => { this._err('main') }
+      s.onload = () => this._updateState()
+      document.body.appendChild(s)
+    } else {
+      // externally hosted
+      window.fetch(`${root}/${json.main}`, { method: 'GET' })
+        .then(res => res.text())
+        .then(text => {
+          s.innerHTML = text
+          document.body.appendChild(s)
+          this._updateState()
+        })
+    }
   }
 
   _updateState () {
