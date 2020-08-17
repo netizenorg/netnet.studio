@@ -85,7 +85,7 @@ body {
   background-color: var(--bg-color);
   padding: 14px;
   border-radius: 15px;
-  border: 7px solid var(--fg-color);
+  border: 4px solid var(--fg-color);
 }
 
 .text-bubble > section > *:first-of-type {
