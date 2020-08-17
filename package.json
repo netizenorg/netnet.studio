@@ -20,12 +20,13 @@
   },
   "homepage": "https://github.com/netizenorg/netnet.studio#readme",
   "dependencies": {
-    "standard": "^14.3.3",
+    "Color": "git+https://github.com/nbriz/Color.git",
+    "Maths": "git+https://github.com/nbriz/Maths.git",
+    "averigua": "git+https://github.com/nbriz/Averigua.git",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0",
     "netitor": "git+https://github.com/netizenorg/netitor.git",
-    "Maths": "git+https://github.com/nbriz/Maths.git",
-    "Color": "git+https://github.com/nbriz/Color.git"
+    "socket.io": "^2.3.0",
+    "standard": "^14.3.3"
   }
 }
