@@ -62,6 +62,10 @@ class TutorialManager {
 
   hide () { STORE.dispatch('HIDE_TUTORIAL_TEXT') }
 
+  open (name) { STORE.dispatch('OPEN_WIDGET', name) }
+
+  close (name) { STORE.dispatch('CLOSE_WIDGET', name) }
+
   end () { STORE.dispatch('TUTORIAL_FINISHED') }
 
   fin () { STORE.dispatch('TUTORIAL_FINISHED') }
