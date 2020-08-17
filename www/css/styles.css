@@ -91,6 +91,68 @@ body {
 }
 
 /* styles for all text inside text bubble */
+.text-bubble > section {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+.text-bubble > section p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+
+.text-bubble > section code {
+  position: relative;
+  top: -0.08em;
+  padding: 0.05em 0.3em 0.18em;
+  border-radius: 6px;
+  border: 1px solid var(--fg-color);
+  color: var(--netizen-match-color);
+  background-color: var(--netizen-hint-shadow);
+  font-size: 14px;
+  line-height: 1.4em;
+}
+.text-bubble > section b {
+  
+}
+.text-bubble > section i {
+  
+}
+.text-bubble > section a {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .5s ease;
+}
+.text-bubble > section a:after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  bottom: -1px;
+
+  width: calc(100% - 4px);
+  height: 1px;
+
+  background-color: var(--fg-color);
+
+  transition: background-color .5s ease;
+}
+.text-bubble > section a:hover {
+  color: var(--netizen-match-color);
+}
+.text-bubble > section a:hover:after {
+  background-color: var(--netizen-match-color);
+}
+.text-bubble > section a:active {
+  color: var(--netizen-attribute);
+}
+.text-bubble > section a:active:after {
+  background-color: var(--netizen-attribute);
+}
+
+
+/* styles for all possible text bubble h1s/headers */
 .text-bubble > section h1 {
   display: inline-block;
   position: relative;
@@ -112,6 +174,27 @@ body {
   color: var(--fg-color);
   text-decoration: none;
   transition: color .2s ease;
+}
+
+.text-bubble > section h1 a:after {
+  display: none;
+}
+
+.text-bubble > section h1 code {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .2s ease;
+  /* resets */
+  top: auto;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  line-height: 1.2em;
 }
 
 .text-bubble > section h1:before {
@@ -176,33 +259,6 @@ body {
   right: calc(100% + 2px);
 }
 
-.text-bubble > section p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.4em;
-}
-
-.text-bubble > section > p code {
-  position: relative;
-  top: -0.05em;
-  padding: 0.25em 0.3em;
-  border-radius: 6px;
-  border: 1px solid var(--fg-color);
-  color: var(--netizen-meta);
-  background-color: var(--netizen-hint-shadow);
-  font-size: 14px;
-  line-height: 1.4em;
-}
-.text-bubble > section > p b {
-  
-}
-.text-bubble > section > p i {
-  
-}
-.text-bubble > section > p a {
-  
-}
-
 
 /* styles for text bubble buttons */
 .text-bubble > .text-bubble-options {
@@ -257,11 +313,10 @@ body {
   box-shadow: none;
 }
 .text-bubble > .text-bubble-options > button:focus:after {
-  border: 1px solid var(--netizen-match-color);
+  border: 1px solid var(--netizen-attribute);
   outline: none;
   box-shadow: none;
 }
-
 
 
 /* styles for text bubble arrow */
