@@ -24,6 +24,7 @@
     z: 100,            // optional (make sure it's always between 100 && 200?)
     width: 500,        // optional
     height: 500        // optional
+    resizable: true   // optional
   })
 
   w.innerHTML = element
@@ -33,6 +34,7 @@
   w.z = 100
   w.width = '50vw'
   w.height = '50vh'
+  w.resizable = false
 
   w.position(x, y, z)     // update position
   w.resize(width, height) // update size
@@ -50,6 +52,7 @@ class Widget {
     this._z = opts.z || 100
     this._width = opts.width
     this._height = opts.height
+    this._resizable = opts.resizable || true
     this.mousedown = false
 
     this._createWindow()
@@ -83,6 +86,9 @@ class Widget {
   get height () { return this._height }
   set height (v) { this.resize(null, v) }
 
+  get resizable () { return this._resizable }
+  set resizable (v) { this._resizable = v }
+
   get title () { return this._title }
   set title (v) {
     if (typeof v !== 'string') {
@@ -90,6 +96,7 @@ class Widget {
     } else {
       this._title = v
       this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
+      this._updateIfStared()
     }
   }
 
@@ -119,6 +126,22 @@ class Widget {
     STORE.dispatch('CLOSE_WIDGET', this)
   }
 
+  star () {
+    let stared = window.localStorage.getItem('stared-widgets')
+    stared = stared ? JSON.parse(stared) : []
+    if (stared.includes(this.title)) { // unstar it
+      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+      const i = stared.indexOf(this.title)
+      stared.splice(i, 1)
+      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
+    } else { // star it
+      this.ele.querySelector('.w-top-bar .star').textContent = '★'
+      stared.push(this.title)
+      stared = stared.reverse()
+      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
+    }
+  }
+
   position (x, y, z) {
     if (x) this._pos(x, 'x')
     if (y) this._pos(y, 'y')
@@ -140,6 +163,39 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  _createWindow () {
+    this.ele = document.createElement('div')
+    this.ele.className = 'widget'
+    this.ele.innerHTML = `
+      <div class="w-top-bar">
+        <span>${this._title}</span>
+        <span>
+          <span class="star">☆</span>
+          <span class="close">✖</span>
+        </span>
+      </div>
+      <div class="w-innerHTML">${this.innerHTML}</div>
+    `
+    document.body.appendChild(this.ele)
+    this.ele.style.display = 'none'
+
+    this.ele.querySelector('.w-top-bar .close')
+      .addEventListener('click', () => this.close())
+
+    this.ele.querySelector('.w-top-bar .star')
+      .addEventListener('click', () => this.star())
+  }
+
+  _updateIfStared () {
+    let stared = window.localStorage.getItem('stared-widgets')
+    stared = stared ? JSON.parse(stared) : []
+    if (stared.includes(this.title)) {
+      this.ele.querySelector('.w-top-bar .star').textContent = '★'
+    } else {
+      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+    }
+  }
+
   _pos (val, prop) {
     const type = prop === 'x'
       ? 'left' : prop === 'y'
@@ -156,30 +212,6 @@ class Widget {
 
   _display (value) {
     this.ele.style.display = value
-  }
-
-  _createWindow () {
-    this.ele = document.createElement('div')
-    this.ele.className = 'widget'
-    this.ele.innerHTML = `
-      <div class="w-top-bar">
-        <span>${this._title}</span>
-        <span class="close">✖</span>
-      </div>
-      <div class="w-innerHTML">${this.innerHTML}</div>
-    `
-    document.body.appendChild(this.ele)
-    this.ele.style.display = 'none'
-
-    const topbar = this.ele.querySelector('.w-top-bar')
-    topbar.style.cursor = 'grab'
-
-    const title = this.ele.querySelector('.w-top-bar > span:nth-child(1)')
-    title.style.cursor = 'auto'
-
-    const close = this.ele.querySelector('.w-top-bar > span:nth-child(2)')
-    close.style.cursor = 'pointer'
-    close.addEventListener('click', () => this.close())
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -207,7 +239,7 @@ class Widget {
     // check if cursor is over bottom right corner
     const offX = this.ele.offsetWidth + this.ele.offsetLeft - 20
     const offY = this.ele.offsetHeight + this.ele.offsetTop - 20
-    if (e.clientX > offX && e.clientY > offY) {
+    if (e.clientX > offX && e.clientY > offY && this._resizable) {
       this.ele.style.cursor = 'se-resize'
     } else this.ele.style.cursor = 'auto'
 
@@ -224,7 +256,7 @@ class Widget {
     } else if (this.mousedown === 'widget') {
       const w = e.clientX - this.ele.offsetLeft
       const h = e.clientY - this.ele.offsetTop
-      this.resize(w, h)
+      if (this._resizable) this.resize(w, h)
     }
   }
 
