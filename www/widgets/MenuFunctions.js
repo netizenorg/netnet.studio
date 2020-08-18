@@ -47,6 +47,7 @@ class MenuFunctions extends Widget {
   }
 
   shareLink () {
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     STORE.dispatch('SHARE_URL')
     let m = 'The URL has been udpated to include your sketches data!'
     m += ' Copy the URL from your browser\'s address bar to share it.'
@@ -61,8 +62,38 @@ class MenuFunctions extends Widget {
     })
   }
 
+  saveProject () {
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    let m = 'I can\'t actually save a project online for you just yet '
+    m += '(though the folks at netizen.org are working on that).'
+    m += ' In the meantime you can download this HTML sketch to your '
+    m += 'comptuer to save it "locally", or we can save the data to a URL'
+    m += ' for you?'
+    STORE.dispatch('SHOW_EDU_TEXT', {
+      content: m,
+      options: {
+        'I\'d like it downloaded': () => {
+          this.downloadFile()
+          STORE.dispatch('HIDE_EDU_TEXT')
+        },
+        'I\'d like that share url': () => { this.shareLink() },
+        'never mind': () => { STORE.dispatch('HIDE_EDU_TEXT') }
+      }
+    })
+  }
+
   openFile () {
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     this.fu.input.click()
+  }
+
+  downloadFile () {
+    const uri = `data:text/html;base64,${window.btoa(NNE.code)}`
+    const a = document.createElement('a')
+    a.setAttribute('download', 'index.html')
+    a.setAttribute('href', uri)
+    a.click()
+    a.remove()
   }
 
   tidyCode () {
@@ -86,6 +117,7 @@ class MenuFunctions extends Widget {
   _createContent (quote, author) {
     this.innerHTML = `
       <div>
+        <button id="func-menu-save">saveProject()</button>
         <button id="func-menu-share">shareLink()</button>
         <button id="func-menu-download">downloadFile()</button>
         <button id="func-menu-open">openFile()</button>
@@ -134,6 +166,7 @@ class MenuFunctions extends Widget {
       dropping: (e) => { STORE.dispatch('CHANGE_OPACITY', 0.5) },
       dropped: (e) => { STORE.dispatch('CHANGE_OPACITY', 1) },
       ready: (file) => {
+        STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
         const data = file.data.split('data:text/html;base64,')[1]
         NNE.code = window.atob(data)
       },
@@ -141,13 +174,12 @@ class MenuFunctions extends Widget {
     })
 
     // setup event listenters
-    const buttons = [
-      'share', 'download', 'open', 'tidy', 'layouts', 'themes', 'opacity'
-    ]
-    buttons.forEach(b => {
+    this.$('button').forEach(btn => {
+      const b = btn.id.split('-menu-')[1]
       this.$(`#func-menu-${b}`)
         .addEventListener('click', (e) => {
-          if (b === 'share') this.shareLink()
+          if (b === 'save') this.saveProject()
+          else if (b === 'share') this.shareLink()
           else if (b === 'download') this.downloadFile()
           // else if (b === 'open') this.openFile() // handled by FileUploader
           else if (b === 'tidy') this.tidyCode()
@@ -156,6 +188,7 @@ class MenuFunctions extends Widget {
           else if (b === 'opacity') this.changeOpacity()
         })
     })
+
     // setup STORE listeners
     STORE.subscribe('layout', (data) => {
       this.layoutsSel.value = data
@@ -216,14 +249,18 @@ class MenuFunctions extends Widget {
       })
       this._processingFace = false
     } else {
-      let m = `Ok! here's your shortened URL: <input value="${data.url}">`
-      m += '<br>And here\'s one with the code hidden: '
-      m += `<input value="${data.url}&opacity=0">`
-      STORE.dispatch('SHOW_EDU_TEXT', {
-        content: m,
-        options: { 'thanks!': () => { STORE.dispatch('HIDE_EDU_TEXT') } }
-      })
-      this._processingFace = false
+      const time = STORE.getTransitionTime()
+      const waitForDramaticEffect = time < 2000 ? 2000 : time
+      setTimeout(() => {
+        let m = `Ok! here's your shortened URL: <input value="${data.url}">`
+        m += '<br>And here\'s one with the code hidden: '
+        m += `<input value="${data.url}&opacity=0">`
+        STORE.dispatch('SHOW_EDU_TEXT', {
+          content: m,
+          options: { 'thanks!': () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+        })
+        this._processingFace = false
+      }, waitForDramaticEffect)
     }
   }
 }
