@@ -70,6 +70,7 @@ class StateManager {
       actions: [{ type: 'PAGE_LOAD' }]
     }
     this.generalActionTypes = [
+      'TOGGLE_MENU', // (no-data-required)
       'NEXT_LAYOUT', // (no-data-required)
       'PREV_LAYOUT', // (no-data-required)
       'CHANGE_LAYOUT', // 'dock-left'
@@ -80,10 +81,11 @@ class StateManager {
       'DISABLE_EDITING', // (no-data-required)
       'SHARE_URL', // (no-data-required), updates address bar URL
       'CHANGE_THEME', // 'theme-name' or { theme, background }
-      'LOAD_WIDGETS', // referenceToWidgetInstance
+      // ............
+      'LOAD_WIDGETS', // object { key: referenceToWidgetInstance }
       'OPEN_WIDGET', // referenceToWidgetInstance
       'CLOSE_WIDGET', // referenceToWidgetInstance
-      'TOGGLE_MENU' // (no-data-required)
+      'DELETE_WIDGET' // referenceToWidgetInstance
     ]
     this.eduActionTypes = [
       'SHOW_EDU_ALERT', // { content, options }
@@ -294,23 +296,11 @@ class StateManager {
   }
 
   updateWidgets (type, data) {
-    data = (typeof data === 'string') ? WIDGETS[data] : data
-    if (data instanceof Widget) {
-      let wig = this.state.widgets.filter(w => w.ref === data)[0]
-      let arr = this.state.widgets.filter(w => w.ref !== data)
-      if (type === 'OPEN_WIDGET') {
-        if (!wig) wig = { ref: data, visible: true }
-        else wig.visible = true
-        arr.push(wig)
-        arr = arr.reverse()
-        return { type, data: arr }
-      } else if (type === 'CLOSE_WIDGET') {
-        if (wig) wig.visible = false
-        arr.push(wig)
-        arr = arr.reverse()
-        return { type, data: arr }
-      }
-    } else { // LOAD_WIDGETS
+    // NOTE: this action creator "breaks the rules" a little bit, as it
+    // also has the "side effect" of updating the global WIDGETS obj
+    let wig, key
+    if (typeof data === 'object' && !(data instanceof Widget)) { // collection
+      // LOAD_WIDGETS
       const arr = [...this.state.widgets]
       for (const key in data) {
         if (WIDGETS[key]) {
@@ -319,8 +309,39 @@ class StateManager {
           console.warn(`StateManager: ignoring ${key}, it's not a Widget`)
         } else {
           WIDGETS[key] = data[key]
-          arr.push({ ref: WIDGETS[key], visible: false })
+          arr.push({ key, ref: WIDGETS[key], visible: false })
         }
+      }
+      return { type, data: arr }
+      // ...
+    } else { // single widget (key or reference)
+      // OPEN, CLOSE or DELETE
+      wig = (typeof data === 'string') ? WIDGETS[data] : data
+      key = (typeof data === 'string') ? key : undefined
+      // ....ERROR CHECK....
+      if (!wig) {
+        console.warn(`StateManager: WIDGETS['${data}'], does not exist`)
+        return { type, data: [...this.state.widgets] }
+      } else if (!(wig instanceof Widget)) {
+        console.warn(`StateManager: ignoring "${wig}", it's not a Widget`)
+        return { type, data: [...this.state.widgets] }
+      }
+      if (!key) {
+        key = this.state.widgets
+          .filter(w => w.ref === wig)
+          .map(w => w.key)[0]
+      }
+      // ....CREAT ACTION....
+      wig = this.state.widgets.filter(w => w.ref === wig)[0]
+      let arr = this.state.widgets.filter(w => w.key !== key)
+      if (type === 'OPEN_WIDGET' || type === 'CLOSE_WIDGET') {
+        if (type === 'OPEN_WIDGET') wig.visible = true
+        else if (type === 'CLOSE_WIDGET') wig.visible = false
+        arr.push(wig)
+        arr = arr.reverse()
+        return { type, data: arr }
+      } else if (type === 'DELETE_WIDGET') {
+        delete WIDGETS[key]
       }
       return { type, data: arr }
     }
