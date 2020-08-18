@@ -167,11 +167,11 @@ class WindowManager {
     if (classes.includes(name)) {
       const w = {}
       if (name === 'MenuFunctions') {
-        w['functions-menu'] = new MenuFunctions()
+        w['Functions Menu'] = new MenuFunctions()
       } else if (name === 'MenuWidgets') {
-        w['widgets-menu'] = new MenuWidgets()
+        w['Widgets Menu'] = new MenuWidgets()
       } else if (name === 'MenuTutorials') {
-        w['tutorials-menu'] = new MenuTutorials()
+        w['Tutorials Menu'] = new MenuTutorials()
       }
       STORE.dispatch('LOAD_WIDGETS', w)
     }

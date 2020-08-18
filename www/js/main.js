@@ -85,7 +85,7 @@ window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
     // STORE.dispatch('SHARE_URL')
-    window.WIDGETS['functions-menu'].shareLink()
+    window.WIDGETS['Functions Menu'].shareLink()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
     STORE.dispatch('NEXT_LAYOUT')

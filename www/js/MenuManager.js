@@ -68,7 +68,7 @@ class MenuManager {
       },
       functions: {
         path: 'images/menu/settings.png',
-        click: () => { STORE.dispatch('OPEN_WIDGET', 'functions-menu') }
+        click: () => { STORE.dispatch('OPEN_WIDGET', 'Functions Menu') }
       },
       save: {
         path: 'images/menu/save.png',

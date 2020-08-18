@@ -11,45 +11,47 @@
   -----------
 
   // this widget is instantiated by the WindowManager as...
-  WIDGETS['functions-menu'] = new MenuFunctions()
+  WIDGETS['Functions Menu'] = new MenuFunctions()
 
   // it has the following methods
-  WIDGETS['functions-menu'].saveProject()
-  WIDGETS['functions-menu'].shareLink()
-  WIDGETS['functions-menu'].downloadFile()
-  WIDGETS['functions-menu'].openFile()
-  WIDGETS['functions-menu'].tidyCode()
-  WIDGETS['functions-menu'].changeLayout()
-  WIDGETS['functions-menu'].changeTheme()
-  WIDGETS['functions-menu'].changeOpacity()
+  WIDGETS['Functions Menu'].saveProject()
+  WIDGETS['Functions Menu'].shareLink()
+  WIDGETS['Functions Menu'].downloadFile()
+  WIDGETS['Functions Menu'].openFile()
+  WIDGETS['Functions Menu'].tidyCode()
+  WIDGETS['Functions Menu'].changeLayout()
+  WIDGETS['Functions Menu'].changeTheme()
+  WIDGETS['Functions Menu'].changeOpacity()
 
   // as well as the props/methods it inherites from the base Widget class
 
-  WIDGETS['functions-menu'].innerHTML = element
-  WIDGETS['functions-menu'].title = 'settings'
-  WIDGETS['functions-menu'].x = 20
-  WIDGETS['functions-menu'].y = '50vh'
-  WIDGETS['functions-menu'].z = 100
-  WIDGETS['functions-menu'].width = '50vw'
-  WIDGETS['functions-menu'].height = '50vh'
+  WIDGETS['Functions Menu'].innerHTML = element
+  WIDGETS['Functions Menu'].title = 'settings'
+  WIDGETS['Functions Menu'].x = 20
+  WIDGETS['Functions Menu'].y = '50vh'
+  WIDGETS['Functions Menu'].z = 100
+  WIDGETS['Functions Menu'].width = '50vw'
+  WIDGETS['Functions Menu'].height = '50vh'
+  WIDGETS['Functions Menu'].resizable = false
 
-  WIDGETS['functions-menu'].position(x, y, z)     // update position
-  WIDGETS['functions-menu'].resize(width, height) // update size
-  WIDGETS['functions-menu'].open()                // display
-  WIDGETS['functions-menu'].close()               // hide
+  WIDGETS['Functions Menu'].position(x, y, z)     // update position
+  WIDGETS['Functions Menu'].resize(width, height) // update size
+  WIDGETS['Functions Menu'].open()                // display
+  WIDGETS['Functions Menu'].close()               // hide
 
 */
 class MenuFunctions extends Widget {
   constructor (opts) {
     super(opts)
     this.title = 'Functions Menu'
+    this.resizable = false
     this._createContent()
     this._initValues()
     this._setupListeners()
   }
 
   shareLink () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
     STORE.dispatch('SHARE_URL')
     let m = 'The URL has been udpated to include your sketches data!'
     m += ' Copy the URL from your browser\'s address bar to share it.'
@@ -65,7 +67,7 @@ class MenuFunctions extends Widget {
   }
 
   saveProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
     let m = 'I can\'t actually save a project online for you just yet '
     m += '(though the folks at netizen.org are working on that).'
     m += ' In the meantime you can download this HTML sketch to your '
@@ -85,7 +87,7 @@ class MenuFunctions extends Widget {
   }
 
   openFile () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
     this.fu.input.click()
   }
 
@@ -119,23 +121,42 @@ class MenuFunctions extends Widget {
   _createContent (quote, author) {
     this.innerHTML = `
       <div>
-        <button id="func-menu-save">saveProject()</button>
-        <button id="func-menu-share">shareLink()</button>
-        <button id="func-menu-download">downloadFile()</button>
-        <button id="func-menu-open">openFile()</button>
-        <button id="func-menu-tidy">tidyCode()</button>
+        <button id="func-menu-save">saveProject()</button><br>
+        <button id="func-menu-share">shareLink()</button><br>
+        <button id="func-menu-download">downloadFile()</button><br>
+        <button id="func-menu-open">openFile()</button><br>
+        <button id="func-menu-tidy">tidyCode()</button><br>
         <button id="func-menu-layouts">
           changeLayout(<select id="func-menu-layout-select"></select>)
-        </button>
+        </button><br>
         <button id="func-menu-themes">
           changeTheme(<select id="func-menu-themes-select"></select>)
-        </button>
+        </button><br>
         <button id="func-menu-opacity">
           changeOpacity(<input id="func-menu-opacity-input"
+            style="width: 63px;"
             type="number" min="0" max="1" step="0.1">)
-        </button>
+        </button><br>
       </div>
     `
+
+    this.$('button').forEach(btn => {
+      btn.style.fontFamily = 'inconsolata, monospace'
+      btn.style.cursor = 'pointer'
+      btn.style.textAlign = 'left'
+      btn.style.background = 'none'
+      btn.style.color = 'var(--fg-color)'
+      btn.style.fontWeight = 'bold'
+      btn.style.border = 'none'
+      btn.style.padding = '6px 20px'
+    })
+
+    this.$('select, input').forEach(ele => {
+      ele.style.background = 'rgba(255,255,255,0.3)'
+      ele.style.borderRadius = '50px'
+      ele.style.color = 'var(--netizen-text)'
+      ele.style.padding = '4px 8px'
+    })
   }
 
   _creatOption (value, parent) {
@@ -168,7 +189,7 @@ class MenuFunctions extends Widget {
       dropping: (e) => { STORE.dispatch('CHANGE_OPACITY', 0.5) },
       dropped: (e) => { STORE.dispatch('CHANGE_OPACITY', 1) },
       ready: (file) => {
-        STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+        STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
         const data = file.data.split('data:text/html;base64,')[1]
         NNE.code = window.atob(data)
       },
