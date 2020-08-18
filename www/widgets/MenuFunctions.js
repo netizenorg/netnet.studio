@@ -14,7 +14,9 @@
   WIDGETS['functions-menu'] = new MenuFunctions()
 
   // it has the following methods
+  WIDGETS['functions-menu'].saveProject()
   WIDGETS['functions-menu'].shareLink()
+  WIDGETS['functions-menu'].downloadFile()
   WIDGETS['functions-menu'].openFile()
   WIDGETS['functions-menu'].tidyCode()
   WIDGETS['functions-menu'].changeLayout()
