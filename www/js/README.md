@@ -38,7 +38,7 @@ This is netent's window manager. It's main concern is handling netnet.studio's l
 
 The window manager also handles loading all of netnet's widgets, this includes creating the initial widget instances (as properties in the global `WIDGETS` object) as well as loading any files it finds inside the `www/js/widgets` directory (ie. classes extended from the [base Widget class](https://github.com/netizenorg/netnet.studio/blob/master/www/js/Widget.js)). For more on widgets refer to the [Creating Widgets](https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets) wiki page.
 
-The window manager also handles theme changes, both for the netitor but also for the page at large, as the windows, widgets, menu items, alerts and text bubbles inherit their foreground and background colors from the editor's theme. This is done by calling the `NNW.updateTheme('theme-name')` method. Though this should never be called directly, rather it should be called by dispatching the StateManager's `CHANGE_THEME` action.
+The window manager also handles expanding shortened URL codes via it's `NNW.expandShortURL(shortCode)` method as well as theme changes, both for the netitor but also for the page at large, as the windows, widgets, menu items, alerts and text bubbles inherit their foreground and background colors from the editor's theme. This is done by calling the `NNW.updateTheme('theme-name')` method. Though this should never be called directly, rather it should be called by dispatching the StateManager's `CHANGE_THEME` action.
 
 Additional documentation can be found at the top of the [www/js/WindowManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/WindowManager.js) file itself.
 

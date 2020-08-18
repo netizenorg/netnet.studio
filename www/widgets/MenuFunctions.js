@@ -1,4 +1,4 @@
-/* global Widget, STORE, NNW, NNE, FileUploader */
+/* global Widget, STORE, NNW, NNE, NNM, FileUploader */
 /*
   -----------
      info
@@ -48,8 +48,17 @@ class MenuFunctions extends Widget {
 
   shareLink () {
     STORE.dispatch('SHARE_URL')
-    // TODO, alert box letting folks know that URL was updated
-    // TODO, provide system for URL shortening
+    let m = 'The URL has been udpated to include your sketches data!'
+    m += ' Copy the URL from your browser\'s address bar to share it.'
+    m += ' It\'s long because it contains all your code, '
+    m += 'but if you\'d like we can generate a short URL for you?'
+    STORE.dispatch('SHOW_EDU_TEXT', {
+      content: m,
+      options: {
+        'no, that\'s alright': () => { STORE.dispatch('HIDE_EDU_TEXT') },
+        'yes please': this._shortenURL()
+      }
+    })
   }
 
   openFile () {
@@ -157,6 +166,65 @@ class MenuFunctions extends Widget {
     STORE.subscribe('opacity', (data) => {
       this.opacityInp.value = data
     })
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _shortenURL () {
+    return () => {
+      STORE.dispatch('SHOW_EDU_TEXT', { content: 'Ok, ...processing...' })
+      const time = STORE.getTransitionTime()
+      setTimeout(() => {
+        NNM.setFace('☉', '⌄', '◉')
+        this._processingFace = true
+        this._runProcessingFace()
+        setTimeout(() => {
+          window.fetch('./api/shorten-url', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ hash: window.location.hash })
+          }).then(res => res.json())
+            .then(json => {
+              if (json.error) this._urlShortner('error', json)
+              else this._urlShortner('success', json)
+            }).catch(err => this._urlShortner('error', err))
+        }, time)
+      }, time)
+    }
+  }
+
+  _runProcessingFace () {
+    const face = NNM.getFace()
+    if (face[0] === '☉') NNM.setFace('◉', '⌄', '☉')
+    else if (face[0] === '◉') NNM.setFace('☉', '⌄', '◉')
+    setTimeout(() => {
+      if (this._processingFace) this._runProcessingFace()
+      else NNM.setFace('◕', '◞', '◕')
+    }, 250)
+  }
+
+  _urlShortner (type, data) {
+    if (type === 'error') {
+      console.error(data)
+      let m = 'Oh dang! looks like the server had an issue shortening the URL.'
+      m += ' Check the JavaScript console for more info.'
+      STORE.dispatch('SHOW_EDU_TEXT', {
+        content: m, options: { ok: () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+      })
+      this._processingFace = false
+    } else {
+      let m = `Ok! here's your shortened URL: <input value="${data.url}">`
+      m += '<br>And here\'s one with the code hidden: '
+      m += `<input value="${data.url}&opacity=0">`
+      STORE.dispatch('SHOW_EDU_TEXT', {
+        content: m,
+        options: { 'thanks!': () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+      })
+      this._processingFace = false
+    }
   }
 }
 

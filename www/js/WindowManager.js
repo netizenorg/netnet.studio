@@ -1,5 +1,5 @@
 /*
-  global Maths, Color, NNM, NNE,
+  global Maths, Color, NNM, NNE, STORE,
   MenuFunctions, MenuWidgets, MenuTutorials
 */
 /*
@@ -26,6 +26,8 @@
   NNW.layout = 'dock-left' // adjusts layout
   NNW.opacity = 0.5 // adjusts the opacity of the netnet window
   NNW.updateTheme('light') // updates the theme
+  NNW.expandShortURL(shortCode) // takes a shortened url code &&
+                                // sends a fetch request for hash
 
 */
 class WindowManager {
@@ -107,6 +109,36 @@ class WindowManager {
     this._canvasUpdate(0, 0)
   }
 
+  expandShortURL (shortCode) {
+    window.fetch('./api/expand-url', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ key: shortCode })
+    }).then(res => res.json())
+      .then(json => {
+        if (json.error) this._expandURLerror(json.error)
+        else {
+          window.location.hash = json.hash
+          const opa = new URL(window.location).searchParams.get('opacity')
+          if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
+          else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        }
+      })
+      .catch(() => { this._expandURLerror() })
+  }
+
+  _expandURLerror (err) {
+    let m = 'Oh dang! looks like something went wrong trying to expand'
+    m += ' the short code in this URL.'
+    if (err) m += ` It seems that ${err}`
+    STORE.dispatch('SHOW_EDU_TEXT', {
+      content: m, options: { ok: () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+    })
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•* private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -114,11 +146,7 @@ class WindowManager {
   _loadWidgets () {
     const self = this
     // create initial global WIDGETS dictionary object
-    window.WIDGETS = {
-      'functions-menu': null,
-      'widgets-menu': null,
-      'tutorials-menu': null
-    }
+    window.WIDGETS = {}
     // load all extended widget classes
     function loadWidget (filename) {
       const s = document.createElement('script')
@@ -137,13 +165,15 @@ class WindowManager {
     const name = filename.split('.')[0]
     const classes = ['MenuFunctions', 'MenuWidgets', 'MenuTutorials']
     if (classes.includes(name)) {
+      const w = {}
       if (name === 'MenuFunctions') {
-        window.WIDGETS['functions-menu'] = new MenuFunctions()
+        w['functions-menu'] = new MenuFunctions()
       } else if (name === 'MenuWidgets') {
-        window.WIDGETS['widgets-menu'] = new MenuWidgets()
+        w['widgets-menu'] = new MenuWidgets()
       } else if (name === 'MenuTutorials') {
-        window.WIDGETS['tutorials-menu'] = new MenuTutorials()
+        w['tutorials-menu'] = new MenuTutorials()
       }
+      STORE.dispatch('LOAD_WIDGETS', w)
     }
   }
 

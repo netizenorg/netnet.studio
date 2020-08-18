@@ -64,6 +64,9 @@ window.addEventListener('DOMContentLoaded', (e) => {
   if (NNE.hasCodeInHash) NNE.loadFromHash()
   // if their are URL parameters...
   const url = new URL(window.location)
+  // ...check for short code
+  const shc = url.searchParams.get('c')
+  if (!NNE.hasCodeInHash && shc) window.NNW.expandShortURL(shc)
   // ...check for a tutorial
   const tut = url.searchParams.get('tutorial')
   if (tut) window.NNT.load(tut)
@@ -81,7 +84,8 @@ window.addEventListener('DOMContentLoaded', (e) => {
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    STORE.dispatch('SHARE_URL')
+    // STORE.dispatch('SHARE_URL')
+    window.WIDGETS['functions-menu'].shareLink()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
     STORE.dispatch('NEXT_LAYOUT')
