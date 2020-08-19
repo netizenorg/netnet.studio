@@ -68,15 +68,24 @@ class MenuManager {
       },
       functions: {
         path: 'images/menu/settings.png',
-        click: () => { STORE.dispatch('OPEN_WIDGET', 'Functions Menu') }
+        click: () => {
+          STORE.dispatch('TOGGLE_MENU')
+          STORE.dispatch('OPEN_WIDGET', 'Functions Menu')
+        }
       },
       widgets: {
         path: 'images/menu/settings.png',
-        click: () => { STORE.dispatch('OPEN_WIDGET', 'Widgets Menu') }
+        click: () => {
+          STORE.dispatch('TOGGLE_MENU')
+          STORE.dispatch('OPEN_WIDGET', 'Widgets Menu')
+        }
       },
-      open: {
+      tutorials: {
         path: 'images/menu/open.png',
-        click: () => { window.alert('open project') }
+        click: () => {
+          STORE.dispatch('TOGGLE_MENU')
+          STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+        }
       }
     }
 

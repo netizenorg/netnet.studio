@@ -263,7 +263,19 @@ class Widget {
 
   _display (value) {
     // used by StateManager's render() method
+    if (value === 'block' && this.ele.style.display === 'none') {
+      this._bring2front()
+    }
     this.ele.style.display = value
+  }
+
+  _bring2front () {
+    // NOTE: this will work so long as there are less than 100
+    // Widgets open... safe assumption i hope
+    this.z = 200
+    let z = 100
+    STORE.state.widgets
+      .forEach(w => { if (w.key !== this.key) w.ref.z = ++z })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -277,13 +289,7 @@ class Widget {
       }
       document.body.style.userSelect = 'none'
       // update z index so it's above other widgets
-      // NOTE: this will work so long as there are less than 100
-      // Widgets open... safe assumption i hope
-      this.z = 200
-      let z = 100
-      STORE.state.widgets.forEach(w => {
-        if (w.key !== this.key) w.ref.z = ++z
-      })
+      this._bring2front()
     }
   }
 

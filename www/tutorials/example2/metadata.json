@@ -1,6 +1,6 @@
 {
-  "title": "New Media Art",
-  "subtitle": "understanding digital art as a metamedia",
+  "title": "Another Exmaple",
+  "subtitle": "understanding something else",
   "author": {
     "name": "Nick Briz",
     "preferred": "Nick",
@@ -9,9 +9,8 @@
   "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
   "main": "main.js",
   "checkpoints": {
-    "the first thing": 0,
-    "the fourth thing": "contd",
-    "nearly at the end": 5
+    "not the only markup language": 0,
+    "artist markup languages": 2
   },
   "references": [
     {

@@ -84,8 +84,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    // STORE.dispatch('SHARE_URL')
     window.WIDGETS['Functions Menu'].shareLink()
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
+    e.preventDefault()
+    window.WIDGETS['Functions Menu'].openFile()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
     STORE.dispatch('NEXT_LAYOUT')
@@ -98,5 +100,8 @@ window.addEventListener('keydown', (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
     STORE.dispatch('INCREASE_OPACITY', 0.05)
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 191) { // ?
+    e.preventDefault()
+    STORE.dispatch('CHANGE_OPACITY', 1)
   }
 })

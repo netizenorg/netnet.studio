@@ -30,7 +30,7 @@
 class MenuFunctions extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Functions Menu' // shows up in title bar
+    this.title = 'Functions' // shows up in title bar
     this.key = 'Functions Menu' // used for: WIDGETS[key] = new MenuFunctions()
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
@@ -109,7 +109,7 @@ class MenuFunctions extends Widget {
 
   _createContent (quote, author) {
     this.innerHTML = `
-      <div>
+      <div id="func-menu-content">
         <button id="func-menu-save">saveProject()</button><br>
         <button id="func-menu-share">shareLink()</button><br>
         <button id="func-menu-download">downloadFile()</button><br>
@@ -123,29 +123,10 @@ class MenuFunctions extends Widget {
         </button><br>
         <button id="func-menu-opacity">
           changeOpacity(<input id="func-menu-opacity-input"
-            style="width: 63px;"
             type="number" min="0" max="1" step="0.1">)
         </button><br>
       </div>
     `
-
-    this.$('button').forEach(btn => {
-      btn.style.fontFamily = 'inconsolata, monospace'
-      btn.style.cursor = 'pointer'
-      btn.style.textAlign = 'left'
-      btn.style.background = 'none'
-      btn.style.color = 'var(--fg-color)'
-      btn.style.fontWeight = 'bold'
-      btn.style.border = 'none'
-      btn.style.padding = '6px 20px'
-    })
-
-    this.$('select, input').forEach(ele => {
-      ele.style.background = 'rgba(255,255,255,0.3)'
-      ele.style.borderRadius = '50px'
-      ele.style.color = 'var(--netizen-text)'
-      ele.style.padding = '4px 8px'
-    })
   }
 
   _creatOption (value, parent) {

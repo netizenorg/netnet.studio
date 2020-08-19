@@ -60,7 +60,7 @@ class StateManager {
       menu: false, // displaying main menu or not
       eduinfo: { display: false, payload: null },
       errors: { display: false, index: -1, list: [] },
-      tutorial: { display: false, id: null, steps: {} }
+      tutorial: { display: false, url: null, id: null, steps: {} }
     }
     this.log = opts.log || false
     this.holding = false // if true, prevent state change
@@ -169,7 +169,7 @@ class StateManager {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  is (type) {
+  is (type, key) {
     const s = this.state
     if (type === 'SHOWING') { // showing any (menu, alerts, text-bubbles)
       return (
@@ -198,6 +198,11 @@ class StateManager {
       return s.tutorial.display
     } else if (type === 'SHOWING_TUTORIAL_TEXT') {
       return s.tutorial.display === 'text'
+    } else if (type === 'TUTORIAL_LOADED') {
+      return Object.keys(s.tutorial.steps).length > 0
+    } else if (type === 'WIDGET_OPEN') {
+      const wig = this.state.widgets.filter(w => w.key === key)[0]
+      return wig ? wig.visible : false
     }
   }
 
@@ -559,7 +564,10 @@ class StateManager {
     } else if (this.tutorialActionTypes.includes(action.type)) {
       if (action.type === 'TUTORIAL_DATA') {
         return {
-          display: 'text', id: action.data.id, steps: action.data.steps
+          url: action.data.url,
+          display: 'text',
+          id: action.data.id,
+          steps: action.data.steps
         }
       } else if (action.type === 'HIDE_TUTORIAL_TEXT') {
         state.display = action.data

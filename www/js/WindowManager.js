@@ -1,4 +1,4 @@
-/* global Maths, Color, NNM, NNE, STORE */
+/* global Maths, Color, NNM, NNE, STORE, Averigua */
 /*
   -----------
      info
@@ -148,22 +148,29 @@ class WindowManager {
     function loadWidget (filename) {
       const s = document.createElement('script')
       s.setAttribute('src', `widgets/${filename}`)
-      s.onload = () => self._initWidget(filename)
+      s.onload = () => self._initWidgets(filename)
       document.body.appendChild(s)
     }
 
     window.fetch('api/widgets', { method: 'GET' })
       .then(res => res.json())
-      .then(json => json.forEach(loadWidget))
+      .then(json => {
+        this._numberOfWidgetsToLoad = json.length
+        this._widgetsLoaded = []
+        json.forEach(loadWidget)
+      })
   }
 
-  _initWidget (filename) {
-    // instantiate menu widgets
+  _initWidgets (filename) {
     const className = filename.split('.')[0]
-    const widget = new window[className]()
-    if (widget.key) {
+    this._widgetsLoaded.push(className)
+    // instantiate menu widgets
+    if (this._widgetsLoaded.length === this._numberOfWidgetsToLoad) {
       const data = {}
-      data[widget.key] = widget
+      this._widgetsLoaded.forEach(cname => {
+        const widget = new window[cname]()
+        if (widget.key) data[widget.key] = widget
+      })
       STORE.dispatch('LOAD_WIDGETS', data)
     }
   }
@@ -171,7 +178,13 @@ class WindowManager {
   _adjustOpacity (v) {
     this._opacity = v
     this.win.style.opacity = this._opacity
-    // TODO: alert w/instructions if opacity === 0
+    if (this._opacity === 0) {
+      const meta = Averigua.platformInfo().platform.includes('Mac')
+        ? 'CMD+?' : 'CTRL+?'
+      let m = 'netnet is currently invisible. When you\'d like netnet '
+      m += 'to reappear use the keyboard shortcut ' + meta
+      window.alert(m)
+    }
   }
 
   _bubbleUpiFrameEvents () {

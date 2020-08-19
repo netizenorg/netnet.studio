@@ -22,9 +22,10 @@
 class MenuWidgets extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Widgets Menu'
+    this.title = 'Widgets'
     this.key = 'Widgets Menu'
     this.listed = false // make sure it doesn't show up in Widgets Menu
+    this.resizable = false
     STORE.subscribe('widgets', (arr) => { this.update() })
   }
 
@@ -41,6 +42,7 @@ class MenuWidgets extends Widget {
 
     // create menu list
     const parent = document.createElement('div')
+    parent.id = 'wig-menu-content'
     keyList.forEach(key => {
       // HACK: seems to be some weird race condition i can't figure out
       // so putting this in a conditional for now...
@@ -48,8 +50,7 @@ class MenuWidgets extends Widget {
         const div = document.createElement('div')
         const str = stared.includes(key) ? '★' : '☆'
         div.textContent = `${str} ${WIDGETS[key].title}`
-        div.style.cursor = 'pointer'
-        div.style.padding = '10px'
+        div.className = 'link'
         div.addEventListener('click', () => STORE.dispatch('OPEN_WIDGET', key))
         parent.appendChild(div)
       }

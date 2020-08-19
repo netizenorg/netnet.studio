@@ -9,6 +9,9 @@
   border-radius: 15px;
 }
 
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
+/* default styles for widget headers */
+
 .widget > .w-top-bar {
   cursor: grab;
   min-width: 100px;
@@ -28,4 +31,96 @@
 
 .widget > .w-top-bar .star {
   cursor: pointer;
+}
+
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
+/* default styles for common elements in widget content */
+
+.widget > .w-innerHTML a,
+.widget > .w-innerHTML .link {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .5s ease;
+}
+.widget > .w-innerHTML a:after,
+.widget > .w-innerHTML .link:after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  bottom: -1px;
+
+  width: calc(100% - 4px);
+  height: 1px;
+
+  background-color: var(--fg-color);
+
+  transition: background-color .5s ease;
+}
+.widget > .w-innerHTML a:hover,
+.widget > .w-innerHTML .link:hover {
+  color: var(--netizen-match-color);
+  cursor: pointer;
+}
+.widget > .w-innerHTML a:hover:after,
+.widget > .w-innerHTML .link:hover:after {
+  background-color: var(--netizen-match-color);
+}
+.widget > .w-innerHTML a:active {
+  color: var(--netizen-attribute);
+}
+.widget > .w-innerHTML a:active:after,
+.widget > .w-innerHTML .link:active:after {
+  background-color: var(--netizen-attribute);
+}
+
+
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
+/* styles for specific sub menu widgets */
+
+#func-menu-content button {
+  font-family: inconsolata, monospace;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  color: var(--fg-color);
+  font-weight: bold;
+  border: none;
+  padding: 6px 20px;
+}
+
+#func-menu-content select,
+#func-menu-content input {
+  background: rgba(255,255,255,0.3);
+  border-radius: 50px;
+  color: var(--netizen-text);
+  padding: 4px 8px;
+}
+
+#func-menu-content input {
+  width: 63px;
+}
+
+
+#tut-menu-content {
+  width: 400px;
+}
+
+#tut-menu-content > .tut-menu-sub-menu {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px auto;
+}
+
+#tut-menu-content > .tut-menu-sub-menu .selected {
+  color: var(--netizen-match-color);
+}
+
+#tut-menu-content > .tut-menu-sub-content {
+
+}
+
+#wig-menu-content > div {
+  padding: 4px;
+  margin: 5px;
 }

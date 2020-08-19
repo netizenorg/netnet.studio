@@ -41,6 +41,13 @@ router.get('/api/widgets', (req, res) => {
   })
 })
 
+router.get('/api/tutorials', (req, res) => {
+  fs.readdir(path.join(__dirname, '../www/tutorials'), (err, list) => {
+    if (err) return console.log(err)
+    else res.json(list)
+  })
+})
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // REST API [POST]
 
 function shortenURL (req, res, dbPath) {

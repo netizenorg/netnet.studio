@@ -91,7 +91,7 @@ class TutorialManager {
       s.setAttribute('src', `${root}/${json.main}`)
       s.setAttribute('type', 'text/javascript')
       s.onerror = (e) => { this._err('main') }
-      s.onload = () => this._updateState()
+      s.onload = () => this._updateState(root)
       document.body.appendChild(s)
     } else {
       // externally hosted
@@ -100,12 +100,12 @@ class TutorialManager {
         .then(text => {
           s.innerHTML = text
           document.body.appendChild(s)
-          this._updateState()
+          this._updateState(root)
         })
     }
   }
 
-  _updateState () {
+  _updateState (url) {
     if (typeof TUTORIAL === 'object') {
       // update tutorial data
       if (!(TUTORIAL.steps instanceof Array)) return this._err('steps')
@@ -114,7 +114,7 @@ class TutorialManager {
       // this.state.video = TUTORIAL.steps[0].video || null // TODO...
       const editable = (typeof TUTORIAL.steps[0].edit === 'boolean')
         ? TUTORIAL.steps[0].edit : true
-      STORE.dispatch('TUTORIAL_DATA', { steps, id: '__START__', editable })
+      STORE.dispatch('TUTORIAL_DATA', { url, steps, id: '__START__', editable })
 
       // update global widgets
       if (typeof TUTORIAL.widgets === 'object') {
@@ -126,35 +126,38 @@ class TutorialManager {
   _createStartObj () {
     const m = this.metadata
     const i = TUTORIAL.steps[0].id || 0
+    const options = {
+      'yes, let\'s do it!': (e) => {
+        e.goTo(i)
+        STORE.dispatch('CLOSE_WIDGET', 'Tutorials Menu')
+      },
+      'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
+    }
+    if (!STORE.is('WIDGET_OPEN', 'Tutorials Menu')) {
+      options['Show me the Tutorials Menu'] = (e) => {
+        STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+      }
+    }
     return {
       id: '___START___',
-      content: `I've loaded a tutorial by ${m.author}
-      called ${m.title}, ${m['sub-title']}, shall we get started?`,
-      options: {
-        'yes, let\'s do it!': (e) => { e.goTo(i) },
-        'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
-      },
+      content: `I've loaded a tutorial called ${m.title},
+      ${m.subtitle}, shall we get started?`,
+      options: options,
       scope: this
     }
   }
 
   _mapData (steps) {
-    let dict = {}
-    if (this._isLinear(steps)) {
-      dict = { length: steps.length }
-      steps.forEach((o, i) => {
-        o.scope = this
-        o.options = o.options || this._defaultOpts(i, steps)
-        dict[i] = o
-      })
-    } else {
-      dict = {}
-      steps.forEach((o, i) => {
-        const id = o.id || i
-        o.scope = this
-        dict[id] = o
-      })
-    }
+    const dict = {}
+    const linear = this._isLinear(steps)
+    steps.forEach((o, i) => {
+      o.scope = this
+      o.id = o.id || i
+      o.options = o.options ? o.options
+        : linear ? this._defaultLinearOpts(i, steps)
+          : this._defaultNonLinearOpts(i, steps)
+      dict[o.id] = o
+    })
     return dict
   }
 
@@ -166,17 +169,25 @@ class TutorialManager {
     return linear
   }
 
-  _defaultOpts (i, arr) {
+  _defaultLinearOpts (i, arr) {
+    const opts = {}
+    if (i > 0) opts.previous = (e) => e.prev()
+    if (i < arr.length - 1) opts.next = (e) => e.next()
+    if (i === arr.length - 1) opts.ok = (e) => e.end()
+    return opts
+  }
+
+  _defaultNonLinearOpts (i, arr) {
     const opts = {}
     if (i > 0) {
-      opts.previous = () => { STORE.dispatch('TUTORIAL_PREV_STEP', i - 1) }
+      const id = arr[i - 1].id || i - 1
+      opts.previous = (e) => e.goTo(id)
     }
     if (i < arr.length - 1) {
-      opts.next = () => { STORE.dispatch('TUTORIAL_NEXT_STEP', i + 1) }
+      const id = arr[i + 1].id || i + 1
+      opts.next = (e) => e.goTo(id)
     }
-    if (i === arr.length - 1) {
-      opts.ok = () => { STORE.dispatch('TUTORIAL_FINISHED') }
-    }
+    if (i === arr.length - 1) opts.ok = (e) => e.end()
     return opts
   }
 }
