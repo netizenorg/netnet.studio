@@ -36,6 +36,8 @@ class MenuWidgets extends Widget {
     stared = stared ? JSON.parse(stared) : []
     keyList = keyList.filter(key => !stared.includes(key))
     keyList = [...stared, ...keyList]
+    // remove itself from the list
+    keyList = keyList.filter(key => key !== this.key)
 
     // create menu list
     const parent = document.createElement('div')
