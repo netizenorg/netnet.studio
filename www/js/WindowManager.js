@@ -1,7 +1,4 @@
-/*
-  global Maths, Color, NNM, NNE, STORE,
-  MenuFunctions, MenuWidgets, MenuTutorials
-*/
+/* global Maths, Color, NNM, NNE, STORE */
 /*
   -----------
      info
@@ -151,7 +148,7 @@ class WindowManager {
     function loadWidget (filename) {
       const s = document.createElement('script')
       s.setAttribute('src', `widgets/${filename}`)
-      s.onload = () => self._initMenuWidget(filename)
+      s.onload = () => self._initWidget(filename)
       document.body.appendChild(s)
     }
 
@@ -160,20 +157,14 @@ class WindowManager {
       .then(json => json.forEach(loadWidget))
   }
 
-  _initMenuWidget (filename) {
+  _initWidget (filename) {
     // instantiate menu widgets
-    const name = filename.split('.')[0]
-    const classes = ['MenuFunctions', 'MenuWidgets', 'MenuTutorials']
-    if (classes.includes(name)) {
-      const w = {}
-      if (name === 'MenuFunctions') {
-        w['Functions Menu'] = new MenuFunctions()
-      } else if (name === 'MenuWidgets') {
-        w['Widgets Menu'] = new MenuWidgets()
-      } else if (name === 'MenuTutorials') {
-        w['Tutorials Menu'] = new MenuTutorials()
-      }
-      STORE.dispatch('LOAD_WIDGETS', w)
+    const className = filename.split('.')[0]
+    const widget = new window[className]()
+    if (widget.key) {
+      const data = {}
+      data[widget.key] = widget
+      STORE.dispatch('LOAD_WIDGETS', data)
     }
   }
 

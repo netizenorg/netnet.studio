@@ -10,44 +10,39 @@
      usage
   -----------
 
-  const w = new ExampleWidget({
-    quote: 'motivational quote' // (required) quote to display as innerHTML
-    author: 'Nick Briz',        // (optional) quote attribution
-    x: 20,                      // (optional) left position
-    y: 20,                      // (optional) top positon
-    z: 100,                     // (optional) z-index
-    width: 500,                 // (optional) widget's width
-    height: 500                 // (optional) widget's height
-  })
+  // it's important that the file-name matches the class-name because
+  // this widget is instantiated by the WindowManager as...
+  WIDGETS['Example Widget'] = new ExampleWidget()
 
-  w.innerHTML = element
-  w.title = 'settings'
-  w.x = 20
-  w.y = '50vh'
-  w.z = 100
-  w.width = '50vw'
-  w.height = '50vh'
-
-  w.position(x, y, z)     // update position
-  w.resize(width, height) // update size
-  w.open()                // display
-  w.close()               // hide
-
+  // this class inherits all the properties/methods of the base Widget class
+  // refer to www/js/Widget.js to see what those are
+  // or take a look at the wiki...
+  // https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets
 */
 class ExampleWidget extends Widget {
   constructor (opts) {
     super(opts)
 
-    if (!opts.quote) {
-      console.error('ExampleWidget: options object requires a "quote" property')
-    }
+    // NOTE: must have key if you want the WindowManager to automatically
+    // instantiate it. Otherwise, the assumption is that it will be instantiated
+    // later by displatching a LOAD_WIDGETS action, for example:
+    // STORE.dispatch('LOAD_WIDGETS', { key: new ExampleWidget() })
+    // at which point it's key will be assigned based on the property name
+    this.key = 'Example Widget'
 
-    this.title = 'Quote File'
-    this._createContent(opts.quote, opts.author)
+    // if for whatever reason you don't want this showing up
+    // in the Widgets Menu, you can set listed to false
+    // this.listed = false
+
+    // here's some more example code...
+    this.title = 'This is an Example Title'
+    this._exampleMethodForCreatingContent(opts)
   }
 
-  _createContent (quote, author) {
-    const attribution = author || 'Anonymous'
+  _exampleMethodForCreatingContent (opts) {
+    opts = opts || {}
+    const quote = opts.quote || 'No quote was passed into the constructor.'
+    const attribution = opts.author || 'Anonymous'
     this.innerHTML = `
       <blockquote>
         ${quote}

@@ -1,4 +1,4 @@
-/* global Maths, HTMLElement, STORE */
+/* global Maths, HTMLElement, STORE, WIDGETS */
 /*
   -----------
      info
@@ -21,10 +21,11 @@
     innerHTML: element,  // optional html string or HTMLElement
     x: 20,             // optional
     y: 20,             // optional
-    z: 100,            // optional (make sure it's always between 100 && 200?)
+    z: 100,            // optional (make sure it's always between 100 && 200)
     width: 500,        // optional
     height: 500        // optional
-    resizable: true   // optional
+    resizable: true,   // optional (can user resize)
+    listed: true       // optional (can user star && display in Widgets Menu?)
   })
 
   w.innerHTML = element
@@ -53,11 +54,14 @@ class Widget {
     this._width = opts.width
     this._height = opts.height
     this._resizable = opts.resizable || true
+    this._listed = opts.listed || true
+    this._key = null
     this.mousedown = false
 
     this._createWindow()
     this.position(opts.x, opts.y, opts.z)
     this.resize(this.width, this.height)
+    this._updateIfListed()
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
 
@@ -96,7 +100,26 @@ class Widget {
     } else {
       this._title = v
       this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
-      this._updateIfStared()
+    }
+  }
+
+  get key () { return this._key }
+  set key (v) {
+    if (typeof v !== 'string') {
+      return console.error('Widget: key property must be set to a string')
+    } else {
+      this._key = v
+      this._updateIfListed()
+    }
+  }
+
+  get listed () { return this._listed }
+  set listed (v) {
+    if (typeof v !== 'boolean') {
+      return console.error('Widget: listed property must be set to a boolean')
+    } else {
+      this._listed = v
+      this._updateIfListed()
     }
   }
 
@@ -124,22 +147,6 @@ class Widget {
 
   close () {
     STORE.dispatch('CLOSE_WIDGET', this)
-  }
-
-  star () {
-    let stared = window.localStorage.getItem('stared-widgets')
-    stared = stared ? JSON.parse(stared) : []
-    if (stared.includes(this.title)) { // unstar it
-      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
-      const i = stared.indexOf(this.title)
-      stared.splice(i, 1)
-      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
-    } else { // star it
-      this.ele.querySelector('.w-top-bar .star').textContent = '★'
-      stared.push(this.title)
-      stared = stared.reverse()
-      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
-    }
   }
 
   position (x, y, z) {
@@ -183,26 +190,70 @@ class Widget {
       .addEventListener('click', () => this.close())
 
     this.ele.querySelector('.w-top-bar .star')
-      .addEventListener('click', () => this.star())
+      .addEventListener('click', () => this._star())
   }
 
-  _updateIfStared () {
-    let stared = window.localStorage.getItem('stared-widgets')
-    stared = stared ? JSON.parse(stared) : []
-    if (stared.includes(this.title)) {
-      this.ele.querySelector('.w-top-bar .star').textContent = '★'
-    } else {
-      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+  _updateIfListed () {
+    // if this instance is set to be listed && if it has it's key property set
+    // (ie. if it was instantiated via a 'LOAD_WIDGETS' action)
+    if (this.listed && this.key) {
+      // display star span
+      this.ele.querySelector('.w-top-bar .star').style.display = 'inline'
+      // set appropriate star character if user has starred it
+      let stared = window.localStorage.getItem('stared-widgets')
+      stared = stared ? JSON.parse(stared) : []
+      if (stared.includes(this.key)) {
+        this.ele.querySelector('.w-top-bar .star').textContent = '★'
+      } else {
+        this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+      }
+    } else { // hide star span
+      this.ele.querySelector('.w-top-bar .star').style.display = 'none'
     }
   }
 
+  _star () {
+    // this method runs when the user clicks the star icon
+    // as noted in _updateIfListed(), the icon only shows up if the instanceof
+    // the widget has this.listed === true (some widgets like those used in
+    // as sub-menus should not be listed) and also if the widget has it's
+    // key property set. a key property is set when the widget is instantiated
+    // by having dispatched a LOAD_WIDGETS actions, like...
+    // STORE.dispatch('LOAD_WIDGETS', { keyname: new Widget() })
+    // (which is how any Widgets defined in a tutorial are loaded)
+    // or, if the Widget is a more complex class, extended from this base
+    // class && defined in it's own file in the www/widgets/ directory
+    // then it needs to have been given a this.key = 'something' in it's
+    // constructor in ordfer for it to have been automatically instantiated
+    // by the WindowManager (which wil also dispatch a LOAD_WIDGETS action)
+    let stared = window.localStorage.getItem('stared-widgets')
+    stared = stared ? JSON.parse(stared) : []
+    if (stared.includes(this.key)) { // unstar it
+      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+      const i = stared.indexOf(this.key)
+      stared.splice(i, 1)
+      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
+    } else { // star it
+      this.ele.querySelector('.w-top-bar .star').textContent = '★'
+      stared.push(this.key)
+      stared = stared.reverse()
+      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
+    }
+    // udpate Widgets Menu to reflect changes
+    if (WIDGETS['Widgets Menu']) WIDGETS['Widgets Menu'].update()
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
   _pos (val, prop) {
-    const type = prop === 'x'
-      ? 'left' : prop === 'y'
-        ? 'top' : prop === 'z'
-          ? 'zIndex' : null
     this[`_${prop}`] = val
-    this.ele.style[type] = (typeof val === 'number') ? `${val}px` : val
+    if (prop === 'x') {
+      this.ele.style.left = (typeof val === 'number') ? `${val}px` : val
+    } else if (prop === 'y') {
+      this.ele.style.top = (typeof val === 'number') ? `${val}px` : val
+    } else if (prop === 'z') {
+      this.ele.style.zIndex = val
+    }
   }
 
   _size (val, prop) {
@@ -211,6 +262,7 @@ class Widget {
   }
 
   _display (value) {
+    // used by StateManager's render() method
     this.ele.style.display = value
   }
 
@@ -224,6 +276,14 @@ class Widget {
         this.ele.querySelector('.w-top-bar').style.cursor = 'move'
       }
       document.body.style.userSelect = 'none'
+      // update z index so it's above other widgets
+      // NOTE: this will work so long as there are less than 100
+      // Widgets open... safe assumption i hope
+      this.z = 200
+      let z = 100
+      STORE.state.widgets.forEach(w => {
+        if (w.key !== this.key) w.ref.z = ++z
+      })
     }
   }
 

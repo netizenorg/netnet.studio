@@ -309,6 +309,7 @@ class StateManager {
           console.warn(`StateManager: ignoring ${key}, it's not a Widget`)
         } else {
           WIDGETS[key] = data[key]
+          if (WIDGETS[key].key !== key) WIDGETS[key].key = key
           arr.push({ key, ref: WIDGETS[key], visible: false })
         }
       }
@@ -331,14 +332,13 @@ class StateManager {
           .filter(w => w.ref === wig)
           .map(w => w.key)[0]
       }
-      // ....CREAT ACTION....
+      // ....CREATE ACTION....
       wig = this.state.widgets.filter(w => w.ref === wig)[0]
-      let arr = this.state.widgets.filter(w => w.key !== key)
+      const arr = this.state.widgets.filter(w => w.key !== key)
       if (type === 'OPEN_WIDGET' || type === 'CLOSE_WIDGET') {
         if (type === 'OPEN_WIDGET') wig.visible = true
         else if (type === 'CLOSE_WIDGET') wig.visible = false
         arr.push(wig)
-        arr = arr.reverse()
         return { type, data: arr }
       } else if (type === 'DELETE_WIDGET') {
         delete WIDGETS[key]

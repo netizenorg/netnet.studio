@@ -70,9 +70,9 @@ class MenuManager {
         path: 'images/menu/settings.png',
         click: () => { STORE.dispatch('OPEN_WIDGET', 'Functions Menu') }
       },
-      save: {
-        path: 'images/menu/save.png',
-        click: () => { STORE.dispatch('SHARE_URL') }
+      widgets: {
+        path: 'images/menu/settings.png',
+        click: () => { STORE.dispatch('OPEN_WIDGET', 'Widgets Menu') }
       },
       open: {
         path: 'images/menu/open.png',

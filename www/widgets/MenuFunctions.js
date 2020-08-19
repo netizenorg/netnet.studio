@@ -23,28 +23,17 @@
   WIDGETS['Functions Menu'].changeTheme()
   WIDGETS['Functions Menu'].changeOpacity()
 
-  // as well as the props/methods it inherites from the base Widget class
-
-  WIDGETS['Functions Menu'].innerHTML = element
-  WIDGETS['Functions Menu'].title = 'settings'
-  WIDGETS['Functions Menu'].x = 20
-  WIDGETS['Functions Menu'].y = '50vh'
-  WIDGETS['Functions Menu'].z = 100
-  WIDGETS['Functions Menu'].width = '50vw'
-  WIDGETS['Functions Menu'].height = '50vh'
-  WIDGETS['Functions Menu'].resizable = false
-
-  WIDGETS['Functions Menu'].position(x, y, z)     // update position
-  WIDGETS['Functions Menu'].resize(width, height) // update size
-  WIDGETS['Functions Menu'].open()                // display
-  WIDGETS['Functions Menu'].close()               // hide
+  // also inherits all the properties/methods of the base Widget class
+  // refer to www/js/Widget.js
 
 */
 class MenuFunctions extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Functions Menu'
+    this.title = 'Functions Menu' // shows up in title bar
+    this.key = 'Functions Menu' // used for: WIDGETS[key] = new MenuFunctions()
     this.resizable = false
+    this.listed = false // make sure it doesn't show up in Widgets Menu
     this._createContent()
     this._initValues()
     this._setupListeners()
