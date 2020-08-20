@@ -68,7 +68,7 @@ class SearchBar {
               idx = i; break
             }
           }
-          if (idx) divs[idx].click()
+          if (typeof idx === 'number') divs[idx].click()
         }
       }
     })
