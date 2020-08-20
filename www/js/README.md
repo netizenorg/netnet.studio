@@ -2,6 +2,12 @@
 
 This README explains (at a high level) what the files in this `/www/js/` direcotry are. If you want a deeper dive into any of this, each `.js` file has comments on the top with more details.
 
+- [StateManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#statemanagerjs)
+- [TutorialManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#tutorialmanagerjs)
+- [WindowManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#windowmanager) (Widget.js)
+- [MenuManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#menumanager) (TextBubble.js, SearchBar.js)
+- [./netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#netitorminjs) (NetitorEduInfoHandler.js, NetitorErrorHandler.js)
+
 
 ## [StateManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/StateManager.js)
 ### global instance: `STORE`
@@ -24,7 +30,7 @@ window.NNT = new TutorialManager()
 This class is responsible for much of the interactive tutorials logic. It can load tutorial data by passing a tutorial name into it's `.load()` method. It can also load tutorials hosted elsewhere on the Internet by passing it a URL (to a directory with a `metadata.json` file). It can also launch a tutorial on page load by passing netnet a `tutorial` URL parameter, ex: `http://netnet.studio/?tutorial=tutorial-name-or-url`. For a more in depth explanation on how to produce tutorials visit the [Creating Tutorials Wiki](https://github.com/netizenorg/netnet.studio/wiki/Creating-Tutorials)
 
 
-## [WindowManager](https://github.com/netizenorg/netnet.studio/blob/master/www/js/WindowManager.js)
+## [WindowManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/WindowManager.js)
 ### global instance: `NNW`
 
 ```js
@@ -43,7 +49,7 @@ The window manager also handles expanding shortened URL codes via it's `NNW.expa
 Additional documentation can be found at the top of the [www/js/WindowManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/WindowManager.js) file itself.
 
 
-## [MenuManager](https://github.com/netizenorg/netnet.studio/blob/master/www/js/MenuManager.js)
+## [MenuManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/MenuManager.js)
 ### global instance: `NNM`
 
 ```js
@@ -67,6 +73,8 @@ We can check if the menu/dialogue system is currently open by calling it's `NNM.
 ![netnet alerts](https://github.com/netizenorg/netnet.studio/wiki/alerts.gif)
 
 The [MenuManager](https://github.com/netizenorg/netnet.studio/blob/master/www/js/MenuManager.js) has a series of other methods for creating alerts and text bubbles (themselves an instance of [TextBubble](https://github.com/netizenorg/netnet.studio/blob/master/www/js/TextBubble.js) which has it's own properties and methods). You can read the comments at the top of these files for more info on these methods, but these should not be called directly, instead you should dispatch actions via the STORE, again refer to the [State Management Wiki](https://github.com/netizenorg/netnet.studio/wiki/State-Management) for more.
+
+The [MenuManager](https://github.com/netizenorg/netnet.studio/blob/master/www/js/MenuManager.js) also maintains a references to netnet's [SearchBar](https://github.com/netizenorg/netnet.studio/blob/master/www/js/SearchBar.js) instance.
 
 
 ## [./netitor.min.js](https://github.com/netizenorg/netitor)

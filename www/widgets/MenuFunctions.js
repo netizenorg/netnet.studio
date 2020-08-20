@@ -34,6 +34,10 @@ class MenuFunctions extends Widget {
     this.key = 'Functions Menu' // used for: WIDGETS[key] = new MenuFunctions()
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
+    this.keywords = { // for search bar
+      subs: ['shareLink', 'saveProject', 'openFile', 'downloadFile', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity'],
+      alts: ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
+    }
     this._createContent()
     this._initValues()
     this._setupListeners()

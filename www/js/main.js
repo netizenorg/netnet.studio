@@ -103,5 +103,7 @@ window.addEventListener('keydown', (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 191) { // ?
     e.preventDefault()
     STORE.dispatch('CHANGE_OPACITY', 1)
+  } else if (window.NNM.search.opened && e.keyCode === 27) { // esc
+    window.NNM.search.close()
   }
 })

@@ -26,7 +26,7 @@ class MenuTutorial extends Widget {
     this.key = 'Tutorials Menu'
     this.listed = false
     this.resizable = false
-    this.tutorials = [] // list of in-house www/tutorials
+    this.keywords = ['lessons', 'lectures', 'workshops', 'demos', 'instructions', 'exercises', 'classes']
     this.loaded = {} // meta data for currently loaded tutorial
     this._createTutorialsList()
     STORE.subscribe('tutorial.url', (arr) => { this.update() })
@@ -37,15 +37,22 @@ class MenuTutorial extends Widget {
       .then(res => res.json())
       .then(json => {
         json.dirname = dir
-        this.tutorials.push(json)
-        this.update()
+        this._tutorialMetaData.push(json)
+        if (this._tutorialMetaData.length === this._numberOfTutorials) {
+          STORE.dispatch('LOAD_TUTORIALS', this._tutorialMetaData)
+          this.update()
+        }
       })
   }
 
   _createTutorialsList () {
     window.fetch('api/tutorials', { method: 'GET' })
       .then(res => res.json())
-      .then(json => json.forEach(dir => this._addTut(dir)))
+      .then(json => {
+        this._numberOfTutorials = json.length
+        this._tutorialMetaData = []
+        json.forEach(dir => this._addTut(dir))
+      })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -57,7 +64,7 @@ class MenuTutorial extends Widget {
 
   _displayList () {
     const parent = document.createElement('div')
-    this.tutorials.forEach(t => {
+    STORE.state.tutorials.forEach(t => {
       const d = document.createElement('div')
       const title = document.createElement('div')
       title.textContent = t.title

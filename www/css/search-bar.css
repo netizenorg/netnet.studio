@@ -1,0 +1,45 @@
+#search-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  width: 100vw;
+  height: 100vh;
+}
+
+#search-bar > section {
+  width: 75vw;
+  margin: 25vh auto;
+}
+
+#search-bar > section > input {
+  width: 100%;
+  padding: 1vw;
+  border-radius: 2vw;
+  font-size: 2vw;
+}
+
+#search-results {
+
+}
+
+#search-results > div {
+  cursor: pointer;
+  padding: 20px;
+}
+
+#search-results > div.selected {
+  border: 2px solid black;
+}
+
+#search-results i.w-results {
+  color: red;
+}
+
+#search-results i.t-results {
+  color: green;
+}
+
+#search-results i.f-results {
+  color: blue;
+}

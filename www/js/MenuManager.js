@@ -1,4 +1,4 @@
-/* global MenuItem, TextBubble, NNW, STORE */
+/* global MenuItem, TextBubble, NNW, STORE, SearchBar */
 /*
   -----------
      info
@@ -64,7 +64,11 @@ class MenuManager {
     this.itemOpts = {
       search: {
         path: 'images/menu/search.png',
-        click: () => { window.alert('open search') }
+        click: () => {
+          STORE.dispatch('TOGGLE_MENU')
+          if (this.search.opened) this.search.close()
+          else this.search.open()
+        }
       },
       functions: {
         path: 'images/menu/settings.png',
@@ -93,6 +97,7 @@ class MenuManager {
     this._setupMenuItems()
     this._setupAlertItem()
     this._setupTextBubble()
+    this.search = new SearchBar()
     this.updatePosition() // to match netnet window placement
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners

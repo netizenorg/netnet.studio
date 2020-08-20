@@ -26,6 +26,7 @@ class MenuWidgets extends Widget {
     this.key = 'Widgets Menu'
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.resizable = false
+    this.keywords = ['gizmos', 'tools', 'toolbar', 'doodad', 'gui', 'interface', 'windows', 'helpers']
     STORE.subscribe('widgets', (arr) => { this.update() })
   }
 

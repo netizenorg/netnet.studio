@@ -56,7 +56,8 @@ class StateManager {
       hash: window.location.hash ? 'has-hash' : 'no-hash',
       theme: 'dark', // the netitor's syntax highlight theme
       background: false, // false means netitor has transparent background
-      widgets: [], // widgets which have been opened during session
+      widgets: [], // widgets which have been instantiated via STORE
+      tutorials: [], // metadata list of 'in-house' tutorials
       menu: false, // displaying main menu or not
       eduinfo: { display: false, payload: null },
       errors: { display: false, index: -1, list: [] },
@@ -82,6 +83,7 @@ class StateManager {
       'SHARE_URL', // (no-data-required), updates address bar URL
       'CHANGE_THEME', // 'theme-name' or { theme, background }
       // ............
+      'LOAD_TUTORIALS', // array of metadata objects
       'LOAD_WIDGETS', // object { key: referenceToWidgetInstance }
       'OPEN_WIDGET', // referenceToWidgetInstance
       'CLOSE_WIDGET', // referenceToWidgetInstance
@@ -234,6 +236,8 @@ class StateManager {
       act = this.updateTheme(type, data); ren = 'netitor'
     } else if (type.includes('_WIDGET')) {
       act = this.updateWidgets(type, data); ren = 'widgets'
+    } else if (type === 'LOAD_TUTORIALS') {
+      act = { type, data }; ren = 'none'
     } else if (type === 'TOGGLE_MENU') {
       act = this.toggleMenu(type); ren = 'netnet'
     } else if (this.eduActionTypes.includes(type)) {
@@ -462,6 +466,11 @@ class StateManager {
     else return state
   }
 
+  tutorials (state, action) {
+    if (action.type === 'LOAD_TUTORIALS') return action.data
+    else return state
+  }
+
   menu (state, action) {
     if (action.type === 'TOGGLE_MENU') {
       return action.data
@@ -591,6 +600,7 @@ class StateManager {
       background: this.background(state.background, action),
       hash: this.hash(state.hash, action),
       widgets: this.widgets(state.widgets, action),
+      tutorials: this.tutorials(state.tutorials, action),
       menu: this.menu(state.menu, action),
       eduinfo: this.eduinfo(state.eduinfo, action),
       errors: this.errors(state.errors, action),

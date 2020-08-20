@@ -30,6 +30,10 @@ class ExampleWidget extends Widget {
     // at which point it's key will be assigned based on the property name
     this.key = 'Example Widget'
 
+    // If you want this widget to show up in the fuzzy search results it helps
+    // (but is not required) to create a keywords array of related words
+    this.keywords = ['example', 'demo', 'template']
+
     // if for whatever reason you don't want this showing up
     // in the Widgets Menu, you can set listed to false
     // this.listed = false
