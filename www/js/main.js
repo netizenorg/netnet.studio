@@ -32,6 +32,12 @@ const NNE = new Netitor({
   `
 })
 
+window.fetch('api/data/aframe', { method: 'GET' })
+  .then(res => res.json())
+  .then(data => {
+    NNE.addCustomElements(data.elements)
+  })
+
 window.NNT = new TutorialManager()
 window.NNW = new WindowManager()
 window.NNM = new MenuManager()
@@ -105,5 +111,10 @@ window.addEventListener('keydown', (e) => {
     STORE.dispatch('CHANGE_OPACITY', 1)
   } else if (window.NNM.search.opened && e.keyCode === 27) { // esc
     window.NNM.search.close()
+  } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
+    e.preventDefault() // CTRL/CMD+SHIFT+P
+    e.stopPropagation()
+    window.NNM.search.open()
+    return false
   }
 })

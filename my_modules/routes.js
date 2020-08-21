@@ -48,6 +48,15 @@ router.get('/api/tutorials', (req, res) => {
   })
 })
 
+router.get('/api/data/:type', (req, res) => {
+  if (req.params.type === 'aframe') {
+    const aframe = require('../data/a-frame-edu-data.json')
+    res.json(aframe)
+  } else {
+    res.status(404).json({ error: `there is no ${req.params.type} data` })
+  }
+})
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // REST API [POST]
 
 function shortenURL (req, res, dbPath) {

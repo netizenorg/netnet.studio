@@ -10,18 +10,18 @@ class NetitorErrorHandler {
       if (i === 0) {
         return {
           'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
-          'could it be something else?': () => STORE.dispatch('NEXT_ERROR')
+          'notice something else?': () => STORE.dispatch('NEXT_ERROR')
         }
       } else if (i === arr.length - 1) {
         return {
           'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
-          'show me the previous one again.': () => STORE.dispatch('PREV_ERROR')
+          'wait, go back': () => STORE.dispatch('PREV_ERROR')
         }
       } else {
         return {
           'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
-          'could it be something else?': () => STORE.dispatch('NEXT_ERROR'),
-          'show me the previous one again.': () => STORE.dispatch('PREV_ERROR')
+          'wait, go back': () => STORE.dispatch('PREV_ERROR'),
+          'notice something else?': () => STORE.dispatch('NEXT_ERROR')
         }
       }
     } else {

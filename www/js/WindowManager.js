@@ -212,8 +212,10 @@ class WindowManager {
     // match the page's background color to that of the iframe's backgroundColor
     // w/out it the netnet's rounded border's create a white space
     const iframeBody = NNE.iframe.contentDocument.body
-    const bg = window.getComputedStyle(iframeBody).backgroundColor
-    document.body.style.backgroundColor = bg
+    if (iframeBody) {
+      const bg = window.getComputedStyle(iframeBody).backgroundColor
+      document.body.style.backgroundColor = bg
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
