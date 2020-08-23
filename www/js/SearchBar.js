@@ -121,6 +121,7 @@ class SearchBar {
     div.innerHTML = ''
     results.forEach(res => {
       const d = document.createElement('div')
+      d.setAttribute('tabindex', '0')
       d.className = `${res.item.type}-results`
       if (res.item.word === 'Functions') {
         const m = res.matches[0].key === 'subs'
@@ -162,7 +163,7 @@ class SearchBar {
     this.ele.innerHTML = `
       <section>
         <span><input placeholder="what are you looking for?"></span>
-        <div id="search-results" tabindex="0"></div>
+        <div id="search-results" tabindex="-1"></div>
       </section>
     `
     this.ele.style.visibility = 'hidden'
