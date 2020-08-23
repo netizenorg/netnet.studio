@@ -121,6 +121,7 @@
   position: relative;
   padding: 20px;
   cursor: pointer;
+  font-size: 17px;
 }
 
 #search-results > div:before {
