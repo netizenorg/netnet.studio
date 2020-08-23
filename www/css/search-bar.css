@@ -1,10 +1,12 @@
 #search-bar {
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 500;
   width: 100vw;
   height: 100vh;
+  transition: opacity .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 #search-bar > section {
@@ -12,19 +14,6 @@
   width: 75vw;
   max-width: 780px;
   margin: 25vh auto;
-}
-
-#search-bar > section:after {
-  content: '◕ ◞ ◕ ';
-  display: block;
-  position: absolute;
-  color: var(--netizen-meta);
-  left: 15px;
-  top: 8px;
-
-  font-size: 25px;
-
-  opacity: 0.8;
 }
 
 #search-bar > section:before {
@@ -40,61 +29,117 @@
 
   background-color: var(--bg-color);
 
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
-#search-bar > section > input {
+#search-bar > section > span {
+  display: block;
   position: relative;
   width: 100%;
-  max-height: 51px;
-  padding: 1vw 1vw 1vw 87px;
-  border: 1px solid var(--netizen-meta);
+  height: 51px;
   border-radius: 17px;
-  color: white;
-  background-color: transparent;
-  font-size: 2vw;
+  opacity: 1;
+  z-index: 500;
+}
+
+#search-bar > section > span:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 17px;
+  border: 1px solid var(--netizen-meta);
+
+  background-color: var(--bg-color);
+
+  opacity: 0.4;
+}
+
+#search-bar > section > span:after {
+  content: '◕ ◞ ◕ ';
+  display: block;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: var(--netizen-meta);
+  font-size: 25px;
+
   opacity: 0.8;
 }
 
-#search-bar > section > input::placeholder {
+#search-bar > section > span > input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 51px;
+  padding: 1vw 1vw 1vw 87px;
+  border: none;
+  border-radius: 17px;
   color: var(--netizen-meta);
-
-  opacity: 0.55;
+  background-color: transparent;
+  font-size: 25px;
+  filter: contrast(10) brightness(1);
 }
 
-#search-bar > section > input:focus {
+#search-bar > section > span > input::placeholder {
+  color: var(--netizen-meta);
+
+  opacity: 0.4;
+}
+
+#search-bar > section > span > input:focus {
   outline: 0;
   box-shadow: 0 2px 15px rgba(0,0,0,0.3);
 }
 
 #search-results {
   position: relative;
-
   margin: 0;
-
   color: var(--netizen-meta);
 }
 
 #search-results > div {
-  cursor: pointer;
+  position: relative;
   padding: 20px;
+  cursor: pointer;
 }
 
-#search-results > div.selected {
-  color: var(--netizen-meta);
+#search-results > div:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: var(--netizen-hint-shadow);
+  opacity: 0;
 }
-#search-results > div:last-of-type.selected {
-  color: var(--netizen-meta);
-  background-color: var(--netizen-hint-shadow);
+#search-results > div:last-of-type:before {
   border-bottom-left-radius: 17px;
   border-bottom-right-radius: 17px;
+}
+#search-results > div:hover:before {
+  opacity: 0.25;
+}
+#search-results > div.selected:before {
+  opacity: 0.4;
+}
+#search-results > div.selected:hover:before {
+  opacity: 0.4;
 }
 
 #search-results i {
   font-family: monospace;
   font-weight: 700;
   font-size: 15px;
+  filter: saturate(1.2);
 }
 
 #search-results i.w-results {
@@ -106,11 +151,10 @@
 }
 
 #search-results i.f-results {
-  color: var(--netizen-keyword);
+  color: var(--netizen-string);
 }
 
 #search-results i.e-results {
-  /* i think there was gonna be a fourth item for edu results? */
-  /* can't remember exactly but i'm writing this in just in case */
+  /* eventual edu results */
   color: var(--netizen-number);
 }
