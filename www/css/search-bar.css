@@ -9,6 +9,15 @@
   transition: opacity .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+#search-overlay {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 #search-bar > section {
   position: relative;
   width: 75vw;

@@ -22,6 +22,8 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: -30;
+
+  transition: filter .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 #nn-output {

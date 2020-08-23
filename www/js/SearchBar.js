@@ -161,6 +161,7 @@ class SearchBar {
     this.ele = document.createElement('div')
     this.ele.id = 'search-bar'
     this.ele.innerHTML = `
+      <div id="search-overlay"></div>
       <section>
         <span><input placeholder="what are you looking for?"></span>
         <div id="search-results" tabindex="-1"></div>
@@ -171,6 +172,12 @@ class SearchBar {
     document.body.appendChild(this.ele)
     this.ele.querySelector('input')
       .addEventListener('input', (e) => this.search(e))
+
+    this.ele.querySelector('#search-overlay').addEventListener('click', (e) => {
+      if (this.opened) {
+        this.close()
+      }
+    })
   }
 
   update (type, data) {
