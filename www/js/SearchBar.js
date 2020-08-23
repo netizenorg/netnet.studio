@@ -95,7 +95,7 @@ class SearchBar {
 
   open () {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
-    this.ele.style.display = 'block'
+    this.ele.style.visibility = 'visible'
     setTimeout(() => {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
@@ -109,7 +109,7 @@ class SearchBar {
       this.ele.style.opacity = 0
       this.netnet.style.filter = 'none'
     }, 10)
-    setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
+    setTimeout(() => { this.ele.style.visibility = 'hidden' }, this.transitionTime)
   }
 
   search (e) {
@@ -121,6 +121,7 @@ class SearchBar {
     div.innerHTML = ''
     results.forEach(res => {
       const d = document.createElement('div')
+      d.setAttribute('tabindex', '0')
       d.className = `${res.item.type}-results`
       if (res.item.word === 'Functions') {
         const m = res.matches[0].key === 'subs'
@@ -160,16 +161,23 @@ class SearchBar {
     this.ele = document.createElement('div')
     this.ele.id = 'search-bar'
     this.ele.innerHTML = `
+      <div id="search-overlay"></div>
       <section>
-        <input placeholder="◕ ◞ ◕ what are you looking for?">
-        <div id="search-results"></div>
+        <span><input placeholder="what are you looking for?"></span>
+        <div id="search-results" tabindex="-1"></div>
       </section>
     `
-    this.ele.style.display = 'none'
+    this.ele.style.visibility = 'hidden'
     this.ele.style.opacity = '0'
     document.body.appendChild(this.ele)
     this.ele.querySelector('input')
       .addEventListener('input', (e) => this.search(e))
+
+    this.ele.querySelector('#search-overlay').addEventListener('click', (e) => {
+      if (this.opened) {
+        this.close()
+      }
+    })
   }
 
   update (type, data) {
