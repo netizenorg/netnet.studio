@@ -161,7 +161,7 @@ class SearchBar {
     this.ele.id = 'search-bar'
     this.ele.innerHTML = `
       <section>
-        <input placeholder="◕ ◞ ◕ what are you looking for?">
+        <input placeholder="what are you looking for?">
         <div id="search-results"></div>
       </section>
     `
