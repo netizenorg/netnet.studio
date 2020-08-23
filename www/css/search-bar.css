@@ -110,8 +110,11 @@
 
 #search-results {
   position: relative;
+  height: auto;
+  max-height: 500px;
   margin: 0;
   color: var(--netizen-meta);
+  overflow: scroll;
 }
 
 #search-results > div {
