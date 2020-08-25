@@ -1,4 +1,4 @@
-/* global NNE */
+/* global NNE, STORE, Maths */
 window.convos = {}
 window.utils = {
 
@@ -89,6 +89,24 @@ window.utils = {
     window.NNM.setFace('☉', '⌄', '◉')
     window.utils.processingFace = true
     window.utils._runProcessingFace()
+  },
+
+  updateShadow (e, self) {
+    if (STORE.state.theme === 'light') {
+      self.ele.style.boxShadow = 'none'
+      return
+    } // no shadows for light theme
+    const center = {
+      x: self.ele.getBoundingClientRect().left,
+      y: self.ele.getBoundingClientRect().top
+    }
+    const x = e.clientX < center.x
+      ? Maths.map(e.clientX, 0, center.x, 33, 0)
+      : Maths.map(e.clientX, center.x, window.innerWidth, 0, -33)
+    const y = e.clientY < center.y
+      ? Maths.map(e.clientY, 0, center.y, 33, 0)
+      : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
+    self.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
   },
 
   // ~ ~ ~ main.js helpers

@@ -66,11 +66,11 @@ class Widget {
     this._updateIfListed()
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
-
+    const wu = window.utils
     window.addEventListener('mousedown', (e) => this._mouseDown(e), true)
     window.addEventListener('mouseup', (e) => this._mouseUp(e), true)
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
-    window.addEventListener('mousemove', (e) => this._updateShadow(e))
+    window.addEventListener('mousemove', (e) => wu.updateShadow(e, this))
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -329,20 +329,6 @@ class Widget {
       const h = e.clientY - this.ele.offsetTop
       if (this._resizable) this.resize(w, h)
     }
-  }
-
-  _updateShadow (e) {
-    const center = {
-      x: this.ele.getBoundingClientRect().left,
-      y: this.ele.getBoundingClientRect().top
-    }
-    const x = e.clientX < center.x
-      ? Maths.map(e.clientX, 0, center.x, 33, 0)
-      : Maths.map(e.clientX, center.x, window.innerWidth, 0, -33)
-    const y = e.clientY < center.y
-      ? Maths.map(e.clientY, 0, center.y, 33, 0)
-      : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
-    this.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
   }
 }
 

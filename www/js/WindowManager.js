@@ -96,6 +96,10 @@ class WindowManager {
   updateTheme (theme, background) {
     NNE.theme = theme || 'dark'
     NNE.background = background || false
+    if (!background) {
+      if (theme === 'light' || theme === 'monokai') NNE.background = true
+      else NNE.background = false
+    }
     const de = document.documentElement
     const fg = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
     document.documentElement.style.setProperty('--fg-color', fg)
@@ -441,8 +445,7 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow
 
   _calcCanvasColors () {
-    const de = document.documentElement
-    const bg = window.getComputedStyle(de)
+    const bg = window.getComputedStyle(document.documentElement)
       .getPropertyValue('--netizen-background').substr(0, 7)
     const c = Color.hex2hsv(bg)
     const v0 = c.v + 10 <= 100 ? c.v + 10 : 100
@@ -453,6 +456,14 @@ class WindowManager {
 
   _canvasUpdate (x, y) {
     const ctx = this.canv.getContext('2d')
+    if (NNE.background) {
+      // if background is present, just match the color, avoid the maths below
+      const bg = window.getComputedStyle(document.documentElement)
+        .getPropertyValue('--netizen-background').substr(0, 7)
+      ctx.fillStyle = bg
+      ctx.fillRect(0, 0, this.canv.width, this.canv.height)
+      return
+    }
     const rad = (this.canv.width > this.canv.height)
       ? this.canv.width : this.canv.height
     const g = ctx.createRadialGradient(x, y, 1, x, y, rad)
@@ -482,6 +493,10 @@ class WindowManager {
     if (ey < this.win.offsetTop) y = 0
     else if (ey > this.win.offsetTop + this.win.offsetHeight) y = this.canv.height
     this._canvasUpdate(x, y)
+    if (STORE.state.theme === 'light') {
+      this.win.style.boxShadow = 'none'
+      return
+    } // no shadows for light theme
     x = Maths.map(ex, 0, window.innerWidth, 33, -33)
     y = Maths.map(ey, 0, window.innerHeight, 33, -33)
     const opac = this.layout === 'welcome' ? 0.5 : 0.75

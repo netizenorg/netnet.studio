@@ -57,10 +57,10 @@ class TextBubble {
     this._setupBubble(opts.content || '', opts.options)
 
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
-
-    window.addEventListener('mousemove', (e) => this._updateShadow(e))
+    const wu = window.utils
+    window.addEventListener('mousemove', (e) => wu.updateShadow(e, this))
     window.addEventListener('DOMContentLoaded', (e) => {
-      this._updateShadow({ clientX: 0, clientY: 0 })
+      wu.updateShadow({ clientX: 0, clientY: 0 }, this)
     })
   }
 
@@ -174,20 +174,6 @@ class TextBubble {
       this.ele.style.opacity = '0'
     }
     if (options) this.updateOptions(options)
-  }
-
-  _updateShadow (e) {
-    const center = {
-      x: this.ele.getBoundingClientRect().left,
-      y: this.ele.getBoundingClientRect().top
-    }
-    const x = e.clientX < center.x
-      ? Maths.map(e.clientX, 0, center.x, 33, 0)
-      : Maths.map(e.clientX, center.x, window.innerWidth, 0, -33)
-    const y = e.clientY < center.y
-      ? Maths.map(e.clientY, 0, center.y, 33, 0)
-      : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
-    this.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
   }
 }
 
