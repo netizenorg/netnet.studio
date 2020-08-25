@@ -181,13 +181,21 @@ class WindowManager {
 
   _adjustOpacity (v) {
     this._opacity = v
-    this.win.style.opacity = this._opacity
-    if (this._opacity === 0) {
-      const meta = Averigua.platformInfo().platform.includes('Mac')
-        ? 'CMD+?' : 'CTRL+?'
-      let m = 'netnet is currently invisible. When you\'d like netnet '
-      m += 'to reappear use the keyboard shortcut ' + meta
-      window.alert(m)
+    if (STORE.state.layout === 'welcome') {
+      this.win.style.opacity = this._opacity
+      this.canv.style.opacity = 1
+      const clr = 'var(--netizen-background)'
+      this.edtr.querySelector('.cm-s-netizen').style.backgroundColor = clr
+      this.edtr.querySelector('.CodeMirror-gutters').style.backgroundColor = clr
+    } else {
+      this.win.style.opacity = 1
+      this.canv.style.opacity = this._opacity
+      const bg = window.getComputedStyle(document.documentElement)
+        .getPropertyValue('--netizen-background').substr(0, 7)
+      const c = Color.hex2rgb(bg)
+      const c2 = `rgba(${c.r}, ${c.g}, ${c.b}, 0)`
+      this.edtr.querySelector('.cm-s-netizen').style.backgroundColor = c2
+      this.edtr.querySelector('.CodeMirror-gutters').style.backgroundColor = c2
     }
   }
 
@@ -306,6 +314,7 @@ class WindowManager {
   _adjustLayout (v) {
     this._toggleTransition(true)
     this._layout = v
+    this.opacity = STORE.state.opacity
     if (v === 'welcome') {
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'

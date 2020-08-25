@@ -722,6 +722,7 @@ class StateManager {
     if (s.theme !== NNE.theme) {
       NNW.updateTheme(this.state.theme, this.state.background)
       window.localStorage.setItem('theme', this.state.theme)
+      NNW.opacity = this.state.opacity
     }
     if (s.editable === NNE.cm.getOption('readOnly')) {
       NNE.cm.setOption('readOnly', !this.state.editable)
