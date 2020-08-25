@@ -1,4 +1,4 @@
-/* global Maths, Color, NNM, NNE, STORE, Averigua */
+/* global Maths, Color, NNM, NNE, STORE */
 /*
   -----------
      info
@@ -230,6 +230,16 @@ class WindowManager {
     }
   }
 
+  _runBlink () {
+    setTimeout(() => {
+      const f = NNM.getFace()
+      if (f[0] === '◕' && f[1] === '◞' && f[2] === '◕') {
+        NNM.setFace('-', f[1], '-', false)
+        setTimeout(() => NNM.setFace(...f), 200)
+      }
+    }, Math.random() * 2000)
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
 
   _mouseMove (e) {
@@ -315,6 +325,12 @@ class WindowManager {
     this._toggleTransition(true)
     this._layout = v
     this.opacity = STORE.state.opacity
+
+    clearInterval(this._blinking)
+    if (v === 'welcome') {
+      this._blinking = setInterval(() => this._runBlink(), 7500)
+    } else this._blinking = null
+
     if (v === 'welcome') {
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
