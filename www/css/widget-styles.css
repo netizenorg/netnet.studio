@@ -60,7 +60,7 @@
 
 .widget > .w-top-bar .close {
   position: relative;
-  display: block;
+  display: inline-block;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -97,6 +97,8 @@
 
 .widget > .w-top-bar .star {
   position: relative;
+  top: -3px;
+  margin-right: 5px;
   cursor: pointer;
 }
 
@@ -125,7 +127,7 @@
   width: calc(100% - 4px);
   height: 1px;
 
-  background-color: var(--fg-color);
+  background-color: var(--netizen-meta);
 
   transition: background-color .5s ease;
 }
@@ -248,7 +250,24 @@
 
 }
 
-#wig-menu-content > div {
+
+/* fav widgets menu */
+#wig-menu-content {
+
+}
+
+#wig-menu-content > div.link {
+  position: relative;
   padding: 4px;
   margin: 5px;
 }
+
+#wig-menu-content > div.link:before {
+  content: '★';
+  position: absolute;
+  left: -20px;
+  font-size: inherit;
+  color: inherit;
+}
+
+
