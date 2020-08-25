@@ -54,6 +54,7 @@ const eles = [
 const attrs = [
   { name: 'animation', url: null, description: null },
   { name: 'camera', url: null, description: null },
+  { name: 'color', url: null, description: null },
   { name: 'cursor', url: null, description: null },
   { name: 'daydream-controls', url: null, description: null },
   { name: 'gearvr-controls', url: null, description: null },
@@ -61,6 +62,7 @@ const attrs = [
   { name: 'generic-tracked-controller-controls', url: null, description: null },
   { name: 'gltf-model', url: null, description: null },
   { name: 'hand-controls', url: null, description: null },
+  { name: 'height', url: null, description: null },
   { name: 'laser-controls', url: null, description: null },
   { name: 'light', url: null, description: null },
   { name: 'line', url: null, description: null },
@@ -85,6 +87,7 @@ const attrs = [
   { name: 'vive-controls', url: null, description: null },
   { name: 'vive-focus-controls', url: null, description: null },
   { name: 'wasd-controls', url: null, description: null },
+  { name: 'width', url: null, description: null },
   { name: 'windows-motion-controls', url: null, description: null },
   { name: 'background', url: null, description: null },
   { name: 'debug', url: null, description: null },

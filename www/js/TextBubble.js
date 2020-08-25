@@ -80,6 +80,12 @@ class TextBubble {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•.¸ public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  $ (selector) {
+    const e = this.ele.querySelectorAll(selector)
+    if (e.length > 1) return e
+    else return e[0]
+  }
+
   update (o) {
     if (typeof o.content === 'string') {
       this.nfo.innerHTML = o.content
@@ -100,7 +106,7 @@ class TextBubble {
     for (const key in opts) {
       const ele = document.createElement('button')
       ele.textContent = key
-      ele.onclick = () => { opts[key](self) }
+      ele.onclick = () => { opts[key](self, this) }
       this.opt.appendChild(ele)
     }
   }

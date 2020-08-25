@@ -1,4 +1,4 @@
-/* global Widget, STORE, NNW, NNE, NNM, FileUploader */
+/* global Widget, WIDGETS, STORE, NNW, NNE, NNM, FileUploader, Convo */
 /*
   -----------
      info
@@ -14,14 +14,17 @@
   WIDGETS['Functions Menu'] = new MenuFunctions()
 
   // it has the following methods
-  WIDGETS['Functions Menu'].saveProject()
   WIDGETS['Functions Menu'].shareLink()
-  WIDGETS['Functions Menu'].downloadFile()
-  WIDGETS['Functions Menu'].openFile()
+  WIDGETS['Functions Menu'].downloadCode()
+  WIDGETS['Functions Menu'].uploadCode()
+  WIDGETS['Functions Menu'].saveProject()
+  WIDGETS['Functions Menu'].openProject()
+  WIDGETS['Functions Menu'].newProject()
   WIDGETS['Functions Menu'].tidyCode()
   WIDGETS['Functions Menu'].changeLayout()
   WIDGETS['Functions Menu'].changeTheme()
   WIDGETS['Functions Menu'].changeOpacity()
+  WIDGETS['Functions Menu'].reboot()
 
   // also inherits all the properties/methods of the base Widget class
   // refer to www/js/Widget.js
@@ -35,56 +38,92 @@ class MenuFunctions extends Widget {
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.keywords = { // for search bar
-      subs: ['shareLink', 'saveProject', 'openFile', 'downloadFile', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity'],
+      subs: ['shareLink', 'saveProject', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot'],
       alts: ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
     }
     this._createContent()
     this._initValues()
     this._setupListeners()
+
+    this.convos = null
+    window.utils.loadConvoData('functions-menu', () => {
+      // NOTE: need to rerun this everytime a convo which relies on
+      // localStorage data is going to launch (to ensure latest data)
+      this.convos = window.convos['functions-menu'](this)
+    })
   }
 
   shareLink () {
+    if (!this.convos) window.alert('on sec, loading data') // TODO loading
     STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
-    STORE.dispatch('SHARE_URL')
-    let m = 'The URL has been udpated to include your sketches data!'
-    m += ' Copy the URL from your browser\'s address bar to share it.'
-    m += ' It\'s long because it contains all your code, '
-    m += 'but if you\'d like we can generate a short URL for you?'
-    STORE.dispatch('SHOW_EDU_TEXT', {
-      content: m,
-      options: {
-        'no, that\'s alright': () => { STORE.dispatch('HIDE_EDU_TEXT') },
-        'yes please': this._shortenURL()
-      }
-    })
+    const opened = window.localStorage.getItem('opened-project')
+    if (opened) {
+      this.convos = window.convos['functions-menu'](this)
+      window.convo = new Convo(this.convos['share-saved-project'])
+    } else {
+      STORE.dispatch('SHARE_URL')
+      window.convo = new Convo(this.convos['share-sketch'])
+    }
   }
 
   saveProject () {
     STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
-    let m = 'I can\'t actually save a project online for you just yet '
-    m += '(though the folks at netizen.org are working on that).'
-    m += ' In the meantime you can download this HTML sketch to your '
-    m += 'comptuer to save it "locally", or we can save the data to a URL'
-    m += ' for you?'
-    STORE.dispatch('SHOW_EDU_TEXT', {
-      content: m,
-      options: {
-        'I\'d like it downloaded': () => {
-          this.downloadFile()
-          STORE.dispatch('HIDE_EDU_TEXT')
-        },
-        'I\'d like that share url': () => { this.shareLink() },
-        'never mind': () => { STORE.dispatch('HIDE_EDU_TEXT') }
+    window.utils.get('./api/github/auth-status', (res) => {
+      if (res.success) { // if user is authenticated
+        if (window.localStorage.getItem('opened-project')) {
+          if (window.localStorage.getItem('last-commit-msg') === 'init') {
+            window.convo = new Convo(this.convos['save-newish-project'])
+          } else {
+            this.convos = window.convos['functions-menu'](this)
+            window.convo = new Convo(this.convos['save-open-project'])
+          }
+        } else { // if this is a new project ...
+          window.convo = new Convo(this.convos['create-new-project'])
+        }
+        window.utils.updateRoot()
+      } else { // if user has not authenticated
+        window.utils.updateRoot()
+        window.convo = new Convo(this.convos['user-needs-login-to-save'])
       }
     })
   }
 
-  openFile () {
+  openProject () {
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    window.utils.get('./api/github/auth-status', (res) => {
+      if (res.success) WIDGETS['saved-projects'].open()
+      else window.convo = new Convo(this.convos['user-needs-login-to-open'])
+    })
+  }
+
+  _newProject () {
+    // TODO: new project from a set of templates? templates widget?
+    NNE.code = '<!DOCTYPE html>'
+    window.utils.clearProjectData()
+  }
+
+  newProject () {
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    if (!window.localStorage.getItem('opened-project')) this._newProject()
+    else {
+      const lastCode = window.localStorage.getItem('last-commit-code')
+      const currCode = window.localStorage.getItem('code')
+      if (lastCode === currCode) {
+        this.convos = window.convos['functions-menu'](this)
+        window.convo = new Convo(this.convos['start-new-project'])
+      } else {
+        this.convos = window.convos['functions-menu'](this)
+        window.convo = new Convo(this.convos['unsaved-changes'])
+      }
+    }
+  }
+
+  uploadCode () {
     STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
     this.fu.input.click()
   }
 
-  downloadFile () {
+  downloadCode () {
     const uri = `data:text/html;base64,${window.btoa(NNE.code)}`
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')
@@ -109,15 +148,25 @@ class MenuFunctions extends Widget {
     STORE.dispatch('CHANGE_OPACITY', Number(this.opacityInp.value))
   }
 
+  reboot () {
+    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    window.convo = new Convo(this.convos['reboot-netnet'])
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createContent (quote, author) {
     this.innerHTML = `
       <div id="func-menu-content">
-        <button id="func-menu-save">saveProject()</button><br>
         <button id="func-menu-share">shareLink()</button><br>
-        <button id="func-menu-download">downloadFile()</button><br>
-        <button id="func-menu-open">openFile()</button><br>
+        <hr>
+        <button id="func-menu-download">downloadCode()</button><br>
+        <button id="func-menu-upload">uploadCode()</button><br>
+        <hr>
+        <button id="func-menu-save">saveProject()</button><br>
+        <button id="func-menu-open">openProject()</button><br>
+        <button id="func-menu-new">newProject()</button><br>
+        <hr>
         <button id="func-menu-tidy">tidyCode()</button><br>
         <button id="func-menu-layouts">
           changeLayout(<select id="func-menu-layout-select"></select>)
@@ -129,6 +178,8 @@ class MenuFunctions extends Widget {
           changeOpacity(<input id="func-menu-opacity-input"
             type="number" min="0" max="1" step="0.1">)
         </button><br>
+        <hr>
+        <button id="func-menu-reboot">reboot()</button><br>
       </div>
     `
   }
@@ -154,7 +205,7 @@ class MenuFunctions extends Widget {
   _setupListeners () {
     // setup FileUploader
     this.fu = new FileUploader({
-      click: '#func-menu-open',
+      click: '#func-menu-upload',
       drop: '#nn-window',
       filter: (type) => {
         if (type !== 'text/html') return false
@@ -167,7 +218,10 @@ class MenuFunctions extends Widget {
         const data = file.data.split('data:text/html;base64,')[1]
         NNE.code = window.atob(data)
       },
-      error: (err) => { console.error(err) }
+      error: (err) => {
+        window.convo = new Convo(this.convos['temp-disclaimer'])
+        console.error('MenuFunctions:', err)
+      }
     })
 
     // setup event listenters
@@ -175,14 +229,17 @@ class MenuFunctions extends Widget {
       const b = btn.id.split('-menu-')[1]
       this.$(`#func-menu-${b}`)
         .addEventListener('click', (e) => {
-          if (b === 'save') this.saveProject()
-          else if (b === 'share') this.shareLink()
-          else if (b === 'download') this.downloadFile()
-          // else if (b === 'open') this.openFile() // handled by FileUploader
+          if (b === 'share') this.shareLink()
+          else if (b === 'download') this.downloadCode()
+          // else if (b === 'upload') this.uploadCode() // handled by FileUploader
+          else if (b === 'save') this.saveProject()
+          else if (b === 'open') this.openProject()
+          else if (b === 'new') this.newProject()
           else if (b === 'tidy') this.tidyCode()
           else if (b === 'layouts') this.changeLayout()
           else if (b === 'themes') this.changeTheme()
           else if (b === 'opacity') this.changeOpacity()
+          else if (b === 'reboot') this.reboot()
         })
     })
 
@@ -205,60 +262,122 @@ class MenuFunctions extends Widget {
       STORE.dispatch('SHOW_EDU_TEXT', { content: 'Ok, ...processing...' })
       const time = STORE.getTransitionTime()
       setTimeout(() => {
-        NNM.setFace('☉', '⌄', '◉')
-        this._processingFace = true
-        this._runProcessingFace()
+        window.utils.runProcessingFace()
         setTimeout(() => {
-          window.fetch('./api/shorten-url', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json, text/plain, */*',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ hash: window.location.hash })
-          }).then(res => res.json())
-            .then(json => {
-              if (json.error) this._urlShortner('error', json)
-              else this._urlShortner('success', json)
-            }).catch(err => this._urlShortner('error', err))
+          const data = { hash: window.location.hash }
+          window.utils.post('./api/shorten-url', data, (res) => {
+            if (!res.success) {
+              console.error(res.error)
+              window.convo = new Convo(this.convos['oh-no-error'])
+              setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
+            } else {
+              const waitForDramaticEffect = time < 2000 ? 2000 : time
+              setTimeout(() => {
+                window.localStorage.setItem('project-url', res.url)
+                this.convos = window.convos['functions-menu'](this)
+                window.convo = new Convo(this.convos['url-shortened'])
+                window.utils.processingFace = false
+              }, waitForDramaticEffect)
+            }
+          })
         }, time)
       }, time)
     }
   }
 
-  _runProcessingFace () {
-    const face = NNM.getFace()
-    if (face[0] === '☉') NNM.setFace('◉', '⌄', '☉')
-    else if (face[0] === '◉') NNM.setFace('☉', '⌄', '◉')
-    setTimeout(() => {
-      if (this._processingFace) this._runProcessingFace()
-      else NNM.setFace('◕', '◞', '◕')
-    }, 250)
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // github methods
+
+  _githubAuth (from) {
+    // keep a refernce for where the user was redirected from
+    // ('save' or 'open') so netnet knows what dialogue to present
+    // when they get redirected back.
+    window.localStorage.setItem('pre-auth-from', from)
+    const id = 'client_id=af0f317a19fc4fd571be'
+    const scope = 'scope=public_repo'
+    const url = `https://github.com/login/oauth/authorize?${id}&${scope}`
+    const a = document.createElement('a')
+    a.setAttribute('download', 'index.html')
+    a.setAttribute('href', url)
+    a.click()
   }
 
-  _urlShortner (type, data) {
-    if (type === 'error') {
-      console.error(data)
-      let m = 'Oh dang! looks like the server had an issue shortening the URL.'
-      m += ' Check the JavaScript console for more info.'
-      STORE.dispatch('SHOW_EDU_TEXT', {
-        content: m, options: { ok: () => { STORE.dispatch('HIDE_EDU_TEXT') } }
-      })
-      this._processingFace = false
-    } else {
-      const time = STORE.getTransitionTime()
-      const waitForDramaticEffect = time < 2000 ? 2000 : time
-      setTimeout(() => {
-        let m = `Ok! here's your shortened URL: <input value="${data.url}">`
-        m += '<br>And here\'s one with the code hidden: '
-        m += `<input value="${data.url}&opacity=0">`
-        STORE.dispatch('SHOW_EDU_TEXT', {
-          content: m,
-          options: { 'thanks!': () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+  _createNewRepo (c, t, v) {
+    window.utils.runProcessingFace()
+    t.$('section').innerHTML = '...saving to GitHub...'
+    NNM.textBubble.updatePosition()
+    const time = STORE.getTransitionTime()
+    const data = { name: v, data: window.btoa(NNE.code) }
+    window.utils.post('./api/github/new-repo', data, (res) => {
+      window.utils.processingFace = false
+      if (res.error) { // if there's an error creating the repo
+        console.error(res.error)
+        if (res.error.errors[0].message.includes('name already exists')) {
+          window.convo = new Convo(this.convos['project-already-exists'])
+        } else {
+          window.convo = new Convo(this.convos['oh-no-error'])
+        }
+        setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
+      } else { // otherwise let the user know it's all good!
+        const code = NNE._encode(NNE.code)
+        window.utils.setProjectData({
+          name: res.name,
+          code: code,
+          sha: res.data.content.sha,
+          message: 'init'
         })
-        this._processingFace = false
-      }, waitForDramaticEffect)
+        WIDGETS['saved-projects'].add(res.name)
+        this.convos = window.convos['functions-menu'](this)
+        window.convo = new Convo(this.convos['new-project-created'])
+      }
+    })
+  }
+
+  _publishProject () {
+    STORE.dispatch('SHOW_EDU_TEXT', {
+      content: '...publishing to GitHub Pages...'
+    })
+    const time = STORE.getTransitionTime()
+    setTimeout(() => { window.utils.runProcessingFace() }, time)
+    const data = {
+      owner: window.localStorage.getItem('owner'),
+      repo: window.localStorage.getItem('opened-project')
     }
+    window.utils.post('./api/github/gh-pages', data, (res) => {
+      if (!res.success) {
+        window.convo = new Convo(this.convos['oh-no-error'])
+        setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
+      } else {
+        window.localStorage.setItem('project-url', res.data.html_url)
+        this.convos = window.convos['functions-menu'](this)
+        window.convo = new Convo(this.convos['publish-to-ghpages'])
+      }
+    })
+  }
+
+  _updateProject (message) {
+    STORE.dispatch('SHOW_EDU_TEXT', { content: '...saving to GitHub...' })
+    const time = STORE.getTransitionTime()
+    setTimeout(() => { window.utils.runProcessingFace() }, time)
+    const data = {
+      owner: window.localStorage.getItem('owner'),
+      repo: window.localStorage.getItem('opened-project'),
+      sha: window.localStorage.getItem('index-sha'),
+      path: 'index.html',
+      message: message,
+      code: window.btoa(NNE.code)
+    }
+    window.utils.post('./api/github/save-project', data, (res) => {
+      if (!res.success) {
+        window.convo = new Convo(this.convos['oh-no-error'])
+        setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
+      } else {
+        window.localStorage.setItem('index-sha', res.data.content.sha)
+        window.localStorage.setItem('last-commit-msg', res.data.commit.message)
+        window.localStorage.setItem('last-commit-code', NNE._encode(NNE.code))
+        window.convo = new Convo(this.convos['project-saved'])
+      }
+    })
   }
 }
 

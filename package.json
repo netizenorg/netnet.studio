@@ -20,16 +20,20 @@
   },
   "homepage": "https://github.com/netizenorg/netnet.studio#readme",
   "dependencies": {
+    "@octokit/core": "^3.1.2",
     "Color": "git+https://github.com/nbriz/Color.git",
     "FileUploader": "git+https://github.com/nbriz/FileUploader.git",
     "Maths": "git+https://github.com/nbriz/Maths.git",
     "averigua": "git+https://github.com/nbriz/Averigua.git",
+    "axios": "^0.20.0",
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "netitor": "git+https://github.com/netizenorg/netitor.git",
     "socket.io": "^2.3.0",
-    "standard": "^14.3.3"
+    "standard": "^14.3.3",
+    "triplesec": "^4.0.3"
   }
 }

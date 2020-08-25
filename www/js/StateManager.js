@@ -126,7 +126,15 @@ class StateManager {
   }
 
   didChange (p) {
-    const equalArr = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+    const equalArr = (a, b) => {
+      if (p === 'widgets') {
+        // HACK: to avoid https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value
+        a = a.map(w => { return { key: w.key, visible: w.visible } })
+        b = b.map(w => { return { key: w.key, visible: w.visible } })
+      }
+      return JSON.stringify(a) === JSON.stringify(b)
+    }
+
     const prior = p.includes('.')
       ? this.prior[p.split('.')[0]][p.split('.')[1]] : this.prior[p]
     const current = p.includes('.')
@@ -693,6 +701,7 @@ class StateManager {
       this.holding = true
       if (NNM.opened) NNM.fadeOut()
       NNW.layout = this.state.layout
+      window.localStorage.setItem('layout', this.state.layout)
       NNW._whenCSSTransitionFinished(() => {
         this.holding = false
         this.renderNetitor()
@@ -712,6 +721,7 @@ class StateManager {
     }
     if (s.theme !== NNE.theme) {
       NNW.updateTheme(this.state.theme, this.state.background)
+      window.localStorage.setItem('theme', this.state.theme)
     }
     if (s.editable === NNE.cm.getOption('readOnly')) {
       NNE.cm.setOption('readOnly', !this.state.editable)

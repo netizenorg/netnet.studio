@@ -37,6 +37,8 @@
   w.height = '50vh'
   w.resizable = false
 
+  w.opened // read only property, returns true/false
+
   w.position(x, y, z)     // update position
   w.resize(width, height) // update size
   w.open()                // display
@@ -92,6 +94,9 @@ class Widget {
 
   get resizable () { return this._resizable }
   set resizable (v) { this._resizable = v }
+
+  get opened () { return this.ele.style.display === 'block' }
+  set opened (v) { console.error('Widget: opened property is read only') }
 
   get title () { return this._title }
   set title (v) {
@@ -262,7 +267,7 @@ class Widget {
   }
 
   _display (value) {
-    // used by StateManager's render() method
+    // used by StateManager's render() method when OPEN/CLOSE_WIDGET dispatched
     if (value === 'block' && this.ele.style.display === 'none') {
       this._bring2front()
     }

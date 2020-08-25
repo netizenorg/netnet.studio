@@ -28,7 +28,7 @@ class ExampleWidget extends Widget {
     // later by displatching a LOAD_WIDGETS action, for example:
     // STORE.dispatch('LOAD_WIDGETS', { key: new ExampleWidget() })
     // at which point it's key will be assigned based on the property name
-    this.key = 'Example Widget'
+    this.key = 'example-widget'
 
     // If you want this widget to show up in the fuzzy search results it helps
     // (but is not required) to create a keywords array of related words
