@@ -734,8 +734,8 @@ class StateManager {
 
   renderWidgets () {
     this.state.widgets.forEach(w => {
-      if (w.visible) w.ref._display('block')
-      else w.ref._display('none')
+      if (w.visible) w.ref._display('visible')
+      else w.ref._display('hidden')
     })
   }
 

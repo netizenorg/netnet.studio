@@ -11,10 +11,10 @@
   -----------
 
   // this widget is instantiated by the WindowManager as...
-  WIDGETS['Functions Menu'] = new MenuWidgets()
+  WIDGETS['widgets-menu'] = new MenuWidgets()
 
   // it has the following methods
-  WIDGETS['Widgets Menu']...
+  WIDGETS['widgets-menu']...
 
   // also inherits all the properties/methods of the base Widget class
   // refer to www/js/Widget.js
@@ -22,8 +22,8 @@
 class MenuWidgets extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Widgets'
-    this.key = 'Widgets Menu'
+    this.title = 'Widgets Menu'
+    this.key = 'widgets-menu'
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.resizable = false
     this.keywords = ['gizmos', 'tools', 'toolbar', 'doodad', 'gui', 'interface', 'windows', 'helpers']
@@ -40,6 +40,10 @@ class MenuWidgets extends Widget {
     keyList = [...stared, ...keyList]
     // remove itself from the list
     keyList = keyList.filter(key => key !== this.key)
+    // remove Functions && Tutorials
+    keyList = keyList.filter(key => key !== 'functions-menu')
+    keyList = keyList.filter(key => key !== 'tutorials-menu')
+    keyList = keyList.filter(key => key !== 'example-widget')
 
     // create menu list
     const parent = document.createElement('div')
@@ -57,6 +61,11 @@ class MenuWidgets extends Widget {
       }
     })
     this.innerHTML = parent
+    if (!this.width) {
+      this.width = this.ele.offsetWidth
+      this.x = window.innerWidth - this.width - 20
+      this.y = 20
+    }
   }
 }
 

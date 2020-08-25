@@ -129,13 +129,13 @@ class TutorialManager {
     const options = {
       'yes, let\'s do it!': (e) => {
         e.goTo(i)
-        STORE.dispatch('CLOSE_WIDGET', 'Tutorials Menu')
+        STORE.dispatch('CLOSE_WIDGET', 'tutorials-menu')
       },
       'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
     }
-    if (!STORE.is('WIDGET_OPEN', 'Tutorials Menu')) {
+    if (!STORE.is('WIDGET_OPEN', 'tutorials-menu')) {
       options['Show me the Tutorials Menu'] = (e) => {
-        STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+        STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
       }
     }
     return {

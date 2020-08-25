@@ -95,7 +95,7 @@ class Widget {
   get resizable () { return this._resizable }
   set resizable (v) { this._resizable = v }
 
-  get opened () { return this.ele.style.display === 'block' }
+  get opened () { return this.ele.style.visibility === 'visible' }
   set opened (v) { console.error('Widget: opened property is read only') }
 
   get title () { return this._title }
@@ -189,7 +189,7 @@ class Widget {
       <div class="w-innerHTML">${this.innerHTML}</div>
     `
     document.body.appendChild(this.ele)
-    this.ele.style.display = 'none'
+    this.ele.style.visibility = 'hidden'
 
     this.ele.querySelector('.w-top-bar .close')
       .addEventListener('click', () => this.close())
@@ -245,7 +245,7 @@ class Widget {
       window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
     }
     // udpate Widgets Menu to reflect changes
-    if (WIDGETS['Widgets Menu']) WIDGETS['Widgets Menu'].update()
+    if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].update()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -268,10 +268,10 @@ class Widget {
 
   _display (value) {
     // used by StateManager's render() method when OPEN/CLOSE_WIDGET dispatched
-    if (value === 'block' && this.ele.style.display === 'none') {
+    if (value === 'visible' && this.ele.style.visibility === 'hidden') {
       this._bring2front()
     }
-    this.ele.style.display = value
+    this.ele.style.visibility = value
   }
 
   _bring2front () {

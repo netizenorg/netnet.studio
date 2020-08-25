@@ -102,7 +102,7 @@ window.utils = {
         options: {
           yes: (e) => e.hide(),
           'no, let\'s start a new project': () => {
-            window.WIDGETS['Functions Menu'].newProject()
+            window.WIDGETS['functions-menu'].newProject()
           }
         }
       })
@@ -110,11 +110,11 @@ window.utils = {
   },
 
   handleLoginRedirect: () => {
-    if (window.WIDGETS['Functions Menu']) {
+    if (window.WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
       window.localStorage.removeItem('pre-auth-from')
-      if (from === 'save') window.WIDGETS['Functions Menu'].saveProject()
-      else if (from === 'open') window.WIDGETS['Functions Menu'].openProject()
+      if (from === 'save') window.WIDGETS['functions-menu'].saveProject()
+      else if (from === 'open') window.WIDGETS['functions-menu'].openProject()
     } else setTimeout(window.utils.handleLoginRedirect, 250)
   },
 

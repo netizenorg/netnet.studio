@@ -215,7 +215,7 @@ class SearchBar {
           subs: Object.keys(t.checkpoints) || [],
           alts: t.keywords || [],
           clck: () => {
-            STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+            STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
             NNT.load(t.dirname)
           }
         }

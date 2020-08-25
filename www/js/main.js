@@ -103,10 +103,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'Functions Menu')
+    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
-    window.WIDGETS['Functions Menu'].openFile()
+    window.WIDGETS['functions-menu'].openFile()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
     STORE.dispatch('NEXT_LAYOUT')
@@ -115,10 +115,10 @@ window.addEventListener('keydown', (e) => {
     STORE.dispatch('PREV_LAYOUT')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+    STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'Widgets Menu')
+    STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 191) { // ?
     e.preventDefault()
     STORE.dispatch('CHANGE_OPACITY', 1)

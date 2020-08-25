@@ -22,13 +22,15 @@
 class MenuTutorial extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Tutorials'
-    this.key = 'Tutorials Menu'
+    this.title = 'Tutorials Menu'
+    this.key = 'tutorials-menu'
     this.listed = false
     this.resizable = false
     this.keywords = ['lessons', 'lectures', 'workshops', 'demos', 'instructions', 'exercises', 'classes']
     this.loaded = {} // meta data for currently loaded tutorial
     this._createTutorialsList()
+    this.x = 20
+    this.y = 20
     STORE.subscribe('tutorial.url', (arr) => { this.update() })
   }
 

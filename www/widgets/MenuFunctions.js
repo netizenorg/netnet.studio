@@ -11,20 +11,20 @@
   -----------
 
   // this widget is instantiated by the WindowManager as...
-  WIDGETS['Functions Menu'] = new MenuFunctions()
+  WIDGETS['functions-menu'] = new MenuFunctions()
 
   // it has the following methods
-  WIDGETS['Functions Menu'].shareLink()
-  WIDGETS['Functions Menu'].downloadCode()
-  WIDGETS['Functions Menu'].uploadCode()
-  WIDGETS['Functions Menu'].saveProject()
-  WIDGETS['Functions Menu'].openProject()
-  WIDGETS['Functions Menu'].newProject()
-  WIDGETS['Functions Menu'].tidyCode()
-  WIDGETS['Functions Menu'].changeLayout()
-  WIDGETS['Functions Menu'].changeTheme()
-  WIDGETS['Functions Menu'].changeOpacity()
-  WIDGETS['Functions Menu'].reboot()
+  WIDGETS['functions-menu'].shareLink()
+  WIDGETS['functions-menu'].downloadCode()
+  WIDGETS['functions-menu'].uploadCode()
+  WIDGETS['functions-menu'].saveProject()
+  WIDGETS['functions-menu'].openProject()
+  WIDGETS['functions-menu'].newProject()
+  WIDGETS['functions-menu'].tidyCode()
+  WIDGETS['functions-menu'].changeLayout()
+  WIDGETS['functions-menu'].changeTheme()
+  WIDGETS['functions-menu'].changeOpacity()
+  WIDGETS['functions-menu'].reboot()
 
   // also inherits all the properties/methods of the base Widget class
   // refer to www/js/Widget.js
@@ -33,8 +33,8 @@
 class MenuFunctions extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Functions' // shows up in title bar
-    this.key = 'Functions Menu' // used for: WIDGETS[key] = new MenuFunctions()
+    this.title = 'Functions Menu' // shows up in title bar
+    this.key = 'functions-menu' // used for: WIDGETS[key] = new MenuFunctions()
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.keywords = { // for search bar
@@ -55,7 +55,7 @@ class MenuFunctions extends Widget {
 
   shareLink () {
     if (!this.convos) window.alert('on sec, loading data') // TODO loading
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     const opened = window.localStorage.getItem('opened-project')
     if (opened) {
       this.convos = window.convos['functions-menu'](this)
@@ -67,7 +67,7 @@ class MenuFunctions extends Widget {
   }
 
   saveProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) { // if user is authenticated
         if (window.localStorage.getItem('opened-project')) {
@@ -89,7 +89,7 @@ class MenuFunctions extends Widget {
   }
 
   openProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) WIDGETS['saved-projects'].open()
       else window.convo = new Convo(this.convos['user-needs-login-to-open'])
@@ -103,7 +103,7 @@ class MenuFunctions extends Widget {
   }
 
   newProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     if (!window.localStorage.getItem('opened-project')) this._newProject()
     else {
       const lastCode = window.localStorage.getItem('last-commit-code')
@@ -119,7 +119,7 @@ class MenuFunctions extends Widget {
   }
 
   uploadCode () {
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     this.fu.input.click()
   }
 
@@ -149,7 +149,7 @@ class MenuFunctions extends Widget {
   }
 
   reboot () {
-    STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     window.convo = new Convo(this.convos['reboot-netnet'])
   }
 
@@ -182,6 +182,12 @@ class MenuFunctions extends Widget {
         <button id="func-menu-reboot">reboot()</button><br>
       </div>
     `
+    if (!this.height) {
+      this.height = this.ele.offsetHeight
+      this.x = 20
+      this.y = window.innerHeight - this.height - 20
+      if (this.y < 20) this.y = 20
+    }
   }
 
   _creatOption (value, parent) {
@@ -214,7 +220,7 @@ class MenuFunctions extends Widget {
       dropping: (e) => { STORE.dispatch('CHANGE_OPACITY', 0.5) },
       dropped: (e) => { STORE.dispatch('CHANGE_OPACITY', 1) },
       ready: (file) => {
-        STORE.dispatch('CLOSE_WIDGET', 'Functions Menu')
+        STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
         const data = file.data.split('data:text/html;base64,')[1]
         NNE.code = window.atob(data)
       },

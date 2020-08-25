@@ -33,10 +33,10 @@ window.convos['upload-assets'] = (self) => {
       content: 'Do you want to save what your working on as a new project? Or do you want to discard this and open up an old project?',
       options: {
         'Let\'s save this': () => {
-          window.WIDGETS['Functions Menu'].saveProject()
+          window.WIDGETS['functions-menu'].saveProject()
         },
         'Let\'s open an old one': () => {
-          window.WIDGETS['Functions Menu'].openProject()
+          window.WIDGETS['functions-menu'].openProject()
         }
       }
     }]

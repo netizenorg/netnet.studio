@@ -74,21 +74,21 @@ class MenuManager {
         path: 'images/menu/settings.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'Functions Menu')
+          STORE.dispatch('OPEN_WIDGET', 'functions-menu')
         }
       },
       widgets: {
         path: 'images/menu/settings.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'Widgets Menu')
+          STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
         }
       },
       tutorials: {
         path: 'images/menu/open.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+          STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
         }
       }
     }
