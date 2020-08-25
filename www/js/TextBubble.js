@@ -1,4 +1,4 @@
-/* global Maths, NNW */
+/* global NNW */
 /*
   -----------
      info

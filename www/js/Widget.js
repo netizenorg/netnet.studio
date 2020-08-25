@@ -1,4 +1,4 @@
-/* global Maths, HTMLElement, STORE, WIDGETS */
+/* global HTMLElement, STORE, WIDGETS */
 /*
   -----------
      info
