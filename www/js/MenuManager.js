@@ -341,6 +341,7 @@ class MenuManager {
     this.tis.id = 'text-bubbles-parent'
     this.ele.appendChild(this.tis)
     this.tis.style.position = 'absolute'
+    this.tis.style.zIndex = 50
     this.textBubble = new TextBubble()
     this.tis.appendChild(this.textBubble.ele)
   }
