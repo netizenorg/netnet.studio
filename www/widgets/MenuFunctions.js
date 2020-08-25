@@ -24,6 +24,7 @@
   WIDGETS['functions-menu'].changeLayout()
   WIDGETS['functions-menu'].changeTheme()
   WIDGETS['functions-menu'].changeOpacity()
+  WIDGETS['functions-menu'].resetIgnoredErrors()
   WIDGETS['functions-menu'].reboot()
 
   // also inherits all the properties/methods of the base Widget class
@@ -38,7 +39,7 @@ class MenuFunctions extends Widget {
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.keywords = { // for search bar
-      subs: ['shareLink', 'saveProject', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot'],
+      subs: ['shareLink', 'saveProject', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot', 'clear', 'errors'],
       alts: ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
     }
     this._createContent()
@@ -148,6 +149,16 @@ class MenuFunctions extends Widget {
     STORE.dispatch('CHANGE_OPACITY', Number(this.opacityInp.value))
   }
 
+  resetIgnoredErrors () {
+    window.localStorage.removeItem('error-exceptions')
+    NNE.clearErrorExceptions()
+    setTimeout(() => {
+      if (!STORE.is('SHOWING_ERROR')) {
+        window.convo = new Convo(this.convos['confirm-errors-reset'])
+      }
+    }, STORE.getTransitionTime())
+  }
+
   reboot () {
     STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     window.convo = new Convo(this.convos['reboot-netnet'])
@@ -179,6 +190,7 @@ class MenuFunctions extends Widget {
             type="number" min="0" max="1" step="0.1">)
         </button><br>
         <hr>
+        <button id="func-menu-errors">resetIgnoredErrors()</button><br>
         <button id="func-menu-reboot">reboot()</button><br>
       </div>
     `
@@ -245,6 +257,7 @@ class MenuFunctions extends Widget {
           else if (b === 'layouts') this.changeLayout()
           else if (b === 'themes') this.changeTheme()
           else if (b === 'opacity') this.changeOpacity()
+          else if (b === 'errors') this.resetIgnoredErrors()
           else if (b === 'reboot') this.reboot()
         })
     })

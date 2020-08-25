@@ -65,6 +65,9 @@ NNE.on('edu-info', (e) => {
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
 window.addEventListener('DOMContentLoaded', (e) => {
+  // does the user have an error exceptions saved
+  const erx = window.localStorage.getItem('error-exceptions')
+  if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
   // if there is code saved in the URL's hash or localStorage...
   const cde = window.localStorage.getItem('code')
   if (NNE.hasCodeInHash) {

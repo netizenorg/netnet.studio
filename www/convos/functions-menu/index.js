@@ -194,6 +194,10 @@ window.convos['functions-menu'] = (self) => {
       content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
       options: { 'ok, thanks!': (e) => e.hide() }
     }],
+    'confirm-errors-reset': {
+      content: 'Your previously ignored errors have been reset, i\'ll <i>bug</i> you about all the default errors from now on.',
+      options: { cool: (e) => e.hide() }
+    },
     'temp-disclaimer': {
       content: 'Sorry, at the moment you can only upload HTML files.',
       options: { 'ah, ok': (e) => e.hide() }
