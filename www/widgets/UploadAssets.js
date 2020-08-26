@@ -167,12 +167,18 @@ class UploadAssets extends Widget {
   _setupFileUploader () {
     // setup FileUploader
     this.fu = new FileUploader({
+      maxSize: 5000,
       filter: (type) => {
         if (!type.includes('image/') && type !== 'text/plain') return false
         else return true // TODO: test 3d files
       },
       ready: (file) => this.uploadFile(file),
-      error: (err) => console.error('UploadAssets:', err)
+      error: (err) => {
+        console.error('UploadAssets:', err)
+        if (err.includes('file larger than max size')) {
+          window.convo = new Convo(this.convos['file-too-big'])
+        }
+      }
     })
   }
 }

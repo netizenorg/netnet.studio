@@ -11,7 +11,7 @@ const fs = require('fs')
 const utils = require('./utils.js')
 
 router.use(cookieParser())
-router.use(bodyParser.json())
+router.use(bodyParser.json({ limit: '10mb' }))
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\

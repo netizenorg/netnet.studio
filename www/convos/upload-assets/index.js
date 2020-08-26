@@ -39,6 +39,17 @@ window.convos['upload-assets'] = (self) => {
           window.WIDGETS['functions-menu'].openProject()
         }
       }
+    }],
+    'file-too-big': [{
+      content: 'I\'m gonna have to stop you right there. That files a bit too big to be including in a web project. Try and see if you can get the file size to be smaller',
+      options: {
+        ok: (e) => e.hide(),
+        'how small does it have to be?': (e) => e.goTo('size')
+      }
+    }, {
+      id: 'size',
+      content: 'There\'s no specific number, it really depends on your audience\'s Internet speeds. As of <a href="https://www.speedtest.net/global-index" target="_blank">July 2020</a> average global download speeds were 34Mbps or ~4.3MB a second. So assuming you don\'t want your page to take longer than a second to load, I\'d keep assets under that size.',
+      options: { ok: (e) => e.hide() }
     }]
   }
 }
