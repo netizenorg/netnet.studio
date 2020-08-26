@@ -1,4 +1,4 @@
-/* global Widget, Convo, FileUploader */
+/* global Widget, Convo, FileUploader, NNM, STORE */
 /*
   -----------
      info
@@ -29,6 +29,8 @@ class UploadAssets extends Widget {
     this._setupFileUploader()
     this._createContent()
     this._initList()
+    this.x = 120
+    this.y = 20
 
     this.convos = null
     window.utils.loadConvoData('upload-assets', () => {
@@ -139,8 +141,27 @@ class UploadAssets extends Widget {
       }
       window.utils.post('./api/github/get-files', data, (res) => {
         this.update(res.data)
+        this._addAssetsToSearch(res.data)
       })
     }
+  }
+
+  _addAssetsToSearch (data) {
+    // NOTE: this is temp, should be updated when we make the official
+    // longterm file manager widget
+    const arr = data
+      .filter(a => a.name !== 'index.html' && a.name !== 'README.md')
+      .filter(a => !NNM.search.dict.map(o => o.word).includes(a.name))
+      .map(a => {
+        return {
+          type: 'widgets.Upload Assets',
+          word: a.name,
+          subs: a.name.split('.'),
+          alts: [],
+          clck: () => { STORE.dispatch('OPEN_WIDGET', this.key) }
+        }
+      })
+    NNM.search.addToDict(arr)
   }
 
   _setupFileUploader () {

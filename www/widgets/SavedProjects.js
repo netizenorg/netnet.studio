@@ -1,4 +1,4 @@
-/* global Widget, STORE, Convo, NNM, NNE */
+/* global Widget, STORE, Convo, NNE, NNM */
 /*
   -----------
      info
@@ -32,6 +32,8 @@ class SavedProjects extends Widget {
     this._initList()
     this._createContent()
     this.update()
+    this.x = 20
+    this.y = 20
 
     this.convos = null
     window.utils.loadConvoData('saved-projects', () => {
@@ -120,7 +122,23 @@ class SavedProjects extends Widget {
       const str = JSON.stringify(arr)
       window.localStorage.setItem('saved-projets', str)
       this.update()
+      this._addProjectsToSearch(arr)
     })
+  }
+
+  _addProjectsToSearch (data) {
+    const arr = data
+      .filter(proj => !NNM.search.dict.map(o => o.word).includes(proj))
+      .map(proj => {
+        return {
+          type: 'widgets.Saved Projects',
+          word: proj,
+          subs: [],
+          alts: [],
+          clck: () => { STORE.dispatch('OPEN_WIDGET', this.key) }
+        }
+      })
+    NNM.search.addToDict(arr)
   }
 }
 

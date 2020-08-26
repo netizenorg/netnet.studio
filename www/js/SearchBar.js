@@ -22,6 +22,8 @@
   search.open()       // opens search
   search.close()      // closes search
   search.search(term) // does the searching
+
+  search.addToDict(array) // add array of objects to search dictionary
 */
 class SearchBar {
   constructor () {
@@ -127,8 +129,14 @@ class SearchBar {
         const m = res.matches[0].key === 'subs'
           ? res.matches[0].value + '()' : 'Menu'
         d.innerHTML = `<i class="f-results">(Functions)</i> &gt; ${m}`
-      } else if (res.item.type === 'widgets') {
-        d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${res.item.word}`
+      } else if (res.item.type.includes('widgets')) {
+        const wrd = res.item.word
+        if (res.item.type === 'widgets') {
+          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${wrd}`
+        } else {
+          const t = res.item.type.split('.')
+          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${t[1]} &gt; ${wrd}`
+        }
       } else if (res.item.type === 'tutorials') {
         d.innerHTML = `<i class="t-results">(Tutorials)</i> &gt; ${res.item.word}`
         if (res.matches[0] && res.matches[0].key === 'subs') {
@@ -150,6 +158,20 @@ class SearchBar {
         }
       })
       div.appendChild(d)
+    })
+  }
+
+  addToDict (arr) {
+    this.dict = this.dict.concat(arr)
+    this.fuse = new Fuse(this.dict, {
+      ignoreLocation: true,
+      includeScore: true,
+      includeMatches: true,
+      keys: [
+        { name: 'word', weight: 1 },
+        { name: 'subs', weight: 0.5 },
+        { name: 'alts', weight: 0.25 }
+      ]
     })
   }
 
@@ -181,17 +203,7 @@ class SearchBar {
   }
 
   update (type, data) {
-    const options = {
-      ignoreLocation: true,
-      includeScore: true,
-      includeMatches: true,
-      keys: [
-        { name: 'word', weight: 1 },
-        { name: 'subs', weight: 0.5 },
-        { name: 'alts', weight: 0.25 }
-      ]
-    }
-
+    const arr = []
     if (type === 'widgets') {
       data.forEach(w => {
         const alts = (w.ref.keywords instanceof Array)
@@ -205,7 +217,7 @@ class SearchBar {
           alts: alts || [],
           clck: () => { STORE.dispatch('OPEN_WIDGET', w.ref.key) }
         }
-        this.dict.push(obj)
+        arr.push(obj)
       })
     } else if (type === 'tutorials') {
       data.forEach(t => {
@@ -219,13 +231,12 @@ class SearchBar {
             NNT.load(t.dirname)
           }
         }
-        this.dict.push(obj)
+        arr.push(obj)
       })
     } else if (type === 'edu-info') {
       // TODO open anatomy of "an html element widget" for elements/attributes
     }
-
-    this.fuse = new Fuse(this.dict, options)
+    this.addToDict(arr)
   }
 }
 
