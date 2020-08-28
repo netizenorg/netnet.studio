@@ -1,4 +1,4 @@
-/* global NNE, STORE, Maths */
+/* global NNE, STORE, Maths, WIDGETS */
 window.convos = {}
 window.utils = {
 
@@ -22,6 +22,28 @@ window.utils = {
       .then(res => res.json())
       .then(res => cb(res))
       .catch(err => console.error(err))
+  },
+
+  loadWidgetClass (path, filename) {
+    window.utils.get('api/widgets', (res) => {
+      const s = document.createElement('script')
+      s.setAttribute('src', `${path}/${filename}`)
+      s.onload = () => {
+        const className = filename.split('.')[0]
+        const widget = new window[className]()
+        if (widget.key) {
+          const data = {}
+          data[widget.key] = widget
+          STORE.dispatch('LOAD_WIDGETS', data)
+        } else {
+          // NOTE: the widget class itself has been injected into the page,
+          // but it has not been instantiated because it was missing it's key.
+          // the ommission of the key may be don intentionally if this
+          // widget is meant to be instantiated elsewhere later.
+        }
+      }
+      document.body.appendChild(s)
+    })
   },
 
   // ~ ~ ~ project data
@@ -120,7 +142,21 @@ window.utils = {
         options: {
           yes: (e) => e.hide(),
           'no, let\'s start a new project': () => {
-            window.WIDGETS['functions-menu'].newProject()
+            WIDGETS['functions-menu'].newProject()
+          }
+        }
+      })
+    } else {
+      window.convo = new window.Convo({
+        content: 'Hmm, I can\'t seem to find that info in your browser? Maybe you cleared that data? Do you want me to open your list of of saved projects?',
+        options: {
+          yes: (e) => WIDGETS['functions-menu'].openProject(),
+          'no, let\'s start a new project': (e) => {
+            e.hide()
+            if (STORE.state.layout === 'welcome') {
+              STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+            }
+            WIDGETS['functions-menu'].newProject()
           }
         }
       })
@@ -128,17 +164,17 @@ window.utils = {
   },
 
   handleLoginRedirect: () => {
-    if (window.WIDGETS['functions-menu']) {
+    if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
       window.localStorage.removeItem('pre-auth-from')
-      if (from === 'save') window.WIDGETS['functions-menu'].saveProject()
-      else if (from === 'open') window.WIDGETS['functions-menu'].openProject()
+      if (from === 'save') WIDGETS['functions-menu'].saveProject()
+      else if (from === 'open') WIDGETS['functions-menu'].openProject()
     } else setTimeout(window.utils.handleLoginRedirect, 250)
   },
 
   closeTopMostWidget: () => {
     const arr = []
-    const W = window.WIDGETS
+    const W = WIDGETS
     for (const w in W) if (W[w].opened) arr.push(W[w])
     arr.sort((a, b) => parseFloat(b.z) - parseFloat(a.z))
     if (arr[0]) arr[0].close()

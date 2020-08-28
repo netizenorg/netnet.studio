@@ -10,7 +10,7 @@ class NetitorErrorHandler {
       const errExcStr = JSON.stringify(NNE._errExceptions)
       window.localStorage.setItem('error-exceptions', errExcStr)
       STORE.dispatch('SHOW_EDU_TEXT', {
-        content: 'Ok, that\'s the last time I\'ll <i>bug</i> you about it. If you change your mind later you can always run <code>resetIgnoredErrors()</code> in the Functions Menu.',
+        content: 'Ok, that\'s the last time I\'ll <i>bug</i> you about it. If you change your mind later you can always run <code>resetErrors()</code> in the Functions Menu.',
         options: { cool: () => STORE.dispatch('CLEAR_ERROR') }
       })
     }

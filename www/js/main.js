@@ -3,6 +3,7 @@
   TutorialManager, WindowManager, MenuManager,
   NetitorErrorHandler, NetitorEduInfoHandler
 */
+window.greetings.loader()
 
 const STORE = new StateManager({
   log: true
@@ -12,24 +13,7 @@ const NNE = new Netitor({
   ele: '#nn-editor',
   render: '#nn-output',
   background: false,
-  code: `<!DOCTYPE html>
-<style>
-  @keyframes animBG {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
-  }
-
-  body {
-    background: linear-gradient(230deg, #81c994, #dacb8e, #515199);
-    background-size: 300% 300%;
-    animation: animBG 30s infinite;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
-</style>
-  `
+  code: window.greetings.starterCode
 })
 
 window.NNT = new TutorialManager()
@@ -73,7 +57,12 @@ window.addEventListener('DOMContentLoaded', (e) => {
   if (NNE.hasCodeInHash) {
     window.utils.clearProjectData()
     NNE.loadFromHash()
-  } else if (cde) NNE.code = NNE._decode(cde)
+  } else if (cde) {
+    if (cde === 'eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=' ||
+    cde === 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') {
+      window.greetings.injectStarterCode()
+    } else NNE.code = NNE._decode(cde)
+  }
   // if their are URL parameters...
   const url = new URL(window.location)
   // ...check for short code
@@ -85,8 +74,13 @@ window.addEventListener('DOMContentLoaded', (e) => {
   // ...check for a layout
   const lay = url.searchParams.get('layout')
   const lSl = window.localStorage.getItem('layout')
-  if (lay) STORE.dispatch('CHANGE_LAYOUT', lay)
-  else if (lSl) STORE.dispatch('CHANGE_LAYOUT', lSl)
+  if (lay || lSl) {
+    const l = lay || lSl
+    STORE.dispatch('CHANGE_LAYOUT', l)
+    if (l !== 'welcome') {
+      window.NNW._whenCSSTransitionFinished(() => window.greetings.welcome())
+    }
+  }
   // ...check for an opacity
   const opa = url.searchParams.get('opacity')
   if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
@@ -98,9 +92,6 @@ window.addEventListener('DOMContentLoaded', (e) => {
   // ...check for redirect from GitHub auth process
   const paf = window.localStorage.getItem('pre-auth-from')
   if (paf) window.utils.handleLoginRedirect()
-  // if they're not arriving via redirect, shareLink, or tutorial
-  // check if they had a prior project open
-  if (!paf && !NNE.hasCodeInHash && !tut) window.utils.openProjectPrompt()
 })
 
 window.addEventListener('keydown', (e) => {

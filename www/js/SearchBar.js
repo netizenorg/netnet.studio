@@ -205,7 +205,7 @@ class SearchBar {
   update (type, data) {
     const arr = []
     if (type === 'widgets') {
-      data.forEach(w => {
+      data.filter(w => w.ref.listed).forEach(w => {
         const alts = (w.ref.keywords instanceof Array)
           ? w.ref.keywords : w.ref.keywords.alts
         const subs = w.ref.keywords && w.ref.keywords.subs

@@ -118,6 +118,9 @@ class TutorialManager {
 
       // update global widgets
       if (typeof TUTORIAL.widgets === 'object') {
+        // NOTE: this will only load tutorials for which there are existing
+        // classes in www/widgets. if a new widget class type needs to be
+        // added to the page use window.utils.loadWidgetClass(path, filename)
         STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
       }
     } else this._err('tutObj')

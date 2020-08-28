@@ -29,8 +29,6 @@ class UploadAssets extends Widget {
     this._setupFileUploader()
     this._createContent()
     this._initList()
-    this.x = 120
-    this.y = 20
 
     this.convos = null
     window.utils.loadConvoData('upload-assets', () => {
@@ -86,7 +84,7 @@ class UploadAssets extends Widget {
     }
   }
 
-  update (arr) {
+  updateView (arr) {
     arr = arr.filter((file) => {
       const split = file.name.split('.')
       const type = split[split.length - 1]
@@ -132,7 +130,7 @@ class UploadAssets extends Widget {
     if (!owner || !repo) {
       this.sec.innerHTML = '<div>save your project before uploading assets</div><div><span id="upload-assets-help" class="link">need help?</span></div>'
       this.$('#upload-assets-help').addEventListener('click', () => {
-        window.convo = new Convo(this.convos['duplicate-file'])
+        window.convo = new Convo(this.convos['upload-help'])
       })
     } else {
       const data = {
@@ -140,7 +138,7 @@ class UploadAssets extends Widget {
         repo: window.localStorage.getItem('opened-project')
       }
       window.utils.post('./api/github/get-files', data, (res) => {
-        this.update(res.data)
+        this.updateView(res.data)
         this._addAssetsToSearch(res.data)
       })
     }

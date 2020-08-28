@@ -35,7 +35,7 @@ class ExampleWidget extends Widget {
     this.keywords = ['example', 'demo', 'template']
 
     // if for whatever reason you don't want this showing up
-    // in the Widgets Menu, you can set listed to false
+    // in the Widgets Menu or SearchBar results you can set listed to false
     // this.listed = false
 
     // here's some more example code...

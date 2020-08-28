@@ -24,7 +24,8 @@
   WIDGETS['functions-menu'].changeLayout()
   WIDGETS['functions-menu'].changeTheme()
   WIDGETS['functions-menu'].changeOpacity()
-  WIDGETS['functions-menu'].resetIgnoredErrors()
+  WIDGETS['functions-menu'].resetErrors()
+  WIDGETS['functions-menu'].refresh()
   WIDGETS['functions-menu'].reboot()
 
   // also inherits all the properties/methods of the base Widget class
@@ -39,7 +40,7 @@ class MenuFunctions extends Widget {
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.keywords = { // for search bar
-      subs: ['shareLink', 'saveProject', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot', 'clear', 'errors'],
+      subs: ['shareLink', 'saveProject', 'refresh', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot', 'clear', 'errors'],
       alts: ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
     }
     this._createContent()
@@ -149,7 +150,7 @@ class MenuFunctions extends Widget {
     STORE.dispatch('CHANGE_OPACITY', Number(this.opacityInp.value))
   }
 
-  resetIgnoredErrors () {
+  resetErrors () {
     window.localStorage.removeItem('error-exceptions')
     NNE.clearErrorExceptions()
     setTimeout(() => {
@@ -160,8 +161,11 @@ class MenuFunctions extends Widget {
   }
 
   reboot () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     window.convo = new Convo(this.convos['reboot-netnet'])
+  }
+
+  refresh () {
+    window.convo = new Convo(this.convos['refresh-netnet'])
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -190,16 +194,12 @@ class MenuFunctions extends Widget {
             type="number" min="0" max="1" step="0.1">)
         </button><br>
         <hr>
-        <button id="func-menu-errors">resetIgnoredErrors()</button><br>
+        <button id="func-menu-errors">resetErrors()</button><br>
+        <button id="func-menu-refresh">refresh()</button><br>
         <button id="func-menu-reboot">reboot()</button><br>
       </div>
     `
-    if (!this.height) {
-      this.height = this.ele.offsetHeight
-      this.x = 20
-      this.y = window.innerHeight - this.height - 20
-      if (this.y < 20) this.y = 20
-    }
+    if (this._recentered) this.update({ left: 20, bottom: 20 })
   }
 
   _creatOption (value, parent) {
@@ -257,7 +257,8 @@ class MenuFunctions extends Widget {
           else if (b === 'layouts') this.changeLayout()
           else if (b === 'themes') this.changeTheme()
           else if (b === 'opacity') this.changeOpacity()
-          else if (b === 'errors') this.resetIgnoredErrors()
+          else if (b === 'errors') this.resetErrors()
+          else if (b === 'refresh') this.refresh()
           else if (b === 'reboot') this.reboot()
         })
     })

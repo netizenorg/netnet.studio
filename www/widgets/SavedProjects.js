@@ -20,7 +20,7 @@
   // https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets
 
   WIDGETS['saved-projects'].add('project-name') // add a new project to the list
-  WIDGETS['saved-projects'].update() // re-render the list of projects
+  WIDGETS['saved-projects'].updateView() // re-render the list of projects
   WIDGETS['saved-projects'].openProject('project-name') // gets data from GitHub
 */
 class SavedProjects extends Widget {
@@ -31,9 +31,7 @@ class SavedProjects extends Widget {
     this.title = 'Saved Projects'
     this._initList()
     this._createContent()
-    this.update()
-    this.x = 20
-    this.y = 20
+    this.updateView()
 
     this.convos = null
     window.utils.loadConvoData('saved-projects', () => {
@@ -53,10 +51,10 @@ class SavedProjects extends Widget {
       const str = JSON.stringify(arr)
       window.localStorage.setItem('saved-projets', str)
     }
-    this.update()
+    this.updateView()
   }
 
-  update () {
+  updateView () {
     const projs = window.localStorage.getItem('saved-projets')
     if (projs) {
       this.sec.innerHTML = ''
@@ -96,6 +94,9 @@ class SavedProjects extends Widget {
         })
         window.utils.updateRoot()
         STORE.dispatch('HIDE_EDU_TEXT')
+        if (STORE.state.layout === 'welcome') {
+          STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        }
         this.close()
       }
     })
@@ -112,17 +113,26 @@ class SavedProjects extends Widget {
   }
 
   _initList () {
-    window.utils.get('./api/github/username', (res) => {
-      if (!res.success) return
-      window.localStorage.setItem('owner', res.data.login)
-    })
-    window.utils.get('./api/github/saved-projects', (res) => {
-      if (!res.success) return
-      const arr = res.data.map(p => p.name)
-      const str = JSON.stringify(arr)
-      window.localStorage.setItem('saved-projets', str)
-      this.update()
-      this._addProjectsToSearch(arr)
+    window.utils.get('./api/github/auth-status', (res) => {
+      if (res.success) {
+        window.utils.get('./api/github/username', (res) => {
+          if (!res.success) return
+          window.localStorage.setItem('owner', res.data.login)
+        })
+        window.utils.get('./api/github/saved-projects', (res) => {
+          if (!res.success) return
+          const arr = res.data.map(p => p.name)
+          const str = JSON.stringify(arr)
+          window.localStorage.setItem('saved-projets', str)
+          this.updateView()
+          this._addProjectsToSearch(arr)
+        })
+      } else {
+        this.sec.innerHTML = '<div>You have not connected your GitHub account. </div><div><span id="save-projects-help" class="link">need help?</span></div>'
+        this.$('#save-projects-help').addEventListener('click', () => {
+          window.convo = new Convo(this.convos['save-help'])
+        })
+      }
     })
   }
 
