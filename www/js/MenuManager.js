@@ -106,6 +106,7 @@ class MenuManager {
 
     this.ele.querySelector('#face').addEventListener('click', () => {
       if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
+      else window.greetings.welcome()
     })
   }
 
@@ -155,7 +156,6 @@ class MenuManager {
       return console.error(m)
     }
 
-    // if (this.opened) this.hideAll()
     this.updatePosition()
     this._opened = 'ais'
 
@@ -193,10 +193,13 @@ class MenuManager {
       return console.error(m)
     }
 
-    // if (this.opened) this.hideAll()
     this.updatePosition()
     this.setFace('◕', '◞', '◕')
     this._opened = 'tis'
+
+    // if text bubble is out of frame
+    if (STORE.state.layout === 'welcome' ||
+      STORE.state.layout === 'separate-window') NNW._stayInFrame()
 
     this.textBubble.update({
       content: content.content,
@@ -213,6 +216,15 @@ class MenuManager {
 
   // ~ * ~
 
+  // NOTE: watch out for a potential race condition here, if the layout
+  // changes && we dispatch an action that hides text IMMEDIATLY after, then
+  // this._opened will become false && when the StateManager manager calls
+  // fadeIn (which is on a timeout after the layout change) there will be
+  // nothing to fade back in (b/c this._opened will be false)
+  // ...if this becomes an issue again, consider using STORE._layingout
+  // to wrap whatever is causing the issue in some sorta debounce logic
+  // (ie. to get around the race condition)
+
   fadeIn (ms, callback) {
     const t = ms || 250
     const menu = this._opened
@@ -226,7 +238,8 @@ class MenuManager {
       this[menu].style.transition = `opacity ${t}ms`
       this[menu].style.display = 'block'
       if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
-      setTimeout(() => {
+      if (this[menu + '_pre_fading']) clearTimeout(this[menu + '_pre_fading'])
+      this[menu + '_pre_fading'] = setTimeout(() => {
         this.updatePosition()
         this[menu].style.opacity = 1
       }, 100)
@@ -241,12 +254,15 @@ class MenuManager {
     const menu = this._opened
     const welc = NNW.layout === 'welcome'
     if (!welc) this._tempFace = this.getFace()
+    else this._tempFace = null
     this.setFace('◕', '◞', '◕')
     if (this.opened === 'mis') this._toggleRadialMenuItems(false)
     else if (this.opened === 'ais') this._toggleAlertItem(false)
+    else if (!this.opened) return
     this[menu].style.transition = `opacity ${t}ms`
     if (this[menu + '_fading']) clearTimeout(this[menu + '_fading'])
-    setTimeout(() => { this[menu].style.opacity = 0 }, 10)
+    if (this[menu + '_pre_fading']) clearTimeout(this[menu + '_pre_fading'])
+    this[menu + '_pre_fading'] = setTimeout(() => { this[menu].style.opacity = 0 }, 10)
     this[menu + '_fading'] = setTimeout(() => {
       this[menu].style.display = 'none'
       if (callback) callback()
@@ -281,7 +297,8 @@ class MenuManager {
     return [
       this.ele.querySelector('#face > span:nth-child(1)').textContent,
       this.ele.querySelector('#face > span:nth-child(2)').textContent,
-      this.ele.querySelector('#face > span:nth-child(3)').textContent
+      this.ele.querySelector('#face > span:nth-child(3)').textContent,
+      this._spinEyes
     ]
   }
 

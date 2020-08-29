@@ -27,23 +27,23 @@ class MenuWidgets extends Widget {
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.resizable = false
     this.keywords = ['gizmos', 'tools', 'toolbar', 'doodad', 'gui', 'interface', 'windows', 'helpers']
-    STORE.subscribe('widgets', (arr) => { this.update() })
+    STORE.subscribe('widgets', (arr) => { this.updateView() })
   }
 
-  update () {
+  updateView () {
     // first order list by most recently LOADED, OPENED or CLOSED
-    let keyList = STORE.state.widgets.map(w => w.key).reverse()
+    let keyList = STORE.state.widgets
+      .filter(w => w.ref.listed).map(w => w.key).reverse()
     // then remove any starred widgets && place them on top
     let stared = window.localStorage.getItem('stared-widgets')
     stared = stared ? JSON.parse(stared) : []
     keyList = keyList.filter(key => !stared.includes(key))
     keyList = [...stared, ...keyList]
-    // remove itself from the list
-    keyList = keyList.filter(key => key !== this.key)
-    // remove Functions && Tutorials
-    keyList = keyList.filter(key => key !== 'functions-menu')
-    keyList = keyList.filter(key => key !== 'tutorials-menu')
-    keyList = keyList.filter(key => key !== 'example-widget')
+    // remove itself && Functions && Tutorials
+    const no = [
+      'widgets-menu', 'functions-menu', 'tutorials-menu', 'example-widget'
+    ]
+    keyList = keyList.filter(key => !no.includes(key))
 
     // create menu list
     const parent = document.createElement('div')
@@ -61,11 +61,7 @@ class MenuWidgets extends Widget {
       }
     })
     this.innerHTML = parent
-    if (!this.width) {
-      this.width = this.ele.offsetWidth
-      this.x = window.innerWidth - this.width - 20
-      this.y = 20
-    }
+    if (this._recentered) this.update({ right: 20, top: 20 })
   }
 }
 

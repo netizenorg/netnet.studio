@@ -8,6 +8,7 @@ const path = require('path')
 const cookieParser = require('cookie-parser')
 // const multer = require('multer')
 const fs = require('fs')
+const exec = require('child_process').exec
 const utils = require('./utils.js')
 
 router.use(cookieParser())
@@ -54,6 +55,13 @@ router.get('/api/tutorials', (req, res) => {
   fs.readdir(path.join(__dirname, '../www/tutorials'), (err, list) => {
     if (err) return console.log(err)
     else res.json(list)
+  })
+})
+
+router.get('/api/user-geo', (req, res) => {
+  exec(`curl http://ip-api.com/json/${req.ip}`, (err, stdout) => {
+    if (err) res.json({ success: false, error: err })
+    else res.json({ success: true, data: JSON.parse(stdout) })
   })
 })
 

@@ -23,6 +23,7 @@
   NNW.layout = 'dock-left' // adjusts layout
   NNW.opacity = 0.5 // adjusts the opacity of the netnet window
   NNW.updateTheme('light') // updates the theme
+  NNW.updatePosition(x, y) // moves window to particular spot
   NNW.expandShortURL(shortCode) // takes a shortened url code &&
                                 // sends a fetch request for hash
 
@@ -108,6 +109,22 @@ class WindowManager {
     this._calcCanvasColors()
     this._canvasResize()
     this._canvasUpdate(0, 0)
+  }
+
+  updatePosition (x, y, ignoreFrame) {
+    this.win.style.transition = 'all .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+    setTimeout(() => {
+      if (x) this.win.style.left = `${x}px`
+      if (y) this.win.style.top = `${y}px`
+      if (!x && !y) {
+        this.win.style.left = 'calc(-170px + 50vw)'
+        this.win.style.top = 'calc(-135px + 50vh)'
+      }
+      setTimeout(() => {
+        this.win.style.transition = 'none'
+        if (!ignoreFrame) this._stayInFrame()
+      }, 500)
+    }, 10)
   }
 
   expandShortURL (shortCode) {
@@ -240,6 +257,21 @@ class WindowManager {
     }, Math.random() * 2000)
   }
 
+  _stayInFrame () { // ensure that the textBubble is always readable in frame
+    setTimeout(() => {
+      // 20 is the "bottom =" offset, see NNM.updatePosition()
+      const offset = this.win.offsetTop - NNM.tis.offsetHeight - 20
+      if (offset < 0) {
+        this.win.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+        setTimeout(() => {
+          const t = this.win.offsetTop + Math.abs(offset)
+          this.win.style.top = `${t + 10}px` // +10 for a little space
+          setTimeout(() => { this.win.style.transition = 'none' }, 500)
+        }, 10)
+      }
+    }, STORE.getTransitionTime())
+  }
+
   _fixMacEyes () {
     // BUG: main eye chars look tiny on Mac-Chrome && Mac-Safari
     if (typeof NNM === 'undefined') {
@@ -331,7 +363,7 @@ class WindowManager {
       this.win.style.height = e.clientY - parseInt(this.win.style.top) + 'px'
       NNM.updatePosition()
     }
-    NNE.code = NNE.cm.getValue()
+    // NNE.code = NNE.cm.getValue()
     this._canvasResize(e)
   }
 
@@ -386,7 +418,7 @@ class WindowManager {
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'dock-left') {
@@ -403,7 +435,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 15px 15px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'full-screen') {
@@ -420,7 +452,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 1px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'separate-window') {
@@ -441,7 +473,7 @@ class WindowManager {
       this.win.style.borderRadius = '25px 25px 1px 1px'
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     }

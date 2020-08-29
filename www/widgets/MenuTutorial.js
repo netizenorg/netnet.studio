@@ -29,9 +29,8 @@ class MenuTutorial extends Widget {
     this.keywords = ['lessons', 'lectures', 'workshops', 'demos', 'instructions', 'exercises', 'classes']
     this.loaded = {} // meta data for currently loaded tutorial
     this._createTutorialsList()
-    this.x = 20
-    this.y = 20
-    STORE.subscribe('tutorial.url', (arr) => { this.update() })
+    if (this._recentered) this.update({ left: 20, top: 20 })
+    STORE.subscribe('tutorial.url', (arr) => { this._updateView() })
   }
 
   _addTut (dir) {
@@ -42,7 +41,7 @@ class MenuTutorial extends Widget {
         this._tutorialMetaData.push(json)
         if (this._tutorialMetaData.length === this._numberOfTutorials) {
           STORE.dispatch('LOAD_TUTORIALS', this._tutorialMetaData)
-          this.update()
+          this._updateView()
         }
       })
   }
@@ -59,7 +58,7 @@ class MenuTutorial extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  update () {
+  _updateView () {
     if (STORE.is('TUTORIAL_LOADED')) this._displayTutInfo()
     else this._displayList()
   }

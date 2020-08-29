@@ -64,7 +64,7 @@ class StateManager {
       tutorial: { display: false, url: null, id: null, steps: {} }
     }
     this.log = opts.log || false
-    this.holding = false // if true, prevent state change
+    this._layingout = false // is layout in the process of changing
     this.listeners = {}
     this.history = {
       states: [{ ...this.state }],
@@ -697,13 +697,12 @@ class StateManager {
   renderWindowManager () {
     const s = this.state
     if (s.layout !== NNW.layout) {
-      if (this.holding) return
-      this.holding = true
-      if (NNM.opened) NNM.fadeOut()
+      this._layingout = true
+      NNM.fadeOut()
       NNW.layout = this.state.layout
       window.localStorage.setItem('layout', this.state.layout)
       NNW._whenCSSTransitionFinished(() => {
-        this.holding = false
+        this._layingout = false
         this.renderNetitor()
         NNM.fadeIn()
       })

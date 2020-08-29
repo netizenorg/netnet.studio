@@ -198,6 +198,15 @@ window.convos['functions-menu'] = (self) => {
       content: 'Your previously ignored errors have been reset, i\'ll <i>bug</i> you about all the default errors from now on.',
       options: { cool: (e) => e.hide() }
     },
+    'refresh-netnet': {
+      content: 'Ok, I\'ll refresh the browser for you, or you could refresh it yourself, surly your browser has a refresh button?',
+      options: {
+        'I like it when you do it': (e) => {
+          window.location = window.location.origin
+        },
+        'never mind, I\'ll do it': (e) => e.hide()
+      }
+    },
     'temp-disclaimer': {
       content: 'Sorry, at the moment you can only upload HTML files.',
       options: { 'ah, ok': (e) => e.hide() }
