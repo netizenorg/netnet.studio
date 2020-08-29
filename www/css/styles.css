@@ -7,7 +7,9 @@
 
 * { box-sizing: border-box; }
 
-body {
+body, 
+input, 
+button {
   box-sizing: border-box;
   padding: 0; margin: 0;
   font-family: "better-serif", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;

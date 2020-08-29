@@ -49,6 +49,20 @@
   text-decoration: none;
   transition: color .5s ease;
 }
+.text-bubble > section input {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  padding: 4px 5px;
+  border: 1px solid var(--netizen-hint-shadow);
+  background-color: var(--netizen-hint-shadow);
+  color: var(--netizen-meta);
+  font-size: 0.9em;
+}
+.text-bubble > section input:focus {
+  outline: 1px solid var(--fg-color);
+  outline-offset: 2px;
+}
 .text-bubble > section a:after {
   content: '';
   position: absolute;
@@ -203,6 +217,7 @@
 }
 .text-bubble > .text-bubble-options > button {
   position: relative;
+  transform: translate(0, 0);
 
   border: none;
   border-radius: 25px;
@@ -216,21 +231,22 @@
   text-shadow: none;
   white-space: nowrap;
 
-  box-shadow: 1px 1px 3px var(--bg-color);
+  box-shadow: 2px 2px 6px var(--netizen-hint-shadow);
   cursor: pointer;
 
-  transition: box-shadow .5s ease;
+  transition: box-shadow .3s ease, transform .3s ease;
 }
 .text-bubble > .text-bubble-options > button:not(:last-of-type) {
   margin-right: 5px;
 }
 
 .text-bubble > .text-bubble-options > button:hover {
-  box-shadow: 2px 2px 6px var(--bg-color);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
 }
 
 .text-bubble > .text-bubble-options > button:focus {
-  outline: 1px solid var(--bg-color);
+  outline: 1px solid var(--fg-color);
   outline-offset: 2px;
   box-shadow: none;
 }

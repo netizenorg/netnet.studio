@@ -364,7 +364,7 @@ class WindowManager {
       this.rndr.style.left = '0px'
       this.rndr.style.top = '0px'
       this.win.style.width = '430px'
-      this.win.style.height = '290px'
+      this.win.style.height = '295px'
       this.win.style.left = 'calc(-170px + 50vw)'
       this.win.style.top = 'calc(-135px + 50vh)'
       this.win.style.bottom = null
