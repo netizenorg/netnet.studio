@@ -260,8 +260,8 @@ class MenuManager {
     this.ais.style.top = this.center.offsetTop + 'px'
     this.ais.style.left = this.center.offsetLeft + 'px'
     const win = document.querySelector('#nn-window')
-    this.tis.style.bottom = win.offsetHeight + 20 + 'px'
-    this.tis.style.left = win.offsetWidth - 340 - 4 + 'px'
+    this.tis.style.bottom = win.offsetHeight + 35 + 'px'
+    this.tis.style.left = win.offsetWidth - 430 - 4 + 'px'
     if (this.opened === 'tis') this.textBubble.updatePosition()
   }
 
