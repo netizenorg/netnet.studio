@@ -112,12 +112,12 @@ class TextBubble {
   }
 
   fadeIn () {
-    this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out, transform var(--menu-fades-time) ease-out'
+    this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out, top var(--menu-fades-time) ease-out'
     this.ele.style.display = 'block'
     this.updatePosition()
     setTimeout(() => { this.ele.style.opacity = 1 }, 100)
     setTimeout(() => { 
-      this.ele.style.transform = 'translateY(-10px)'
+      this.ele.style.top = '-10px'
     }, 500)
     setTimeout(() => {  
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateY(0)'
@@ -137,15 +137,15 @@ class TextBubble {
 
   updatePosition () {
     if (NNW.layout === 'dock-left') {
-      const offY = 29 + this.ele.offsetHeight
-      this.ele.style.transform = `translate(362px, ${offY}px)`
+      const offY = 46 + this.ele.offsetHeight
+      this.ele.style.transform = `translate(455px, ${offY}px)`
       this.tri.style.top = '13px'
       this.tri.style.left = '-22px'
       this.tri.style.right = null
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(270deg)'
     } else if (NNW.layout === 'full-screen') {
-      const offY = 92 + this.ele.offsetHeight
+      const offY = 115 + this.ele.offsetHeight
       this.ele.style.transform = `translate(-20px, ${offY}px)`
       this.tri.style.top = '-19px'
       this.tri.style.left = null
