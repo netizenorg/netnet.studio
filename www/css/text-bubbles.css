@@ -192,7 +192,8 @@
   justify-content: flex-end;
   position: absolute;
   top: calc(100% + 10px);
-  width: 80%;
+  width: auto;
+  max-width: 80%;
   margin: 0;
   margin-bottom: 2px;
   margin-right: 2px;
@@ -215,17 +216,17 @@
   text-shadow: none;
   white-space: nowrap;
 
+  box-shadow: 1px 1px 3px var(--bg-color);
   cursor: pointer;
 
-  transition: all .5s ease;
+  transition: box-shadow .5s ease;
 }
 .text-bubble > .text-bubble-options > button:not(:last-of-type) {
   margin-right: 5px;
 }
 
 .text-bubble > .text-bubble-options > button:hover {
-  color: var(--fg-color);
-  background: var(--bg-color);
+  box-shadow: 2px 2px 6px var(--bg-color);
 }
 
 .text-bubble > .text-bubble-options > button:focus {
