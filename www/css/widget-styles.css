@@ -36,35 +36,29 @@
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* default styles for common elements in widget content */
 
+.widget > .w-innerHTML p {
+  margin: 13px 0 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+
 .widget > .w-innerHTML a,
 .widget > .w-innerHTML .link {
   position: relative;
   color: var(--fg-color);
   text-decoration: none;
-  transition: color .5s ease;
-}
-.widget > .w-innerHTML a:after,
-.widget > .w-innerHTML .link:after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  bottom: -1px;
+  transition: color .5s ease, border .5s ease;
 
-  width: calc(100% - 4px);
-  height: 1px;
-
-  background-color: var(--fg-color);
-
-  transition: background-color .5s ease;
+  /*underline*/
+  border-bottom: 1px solid var(--fg-color);
+  padding-bottom: 1px;
+  text-shadow: 1px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 0px 1px var(--bg-color);
 }
 .widget > .w-innerHTML a:hover,
 .widget > .w-innerHTML .link:hover {
   color: var(--netizen-match-color);
+  border-bottom: 1px solid var(--netizen-match-color);
   cursor: pointer;
-}
-.widget > .w-innerHTML a:hover:after,
-.widget > .w-innerHTML .link:hover:after {
-  background-color: var(--netizen-match-color);
 }
 .widget > .w-innerHTML a:active {
   color: var(--netizen-attribute);
@@ -100,7 +94,6 @@
 #func-menu-content input {
   width: 63px;
 }
-
 
 #tut-menu-content {
   width: 400px;

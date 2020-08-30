@@ -43,12 +43,6 @@
 .text-bubble > section i {
   font-style: italic;
 }
-.text-bubble > section a {
-  position: relative;
-  color: var(--fg-color);
-  text-decoration: none;
-  transition: color .5s ease;
-}
 .text-bubble > section input {
   display: block;
   width: auto;
@@ -59,28 +53,28 @@
   color: var(--netizen-meta);
   font-size: 0.9em;
 }
+.text-bubble > section input::placeholder {
+  color: var(--netizen-meta);
+  opacity: 0.8;
+}
 .text-bubble > section input:focus {
   outline: 1px solid var(--fg-color);
   outline-offset: 2px;
 }
-.text-bubble > section a:after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  bottom: -1px;
+.text-bubble > section a {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .5s ease, border .5s ease;
 
-  width: calc(100% - 4px);
-  height: 1px;
-
-  background-color: var(--fg-color);
-
-  transition: background-color .5s ease;
+  /*underline*/
+  border-bottom: 1px solid var(--fg-color);
+  padding-bottom: 1px;
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
 }
 .text-bubble > section a:hover {
   color: var(--netizen-match-color);
-}
-.text-bubble > section a:hover:after {
-  background-color: var(--netizen-match-color);
+  border-bottom: 1px solid var(--netizen-match-color);
 }
 .text-bubble > section a:active {
   color: var(--netizen-attribute);
@@ -112,10 +106,23 @@
   color: var(--fg-color);
   text-decoration: none;
   transition: color .2s ease;
+
+  /* resets */
+  background: transparent;
+  border-bottom: none;
+  padding-bottom: 0;
+  text-shadow: none;
 }
 
 .text-bubble > section h1 a:after {
   display: none;
+}
+
+.text-bubble > section h1 a:hover {
+  /* resets */
+  color: inherit;
+  border-bottom: none;
+  background-image: none; 
 }
 
 .text-bubble > section h1 code {
@@ -205,14 +212,14 @@
   flex-flow: row nowrap;
   justify-content: flex-end;
   position: absolute;
-  top: calc(100% + 10px);
-  width: auto;
-  max-width: 80%;
+  top: calc(100% + 9px);
+  left: 47%;
+  width: 80%;
   margin: 0;
   margin-bottom: 2px;
   margin-right: 2px;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateX(-50%) translateY(10px);
   transition: opacity .5s cubic-bezier(0.165, 0.84, 0.44, 1), transform .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 .text-bubble > .text-bubble-options > button {
@@ -239,16 +246,27 @@
 .text-bubble > .text-bubble-options > button:not(:last-of-type) {
   margin-right: 5px;
 }
-
+.text-bubble > .text-bubble-options > button:after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: calc(100% + 5px);
+  height: calc(100% + 5px);
+  border-radius: 25px;
+  border: 1px solid var(--fg-color);
+  opacity: 0;
+}
 .text-bubble > .text-bubble-options > button:hover {
   transform: translate(1px, 1px);
   box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
 }
-
 .text-bubble > .text-bubble-options > button:focus {
-  outline: 1px solid var(--fg-color);
-  outline-offset: 2px;
-  box-shadow: none;
+  outline: none;
+  box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
+}
+.text-bubble > .text-bubble-options > button:focus:after {
+  opacity: 1;
 }
 
 /* styles for text bubble arrow */
