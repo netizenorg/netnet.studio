@@ -4,13 +4,13 @@ window.greetings.widgets = {
     listed: false,
     width: window.innerWidth * 0.5,
     title: 'Ted Nelson demonstrates Xanadu',
-    innerHTML: '<video style="width: 100%" controls src="convos/welcome-screen/videos/xanadu.mp4"></video><p>(srouce: <a href="https://www.youtube.com/watch?v=En_2T7KH6RA" target="_blank">Ted Nelson demonstrates Xanadu Space (2008) on YouTube</a>)</p>'
+    innerHTML: '<video style="width: 100%" controls src="https://netnet.studio/api/videos/xanadu.mp4"></video><p>(source: <a href="https://www.youtube.com/watch?v=En_2T7KH6RA" target="_blank">Ted Nelson demonstrates Xanadu Space (2008) on YouTube</a>)</p>'
   }),
   'ws-smalltalk': new Widget({
     listed: false,
     width: window.innerWidth * 0.5,
     title: 'Adele Goldberg demonstrates SmallTalk',
-    innerHTML: '<video style="width: 100%" controls src="convos/welcome-screen/videos/smalltalk.mp4"></video><p>(srouce: <a href="https://archive.org/details/bits_and_bytes_12" target="_blank">Bits and Bytes Episode 12 (1983) on the Internet Archive</a>)</p>'
+    innerHTML: '<video style="width: 100%" controls src="https://netnet.studio/api/videos/smalltalk.mp4"></video><p>(source: <a href="https://archive.org/details/bits_and_bytes_12" target="_blank">Bits and Bytes Episode 12 (1983) on the Internet Archive</a>)</p>'
   }),
   'ws-adele': new Widget({
     listed: false,
@@ -173,7 +173,7 @@ window.convos['welcome-screen'] = (self) => {
     id: 'metamedia',
     content: 'Metamedia is one way to think about the Internet and computers, as an artistic medium which consists of "a wide range of already-existing and not-yet-invented media". I\'m here to help you fully realize that potential!',
     options: {
-      'did you make that up?': (e) => {
+      'tell me more...': (e) => {
         STORE.dispatch('OPEN_WIDGET', 'ws-alan')
         STORE.dispatch('OPEN_WIDGET', 'ws-adele')
         STORE.dispatch('OPEN_WIDGET', 'ws-smalltalk')
@@ -186,7 +186,7 @@ window.convos['welcome-screen'] = (self) => {
         }, 500)
         e.goTo('xerox-parc')
       },
-      'right, you netnet?': (e) => e.goTo('whois')
+      'how netnet?': (e) => e.goTo('whois')
     }
   }, {
     id: 'xerox-parc',
@@ -268,6 +268,11 @@ window.convos['welcome-screen'] = (self) => {
             self.goTo('name-entered')
           }
         },
+        'my name? rather not say': (e, t) => {
+          self.saveName('')
+          e.hide()
+          self.goTo('make-one-up')
+        },
         'whois netnet?': (e, t) => {
           const v = t.$('input').value
           self.saveName(v)
@@ -283,17 +288,6 @@ window.convos['welcome-screen'] = (self) => {
               const x = WIDGETS['ws-credits'].width + 50
               NNW.updatePosition(x)
             }, 250)
-          }
-        },
-        'what\'s hypermedia': (e, t) => {
-          const v = t.$('input').value
-          self.saveName(v)
-          if (v === '') {
-            e.hide()
-            self.goTo('no-name')
-          } else {
-            e.hide()
-            self.goTo('hypermedia')
           }
         }
       }
@@ -329,8 +323,8 @@ window.convos['welcome-screen'] = (self) => {
     'make-one-up': [{
       content: `ok! I'm going to call you ${ls.getItem('username')}!`,
       options: {
-        'cool! now what\'s netnet?': (e) => e.goTo('whois'),
-        'why that name?': (e) => e.goTo('made-up-name')
+        'why that name?': (e) => e.goTo('made-up-name'),
+        '...um ok, netnet': (e) => e.goTo('whois')
       }
     }, {
       id: 'made-up-name',

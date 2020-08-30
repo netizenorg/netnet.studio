@@ -16,3 +16,18 @@ app.use(ROUTES)
 io.on('connection', (socket) => SOCKETS(socket, io))
 
 http.listen(port, () => console.log(`listening on: ${port}`))
+
+if (process.env.PROD) {
+  const proxy = require('redbird')({
+    port: 80,
+    xfwd: false,
+    letsencrypt: { path: 'certs', port: 3000 },
+    ssl: { port: 443 }
+  })
+  const config = {
+    ssl: { letsencrypt: { email: 'hi@netizen.org', production: true } }
+  }
+  proxy.register('68.183.115.149', 'http://localhost:8001', config)
+  proxy.register('netnet.studio', 'http://localhost:8001', config)
+  proxy.register('www.netnet.studio', 'http://localhost:8001', config)
+}
