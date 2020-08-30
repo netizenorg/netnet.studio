@@ -127,8 +127,8 @@ class TextBubble {
     setTimeout(() => {  
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(10px)'
       this.ele.querySelector('.text-bubble-options').style.opacity = 0
-    }, 10)
-    setTimeout(() => { this.ele.style.opacity = 0 }, 50)
+    }, 5)
+    setTimeout(() => { this.ele.style.opacity = 0 }, 10)
     setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
   }
 

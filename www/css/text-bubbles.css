@@ -69,8 +69,7 @@
 
   /*underline*/
   border-bottom: 1px solid var(--fg-color);
-  padding-bottom: 1px;
-  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+  text-shadow: 2px 2px var(--bg-color), 2px -2px var(--bg-color), -2px 2px var(--bg-color), -2px -2px var(--bg-color);
 }
 .text-bubble > section a:hover {
   color: var(--netizen-match-color);
