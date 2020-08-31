@@ -56,6 +56,7 @@
   letter-spacing: -0.02em;
   font-weight: 400;
   cursor: default;
+  pointer-events: none;
 }
 
 .widget > .w-top-bar .close {
@@ -152,6 +153,7 @@
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* styles for specific sub menu widgets */
 
+/* functions widget */
 #func-menu-content button {
   position: relative;
   font-family: inconsolata, monospace;
@@ -187,7 +189,6 @@
 }
 
 #func-menu-content button:hover:after {
-  /*opacity: 1;*/
   transform: scaleX(1);
 }
 
@@ -197,40 +198,49 @@
 }
 
 #func-menu-content button:focus {
-  outline: 1px solid #ffffff;
+  outline: 1px solid var(--netizen-meta);
+  outline-offset: 2px;
+  box-shadow: none;
+  border:none;
 }
 
 #func-menu-content select,
 #func-menu-content input {
-  /*background: rgba(255,255,255,0.3);
-  border-radius: 50px;*/
   background: transparent;
   color: var(--netizen-meta);
-  padding: 0 5px;
+  padding: 0 3px;
   border: 0;
   margin: 0;
   font-family: inconsolata, monospace;
   cursor: pointer;
 }
 
-#func-menu-content input {
-  width: 63px;
+#func-menu-content select:focus,
+#func-menu-content input:focus {
+  background: var(--netizen-meta);
+  color: var(--bg-color);
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
 
-#func-menu-content #func-menu-layouts {
-  margin-top: 25px;
+#func-menu-content input[type=number] {
+  width: 49px;
+  padding: 0 3px 0 6px;
 }
 
-#func-menu-content #func-menu-layouts:before {
-  content: '';
-  position: absolute;
-  top: -9px;
-  left: 0;
-  width: 100%;
+#func-menu-content input[type=number]::-webkit-inner-spin-button,
+#func-menu-content input[type=number]::-webkit-outer-spin-button {
+  color: red;
+  background-color: transparent;
+}
+
+#func-menu-content hr {
   height: 1px;
-  background-color: var(--netizen-meta);
+  padding: 0;
+  border: 0;
+  background: var(--netizen-meta);
 }
-
 
 #tut-menu-content {
   width: 400px;
@@ -255,19 +265,4 @@
 #wig-menu-content {
 
 }
-
-#wig-menu-content > div.link {
-  position: relative;
-  padding: 4px;
-  margin: 5px;
-}
-
-#wig-menu-content > div.link:before {
-  content: '★';
-  position: absolute;
-  left: -20px;
-  font-size: inherit;
-  color: inherit;
-}
-
 
