@@ -65,6 +65,7 @@ class MenuTutorial extends Widget {
 
   _displayList () {
     const parent = document.createElement('div')
+    parent.id = 'tut-menu-content'
     STORE.state.tutorials.forEach(t => {
       const d = document.createElement('div')
       const title = document.createElement('div')

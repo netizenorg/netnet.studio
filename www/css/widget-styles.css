@@ -8,7 +8,8 @@
   min-height: 150px;
   color: var(--bg-color);
   background-color: transparent;
-  padding: 10px 15px 15px;
+  padding: 10px 15px;
+  border: 1px solid var(--netizen-meta);
   border-radius: 15px;
   overflow: hidden;
 }
@@ -32,7 +33,7 @@
 .widget > .w-top-bar {
   cursor: grab;
   min-width: 100px;
-  margin-bottom: 15px;
+  margin-bottom: 13px;
   padding-left: 5px;
   font-weight: bold;
   display: flex;
@@ -108,52 +109,57 @@
 
 .widget > .w-innerHTML {
   position: relative;
-  padding: 8px 15px;
+  padding: 10px 15px;
+  color: var(--netizen-meta);
+  font-size: 16px;
+  line-height: 1.45em;
+}
+
+.widget > .w-innerHTML section div:not(:first-of-type),
+.widget > .w-innerHTML p:not(:first-of-type) {
+  margin-top: 13px;
+  margin-bottom: 0;
+}
+
+.widget > .w-innerHTML section div:first-of-type,
+.widget > .w-innerHTML p:first-of-type {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .widget > .w-innerHTML a,
-.widget > .w-innerHTML .link {
+.widget > .w-innerHTML .link,
+.widget > .w-innerHTML section a,
+.widget > .w-innerHTML section .link {
   position: relative;
   color: var(--netizen-meta);
   text-decoration: none;
-  transition: color .5s ease;
-}
-.widget > .w-innerHTML a:after,
-.widget > .w-innerHTML .link:after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  bottom: -1px;
+  transition: color .5s ease, border .5s ease;
 
-  width: calc(100% - 4px);
-  height: 1px;
-
-  background-color: var(--netizen-meta);
-
-  transition: background-color .5s ease;
+  /*underline*/
+  border-bottom: 1px solid var(--netizen-meta);
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
 }
 .widget > .w-innerHTML a:hover,
-.widget > .w-innerHTML .link:hover {
+.widget > .w-innerHTML .link:hover,
+.widget > .w-innerHTML section a:hover,
+.widget > .w-innerHTML section .link:hover {
   color: var(--netizen-match-color);
+  border-bottom: 1px solid var(--netizen-match-color);
   cursor: pointer;
 }
-.widget > .w-innerHTML a:hover:after,
-.widget > .w-innerHTML .link:hover:after {
-  background-color: var(--netizen-match-color);
-}
-.widget > .w-innerHTML a:active {
+.widget > .w-innerHTML a:active,
+.widget > .w-innerHTML .link:active,
+.widget > .w-innerHTML section a:active,
+.widget > .w-innerHTML section .link:active {
   color: var(--netizen-attribute);
-}
-.widget > .w-innerHTML a:active:after,
-.widget > .w-innerHTML .link:active:after {
-  background-color: var(--netizen-attribute);
 }
 
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* styles for specific sub menu widgets */
 
-/* functions widget */
+/* functions menu */
 #func-menu-content button {
   position: relative;
   font-family: inconsolata, monospace;
@@ -242,27 +248,63 @@
   background: var(--netizen-meta);
 }
 
+
+/* tutorial menu */
 #tut-menu-content {
-  width: 400px;
+  width: 300px;
+  max-width: 400px;
+  color: var(--netizen-meta);
+}
+
+#tut-menu-content .link {
+  position: relative;
+  padding: 0 5px;
+  margin: 5px 0;
 }
 
 #tut-menu-content > .tut-menu-sub-menu {
   display: flex;
   justify-content: space-between;
-  margin: 10px auto;
+  margin: 0 auto 15px;
 }
 
-#tut-menu-content > .tut-menu-sub-menu .selected {
+#tut-menu-content > div {
+  margin: 0 auto 15px;
+}
+
+#tut-menu-content p {
+  padding: 2px 5px;
+  margin: 0;
+}
+
+#tut-menu-content .selected {
   color: var(--netizen-match-color);
-}
-
-#tut-menu-content > .tut-menu-sub-content {
-
 }
 
 
 /* fav widgets menu */
 #wig-menu-content {
-
+  min-width: 170px;
 }
+
+#wig-menu-content > div.link {
+  position: relative;
+  padding: 0 5px;
+  margin: 0 0 15px;
+}
+
+#wig-menu-content > div.link:last-of-type {
+  margin: 0 0 10px;
+}
+
+#wig-menu-content > div.link > span {
+  position: absolute;
+  top: 50%;
+  left: -17px;
+  transform: translateY(-50%);
+  font-size: inherit;
+  color: inherit;
+  pointer-events: none;
+}
+
 
