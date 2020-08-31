@@ -133,6 +133,13 @@ class TextBubble {
   }
 
   updatePosition () {
+    const tbo = this.ele.querySelector('.text-bubble-options')
+    if (NNW.layout === 'dock-left' || NNW.layout === 'full-screen') {
+      tbo.style.flexDirection = 'column'
+      tbo.style.left = '50%'
+      tbo.style.width = '75%'
+      tbo.querySelectorAll('button').forEach(b => { b.style.margin = '5px' })
+    }
     if (NNW.layout === 'dock-left') {
       const offY = 46 + this.ele.offsetHeight
       this.ele.style.transform = `translate(455px, ${offY}px)`
@@ -150,6 +157,10 @@ class TextBubble {
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(0deg)'
     } else {
+      tbo.style.flexDirection = 'row'
+      tbo.style.left = '48%'
+      tbo.style.width = '80%'
+      tbo.querySelectorAll('button').forEach(b => { b.style.margin = '0 5px 0 0' })
       this.ele.style.transform = 'translate(0,0)'
       this.tri.style.top = null
       this.tri.style.left = null

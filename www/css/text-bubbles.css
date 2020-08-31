@@ -173,21 +173,15 @@
   width: 2px;
   height: 95%;
 
-  background-color: var(--fg-color);
-  background-color: #ffffff;
+  background-color: var(--netizen-meta);
 
   animation: blink 1.5s infinite steps(1);
   transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 @keyframes blink {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .text-bubble > section h1:hover {
@@ -212,7 +206,7 @@
   justify-content: flex-end;
   position: absolute;
   top: calc(100% + 9px);
-  left: 47%;
+  left: 48%;
   width: 80%;
   margin: 0;
   margin-bottom: 2px;
@@ -228,6 +222,7 @@
   border: none;
   border-radius: 25px;
   padding: 5px 15px;
+  margin-right: 0 5px 0 0;
 
   color: var(--bg-color);
   background: var(--fg-color);
@@ -241,9 +236,6 @@
   cursor: pointer;
 
   transition: box-shadow .3s ease, transform .3s ease;
-}
-.text-bubble > .text-bubble-options > button:not(:last-of-type) {
-  margin-right: 5px;
 }
 .text-bubble > .text-bubble-options > button:after {
   content: '';
