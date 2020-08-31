@@ -15,6 +15,22 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+#loader {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #515199;
+  color: #fff;
+  opacity: 1;
+  transition: opacity 1s;
+}
+
 #netnet {
   position: absolute;
   top: 0;
@@ -22,6 +38,8 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: -30;
+
+  transition: filter .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 #nn-output {

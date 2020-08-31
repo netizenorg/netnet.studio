@@ -118,6 +118,9 @@ class TutorialManager {
 
       // update global widgets
       if (typeof TUTORIAL.widgets === 'object') {
+        // NOTE: this will only load tutorials for which there are existing
+        // classes in www/widgets. if a new widget class type needs to be
+        // added to the page use window.utils.loadWidgetClass(path, filename)
         STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
       }
     } else this._err('tutObj')
@@ -129,13 +132,13 @@ class TutorialManager {
     const options = {
       'yes, let\'s do it!': (e) => {
         e.goTo(i)
-        STORE.dispatch('CLOSE_WIDGET', 'Tutorials Menu')
+        STORE.dispatch('CLOSE_WIDGET', 'tutorials-menu')
       },
       'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
     }
-    if (!STORE.is('WIDGET_OPEN', 'Tutorials Menu')) {
+    if (!STORE.is('WIDGET_OPEN', 'tutorials-menu')) {
       options['Show me the Tutorials Menu'] = (e) => {
-        STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+        STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
       }
     }
     return {

@@ -22,6 +22,8 @@
   search.open()       // opens search
   search.close()      // closes search
   search.search(term) // does the searching
+
+  search.addToDict(array) // add array of objects to search dictionary
 */
 class SearchBar {
   constructor () {
@@ -95,7 +97,7 @@ class SearchBar {
 
   open () {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
-    this.ele.style.display = 'block'
+    this.ele.style.visibility = 'visible'
     setTimeout(() => {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
@@ -109,7 +111,7 @@ class SearchBar {
       this.ele.style.opacity = 0
       this.netnet.style.filter = 'none'
     }, 10)
-    setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
+    setTimeout(() => { this.ele.style.visibility = 'hidden' }, this.transitionTime)
   }
 
   search (e) {
@@ -121,13 +123,20 @@ class SearchBar {
     div.innerHTML = ''
     results.forEach(res => {
       const d = document.createElement('div')
+      d.setAttribute('tabindex', '0')
       d.className = `${res.item.type}-results`
       if (res.item.word === 'Functions') {
         const m = res.matches[0].key === 'subs'
           ? res.matches[0].value + '()' : 'Menu'
         d.innerHTML = `<i class="f-results">(Functions)</i> &gt; ${m}`
-      } else if (res.item.type === 'widgets') {
-        d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${res.item.word}`
+      } else if (res.item.type.includes('widgets')) {
+        const wrd = res.item.word
+        if (res.item.type === 'widgets') {
+          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${wrd}`
+        } else {
+          const t = res.item.type.split('.')
+          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${t[1]} &gt; ${wrd}`
+        }
       } else if (res.item.type === 'tutorials') {
         d.innerHTML = `<i class="t-results">(Tutorials)</i> &gt; ${res.item.word}`
         if (res.matches[0] && res.matches[0].key === 'subs') {
@@ -152,28 +161,9 @@ class SearchBar {
     })
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
-  _setupSearchBar (content, options) {
-    this.ele = document.createElement('div')
-    this.ele.id = 'search-bar'
-    this.ele.innerHTML = `
-      <section>
-        <input placeholder="◕ ◞ ◕ what are you looking for?">
-        <div id="search-results"></div>
-      </section>
-    `
-    this.ele.style.display = 'none'
-    this.ele.style.opacity = '0'
-    document.body.appendChild(this.ele)
-    this.ele.querySelector('input')
-      .addEventListener('input', (e) => this.search(e))
-  }
-
-  update (type, data) {
-    const options = {
+  addToDict (arr) {
+    this.dict = this.dict.concat(arr)
+    this.fuse = new Fuse(this.dict, {
       ignoreLocation: true,
       includeScore: true,
       includeMatches: true,
@@ -182,10 +172,40 @@ class SearchBar {
         { name: 'subs', weight: 0.5 },
         { name: 'alts', weight: 0.25 }
       ]
-    }
+    })
+  }
 
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _setupSearchBar (content, options) {
+    this.ele = document.createElement('div')
+    this.ele.id = 'search-bar'
+    this.ele.innerHTML = `
+      <div id="search-overlay"></div>
+      <section>
+        <span><input placeholder="what are you looking for?"></span>
+        <div id="search-results" tabindex="-1"></div>
+      </section>
+    `
+    this.ele.style.visibility = 'hidden'
+    this.ele.style.opacity = '0'
+    document.body.appendChild(this.ele)
+    this.ele.querySelector('input')
+      .addEventListener('input', (e) => this.search(e))
+
+    this.ele.querySelector('#search-overlay').addEventListener('click', (e) => {
+      if (this.opened) {
+        this.close()
+      }
+    })
+  }
+
+  update (type, data) {
+    const arr = []
     if (type === 'widgets') {
-      data.forEach(w => {
+      data.filter(w => w.ref.listed).forEach(w => {
         const alts = (w.ref.keywords instanceof Array)
           ? w.ref.keywords : w.ref.keywords.alts
         const subs = w.ref.keywords && w.ref.keywords.subs
@@ -197,7 +217,7 @@ class SearchBar {
           alts: alts || [],
           clck: () => { STORE.dispatch('OPEN_WIDGET', w.ref.key) }
         }
-        this.dict.push(obj)
+        arr.push(obj)
       })
     } else if (type === 'tutorials') {
       data.forEach(t => {
@@ -207,17 +227,16 @@ class SearchBar {
           subs: Object.keys(t.checkpoints) || [],
           alts: t.keywords || [],
           clck: () => {
-            STORE.dispatch('OPEN_WIDGET', 'Tutorials Menu')
+            STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
             NNT.load(t.dirname)
           }
         }
-        this.dict.push(obj)
+        arr.push(obj)
       })
     } else if (type === 'edu-info') {
       // TODO open anatomy of "an html element widget" for elements/attributes
     }
-
-    this.fuse = new Fuse(this.dict, options)
+    this.addToDict(arr)
   }
 }
 

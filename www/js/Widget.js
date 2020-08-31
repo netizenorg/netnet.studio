@@ -1,4 +1,4 @@
-/* global Maths, HTMLElement, STORE, WIDGETS */
+/* global HTMLElement, STORE, WIDGETS */
 /*
   -----------
      info
@@ -17,81 +17,90 @@
   -----------
 
   const w = new Widget({
-    title: 'settings', // required
-    innerHTML: element,  // optional html string or HTMLElement
-    x: 20,             // optional
-    y: 20,             // optional
-    z: 100,            // optional (make sure it's always between 100 && 200)
-    width: 500,        // optional
-    height: 500        // optional
-    resizable: true,   // optional (can user resize)
-    listed: true       // optional (can user star && display in Widgets Menu?)
+    title: 'settings',  // required
+    innerHTML: element, // optional html string or HTMLElement
+    resizable: true,    // optional (can user resize)
+    listed: true,       // optional (can user star && display in Widgets Menu?)
+    left: 20,           // optional
+    top: 20,            // optional
+    zIndex: 100,        // optional (make sure it's always between 100 && 200)
+    width: 500,         // optional
+    height: 500         // optional
   })
 
   w.innerHTML = element
   w.title = 'settings'
-  w.x = 20
-  w.y = '50vh'
-  w.z = 100
+  w.resizable = false
+  w.left = 20
+  w.top =  '50vh'
+  w.bottom = 20
+  w.right =  '50vh'
+  w.zIndex = 100
   w.width = '50vw'
   w.height = '50vh'
-  w.resizable = false
 
-  w.position(x, y, z)     // update position
-  w.resize(width, height) // update size
+  w.opened // read only property, returns true/false
+
   w.open()                // display
   w.close()               // hide
+
+  w.recenter() // recenters the widget
+  w.update(cssObj, transitionTime) // to update CSS
+
+  // when using update() to position the widget (left/right/top/bottom)
+  // you must pass number values (not strings), for example:
+  w.update({ top: 29, right: 20 }, 500)
 
 */
 class Widget {
   constructor (opts) {
     opts = opts || {}
+    this._key = null
     this._title = opts.title || 'netnet widget'
     this._innerHTML = opts.innerHTML || ''
-    this._x = opts.x || 20
-    this._y = opts.y || 20
-    this._z = opts.z || 100
-    this._width = opts.width
-    this._height = opts.height
-    this._resizable = opts.resizable || true
-    this._listed = opts.listed || true
-    this._key = null
+    this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
+    this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
     this.mousedown = false
 
     this._createWindow()
-    this.position(opts.x, opts.y, opts.z)
-    this.resize(this.width, this.height)
     this._updateIfListed()
 
-    // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
+    const s = ['top', 'right', 'bottom', 'left', 'zIndex', 'width', 'height']
+    s.forEach(p => { this[`_${p}`] = null })
+    for (const prop in opts) if (s.includes(prop)) this._css(prop, opts[prop])
 
+    // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
+    const wu = window.utils
     window.addEventListener('mousedown', (e) => this._mouseDown(e), true)
     window.addEventListener('mouseup', (e) => this._mouseUp(e), true)
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
-    window.addEventListener('mousemove', (e) => this._updateShadow(e))
+    window.addEventListener('mousemove', (e) => wu.updateShadow(e, this))
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ properties
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  get x () { return this._x }
-  set x (v) { this.position(v, null, null) }
+  get left () { return parseInt(this.ele.style.left) }
+  set left (v) { this._css('left', v) }
 
-  get y () { return this._y }
-  set y (v) { this.position(null, v, null) }
+  get top () { return parseInt(this.ele.style.top) }
+  set top (v) { this._css('top', v) }
 
-  get z () { return this._z }
-  set z (v) { this.position(null, null, v) }
+  get right () { return window.innerWidth - this.width - this.left }
+  set right (v) { this._css('right', v) }
 
-  get width () { return this._width }
-  set width (v) { this.resize(v, null) }
+  get bottom () { return window.innerHeight - this.height - this.top }
+  set bottom (v) { this._css('bottom', v) }
 
-  get height () { return this._height }
-  set height (v) { this.resize(null, v) }
+  get zIndex () { return this.ele.style.zIndex }
+  set zIndex (v) { this._css('zIndex', v) }
 
-  get resizable () { return this._resizable }
-  set resizable (v) { this._resizable = v }
+  get width () { return this.ele.offsetWidth }
+  set width (v) { this._css('width', v) }
+
+  get height () { return this.ele.offsetHeight }
+  set height (v) { this._css('height', v) }
 
   get title () { return this._title }
   set title (v) {
@@ -102,6 +111,12 @@ class Widget {
       this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
     }
   }
+
+  get resizable () { return this._resizable }
+  set resizable (v) { this._resizable = v }
+
+  get opened () { return this.ele.style.visibility === 'visible' }
+  set opened (v) { console.error('Widget: opened property is read only') }
 
   get key () { return this._key }
   set key (v) {
@@ -142,33 +157,45 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   open () {
-    STORE.dispatch('OPEN_WIDGET', this)
+    if (STORE.state.widgets.map(w => w.ref).includes(this)) {
+      STORE.dispatch('OPEN_WIDGET', this)
+    } else {
+      console.error('Widget: this widget was never loaded to the STORE')
+    }
   }
 
   close () {
     STORE.dispatch('CLOSE_WIDGET', this)
   }
 
-  position (x, y, z) {
-    if (x) this._pos(x, 'x')
-    if (y) this._pos(y, 'y')
-    if (z) this._pos(z, 'z')
+  update (opts, time) {
+    time = time || 0
+    const t = `${time}ms`
+    const ease = 'cubic-bezier(0.165, 0.84, 0.44, 1)'
+    this.ele.style.transition = `all ${t} ${ease}`
+    // trigger transition
+    setTimeout(() => {
+      for (const prop in opts) this._css(prop, opts[prop])
+      setTimeout(() => { this.ele.style.transition = 'none' }, time)
+      this._recentered = false
+    }, 25)
   }
 
-  resize (w, h) {
-    if (w) this._size(w, 'width')
-    if (h) this._size(h, 'height')
+  recenter () {
+    this._css('left', window.innerWidth / 2 - this.width / 2)
+    this._css('top', window.innerHeight / 2 - this.height / 2)
+    this._recentered = true
   }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   $ (selector) {
     const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
     if (e.length > 1) return e
     else return e[0]
   }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createWindow () {
     this.ele = document.createElement('div')
@@ -184,13 +211,15 @@ class Widget {
       <div class="w-innerHTML">${this.innerHTML}</div>
     `
     document.body.appendChild(this.ele)
-    this.ele.style.display = 'none'
+    this.ele.style.visibility = 'hidden'
 
     this.ele.querySelector('.w-top-bar .close')
       .addEventListener('click', () => this.close())
 
     this.ele.querySelector('.w-top-bar .star')
       .addEventListener('click', () => this._star())
+
+    this.recenter()
   }
 
   _updateIfListed () {
@@ -240,45 +269,55 @@ class Widget {
       window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
     }
     // udpate Widgets Menu to reflect changes
-    if (WIDGETS['Widgets Menu']) WIDGETS['Widgets Menu'].update()
+    if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].update()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _pos (val, prop) {
-    this[`_${prop}`] = val
-    if (prop === 'x') {
-      this.ele.style.left = (typeof val === 'number') ? `${val}px` : val
-    } else if (prop === 'y') {
-      this.ele.style.top = (typeof val === 'number') ? `${val}px` : val
-    } else if (prop === 'z') {
-      this.ele.style.zIndex = val
+  _css (prop, val) {
+    const p = ['top', 'right', 'bottom', 'left']
+    const s = ['width', 'height']
+    if (s.includes(prop)) {
+      this.ele.style[prop] = (typeof val === 'number') ? `${val}px` : val
+    } else if (p.includes(prop)) {
+      if (prop === 'left' || prop === 'right') {
+        const left = (prop === 'left')
+          ? val : window.innerWidth - val - this.width
+        this.ele.style.left = `${left}px`
+      } else { // top || bottom
+        const top = (prop === 'top')
+          ? val : window.innerHeight - val - this.height
+        this.ele.style.top = `${top}px`
+      }
+    } else {
+      this.ele.style[prop] = val
     }
-  }
-
-  _size (val, prop) {
-    this[`_${prop}`] = val
-    this.ele.style[prop] = (typeof val === 'number') ? `${val}px` : val
   }
 
   _display (value) {
-    // used by StateManager's render() method
-    if (value === 'block' && this.ele.style.display === 'none') {
+    // used by StateManager's render() method when OPEN/CLOSE_WIDGET dispatched
+    if (value === 'visible' && this.ele.style.visibility === 'hidden') {
       this._bring2front()
     }
-    this.ele.style.display = value
+    this.ele.style.visibility = value
   }
 
   _bring2front () {
     // NOTE: this will work so long as there are less than 100
     // Widgets open... safe assumption i hope
-    this.z = 200
+    this.zIndex = 200
     let z = 100
     STORE.state.widgets
-      .forEach(w => { if (w.key !== this.key) w.ref.z = ++z })
+      .forEach(w => { if (w.key !== this.key) w.ref.zIndex = ++z })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _shouldResize (e) {
+    const offX = this.ele.offsetWidth + this.ele.offsetLeft - 20
+    const offY = this.ele.offsetHeight + this.ele.offsetTop - 20
+    return e.clientX > offX && e.clientY > offY && this._resizable
+  }
 
   _mouseDown (e) {
     const self = e.target.parentNode === this.ele || e.target === this.ele
@@ -288,6 +327,10 @@ class Widget {
         this.ele.querySelector('.w-top-bar').style.cursor = 'move'
       }
       document.body.style.userSelect = 'none'
+      // if it wasn't clicked on bottom right, then we shouldn't resize
+      if (this.mousedown === 'widget' && !this._shouldResize(e)) {
+        this.mousedown = false
+      }
       // update z index so it's above other widgets
       this._bring2front()
     }
@@ -303,41 +346,26 @@ class Widget {
   _mouseMove (e) {
     e.preventDefault()
     // check if cursor is over bottom right corner
-    const offX = this.ele.offsetWidth + this.ele.offsetLeft - 20
-    const offY = this.ele.offsetHeight + this.ele.offsetTop - 20
-    if (e.clientX > offX && e.clientY > offY && this._resizable) {
+    if (this._shouldResize(e)) {
       this.ele.style.cursor = 'se-resize'
     } else this.ele.style.cursor = 'auto'
 
     // move or resize window
     if (this.mousedown === 'w-top-bar') {
+      this._recentered = false
       if (!this.winOff || typeof this.winOff === 'undefined') {
         this.winOff = {
           x: e.clientX - this.ele.offsetLeft,
           y: e.clientY - this.ele.offsetTop
         }
       }
-      this.ele.style.left = e.clientX - this.winOff.x + 'px'
-      this.ele.style.top = e.clientY - this.winOff.y + 'px'
+      this._css('left', e.clientX - this.winOff.x)
+      this._css('top', e.clientY - this.winOff.y)
     } else if (this.mousedown === 'widget') {
       const w = e.clientX - this.ele.offsetLeft
       const h = e.clientY - this.ele.offsetTop
-      if (this._resizable) this.resize(w, h)
+      if (this._resizable) this.update({ width: w, height: h })
     }
-  }
-
-  _updateShadow (e) {
-    const center = {
-      x: this.ele.getBoundingClientRect().left,
-      y: this.ele.getBoundingClientRect().top
-    }
-    const x = e.clientX < center.x
-      ? Maths.map(e.clientX, 0, center.x, 33, 0)
-      : Maths.map(e.clientX, center.x, window.innerWidth, 0, -33)
-    const y = e.clientY < center.y
-      ? Maths.map(e.clientY, 0, center.y, 33, 0)
-      : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
-    this.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
   }
 }
 

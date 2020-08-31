@@ -64,7 +64,7 @@ class StateManager {
       tutorial: { display: false, url: null, id: null, steps: {} }
     }
     this.log = opts.log || false
-    this.holding = false // if true, prevent state change
+    this._layingout = false // is layout in the process of changing
     this.listeners = {}
     this.history = {
       states: [{ ...this.state }],
@@ -126,7 +126,15 @@ class StateManager {
   }
 
   didChange (p) {
-    const equalArr = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+    const equalArr = (a, b) => {
+      if (p === 'widgets') {
+        // HACK: to avoid https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value
+        a = a.map(w => { return { key: w.key, visible: w.visible } })
+        b = b.map(w => { return { key: w.key, visible: w.visible } })
+      }
+      return JSON.stringify(a) === JSON.stringify(b)
+    }
+
     const prior = p.includes('.')
       ? this.prior[p.split('.')[0]][p.split('.')[1]] : this.prior[p]
     const current = p.includes('.')
@@ -689,12 +697,12 @@ class StateManager {
   renderWindowManager () {
     const s = this.state
     if (s.layout !== NNW.layout) {
-      if (this.holding) return
-      this.holding = true
-      if (NNM.opened) NNM.fadeOut()
+      this._layingout = true
+      NNM.fadeOut()
       NNW.layout = this.state.layout
+      window.localStorage.setItem('layout', this.state.layout)
       NNW._whenCSSTransitionFinished(() => {
-        this.holding = false
+        this._layingout = false
         this.renderNetitor()
         NNM.fadeIn()
       })
@@ -712,6 +720,8 @@ class StateManager {
     }
     if (s.theme !== NNE.theme) {
       NNW.updateTheme(this.state.theme, this.state.background)
+      window.localStorage.setItem('theme', this.state.theme)
+      NNW.opacity = this.state.opacity
     }
     if (s.editable === NNE.cm.getOption('readOnly')) {
       NNE.cm.setOption('readOnly', !this.state.editable)
@@ -724,8 +734,8 @@ class StateManager {
 
   renderWidgets () {
     this.state.widgets.forEach(w => {
-      if (w.visible) w.ref._display('block')
-      else w.ref._display('none')
+      if (w.visible) w.ref._display('visible')
+      else w.ref._display('hidden')
     })
   }
 

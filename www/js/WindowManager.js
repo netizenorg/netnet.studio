@@ -23,6 +23,7 @@
   NNW.layout = 'dock-left' // adjusts layout
   NNW.opacity = 0.5 // adjusts the opacity of the netnet window
   NNW.updateTheme('light') // updates the theme
+  NNW.updatePosition(x, y) // moves window to particular spot
   NNW.expandShortURL(shortCode) // takes a shortened url code &&
                                 // sends a fetch request for hash
 
@@ -96,6 +97,10 @@ class WindowManager {
   updateTheme (theme, background) {
     NNE.theme = theme || 'dark'
     NNE.background = background || false
+    if (!background) {
+      if (theme === 'light' || theme === 'monokai') NNE.background = true
+      else NNE.background = false
+    }
     const de = document.documentElement
     const fg = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
     document.documentElement.style.setProperty('--fg-color', fg)
@@ -104,6 +109,22 @@ class WindowManager {
     this._calcCanvasColors()
     this._canvasResize()
     this._canvasUpdate(0, 0)
+  }
+
+  updatePosition (x, y, ignoreFrame) {
+    this.win.style.transition = 'all .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+    setTimeout(() => {
+      if (x) this.win.style.left = `${x}px`
+      if (y) this.win.style.top = `${y}px`
+      if (!x && !y) {
+        this.win.style.left = 'calc(-170px + 50vw)'
+        this.win.style.top = 'calc(-135px + 50vh)'
+      }
+      setTimeout(() => {
+        this.win.style.transition = 'none'
+        if (!ignoreFrame) this._stayInFrame()
+      }, 500)
+    }, 10)
   }
 
   expandShortURL (shortCode) {
@@ -177,13 +198,21 @@ class WindowManager {
 
   _adjustOpacity (v) {
     this._opacity = v
-    this.win.style.opacity = this._opacity
-    if (this._opacity === 0) {
-      const meta = Averigua.platformInfo().platform.includes('Mac')
-        ? 'CMD+?' : 'CTRL+?'
-      let m = 'netnet is currently invisible. When you\'d like netnet '
-      m += 'to reappear use the keyboard shortcut ' + meta
-      window.alert(m)
+    if (STORE.state.layout === 'welcome') {
+      this.win.style.opacity = this._opacity
+      this.canv.style.opacity = 1
+      const clr = 'var(--netizen-background)'
+      this.edtr.querySelector('.cm-s-netizen').style.backgroundColor = clr
+      this.edtr.querySelector('.CodeMirror-gutters').style.backgroundColor = clr
+    } else {
+      this.win.style.opacity = 1
+      this.canv.style.opacity = this._opacity
+      const bg = window.getComputedStyle(document.documentElement)
+        .getPropertyValue('--netizen-background').substr(0, 7)
+      const c = Color.hex2rgb(bg)
+      const c2 = `rgba(${c.r}, ${c.g}, ${c.b}, 0)`
+      this.edtr.querySelector('.cm-s-netizen').style.backgroundColor = c2
+      this.edtr.querySelector('.CodeMirror-gutters').style.backgroundColor = c2
     }
   }
 
@@ -215,6 +244,58 @@ class WindowManager {
     if (iframeBody) {
       const bg = window.getComputedStyle(iframeBody).backgroundColor
       document.body.style.backgroundColor = bg
+    }
+  }
+
+  _runBlink () {
+    setTimeout(() => {
+      const f = NNM.getFace()
+      if (f[0] === '◕' && f[1] === '◞' && f[2] === '◕') {
+        NNM.setFace('-', f[1], '-', false)
+        setTimeout(() => NNM.setFace(...f), 200)
+      }
+    }, Math.random() * 2000)
+  }
+
+  _stayInFrame () { // ensure that the textBubble is always readable in frame
+    setTimeout(() => {
+      // 20 is the "bottom =" offset, see NNM.updatePosition()
+      const offset = this.win.offsetTop - NNM.tis.offsetHeight - 20
+      if (offset < 0) {
+        this.win.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+        setTimeout(() => {
+          const t = this.win.offsetTop + Math.abs(offset)
+          this.win.style.top = `${t + 10}px` // +10 for a little space
+          setTimeout(() => { this.win.style.transition = 'none' }, 500)
+        }, 10)
+      }
+    }, STORE.getTransitionTime())
+  }
+
+  _fixMacEyes () {
+    // BUG: main eye chars look tiny on Mac-Chrome && Mac-Safari
+    if (typeof NNM === 'undefined') {
+      return setTimeout(() => this._fixMacEyes(), 250)
+    }
+    const isMac = Averigua.platformInfo().platform.includes('Mac')
+    const isSafari = Averigua.browserInfo().name === 'Safari'
+    const isChrome = Averigua.browserInfo().name === 'Chrome'
+    if (isMac && (isSafari || isChrome)) {
+      const face = NNM.ele.querySelector('#face')
+      const leftEye = face.children[0]
+      // const mouth = face.children[1]
+      const rightEye = face.children[2]
+      if (STORE.state.layout === 'welcome') {
+        face.style.setProperty('font-size', '64px', 'important')
+        face.style.margin = '79px auto'
+        leftEye.style.margin = '-24px'
+        rightEye.style.marginLeft = '-9px'
+      } else {
+        face.style.setProperty('font-size', '25px', 'important')
+        face.style.margin = '0'
+        leftEye.style.margin = '-12px'
+        rightEye.style.marginLeft = '-6px'
+      }
     }
   }
 
@@ -282,7 +363,7 @@ class WindowManager {
       this.win.style.height = e.clientY - parseInt(this.win.style.top) + 'px'
       NNM.updatePosition()
     }
-    NNE.code = NNE.cm.getValue()
+    // NNE.code = NNE.cm.getValue()
     this._canvasResize(e)
   }
 
@@ -302,6 +383,13 @@ class WindowManager {
   _adjustLayout (v) {
     this._toggleTransition(true)
     this._layout = v
+    this.opacity = STORE.state.opacity
+
+    clearInterval(this._blinking)
+    if (v === 'welcome') {
+      this._blinking = setInterval(() => this._runBlink(), 7500)
+    } else this._blinking = null
+
     if (v === 'welcome') {
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
@@ -330,7 +418,7 @@ class WindowManager {
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'dock-left') {
@@ -347,7 +435,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 15px 15px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'full-screen') {
@@ -364,7 +452,7 @@ class WindowManager {
       this.canv.style.borderRadius = '1px 1px 1px 1px'
       this._showEditor(true)
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     } else if (v === 'separate-window') {
@@ -385,7 +473,7 @@ class WindowManager {
       this.win.style.borderRadius = '25px 25px 1px 1px'
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       this._whenCSSTransitionFinished(() => {
-        NNE.code = NNE.cm.getValue()
+        // NNE.code = NNE.cm.getValue()
         this._canvasResize()
       })
     }
@@ -424,6 +512,7 @@ class WindowManager {
       this.menu.style.height = '100%'
       // this.menu.style.cursor = 'grab'
     }
+    this._fixMacEyes()
   }
 
   _toggleTransition (bool) {
@@ -441,8 +530,7 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow
 
   _calcCanvasColors () {
-    const de = document.documentElement
-    const bg = window.getComputedStyle(de)
+    const bg = window.getComputedStyle(document.documentElement)
       .getPropertyValue('--netizen-background').substr(0, 7)
     const c = Color.hex2hsv(bg)
     const v0 = c.v + 10 <= 100 ? c.v + 10 : 100
@@ -453,6 +541,14 @@ class WindowManager {
 
   _canvasUpdate (x, y) {
     const ctx = this.canv.getContext('2d')
+    if (NNE.background) {
+      // if background is present, just match the color, avoid the maths below
+      const bg = window.getComputedStyle(document.documentElement)
+        .getPropertyValue('--netizen-background').substr(0, 7)
+      ctx.fillStyle = bg
+      ctx.fillRect(0, 0, this.canv.width, this.canv.height)
+      return
+    }
     const rad = (this.canv.width > this.canv.height)
       ? this.canv.width : this.canv.height
     const g = ctx.createRadialGradient(x, y, 1, x, y, rad)
@@ -482,6 +578,10 @@ class WindowManager {
     if (ey < this.win.offsetTop) y = 0
     else if (ey > this.win.offsetTop + this.win.offsetHeight) y = this.canv.height
     this._canvasUpdate(x, y)
+    if (STORE.state.theme === 'light') {
+      this.win.style.boxShadow = 'none'
+      return
+    } // no shadows for light theme
     x = Maths.map(ex, 0, window.innerWidth, 33, -33)
     y = Maths.map(ey, 0, window.innerHeight, 33, -33)
     const opac = this.layout === 'welcome' ? 0.5 : 0.75

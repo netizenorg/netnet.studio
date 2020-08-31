@@ -1,12 +1,21 @@
 # The Logic (JavaScript)
 
-This README explains (at a high level) what the files in this `/www/js/` direcotry are. If you want a deeper dive into any of this, each `.js` file has comments on the top with more details.
+This README explains (at a high level) what the files in this `/www/js/` directory are. If you want a deeper dive into any of this, each `.js` file has comments on the top with more details.
 
+- [Convo.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#convojs)
 - [StateManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#statemanagerjs)
 - [TutorialManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#tutorialmanagerjs)
 - [WindowManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#windowmanager) (Widget.js)
 - [MenuManager.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#menumanager) (TextBubble.js, SearchBar.js)
 - [./netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/master/www/js#netitorminjs) (NetitorEduInfoHandler.js, NetitorErrorHandler.js)
+
+
+## [Convo.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/Convo.js)
+
+This class can be used to create linear and non-linear conversations with netnet. It works almost exactly like the TutorialManager (except without all the extra logic related to tutorials). the ArrayOfContentObjects you pass into the constructor should look exactly like that of the steps array in tutorials. See [Creating Tutorials Wiki](https://github.com/netizenorg/netnet.studio/wiki/Creating-Tutorials) for more info on what those objects should look like. It's used by various other components to instantiate new "convos" but (to keep things consistent) the instantiated convo is always assigned to the global "convo" variable, like this:
+```js
+window.convo = new Convo({ content: 'oh hi!' })
+```
 
 
 ## [StateManager.js](https://github.com/netizenorg/netnet.studio/blob/master/www/js/StateManager.js)
