@@ -175,13 +175,17 @@
 
   background-color: var(--netizen-meta);
 
-  animation: blink 1.5s infinite steps(1);
+  animation: hdrCursorBlink 1.5s infinite linear;
   transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-@keyframes blink {
+@keyframes hdrCursorBlink {
   0% { opacity: 0; }
-  100% { opacity: 1; }
+  25% { opacity: 0; }
+  26% { opacity: 1; }
+  75% { opacity: 1; }
+  76% { opacity: 0; }
+  100% { opacity: 0; }
 }
 
 .text-bubble > section h1:hover {
