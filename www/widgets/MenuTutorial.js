@@ -140,7 +140,7 @@ class MenuTutorial extends Widget {
         </a>
       </h3>
       <p>${t.description}</p>
-      <div>
+      <div id="tut-menu-buttons">
         <button id="tut-menu-restart">restart</button>
         <button id="tut-menu-quit">quit</button>
       </div>

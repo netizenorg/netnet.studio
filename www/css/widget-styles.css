@@ -115,8 +115,8 @@
   line-height: 1.45em;
 }
 
-.widget > .w-innerHTML section div:not(:first-of-type),
-.widget > .w-innerHTML p:not(:first-of-type) {
+.widget > .w-innerHTML section div,
+.widget > .w-innerHTML p {
   margin-top: 13px;
   margin-bottom: 0;
 }
@@ -251,8 +251,7 @@
 
 /* tutorial menu */
 #tut-menu-content {
-  width: 300px;
-  max-width: 400px;
+  width: 400px;
   color: var(--netizen-meta);
 }
 
@@ -260,6 +259,22 @@
   position: relative;
   padding: 0 5px;
   margin: 5px 0;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: none;
+}
+
+#tut-menu-content > div {
+  margin: 0 auto 15px;
+}
+
+#tut-menu-content > div:last-of-type {
+  margin: 0 auto 10px;
+}
+
+#tut-menu-content p {
+  padding: 0px 5px;
+  margin: 0;
 }
 
 #tut-menu-content > .tut-menu-sub-menu {
@@ -268,17 +283,68 @@
   margin: 0 auto 15px;
 }
 
-#tut-menu-content > div {
-  margin: 0 auto 15px;
+#tut-menu-content > .tut-menu-sub-menu .link {
+  padding: 0;
 }
 
-#tut-menu-content p {
-  padding: 2px 5px;
-  margin: 0;
-}
-
-#tut-menu-content .selected {
+#tut-menu-content > .tut-menu-sub-menu .selected {
   color: var(--netizen-match-color);
+  border-bottom: 1px solid var(--netizen-match-color);
+  transform: skew(-5deg);
+}
+
+#tut-menu-content > .tut-menu-sub-content div {
+  display: block;
+  margin-top: 13px;
+  margin-bottom: 0;
+}
+#tut-menu-content > .tut-menu-sub-content div:first-of-type {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#tut-menu-content #tut-menu-buttons {
+  margin-top: 15px;
+}
+
+#tut-menu-content #tut-menu-buttons button {
+  display: inline-block;
+  position: relative;
+  padding: 5px 10px;
+  border: 1px solid var(--netizen-meta);
+  border-radius: 25px;
+  margin-right: 5px;
+  color: var(--netizen-meta);
+  background-color: var(--bg-color);
+  transition: background-color .5s cubic-bezier(0.165, 0.84, 0.44, 1), color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+}
+
+#tut-menu-content #tut-menu-buttons button:after {
+  content: '';
+  position: absolute;
+  display: block;
+  left: -4px;
+  top: -4px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  border: 1px solid var(--netizen-meta);
+  border-radius: 25px;
+  opacity: 0;
+}
+
+#tut-menu-content #tut-menu-buttons button:hover {
+  color: var(--bg-color);
+  background-color: var(--netizen-match-color);
+}
+
+#tut-menu-content #tut-menu-buttons button:focus {
+  outline:none;
+  outline-offset: none;
+  box-shadow: none;
+}
+#tut-menu-content #tut-menu-buttons button:focus:after {
+  opacity: 1;
 }
 
 
