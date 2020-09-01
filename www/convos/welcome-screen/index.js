@@ -234,6 +234,50 @@ window.convos['welcome-screen'] = (self) => {
     }
   }]
   return {
+    'quick-menu': [{
+      content: 'What do you want to do?',
+      options: {
+        'learn to make Internet Art': (e) => {
+          WIDGETS['functions-menu'].close()
+          // NOTE: THIS IS TEMPORARY
+          window.greetings.injectStarterCode()
+          setTimeout(() => {
+            NNM.setFace('ᴖ', '﹏', 'ᴖ', false)
+          }, STORE.getTransitionTime() + 100)
+          e.goTo('start-learning')
+          // TODO: once we've got the orientation tutorial && a couple
+          // of others, we should say something like:
+          // want to get oriented? or try one of our beta-tutorials
+          // (maybe even a "what's beta mean?" to explain status of project)
+        },
+        'give me a blank canvas': (e) => {
+          WIDGETS['functions-menu'].close()
+          e.hide()
+          if (STORE.state.layout === 'welcome') {
+            STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          }
+          WIDGETS['functions-menu'].newProject()
+        },
+        'open my last project': (e) => {
+          WIDGETS['functions-menu'].close()
+          window.utils.openProjectPrompt()
+        },
+        'tell me about netnet': (e) => {
+          WIDGETS['functions-menu'].close()
+          if (STORE.state.layout !== 'welcome') {
+            STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+          }
+          STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+          setTimeout(() => {
+            WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
+            const x = WIDGETS['ws-credits'].width + 50
+            NNW.updatePosition(x)
+          }, 250)
+          e.goTo('whois')
+        },
+        'never mind': (e) => e.hide()
+      }
+    }, ...backgroundInfo],
     'face-click': [{
       content: `Oh hi ${ls.getItem('username')}!`,
       options: {

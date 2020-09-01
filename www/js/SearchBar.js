@@ -1,4 +1,4 @@
-/* global STORE, NNT, NNE, Fuse */
+/* global STORE, NNT, NNE, Fuse, WIDGETS */
 /*
   -----------
      info
@@ -23,7 +23,6 @@
   search.close()      // closes search
   search.search(term) // does the searching
 
-  search.addToDict(array) // add array of objects to search dictionary
 */
 class SearchBar {
   constructor () {
@@ -33,15 +32,17 @@ class SearchBar {
     this.netnet = document.querySelector('#netnet')
 
     this.dict = []
-    this.loadedTutorialsData = false
-    this.loadedWidgetsData = false
+    this.loadedTutorialsData = 0
+    this.loadedWidgetsData = 0
     STORE.subscribe('tutorials', (e) => {
-      if (!this.loadedTutorialsData) this.update('tutorials', e)
-      this.loadedTutorialsData = true
+      if (this.loadedTutorialsData < 1) this._loadData('tutorials', e)
+      this.loadedTutorialsData++
     })
     STORE.subscribe('widgets', (e) => {
-      if (!this.loadedWidgetsData) this.update('widgets', e)
-      this.loadedWidgetsData = true
+      // 2, b/c the general widgets load call doesnt fire until
+      // after the welcome widgets load call
+      if (this.loadedWidgetsData < 2) this._loadData('widgets', e)
+      this.loadedWidgetsData++
     })
 
     document.addEventListener('keydown', (e) => {
@@ -76,7 +77,8 @@ class SearchBar {
     })
 
     this._setupSearchBar()
-    this.update('edu-info', NNE.edu)
+    this._loadData('edu-info', NNE.edu)
+    this._loadMiscData()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -133,9 +135,13 @@ class SearchBar {
         const wrd = res.item.word
         if (res.item.type === 'widgets') {
           d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${wrd}`
-        } else {
+        } else { // Functions Menu (sub menus)
           const t = res.item.type.split('.')
-          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${t[1]} &gt; ${wrd}`
+          if (t.length > 2) {
+            d.innerHTML = `<i class="w-results">(${t[1]})</i> &gt; ${t[2]} &gt; ${wrd}`
+          } else {
+            d.innerHTML = `<i class="w-results">(${t[1]})</i> &gt; ${wrd}`
+          }
         }
       } else if (res.item.type === 'tutorials') {
         d.innerHTML = `<i class="t-results">(Tutorials)</i> &gt; ${res.item.word}`
@@ -145,6 +151,9 @@ class SearchBar {
           d.innerHTML += ` &gt; ${res.matches[1].value}`
         }
         d.className = 'tutorials-results'
+      } else if (res.item.type === 'netnet') {
+        d.innerHTML = `<i class="e-results">(netnet)</i> &gt; ${res.item.word}`
+        d.className = 'edu-results'
       }
       d.addEventListener('click', () => {
         this.ele.querySelector('input').value = ''
@@ -158,20 +167,6 @@ class SearchBar {
         }
       })
       div.appendChild(d)
-    })
-  }
-
-  addToDict (arr) {
-    this.dict = this.dict.concat(arr)
-    this.fuse = new Fuse(this.dict, {
-      ignoreLocation: true,
-      includeScore: true,
-      includeMatches: true,
-      keys: [
-        { name: 'word', weight: 1 },
-        { name: 'subs', weight: 0.5 },
-        { name: 'alts', weight: 0.25 }
-      ]
     })
   }
 
@@ -202,19 +197,61 @@ class SearchBar {
     })
   }
 
-  update (type, data) {
+  _addToDict (arr) {
+    this.dict = this.dict.concat(arr)
+    this.fuse = new Fuse(this.dict, {
+      ignoreLocation: true,
+      includeScore: true,
+      includeMatches: true,
+      keys: [
+        { name: 'word', weight: 1 },
+        { name: 'subs', weight: 0.5 },
+        { name: 'alts', weight: 0.25 }
+      ]
+    })
+  }
+
+  _createFuncMenuObj (subs) {
+    const arr = []
+    for (const sub in subs) {
+      arr.push({
+        type: 'widgets.Functions Menu',
+        word: sub,
+        clck: () => {
+          STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+          const id = `func-menu-${sub.replace(/ /g, '-')}`
+          WIDGETS['functions-menu'].toggleSubMenu(id)
+        }
+      })
+      subs[sub].forEach(s => {
+        arr.push({
+          type: `widgets.Functions Menu.${sub}`,
+          word: `${s.click}()`,
+          alts: s.alts,
+          clck: () => {
+            STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+            const id = `func-menu-${sub.replace(/ /g, '-')}`
+            WIDGETS['functions-menu'].toggleSubMenu(id)
+          }
+        })
+      })
+    }
+    this._addToDict(arr)
+  }
+
+  _loadData (type, data) {
     const arr = []
     if (type === 'widgets') {
-      data.filter(w => w.ref.listed).forEach(w => {
-        const alts = (w.ref.keywords instanceof Array)
-          ? w.ref.keywords : w.ref.keywords.alts
-        const subs = w.ref.keywords && w.ref.keywords.subs
-          ? w.ref.keywords.subs : []
+      data.filter(w => {
+        const keys = ['functions-menu', 'widgets-menu']
+        if (w.ref.listed || keys.includes(w.ref.key)) return w
+        else return false
+      }).forEach(w => {
+        if (w.key === 'functions-menu') this._createFuncMenuObj(w.ref.subs)
         const obj = {
           type: 'widgets',
           word: w.ref.title,
-          subs: subs || [],
-          alts: alts || [],
+          alts: w.ref.keywords || [],
           clck: () => { STORE.dispatch('OPEN_WIDGET', w.ref.key) }
         }
         arr.push(obj)
@@ -235,8 +272,20 @@ class SearchBar {
       })
     } else if (type === 'edu-info') {
       // TODO open anatomy of "an html element widget" for elements/attributes
+      // type: 'netnet'
     }
-    this.addToDict(arr)
+    this._addToDict(arr)
+  }
+
+  _loadMiscData () {
+    const arr = []
+    arr.push({
+      type: 'netnet', // for "convos" like 'edu-info'
+      word: 'main menu',
+      alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
+      clck: () => { window.greetings.mainMenu() }
+    })
+    this._addToDict(arr)
   }
 }
 

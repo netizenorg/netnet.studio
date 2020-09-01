@@ -47,6 +47,10 @@
   w.recenter() // recenters the widget
   w.update(cssObj, transitionTime) // to update CSS
 
+  // to create event listeners
+  w.on('open', callback)
+  w.on('close', callback)
+
   // when using update() to position the widget (left/right/top/bottom)
   // you must pass number values (not strings), for example:
   w.update({ top: 29, right: 20 }, 500)
@@ -61,6 +65,11 @@ class Widget {
     this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
     this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
     this.mousedown = false
+
+    this.events = {
+      open: [],
+      close: []
+    }
 
     this._createWindow()
     this._updateIfListed()
@@ -159,6 +168,7 @@ class Widget {
   open () {
     if (STORE.state.widgets.map(w => w.ref).includes(this)) {
       STORE.dispatch('OPEN_WIDGET', this)
+      this.events.open.forEach(func => func())
     } else {
       console.error('Widget: this widget was never loaded to the STORE')
     }
@@ -166,6 +176,7 @@ class Widget {
 
   close () {
     STORE.dispatch('CLOSE_WIDGET', this)
+    this.events.close.forEach(func => func())
   }
 
   update (opts, time) {
@@ -185,6 +196,13 @@ class Widget {
     this._css('left', window.innerWidth / 2 - this.width / 2)
     this._css('top', window.innerHeight / 2 - this.height / 2)
     this._recentered = true
+  }
+
+  on (eve, callback) {
+    if (!this.events[eve]) {
+      return console.error(`Widget: ${eve} is not a Widget event`)
+    }
+    this.events[eve].push(callback)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

@@ -70,6 +70,10 @@ window.greetings = {
     }
   },
 
+  mainMenu: () => {
+    window.convo = new Convo(window.greetings.convos['quick-menu'])
+  },
+
   saveName: (name) => {
     const self = window.greetings
     if (name === '') {
