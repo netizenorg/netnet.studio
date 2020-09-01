@@ -116,25 +116,40 @@ class TextBubble {
     this.ele.style.display = 'block'
     this.updatePosition()
     setTimeout(() => { this.ele.style.opacity = 1 }, 100)
+    setTimeout(() => {  
+      this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(0)'
+      this.ele.querySelector('.text-bubble-options').style.opacity = 1
+    }, 600)
   }
 
   fadeOut (ms, callback) {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
+    setTimeout(() => {  
+      this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(10px)'
+      this.ele.querySelector('.text-bubble-options').style.opacity = 0
+    }, 5)
     setTimeout(() => { this.ele.style.opacity = 0 }, 10)
     setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
   }
 
   updatePosition () {
+    const tbo = this.ele.querySelector('.text-bubble-options')
+    if (NNW.layout === 'dock-left' || NNW.layout === 'full-screen') {
+      tbo.style.flexDirection = 'column'
+      tbo.style.left = '50%'
+      tbo.style.width = '75%'
+      tbo.querySelectorAll('button').forEach(b => { b.style.margin = '5px' })
+    }
     if (NNW.layout === 'dock-left') {
-      const offY = 29 + this.ele.offsetHeight
-      this.ele.style.transform = `translate(362px, ${offY}px)`
+      const offY = 46 + this.ele.offsetHeight
+      this.ele.style.transform = `translate(455px, ${offY}px)`
       this.tri.style.top = '13px'
       this.tri.style.left = '-22px'
       this.tri.style.right = null
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(270deg)'
     } else if (NNW.layout === 'full-screen') {
-      const offY = 92 + this.ele.offsetHeight
+      const offY = 115 + this.ele.offsetHeight
       this.ele.style.transform = `translate(-20px, ${offY}px)`
       this.tri.style.top = '-19px'
       this.tri.style.left = null
@@ -142,6 +157,10 @@ class TextBubble {
       this.tri.style.bottom = null
       this.tri.style.transform = 'rotate(0deg)'
     } else {
+      tbo.style.flexDirection = 'row'
+      tbo.style.left = '48%'
+      tbo.style.width = '80%'
+      tbo.querySelectorAll('button').forEach(b => { b.style.margin = '0 5px 0 0' })
       this.ele.style.transform = 'translate(0,0)'
       this.tri.style.top = null
       this.tri.style.left = null
