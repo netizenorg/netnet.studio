@@ -269,6 +269,25 @@ class WindowManager {
           setTimeout(() => { this.win.style.transition = 'none' }, 500)
         }, 10)
       }
+      // check if text-bubbles are going off-frame left
+      if (this.layout === 'welcome' || this.layout === 'separate-window') {
+        const winRight = this.win.offsetLeft + this.win.offsetWidth
+        let tbWidth = 0
+        NNM.ele.querySelectorAll('.text-bubble-options > button')
+          .forEach(b => { tbWidth += b.offsetWidth + 5 }) // +5 button margin
+        // 0.8 b/c .text-bubble-options width:80%;
+        // divided by 2, b/c .text-bubble-options translateX(-50%)
+        const nudge = (NNM.tis.offsetWidth - (NNM.tis.offsetWidth * 0.8)) / 2
+        if (tbWidth + nudge > winRight) {
+          this.win.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+          setTimeout(() => {
+            let l = this.win.offsetLeft
+            l += tbWidth + nudge - winRight
+            this.win.style.left = `${l + 20}px` // +20 for a little space
+            setTimeout(() => { this.win.style.transition = 'none' }, 500)
+          }, 10)
+        }
+      }
     }, STORE.getTransitionTime())
   }
 
