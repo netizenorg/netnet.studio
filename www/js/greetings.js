@@ -23,6 +23,10 @@ window.greetings = {
 </style>
   `,
 
+  injectStarterCode: () => {
+    NNE.code = window.greetings.starterCode
+  },
+
   loader: () => {
     const self = window.greetings
     window.utils.loadConvoData('welcome-screen', () => {
@@ -46,17 +50,24 @@ window.greetings = {
       document.querySelector('#loader').style.opacity = '0'
       setTimeout(() => {
         document.querySelector('#loader').style.display = 'none'
+        self.faceClickHint()
       }, 1000) // NOTE this should match #loader transition-duration
     }
   },
 
-  injectStarterCode: () => {
-    NNE.code = window.greetings.starterCode
+  faceClickHint: () => {
+    window.greetings._faceHint = setTimeout(() => {
+      window.convo = new window.Convo({
+        content: 'pssst, click on my face', options: {}
+      })
+      window.NNM.setFace('^', '‿', '^', false)
+    }, 5 * 1000)
   },
 
   welcome: () => {
     const self = window.greetings
     self.convos = window.convos['welcome-screen'](self)
+    clearTimeout(self._faceHint)
     if (window.localStorage.getItem('username')) {
       if (STORE.history.actions.length <= 6) {
         // NOTE: 6 is based on the amount of actions that fire on launch
