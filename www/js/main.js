@@ -94,6 +94,11 @@ window.addEventListener('DOMContentLoaded', (e) => {
   if (paf) window.utils.handleLoginRedirect()
 })
 
+window.addEventListener('resize', (e) => {
+  window.utils.windowResize()
+  window.utils.keepWidgetsInFrame()
+})
+
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()

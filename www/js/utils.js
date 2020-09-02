@@ -24,7 +24,7 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
-  loadWidgetClass (path, filename) {
+  loadWidgetClass: (path, filename) => {
     window.utils.get('api/widgets', (res) => {
       const s = document.createElement('script')
       s.setAttribute('src', `${path}/${filename}`)
@@ -113,7 +113,7 @@ window.utils = {
     window.utils._runProcessingFace()
   },
 
-  updateShadow (e, self) {
+  updateShadow: (e, self) => {
     if (STORE.state.theme === 'light') {
       self.ele.style.boxShadow = 'none'
       return
@@ -129,6 +129,26 @@ window.utils = {
       ? Maths.map(e.clientY, 0, center.y, 33, 0)
       : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
     self.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
+  },
+
+  keepWidgetsInFrame: () => {
+    STORE.state.widgets.forEach(w => {
+      const maxLeft = window.innerWidth - w.ref.ele.offsetWidth
+      const maxTop = window.innerHeight - w.ref.ele.offsetHeight
+      if (w.ref.ele.offsetLeft > maxLeft) {
+        w.ref.update({ right: 20 })
+      } else if (w.ref.ele.offsetTop > maxTop) {
+        w.ref.update({ bottom: 20 })
+      }
+    })
+  },
+
+  closeTopMostWidget: () => {
+    const arr = []
+    const W = WIDGETS
+    for (const w in W) if (W[w].opened) arr.push(W[w])
+    arr.sort((a, b) => parseFloat(b.z) - parseFloat(a.z))
+    if (arr[0]) arr[0].close()
   },
 
   // ~ ~ ~ main.js helpers
@@ -172,11 +192,11 @@ window.utils = {
     } else setTimeout(window.utils.handleLoginRedirect, 250)
   },
 
-  closeTopMostWidget: () => {
-    const arr = []
-    const W = WIDGETS
-    for (const w in W) if (W[w].opened) arr.push(W[w])
-    arr.sort((a, b) => parseFloat(b.z) - parseFloat(a.z))
-    if (arr[0]) arr[0].close()
+  windowResize: () => {
+    window.NNW._resizeWindow({
+      clientX: window.NNW.win.offsetWidth,
+      clientY: window.NNW.win.offsetHeight
+    })
   }
+
 }
