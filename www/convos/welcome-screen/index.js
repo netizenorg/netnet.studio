@@ -41,6 +41,11 @@ window.convos['welcome-screen'] = (self) => {
   // best to keep backgroundInfos generic
   const backgroundInfo = [{
     id: 'main-menu',
+    before: () => {
+      if (WIDGETS['ws-credits'].opened) {
+        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+      }
+    },
     content: 'What do you want to do now?',
     options: {
       'learn to make Internet Art': (e) => {
@@ -67,12 +72,6 @@ window.convos['welcome-screen'] = (self) => {
         if (STORE.state.layout !== 'welcome') {
           STORE.dispatch('CHANGE_LAYOUT', 'welcome')
         }
-        STORE.dispatch('OPEN_WIDGET', 'ws-credits')
-        setTimeout(() => {
-          WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
-          const x = WIDGETS['ws-credits'].width + 50
-          NNW.updatePosition(x)
-        }, 250)
         e.goTo('whois')
       }
     }
@@ -113,6 +112,14 @@ window.convos['welcome-screen'] = (self) => {
     options: { cool: (e) => e.hide() }
   }, {
     id: 'whois',
+    before: () => {
+      STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+      setTimeout(() => {
+        WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
+        const x = WIDGETS['ws-credits'].width + 50
+        NNW.updatePosition(x)
+      }, 250)
+    },
     content: 'netnet? that\'s me! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;',
     options: {
       'cool!': (e) => e.goTo('main-menu'),
@@ -141,7 +148,8 @@ window.convos['welcome-screen'] = (self) => {
     options: {
       'why\'s that?': (e) => e.goTo('why-is-that'),
       'I see, and netnet?': (e) => e.goTo('whois')
-    }
+    },
+    after: () => { NNM.setFace('^', '⌄', '^', false) }
   }, {
     id: 'why-is-that',
     content: 'Because he feels the web is a "watered down" version of his Xanadu Project, which he was working on long before the web came out, but unlike the Web, it\'s had some trouble gaining traction.',
@@ -156,7 +164,8 @@ window.convos['welcome-screen'] = (self) => {
         e.goTo('xanadu')
       },
       'I see, and netnet?': (e) => e.goTo('whois')
-    }
+    },
+    after: () => { NNM.setFace('^', '⌄', '^', false) }
   }, {
     id: 'xanadu',
     content: 'I\'ll let Ted explain that himself.',
@@ -187,10 +196,11 @@ window.convos['welcome-screen'] = (self) => {
         e.goTo('xerox-parc')
       },
       'how netnet?': (e) => e.goTo('whois')
-    }
+    },
+    after: () => { NNM.setFace('o', '‿', 'o', false) }
   }, {
     id: 'xerox-parc',
-    content: 'Nope, Adele Goldberg and Alan Kay did. At a time (1977) when computers where huge institution owned machines, they <a href="http://www.newmediareader.com/book_samples/nmr-26-kay.pdf" target="_blank">imagined</a> "personal" computers. While working on that they made the first computers with real "graphical user interfaces" at Xerox PARC, a system they called SmallTalk.',
+    content: 'Adele Goldberg and Alan Kay coined the term in 1977, when computers were huge institution owned machines, they <a href="http://www.newmediareader.com/book_samples/nmr-26-kay.pdf" target="_blank">imagined</a> "personal" computers. While working on that they made the first computers with real "graphical user interfaces" at Xerox PARC, a system they called SmallTalk.',
     options: {
       'I see, and netnet?': (e) => {
         STORE.dispatch('CLOSE_WIDGET', 'ws-alan')
@@ -203,7 +213,8 @@ window.convos['welcome-screen'] = (self) => {
         NNW.updatePosition()
         e.goTo('whois')
       }
-    }
+    },
+    after: () => { NNM.setFace('^', '‿', '^', false) }
   }, {
     id: 'ai',
     content: 'AI stands for Artificial Intelligence, which is what we call it when we personify algorithms. Like me! but there are so many others <i>kinds</i> of AI playing this imitation game.',
@@ -217,14 +228,16 @@ window.convos['welcome-screen'] = (self) => {
     options: {
       'machine learning?': (e) => e.goTo('machine-learning'),
       'I see, and netnet?': (e) => e.goTo('whois')
-    }
+    },
+    after: () => { NNM.setFace('◠', '‿', '◠', false) }
   }, {
     id: 'machine-learning',
     content: 'ML is a very powerful and contemporary approach to AI. But it\'s magic requires troves of organized (labeled) data and an immense amount of computational resources, such that only a relatively few institutions have access to this power (regardless of however "open source" the libraries used to create these models may be).',
     options: {
       'so no ML for me?': (e) => e.goTo('ml-for-me'),
       'I see, and netnet?': (e) => e.goTo('whois')
-    }
+    },
+    after: () => { NNM.setFace('⇀', '‸', '↼', false) }
   }, {
     id: 'ml-for-me',
     content: 'Well not necessarily! There are lots of ways artists can leverage the power of Machine Learning in their work, I can teach you!',
@@ -235,6 +248,11 @@ window.convos['welcome-screen'] = (self) => {
   }]
   return {
     'quick-menu': [{
+      before: () => {
+        if (WIDGETS['ws-credits'].opened) {
+          STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+        }
+      },
       content: 'What do you want to do?',
       options: {
         'learn to make Internet Art': (e) => {
@@ -267,12 +285,6 @@ window.convos['welcome-screen'] = (self) => {
           if (STORE.state.layout !== 'welcome') {
             STORE.dispatch('CHANGE_LAYOUT', 'welcome')
           }
-          STORE.dispatch('OPEN_WIDGET', 'ws-credits')
-          setTimeout(() => {
-            WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
-            const x = WIDGETS['ws-credits'].width + 50
-            NNW.updatePosition(x)
-          }, 250)
           e.goTo('whois')
         },
         'never mind': (e) => e.hide()
@@ -296,7 +308,8 @@ window.convos['welcome-screen'] = (self) => {
       content: `It's not? woops! I can't actually <i>see you</i>, just your computer. It seems someone named ${ls.getItem('username')} was on this computer before you.`,
       options: {
         'I see, let\'s reboot then!': (e) => WIDGETS['functions-menu'].reboot()
-      }
+      },
+      after: () => { NNM.setFace('Ó', '﹏', 'Ò', false) }
     }, ...backgroundInfo],
     'get-started-first-time': {
       content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio (aka netnet.studio) a hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input placeholder="what\'s your name?">',
@@ -316,23 +329,6 @@ window.convos['welcome-screen'] = (self) => {
           self.saveName('')
           e.hide()
           self.goTo('make-one-up')
-        },
-        'whois netnet?': (e, t) => {
-          const v = t.$('input').value
-          self.saveName(v)
-          if (v === '') {
-            e.hide()
-            self.goTo('no-name')
-          } else {
-            e.hide()
-            self.goTo('whois')
-            STORE.dispatch('OPEN_WIDGET', 'ws-credits')
-            setTimeout(() => {
-              WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
-              const x = WIDGETS['ws-credits'].width + 50
-              NNW.updatePosition(x)
-            }, 250)
-          }
         }
       }
     },
@@ -356,6 +352,14 @@ window.convos['welcome-screen'] = (self) => {
       }
     },
     'name-entered': [{
+      before: () => {
+        STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+        setTimeout(() => {
+          WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
+          const x = WIDGETS['ws-credits'].width + 50
+          NNW.updatePosition(x)
+        }, 250)
+      },
       content: `Nice to e-meet you ${ls.getItem('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;`,
       options: {
         'cool!': (e) => e.goTo('main-menu'),
@@ -368,8 +372,9 @@ window.convos['welcome-screen'] = (self) => {
       content: `ok! I'm going to call you ${ls.getItem('username')}!`,
       options: {
         'why that name?': (e) => e.goTo('made-up-name'),
-        '...um ok, netnet': (e) => e.goTo('whois')
-      }
+        '...um ok, "netnet"': (e) => e.goTo('whois')
+      },
+      after: () => { NNM.setFace('◠', 'ᗜ', '◠', false) }
     }, {
       id: 'made-up-name',
       content: (() => {
@@ -384,36 +389,41 @@ window.convos['welcome-screen'] = (self) => {
         return content
       })(),
       options: {
-        'i see, very creative': (e) => e.goTo('main-menu'),
-        'wtf? how did you know all that?': (e) => e.goTo('explain-data')
-      }
+        'very creative netnet': (e) => e.goTo('whois'),
+        'wtf? how did you know all that?': (e) => e.gfoTo('explain-data')
+      },
+      after: () => { NNM.setFace('◠', '_', '◠', false) }
     }, {
       id: 'explain-data',
       content: 'On the Internet it\'s very common for a web-app like myself to know all sorts of things about you.',
       options: {
         'oh right, forgot I was online': (e) => e.goTo('forgot-online'),
         'isn\'t that an invasion of privacy?': (e) => e.goTo('explain-privacy')
-      }
+      },
+      after: () => { NNM.setFace('☉', '﹏', '☉', false) }
     }, {
       id: 'forgot-online',
       content: 'Easy to forget in our hyper-digitally mediated world! Online life is real life after all!',
       options: {
         'so tell me, what\'s netnet?': (e) => e.goTo('whois')
-      }
+      },
+      after: () => { NNM.setFace('^', '﹏', '^', false) }
     }, {
       id: 'explain-privacy',
       content: 'That depends on what\'s done with the data. Some apps exploit as much user data as they can in the interest of Surveillance Capitalism, while others simply use what they need to service the user.',
       options: {
         'which one are you?': (e) => e.goTo('which-are-you'),
         'what\'s Surveillance Capitalism?': (e) => e.goTo('surveillance-capitalism')
-      }
+      },
+      after: () => { NNM.setFace('ŏ', 'ー', 'ŏ', false) }
     }, {
       id: 'which-are-you',
       content: 'I\'m the later. I only use the data I need in order to work, like knowing what browser you\'re using. And personal data like your name is only stored on your browser, it neves gets sent to my server.',
       options: {
         'and what\'s Surveillance Capitalism?': (e) => e.goTo('surveillance-capitalism'),
         'how can I trust you?': (e) => e.goTo('trust')
-      }
+      },
+      after: () => { NNM.setFace('ᴖ', 'ᴗ', 'ᴖ', false) }
     }, {
       id: 'trust',
       content: 'How can you trust any website or app you use? That\'s exactly one of the reasons you should learn how the Internet works! And that\'s why I exist! To teach you!',
@@ -426,7 +436,8 @@ window.convos['welcome-screen'] = (self) => {
       content: 'Apps made to extract as much data from you as possible. This data is refined and used to fuel lucrative systems at the core of their business model; which in most cases, are used to predict and manipulate your behaviors and thoughts to make money.',
       options: {
         'that\'s dark': (e) => e.goTo('thats-dark')
-      }
+      },
+      after: () => { NNM.setFace('⌣̀', '_', '⌣́', false) }
     }, {
       id: 'thats-dark',
       content: 'it is... but that\'s why I exist! To help teach you and others to take back agency in their your lives!',

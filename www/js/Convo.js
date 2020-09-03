@@ -71,6 +71,11 @@ class Convo {
     this.id = id
     const time = STORE.getTransitionTime()
     const obj = this.data[this.id]
+
+    // pre hoook
+    if (typeof obj.before === 'function') obj.before()
+
+    // update
     STORE.dispatch('SHOW_EDU_TEXT', {
       content: obj.content,
       options: obj.options,
@@ -93,6 +98,9 @@ class Convo {
       if (typeof obj.opacity === 'number') {
         STORE.dispatch('CHANGE_OPACITY', obj.opacity)
       }
+
+      // post hook
+      if (typeof obj.after === 'function') obj.after()
     }, time)
   }
 
