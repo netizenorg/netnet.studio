@@ -46,11 +46,15 @@ window.greetings = {
 
   ready: () => {
     const self = window.greetings
-    if (self.loaded.widgets && self.loaded.tutorials) {
+    const loader = document.querySelector('#loader')
+    const loadScreen = loader.style.display !== 'none'
+    const previousUser = window.localStorage.getItem('username')
+    const allLoaded = self.loaded.widgets && self.loaded.tutorials
+    if (allLoaded && loadScreen) {
       document.querySelector('#loader').style.opacity = '0'
       setTimeout(() => {
         document.querySelector('#loader').style.display = 'none'
-        self.faceClickHint()
+        if (!previousUser) self.faceClickHint()
       }, 1000) // NOTE this should match #loader transition-duration
     }
   },
