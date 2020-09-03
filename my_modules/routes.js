@@ -93,14 +93,23 @@ function shortenURL (req, res, dbPath) {
   const urlsDict = require(dbPath)
   const index = Object.keys(urlsDict).length
   const key = (index === 0) ? '0' : utils.b10tob64(index)
-  urlsDict[key] = req.body.hash
-  fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
-    if (err) res.json({ success: false, error: err })
-    else {
-      const url = `http://netnet.studio/?c=${key}`
-      res.json({ success: true, url })
-    }
-  })
+  let repeatEntry = false
+  for (const key in urlsDict) {
+    if (urlsDict[key] === req.body.hash) { repeatEntry = key; break }
+  }
+  if (repeatEntry) {
+    const url = `http://netnet.studio/?c=${repeatEntry}`
+    res.json({ success: true, url })
+  } else {
+    urlsDict[key] = req.body.hash
+    fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
+      if (err) res.json({ success: false, error: err })
+      else {
+        const url = `http://netnet.studio/?c=${key}`
+        res.json({ success: true, url })
+      }
+    })
+  }
 }
 
 router.post('/api/shorten-url', (req, res) => {
