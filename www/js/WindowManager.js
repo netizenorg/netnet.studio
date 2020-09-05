@@ -127,7 +127,7 @@ class WindowManager {
     }, 10)
   }
 
-  expandShortURL (shortCode) {
+  expandShortURL (shortCode, cb) {
     window.fetch('./api/expand-url', {
       method: 'POST',
       headers: {
@@ -140,9 +140,10 @@ class WindowManager {
         if (json.error) this._expandURLerror(json.error)
         else {
           window.location.hash = json.hash
-          const opa = new URL(window.location).searchParams.get('opacity')
-          if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
-          else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          // const opa = new URL(window.location).searchParams.get('opacity')
+          // if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
+          // else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          if (cb) cb()
         }
       })
       .catch(() => { this._expandURLerror() })

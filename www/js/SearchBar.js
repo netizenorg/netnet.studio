@@ -283,7 +283,7 @@ class SearchBar {
       type: 'netnet', // for "convos" like 'edu-info'
       word: 'main menu',
       alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
-      clck: () => { window.greetings.mainMenu() }
+      clck: () => { window.greetings.startMenu() }
     })
     this._addToDict(arr)
   }

@@ -27,8 +27,8 @@
              // returns false, or 'mis' for main menu items,
              // 'ais' for alert menu item, 'tis' for textBubble item
 
-  NNM.toggleMenu()      // toggle's the main menu
-  NNM.showMainMenu()    // displays the main menu
+  NNM.toggleMenu()      // toggle's the main radial menu
+  NNM.showMainMenu()    // displays the main radial menu
   NNM.hideMainMenu()    // hides the main menu
 
   NNM.hideAlert()       // hides the currently displayed alert

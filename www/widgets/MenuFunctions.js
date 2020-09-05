@@ -14,7 +14,7 @@
   WIDGETS['functions-menu'] = new MenuFunctions()
 
   // it has the following methods
-  WIDGETS['functions-menu'].mainMenu()
+  WIDGETS['functions-menu'].startMenu()
   WIDGETS['functions-menu'].shareLink()
   WIDGETS['functions-menu'].downloadCode()
   WIDGETS['functions-menu'].uploadCode()
@@ -121,9 +121,9 @@ class MenuFunctions extends Widget {
     })
   }
 
-  mainMenu () {
+  startMenu () {
     this.close()
-    window.greetings.mainMenu()
+    window.greetings.startMenu()
   }
 
   shareLink () {
@@ -264,7 +264,7 @@ class MenuFunctions extends Widget {
       </div>
     `
 
-    this.$('#func-menu-hi').addEventListener('click', () => this.mainMenu())
+    this.$('#func-menu-hi').addEventListener('click', () => this.startMenu())
 
     for (const sub in this.subs) {
       const div = document.createElement('div')
