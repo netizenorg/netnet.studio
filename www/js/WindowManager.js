@@ -127,7 +127,7 @@ class WindowManager {
     }, 10)
   }
 
-  expandShortURL (shortCode) {
+  expandShortURL (shortCode, cb) {
     window.fetch('./api/expand-url', {
       method: 'POST',
       headers: {
@@ -140,9 +140,10 @@ class WindowManager {
         if (json.error) this._expandURLerror(json.error)
         else {
           window.location.hash = json.hash
-          const opa = new URL(window.location).searchParams.get('opacity')
-          if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
-          else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          // const opa = new URL(window.location).searchParams.get('opacity')
+          // if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
+          // else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          if (cb) cb()
         }
       })
       .catch(() => { this._expandURLerror() })
@@ -268,6 +269,25 @@ class WindowManager {
           this.win.style.top = `${t + 10}px` // +10 for a little space
           setTimeout(() => { this.win.style.transition = 'none' }, 500)
         }, 10)
+      }
+      // check if text-bubbles are going off-frame left
+      if (this.layout === 'welcome' || this.layout === 'separate-window') {
+        const winRight = this.win.offsetLeft + this.win.offsetWidth
+        let tbWidth = 0
+        NNM.ele.querySelectorAll('.text-bubble-options > button')
+          .forEach(b => { tbWidth += b.offsetWidth + 5 }) // +5 button margin
+        // 0.8 b/c .text-bubble-options width:80%;
+        // divided by 2, b/c .text-bubble-options translateX(-50%)
+        const nudge = (NNM.tis.offsetWidth - (NNM.tis.offsetWidth * 0.8)) / 2
+        if (tbWidth + nudge > winRight) {
+          this.win.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+          setTimeout(() => {
+            let l = this.win.offsetLeft
+            l += tbWidth + nudge - winRight
+            this.win.style.left = `${l + 20}px` // +20 for a little space
+            setTimeout(() => { this.win.style.transition = 'none' }, 500)
+          }, 10)
+        }
       }
     }, STORE.getTransitionTime())
   }
@@ -395,8 +415,8 @@ class WindowManager {
       this.rndr.style.height = '100%'
       this.rndr.style.left = '0px'
       this.rndr.style.top = '0px'
-      this.win.style.width = '340px'
-      this.win.style.height = '270px'
+      this.win.style.width = '430px'
+      this.win.style.height = '295px'
       this.win.style.left = 'calc(-170px + 50vw)'
       this.win.style.top = 'calc(-135px + 50vh)'
       this.win.style.bottom = null

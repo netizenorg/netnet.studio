@@ -39,13 +39,13 @@ class TutorialManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•.¸ public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  load (tut) {
+  load (tut, cb) {
     const root = (tut.indexOf('http') === 0) ? tut : `tutorials/${tut}`
     const url = (tut.indexOf('http') === 0)
       ? `${tut}/metadata.json` : `tutorials/${tut}/metadata.json`
     window.fetch(url, { method: 'GET' })
       .then(res => res.json())
-      .then(json => this._loadScript(json, root))
+      .then(json => this._loadScript(json, root, cb))
   }
 
   next () {
@@ -83,7 +83,7 @@ class TutorialManager {
     console.error(`TutorialManager: ${errz[t]}`)
   }
 
-  _loadScript (json, root) {
+  _loadScript (json, root, cb) {
     this.metadata = json // TODO: validate metadata....
     const s = document.createElement('script')
     if (root.indexOf('tutorials/') === 0) {
@@ -91,7 +91,7 @@ class TutorialManager {
       s.setAttribute('src', `${root}/${json.main}`)
       s.setAttribute('type', 'text/javascript')
       s.onerror = (e) => { this._err('main') }
-      s.onload = () => this._updateState(root)
+      s.onload = () => this._updateState(root, cb)
       document.body.appendChild(s)
     } else {
       // externally hosted
@@ -100,12 +100,12 @@ class TutorialManager {
         .then(text => {
           s.innerHTML = text
           document.body.appendChild(s)
-          this._updateState(root)
+          this._updateState(root, cb)
         })
     }
   }
 
-  _updateState (url) {
+  _updateState (url, cb) {
     if (typeof TUTORIAL === 'object') {
       // update tutorial data
       if (!(TUTORIAL.steps instanceof Array)) return this._err('steps')
@@ -123,6 +123,8 @@ class TutorialManager {
         // added to the page use window.utils.loadWidgetClass(path, filename)
         STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
       }
+      // run optional callback
+      if (cb) cb()
     } else this._err('tutObj')
   }
 
@@ -143,7 +145,7 @@ class TutorialManager {
     }
     return {
       id: '___START___',
-      content: `I've loaded a tutorial called ${m.title},
+      content: `Ok, I've loaded a tutorial called ${m.title},
       ${m.subtitle}, shall we get started?`,
       options: options,
       scope: this

@@ -14,6 +14,7 @@
   WIDGETS['functions-menu'] = new MenuFunctions()
 
   // it has the following methods
+  WIDGETS['functions-menu'].startMenu()
   WIDGETS['functions-menu'].shareLink()
   WIDGETS['functions-menu'].downloadCode()
   WIDGETS['functions-menu'].uploadCode()
@@ -28,6 +29,9 @@
   WIDGETS['functions-menu'].refresh()
   WIDGETS['functions-menu'].reboot()
 
+  // type is optional, should be either 'open' or 'close'
+  WIDGETS['functions-menu'].toggleSubMenu('sub-menu-id', type)
+
   // also inherits all the properties/methods of the base Widget class
   // refer to www/js/Widget.js
 
@@ -39,9 +43,71 @@ class MenuFunctions extends Widget {
     this.key = 'functions-menu' // used for: WIDGETS[key] = new MenuFunctions()
     this.resizable = false
     this.listed = false // make sure it doesn't show up in Widgets Menu
-    this.keywords = { // for search bar
-      subs: ['shareLink', 'saveProject', 'refresh', 'save', 'openProject', 'open', 'new', 'newProject', 'project', 'uploadCode', 'downloadCode', 'tidyCode', 'changeLayout', 'changeTheme', 'changeOpacity', 'reset', 'reboot', 'clear', 'errors'],
-      alts: ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
+    this.keywords = ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
+    this.subs = {
+      'my project': [
+        {
+          click: 'shareLink',
+          alts: ['share', 'link', 'save'],
+          hrAfter: true
+        },
+        {
+          click: 'downloadCode',
+          alts: ['download', 'export', 'save']
+        },
+        {
+          click: 'uploadCode',
+          alts: ['upload', 'import', 'open'],
+          hrAfter: true
+        },
+        {
+          click: 'saveProject',
+          alts: ['save', 'github', 'project', 'repo', 'repository']
+        },
+        {
+          click: 'openProject',
+          alts: ['open', 'github', 'project', 'repo', 'repository']
+        },
+        {
+          click: 'newProject',
+          alts: ['new', 'blank', 'start', 'fresh', 'canvas']
+        }
+      ],
+      'editor settings': [
+        {
+          click: 'tidyCode',
+          alts: ['tidy', 'format', 'clean', 'indent']
+        },
+        {
+          click: 'changeLayout',
+          alts: ['layout', 'view', 'orientation', 'setup'],
+          select: 'func-menu-layout-select'
+        },
+        {
+          click: 'changeTheme',
+          alts: ['theme', 'color', 'style', 'syntax highlight'],
+          select: 'func-menu-themes-select'
+        },
+        {
+          click: 'changeOpacity',
+          alts: ['opacity', 'transparency', 'fade'],
+          float: 'func-menu-opacity-input'
+        }
+      ],
+      'reset options': [
+        {
+          click: 'resetErrors',
+          alts: ['reset', 'ignored', 'dismissed', 'errors']
+        },
+        {
+          click: 'refresh',
+          alts: ['restart', 'reset']
+        },
+        {
+          click: 'reboot',
+          alts: ['restart', 'clear', 'start over']
+        }
+      ]
     }
     this._createContent()
     this._initValues()
@@ -53,6 +119,11 @@ class MenuFunctions extends Widget {
       // localStorage data is going to launch (to ensure latest data)
       this.convos = window.convos['functions-menu'](this)
     })
+  }
+
+  startMenu () {
+    this.close()
+    window.greetings.startMenu()
   }
 
   shareLink () {
@@ -168,37 +239,67 @@ class MenuFunctions extends Widget {
     window.convo = new Convo(this.convos['refresh-netnet'])
   }
 
+  toggleSubMenu (id, type) {
+    const subSec = this.$(`#${id} > .func-menu-sub-section`)
+    if (type === 'close') {
+      subSec.style.display = 'none'
+    } else if (type === 'open') {
+      subSec.style.display = 'block'
+    } else {
+      if (subSec.style.display === 'block') {
+        subSec.style.display = 'none'
+      } else {
+        subSec.style.display = 'block'
+      }
+    }
+    this._stayInFrame()
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createContent (quote, author) {
     this.innerHTML = `
       <div id="func-menu-content">
-        <button id="func-menu-share">shareLink()</button><br>
-        <hr>
-        <button id="func-menu-download">downloadCode()</button><br>
-        <button id="func-menu-upload">uploadCode()</button><br>
-        <hr>
-        <button id="func-menu-save">saveProject()</button><br>
-        <button id="func-menu-open">openProject()</button><br>
-        <button id="func-menu-new">newProject()</button><br>
-        <hr>
-        <button id="func-menu-tidy">tidyCode()</button><br>
-        <button id="func-menu-layouts">
-          changeLayout(<select id="func-menu-layout-select"></select>)
-        </button><br>
-        <button id="func-menu-themes">
-          changeTheme(<select id="func-menu-themes-select"></select>)
-        </button><br>
-        <button id="func-menu-opacity">
-          changeOpacity(<input id="func-menu-opacity-input"
-            type="number" min="0" max="1" step="0.1">)
-        </button><br>
-        <hr>
-        <button id="func-menu-errors">resetErrors()</button><br>
-        <button id="func-menu-refresh">refresh()</button><br>
-        <button id="func-menu-reboot">reboot()</button><br>
+        <div id="func-menu-hi">hi netnet!</div>
       </div>
     `
+
+    this.$('#func-menu-hi').addEventListener('click', () => this.startMenu())
+
+    for (const sub in this.subs) {
+      const div = document.createElement('div')
+      div.id = `func-menu-${sub.replace(/ /g, '-')}`
+      const title = document.createElement('span')
+      title.textContent = sub
+      title.addEventListener('click', () => this.toggleSubMenu(div.id))
+      div.appendChild(title)
+      const subSec = document.createElement('div')
+      subSec.className = 'func-menu-sub-section'
+      subSec.style.display = 'none'
+      div.appendChild(subSec)
+      this.subs[sub].forEach(btn => {
+        const b = document.createElement('button')
+        b.textContent = btn.click + '()'
+        b.addEventListener('click', (e) => this[btn.click]())
+        if (btn.select) {
+          const sel = document.createElement('select')
+          sel.id = btn.select
+          b.appendChild(sel)
+        } else if (btn.float) {
+          const inp = document.createElement('input')
+          inp.setAttribute('type', 'number')
+          inp.setAttribute('min', '0')
+          inp.setAttribute('max', '1')
+          inp.setAttribute('step', '0.1')
+          inp.id = btn.float
+          b.appendChild(inp)
+        }
+        subSec.appendChild(b)
+        if (btn.hrAfter) subSec.appendChild(document.createElement('hr'))
+      })
+      this.$('#func-menu-content').appendChild(div)
+    }
+
     if (this._recentered) this.update({ left: 20, bottom: 20 })
   }
 
@@ -242,25 +343,13 @@ class MenuFunctions extends Widget {
       }
     })
 
-    // setup event listenters
-    this.$('button').forEach(btn => {
-      const b = btn.id.split('-menu-')[1]
-      this.$(`#func-menu-${b}`)
-        .addEventListener('click', (e) => {
-          if (b === 'share') this.shareLink()
-          else if (b === 'download') this.downloadCode()
-          // else if (b === 'upload') this.uploadCode() // handled by FileUploader
-          else if (b === 'save') this.saveProject()
-          else if (b === 'open') this.openProject()
-          else if (b === 'new') this.newProject()
-          else if (b === 'tidy') this.tidyCode()
-          else if (b === 'layouts') this.changeLayout()
-          else if (b === 'themes') this.changeTheme()
-          else if (b === 'opacity') this.changeOpacity()
-          else if (b === 'errors') this.resetErrors()
-          else if (b === 'refresh') this.refresh()
-          else if (b === 'reboot') this.reboot()
-        })
+    // setup WIDGET listeners
+    this.on('close', () => {
+      // close open sub menus
+      for (const sub in this.subs) {
+        const id = `func-menu-${sub.replace(/ /g, '-')}`
+        this.toggleSubMenu(id, 'close')
+      }
     })
 
     // setup STORE listeners
@@ -273,6 +362,20 @@ class MenuFunctions extends Widget {
     STORE.subscribe('opacity', (data) => {
       this.opacityInp.value = data
     })
+  }
+
+  _stayInFrame () { // ensure that the textBubble is always readable in frame
+    setTimeout(() => {
+      const offset = (this.ele.offsetTop + this.ele.offsetHeight)
+      if (offset > window.innerHeight) {
+        this.ele.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+        setTimeout(() => {
+          const t = this.ele.offsetTop - Math.abs(window.innerHeight - offset - 20)
+          this.ele.style.top = `${t + 10}px` // +10 for a little space
+          setTimeout(() => { this.ele.style.transition = 'none' }, 500)
+        }, 10)
+      }
+    }, STORE.getTransitionTime())
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

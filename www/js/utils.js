@@ -24,7 +24,7 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
-  loadWidgetClass (path, filename) {
+  loadWidgetClass: (path, filename) => {
     window.utils.get('api/widgets', (res) => {
       const s = document.createElement('script')
       s.setAttribute('src', `${path}/${filename}`)
@@ -113,7 +113,7 @@ window.utils = {
     window.utils._runProcessingFace()
   },
 
-  updateShadow (e, self) {
+  updateShadow: (e, self) => {
     if (STORE.state.theme === 'light') {
       self.ele.style.boxShadow = 'none'
       return
@@ -131,45 +131,16 @@ window.utils = {
     self.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
   },
 
-  // ~ ~ ~ main.js helpers
-
-  openProjectPrompt: () => {
-    const opened = window.localStorage.getItem('opened-project')
-    if (opened) {
-      window.utils.updateRoot()
-      window.convo = new window.Convo({
-        content: `Do you want to continue working on "${opened}"?`,
-        options: {
-          yes: (e) => e.hide(),
-          'no, let\'s start a new project': () => {
-            WIDGETS['functions-menu'].newProject()
-          }
-        }
-      })
-    } else {
-      window.convo = new window.Convo({
-        content: 'Hmm, I can\'t seem to find that info in your browser? Maybe you cleared that data? Do you want me to open your list of of saved projects?',
-        options: {
-          yes: (e) => WIDGETS['functions-menu'].openProject(),
-          'no, let\'s start a new project': (e) => {
-            e.hide()
-            if (STORE.state.layout === 'welcome') {
-              STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
-            }
-            WIDGETS['functions-menu'].newProject()
-          }
-        }
-      })
-    }
-  },
-
-  handleLoginRedirect: () => {
-    if (WIDGETS['functions-menu']) {
-      const from = window.localStorage.getItem('pre-auth-from')
-      window.localStorage.removeItem('pre-auth-from')
-      if (from === 'save') WIDGETS['functions-menu'].saveProject()
-      else if (from === 'open') WIDGETS['functions-menu'].openProject()
-    } else setTimeout(window.utils.handleLoginRedirect, 250)
+  keepWidgetsInFrame: () => {
+    STORE.state.widgets.forEach(w => {
+      const maxLeft = window.innerWidth - w.ref.ele.offsetWidth
+      const maxTop = window.innerHeight - w.ref.ele.offsetHeight
+      if (w.ref.ele.offsetLeft > maxLeft) {
+        w.ref.update({ right: 20 })
+      } else if (w.ref.ele.offsetTop > maxTop) {
+        w.ref.update({ bottom: 20 })
+      }
+    })
   },
 
   closeTopMostWidget: () => {
@@ -178,5 +149,39 @@ window.utils = {
     for (const w in W) if (W[w].opened) arr.push(W[w])
     arr.sort((a, b) => parseFloat(b.z) - parseFloat(a.z))
     if (arr[0]) arr[0].close()
+  },
+
+  // ~ ~ ~ misc && main.js helpers
+
+  windowResize: () => {
+    window.NNW._resizeWindow({
+      clientX: window.NNW.win.offsetWidth,
+      clientY: window.NNW.win.offsetHeight
+    })
+  },
+
+  savedCode: () => {
+    const code = window.localStorage.getItem('code')
+    if (code !== NNE._encode(window.greetings.starterCode) &&
+    code !== 'eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=' &&
+    code !== 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') return code
+    else return false
+  },
+
+  netitorUpdate: () => {
+    // HACK: for some reason, sometimes the netitor doesn't reflect
+    // the actual the current code in it's value, but reassigning it does
+    window.NNW._whenCSSTransitionFinished(() => {
+      NNE.code = NNE.cm.getValue()
+    })
+  },
+
+  url: {
+    shortCode: new URL(window.location).searchParams.get('c'),
+    tutorial: new URL(window.location).searchParams.get('tutorial'),
+    opacity: new URL(window.location).searchParams.get('opacity'),
+    layout: new URL(window.location).searchParams.get('layout'),
+    theme: new URL(window.location).searchParams.get('theme')
   }
+
 }

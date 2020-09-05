@@ -36,7 +36,7 @@ class ExampleWidget extends Widget {
 
     // if for whatever reason you don't want this showing up
     // in the Widgets Menu or SearchBar results you can set listed to false
-    // this.listed = false
+    this.listed = false
 
     // here's some more example code...
     this.title = 'This is an Example Title'

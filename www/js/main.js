@@ -3,7 +3,7 @@
   TutorialManager, WindowManager, MenuManager,
   NetitorErrorHandler, NetitorEduInfoHandler
 */
-window.greetings.loader()
+// window.greetings.loader()
 
 const STORE = new StateManager({
   log: true
@@ -49,49 +49,12 @@ NNE.on('edu-info', (e) => {
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
 window.addEventListener('DOMContentLoaded', (e) => {
-  // does the user have an error exceptions saved
-  const erx = window.localStorage.getItem('error-exceptions')
-  if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
-  // if there is code saved in the URL's hash or localStorage...
-  const cde = window.localStorage.getItem('code')
-  if (NNE.hasCodeInHash) {
-    window.utils.clearProjectData()
-    NNE.loadFromHash()
-  } else if (cde) {
-    if (cde === 'eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=' ||
-    cde === 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') {
-      window.greetings.injectStarterCode()
-    } else NNE.code = NNE._decode(cde)
-  }
-  // if their are URL parameters...
-  const url = new URL(window.location)
-  // ...check for short code
-  const shc = url.searchParams.get('c')
-  if (!NNE.hasCodeInHash && shc) window.NNW.expandShortURL(shc)
-  // ...check for a tutorial
-  const tut = url.searchParams.get('tutorial')
-  if (tut) window.NNT.load(tut)
-  // ...check for a layout
-  const lay = url.searchParams.get('layout')
-  const lSl = window.localStorage.getItem('layout')
-  if (lay || lSl) {
-    const l = lay || lSl
-    STORE.dispatch('CHANGE_LAYOUT', l)
-    if (l !== 'welcome') {
-      window.NNW._whenCSSTransitionFinished(() => window.greetings.welcome())
-    }
-  }
-  // ...check for an opacity
-  const opa = url.searchParams.get('opacity')
-  if (opa) STORE.dispatch('CHANGE_OPACITY', opa)
-  // ...check for a theme
-  const the = url.searchParams.get('theme')
-  const lSt = window.localStorage.getItem('theme')
-  if (the) STORE.dispatch('CHANGE_THEME', the)
-  else if (lSt) STORE.dispatch('CHANGE_THEME', lSt)
-  // ...check for redirect from GitHub auth process
-  const paf = window.localStorage.getItem('pre-auth-from')
-  if (paf) window.utils.handleLoginRedirect()
+  window.greetings.loader()
+})
+
+window.addEventListener('resize', (e) => {
+  window.utils.windowResize()
+  window.utils.keepWidgetsInFrame()
 })
 
 window.addEventListener('keydown', (e) => {

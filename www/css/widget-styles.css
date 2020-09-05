@@ -107,6 +107,7 @@
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* default styles for common elements in widget content */
 
+<<<<<<< HEAD
 .widget > .w-innerHTML {
   position: relative;
   padding: 10px 15px;
@@ -138,6 +139,23 @@
 
   /*underline*/
   border-bottom: 1px solid var(--netizen-meta);
+=======
+.widget > .w-innerHTML p {
+  margin: 13px 0 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+
+.widget > .w-innerHTML a,
+.widget > .w-innerHTML .link {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .5s ease, border .5s ease;
+
+  /*underline*/
+  border-bottom: 1px solid var(--fg-color);
+>>>>>>> eda61e4f3eafbbfed3ac0c0f969e2c8e7ace7a16
   text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
 }
 .widget > .w-innerHTML a:hover,
@@ -148,10 +166,14 @@
   border-bottom: 1px solid var(--netizen-match-color);
   cursor: pointer;
 }
+<<<<<<< HEAD
 .widget > .w-innerHTML a:active,
 .widget > .w-innerHTML .link:active,
 .widget > .w-innerHTML section a:active,
 .widget > .w-innerHTML section .link:active {
+=======
+.widget > .w-innerHTML a:active {
+>>>>>>> eda61e4f3eafbbfed3ac0c0f969e2c8e7ace7a16
   color: var(--netizen-attribute);
 }
 
@@ -248,8 +270,11 @@
   background: var(--netizen-meta);
 }
 
+<<<<<<< HEAD
 
 /* tutorial menu */
+=======
+>>>>>>> eda61e4f3eafbbfed3ac0c0f969e2c8e7ace7a16
 #tut-menu-content {
   width: 400px;
   color: var(--netizen-meta);

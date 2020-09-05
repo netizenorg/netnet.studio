@@ -27,8 +27,8 @@
              // returns false, or 'mis' for main menu items,
              // 'ais' for alert menu item, 'tis' for textBubble item
 
-  NNM.toggleMenu()      // toggle's the main menu
-  NNM.showMainMenu()    // displays the main menu
+  NNM.toggleMenu()      // toggle's the main radial menu
+  NNM.showMainMenu()    // displays the main radial menu
   NNM.hideMainMenu()    // hides the main menu
 
   NNM.hideAlert()       // hides the currently displayed alert
@@ -276,8 +276,8 @@ class MenuManager {
     this.ais.style.top = this.center.offsetTop + 'px'
     this.ais.style.left = this.center.offsetLeft + 'px'
     const win = document.querySelector('#nn-window')
-    this.tis.style.bottom = win.offsetHeight + 20 + 'px'
-    this.tis.style.left = win.offsetWidth - 340 - 4 + 'px'
+    this.tis.style.bottom = win.offsetHeight + 35 + 'px'
+    this.tis.style.left = win.offsetWidth - 430 - 4 + 'px'
     if (this.opened === 'tis') this.textBubble.updatePosition()
   }
 
