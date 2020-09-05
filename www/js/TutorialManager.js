@@ -145,7 +145,7 @@ class TutorialManager {
     }
     return {
       id: '___START___',
-      content: `I've loaded a tutorial called ${m.title},
+      content: `Ok, I've loaded a tutorial called ${m.title},
       ${m.subtitle}, shall we get started?`,
       options: options,
       scope: this

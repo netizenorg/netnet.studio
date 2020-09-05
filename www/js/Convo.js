@@ -17,7 +17,18 @@
      usage
   -----------
 
+  // simplest convo is passed a single content object
+  const chat = new Convo(contentObject)
+
+  // when passed an array of content objects, the convo starts with
+  // the first object in that array
   const chat = new Convo(ArrayOfContentObjects)
+
+  // you can pass an optional second arg with the ID of a content object
+  // in the array you'd prefer to start with (instead of the first one)
+  const chat = new Convo(ArrayOfContentObjects, startID)
+
+  // methods include...
   chat.next() // jump to next step
   chat.prev() // jump to previous step
   chat.goTo(id) // to jump to a specific step in the tutorial
@@ -41,13 +52,13 @@
 
 */
 class Convo {
-  constructor (data) {
+  constructor (data, start) {
     if (typeof data !== 'object' && !(data instanceof Array)) {
       return console.error('Convo: constructor expects an object or array')
     }
     if (data instanceof Array) this.data = this._mapData(data)
     else this.data = this._mapData([data])
-    this.id = Object.keys(this.data)[0]
+    this.id = start || Object.keys(this.data)[0]
     this._update(this.id)
   }
 

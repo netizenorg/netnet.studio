@@ -55,7 +55,10 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: 'netnet? that\'s me! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;',
     options: {
-      'cool!': (e) => e.goTo('main-menu'),
+      'cool!': (e) => {
+        if (self.introducing) self.postIntro()
+        else e.goTo('main-menu')
+      },
       'AI?': (e) => e.goTo('ai'),
       'pedagogical?': (e) => e.goTo('pedagogical'),
       'hypermedia?': (e) => e.goTo('hypermedia')
@@ -185,6 +188,7 @@ window.convos['welcome-screen'] = (self) => {
       (((
   */
   const madeUpName = [{
+    id: 'make-one-up',
     content: `ok! I'm going to call you ${ls.getItem('username')}!`,
     options: {
       'why that name?': (e) => e.goTo('made-up-name'),
@@ -317,7 +321,7 @@ window.convos['welcome-screen'] = (self) => {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
       }
     },
-    content: `Great! Should we continue working on ${window.localStorage.getItem('opened-project')}? Or did you want to open another project?`,
+    content: `Great! Should we continue working on ${ls.getItem('opened-project')}? Or did you want to open another project?`,
     options: {
       'yes, I\'ll pick up where I left off': (e) => e.hide(),
       'no, let\'s open another one': (e) => {
@@ -433,137 +437,144 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: 'Ok, feel free to experiment with the code. Click my face if you need anything.',
     options: { ok: (e) => e.hide() }
+  }, {
+    id: 'explain-url-code',
+    content: 'The URL in your browser\'s address bar contains some URL parameters including some code to preload into the editor, isn\'t that what you want?',
+    options: {
+      'oh yea! thanks!': (e) => e.hide(),
+      'nope, lets\'s start over': (e) => e.goTo('main-menu')
+    }
   }]
 
   // ..........................                 ..........................
   // .......................... STARTING POINTS ..........................
   // ..........................                 ..........................
-  return {
-    'default-greeting': [{
-      content: `Oh hi ${ls.getItem('username')}!`,
-      options: {
-        'hi netnet!': (e) => e.goTo('main-menu'),
-        'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
-      }
-    }, ...backgroundInfo, ...miscInfo, ...learnInfo, ...makeInfo],
-    // ..........................
-    // ..........................
-    'url-param-tutorial-returning': [{
-      content: `Welcome back ${ls.getItem('username')}!`,
-      options: {
-        'hi netnet!': (e) => e.hide(), // so that tutorial bubble appears
-        'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
-      }
-    }, ...miscInfo],
-    // ..........................
-    // ..........................
-    'url-param-tutorial-first-time': [{
-      content: 'Hi there! Based on the URL parameters in the address bar it would seem you\'re trying to load a tutorial, but we\'ve never actually met before have we?',
-      options: {
-        'no we haven\'t': (e) => e.goTo('we-have-not-met'),
-        'yes we have?': (e) => e.goTo('we-have-met')
-      }
-    }, ...miscInfo],
-    // ..........................
-    // ..........................
-    'url-param-code-returning': [{
-      content: `Welcome back ${ls.getItem('username')}! I've loaded the code into the editor, assuming that's what you wanted.`,
-      options: {
-        'thanks netnet!': (e) => e.hide(),
-        'what code?': (e) => e.goTo('explain-url-code'),
-        'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
-      }
-    }, {
-      id: 'explain-url-code',
-      content: 'The URL in your browser\'s address bar contains some URL parameters including some code to preload into the editor, isn\'t that what you want?',
-      options: {
-        'oh yea! thanks!': (e) => e.hide(),
-        'nope, lets\'s start over': (e) => e.goTo('main-menu')
-      }
-    }, ...backgroundInfo, ...miscInfo, ...learnInfo, ...makeInfo],
-    // ..........................
-    // ..........................
-    'url-param-code-first-time': [{
-      content: 'Hi there! Based on the URL parameters in the address bar it would seem you\'re trying to load some pre-written code into my editor, but we don\'t really know eachother like that... have we met before?',
-      options: {
-        'no we haven\'t': (e) => e.goTo('we-have-not-met'),
-        'yes, I thought so?': (e) => e.goTo('we-have-met')
-      }
-    }, ...miscInfo],
-    // ..........................
-    // ..........................
-    'get-started-returning': [{
-      content: `Welcome back ${ls.getItem('username')}!`,
-      options: {
-        'hi netnet!': (e) => e.goTo('main-menu'),
-        'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
-      }
-    }, ...backgroundInfo, ...miscInfo, ...learnInfo, ...makeInfo],
-    // ..........................
-    // ..........................
-    'get-started-first-time': {
-      content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio (aka netnet.studio) a hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input placeholder="what\'s your name?">',
-      options: {
-        'hi netnet!': (e, t) => {
-          const v = t.$('input').value
-          self.saveName(v)
-          if (v === '') {
-            e.hide()
-            self.goTo('no-name')
-          } else {
-            e.hide()
-            self.goTo('name-entered')
-          }
-        },
-        'my name? rather not say': (e, t) => {
-          self.saveName('')
-          e.hide()
-          self.goTo('make-one-up')
-        }
-      }
-    },
-    // ..........................
-    // ..........................
-    'no-name': {
-      content: 'Wait a sec, I didn\'t get your name. Should i make one up? or did you forget to tell me: <input placeholder="type your preferred name here">',
-      options: {
-        'here you go': (e, t) => {
-          const v = t.$('input').value
-          if (v === '') {
-            window.alert('◕ ◞ ◕ the input field is still empty... just click "make one up" if you don\'t want to enter your name')
-          } else {
-            self.saveName(v)
-            e.hide()
-            self.goTo('name-entered')
-          }
-        },
-        'just make one up': (e) => {
-          e.hide()
-          self.goTo('make-one-up')
-        }
-      }
-    },
-    // ..........................
-    // ..........................
-    'name-entered': [{
-      before: () => {
-        STORE.dispatch('OPEN_WIDGET', 'ws-credits')
-        setTimeout(() => {
-          WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
-          const x = WIDGETS['ws-credits'].width + 50
-          NNW.updatePosition(x)
-        }, 250)
+
+  const starts = [{
+    id: 'default-greeting',
+    content: `Oh hi ${ls.getItem('username')}!`,
+    options: {
+      'hi netnet!': (e) => e.goTo('main-menu'),
+      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+    }
+  }, {
+    id: 'url-param-tutorial-returning',
+    content: `Welcome back ${ls.getItem('username')}!`,
+    options: {
+      'hi netnet!': (e) => e.hide(), // so that tutorial bubble appears
+      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+    }
+  }, {
+    id: 'url-param-tutorial-first-time',
+    content: 'Hi there! Based on the URL parameters in the address bar it would seem you\'re trying to load a tutorial, but we\'ve never actually met before have we?',
+    options: {
+      'no we haven\'t': (e) => e.goTo('we-have-not-met'),
+      'yes we have?': (e) => e.goTo('we-have-met')
+    }
+  }, {
+    id: 'url-param-tutorial-redirect',
+    content: `ready to start that tutorial ${ls.getItem('username')}?`,
+    options: {
+      'yes!': (e) => e.hide() // so that tutorial bubble appears
+    }
+  }, {
+    id: 'url-param-code-returning',
+    content: `Welcome back ${ls.getItem('username')}! I've loaded the code into the editor, assuming that's what you wanted.`,
+    options: {
+      'ok!': (e) => e.hide(),
+      'let\'s see it': (e) => {
+        e.hide()
+        const l = ls.getItem('layout')
+        if (l && l !== 'welcome') STORE.dispatch('CHANGE_LAYOUT', l)
+        else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
       },
-      content: `Nice to e-meet you ${ls.getItem('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;`,
-      options: {
-        'cool!': (e) => e.goTo('main-menu'),
-        'AI?': (e) => e.goTo('ai'),
-        'pedagogical?': (e) => e.goTo('pedagogical'),
-        'hypermedia?': (e) => e.goTo('hypermedia')
+      'what code?': (e) => e.goTo('explain-url-code'),
+      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+    }
+  }, {
+    id: 'url-param-code-first-time',
+    content: 'Hi there! Based on the URL parameters in the address bar it would seem you\'re trying to load some pre-written code into my editor, but we don\'t really know eachother like that... have we met before?',
+    options: {
+      'no we haven\'t': (e) => e.goTo('we-have-not-met'),
+      'yes, I thought so?': (e) => e.goTo('we-have-met')
+    }
+  }, {
+    id: 'url-param-code-redirect',
+    content: `Ok ${ls.getItem('username')}! I've loaded the code I mentioned before into my editor.`,
+    options: {
+      'ok!': (e) => e.hide(),
+      'let\'s see it': (e) => {
+        e.hide()
+        const l = ls.getItem('layout')
+        if (l && l !== 'welcome') STORE.dispatch('CHANGE_LAYOUT', l)
+        else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+      },
+      'what code?': (e) => e.goTo('explain-url-code'),
+      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+    }
+  }, {
+    id: 'get-started-first-time',
+    content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio (aka netnet.studio) a hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input placeholder="what\'s your name?">',
+    options: {
+      'hi netnet!': (e, t) => {
+        const v = t.$('input').value
+        self.saveName(v)
+        if (v === '') {
+          self.goTo('no-name')
+        } else {
+          self.goTo('name-entered')
+        }
+      },
+      'my name? rather not say': (e, t) => {
+        self.saveName('')
+        self.goTo('make-one-up')
       }
-    }, ...backgroundInfo, ...miscInfo, ...learnInfo, ...makeInfo],
-    // ..........................
-    // ..........................
-    'make-one-up': [...madeUpName, ...backgroundInfo, ...miscInfo, ...learnInfo, ...makeInfo]
-  }
+    }
+  }, {
+    id: 'no-name',
+    content: 'Wait a sec, I didn\'t get your name. Should i make one up? or did you forget to tell me: <input placeholder="type your preferred name here">',
+    options: {
+      'here you go': (e, t) => {
+        const v = t.$('input').value
+        if (v === '') {
+          window.alert('◕ ◞ ◕ the input field is still empty... just click "make one up" if you don\'t want to enter your name')
+        } else {
+          self.saveName(v)
+          self.goTo('name-entered')
+        }
+      },
+      'just make one up': (e) => {
+        self.goTo('make-one-up')
+      }
+    }
+  }, {
+    id: 'name-entered',
+    before: () => {
+      STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+      setTimeout(() => {
+        WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
+        const x = WIDGETS['ws-credits'].width + 50
+        NNW.updatePosition(x)
+      }, 250)
+    },
+    content: `Nice to e-meet you ${ls.getItem('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;`,
+    options: {
+      'cool!': (e) => {
+        if (self.introducing) self.postIntro()
+        else e.goTo('main-menu')
+      },
+      'AI?': (e) => e.goTo('ai'),
+      'pedagogical?': (e) => e.goTo('pedagogical'),
+      'hypermedia?': (e) => e.goTo('hypermedia')
+    }
+  }]
+
+  return [
+    ...starts, // different entry points
+    ...miscInfo, // objects shared by diff paths
+    ...madeUpName, // objects used in path when user opts out on sharing name
+    ...backgroundInfo, // objects used for netnet's "about" info
+    ...learnInfo, // objects used for 'main-menu' dialogue's learn option
+    ...makeInfo // objects used for 'main-menu' dialogue's make option
+  ]
 }

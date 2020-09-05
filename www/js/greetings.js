@@ -4,6 +4,7 @@ window.greetings = {
   city: null,
   loaded: { widgets: false, tutorials: false },
   greeted: false, // has user been greeted yet
+  introducing: false, // see postIntro below
   returningUser: window.localStorage.getItem('username'),
   widgets: {}, // NOTE: created in www/convos/welcome-screen/index.js
   starterCode: `<!DOCTYPE html>
@@ -30,7 +31,7 @@ window.greetings = {
   },
 
   startMenu: () => {
-    window.convo = new Convo(window.greetings.convos['default-greeting'])
+    window.convo = new Convo(window.greetings.convos, 'default-greeting')
   },
 
   loader: () => {
@@ -139,10 +140,11 @@ window.greetings = {
       //
       window.NNT.load(urlHasTutorial, () => {
         setTimeout(() => {
-          const oldUser = self.convos['url-param-tutorial-returning']
-          const newUser = self.convos['url-param-tutorial-first-time']
-          if (self.returningUser) window.convo = new Convo(oldUser)
-          else window.convo = new Convo(newUser)
+          const oUsr = 'url-param-tutorial-returning'
+          const nUsr = 'url-param-tutorial-first-time'
+          if (!self.returningUser) self.introducing = 'tutorial'
+          if (self.returningUser) window.convo = new Convo(self.convos, oUsr)
+          else window.convo = new Convo(self.convos, nUsr)
         }, STORE.getTransitionTime())
       })
     } else if (urlHasCode) {
@@ -150,9 +152,10 @@ window.greetings = {
       //  PRELOADED CODE WELCOME
       //
       if (self.returningUser) {
-        window.convo = new Convo(self.convos['url-param-code-returning'])
+        window.convo = new Convo(self.convos, 'url-param-code-returning')
       } else {
-        window.convo = new Convo(self.convos['url-param-code-first-time'])
+        self.introducing = 'code-hash'
+        window.convo = new Convo(self.convos, 'url-param-code-first-time')
       }
     } else if (self.returningUser) {
       //
@@ -160,22 +163,22 @@ window.greetings = {
       //
       // if (STORE.history.actions.length <= 6) {
       if (self.greeted) {
-        window.convo = new Convo(self.convos['default-greeting'])
+        window.convo = new Convo(self.convos, 'default-greeting')
       } else {
-        window.convo = new Convo(self.convos['get-started-returning'])
+        window.convo = new Convo(self.convos, 'get-started-returning')
       }
     } else {
       //
       //  NEW USER WELCOME
       //
-      window.convo = new Convo(self.convos['get-started-first-time'])
+      window.convo = new Convo(self.convos, 'get-started-first-time')
     }
     self.greeted = true
   },
 
   faceClickHint: () => {
     window.greetings._faceHint = setTimeout(() => {
-      window.convo = new window.Convo({
+      window.convo = new Convo({
         content: 'pssst, click on my face', options: {}
       })
       window.NNM.setFace('^', '‿', '^', false)
@@ -211,8 +214,25 @@ window.greetings = {
     const self = window.greetings
     setTimeout(() => {
       self.convos = window.convos['welcome-screen'](self)
-      window.convo = new Convo(self.convos[redirect])
+      window.convo = new Convo(self.convos, redirect)
     }, STORE.getTransitionTime())
+  },
+
+  postIntro: () => {
+    // if the user lands on the page with a URL param for a tutorial or a
+    // shortCode/code-hash, && netnet's never met them, they will be prompted
+    // to introduce themselves, if they do, this redirects them after they've
+    // finished their introductions
+    if (WIDGETS['ws-credits'].opened) {
+      STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+    }
+    const self = window.greetings
+    if (self.introducing === 'tutorial') {
+      self.goTo('url-param-tutorial-redirect')
+    } else if (self.introducing === 'code-hash') {
+      self.goTo('url-param-code-redirect')
+      self.netnetToCorner()
+    }
   },
 
   handleLoginRedirect: () => {
