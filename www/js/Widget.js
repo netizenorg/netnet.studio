@@ -46,6 +46,7 @@
 
   w.recenter() // recenters the widget
   w.update(cssObj, transitionTime) // to update CSS
+  w.bring2front() // places widget's z-index above all other widgets
 
   // to create event listeners
   w.on('open', callback)
@@ -198,6 +199,15 @@ class Widget {
     this._recentered = true
   }
 
+  bring2front () {
+    // NOTE: this will work so long as there are less than 100
+    // Widgets open... safe assumption i hope
+    this.zIndex = 200
+    let z = 100
+    STORE.state.widgets
+      .forEach(w => { if (w.key !== this.key) w.ref.zIndex = ++z })
+  }
+
   on (eve, callback) {
     if (!this.events[eve]) {
       return console.error(`Widget: ${eve} is not a Widget event`)
@@ -315,18 +325,9 @@ class Widget {
   _display (value) {
     // used by StateManager's render() method when OPEN/CLOSE_WIDGET dispatched
     if (value === 'visible' && this.ele.style.visibility === 'hidden') {
-      this._bring2front()
+      this.bring2front()
     }
     this.ele.style.visibility = value
-  }
-
-  _bring2front () {
-    // NOTE: this will work so long as there are less than 100
-    // Widgets open... safe assumption i hope
-    this.zIndex = 200
-    let z = 100
-    STORE.state.widgets
-      .forEach(w => { if (w.key !== this.key) w.ref.zIndex = ++z })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -350,7 +351,7 @@ class Widget {
         this.mousedown = false
       }
       // update z index so it's above other widgets
-      this._bring2front()
+      this.bring2front()
     }
   }
 

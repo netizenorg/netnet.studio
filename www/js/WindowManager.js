@@ -186,12 +186,14 @@ class WindowManager {
   _initWidgets (filename) {
     const className = filename.split('.')[0]
     this._widgetsLoaded.push(className)
-    // instantiate menu widgets
+    // instantiate listed widgets
     if (this._widgetsLoaded.length === this._numberOfWidgetsToLoad) {
       const data = {}
       this._widgetsLoaded.forEach(cname => {
-        const widget = new window[cname]()
-        if (widget.key) data[widget.key] = widget
+        if (window[cname].skipAutoInstantiation !== true) {
+          const widget = new window[cname]()
+          if (widget.key) data[widget.key] = widget
+        }
       })
       STORE.dispatch('LOAD_WIDGETS', data)
     }

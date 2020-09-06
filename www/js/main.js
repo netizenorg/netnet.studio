@@ -3,7 +3,6 @@
   TutorialManager, WindowManager, MenuManager,
   NetitorErrorHandler, NetitorEduInfoHandler
 */
-// window.greetings.loader()
 
 const STORE = new StateManager({
   log: true
@@ -89,16 +88,3 @@ window.addEventListener('keydown', (e) => {
     return false
   }
 })
-
-// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
-// NOTE: this is temporary until i work out the a-frame tutorial
-// probably also want to think about how to dynamically do this when
-// netnet notices the inclusion of the a-frame library in any project
-window.fetch('api/data/aframe', { method: 'GET' })
-  .then(res => res.json())
-  .then(data => {
-    NNE.addCustomElements(data.elements)
-    NNE.addCustomAttributes(data.attributes)
-    NNE.addErrorException('{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ animation ] must be separated by only one space."}')
-  })

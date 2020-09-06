@@ -513,6 +513,13 @@ window.convos['welcome-screen'] = (self) => {
       'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
     }
   }, {
+    id: 'get-started-returning',
+    content: `Welcome back ${ls.getItem('username')}!`,
+    options: {
+      'hi netnet!': (e) => e.goTo('main-menu'),
+      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+    }
+  }, {
     id: 'get-started-first-time',
     content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio (aka netnet.studio) a hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input placeholder="what\'s your name?">',
     options: {
