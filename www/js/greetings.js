@@ -64,30 +64,31 @@ window.greetings = {
             AFTER EVERYTHING HAS LOADED
             ...BEGIN INTRO LOGIC...
       */
+      const tut = window.utils.url.tutorial
 
       // if there is some prior code to display
       const prevCode = window.utils.savedCode()
       const shortCode = window.utils.url.shortCode
       const redirect = window.localStorage.getItem('pre-auth-from')
-      if (redirect) { // ...if redirected here via GitHub auth
+      if (!tut && redirect) { // ...if redirected here via GitHub auth
         // ...pick up where they left off...
         if (prevCode) NNE.code = NNE._decode(prevCode)
         const layout = window.localStorage.getItem('layout')
         if (layout) STORE.dispatch('CHANGE_LAYOUT', layout)
         self.handleLoginRedirect()
-      } else if (shortCode) { // ...if there's a ?c=[code] URL param
+      } else if (!tut && shortCode) { // ...if there's a ?c=[code] URL param
         window.utils.clearProjectData()
         self.netnetToCorner()
         window.NNW.expandShortURL(shortCode, () => {
           NNE.loadFromHash()
           self.welcome()
         })
-      } else if (NNE.hasCodeInHash) { // ...if there's a #code/... URL hash
+      } else if (!tut && NNE.hasCodeInHash) { // ...if there's a #code/... URL hash
         window.utils.clearProjectData()
         self.netnetToCorner()
         NNE.loadFromHash()
         self.welcome()
-      } else if (prevCode && self.returningUser) {
+      } else if (!tut && prevCode && self.returningUser) {
         // ...if user had previously been working on code
         NNE.code = NNE._decode(prevCode) // ...display their priror code...
         // ...in their prior layout...
@@ -98,8 +99,16 @@ window.greetings = {
           STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
         }
         self.welcome() // ...&& welcome them.
-      } else { // ...otherwise ...
+      } else if (!tut) { // ...otherwise ...
         window.greetings.injectStarterCode()
+      }
+
+      // if URL has a tutorial param, jump right into welcome
+      if (tut) {
+        if (STORE.state.layout !== 'welcome') {
+          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        }
+        self.welcome()
       }
 
       // check for opacity in URL parameters
@@ -111,9 +120,6 @@ window.greetings = {
       // does the user have any error exceptions saved locally
       const erx = window.localStorage.getItem('error-exceptions')
       if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
-
-      // if URL has a tutorial param, jump right into welcome
-      if (window.utils.url.tutorial) self.welcome()
 
       window.utils.netitorUpdate()
       // When any layout or other transition finishes remove loader...

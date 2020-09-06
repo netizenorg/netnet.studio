@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE */
+/* global TUTORIAL, STORE, NNE */
 /*
   -----------
      info
@@ -50,15 +50,35 @@ class TutorialManager {
 
   next () {
     const index = Number(STORE.state.tutorial.id)
+    const obj = STORE.state.tutorial.steps[index]
+    if (obj.before) obj.before()
     STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
+    if (obj.code) NNE.code = obj.code
+    setTimeout(() => {
+      if (obj.after) obj.after()
+    }, STORE.getTransitionTime())
   }
 
   prev () {
     const index = Number(STORE.state.tutorial.id)
+    const obj = STORE.state.tutorial.steps[index]
+    if (obj.before) obj.before()
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
+    if (obj.code) NNE.code = obj.code
+    setTimeout(() => {
+      if (obj.after) obj.after()
+    }, STORE.getTransitionTime())
   }
 
-  goTo (id) { STORE.dispatch('TUTORIAL_GOTO', id) }
+  goTo (id) {
+    const obj = STORE.state.tutorial.steps[id]
+    if (obj.before) obj.before()
+    STORE.dispatch('TUTORIAL_GOTO', id)
+    if (obj.code) NNE.code = obj.code
+    setTimeout(() => {
+      if (obj.after) obj.after()
+    }, STORE.getTransitionTime())
+  }
 
   hide () { STORE.dispatch('HIDE_TUTORIAL_TEXT') }
 
@@ -123,6 +143,10 @@ class TutorialManager {
         // added to the page use window.utils.loadWidgetClass(path, filename)
         STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
       }
+
+      // run tutorial's onload event
+      if (typeof TUTORIAL.onload === 'function') TUTORIAL.onload()
+
       // run optional callback
       if (cb) cb()
     } else this._err('tutObj')
@@ -145,8 +169,8 @@ class TutorialManager {
     }
     return {
       id: '___START___',
-      content: `Ok, I've loaded a tutorial called ${m.title},
-      ${m.subtitle}, shall we get started?`,
+      content: `Ok, I've loaded a tutorial called ${m.title}:
+      ${m.subtitle}; shall we get started?`,
       options: options,
       scope: this
     }
