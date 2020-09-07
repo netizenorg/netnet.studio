@@ -43,6 +43,13 @@ class ExampleWidget extends Widget {
     this._exampleMethodForCreatingContent(opts)
   }
 
+  // most widgets are meant to be instantiated only once at load time,
+  // but if this is meant to be a reusuable widget (and so not immediately
+  // instantiated, but rather instantiated some number of times at some point
+  // later on, ex: during a tutorial) then we should set the following
+  // static getter. Otherwise, you should remove this line.
+  static get skipAutoInstantiation () { return true }
+
   _exampleMethodForCreatingContent (opts) {
     opts = opts || {}
     const quote = opts.quote || 'No quote was passed into the constructor.'

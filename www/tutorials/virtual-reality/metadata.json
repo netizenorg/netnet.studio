@@ -1,0 +1,20 @@
+{
+  "title": "Cyberspace Cyberpunks",
+  "subtitle": "Virtual, Augmented, Mixed Reality",
+  "author": {
+    "name": "Nick Briz",
+    "preferred": "Nick",
+    "url": "http://nickbriz.com"
+  },
+  "description": "\"Like the word 'cyberspace', the term 'virtual reality' (VR) is now commonly used for any space created by or accssible through computers, ranging from the 3D world of a game to the Internet as an alternate 'virtual' reality constructed by a vast networked communication space.\" Christiane Paul (Curator of New Media Arts at the Whitney Museum of American Art). In this tutorial we'll learn about Cyberspace's history, as well as how to make it using WebVR/XR and <a-frame>",
+  "keywords": ["vr", "ar", "xr"],
+  "main": "main.js",
+  "checkpoints": {
+    "Introducing Cyberspace": 0,
+    "Deconstruction of a Scene": "deconstruction",
+    "Reconstruction of a Scene": "reconstruction"
+  },
+  "references": [
+
+  ]
+}
