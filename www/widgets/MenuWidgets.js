@@ -53,11 +53,13 @@ class MenuWidgets extends Widget {
       // so putting this in a conditional for now...
       if (WIDGETS[key]) {
         const div = document.createElement('div')
+        const starSpan = document.createElement('span')
         const str = stared.includes(key) ? '★' : ''
-        div.textContent = `${str} ${WIDGETS[key].title}`
+        starSpan.textContent = str
+        div.textContent = `${WIDGETS[key].title}`
         div.className = 'link'
         div.addEventListener('click', () => STORE.dispatch('OPEN_WIDGET', key))
-        parent.appendChild(div)
+        parent.appendChild(div).appendChild(starSpan)
       }
     })
     this.innerHTML = parent
