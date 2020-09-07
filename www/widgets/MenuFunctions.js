@@ -241,15 +241,20 @@ class MenuFunctions extends Widget {
 
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
+    const subSecParent = this.$(`#${id}`)
     if (type === 'close') {
       subSec.style.display = 'none'
+      subSecParent.classList.remove('open')
     } else if (type === 'open') {
       subSec.style.display = 'block'
+      subSecParent.classList.add('open')
     } else {
       if (subSec.style.display === 'block') {
         subSec.style.display = 'none'
+        subSecParent.classList.remove('open')
       } else {
         subSec.style.display = 'block'
+        subSecParent.classList.add('open')
       }
     }
     this._stayInFrame()
@@ -260,18 +265,39 @@ class MenuFunctions extends Widget {
   _createContent (quote, author) {
     this.innerHTML = `
       <div id="func-menu-content">
-        <div id="func-menu-hi">hi netnet!</div>
+        <div id="func-menu-hi" tabindex="0">
+          hi netnet!
+          <span class="icon"></span>
+        </div>
       </div>
     `
 
-    this.$('#func-menu-hi').addEventListener('click', () => this.startMenu())
+    this.$('#func-menu-hi').addEventListener('click', () => {
+      this.startMenu()
+      this.$('#func-menu-hi').blur()
+    })
+    this.$('#func-menu-hi').addEventListener('keypress', (e) => {
+      if(e.which == 13) {
+        this.startMenu()
+      }
+    })
 
     for (const sub in this.subs) {
       const div = document.createElement('div')
       div.id = `func-menu-${sub.replace(/ /g, '-')}`
+      div.classList.add('func-menu-dropdown')
       const title = document.createElement('span')
       title.textContent = sub
-      title.addEventListener('click', () => this.toggleSubMenu(div.id))
+      title.tabIndex = 0;
+      title.addEventListener('click', () => {
+        this.toggleSubMenu(div.id)
+        title.blur()
+      })
+      title.addEventListener('keypress', (e) => {
+        if(e.which == 13) {
+          this.toggleSubMenu(div.id)
+        }
+      })
       div.appendChild(title)
       const subSec = document.createElement('div')
       subSec.className = 'func-menu-sub-section'
@@ -279,13 +305,16 @@ class MenuFunctions extends Widget {
       div.appendChild(subSec)
       this.subs[sub].forEach(btn => {
         const b = document.createElement('button')
-        b.textContent = btn.click + '()'
+        b.textContent = btn.click + '('
         b.addEventListener('click', (e) => this[btn.click]())
         if (btn.select) {
+          b.textContent = btn.click + '('
           const sel = document.createElement('select')
           sel.id = btn.select
           b.appendChild(sel)
+          b.addEventListener('click', () => sel.focus())
         } else if (btn.float) {
+          b.textContent = btn.click + '('
           const inp = document.createElement('input')
           inp.setAttribute('type', 'number')
           inp.setAttribute('min', '0')
@@ -293,6 +322,7 @@ class MenuFunctions extends Widget {
           inp.setAttribute('step', '0.1')
           inp.id = btn.float
           b.appendChild(inp)
+          b.addEventListener('click', () => inp.focus())
         }
         subSec.appendChild(b)
         if (btn.hrAfter) subSec.appendChild(document.createElement('hr'))
