@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, NNE */
+/* global TUTORIAL, STORE, NNE, Convo */
 /*
   -----------
      info
@@ -32,6 +32,7 @@
 */
 class TutorialManager {
   constructor () {
+    this.precode = null // hold onto code that was here before tutorial loaded
     this.metadata = null // info from the tutorial's metadata.json
   }
 
@@ -40,6 +41,7 @@ class TutorialManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   load (tut, cb) {
+    this.precode = NNE.code
     const root = (tut.indexOf('http') === 0) ? tut : `tutorials/${tut}`
     const url = (tut.indexOf('http') === 0)
       ? `${tut}/metadata.json` : `tutorials/${tut}/metadata.json`
@@ -160,11 +162,9 @@ class TutorialManager {
         e.goTo(i)
         STORE.dispatch('CLOSE_WIDGET', 'tutorials-menu')
       },
-      'no, i changed my mind': (e) => { STORE.dispatch('TUTORIAL_FINISHED') }
-    }
-    if (!STORE.is('WIDGET_OPEN', 'tutorials-menu')) {
-      options['Show me the Tutorials Menu'] = (e) => {
-        STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+      'no, i changed my mind': (e) => {
+        NNE.code = this.precode
+        window.location = window.location.origin
       }
     }
     return {
