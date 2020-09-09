@@ -22,6 +22,7 @@
   WIDGETS['functions-menu'].openProject()
   WIDGETS['functions-menu'].newProject()
   WIDGETS['functions-menu'].tidyCode()
+  WIDGETS['functions-menu'].autoUpdate()
   WIDGETS['functions-menu'].changeLayout()
   WIDGETS['functions-menu'].changeTheme()
   WIDGETS['functions-menu'].changeOpacity()
@@ -77,6 +78,11 @@ class MenuFunctions extends Widget {
         {
           click: 'tidyCode',
           alts: ['tidy', 'format', 'clean', 'indent']
+        },
+        {
+          click: 'autoUpdate',
+          alts: ['update', 'render', 'auto', 'compile'],
+          select: 'func-menu-update-select'
         },
         {
           click: 'changeLayout',
@@ -209,6 +215,10 @@ class MenuFunctions extends Widget {
     NNE.tidy()
   }
 
+  autoUpdate () {
+    NNE.autoUpdate = this.autoUpdateSel.value === 'true'
+  }
+
   changeLayout () {
     STORE.dispatch('CHANGE_LAYOUT', this.layoutsSel.value)
   }
@@ -277,7 +287,7 @@ class MenuFunctions extends Widget {
       this.$('#func-menu-hi').blur()
     })
     this.$('#func-menu-hi').addEventListener('keypress', (e) => {
-      if(e.which == 13) {
+      if (e.which === 13) {
         this.startMenu()
       }
     })
@@ -288,13 +298,13 @@ class MenuFunctions extends Widget {
       div.classList.add('func-menu-dropdown')
       const title = document.createElement('span')
       title.textContent = sub
-      title.tabIndex = 0;
+      title.tabIndex = 0
       title.addEventListener('click', () => {
         this.toggleSubMenu(div.id)
         title.blur()
       })
       title.addEventListener('keypress', (e) => {
-        if(e.which == 13) {
+        if (e.which === 13) {
           this.toggleSubMenu(div.id)
         }
       })
@@ -341,6 +351,10 @@ class MenuFunctions extends Widget {
   }
 
   _initValues () {
+    this.autoUpdateSel = this.$('#func-menu-update-select')
+    this._creatOption('true', this.autoUpdateSel)
+    this._creatOption('false', this.autoUpdateSel)
+    this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
     this.layoutsSel = this.$('#func-menu-layout-select')
     NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
     this.themesSel = this.$('#func-menu-themes-select')
