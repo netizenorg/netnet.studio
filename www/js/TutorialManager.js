@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, NNE, Convo */
+/* global TUTORIAL, STORE, NNE */
 /*
   -----------
      info

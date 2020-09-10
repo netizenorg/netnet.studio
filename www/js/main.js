@@ -78,6 +78,8 @@ window.addEventListener('keydown', (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 191) { // ?
     e.preventDefault()
     STORE.dispatch('CHANGE_OPACITY', 1)
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
+    if (!NNE.autoUpdate) NNE.update()
   } else if (e.keyCode === 27) { // esc
     if (window.NNM.search.opened) window.NNM.search.close()
     else window.utils.closeTopMostWidget()

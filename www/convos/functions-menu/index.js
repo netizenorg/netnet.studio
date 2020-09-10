@@ -1,4 +1,7 @@
+/* global Averigua */
 window.convos['functions-menu'] = (self) => {
+  const hotkey = Averigua.platformInfo().platform.includes('Mac')
+    ? 'CMD' : 'CTRL'
   return {
     'user-needs-login-to-save': {
       content: 'In order to save a project you need to be logged in with a GitHub account. Or I could generate a share link for you instead?',
@@ -206,6 +209,14 @@ window.convos['functions-menu'] = (self) => {
         },
         'never mind, I\'ll do it': (e) => e.hide()
       }
+    },
+    'no-need-to-update': {
+      content: 'You\'ve got <code>autoUpdate(true)</code> so there\'s no need to manually <code>runUpdate()</code>, I\'ll update the output for you soon as you make a change to your code.',
+      options: { 'ah, ok': (e) => e.hide() }
+    },
+    'need-to-update': {
+      content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually <code>runUpdate()</code> to see your changes. You can click the button in the Functions Menu or press ${hotkey}+Enter`,
+      options: { 'ah, ok': (e) => e.hide() }
     },
     'temp-disclaimer': {
       content: 'Sorry, at the moment you can only upload HTML files.',

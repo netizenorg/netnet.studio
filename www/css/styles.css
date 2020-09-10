@@ -11,8 +11,8 @@ body {
   overflow: hidden;
 }
 
-body, 
-input, 
+body,
+input,
 button {
   box-sizing: border-box;
   padding: 0; margin: 0;
@@ -31,7 +31,7 @@ button {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #515199;
+  background-color: #1c1c36;
   color: #fff;
   opacity: 1;
   transition: opacity 1s;

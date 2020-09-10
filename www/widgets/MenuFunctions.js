@@ -22,6 +22,7 @@
   WIDGETS['functions-menu'].openProject()
   WIDGETS['functions-menu'].newProject()
   WIDGETS['functions-menu'].tidyCode()
+  WIDGETS['functions-menu'].runUpdate()
   WIDGETS['functions-menu'].autoUpdate()
   WIDGETS['functions-menu'].changeLayout()
   WIDGETS['functions-menu'].changeTheme()
@@ -78,6 +79,10 @@ class MenuFunctions extends Widget {
         {
           click: 'tidyCode',
           alts: ['tidy', 'format', 'clean', 'indent']
+        },
+        {
+          click: 'runUpdate',
+          alts: ['update', 'render', 'compile']
         },
         {
           click: 'autoUpdate',
@@ -215,8 +220,18 @@ class MenuFunctions extends Widget {
     NNE.tidy()
   }
 
+  runUpdate () {
+    NNE.update()
+    if (NNE.autoUpdate) {
+      window.convo = new Convo(this.convos['no-need-to-update'])
+    }
+  }
+
   autoUpdate () {
     NNE.autoUpdate = this.autoUpdateSel.value === 'true'
+    if (!NNE.autoUpdate) {
+      window.convo = new Convo(this.convos['need-to-update'])
+    }
   }
 
   changeLayout () {
