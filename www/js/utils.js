@@ -2,9 +2,12 @@
 window.convos = {}
 window.utils = {
 
-  get: function (url, cb) {
+  get: function (url, cb, text) {
     window.fetch(url, { method: 'GET' })
-      .then(res => res.json())
+      .then(res => {
+        if (text) return res.text()
+        else return res.json()
+      })
       .then(res => cb(res))
       .catch(err => console.error(err))
   },

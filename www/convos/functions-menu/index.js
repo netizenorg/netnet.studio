@@ -215,7 +215,7 @@ window.convos['functions-menu'] = (self) => {
       options: { 'ah, ok': (e) => e.hide() }
     },
     'need-to-update': {
-      content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually <code>runUpdate()</code> to see your changes. You can click the button in the Functions Menu or press ${hotkey}+Enter`,
+      content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press ${hotkey}+Enter`,
       options: { 'ah, ok': (e) => e.hide() }
     },
     'temp-disclaimer': {

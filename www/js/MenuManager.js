@@ -117,6 +117,18 @@ class MenuManager {
   get opened () { return this._opened }
   set opened (v) { return console.error('Menu: opened property is read only') }
 
+  // NOTE: opened doesn't seem to always reflect the truth... so i created this
+  // redundent prop... in the future should refactor to only include one of 'em
+  get displaying () {
+    const d = []
+    if (this.mis.children[0].style.display !== 'none') d.push('menu')
+    if (this.ais.children[0].style.display !== 'none') d.push('alert')
+    if (this.tis.children[0].style.display !== 'none') d.push('text')
+    return d
+  }
+
+  set displaying (v) { return console.error('Menu: .displaying is read only') }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•.¸ public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

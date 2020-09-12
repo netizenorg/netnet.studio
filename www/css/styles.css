@@ -32,6 +32,7 @@ button {
   justify-content: space-around;
   align-items: center;
   background-color: #1c1c36;
+  background: radial-gradient(circle, rgba(106,106,167,1) 0%, rgba(28,28,54,1) 100%);
   color: #fff;
   opacity: 1;
   transition: opacity 1s;

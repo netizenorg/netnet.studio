@@ -324,7 +324,7 @@ class WindowManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
 
   _mouseMove (e) {
-    e.preventDefault()
+    // e.preventDefault()
     this._canvasMouseMove(e)
     this._updateCursor(e)
     if (this.mousedown) this._resizeWindow(e)

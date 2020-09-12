@@ -642,6 +642,16 @@ class StateManager {
     }
   }
 
+  execTutorialLogic () {
+    const obj = this.state.tutorial.steps[this.state.tutorial.id]
+    if (!obj) return
+    if (obj.before) obj.before()
+    if (obj.code) NNE.code = obj.code
+    setTimeout(() => {
+      if (obj.after) obj.after()
+    }, this.getTransitionTime())
+  }
+
   renderMenuManager () {
     if (!this.is('SHOWING')) { // if nothing should be showing...
       // ...hide anything that was previously being shown.
@@ -664,10 +674,13 @@ class StateManager {
       const data = this.is('SHOWING_ERROR_ALERT')
         ? this.state.errors.list[idx] : this.state.eduinfo.payload
       const type = this.is('SHOWING_ERROR_ALERT') ? data.type : 'information'
-      if (NNM.opened) { // ...but something else is, hide that first,
-        if (NNM.opened === 'mis') NNM.hideMenu()
-        else if (NNM.opened === 'ais') NNM.hideAlert()
-        else if (NNM.opened === 'tis') NNM.hideTextBubble()
+
+      // ...but if something else is, hide that first,
+      if (NNM.displaying.length > 0) {
+        if (NNM.displaying.includes('menu')) NNM.hideMenu()
+        if (NNM.displaying.includes('alert')) NNM.hideAlert()
+        if (NNM.displaying.includes('text')) NNM.hideTextBubble()
+        // ...wait for hiding transition to finish before showing me
         // ...wait for hiding transition to finish before showing menu
         const tt = this.getTransitionTime()
         setTimeout(() => NNM.showAlert(type, data), tt)
@@ -681,13 +694,16 @@ class StateManager {
       const data = this.is('SHOWING_ERROR_TEXT')
         ? this.state.errors.list[idx] : this.is('SHOWING_EDU_TEXT')
           ? this.state.eduinfo.payload : this.state.tutorial.steps[tut]
-      if (NNM.opened) { // ...but something else is, hide that first,
-        if (NNM.opened === 'mis') NNM.hideMenu()
-        else if (NNM.opened === 'ais') NNM.hideAlert()
-        else if (NNM.opened === 'tis') NNM.hideTextBubble()
+
+      // ...but if something else is, hide that first,
+      if (NNM.displaying.length > 0) {
+        if (NNM.displaying.includes('menu')) NNM.hideMenu()
+        if (NNM.displaying.includes('alert')) NNM.hideAlert()
+        if (NNM.displaying.includes('text')) NNM.hideTextBubble()
         // ...wait for hiding transition to finish before showing menu
-        const tt = this.getTransitionTime()
-        setTimeout(() => NNM.showTextBubble(data), tt)
+        setTimeout(() => {
+          if (this.is('SHOWING_TEXT')) NNM.showTextBubble(data)
+        }, this.getTransitionTime())
       } else { // ...if nothing was previously showing, show the alert.
         NNM.showTextBubble(data)
       }
@@ -750,6 +766,7 @@ class StateManager {
       this.renderMenuManager()
       this.resetErrorMarkers()
     } else if (change === 'tutorial') {
+      this.execTutorialLogic()
       this.renderMenuManager()
       this.resetErrorMarkers()
       this.renderWindowManager()

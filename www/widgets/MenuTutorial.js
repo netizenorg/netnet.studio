@@ -1,4 +1,4 @@
-/* global Widget, NNT, STORE */
+/* global Widget, NNT, NNE, STORE */
 /*
   -----------
      info
@@ -151,6 +151,10 @@ class MenuTutorial extends Widget {
       })
       this.$('#tut-menu-quit').addEventListener('click', () => {
         STORE.dispatch('TUTORIAL_FINISHED')
+        STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        if (NNT.precode) NNE.code = NNT.precode
+        else window.greetings.injectStarterCode()
+        window.greetings.mainMenu()
       })
     }, 500)
   }
@@ -164,6 +168,7 @@ class MenuTutorial extends Widget {
       d.className = 'link'
       d.addEventListener('click', () => {
         STORE.dispatch('TUTORIAL_GOTO', t.checkpoints[cp])
+        window.utils.netitorUpdate()
       })
       ele.appendChild(d)
     }

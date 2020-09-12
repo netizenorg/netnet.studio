@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, NNE */
+/* global TUTORIAL, STORE, NNE, WIDGETS */
 /*
   -----------
      info
@@ -52,34 +52,16 @@ class TutorialManager {
 
   next () {
     const index = Number(STORE.state.tutorial.id)
-    const obj = STORE.state.tutorial.steps[index]
-    if (obj.before) obj.before()
     STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
-    if (obj.code) NNE.code = obj.code
-    setTimeout(() => {
-      if (obj.after) obj.after()
-    }, STORE.getTransitionTime())
   }
 
   prev () {
     const index = Number(STORE.state.tutorial.id)
-    const obj = STORE.state.tutorial.steps[index]
-    if (obj.before) obj.before()
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
-    if (obj.code) NNE.code = obj.code
-    setTimeout(() => {
-      if (obj.after) obj.after()
-    }, STORE.getTransitionTime())
   }
 
   goTo (id) {
-    const obj = STORE.state.tutorial.steps[id]
-    if (obj.before) obj.before()
     STORE.dispatch('TUTORIAL_GOTO', id)
-    if (obj.code) NNE.code = obj.code
-    setTimeout(() => {
-      if (obj.after) obj.after()
-    }, STORE.getTransitionTime())
   }
 
   hide () { STORE.dispatch('HIDE_TUTORIAL_TEXT') }
@@ -163,8 +145,15 @@ class TutorialManager {
         STORE.dispatch('CLOSE_WIDGET', 'tutorials-menu')
       },
       'no, i changed my mind': (e) => {
-        NNE.code = this.precode
-        window.location = window.location.origin
+        STORE.dispatch('TUTORIAL_FINISHED')
+        if (this.precode) NNE.code = this.precode
+        else window.greetings.injectStarterCode()
+        window.greetings.mainMenu()
+      }
+    }
+    if (!WIDGETS['tutorials-menu'].opened) {
+      options['open tutorials menu'] = (e) => {
+        WIDGETS['tutorials-menu'].open()
       }
     }
     return {

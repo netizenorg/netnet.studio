@@ -363,7 +363,7 @@ class Widget {
   }
 
   _mouseMove (e) {
-    e.preventDefault()
+    // e.preventDefault()
     // check if cursor is over bottom right corner
     if (this._shouldResize(e)) {
       this.ele.style.cursor = 'se-resize'

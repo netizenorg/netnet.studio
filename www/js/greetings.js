@@ -34,6 +34,10 @@ window.greetings = {
     window.convo = new Convo(window.greetings.convos, 'default-greeting')
   },
 
+  mainMenu: () => {
+    window.convo = new Convo(window.greetings.convos, 'main-menu')
+  },
+
   loader: () => {
     const self = window.greetings
     window.utils.loadConvoData('welcome-screen', () => {
