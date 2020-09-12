@@ -156,6 +156,46 @@
 }
 
 
+.widget > .w-innerHTML button {
+  display: inline-block;
+  position: relative;
+  padding: 5px 10px;
+  border: 1px solid var(--netizen-meta);
+  border-radius: 25px;
+  margin-right: 5px;
+  color: var(--netizen-meta);
+  background-color: var(--bg-color);
+  transition: background-color .5s cubic-bezier(0.165, 0.84, 0.44, 1), color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+}
+
+.widget > .w-innerHTML button:after {
+  content: '';
+  position: absolute;
+  display: block;
+  left: -4px;
+  top: -4px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  border: 1px solid var(--netizen-meta);
+  border-radius: 25px;
+  opacity: 0;
+}
+
+.widget > .w-innerHTML button:hover {
+  color: var(--bg-color);
+  background-color: var(--netizen-match-color);
+}
+
+.widget > .w-innerHTML button:focus {
+  outline:none;
+  outline-offset: none;
+  box-shadow: none;
+}
+.widget > .w-innerHTML button:focus:after {
+  opacity: 1;
+}
+
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* styles for specific sub menu widgets */
 
@@ -412,46 +452,6 @@
   margin-top: 15px;
 }
 
-#tut-menu-content #tut-menu-buttons button {
-  display: inline-block;
-  position: relative;
-  padding: 5px 10px;
-  border: 1px solid var(--netizen-meta);
-  border-radius: 25px;
-  margin-right: 5px;
-  color: var(--netizen-meta);
-  background-color: var(--bg-color);
-  transition: background-color .5s cubic-bezier(0.165, 0.84, 0.44, 1), color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
-  cursor: pointer;
-}
-
-#tut-menu-content #tut-menu-buttons button:after {
-  content: '';
-  position: absolute;
-  display: block;
-  left: -4px;
-  top: -4px;
-  width: calc(100% + 6px);
-  height: calc(100% + 6px);
-  border: 1px solid var(--netizen-meta);
-  border-radius: 25px;
-  opacity: 0;
-}
-
-#tut-menu-content #tut-menu-buttons button:hover {
-  color: var(--bg-color);
-  background-color: var(--netizen-match-color);
-}
-
-#tut-menu-content #tut-menu-buttons button:focus {
-  outline:none;
-  outline-offset: none;
-  box-shadow: none;
-}
-#tut-menu-content #tut-menu-buttons button:focus:after {
-  opacity: 1;
-}
-
 
 /* fav widgets menu */
 #wig-menu-content {
@@ -477,5 +477,3 @@
   color: inherit;
   pointer-events: none;
 }
-
-
