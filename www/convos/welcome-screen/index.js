@@ -238,7 +238,7 @@ window.convos['welcome-screen'] = (self) => {
     after: () => { NNM.setFace('ŏ', 'ー', 'ŏ', false) }
   }, {
     id: 'which-are-you',
-    content: 'I\'m the later. I only use the data I need in order to work, like knowing what browser you\'re using. And personal data like your name is only stored on your browser, it neves gets sent to my server.',
+    content: 'I\'m the latter. I only use the data I need in order to work, like knowing what browser you\'re using. And personal data like your name is only stored on your browser, it neves gets sent to my server.',
     options: {
       'and what\'s Surveillance Capitalism?': (e) => e.goTo('surveillance-capitalism'),
       'how can I trust you?': (e) => e.goTo('trust')
