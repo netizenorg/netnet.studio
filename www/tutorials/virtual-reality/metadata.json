@@ -1,20 +1,38 @@
 {
-  "title": "Cyberspace Cyberpunks",
-  "subtitle": "Virtual, Augmented, Mixed Reality",
+  "title": "Cyberspace",
+  "subtitle": "An introduction to Virtual Reality",
   "author": {
     "name": "Nick Briz",
     "preferred": "Nick",
     "url": "http://nickbriz.com"
   },
-  "description": "\"Like the word 'cyberspace', the term 'virtual reality' (VR) is now commonly used for any space created by or accssible through computers, ranging from the 3D world of a game to the Internet as an alternate 'virtual' reality constructed by a vast networked communication space.\" Christiane Paul (Curator of New Media Arts at the Whitney Museum of American Art). In this tutorial we'll learn about Cyberspace's history, as well as how to make it using WebVR/XR and <a-frame>",
-  "keywords": ["vr", "ar", "xr"],
+  "description": "In this lesson we'll learn about the ideas and history of Cyberspace. We'll also take a look at some WebVR/XR code written with <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> used to create it. \"Like the word 'cyberspace', the term 'virtual reality' (VR) is now commonly used for any space created by or accssible through computers, ranging from the 3D world of a game to the Internet as an alternate 'virtual' reality constructed by a vast networked communication space.\" —<i>Christiane Paul (Curator of New Media Arts at the Whitney Museum of American Art)</i>.",
+  "keywords": ["vr", "ar", "xr", "history", "theory", "cyberpunk", "the-cave", "osmose"],
   "main": "main.js",
   "checkpoints": {
-    "Introducing Cyberspace": 0,
-    "Deconstruction of a Scene": "deconstruction",
-    "Reconstruction of a Scene": "reconstruction"
+    "0: Introducing Cyberspace": 0,
+    "1: Bit of History": "vr-history",
+    "2: Terminology": "terminology",
+    "3: VR as tool": "art-tool-vs-medium2",
+    "4: VR as medium": "art-tool-vs-medium3",
+    "5: Reconstruction of a Scene": "code-start"
   },
   "references": [
-
+    {
+      "note": "Paul, Christiane. Digital Art. Thames & Hudson. 2003.",
+      "url": "http://www.immersence.com/publications/2003/2003-CPaul.html"
+    },
+    {
+      "note": "Virtual Reality, The Computer Chronicles. Stewart Cheifet Productions. 1992",
+      "url": "https://archive.org/details/virtualreali"
+    },
+    {
+      "note": "Trench, Marianne. Cyberpunk. Intercon. 1990.",
+      "url": "https://archive.org/details/cyberpunk_201410"
+    },
+    {
+      "note": "A-Frame.js, Open Source Library. <a href=\"https://github.com/ngokevin\" target=\"_blank\">Kevin Ngo</a>, <a href=\"https://github.com/dmarcos\" target=\"_blank\">Diego Marcos</a>, <a href=\"https://github.com/cvan\" target=\"_blank\">Christopher Robert Van Wiemeersch</a>, <a href=\"https://github.com/donmccurdy\" target=\"_blank\">Don McCurdy</a> and other <a href=\"https://github.com/aframevr/aframe/graphs/contributors\" target=\"_blank\">contributors</a>",
+      "url": "https://aframe.io/"
+    }
   ]
 }
