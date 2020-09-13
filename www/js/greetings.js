@@ -7,6 +7,7 @@ window.greetings = {
   introducing: false, // see postIntro below
   returningUser: window.localStorage.getItem('username'),
   widgets: {}, // NOTE: created in www/convos/welcome-screen/index.js
+  starterEncoded: 'eJyFkEFLw0AQhe/5FSOloNBgYgw0aSilKh714KXHTXaSHZrsyu62IZb+dzfZoiiIhx1m33wM701x9fjy8LZ7fQJhu3YdFMYOLa4DgM0eh1qzDg0wSd32GU5OBYjmcIKSVftGq4Pk4bsyZEnJfJyk7p0nLP2bi6Mf5PT9f+U5cKVUfLj4+OZzaEki02GjGSeU9vouiTg2C5gt4yrL7l3DWVUu0TVpnMZZdrP6tSM09IE5JKOXsfj5GJx5J5cbJJEBkjVJsuiZnrgVU6hj7xWB1AjrJeEldURdt6rPQRDnKFdToOL269qf3xBxIA==',
   starterCode: `<!DOCTYPE html>
 <style>
   @keyframes animBG {
@@ -249,6 +250,7 @@ window.greetings = {
     if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
       window.localStorage.removeItem('pre-auth-from')
+      NNE.code = NNE._decode(window.utils.savedCode())
       if (from === 'save') WIDGETS['functions-menu'].saveProject()
       else if (from === 'open') WIDGETS['functions-menu'].openProject()
     } else setTimeout(window.utils.handleLoginRedirect, 250)

@@ -71,7 +71,7 @@ class MenuManager {
         }
       },
       functions: {
-        path: 'images/menu/settings.png',
+        path: 'images/menu/functions.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
           STORE.dispatch('OPEN_WIDGET', 'functions-menu')
@@ -85,7 +85,7 @@ class MenuManager {
         }
       },
       tutorials: {
-        path: 'images/menu/open.png',
+        path: 'images/menu/tutorials.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
           STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')

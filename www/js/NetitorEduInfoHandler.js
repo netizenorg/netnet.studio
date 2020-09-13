@@ -135,11 +135,11 @@ class NetitorEduInfoHandler {
 
     let s = '<h1><a href="https://developer.mozilla.org/en-US/docs/Web/CSS color_value" target="_blank">color</a></h1><p>'
 
-    s += `This specific color <code>${val}</code> is defined using a color <a href="${clrURL[type]}" target="_blank">${type}</a>.`
+    s += (type === 'keyword') ? `This specific color <code>${val}</code> is defined using a color <a href="${clrURL[type]}" target="_blank">${type}</a>.` : `This specific color <code>${val}</code> is defined using a <a href="${clrURL[type]}" target="_blank">${type}</a> color code.`
 
-    const ix = `written as a hex value it would be <code>${r.hex}</code>`
-    const ir = `written as an rgb value it would be <code>${r.rgb}</code>`
-    const ih = `written as an hsl value it would be <code>${r.hsl}</code>`
+    const ix = `written as a <i>hex</i> code it would be <code>${r.hex}</code>`
+    const ir = `written as an <i>rgb</i> code it would be <code>${r.rgb}</code>`
+    const ih = `written as an <i>hsl</i> code it would be <code>${r.hsl}</code>`
 
     if (type === 'keyword') {
       return `${s} If this were ${ix}, ${ir}, ${ih}.</p>`
@@ -153,8 +153,6 @@ class NetitorEduInfoHandler {
   }
 
   static parse (eve) {
-    if (!eve.nfo) return null // TODO handle these differently?
-
     const c = Color.match(eve.data)
     const k = NNE.edu.css.colors[eve.data]
     // if (c) {
@@ -162,6 +160,8 @@ class NetitorEduInfoHandler {
     //   if (c[0] === 'hex' && c[1] !== '#' + NNE.cm.getSelection()) return null
     //   else if (c[1] !== NNE.cm.getSelection()) return null
     // }
+
+    if (!c && !k && !eve.nfo) return null // TODO handle these differently?
 
     let cnt
     if (c || k) cnt = this.colorEduInfo(eve, c, k)

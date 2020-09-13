@@ -56,9 +56,14 @@ class MenuWidgets extends Widget {
         const starSpan = document.createElement('span')
         const str = stared.includes(key) ? '★' : ''
         starSpan.textContent = str
+        // if (stared.includes(key)) {
+        //   starSpan.innerHTML = '<img src="images/chicago-star.png" style="width: 25px;">'
+        // } else {
+        //   starSpan.innerHTML = ''
+        // }
         div.textContent = `${WIDGETS[key].title}`
         div.className = 'link'
-        div.addEventListener('click', () => STORE.dispatch('OPEN_WIDGET', key))
+        div.addEventListener('click', () => WIDGETS[key].open())
         parent.appendChild(div).appendChild(starSpan)
       }
     })

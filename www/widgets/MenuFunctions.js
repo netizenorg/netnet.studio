@@ -474,6 +474,7 @@ class MenuFunctions extends Widget {
     // keep a refernce for where the user was redirected from
     // ('save' or 'open') so netnet knows what dialogue to present
     // when they get redirected back.
+    window.localStorage.setItem('code', NNE._encode(NNE.code))
     window.localStorage.setItem('pre-auth-from', from)
     const id = 'client_id=af0f317a19fc4fd571be'
     const scope = 'scope=public_repo'

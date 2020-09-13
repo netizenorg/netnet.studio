@@ -185,6 +185,19 @@ window.utils = {
     opacity: new URL(window.location).searchParams.get('opacity'),
     layout: new URL(window.location).searchParams.get('layout'),
     theme: new URL(window.location).searchParams.get('theme')
+  },
+
+  // ~ ~ ~ 3rd party lib helpers
+
+  setupAframeEnv: () => {
+    window.utils.get('api/data/aframe', (data) => {
+      NNE.addCustomElements(data.elements)
+      NNE.addCustomAttributes(data.attributes)
+      for (const attr in data.attributes) {
+        NNE.addErrorException(`{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ ${attr} ] must be separated by only one space."}`)
+        NNE.addErrorException(`{"rule":{"id":"attr-value-not-empty","description":"All attributes must have values.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-value-not-empty"},"message":"The attribute [ ${attr} ] must have a value."}`)
+      }
+    })
   }
 
 }

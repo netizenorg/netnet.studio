@@ -168,6 +168,7 @@ class Widget {
 
   open () {
     if (STORE.state.widgets.map(w => w.ref).includes(this)) {
+      this._stayInFrame()
       STORE.dispatch('OPEN_WIDGET', this)
       this.events.open.forEach(func => func())
     } else {
@@ -233,6 +234,9 @@ class Widget {
         <span>${this._title}</span>
         <span>
           <span class="star">☆</span>
+          <!-- <span class="star" style="opacity: 0.5"> -->
+            <!-- <img src="images/chicago-star.png" style="width: 25px;"> -->
+          <!-- </span> -->
           <span class="close">✖</span>
         </span>
       </div>
@@ -261,8 +265,10 @@ class Widget {
       stared = stared ? JSON.parse(stared) : []
       if (stared.includes(this.key)) {
         this.ele.querySelector('.w-top-bar .star').textContent = '★'
+        // this.ele.querySelector('.w-top-bar .star').style.opacity = 1
       } else {
         this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+        // this.ele.querySelector('.w-top-bar .star').style.opacity = 0.5
       }
     } else { // hide star span
       this.ele.querySelector('.w-top-bar .star').style.display = 'none'
@@ -287,17 +293,19 @@ class Widget {
     stared = stared ? JSON.parse(stared) : []
     if (stared.includes(this.key)) { // unstar it
       this.ele.querySelector('.w-top-bar .star').textContent = '☆'
+      // this.ele.querySelector('.w-top-bar .star').style.opacity = 1
       const i = stared.indexOf(this.key)
       stared.splice(i, 1)
       window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
     } else { // star it
       this.ele.querySelector('.w-top-bar .star').textContent = '★'
+      // this.ele.querySelector('.w-top-bar .star').style.opacity = 0.5
       stared.push(this.key)
       stared = stared.reverse()
       window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
     }
     // udpate Widgets Menu to reflect changes
-    if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].update()
+    if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].updateView()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -330,6 +338,17 @@ class Widget {
     this.ele.style.visibility = value
   }
 
+  _stayInFrame () {
+    if (this.ele.offsetTop < 2) this.top = 2
+    else if (this.ele.offsetTop > window.innerHeight) {
+      this.top = window.innerHeight - this.ele.offsetTop - 10
+    }
+    if (this.ele.offsetLeft < 2) this.left = 2
+    else if (this.ele.offsetLeft > window.innerWidth) {
+      this.left = window.innerWidth - this.ele.offsetWidth - 10
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _shouldResize (e) {
@@ -360,6 +379,7 @@ class Widget {
     this.winOff = null
     this.ele.querySelector('.w-top-bar').style.cursor = 'grab'
     document.body.style.userSelect = 'auto'
+    this._stayInFrame()
   }
 
   _mouseMove (e) {

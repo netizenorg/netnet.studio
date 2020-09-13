@@ -218,7 +218,7 @@ class SearchBar {
         type: 'widgets.Functions Menu',
         word: sub,
         clck: () => {
-          STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+          WIDGETS['functions-menu'].open()
           const id = `func-menu-${sub.replace(/ /g, '-')}`
           WIDGETS['functions-menu'].toggleSubMenu(id)
         }
@@ -229,7 +229,7 @@ class SearchBar {
           word: `${s.click}()`,
           alts: s.alts,
           clck: () => {
-            STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+            WIDGETS['functions-menu'].open()
             const id = `func-menu-${sub.replace(/ /g, '-')}`
             WIDGETS['functions-menu'].toggleSubMenu(id)
           }
@@ -252,7 +252,7 @@ class SearchBar {
           type: 'widgets',
           word: w.ref.title,
           alts: w.ref.keywords || [],
-          clck: () => { STORE.dispatch('OPEN_WIDGET', w.ref.key) }
+          clck: () => { WIDGETS[w.ref.key].open() }
         }
         arr.push(obj)
       })
@@ -264,7 +264,7 @@ class SearchBar {
           subs: Object.keys(t.checkpoints) || [],
           alts: t.keywords || [],
           clck: () => {
-            STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+            WIDGETS['tutorials-menu'].open()
             NNT.load(t.dirname)
           }
         }

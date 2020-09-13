@@ -33,11 +33,12 @@ NNE.on('lint-error', (e) => {
 })
 
 NNE.on('cursor-activity', (e) => {
+  // console.log(e);
   if (STORE.is('SHOWING_EDU_ALERT')) STORE.dispatch('HIDE_EDU_ALERT')
-  window.localStorage.setItem('code', NNE._encode(NNE.code))
 })
 
 NNE.on('edu-info', (e) => {
+  // console.log(e);
   const edu = NetitorEduInfoHandler.parse(e)
   if (edu) {
     if (STORE.is('SHOWING_EDU_TEXT')) STORE.dispatch('SHOW_EDU_TEXT', edu)
@@ -57,9 +58,11 @@ window.addEventListener('resize', (e) => {
 })
 
 window.addEventListener('keydown', (e) => {
+  // console.log(e.keyCode);
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+    if (!NNE.autoUpdate) NNE.update()
+    window.localStorage.setItem('code', NNE._encode(NNE.code))
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
     window.WIDGETS['functions-menu'].openFile()
@@ -69,17 +72,20 @@ window.addEventListener('keydown', (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
     e.preventDefault()
     STORE.dispatch('PREV_LAYOUT')
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 75) { // k
+    e.preventDefault()
+    STORE.dispatch('CHANGE_OPACITY', 1)
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
+    e.preventDefault()
+    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
     STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
     STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 191) { // ?
-    e.preventDefault()
-    STORE.dispatch('CHANGE_OPACITY', 1)
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
-    if (!NNE.autoUpdate) NNE.update()
+    // ...
   } else if (e.keyCode === 27) { // esc
     if (window.NNM.search.opened) window.NNM.search.close()
     else window.utils.closeTopMostWidget()
