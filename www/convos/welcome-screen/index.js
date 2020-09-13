@@ -260,7 +260,7 @@ window.convos['welcome-screen'] = (self) => {
     after: () => { NNM.setFace('⌣̀', '_', '⌣́', false) }
   }, {
     id: 'thats-dark',
-    content: 'it is... but that\'s why I exist! To help teach you and others to take back agency in their your lives!',
+    content: 'it is... but that\'s why I exist! To help teach you and others to take back agency in your lives!',
     options: {
       'oh right, what\'s netnet?': (e) => e.goTo('whois')
     }
