@@ -315,12 +315,26 @@ class MenuFunctions extends Widget {
       title.textContent = sub
       title.tabIndex = 0
       title.addEventListener('click', () => {
-        this.toggleSubMenu(div.id)
+        for (const sub in this.subs) {
+          if (title.textContent === sub) {
+            this.toggleSubMenu(div.id)
+          } else {
+            const id = `func-menu-${sub.replace(/ /g, '-')}`
+            this.toggleSubMenu(id, 'close')
+          }
+        }
         title.blur()
       })
       title.addEventListener('keypress', (e) => {
         if (e.which === 13) {
-          this.toggleSubMenu(div.id)
+          for (const sub in this.subs) {
+            if (title.textContent === sub) {
+              this.toggleSubMenu(div.id)
+            } else {
+              const id = `func-menu-${sub.replace(/ /g, '-')}`
+              this.toggleSubMenu(id, 'close')
+            }
+          }
         }
       })
       div.appendChild(title)
