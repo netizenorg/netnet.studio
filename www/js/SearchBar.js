@@ -103,7 +103,6 @@ class SearchBar {
     setTimeout(() => {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
-      this.netnet.style.filter = 'blur(25px)'
     }, 100)
   }
 

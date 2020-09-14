@@ -65,21 +65,30 @@
   position: relative;
   color: var(--fg-color);
   text-decoration: none;
+  cursor: pointer;
   transition: color .5s ease, border .5s ease;
 
   /*underline*/
-  border-bottom: 1px solid var(--fg-color);
-  text-shadow: 2px 2px var(--bg-color), 2px -2px var(--bg-color), -2px 2px var(--bg-color), -2px -2px var(--bg-color);
+  text-decoration: underline;
+  text-underline-position: under;
 }
 .text-bubble > section a:hover {
   color: var(--netizen-match-color);
-  border-bottom: 1px solid var(--netizen-match-color);
 }
 .text-bubble > section a:active {
   color: var(--netizen-attribute);
 }
 .text-bubble > section a:active:after {
   background-color: var(--netizen-attribute);
+}
+.text-bubble > section a code {
+  text-decoration: underline;
+  text-underline-position: under;
+  cursor: pointer;
+  transition: color .5s ease;
+}
+.text-bubble > section a:hover code {
+  color: var(--netizen-match-color);
 }
 
 
@@ -140,6 +149,10 @@
   font-size: 20px;
   line-height: 1.2em;
   cursor: pointer;
+}
+
+.text-bubble > section h1 a:hover code {
+  color: inherit;
 }
 
 .text-bubble > section h1:before {
