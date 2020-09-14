@@ -8,7 +8,12 @@ window.greetings = {
   returningUser: window.localStorage.getItem('username'),
   widgets: {}, // NOTE: created in www/convos/welcome-screen/index.js
   starterEncoded: 'eJyFkEFLw0AQhe/5FSOloNBgYgw0aSilKh714KXHTXaSHZrsyu62IZb+dzfZoiiIhx1m33wM701x9fjy8LZ7fQJhu3YdFMYOLa4DgM0eh1qzDg0wSd32GU5OBYjmcIKSVftGq4Pk4bsyZEnJfJyk7p0nLP2bi6Mf5PT9f+U5cKVUfLj4+OZzaEki02GjGSeU9vouiTg2C5gt4yrL7l3DWVUu0TVpnMZZdrP6tSM09IE5JKOXsfj5GJx5J5cbJJEBkjVJsuiZnrgVU6hj7xWB1AjrJeEldURdt6rPQRDnKFdToOL269qf3xBxIA==',
-  starterCode: `<!DOCTYPE html>
+  getStarterCode: () => {
+    const de = window.getComputedStyle(document.documentElement)
+    const clr1 = de.getPropertyValue('--netizen-string')
+    const clr2 = de.getPropertyValue('--netizen-number')
+    const clr3 = de.getPropertyValue('--netizen-keyword')
+    return `<!DOCTYPE html>
 <style>
   @keyframes animBG {
     0% { background-position: 0% 50% }
@@ -17,7 +22,7 @@ window.greetings = {
   }
 
   body {
-    background: linear-gradient(230deg, #81c994, #dacb8e, #515199);
+    background: linear-gradient(230deg, ${clr1}, ${clr2}, ${clr3});
     background-size: 300% 300%;
     animation: animBG 30s infinite;
     width: 100vw;
@@ -25,10 +30,11 @@ window.greetings = {
     overflow: hidden;
   }
 </style>
-  `,
+    `
+  },
 
   injectStarterCode: () => {
-    NNE.code = window.greetings.starterCode
+    NNE.code = window.greetings.getStarterCode()
   },
 
   startMenu: () => {
@@ -70,6 +76,16 @@ window.greetings = {
             ...BEGIN INTRO LOGIC...
       */
       const tut = window.utils.url.tutorial
+
+      // check for opacity in URL parameters
+      const opc = window.utils.url.opacity
+      if (opc) STORE.dispatch('CHANGE_OPACITY', opc)
+      // check for theme in URL param or user picked theme in localStorage
+      const thm = window.utils.url.theme || window.localStorage.getItem('theme')
+      if (thm) STORE.dispatch('CHANGE_THEME', thm)
+      // does the user have any error exceptions saved locally
+      const erx = window.localStorage.getItem('error-exceptions')
+      if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
 
       // if there is some prior code to display
       const prevCode = window.utils.savedCode()
@@ -115,16 +131,6 @@ window.greetings = {
         }
         self.welcome()
       }
-
-      // check for opacity in URL parameters
-      const opc = window.utils.url.opacity
-      if (opc) STORE.dispatch('CHANGE_OPACITY', opc)
-      // check for theme in URL param or user picked theme in localStorage
-      const thm = window.utils.url.theme || window.localStorage.getItem('theme')
-      if (thm) STORE.dispatch('CHANGE_THEME', thm)
-      // does the user have any error exceptions saved locally
-      const erx = window.localStorage.getItem('error-exceptions')
-      if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
 
       window.utils.netitorUpdate()
       // When any layout or other transition finishes remove loader...
