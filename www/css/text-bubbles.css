@@ -65,7 +65,7 @@
   position: relative;
   color: var(--fg-color);
   text-decoration: none;
-  cursor: pointer !important;
+  cursor: pointer;
   transition: color .5s ease, border .5s ease;
 
   /*underline*/
