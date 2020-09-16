@@ -89,11 +89,11 @@ class HyperVidPlayer extends Widget {
         <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
       </div>
       ${opts.text ? '<p>' + opts.text + '</p>' : ''}
-      <p>
-        (source:<a href="${opts.source.url}" target="_blank">
-          ${opts.source.text}
-        </a>)
-      </p>
+      ${opts.source ? `<p>
+          (source:<a href="${opts.source.url}" target="_blank">
+            ${opts.source.text}
+          </a>)
+        </p>` : ''}
     `
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
     this.$('.hvp-vol').addEventListener('change', () => {
