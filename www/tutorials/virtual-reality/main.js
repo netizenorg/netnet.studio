@@ -525,7 +525,7 @@ iframe { width: 100vw; height: 100vh }
       video: 'api/videos/cyberpunk.mp4',
       width: window.innerWidth * 0.375,
       title: 'Cyberpunk Documentary (1990)',
-      text: '"Jack into the Matrix!", This video is a 6min edit of an hour long doc by Marianne Trench explores the cyberpunk culture of the late 80s and early 90s, from Virtual Reality to "cyber arts" to mind machines. It contains some great interviews, including William Gibson (cyberpunk author), Timothy Leary (the notorious LSD evangelist), Jaron Lanier (VR pioneer turned digital rights advocate) among others.',
+      text: '"Jack into the Matrix!", This video is a 6min edit of an hour long doc by Marianne Trench explores the cyberpunk culture of the late 80s and early 90s, from virtual reality to "cyber arts" to mind machines. It contains some great interviews, including William Gibson (cyberpunk author), Timothy Leary (the notorious LSD evangelist), Jaron Lanier (VR pioneer turned digital rights advocate) among others.',
       source: {
         url: 'https://archive.org/details/cyberpunk_201410',
         text: 'Cyberpunk documentary by Marianne Trench'
