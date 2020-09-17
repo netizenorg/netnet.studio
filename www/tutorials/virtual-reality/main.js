@@ -7,7 +7,7 @@ window.TUTORIAL = {
       const y = window.innerHeight - window.NNW.win.offsetHeight - 20
       NNW.updatePosition(x, y)
     },
-    content: 'The scene you see behind me was created using HTML code and a WebVR library called <a href="https://aframe.io/" target="_blank">a-frame</a>. Click and drag it with your mouse. I can show you how it was made, but first let\'s talk about Virtual Reality or VR!'
+    content: 'The scene you see behind me was created using HTML code and a WebVR library called <a href="https://aframe.io/" target="_blank">a-frame</a>. Click and drag it with your mouse. I can show you how it was made, but first let\'s talk about virtual reality or VR!'
   }, {
     before: () => {
       TUTORIAL.introVideos()
