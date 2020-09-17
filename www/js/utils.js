@@ -1,4 +1,4 @@
-/* global NNE, STORE, Maths, WIDGETS */
+/* global NNE, STORE, Maths, WIDGETS, Convo */
 window.convos = {}
 window.utils = {
 
@@ -165,7 +165,7 @@ window.utils = {
 
   savedCode: () => {
     const code = window.localStorage.getItem('code')
-    if (code !== NNE._encode(window.greetings.starterCode) &&
+    if (code !== NNE._encode(window.greetings.getStarterCode()) &&
     code !== 'eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=' &&
     code !== 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') return code
     else return false
@@ -179,6 +179,11 @@ window.utils = {
     })
   },
 
+  _libs: [],
+  checkForLibs: (type, err) => {
+    if (type === 'aframe') window.utils.checkAframeEnv(err)
+  },
+
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
@@ -189,15 +194,51 @@ window.utils = {
 
   // ~ ~ ~ 3rd party lib helpers
 
+  checkAframeEnv: (err) => {
+    if (window.utils._libs.includes('aframe')) return
+    if (NNE.code.includes('aframe.js"') ||
+      NNE.code.includes('aframe.min.js"')) {
+      window.convo = new Convo({
+        content: 'It appears you\'re using the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, would you like me to load the A-Frame widgets, helpers and Error exceptions?',
+        options: {
+          'yes, that be great!': (e) => {
+            window.utils.setupAframeEnv()
+            e.hide()
+          },
+          'no, you\'re mistaken.': (e) => e.hide()
+        }
+      })
+    } else if (err.message.indexOf('<a-') === 0) {
+      window.convo = new Convo([{
+        content: 'It appears you\'re trying to use a custom element from the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, but the library is not present in your code? You must <a href="https://aframe.io/docs/1.0.0/introduction/installation.html#include-the-js-build" target="_blank">include it in a script tag</a>',
+        options: {
+          'ok I will': (e) => e.hide(),
+          'could you include it for me?': (e) => e.goTo('include')
+        }
+      }, {
+        id: 'include',
+        content: 'Sure, place your cursor at the place in my editor where you would like me to insert the code. Let me know when you\'re ready.',
+        options: {
+          'ok, ready!': (e) => {
+            NNE.cm.replaceSelection('<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>')
+            e.hide()
+          }
+        }
+      }])
+    }
+  },
+
   setupAframeEnv: () => {
     window.utils.get('api/data/aframe', (data) => {
       NNE.addCustomElements(data.elements)
       NNE.addCustomAttributes(data.attributes)
+      WIDGETS['aframe-component-widget'].listed = true
       for (const attr in data.attributes) {
         NNE.addErrorException(`{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ ${attr} ] must be separated by only one space."}`)
         NNE.addErrorException(`{"rule":{"id":"attr-value-not-empty","description":"All attributes must have values.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-value-not-empty"},"message":"The attribute [ ${attr} ] must have a value."}`)
       }
     })
+    window.utils._libs.push('aframe')
   }
 
 }

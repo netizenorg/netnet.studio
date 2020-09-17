@@ -365,13 +365,9 @@ iframe { width: 100vw; height: 100vh }
   }],
 
   onload: () => {
-    window.utils.get('api/data/aframe', (data) => {
-      NNE.addCustomElements(data.elements)
-      NNE.addCustomAttributes(data.attributes)
-      NNE.addErrorException('{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ animation ] must be separated by only one space."}')
-      NNE.addCustomRoot('tutorials/virtual-reality/')
-      NNE.code = TUTORIAL.bgCode
-    })
+    window.utils.setupAframeEnv()
+    NNE.addCustomRoot('tutorials/virtual-reality/')
+    NNE.code = TUTORIAL.bgCode
   },
 
   bgCode: `<!DOCTYPE html>
