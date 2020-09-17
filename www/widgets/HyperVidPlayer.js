@@ -43,6 +43,7 @@ class HyperVidPlayer extends Widget {
   play () {
     this.$('.hvp-toggle').textContent = '□'
     this.$('video').play()
+    this._loop()
   }
 
   pause () {
@@ -109,11 +110,12 @@ class HyperVidPlayer extends Widget {
       setTimeout(() => { this.$('.hvp-controls').style.opacity = 0 }, 250)
     })
     this.on('close', () => this.pause())
-    this._loop()
   }
 
   _loop () {
-    window.requestAnimationFrame(() => this._loop())
+    if (!this.$('video').paused) {
+      window.requestAnimationFrame(() => this._loop())
+    }
     const ct = this.$('video').currentTime
     const kfs = this.keyframes.filter(kf => ct > kf.time && !kf.ran)
     kfs.forEach(kf => {
