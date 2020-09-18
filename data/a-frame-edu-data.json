@@ -130,8 +130,8 @@
         "pivot"
       ],
       "description": {
-        "html": "This HTML <a href=\"https://developer.mozilla.org/en-US/docs/Web/Web_Components\" target=\"_blank\">custom element</a> is part of the <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> library. It's used to load assets (external files used int the scene) like 3D objects",
-        "text": "It's used to load assets (external files used int the scene) like 3D objects"
+        "html": "This HTML <a href=\"https://developer.mozilla.org/en-US/docs/Web/Web_Components\" target=\"_blank\">custom element</a> is part of the <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> library. It's used to load assets (external files used in the scene) like 3D objects",
+        "text": "It's used to load assets (external files used in the scene) like 3D objects"
       }
     },
     "a-box": {

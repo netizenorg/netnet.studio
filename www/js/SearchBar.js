@@ -22,6 +22,7 @@
   search.open()       // opens search
   search.close()      // closes search
   search.search(term) // does the searching
+  search.addToDict(arr) // add array of search objects to internal dictionary
 
 */
 class SearchBar {
@@ -115,6 +116,20 @@ class SearchBar {
     setTimeout(() => { this.ele.style.visibility = 'hidden' }, this.transitionTime)
   }
 
+  addToDict (arr) {
+    this.dict = this.dict.concat(arr)
+    this.fuse = new Fuse(this.dict, {
+      ignoreLocation: true,
+      includeScore: true,
+      includeMatches: true,
+      keys: [
+        { name: 'word', weight: 1 },
+        { name: 'subs', weight: 0.5 },
+        { name: 'alts', weight: 0.25 }
+      ]
+    })
+  }
+
   search (e) {
     const term = e.target.value
     let results = this.fuse.search(term)
@@ -196,20 +211,6 @@ class SearchBar {
     })
   }
 
-  _addToDict (arr) {
-    this.dict = this.dict.concat(arr)
-    this.fuse = new Fuse(this.dict, {
-      ignoreLocation: true,
-      includeScore: true,
-      includeMatches: true,
-      keys: [
-        { name: 'word', weight: 1 },
-        { name: 'subs', weight: 0.5 },
-        { name: 'alts', weight: 0.25 }
-      ]
-    })
-  }
-
   _createFuncMenuObj (subs) {
     const arr = []
     for (const sub in subs) {
@@ -235,7 +236,7 @@ class SearchBar {
         })
       })
     }
-    this._addToDict(arr)
+    this.addToDict(arr)
   }
 
   _loadData (type, data) {
@@ -273,7 +274,7 @@ class SearchBar {
       // TODO open anatomy of "an html element widget" for elements/attributes
       // type: 'netnet'
     }
-    this._addToDict(arr)
+    this.addToDict(arr)
   }
 
   _loadMiscData () {
@@ -284,7 +285,7 @@ class SearchBar {
       alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
       clck: () => { window.greetings.startMenu() }
     })
-    this._addToDict(arr)
+    this.addToDict(arr)
   }
 }
 

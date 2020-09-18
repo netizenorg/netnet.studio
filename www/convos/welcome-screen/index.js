@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, Widget */
+/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, NNT, Widget */
 window.greetings.widgets = {
   'ws-xanadu': new Widget({
     listed: false,
@@ -272,24 +272,32 @@ window.convos['welcome-screen'] = (self) => {
   */
   const learnInfo = [{
     id: 'start-learning',
-    content: 'Fantastic! ...except that the tutorials aren\'t ready yet. In the mean time you can experiment with the code generating this pretty background?',
+    before: () => {
+      if (STORE.state.layout !== 'welcome') {
+        STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+      }
+      setTimeout(() => {
+        NNM.setFace('ᴖ', '﹏', 'ᴖ', false)
+      }, STORE.getTransitionTime() + 100)
+    },
+    content: 'Fantastic! Teaching you the ways of the Internet is what I was programmed to do! ...that said, I\'m a fairly young AI, still very much in <i>beta</i>, so be warned: there will be bugs!',
     options: {
-      'ok!': (e) => {
-        if (STORE.state.layout === 'welcome') {
-          STORE.dispatch('CHANGE_LAYOUT', 'separate-window')
-        }
-        e.goTo('experiment')
-      },
-      'tell me about netnet': (e) => e.goTo('whois')
+      'ok, duly noted': (e) => e.goTo('keep-learning'),
+      'what\'s "beta" mean?': (e) => e.goTo('beta?')
     }
   }, {
-    id: 'experiment',
-    content: 'Change the code in my editor! Don\'t worry about messing anything up, I\'ll warn you if you make a mistake.',
-    options: { 'anything else I should know?': (e) => e.goTo('experiment-2') }
+    id: 'beta?',
+    content: '"Beta" is developer lingo for an app that is ready for user testing but not quite finished (and likely full of bugs)',
+    options: { 'I see': (e) => e.goTo('keep-learning') }
   }, {
-    id: 'experiment-2',
-    content: 'Double click any piece of code if you want me to explain it to you. You can also click on my face at any point to open my menu. Sound good?',
-    options: { cool: (e) => e.hide() }
+    id: 'keep-learning',
+    content: 'I\'ve got a lesson prepared to help you get oriented, should I launch into it?',
+    options: {
+      'yea!': (e) => {
+        NNT.load('orientation', (e) => { e.goTo('getting-started') })
+      },
+      'no thanks': (e) => e.goTo('main-menu')
+    }
   }]
 
   /*  (((
@@ -369,16 +377,8 @@ window.convos['welcome-screen'] = (self) => {
     content: 'What do you want to do?',
     options: {
       'i want to learn': (e) => {
-        // NOTE: THIS IS TEMPORARY
         window.greetings.injectStarterCode()
-        setTimeout(() => {
-          NNM.setFace('ᴖ', '﹏', 'ᴖ', false)
-        }, STORE.getTransitionTime() + 100)
         e.goTo('start-learning')
-        // TODO: once we've got the orientation tutorial && a couple
-        // of others, we should say something like:
-        // want to get oriented? or try one of our beta-tutorials
-        // (maybe even a "what's beta mean?" to explain status of project)
       },
       'i want to sketch': (e) => {
         const prevCode = window.utils.savedCode()

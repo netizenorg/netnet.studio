@@ -78,7 +78,7 @@ class MenuManager {
         }
       },
       widgets: {
-        path: 'images/menu/settings.png',
+        path: 'images/menu/widget.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
           STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
@@ -106,7 +106,7 @@ class MenuManager {
 
     this.ele.querySelector('#face').addEventListener('click', () => {
       if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
-      else window.greetings.welcome()
+      // else window.greetings.welcome()
     })
   }
 

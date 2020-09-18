@@ -153,7 +153,7 @@ class NetitorEduInfoHandler {
   }
 
   static parse (eve) {
-    const c = Color.match(eve.data)
+    const c = Color.match(eve.data.toLowerCase())
     const k = NNE.edu.css.colors[eve.data]
     // if (c) {
     //   console.log('IN IT', c, '#', NNE.cm.getSelection());
@@ -172,9 +172,15 @@ class NetitorEduInfoHandler {
     const opts = {
       ok: () => { STORE.dispatch('HIDE_EDU_TEXT') }
     }
+    // TODO: as we create more widgets this should prolly be re-org
     if (c) {
       opts['open color widget'] = () => {
         WIDGETS['color-widget'].open()
+      }
+    } else if (eve.type === 'attribute' && NNE._customAttributes) {
+      const awig = WIDGETS['aframe-component-widget']
+      if (awig && awig.data[eve.data]) {
+        opts['open component widget'] = () => awig.open()
       }
     }
 

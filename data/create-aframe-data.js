@@ -16,7 +16,7 @@ const fs = require('fs')
 const data = { elements: {}, attributes: {}, properties: {} }
 const eles = [
   { name: 'a-assets', url: 'https://aframe.io/docs/1.0.0/core/asset-management-system.html', description: 'A-Frame has an asset management system that allows us to place our assets (images, audio, video, 3d models) in one place and to preload and cache assets for better performance.' },
-  { name: 'a-asset-item', url: 'https://aframe.io/docs/1.0.0/core/asset-management-system.html#lt-a-asset-item-gt', description: 'It\'s used to load assets (external files used int the scene) like 3D objects' },
+  { name: 'a-asset-item', url: 'https://aframe.io/docs/1.0.0/core/asset-management-system.html#lt-a-asset-item-gt', description: 'It\'s used to load assets (external files used in the scene) like 3D objects' },
   { name: 'a-box', url: null, description: null },
   { name: 'a-camera', url: 'https://aframe.io/docs/1.0.0/primitives/a-camera.html', description: 'It determines what the user sees. We can change the viewport by modifying the camera entity\'s position and rotation.' },
   { name: 'a-circle', url: null, description: null },
@@ -110,7 +110,35 @@ const props = [
   { name: 'position', type: 'vec3', default: '0 0 0' },
   { name: 'rotation', type: 'vec3', default: '0 0 0' },
   { name: 'scale', type: 'vec3', default: '1 1 1' }
+  // {
+  //   name: 'camera',
+  //   type: 'component',
+  //   schema: {
+  //     active: { type: 'boolean', default: true },
+  //     far: { type: 'number', default: 10000, min: 100, max: 10000 },
+  //     fov: { type: 'number', default: 80, min: 0, max: 200 },
+  //     near: { type: 'number', default: 0.005, min: 0, step: 0.001, max: 2 },
+  //     spectator: { type: 'boolean', default: false },
+  //     zoom: { type: 'number', default: 1, min: 0, max: 10 }
+  //   }
+  // }
 ]
+
+// function schema2data (s) {
+//   const data = {}
+//   for (const p in s) {
+//     data[p] = {
+//       type: s[p].type,
+//       default: s[p].default,
+//       info: '...'
+//     }
+//     if (s[p].type === 'number') {
+//       data[p].min = s[p].min || 0
+//       data[p].max = s[p].max || 1
+//     }
+//   }
+//   return JSON.stringify(data, null, 2)
+// }
 
 const attrArr = attrs.map(a => a.name)
 const eleTextStr = eles.map(e => `<${e.name}>`).join(', ')

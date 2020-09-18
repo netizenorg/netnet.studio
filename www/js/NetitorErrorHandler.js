@@ -59,7 +59,24 @@ class NetitorErrorHandler {
   }
 
   static parse (eve) {
+    // if we're using a-frame, filter out any edge-case errors (>_<)
+    const initLength = eve.length
+    if (window.utils._libs.includes('aframe')) {
+      eve = eve.filter(() => {
+        const x = '{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ animation ] must be separated by only one space."}'
+        const y = JSON.stringify({ rule: eve[0].rule, message: eve[0].message })
+        return NNE._compareTwoStrings(x, y) < 0.9
+      })
+    }
+
     if (eve.length > 0) {
+      // check for errors caused by a-frame custom elements......
+      const ce = eve.filter(e => e.rule.id === 'standard-elements')
+      if (ce.length > 0 && !window.utils._libs.includes('aframe')) {
+        const lib = window.utils.checkForLibs('aframe', eve[0])
+        if (lib) return
+      } // .......................................................
+
       return eve.map((err, i) => {
         const markerColor = err.type === 'error' ? 'red' : 'yellow'
         const highlightColor = err.type === 'error'
@@ -82,7 +99,16 @@ class NetitorErrorHandler {
           colors: [markerColor, highlightColor]
         }
       })
-    } else return null
+    } else {
+      // netitor won't update if it found a-frame errors (even if we rmv'd those
+      // errors here) so i'm reproducing the netitors _update logic here
+      if (initLength > 0 && window.utils._libs.includes('aframe')) {
+        const h = document.querySelector('.CodeMirror-hints')
+        if (NNE._auto && !h) NNE.update()
+      } // .......................................................
+
+      return null
+    }
   }
 }
 

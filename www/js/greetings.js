@@ -138,7 +138,9 @@ window.greetings = {
         document.querySelector('#loader').style.opacity = '0'
         setTimeout(() => {
           document.querySelector('#loader').style.display = 'none'
-          if (!STORE.is('SHOWING')) self.faceClickHint()
+          setTimeout(() => {
+            if (!STORE.is('SHOWING')) self.welcome()
+          }, 1000)
         }, 1000) // NOTE this ms should match #loader transition-duration
       })
     }
@@ -147,7 +149,6 @@ window.greetings = {
   welcome: () => {
     const self = window.greetings
     // self.convos = window.convos['welcome-screen'](self)
-    clearTimeout(self._faceHint)
     const urlHasCode = NNE.hasCodeInHash || window.utils.url.shortCode
     const urlHasTutorial = window.utils.url.tutorial
 
@@ -191,15 +192,6 @@ window.greetings = {
       window.convo = new Convo(self.convos, 'get-started-first-time')
     }
     self.greeted = true
-  },
-
-  faceClickHint: () => {
-    window.greetings._faceHint = setTimeout(() => {
-      window.convo = new Convo({
-        content: 'pssst, click on my face', options: {}
-      })
-      window.NNM.setFace('^', '‿', '^', false)
-    }, 5 * 1000)
   },
 
   netnetToCorner: () => {
@@ -257,6 +249,11 @@ window.greetings = {
       const from = window.localStorage.getItem('pre-auth-from')
       window.localStorage.removeItem('pre-auth-from')
       NNE.code = NNE._decode(window.utils.savedCode())
+      // if redirected from a-frame tutorial, make sure to re-setup a-frame
+      if (NNE.code.includes('aframe.js"') ||
+        NNE.code.includes('aframe.min.js"')) {
+        window.utils.setupAframeEnv()
+      }
       if (from === 'save') WIDGETS['functions-menu'].saveProject()
       else if (from === 'open') WIDGETS['functions-menu'].openProject()
     } else setTimeout(window.utils.handleLoginRedirect, 250)

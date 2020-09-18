@@ -133,13 +133,16 @@ class MenuFunctions extends Widget {
   }
 
   startMenu () {
-    this.close()
-    window.greetings.startMenu()
+    if (STORE.is('TUTORIAL_LOADED')) {
+      window.convo = new Convo(this.convos['exit-tutorial'])
+    } else {
+      this.close()
+      window.greetings.startMenu()
+    }
   }
 
   shareLink () {
     if (!this.convos) window.alert('on sec, loading data') // TODO loading
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
     const opened = window.localStorage.getItem('opened-project')
     if (opened) {
       this.convos = window.convos['functions-menu'](this)
@@ -247,11 +250,15 @@ class MenuFunctions extends Widget {
   }
 
   resetErrors () {
+    window.convo = new Convo(this.convos['confirm-errors-reset'])
+  }
+
+  _resetErrors () {
     window.localStorage.removeItem('error-exceptions')
     NNE.clearErrorExceptions()
     setTimeout(() => {
       if (!STORE.is('SHOWING_ERROR')) {
-        window.convo = new Convo(this.convos['confirm-errors-reset'])
+        window.convo = new Convo(this.convos['errors-reset-confirmation'])
       }
     }, STORE.getTransitionTime())
   }

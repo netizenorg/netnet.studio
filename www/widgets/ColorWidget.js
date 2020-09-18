@@ -44,7 +44,7 @@ class ColorWidget extends Widget {
     })
 
     NNE.on('edu-info', (e) => {
-      const c = Color.match(e.data)
+      const c = Color.match(e.data.toLowerCase())
       if (c) this.updateColor(c)
       setTimeout(() => {
         if (c && c[0] === 'hex') {

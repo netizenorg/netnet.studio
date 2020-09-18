@@ -145,6 +145,7 @@ class Widget {
     } else {
       this._listed = v
       this._updateIfListed()
+      if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].updateView()
     }
   }
 

@@ -197,9 +197,29 @@ window.convos['functions-menu'] = (self) => {
       content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
       options: { 'ok, thanks!': (e) => e.hide() }
     }],
-    'confirm-errors-reset': {
+    'exit-tutorial': {
+      content: 'Pressing that button right now will quit the tutorial we\'re currently having, you sure you want to do that?',
+      options: {
+        'No, never mind': (e) => e.hide(),
+        'Yes, I\'ll return to the tutorial later.': (e) => {
+          self.close()
+          window.greetings.startMenu()
+        }
+      }
+    },
+    'errors-reset-confirmation': {
       content: 'Your previously ignored errors have been reset, i\'ll <i>bug</i> you about all the default errors from now on.',
       options: { cool: (e) => e.hide() }
+    },
+    'confirm-errors-reset': {
+      content: 'If you run this function I\'ll forget about every "error" you\'ve ever asked me to ignore. You sure you want to erase that part of my memory?',
+      options: {
+        'let\'s do it': (e) => {
+          self._resetErrors()
+          e.hide()
+        },
+        'never mind': (e) => e.hide()
+      }
     },
     'refresh-netnet': {
       content: 'Ok, I\'ll refresh the browser for you, or you could refresh it yourself, surly your browser has a refresh button?',

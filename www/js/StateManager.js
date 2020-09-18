@@ -172,6 +172,18 @@ class StateManager {
     }
   }
 
+  unsubscribe (prop, callback) {
+    if (this.listeners[prop]) {
+      const p = this.listeners[prop]
+      for (let i = 0; i < p.length; i++) {
+        if (p[i] === callback) {
+          p.splice(i, 1)
+          break
+        }
+      }
+    }
+  }
+
   subscribe (prop, callback) {
     if (!this.listeners[prop]) this.listeners[prop] = []
     this.listeners[prop].push(callback)

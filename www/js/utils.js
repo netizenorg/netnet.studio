@@ -181,7 +181,7 @@ window.utils = {
 
   _libs: [],
   checkForLibs: (type, err) => {
-    if (type === 'aframe') window.utils.checkAframeEnv(err)
+    if (type === 'aframe') return window.utils.checkAframeEnv(err)
   },
 
   url: {
@@ -208,6 +208,7 @@ window.utils = {
           'no, you\'re mistaken.': (e) => e.hide()
         }
       })
+      return true
     } else if (err.message.indexOf('<a-') === 0) {
       window.convo = new Convo([{
         content: 'It appears you\'re trying to use a custom element from the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, but the library is not present in your code? You must <a href="https://aframe.io/docs/1.0.0/introduction/installation.html#include-the-js-build" target="_blank">include it in a script tag</a>',
@@ -225,6 +226,7 @@ window.utils = {
           }
         }
       }])
+      return true
     }
   },
 

@@ -12,7 +12,7 @@ const NNE = new Netitor({
   ele: '#nn-editor',
   render: '#nn-output',
   background: false,
-  code: window.greetings.starterCode
+  code: window.greetings.getStarterCode()
 })
 
 window.NNT = new TutorialManager()
@@ -21,7 +21,6 @@ window.NNM = new MenuManager()
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
-
 NNE.on('lint-error', (e) => {
   // if (e.length > 0) {
   //   catchError = JSON.stringify({ rule: e[0].rule, message: e[0].message })

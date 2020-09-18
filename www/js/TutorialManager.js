@@ -109,7 +109,7 @@ class TutorialManager {
     }
   }
 
-  _updateState (url, cb) {
+  _updateState (url, func) {
     if (typeof TUTORIAL === 'object') {
       // update tutorial data
       if (!(TUTORIAL.steps instanceof Array)) return this._err('steps')
@@ -132,7 +132,7 @@ class TutorialManager {
       if (typeof TUTORIAL.onload === 'function') TUTORIAL.onload()
 
       // run optional callback
-      if (cb) cb()
+      if (func) func(this)
     } else this._err('tutObj')
   }
 
