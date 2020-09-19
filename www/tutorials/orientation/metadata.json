@@ -14,7 +14,10 @@
     "1: Widgets": "pre-widget",
     "2: The Code Editor": "code-editor",
     "3: Errors and Info": "markup",
-    "4: Functions Menu": "jump-to-theme"
+    "4: Functions Menu": "pre-func-menu",
+    "5: Widgets Menu": "pre-wig-menu",
+    "6: Tutorials Menu": "pre-tut-menu",
+    "7: Search Bar": "pre-search-bar"
   },
   "references": [
     {

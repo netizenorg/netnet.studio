@@ -105,6 +105,7 @@ class SearchBar {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
     }, 100)
+    if (this.onopen) this.onopen()
   }
 
   close () {

@@ -1,4 +1,4 @@
-/* global Convo, Averigua, STORE, NNE, WIDGETS */
+/* global Convo, Averigua, STORE, NNE, NNT, WIDGETS */
 window.greetings = {
   convos: null,
   city: null,
@@ -93,7 +93,6 @@ window.greetings = {
       const redirect = window.localStorage.getItem('pre-auth-from')
       if (!tut && redirect) { // ...if redirected here via GitHub auth
         // ...pick up where they left off...
-        if (prevCode) NNE.code = NNE._decode(prevCode)
         const layout = window.localStorage.getItem('layout')
         if (layout) STORE.dispatch('CHANGE_LAYOUT', layout)
         self.handleLoginRedirect()
@@ -156,7 +155,7 @@ window.greetings = {
       //
       //  TUTORIAL WELCCOME
       //
-      window.NNT.load(urlHasTutorial, () => {
+      NNT.load(urlHasTutorial, () => {
         setTimeout(() => {
           const oUsr = 'url-param-tutorial-returning'
           const nUsr = 'url-param-tutorial-first-time'
@@ -247,15 +246,25 @@ window.greetings = {
   handleLoginRedirect: () => {
     if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
-      window.localStorage.removeItem('pre-auth-from')
-      NNE.code = NNE._decode(window.utils.savedCode())
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
       if (NNE.code.includes('aframe.js"') ||
         NNE.code.includes('aframe.min.js"')) {
         window.utils.setupAframeEnv()
       }
-      if (from === 'save') WIDGETS['functions-menu'].saveProject()
-      else if (from === 'open') WIDGETS['functions-menu'].openProject()
+      if (from === 'save') {
+        NNE.code = NNE._decode(window.utils.savedCode())
+        WIDGETS['functions-menu'].saveProject()
+      } else if (from === 'open') {
+        NNE.code = NNE._decode(window.utils.savedCode())
+        WIDGETS['functions-menu'].openProject()
+      } else { // assume tutorial
+        const d = JSON.parse(from)
+        NNT.load(d.tutorial, (e) => {
+          window._tempAuthFrom = from
+          e.goTo(d.id)
+        })
+      }
+      window.localStorage.removeItem('pre-auth-from')
     } else setTimeout(window.utils.handleLoginRedirect, 250)
   }
 }
