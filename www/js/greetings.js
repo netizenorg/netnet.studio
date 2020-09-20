@@ -137,9 +137,10 @@ window.greetings = {
         document.querySelector('#loader').style.opacity = '0'
         setTimeout(() => {
           document.querySelector('#loader').style.display = 'none'
+          const delay = window.localStorage.getItem('username') ? 500 : 1000
           setTimeout(() => {
             if (!STORE.is('SHOWING')) self.welcome()
-          }, 1000)
+          }, delay)
         }, 1000) // NOTE this ms should match #loader transition-duration
       })
     }
@@ -244,6 +245,15 @@ window.greetings = {
   },
 
   handleLoginRedirect: () => {
+    function waitForOwner (d) {
+      if (window.localStorage.getItem('owner')) {
+        NNT.load(d.tutorial, (e) => {
+          window._tempAuthFrom = d.menuStatus
+          e.goTo(d.id)
+        })
+      } else setTimeout(() => waitForOwner(d), 250)
+    }
+
     if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
@@ -258,11 +268,7 @@ window.greetings = {
         NNE.code = NNE._decode(window.utils.savedCode())
         WIDGETS['functions-menu'].openProject()
       } else { // assume tutorial
-        const d = JSON.parse(from)
-        NNT.load(d.tutorial, (e) => {
-          window._tempAuthFrom = from
-          e.goTo(d.id)
-        })
+        waitForOwner(JSON.parse(from))
       }
       window.localStorage.removeItem('pre-auth-from')
     } else setTimeout(window.utils.handleLoginRedirect, 250)

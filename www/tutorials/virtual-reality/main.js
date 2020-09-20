@@ -13,8 +13,8 @@ window.TUTORIAL = {
       TUTORIAL.introVideos()
       NNW.updatePosition()
     },
-    content: 'Our VR story begins, like the Web itself, in the early 1990s',
-    options: { next: (e) => e.goTo('vr-history') }
+    content: 'Our VR story begins, like the Web itself, in the early 1990s. Let me know when you\'ve finished watching this introduction I\'ve prepared for you.',
+    options: { 'ok, what\'s next?': (e) => e.goTo('vr-history') }
   }, {
     before: () => {
       TUTORIAL.autoStopClose([
@@ -368,6 +368,7 @@ iframe { width: 100vw; height: 100vh }
     window.utils.setupAframeEnv()
     NNE.addCustomRoot('tutorials/virtual-reality/')
     NNE.code = TUTORIAL.bgCode
+    STORE.dispatch('CHANGE_LAYOUT', 'welcome')
   },
 
   bgCode: `<!DOCTYPE html>

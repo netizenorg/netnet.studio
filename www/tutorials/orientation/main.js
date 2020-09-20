@@ -4,7 +4,7 @@ window.TUTORIAL = {
     NNE.addErrorException('{"rule":{"id":"doctype-first","description":"Doctype must be declared first.","link":"https://github.com/thedaviddias/HTMLHint/wiki/doctype-first"},"message":"Doctype must be declared first."}')
     STORE.dispatch('CHANGE_THEME', 'dark')
     window.utils.get('tutorials/orientation/trails.html', (html) => {
-      NNE.code = html
+      if (Object.keys(TUTORIAL._menusChecked).length === 0) NNE.code = html
     }, true)
   },
 
@@ -159,7 +159,7 @@ window.TUTORIAL = {
     id: 'future-tuts2',
     content: 'Very exciting! There are a couple of "beta" tutorials for you to try out already. If you\'re ascii is getting antsy I can take you straight to those tutorials now, or I could show you how to navigate around the studio a bit first?',
     options: {
-      'ok, let\'s finish here first': (e) => e.goTo('finish-here'),
+      'show me more of the studio first': (e) => e.goTo('finish-here'),
       'let\'s check out those tutorials now': (e) => e.goTo('leave-tutorial')
     }
   }, {
@@ -218,8 +218,9 @@ window.TUTORIAL = {
   }, {
     id: 'pre-func-menu',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
+      TUTORIAL.genMarkupCode(5)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
+      TUTORIAL._menusChecked.func = false
       TUTORIAL.setupMenuListeners()
     },
     content: 'To launch the <b>Functions Menu</b> just click on my face and then click on the <img src="images/menu/functions.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
@@ -251,6 +252,7 @@ window.TUTORIAL = {
       'editor settings?': (e) => e.goTo('editor-settings'),
       'reset options?': (e) => e.goTo('reset-options'),
       'no thanks, I get it': (e) => {
+        WIDGETS['functions-menu'].close()
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
         else e.goTo('another-menu')
       }
@@ -389,7 +391,7 @@ window.TUTORIAL = {
         STORE.dispatch('CHANGE_THEME', TUTORIAL._themePicked)
         STORE.dispatch('CHANGE_OPACITY', 1)
         STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
-        TUTORIAL.genMarkupCode(4)
+        TUTORIAL.genMarkupCode(5)
         e.goTo('editor-settings2')
       }
     }
@@ -437,8 +439,9 @@ window.TUTORIAL = {
   }, {
     id: 'pre-wig-menu',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
+      TUTORIAL.genMarkupCode(5)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
+      TUTORIAL._menusChecked.wig = false
       TUTORIAL.setupMenuListeners()
     },
     content: 'To launch the <b>Widgets Menu</b> just click on my face and then click on the <img src="images/menu/widget.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
@@ -464,7 +467,11 @@ window.TUTORIAL = {
     id: 'wig-menu3-authed',
     content: 'Now that I\'m connected to your GitHub, I\'m able to list all of your projects in the <b>Saved Projects</b> widget, and if you open a project I\'ll be able to display that project\'s assets in the <b>Upload Assets</b> widget.',
     options: {
-      ok: (e) => e.goTo('wig-menu4'),
+      ok: (e) => {
+        WIDGETS['widgets-menu'].close()
+        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
+        else e.goTo('another-menu')
+      },
       'assets?': (e) => e.goTo('assets')
     }
   }, {
@@ -481,6 +488,7 @@ window.TUTORIAL = {
         e.goTo('github')
       },
       'ok, I\'ll do that later': (e) => {
+        WIDGETS['widgets-menu'].close()
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
         else e.goTo('another-menu')
       }
@@ -497,8 +505,9 @@ window.TUTORIAL = {
   }, {
     id: 'pre-tut-menu',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
+      TUTORIAL.genMarkupCode(5)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
+      TUTORIAL._menusChecked.tut = false
       TUTORIAL.setupMenuListeners()
     },
     content: 'To launch the <b>Tutorials Menu</b> just click on my face and then click on the <img src="images/menu/tutorials.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
@@ -512,6 +521,7 @@ window.TUTORIAL = {
     content: 'Because we\'re currently in the middle of a Tutorial, this menu display\'s the lesson\'s metadata, you can also switch to the "sections" tab which will let you navigate to past and future steps in this tutorial. At the bottom of the Information tab you\'ll find a button for restarting and quitting the tutorial. When you quit the tutorial this menu will instead display the list of all available tutorials.',
     options: {
       ok: (e) => {
+        WIDGETS['tutorials-menu'].close()
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
         else e.goTo('another-menu')
       }
@@ -519,8 +529,9 @@ window.TUTORIAL = {
   }, {
     id: 'pre-search-bar',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
+      TUTORIAL.genMarkupCode(5)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
+      TUTORIAL._menusChecked.search = false
       TUTORIAL.setupMenuListeners()
     },
     content: 'My search algorithms are still being polished, but feel free to take them for a test drive. To launch a universal "fuzzy search" that searches everything in the studio just click on my face and then click on the <img src="images/menu/search.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
@@ -577,23 +588,22 @@ window.TUTORIAL = {
   }, {
     id: 'post-auth-func-menu',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
-      TUTORIAL._menusChecked = JSON.parse(window._tempAuthFrom).menuStatus
+      TUTORIAL._menusChecked = window._tempAuthFrom
       WIDGETS['functions-menu'].open()
       TUTORIAL.setupMenuListeners()
-      console.log(window.localStorage.getItem('username'));
+      NNE.code = NNE._decode(window.utils.savedCode())
     },
     content: `Welcome back! ${window.localStorage.getItem('username')} or should I say <i>${window.localStorage.getItem('owner')}</i>, now that I know your GitHub account you can use the <code>saveProject()</code> and <code>openProject()</code> functions in the Functions Menu (keep in mind, I'm still in <i>beta</i> so there may be bugs)`,
     options: { cool: (e) => e.goTo('func-menu2') }
   }, {
     id: 'post-auth-wig-menu',
     before: () => {
-      TUTORIAL.genMarkupCode(4)
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
-      TUTORIAL._menusChecked = JSON.parse(window._tempAuthFrom).menuStatus
+      TUTORIAL._menusChecked = window._tempAuthFrom
       WIDGETS['widgets-menu'].open()
       TUTORIAL.setupMenuListeners()
+      NNE.code = NNE._decode(window.utils.savedCode())
     },
     content: `Welcome back! ${window.localStorage.getItem('username')} or should I say <i>${window.localStorage.getItem('owner')}</i>, now that I know your GitHub account you can use the <b>Saved Projects</b> and <b>Upload Assets</b> widgets in the Widgets Menu (keep in mind, I'm still in <i>beta</i> so there may be bugs)`,
     options: {
@@ -785,6 +795,7 @@ window.TUTORIAL = {
   },
 
   starterText: null,
+  genCodeInit4: null,
   genMarkupCode: (n) => {
     let txt
     if (!TUTORIAL.starterText) {
@@ -802,14 +813,16 @@ window.TUTORIAL = {
     } else if (n === 1) {
       NNE.code = `<body>${txt}</body>`
     } else if (n === 2) {
-      NNE.code = NNE.code = `<body>
+      NNE.code = NNE.code = `<!DOCTYPE html>
+<body>
   <h1>${txt}</h1>
   <p>
     A work by ${window.localStorage.getItem('username')}
   </p>
 </body>`
     } else if (n === 3) {
-      NNE.code = `<body title="art">
+      NNE.code = `<!DOCTYPE html>
+<body title="art">
   <h1>${txt}</h1>
   <p>
     A work by ${window.localStorage.getItem('username')}, the great
@@ -817,8 +830,18 @@ window.TUTORIAL = {
   </p>
 </body>`
     } else if (n === 4) {
-      NNE.code = `<body title="art" style="background-color: #82ccd7;">
+      TUTORIAL.genCodeInit4 = NNE.code = `<!DOCTYPE html>
+<body title="art" style="background-color: #82ccd7;">
   <h1>${txt}</h1>
+  <p>
+    A work by ${window.localStorage.getItem('username')}, the great
+    <a href="https://en.wikipedia.org/wiki/Internet_art" target="_blank">Internet artist</a>
+  </p>
+</body>`
+    } else if (n === 5) {
+      NNE.code = TUTORIAL.genCodeInit4 || `<!DOCTYPE html>
+<body title="art" style="background-color: #82ccd7;">
+  <h1>Hello Internet!</h1>
   <p>
     A work by ${window.localStorage.getItem('username')}, the great
     <a href="https://en.wikipedia.org/wiki/Internet_art" target="_blank">Internet artist</a>
