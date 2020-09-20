@@ -1,4 +1,4 @@
-/* global Convo, Averigua, STORE, NNE, WIDGETS */
+/* global Convo, Averigua, STORE, NNE, NNT, WIDGETS */
 window.greetings = {
   convos: null,
   city: null,
@@ -93,7 +93,6 @@ window.greetings = {
       const redirect = window.localStorage.getItem('pre-auth-from')
       if (!tut && redirect) { // ...if redirected here via GitHub auth
         // ...pick up where they left off...
-        if (prevCode) NNE.code = NNE._decode(prevCode)
         const layout = window.localStorage.getItem('layout')
         if (layout) STORE.dispatch('CHANGE_LAYOUT', layout)
         self.handleLoginRedirect()
@@ -138,9 +137,10 @@ window.greetings = {
         document.querySelector('#loader').style.opacity = '0'
         setTimeout(() => {
           document.querySelector('#loader').style.display = 'none'
+          const delay = window.localStorage.getItem('username') ? 500 : 1000
           setTimeout(() => {
             if (!STORE.is('SHOWING')) self.welcome()
-          }, 1000)
+          }, delay)
         }, 1000) // NOTE this ms should match #loader transition-duration
       })
     }
@@ -156,7 +156,7 @@ window.greetings = {
       //
       //  TUTORIAL WELCCOME
       //
-      window.NNT.load(urlHasTutorial, () => {
+      NNT.load(urlHasTutorial, () => {
         setTimeout(() => {
           const oUsr = 'url-param-tutorial-returning'
           const nUsr = 'url-param-tutorial-first-time'
@@ -245,17 +245,32 @@ window.greetings = {
   },
 
   handleLoginRedirect: () => {
+    function waitForOwner (d) {
+      if (window.localStorage.getItem('owner')) {
+        NNT.load(d.tutorial, (e) => {
+          window._tempAuthFrom = d.menuStatus
+          e.goTo(d.id)
+        })
+      } else setTimeout(() => waitForOwner(d), 250)
+    }
+
     if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
-      window.localStorage.removeItem('pre-auth-from')
-      NNE.code = NNE._decode(window.utils.savedCode())
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
       if (NNE.code.includes('aframe.js"') ||
         NNE.code.includes('aframe.min.js"')) {
         window.utils.setupAframeEnv()
       }
-      if (from === 'save') WIDGETS['functions-menu'].saveProject()
-      else if (from === 'open') WIDGETS['functions-menu'].openProject()
+      if (from === 'save') {
+        NNE.code = NNE._decode(window.utils.savedCode())
+        WIDGETS['functions-menu'].saveProject()
+      } else if (from === 'open') {
+        NNE.code = NNE._decode(window.utils.savedCode())
+        WIDGETS['functions-menu'].openProject()
+      } else { // assume tutorial
+        waitForOwner(JSON.parse(from))
+      }
+      window.localStorage.removeItem('pre-auth-from')
     } else setTimeout(window.utils.handleLoginRedirect, 250)
   }
 }

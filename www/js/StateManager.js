@@ -594,7 +594,7 @@ class StateManager {
       if (action.type === 'TUTORIAL_DATA') {
         return {
           url: action.data.url,
-          display: 'text',
+          display: null,
           id: action.data.id,
           steps: action.data.steps
         }

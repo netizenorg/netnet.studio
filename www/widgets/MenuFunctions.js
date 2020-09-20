@@ -497,7 +497,7 @@ class MenuFunctions extends Widget {
     // when they get redirected back.
     window.localStorage.setItem('code', NNE._encode(NNE.code))
     window.localStorage.setItem('pre-auth-from', from)
-    // const id = 'client_id=af0f317a19fc4fd571be'
+    // const id = 'client_id=af0f317a19fc4fd571be' // local
     const id = 'client_id=e962229aa07d8e9e354b'
     const scope = 'scope=public_repo'
     const url = `https://github.com/login/oauth/authorize?${id}&${scope}`

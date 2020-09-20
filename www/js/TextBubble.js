@@ -116,7 +116,7 @@ class TextBubble {
     this.ele.style.display = 'block'
     this.updatePosition()
     setTimeout(() => { this.ele.style.opacity = 1 }, 100)
-    setTimeout(() => {  
+    setTimeout(() => {
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(0)'
       this.ele.querySelector('.text-bubble-options').style.opacity = 1
     }, 600)
@@ -124,7 +124,7 @@ class TextBubble {
 
   fadeOut (ms, callback) {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
-    setTimeout(() => {  
+    setTimeout(() => {
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(10px)'
       this.ele.querySelector('.text-bubble-options').style.opacity = 0
     }, 5)

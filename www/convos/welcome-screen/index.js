@@ -55,13 +55,13 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: 'netnet? that\'s me! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;',
     options: {
-      'cool!': (e) => {
-        if (self.introducing) self.postIntro()
-        else e.goTo('main-menu')
-      },
       'AI?': (e) => e.goTo('ai'),
       'pedagogical?': (e) => e.goTo('pedagogical'),
-      'hypermedia?': (e) => e.goTo('hypermedia')
+      'hypermedia?': (e) => e.goTo('hypermedia'),
+      'ok, cool!': (e) => {
+        if (self.introducing) self.postIntro()
+        else e.goTo('main-menu')
+      }
     }
   }, {
     id: 'pedagogical',
@@ -566,13 +566,13 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: `Nice to e-meet you ${ls.getItem('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;`,
     options: {
-      'cool!': (e) => {
-        if (self.introducing) self.postIntro()
-        else e.goTo('main-menu')
-      },
       'AI?': (e) => e.goTo('ai'),
       'pedagogical?': (e) => e.goTo('pedagogical'),
-      'hypermedia?': (e) => e.goTo('hypermedia')
+      'hypermedia?': (e) => e.goTo('hypermedia'),
+      'ok, cool!': (e) => {
+        if (self.introducing) self.postIntro()
+        else e.goTo('main-menu')
+      }
     }
   }]
 

@@ -133,6 +133,8 @@ class TutorialManager {
 
       // run optional callback
       if (func) func(this)
+      else this.goTo('__START__')
+      //
     } else this._err('tutObj')
   }
 

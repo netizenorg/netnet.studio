@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<style>
+  @keyframes animBG {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+
+  body {
+    background: linear-gradient(230deg, #82ccd7, #81c994);
+    background-size: 300% 300%;
+    animation: animBG 30s infinite;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  section {
+    background-image: url(tutorials/orientation/images/sparkles.gif);
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+<section></section>
+<script>
+  function updateStar (star) {
+    let s = parseInt(star.style.fontSize)
+    star.style.fontSize = `${s - 5}px`
+    let t = star.style.transform.substr(7).split('deg')[0]
+    t = parseInt(t) + 5 < 361 ? parseInt(t) + 5 : 0
+    star.style.transform = `rotate(${t}deg)`
+    if (s > 0) setTimeout(() => updateStar(star), 100)
+    else document.body.removeChild(star)
+  }
+
+  function createStar (e) {
+    const star = document.createElement('div')
+    star.textContent = '✶'
+    star.className = 'star'
+    star.style.position = 'absolute'
+    const x = e.clientX + Math.random() * 100 - 150
+    const y = e.clientY + Math.random() * 100 - 150
+    star.style.left = `${x}px`
+    star.style.top = `${y}px`
+    star.style.color = '#515199'
+    star.style.fontSize = '100px'
+    star.style.transform = 'rotate(0deg)'
+    star.style.transition = 'all 1s easinout'
+    if (document.querySelectorAll('.star').length < 50) {
+      document.body.appendChild(star)
+      updateStar(star)
+    }
+  }
+
+  function placeStar () {
+    document.querySelectorAll('.star').forEach(star => {
+      let s = parseInt(star.style.fontSize)
+      const x = parseInt(star.style.left)
+      const y = parseInt(star.style.top)
+      const dx = Math.sin(s) * 50
+      const dy = Math.cos(s) * 60
+      star.style.left = `${x + dx}px`
+      star.style.top = `${y + dy}px`
+    })
+  }
+
+  window.addEventListener('mousemove', createStar)
+  window.addEventListener('mousemove', placeStar)
+</script>
