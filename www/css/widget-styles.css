@@ -493,7 +493,7 @@
 
 #wig-menu-content > div.link {
   position: relative;
-  padding: 0 5px;
+  padding: 0;
   margin: 0 0 15px;
 }
 
@@ -503,8 +503,8 @@
 
 #wig-menu-content > div.link > span {
   position: absolute;
-  top: 50%;
-  left: -17px;
+  top: 49%;
+  left: -21px;
   transform: translateY(-50%);
   font-size: inherit;
   color: inherit;
