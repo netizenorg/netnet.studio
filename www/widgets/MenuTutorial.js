@@ -152,8 +152,7 @@ class MenuTutorial extends Widget {
       this.$('#tut-menu-quit').addEventListener('click', () => {
         STORE.dispatch('TUTORIAL_FINISHED')
         STORE.dispatch('CHANGE_LAYOUT', 'welcome')
-        if (NNT.precode) NNE.code = NNT.precode
-        else window.greetings.injectStarterCode()
+        window.greetings.injectStarterCode()
         window.greetings.mainMenu()
       })
     }, 500)

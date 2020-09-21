@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, NNE, WIDGETS */
+/* global TUTORIAL, STORE, WIDGETS */
 /*
   -----------
      info
@@ -32,7 +32,6 @@
 */
 class TutorialManager {
   constructor () {
-    this.precode = null // hold onto code that was here before tutorial loaded
     this.metadata = null // info from the tutorial's metadata.json
   }
 
@@ -41,7 +40,6 @@ class TutorialManager {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   load (tut, cb) {
-    this.precode = NNE.code
     const root = (tut.indexOf('http') === 0) ? tut : `tutorials/${tut}`
     const url = (tut.indexOf('http') === 0)
       ? `${tut}/metadata.json` : `tutorials/${tut}/metadata.json`
@@ -148,8 +146,7 @@ class TutorialManager {
       },
       'no, i changed my mind': (e) => {
         STORE.dispatch('TUTORIAL_FINISHED')
-        if (this.precode) NNE.code = this.precode
-        else window.greetings.injectStarterCode()
+        window.greetings.injectStarterCode()
         window.greetings.mainMenu()
       }
     }

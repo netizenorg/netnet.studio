@@ -343,7 +343,7 @@ window.TUTORIAL = {
     id: 'editor-settings2',
     before: () => {
       if (!WIDGETS['functions-menu'].opened) WIDGETS['functions-menu'].open()
-      TUTORIAL.openSubMenu('func-menu-my-project')
+      TUTORIAL.openSubMenu('func-menu-editor-settings')
     },
     content: 'Which function would you like me to explain?',
     options: {
@@ -379,8 +379,11 @@ window.TUTORIAL = {
     }
   }, {
     id: 'algorave',
-    code: '[TODO: algorave example]',
     before: () => {
+      window.utils.get('tutorials/orientation/algorave.html', (html) => {
+        NNE.code = html
+      }, true)
+      WIDGETS['functions-menu'].close()
       STORE.dispatch('CHANGE_THEME', 'light')
       STORE.dispatch('CHANGE_OPACITY', 0.4)
       STORE.dispatch('CHANGE_LAYOUT', 'full-screen')
