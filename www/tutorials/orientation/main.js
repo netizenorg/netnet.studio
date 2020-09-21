@@ -3,6 +3,7 @@ window.TUTORIAL = {
   onload: () => {
     NNE.addErrorException('{"rule":{"id":"doctype-first","description":"Doctype must be declared first.","link":"https://github.com/thedaviddias/HTMLHint/wiki/doctype-first"},"message":"Doctype must be declared first."}')
     STORE.dispatch('CHANGE_THEME', 'dark')
+    STORE.dispatch('CHANGE_LAYOUT', 'welcome')
     window.utils.get('tutorials/orientation/trails.html', (html) => {
       if (Object.keys(TUTORIAL._menusChecked).length === 0) NNE.code = html
     }, true)
