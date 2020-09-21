@@ -112,7 +112,6 @@ class HyperVidPlayer extends Widget {
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
     this.$('.hvp-vol').addEventListener('change', () => {
       this.$('video').volume = this.$('.hvp-vol').value
-      console.log(this.$('video').volume)
       if (this.$('video').volume <= 0.1) {
         this.$('.hvp-vol-wrap').classList.remove('half')
         this.$('.hvp-vol-wrap').classList.add('zero')
