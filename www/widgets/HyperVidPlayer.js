@@ -95,9 +95,8 @@ class HyperVidPlayer extends Widget {
           <div class="hvp-vol-wrap">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="500" height="500" viewBox="0 0 75 75">
               <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:white;stroke-width:5;stroke-linejoin:round;fill:white;transition:all .5s ease;"/>
-              <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
-              <path d="M55.1,20.5a30,30 0 0 1 0,35.6" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
-              <!-- <path d="M61.6,14a38.8,38.8 0 0 1 0,48.6" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/> -->
+              <path class="sound" d="M48,27.6a19.5,19.5 0 0 1 0,21.4" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
+              <path class="sound" d="M55.1,20.5a30,30 0 0 1 0,35.6" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
             </svg>
             <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
           </div>
@@ -113,6 +112,17 @@ class HyperVidPlayer extends Widget {
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
     this.$('.hvp-vol').addEventListener('change', () => {
       this.$('video').volume = this.$('.hvp-vol').value
+      console.log(this.$('video').volume)
+      if (this.$('video').volume <= 0.1) {
+        this.$('.hvp-vol-wrap').classList.remove('half')
+        this.$('.hvp-vol-wrap').classList.add('zero')
+      } else if (this.$('video').volume <= 0.5) {
+        this.$('.hvp-vol-wrap').classList.remove('zero')
+        this.$('.hvp-vol-wrap').classList.add('half')
+      } else {
+        this.$('.hvp-vol-wrap').classList.remove('half')
+        this.$('.hvp-vol-wrap').classList.remove('zero')
+      }
     })
     this.ele.addEventListener('mouseover', () => {
       this.$('.hvp-controls').style.opacity = 1

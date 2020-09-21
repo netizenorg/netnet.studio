@@ -18,14 +18,16 @@
 	height: 20px;
 	cursor: pointer;
 }
+.hvp-vol-wrap.half svg path.sound:last-of-type {
+	display: none;
+}
+.hvp-vol-wrap.zero svg path.sound {
+	display: none;
+}
 .hvp-vol-wrap:hover input.hvp-vol {
 	opacity: 1;
 }
 .hvp-vol-wrap:hover svg path {
-	stroke: var(--fg-color)!important;
-	fill: var(--fg-color)!important;
-}
-.hvp-vol-wrap:focus-within svg path {
 	stroke: var(--fg-color)!important;
 	fill: var(--fg-color)!important;
 }
@@ -89,7 +91,7 @@
 }
 .hvp-vol-wrap input.hvp-vol:focus {
   outline: 1px solid var(--bg-color);
-  outline-offset: 2px;
+  outline-offset: 4px;
   box-shadow: none;
 }
 /* end volume */
