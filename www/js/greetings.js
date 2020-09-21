@@ -109,15 +109,9 @@ window.greetings = {
         NNE.loadFromHash()
         self.welcome()
       } else if (!tut && prevCode && self.returningUser) {
-        // ...if user had previously been working on code
-        NNE.code = NNE._decode(prevCode) // ...display their priror code...
-        // ...in their prior layout...
-        if (window.utils.url.layout || window.localStorage.getItem('layout')) {
-          STORE.dispatch('CHANGE_LAYOUT', window.utils.url.layout ||
-          window.localStorage.getItem('layout'))
-        } else { // ...or default to dock-left layout...
-          STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
-        }
+        // inserting code into editor && setting prev-layout is handled in convo
+        // ... 'I want to sketch' > 'work-on-saved-code'
+        window.greetings.injectStarterCode()
         self.welcome() // ...&& welcome them.
       } else if (!tut) { // ...otherwise ...
         window.greetings.injectStarterCode()
@@ -256,16 +250,17 @@ window.greetings = {
 
     if (WIDGETS['functions-menu']) {
       const from = window.localStorage.getItem('pre-auth-from')
+      const prevCode = window.utils.savedCode() || NNE._encode('<!DOCTYPE html>')
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
       if (NNE.code.includes('aframe.js"') ||
         NNE.code.includes('aframe.min.js"')) {
         window.utils.setupAframeEnv()
       }
       if (from === 'save') {
-        NNE.code = NNE._decode(window.utils.savedCode())
+        NNE.code = NNE._decode(prevCode)
         WIDGETS['functions-menu'].saveProject()
       } else if (from === 'open') {
-        NNE.code = NNE._decode(window.utils.savedCode())
+        NNE.code = NNE._decode(prevCode)
         WIDGETS['functions-menu'].openProject()
       } else { // assume tutorial
         waitForOwner(JSON.parse(from))

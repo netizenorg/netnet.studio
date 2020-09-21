@@ -307,8 +307,17 @@ window.convos['welcome-screen'] = (self) => {
   const makeInfo = [{
     id: 'work-on-saved-code',
     before: () => {
-      if (STORE.state.layout === 'welcome') {
+      // ...if user had previously been working on code
+      const prevCode = window.utils.savedCode()
+      NNE.code = NNE._decode(prevCode) // ...display their priror code...
+      // ...in their prior layout...
+      if (window.utils.url.layout || window.localStorage.getItem('layout')) {
+        STORE.dispatch('CHANGE_LAYOUT', window.utils.url.layout ||
+        window.localStorage.getItem('layout'))
+        window.utils.netitorUpdate()
+      } else { // ...or default to dock-left layout...
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
       }
     },
     content: 'Great! Do you want to keep working on this code from before or start something new with a blank canvas?',
@@ -316,37 +325,87 @@ window.convos['welcome-screen'] = (self) => {
       'I\'ll take it from here': (e) => e.hide(),
       'give me a blank canvas': (e) => {
         if (self.returningUser) {
-          e.hide()
+          WIDGETS['functions-menu']._newProject()
           STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
-          WIDGETS['functions-menu'].newProject()
+          window.utils.netitorUpdate()
+          e.goTo('blank-canvas')
         } else e.goTo('blank-canvas-layout')
       }
     }
   }, {
-    id: 'open-project',
+    id: 'blank-canvas',
+    content: `You got it! If at any point you want me to save your progress locally use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut`,
+    options: { ok: (e) => e.hide() }
+  }, {
+    id: 'local-or-open-project',
     before: () => {
-      if (STORE.state.layout === 'welcome') {
+      // ...if user had previously been working on code
+      const prevCode = window.utils.savedCode()
+      NNE.code = NNE._decode(prevCode) // ...display their priror code...
+      // ...in their prior layout...
+      if (window.utils.url.layout || window.localStorage.getItem('layout')) {
+        STORE.dispatch('CHANGE_LAYOUT', window.utils.url.layout ||
+        window.localStorage.getItem('layout'))
+        window.utils.netitorUpdate()
+      } else { // ...or default to dock-left layout...
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
       }
     },
-    content: `Great! Should we continue working on ${ls.getItem('opened-project')}? Or did you want to open another project?`,
+    content: 'Great! Do you want to open a project saved on your GitHub? Or do you want to keep working on this code from before, or maybe start something new with a blank canvas?',
     options: {
-      'yes, I\'ll pick up where I left off': (e) => e.hide(),
-      'no, let\'s open another one': (e) => {
-        e.hide()
+      'let\'s open a project saved to my GitHub': (e) => {
         WIDGETS['functions-menu'].openProject()
+        e.goTo('open-a-project')
       },
-      'no, let\'s start a new project': () => {
-        WIDGETS['functions-menu'].newProject()
+      'let\'s start something new': (e) => {
+        if (self.returningUser) {
+          WIDGETS['functions-menu']._newProject()
+          STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          window.utils.netitorUpdate()
+          e.goTo('blank-canvas')
+        } else e.goTo('blank-canvas-layout')
+      },
+      'I\'ll take it from here': (e) => e.hide()
+    }
+  }, {
+    id: 'open-project',
+    before: () => {
+      NNE.code = '<!DOCTYPE html>'
+      if (STORE.state.layout === 'welcome') {
+        STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
+      }
+    },
+    content: `Great! I've got a blank canvas here for you. Is this ok or should we continue working on your last project <i>${ls.getItem('opened-project')}</i>, or maybe another one of your GitHub projects?`,
+    options: {
+      'let\'s open my last project': (e) => {
+        const proj = ls.getItem('opened-project')
+        WIDGETS['saved-projects'].openProject(proj)
+        e.hide()
+      },
+      'let\'s open another GitHub project': (e) => {
+        window.utils.clearProjectData()
+        WIDGETS['functions-menu'].openProject()
+        e.goTo('open-a-project')
+      },
+      'this is fine': (e) => {
+        window.utils.clearProjectData()
+        e.goTo('this-is-fine')
       }
     }
   }, {
+    id: 'open-a-project',
+    content: 'Ok, choose the project you want to keep working on from the <b>Saved Projects</b> Widget.',
+    options: { ok: (e) => e.hide() }
+  }, {
     id: 'blank-canvas-layout',
     before: () => {
+      WIDGETS['functions-menu']._newProject()
       if (STORE.state.layout === 'welcome') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
       }
-      WIDGETS['functions-menu'].newProject()
     },
     content: 'Is this layout ok? Want me to change the theme or anything?',
     options: {
@@ -355,7 +414,7 @@ window.convos['welcome-screen'] = (self) => {
     }
   }, {
     id: 'this-is-fine',
-    content: 'great, just click my face if you need anything.',
+    content: `Great, just click my face if you need anything. If at any point you want me to save your progress locally use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut`,
     options: { ok: (e) => e.hide() }
   }, {
     id: 'layout-help',
@@ -386,6 +445,8 @@ window.convos['welcome-screen'] = (self) => {
         const opened = window.localStorage.getItem('opened-project')
         if (owner && opened) {
           e.goTo('open-project')
+        } else if (owner && prevCode) {
+          e.goTo('local-or-open-project')
         } else if (prevCode) {
           e.goTo('work-on-saved-code')
         } else {
@@ -487,6 +548,7 @@ window.convos['welcome-screen'] = (self) => {
         const l = ls.getItem('layout')
         if (l && l !== 'welcome') STORE.dispatch('CHANGE_LAYOUT', l)
         else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
       },
       'what code?': (e) => e.goTo('explain-url-code'),
       'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
@@ -508,6 +570,7 @@ window.convos['welcome-screen'] = (self) => {
         const l = ls.getItem('layout')
         if (l && l !== 'welcome') STORE.dispatch('CHANGE_LAYOUT', l)
         else STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        window.utils.netitorUpdate()
       },
       'what code?': (e) => e.goTo('explain-url-code'),
       'wait, that\'s not my name?': (e) => e.goTo('wrong-user')

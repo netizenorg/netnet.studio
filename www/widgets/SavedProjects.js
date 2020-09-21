@@ -83,6 +83,7 @@ class SavedProjects extends Widget {
       if (!res.success) {
         window.convo = new Convo(this.convos['open-project'])
         window.utils.updateRoot()
+        window.utils.processingFace = false
       } else {
         NNE.code = window.atob(res.data.content)
         window.utils.setProjectData({
@@ -98,6 +99,7 @@ class SavedProjects extends Widget {
           STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
         }
         this.close()
+        window.utils.processingFace = false
       }
     })
   }

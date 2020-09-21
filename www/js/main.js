@@ -61,7 +61,7 @@ window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
     if (!NNE.autoUpdate) NNE.update()
-    window.localStorage.setItem('code', NNE._encode(NNE.code))
+    window.utils.localSave()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
     window.WIDGETS['functions-menu'].openFile()

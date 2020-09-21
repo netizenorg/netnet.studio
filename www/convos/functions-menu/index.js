@@ -48,7 +48,7 @@ window.convos['functions-menu'] = (self) => {
       }
     },
     'url-shortened': {
-      content: `Ok! here's your shortened URL: <input value="${window.localStorage.getItem('project-url')}"><br>And here's one with the code hidden: <input value="${window.localStorage.getItem('project-url')}&opacity=0">`,
+      content: `Ok! here's your shortened URL: <input value="${window.localStorage.getItem('project-url')}"><br>If you want me to hide when you share this sketch use this URL: <input value="${window.localStorage.getItem('project-url')}&opacity=0"><br>My URL shortener is still a <i>beta</i> feature, so I'd also recommend running the <code>downloadCode()</code> function to save a copy of your sketch on your own computer.`,
       options: { 'thanks!': (e) => e.hide() }
     },
     'create-new-project': [{
@@ -163,6 +163,17 @@ window.convos['functions-menu'] = (self) => {
         ok: (e) => self.saveProject(),
         'no, i\'ll discard the changes': (e) => {
           self._newProject()
+          e.hide()
+        },
+        'actually, i\'ll keep working on this': (e) => e.hide()
+      }
+    },
+    'unsaved-changes-b': {
+      content: `You have unsaved changes to your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
+      options: {
+        ok: (e) => self.saveProject(),
+        'no, i\'ll discard the changes': (e) => {
+          self._openProject()
           e.hide()
         },
         'actually, i\'ll keep working on this': (e) => e.hide()

@@ -83,19 +83,16 @@ class NetitorErrorHandler {
         const markerColor = err.type === 'error' ? 'red' : 'yellow'
         const highlightColor = err.type === 'error'
           ? 'rgba(255,0,0,0.25)' : 'rgba(255, 255, 0, 0.25)'
-        /*
-        // was dynamically assigning col value, but the number netitor
-        // returns for column error is not super accurate,
-        // so not using this code until that can be improved in netitor
-        const code = NNE.code.split('\n')[err.line - 1]
-        const column = code.length <= err.col
-          ? 0 : typeof err.col === 'number' ? err.col : 0
-        */
+
+        let msg = err.friendly || err.message
+        msg = msg.replace(msg[0], msg[0].toLowerCase())
+        msg = (i === 0) ? `Hmmm, ${msg}` : `Or maybe, ${msg}`
+
         return {
           line: err.line,
           col: 0,
           type: err.type,
-          content: err.friendly || err.message,
+          content: msg,
           options: NetitorErrorHandler.createErrorOpts(i, eve),
           langauge: err.language,
           colors: [markerColor, highlightColor]

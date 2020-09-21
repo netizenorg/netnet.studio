@@ -175,12 +175,24 @@ class MenuFunctions extends Widget {
     })
   }
 
-  openProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+  _openProject () {
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) WIDGETS['saved-projects'].open()
       else window.convo = new Convo(this.convos['user-needs-login-to-open'])
     })
+  }
+
+  openProject () {
+    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    const lastCode = window.localStorage.getItem('last-commit-code')
+    const currCode = window.btoa(NNE.code)
+    const blankCanv = 'PCFET0NUWVBFIGh0bWw+'
+    if (lastCode === currCode) this._openProject()
+    else if (currCode === blankCanv) this._openProject()
+    else {
+      this.convos = window.convos['functions-menu'](this)
+      window.convo = new Convo(this.convos['unsaved-changes-b'])
+    }
   }
 
   _newProject () {
@@ -194,7 +206,7 @@ class MenuFunctions extends Widget {
     if (!window.localStorage.getItem('opened-project')) this._newProject()
     else {
       const lastCode = window.localStorage.getItem('last-commit-code')
-      const currCode = window.localStorage.getItem('code')
+      const currCode = NNE._encode(NNE.code)
       if (lastCode === currCode) {
         this.convos = window.convos['functions-menu'](this)
         window.convo = new Convo(this.convos['start-new-project'])

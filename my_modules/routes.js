@@ -98,14 +98,14 @@ function shortenURL (req, res, dbPath) {
     if (urlsDict[key] === req.body.hash) { repeatEntry = key; break }
   }
   if (repeatEntry) {
-    const url = `http://netnet.studio/?c=${repeatEntry}`
+    const url = `https://netnet.studio/?c=${repeatEntry}`
     res.json({ success: true, url })
   } else {
     urlsDict[key] = req.body.hash
     fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
       if (err) res.json({ success: false, error: err })
       else {
-        const url = `http://netnet.studio/?c=${key}`
+        const url = `https://netnet.studio/?c=${key}`
         res.json({ success: true, url })
       }
     })
@@ -230,7 +230,7 @@ router.post('/api/github/new-repo', (req, res) => {
     // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
     octokit.request('POST /user/repos', {
       name: name,
-      description: '◕ ◞ ◕ This project was made using http://netnet.studio',
+      description: '◕ ◞ ◕ This project was made using https://netnet.studio',
       auto_init: true
     }).then(gitRes => {
       // console.log('created repo >>', gitRes.data.name)

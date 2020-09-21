@@ -71,9 +71,14 @@ window.utils = {
     const ls = window.localStorage
     if (data.name) ls.setItem('opened-project', data.name)
     if (data.message) ls.setItem('last-commit-msg', data.message)
-    if (data.code) ls.setItem('last-commit-code', data.code)
     if (data.sha) ls.setItem('index-sha', data.sha)
     if (data.url) ls.setItem('project-url', data.url)
+    if (data.code) {
+      // for some reason GitHub adds a '\n' at the end of the base64 string?
+      const c = (data.code.indexOf('\n') === data.code.length - 1)
+        ? data.code.substr(0, data.code.length - 1) : data.code
+      ls.setItem('last-commit-code', c)
+    }
   },
 
   updateRoot: () => {
@@ -161,6 +166,29 @@ window.utils = {
       clientX: window.NNW.win.offsetWidth,
       clientY: window.NNW.win.offsetHeight
     })
+  },
+
+  localSave: () => {
+    if (STORE.is('SHOWING_ERROR')) {
+      window.convo = new Convo({
+        content: 'I want to avoid saving any buggy code, fix the issue I noticed before trying to save it again, or ask me to ignore this particular issue if you don\'t want me to keep bugging you about it.'
+      })
+    } else {
+      window.localStorage.setItem('code', NNE._encode(NNE.code))
+      if (NNE.autoUpdate) {
+        const m = 'Ok, I\'ll remember this sketch for you, in case you decide to leave the studio and come back later and want to keep working on it.'
+        const n = 'Of course, but you\'ll need to use the <code>saveProject()</code> function for that. Click on my face to open the <b>Functions Menu</b> &gt; <b>my project</b>'
+        const a = { ok: (e) => e.hide() }
+        const b = Object.assign({ 'can I save this to my GitHub?': (e) => e.goTo('gh') }, a)
+        let cnt
+        if (window.localStorage.getItem('owner')) {
+          cnt = [{ content: m, options: b }, { id: 'gh', content: n, options: a }]
+        } else {
+          cnt = [{ content: m, options: a }]
+        }
+        window.convo = new Convo(cnt)
+      }
+    }
   },
 
   savedCode: () => {
