@@ -44,7 +44,9 @@ class HyperVidPlayer extends Widget {
     this.$('.hvp-toggle > span').classList.remove('play')
     this.$('.hvp-toggle > span').classList.add('pause')
     this.$('video').play()
-    this._loop()
+    this.$('video').addEventListener('loadedmetadata', () => {
+      this._loop()
+    })
   }
 
   pause () {
@@ -145,6 +147,15 @@ class HyperVidPlayer extends Widget {
       kf.callback()
       kf.ran = true
     })
+
+    this._updateProgress(ct)
+  }
+
+  _updateProgress (_ct) {
+    const progressBar = this.$('.progress')
+    let percentage = Math.floor((100 / this.$('video').duration) * _ct)
+    progressBar.value = percentage
+    progressBar.innerHTML = percentage + '%'
   }
 }
 
