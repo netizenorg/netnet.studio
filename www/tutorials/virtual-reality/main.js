@@ -63,7 +63,7 @@ iframe { width: 100vw; height: 100vh }
     }
   }, {
     id: 'the-90s',
-    content: 'The VR renaissance came in the late 80s and early 90s when the technology found it\'s way into the mainstream and the underground, like the "Cyberpunk" counterculture. A wave of new technologies were developed, like The Cave in Chicago and VR art, like Osmose by Char Davies, found it\'s way into major art museums. Virtual dreams were becoming a reality, until nauseating commercial failures of consumer devices, like Nintendo\'s Virtual Boy, ruined the public\'s appetite.',
+    content: 'The VR renaissance came in the late 80s and early 90s when the technology found its way into the mainstream and the underground, like the "Cyberpunk" counterculture. A wave of new technologies were developed, like The Cave in Chicago and VR art, like Osmose by Char Davies, found it\'s way into major art museums. Virtual dreams were becoming a reality, until nauseating commercial failures of consumer devices, like Nintendo\'s Virtual Boy, ruined the public\'s appetite.',
     options: {
       'The Cave?': (e) => {
         WIDGETS['90s-the-cave'].open()
