@@ -450,7 +450,7 @@ iframe { width: 100vw; height: 100vh }
       video: 'api/videos/vr4-cyberpunk.mp4',
       width: window.innerWidth * 0.4,
       title: 'Cyberpunk (1990)',
-      text: '"Jack into the Matrix!", this doc by Marianne Trench explores the cyberpunk culture of the late 80s and early 90s, for which Virtual Reality is only one aspect.',
+      text: '"Jack into the Matrix!", this doc by Marianne Trench explores the cyberpunk culture of the late 80s and early 90s, of which Virtual Reality is only one aspect.',
       source: {
         url: 'https://archive.org/details/cyberpunk_201410',
         text: 'Cyberpunk documentary by Marianne Trench'
