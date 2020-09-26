@@ -5,6 +5,7 @@ window.TUTORIAL = {
     before: () => {
       if (STORE.state.layout !== 'dock-left') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        STORE.dispatch('CHANGE_OPACITY', 1)
       }
     },
     content: 'As mentioned in the Intro to Cyberspace lesson, we\'ll be creating a Virtual Reality sketch using a library called <a href="https://aframe.io/" target="_blank">A-Frame</a>, which gives us access to a set of Custom Elements for creating 3D environments.',
@@ -81,6 +82,9 @@ window.TUTORIAL = {
       color: 'rgba(255, 255, 255, 0.15)'
     },
     code: '<!DOCTYPE html>\n<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>\n<a-scene>\n  <a-sky></a-sky>\n</a-scene>\n',
+    before: () => {
+      STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+    },
     content: 'Now I\'ve added an <a href="https://aframe.io/docs/1.0.0/primitives/a-sky.html#sidebar" target="_blank">a-sky</a> element to our scene. This element creates a background for our scene. The default color is white, so it doesn\'t look like much has changed.',
     options: { 'can we change the color!': (e) => e.goTo('start-coding5') }
   }, {
@@ -99,7 +103,10 @@ window.TUTORIAL = {
     }
   }, {
     id: 'start-coding6',
-    before: () => { NNE.code = TUTORIAL.getCode('a-box') },
+    before: () => {
+      NNE.code = TUTORIAL.getCode('a-box')
+      STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+    },
     highlight: { startLine: 5, color: 'rgba(255, 255, 255, 0.15)' },
     content: 'We can use the <a href="https://aframe.io/docs/1.0.0/core/entity.html#sidebar" target="_blank">a-entity</a> element, which I\'ve added on <b>line 5</b>, to add all kinds of stuff to our scene.',
     options: { ok: (e) => e.goTo('start-coding7') }
@@ -123,7 +130,7 @@ window.TUTORIAL = {
       endCol: 38,
       color: 'rgba(255, 255, 255, 0.15)'
     },
-    content: 'Done! The <a href="https://aframe.io/docs/1.0.0/components/geometry.html#sidebar" target="_blank">material</a>  component takes as it\'s value a list of properties written much like CSS. The property name (<i>primitive</i>) followed by a colon <code>:</code> and then the property\'s value (<i>box</i>) ending with a semicolon <code>;</code> (after which we can add another property/value pair). But we won\'t actually see it until we give it a material.',
+    content: 'Done! The <a href="https://aframe.io/docs/1.0.0/components/material.html#sidebar" target="_blank">material</a>  component takes as it\'s value a list of properties written much like CSS. The property name (<i>primitive</i>) followed by a colon <code>:</code> and then the property\'s value (<i>box</i>) ending with a semicolon <code>;</code> (after which we can add another property/value pair). But we won\'t actually see it until we give it a material.',
     options: {
       'let\'s give it a material!': (e) => e.goTo('set-mat-from-geo'),
       'can we add other properites?': (e) => e.goTo('other-props-geo')
@@ -206,6 +213,7 @@ window.TUTORIAL = {
       NNE.code = TUTORIAL.getCode('set-geo-mat')
       if (STORE.state.layout !== 'dock-left') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        STORE.dispatch('CHANGE_OPACITY', 1)
       }
     },
     content: 'Now, every time we update our code and our sketch refreshes the camera will get reset to it\'s default position. So if we don\'t want to start with a blank screen, we\'ll either have to change our box\'s position or our camera\'s position in our code.',
@@ -343,13 +351,14 @@ window.TUTORIAL = {
       color: 'rgba(255, 255, 255, 0.15)'
     },
     content: 'Ok now the fun begins! Let\'s start animating things! For this to make more conceptual sense it\'ll help if we add a position component to our box. I\'ve done that now, but I\'ve left the default values of "0 0 0" so we won\'t notice any change yet.',
-    options: { ok: (e) => e.goTo('pos-cam') }
+    options: { ok: (e) => e.goTo('more-components') }
   }, {
     id: 'more-components',
     before: () => {
       NNE.code = TUTORIAL.getCode('box-cam-set')
       if (STORE.state.layout !== 'dock-left') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        STORE.dispatch('CHANGE_OPACITY', 1)
       }
     },
     content: 'Similar to the position component, we can also give any entity a <a href="https://aframe.io/docs/1.0.0/components/rotation.html#sidebar">rotation</a> component which takes "x y z" values in degrees (0-360), as well as a <a href="https://aframe.io/docs/1.0.0/components/scale.html#sidebar">scale</a> which also takes "x y z" values to change the objects "scale" (1 being the same size, 2 being twice the size, 0.5 half the size, etc)',
@@ -397,6 +406,7 @@ window.TUTORIAL = {
       NNE.code = TUTORIAL.getCode('clean-up')
       if (STORE.state.layout !== 'dock-left') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        STORE.dispatch('CHANGE_OPACITY', 1)
       }
     },
     content: 'We can animate practically any aspect of our entity, like it\'s scale, rotation and position, and also various sub-properties of it\'s geometry and material. I\'ll demonstrate how the animation system works with our box\'s rotation.',
@@ -417,7 +427,7 @@ window.TUTORIAL = {
     id: 'animate4',
     before: () => { NNE.code = TUTORIAL.getCode('anim-3') },
     highlight: { startLine: 16, color: 'rgba(255, 255, 255, 0.15)' },
-    content: 'If we want the animation to repeat we can set the <code>loop</code> preoprty to <i>true</i>',
+    content: 'If we want the animation to repeat we can set the <code>loop</code> property to <i>true</i>',
     options: { ok: (e) => e.goTo('animate5') }
   }, {
     id: 'animate5',
@@ -481,6 +491,13 @@ window.TUTORIAL = {
     options: { ok: (e) => e.goTo('vr-ethics') }
   }, {
     id: 'pre-remix',
+    before: () => {
+      NNE.code = TUTORIAL.getCode(TUTORIAL.remixTemplate)
+      if (STORE.state.layout !== 'dock-left') {
+        STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+        STORE.dispatch('CHANGE_OPACITY', 1)
+      }
+    },
     content: 'Great! Before you start experimenting I want you to consider the bigger picture here. Spinning a box around might seem trivial, but it\'s the first step in your journey to creating the digital environment the rest of the world lives in. And with great power comes great responsibility.',
     options: { ok: (e) => e.goTo('vr-ethics') }
   }, {
@@ -497,7 +514,7 @@ window.TUTORIAL = {
     }
   }, {
     id: 'lets-play',
-    content: 'Keeping all that in the back of your mind... let\'s play! As you start remixing don\'t forget that you can double click on various pieces of code if you\'d like me to explain more about it. In some cases I\'ve even got some widgets to help you write/edit the code. For example, double click the a-sky\'s hex color value or an entity\'s component to see some of those widget options.',
+    content: 'Keeping all that in the back of your mind... let\'s play! As you start remixing don\'t forget that you can double click on various pieces of code if you\'d like me to explain more about it. In some cases I\'ve even got some widgets to help you write/edit the code. For example, double click the a-sky\'s hex color value or an entity\'s position, rotation or scale component to use related widgets',
     options: { 'ok thanks!': (e) => e.goTo('remix') }
   }, {
     id: 'remix',
@@ -506,15 +523,62 @@ window.TUTORIAL = {
       'ok I\'m done!': (e) => {
         const template = TUTORIAL.getCode(TUTORIAL.remixTemplate)
         const compare = NNE._compareTwoStrings(template, NNE.code)
-        console.log('CHANGED BY', compare);
-        // e.goTo('...')
-      }
+        if (compare === 1) e.goTo('no-change')
+        else e.goTo('done')
+      },
+      'what should I do?': (e) => e.goTo('advice')
+    }
+  }, {
+    id: 'advice',
+    content: 'Try editing some of these entities, maybe change their <a href="https://aframe.io/docs/1.0.0/components/geometry.html#sidebar" target="_blank">geometry</a> or <a href="https://aframe.io/docs/1.0.0/components/material.html#sidebar" target="_blank">material</a>. You could also try experimenting more with There you can learn more about <a href="https://aframe.io/docs/1.0.0/components/animation.html#sidebar" target="_blank">animations</a>. Don\'t forget that you can double click on any of these components to learn more about them. Taking a look through A-Frame\'s <a href="https://aframe.io/docs/1.0.0/ target="_blank">documentation page</a> is also a great way to learn about what else you can do and get some ideas.',
+    options: {
+      'ok thanks!': (e) => e.goTo('remix')
+    }
+  }, {
+    id: 'no-change',
+    content: 'Are you sure? It doesn\'t look like much has changed?',
+    options: {
+      'I\'m sure': (e) => { e.goTo('done') },
+      'no, I\'ll keep experimenting': (e) => e.goTo('remix')
+    }
+  }, {
+    id: 'done',
+    before: () => { STORE.subscribe('widgets', TUTORIAL.waitForFuncMenu) },
+    content: 'Great! Anytime you\'re working in the studio you can use the <b>Functions Menu</b> to save new projects, open old projects and generate links so you can share your work publicly online. Click on my face and open the <b>Functions Menu</b>',
+    options: {}
+  }, {
+    id: 'func-menu',
+    before: () => { STORE.unsubscribe('widgets', TUTORIAL.waitForFuncMenu) },
+    content: 'Now click on <b>my project</b>, there you can generate a <code>shareLink()</code> to save your work as a URL, or run <code>downloadCode()</code> to save it to your computer, or run <code>saveProject()</code> to save this project to your GitHub.',
+    options: {
+      cool: (e) => e.goTo('finished')
+    }
+  }, {
+    id: 'finished',
+    content: 'That\'s it for this tutorial, feel free to keep sketching or we can launch right into the next one and learn how to incorporate assets into our project, like image textures and 3D objects.',
+    options: {
+      'that\'s ok, I\'ll keep sketching': (e) => e.goTo('finished2'),
+      'let\'s start the the next one!': (e) => NNT.load('webvr-assets')
+    }
+  }, {
+    id: 'finished2',
+    content: 'Good idea! When you\'re ready to start the next tutorial just click on my face again to open the <b>Tutorials Menu</b>.',
+    options: {
+      'got it': (e) => e.end()
     }
   }],
+
+  remixTemplate: 'cube-only',
 
   onload: () => {
     window.utils.setupAframeEnv()
     NNE.addCustomRoot('tutorials/webvr-basics/')
+  },
+
+  waitForFuncMenu: () => {
+    if (WIDGETS['functions-menu'].opened) {
+      NNT.goTo('func-menu')
+    }
   },
 
   widgets: {

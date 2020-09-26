@@ -11,7 +11,8 @@ window.TUTORIAL = {
 
   steps: [{
     id: 'getting-started',
-    content: 'Great! The first thing to note is that my tutorials are non-linear, this means that while the general lessons will be the same for everyone, the details will be different depending on how you respond to me?',
+    before: () => { TUTORIAL.beforeSectionStart('welcome') },
+    content: 'Great! The first thing to note is that my tutorials are non-linear, this means that while the general lessons will be the same for everyone, the details will be different depending on how you respond to me.',
     options: {
       'I noticed!': (e) => e.goTo('pre-widget'),
       'respond to you?': (e) => e.goTo('a-response')
@@ -65,7 +66,7 @@ window.TUTORIAL = {
   }, {
     id: 'code-editor',
     before: () => {
-      STORE.dispatch('CHANGE_LAYOUT', 'separate-window')
+      TUTORIAL.beforeSectionStart('separate-window')
       window.utils.netitorUpdate()
     },
     edit: false,
@@ -96,8 +97,8 @@ window.TUTORIAL = {
   }, {
     id: 'markup',
     before: () => {
+      TUTORIAL.beforeSectionStart('separate-window')
       TUTORIAL.genMarkupCode(1)
-      STORE.dispatch('CHANGE_LAYOUT', 'separate-window')
       window.utils.netitorUpdate()
     },
     content: 'HTML structures data/content by placing it inside of "elements". Every element has a name, like "article" for example. In <a href="https://en.wikipedia.org/wiki/Markup_language" target="_blank">Markup Languages</a> an element consists of an "opening tag" like <code>&lt;article&gt;</code>, and a "closing tag" like <code>&lt;/article&gt;</code>.',
@@ -188,7 +189,7 @@ window.TUTORIAL = {
     content: 'Great! I\'ve got a few more tricks in my source code, changing my appearance for example! wanna try a new look?',
     options: {
       'something light': (e) => e.goTo('light-theme'),
-      'something l337': (e) => e.goTo('monokai-theme'),
+      'something classic': (e) => e.goTo('monokai-theme'),
       'I like this look': (e) => e.goTo('same-theme')
     }
   }, {
@@ -207,7 +208,7 @@ window.TUTORIAL = {
       STORE.dispatch('CHANGE_THEME', 'monokai')
       TUTORIAL.setupMenuListeners()
     },
-    content: 'classic! I wear this outfit when I go to hack-a-thons. You can use my main menu to change my settings, load tutorials and open widgets. Just click on my face!',
+    content: 'solid choice! I wear this outfit when I go to hack-a-thons. You can use my main menu to change my settings, load tutorials and open widgets. Just click on my face!',
     options: {}
   }, {
     id: 'same-theme',
@@ -219,8 +220,8 @@ window.TUTORIAL = {
   }, {
     id: 'pre-func-menu',
     before: () => {
+      TUTORIAL.beforeSectionStart('dock-bottom')
       TUTORIAL.genMarkupCode(5)
-      STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
       TUTORIAL._menusChecked.func = false
       TUTORIAL.setupMenuListeners()
     },
@@ -318,7 +319,7 @@ window.TUTORIAL = {
         const f = {
           tutorial: 'orientation',
           id: 'post-auth-func-menu',
-          menuStatus: TUTORIAL._menusChecked
+          status: TUTORIAL._menusChecked
         }
         TUTORIAL._toGHfrom = JSON.stringify(f)
         e.goTo('github')
@@ -389,9 +390,9 @@ window.TUTORIAL = {
       STORE.dispatch('CHANGE_OPACITY', 0.4)
       STORE.dispatch('CHANGE_LAYOUT', 'full-screen')
     },
-    content: 'Sure, here\'s something I was working on last week, what do you think? As always, feel free to remix it, I love collaborating.',
+    content: 'Sure, here\'s something I was working on last week, what do you think? As always, feel free to remix it, I love collaborating. Try chaning some of the number values for example. Let me know when you\'re done experimenting and we\'ll move on.',
     options: {
-      'very cool!': (e) => {
+      'ok I\'m done': (e) => {
         STORE.dispatch('CHANGE_THEME', TUTORIAL._themePicked)
         STORE.dispatch('CHANGE_OPACITY', 1)
         STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
@@ -443,8 +444,8 @@ window.TUTORIAL = {
   }, {
     id: 'pre-wig-menu',
     before: () => {
+      TUTORIAL.beforeSectionStart('dock-bottom')
       TUTORIAL.genMarkupCode(5)
-      STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
       TUTORIAL._menusChecked.wig = false
       TUTORIAL.setupMenuListeners()
     },
@@ -486,7 +487,7 @@ window.TUTORIAL = {
         const f = {
           tutorial: 'orientation',
           id: 'post-auth-wig-menu',
-          menuStatus: TUTORIAL._menusChecked
+          status: TUTORIAL._menusChecked
         }
         TUTORIAL._toGHfrom = JSON.stringify(f)
         e.goTo('github')
@@ -509,8 +510,8 @@ window.TUTORIAL = {
   }, {
     id: 'pre-tut-menu',
     before: () => {
+      TUTORIAL.beforeSectionStart('dock-bottom')
       TUTORIAL.genMarkupCode(5)
-      STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
       TUTORIAL._menusChecked.tut = false
       TUTORIAL.setupMenuListeners()
     },
@@ -533,8 +534,8 @@ window.TUTORIAL = {
   }, {
     id: 'pre-search-bar',
     before: () => {
+      TUTORIAL.beforeSectionStart('dock-bottom')
       TUTORIAL.genMarkupCode(5)
-      STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
       TUTORIAL._menusChecked.search = false
       TUTORIAL.setupMenuListeners()
     },
@@ -741,6 +742,13 @@ window.TUTORIAL = {
     })
   },
 
+  beforeSectionStart: (layout) => {
+    Object.keys(TUTORIAL.widgets)
+      .filter(w => w.indexOf('cyber') === 0)
+      .forEach(w => WIDGETS[w].close())
+    STORE.dispatch('CHANGE_LAYOUT', layout)
+  },
+
   waitForColorWig: () => {
     if (WIDGETS['color-widget'].opened) {
       NNT.goTo('done-with-color')
@@ -777,6 +785,9 @@ window.TUTORIAL = {
 
   setupMenuListeners: () => {
     const ch = TUTORIAL._menusChecked
+    STORE.unsubscribe('widgets', TUTORIAL.waitForFuncMenu)
+    STORE.unsubscribe('widgets', TUTORIAL.waitForWigMenu)
+    STORE.unsubscribe('widgets', TUTORIAL.waitForTutMenu)
     if (!ch.func) STORE.subscribe('widgets', TUTORIAL.waitForFuncMenu)
     if (!ch.wig) STORE.subscribe('widgets', TUTORIAL.waitForWigMenu)
     if (!ch.tut) STORE.subscribe('widgets', TUTORIAL.waitForTutMenu)

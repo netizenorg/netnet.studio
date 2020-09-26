@@ -71,9 +71,7 @@ class NetitorErrorHandler {
 
     if (eve.length > 0) {
       // check for errors caused by a-frame custom elements......
-      const ce = eve.filter(e => {
-        return e.language === 'html' && e.rule.id === 'standard-elements'
-      })
+      const ce = eve.filter(e => e.rule.id === 'standard-elements')
       if (ce.length > 0 && !window.utils._libs.includes('aframe')) {
         const lib = window.utils.checkForLibs('aframe', eve[0])
         if (lib) return

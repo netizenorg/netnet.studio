@@ -136,7 +136,7 @@ window.convos['welcome-screen'] = (self) => {
     after: () => { NNM.setFace('o', '‿', 'o', false) }
   }, {
     id: 'xerox-parc',
-    content: 'Adele Goldberg and Alan Kay coined the term in 1977, when computers were huge institution owned machines, they <a href="http://www.newmediareader.com/book_samples/nmr-26-kay.pdf" target="_blank">imagined</a> "personal" computers. While working on that they made the first computers with real "graphical user interfaces" at Xerox PARC, a system they called SmallTalk.',
+    content: 'Adele Goldberg and Alan Kay coined the term "metamedia" in 1977, when computers were huge institution owned machines, they <a href="http://www.newmediareader.com/book_samples/nmr-26-kay.pdf" target="_blank">imagined</a> "personal" computers. While working on that they made the first computers with real "graphical user interfaces" at Xerox PARC, a system they called SmallTalk.',
     options: {
       'I see, and netnet?': (e) => {
         STORE.dispatch('CLOSE_WIDGET', 'ws-alan')
@@ -291,12 +291,26 @@ window.convos['welcome-screen'] = (self) => {
     options: { 'I see': (e) => e.goTo('keep-learning') }
   }, {
     id: 'keep-learning',
-    content: 'I\'ve got a lesson prepared to help you get oriented, should I launch into it?',
+    before: () => { WIDGETS['tutorials-menu'].open() },
+    content: 'The net artsits at <a href="http://netizen.org" target="_blank">netizen.org</a> are diligently developing pedagogical programming, but in the meantime you can try out one of these <i>beta</i> tutorials. <br><Br> When launched, you can jump to a specific point in tutorial by choosing a <i>step</i> in the <b>sections</b> tab of the <b>Tutorials Menu</b>. And for the academics out there, check out the <b>references</b> tab for sources informing each tutorial.',
     options: {
-      'yea!': (e) => {
+      'where should I start?': (e) => e.goTo('where-to'),
+      'I changed my mind': (e) => {
+        WIDGETS['tutorials-menu'].close()
+        e.goTo('main-menu')
+      }
+    }
+  }, {
+    id: 'where-to',
+    content: 'Personaly, I always recommend starting at the beginning. Which at the moment is the <i>Orientation</i>. I can launch it for you, but you could also just click it yourself.',
+    options: {
+      'sure, but I like when you do it': (e) => {
         NNT.load('orientation', (e) => { e.goTo('getting-started') })
       },
-      'no thanks': (e) => e.goTo('main-menu')
+      'actually, I changed my mind': (e) => {
+        WIDGETS['tutorials-menu'].close()
+        e.goTo('main-menu')
+      }
     }
   }]
 
@@ -307,6 +321,7 @@ window.convos['welcome-screen'] = (self) => {
   const makeInfo = [{
     id: 'work-on-saved-code',
     before: () => {
+      window._lastConvo = 'work-on-saved-code'
       // ...if user had previously been working on code
       const prevCode = window.utils.savedCode()
       NNE.code = NNE._decode(prevCode) // ...display their priror code...
@@ -333,12 +348,14 @@ window.convos['welcome-screen'] = (self) => {
       }
     }
   }, {
+    before: () => { window._lastConvo = 'blank-canvas' },
     id: 'blank-canvas',
     content: `You got it! If at any point you want me to save your progress locally use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut`,
     options: { ok: (e) => e.hide() }
   }, {
     id: 'local-or-open-project',
     before: () => {
+      window._lastConvo = 'local-or-open-project'
       // ...if user had previously been working on code
       const prevCode = window.utils.savedCode()
       NNE.code = NNE._decode(prevCode) // ...display their priror code...
@@ -371,6 +388,7 @@ window.convos['welcome-screen'] = (self) => {
   }, {
     id: 'open-project',
     before: () => {
+      window._lastConvo = 'open-project'
       NNE.code = '<!DOCTYPE html>'
       if (STORE.state.layout === 'welcome') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
@@ -396,6 +414,7 @@ window.convos['welcome-screen'] = (self) => {
     }
   }, {
     id: 'open-a-project',
+    before: () => { window._lastConvo = 'open-a-project' },
     content: 'Ok, choose the project you want to keep working on from the <b>Saved Projects</b> Widget.',
     options: { ok: (e) => e.hide() }
   }, {
@@ -414,10 +433,12 @@ window.convos['welcome-screen'] = (self) => {
     }
   }, {
     id: 'this-is-fine',
+    before: () => { window._lastConvo = 'this-is-fine' },
     content: `Great, just click my face if you need anything. If at any point you want me to save your progress locally use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut`,
     options: { ok: (e) => e.hide() }
   }, {
     id: 'layout-help',
+    before: () => { window._lastConvo = 'layout-help' },
     content: 'You can change all of my editor settings in my "Functions" menu, just click my face to launch the menu options.',
     options: { ok: (e) => e.hide() }
   }]

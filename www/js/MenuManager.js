@@ -106,7 +106,7 @@ class MenuManager {
 
     this.ele.querySelector('#face').addEventListener('click', () => {
       if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
-      // else window.greetings.welcome()
+      else if (!STORE.is('TUTORIAL_LOADED')) window.greetings.welcome()
     })
   }
 

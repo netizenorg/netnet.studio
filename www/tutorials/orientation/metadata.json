@@ -10,7 +10,7 @@
   "keywords": ["help", "get started", "intro", "introduction", "begin"],
   "main": "main.js",
   "checkpoints": {
-    "0: Hello World": 0,
+    "0: Hello World": "getting-started",
     "1: Widgets": "pre-widget",
     "2: The Code Editor": "code-editor",
     "3: Errors and Info": "markup",

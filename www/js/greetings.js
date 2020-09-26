@@ -242,15 +242,16 @@ window.greetings = {
     function waitForOwner (d) {
       if (window.localStorage.getItem('owner')) {
         NNT.load(d.tutorial, (e) => {
-          window._tempAuthFrom = d.menuStatus
+          window._tempAuthFrom = d.status
           e.goTo(d.id)
         })
       } else setTimeout(() => waitForOwner(d), 250)
     }
 
     if (WIDGETS['functions-menu']) {
-      const from = window.localStorage.getItem('pre-auth-from')
       const prevCode = window.utils.savedCode() || NNE._encode('<!DOCTYPE html>')
+      const from = window.localStorage.getItem('pre-auth-from')
+      if (from === 'save' || from === 'open') window._lastConvo = from
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
       if (NNE.code.includes('aframe.js"') ||
         NNE.code.includes('aframe.min.js"')) {

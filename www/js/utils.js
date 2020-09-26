@@ -223,6 +223,20 @@ window.utils = {
   // ~ ~ ~ 3rd party lib helpers
 
   checkAframeEnv: (err) => {
+    function done (e) {
+      e.hide()
+      // show the convo netnet tried to show before this func consumed it
+      const last = window._lastConvo
+      if (last === 'save') { // go here via save >> GH redirect
+        const obj = WIDGETS['functions-menu'].convos['create-new-project']
+        window.convo = new Convo(obj)
+      } else if (last === 'open') { // go here via open >> GH redirect
+        WIDGETS['saved-projects'].open()
+      } else if (last && window.greetings.convos) {
+        // go here via 'i want to sketch' in welcome screen
+        window.convo = new Convo(window.greetings.convos, last)
+      }
+    }
     if (window.utils._libs.includes('aframe')) return
     if (NNE.code.includes('aframe.js"') ||
       NNE.code.includes('aframe.min.js"')) {
@@ -231,9 +245,9 @@ window.utils = {
         options: {
           'yes, that be great!': (e) => {
             window.utils.setupAframeEnv()
-            e.hide()
+            done(e)
           },
-          'no, you\'re mistaken.': (e) => e.hide()
+          'no, you\'re mistaken.': (e) => done(e)
         }
       })
       return true
@@ -241,7 +255,7 @@ window.utils = {
       window.convo = new Convo([{
         content: 'It appears you\'re trying to use a custom element from the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, but the library is not present in your code? You must <a href="https://aframe.io/docs/1.0.0/introduction/installation.html#include-the-js-build" target="_blank">include it in a script tag</a>',
         options: {
-          'ok I will': (e) => e.hide(),
+          'ok I will': (e) => done(e),
           'could you include it for me?': (e) => e.goTo('include')
         }
       }, {
@@ -250,7 +264,7 @@ window.utils = {
         options: {
           'ok, ready!': (e) => {
             NNE.cm.replaceSelection('<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>')
-            e.hide()
+            done(e)
           }
         }
       }])

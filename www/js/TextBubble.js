@@ -56,6 +56,8 @@ class TextBubble {
 
     this._setupBubble(opts.content || '', opts.options)
 
+    this._fadeTimers = []
+
     // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
     const wu = window.utils
     window.addEventListener('mousemove', (e) => wu.updateShadow(e, this))
@@ -111,25 +113,36 @@ class TextBubble {
     }
   }
 
+  _fadeDebounce () {
+    this._fadeTimers.forEach(t => { clearTimeout(t) })
+  }
+
   fadeIn () {
+    this._fadeDebounce()
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
     this.ele.style.display = 'block'
     this.updatePosition()
-    setTimeout(() => { this.ele.style.opacity = 1 }, 100)
-    setTimeout(() => {
+    const t1 = setTimeout(() => { this.ele.style.opacity = 1 }, 100)
+    const t2 = setTimeout(() => {
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(0)'
       this.ele.querySelector('.text-bubble-options').style.opacity = 1
     }, 600)
+    this._fadeTimers.push(t1)
+    this._fadeTimers.push(t2)
   }
 
   fadeOut (ms, callback) {
+    this._fadeDebounce()
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
-    setTimeout(() => {
+    const t1 = setTimeout(() => {
       this.ele.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(10px)'
       this.ele.querySelector('.text-bubble-options').style.opacity = 0
     }, 5)
-    setTimeout(() => { this.ele.style.opacity = 0 }, 10)
-    setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
+    const t2 = setTimeout(() => { this.ele.style.opacity = 0 }, 10)
+    const t3 = setTimeout(() => { this.ele.style.display = 'none' }, this.transitionTime)
+    this._fadeTimers.push(t1)
+    this._fadeTimers.push(t2)
+    this._fadeTimers.push(t3)
   }
 
   updatePosition () {
