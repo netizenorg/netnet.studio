@@ -13,7 +13,7 @@ window.TUTORIAL = {
       TUTORIAL.introVideos()
       NNW.updatePosition()
     },
-    content: 'Our VR story begins, like the Web itself, in the early 1990s. Let me know when you\'ve finished watching this introduction I\'ve prepared for you.',
+    content: 'Our VR story begins, like the Web itself, in the early 1990s. Let me know when you\'ve finished watching the intro videos I\'ve prepared for you.',
     options: { 'ok, what\'s next?': (e) => e.goTo('vr-history') }
   }, {
     before: () => {
