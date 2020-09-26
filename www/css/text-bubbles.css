@@ -259,8 +259,8 @@
   position: absolute;
   top: -3px;
   left: -3px;
-  width: calc(100% + 5px);
-  height: calc(100% + 5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
   border-radius: 25px;
   border: 1px solid var(--fg-color);
   opacity: 0;

@@ -41,13 +41,17 @@ class HyperVidPlayer extends Widget {
   set src (v) { this.$('video').src = v }
 
   play () {
-    this.$('.hvp-toggle').textContent = '□'
+    this.$('.hvp-toggle > span').classList.remove('play')
+    this.$('.hvp-toggle > span').classList.add('pause')
     this.$('video').play()
-    this._loop()
+    this.$('video').addEventListener('loadedmetadata', () => {
+      this._loop()
+    })
   }
 
   pause () {
-    this.$('.hvp-toggle').textContent = 'ᐅ'
+    this.$('.hvp-toggle > span').classList.remove('pause')
+    this.$('.hvp-toggle > span').classList.add('play')
     this.$('video').pause()
   }
 
@@ -70,8 +74,7 @@ class HyperVidPlayer extends Widget {
       div.hvp-controls {
         display: flex;
         justify-content: space-between;
-        transform: translateY(-100%);
-        padding: 18px;
+        align-items: center;
         background: #0007;
         transition: opacity 0.25s;
       }
@@ -84,13 +87,25 @@ class HyperVidPlayer extends Widget {
 
   _createHTML (opts) {
     this.innerHTML = `
-      <video style="width: 100%" src="${opts.video}"></video>
-      <div class="hvp-controls">
-        <div class="hvp-toggle">ᐅ</div>
-        <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
+      <div class="hvp-wrap">
+        <video style="display:block; width:100%" src="${opts.video}"></video>
+        <div class="hvp-controls">
+          <div class="hvp-toggle">
+            <span class="pause"></span>
+          </div>
+          <progress class="progress" min="0" max="100" value="0">0%</progress>
+          <div class="hvp-vol-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="500" height="500" viewBox="0 0 75 75">
+              <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:white;stroke-width:5;stroke-linejoin:round;fill:white;transition:all .5s ease;"/>
+              <path class="sound" d="M48,27.6a19.5,19.5 0 0 1 0,21.4" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
+              <path class="sound" d="M55.1,20.5a30,30 0 0 1 0,35.6" style="fill:none;stroke:white;stroke-width:5;stroke-linecap:round;transition:stroke .5s ease;"/>
+            </svg>
+            <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
+          </div>
+        </div>
       </div>
-      ${opts.text ? '<p>' + opts.text + '</p>' : ''}
-      ${opts.source ? `<p>
+      ${opts.text ? '<p class="hvp-copy">' + opts.text + '</p>' : ''}
+      ${opts.source ? `<p class="hvp-copy">
           (source:<a href="${opts.source.url}" target="_blank">
             ${opts.source.text}
           </a>)
@@ -99,6 +114,16 @@ class HyperVidPlayer extends Widget {
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
     this.$('.hvp-vol').addEventListener('change', () => {
       this.$('video').volume = this.$('.hvp-vol').value
+      if (this.$('video').volume <= 0.1) {
+        this.$('.hvp-vol-wrap').classList.remove('half')
+        this.$('.hvp-vol-wrap').classList.add('zero')
+      } else if (this.$('video').volume <= 0.5) {
+        this.$('.hvp-vol-wrap').classList.remove('zero')
+        this.$('.hvp-vol-wrap').classList.add('half')
+      } else {
+        this.$('.hvp-vol-wrap').classList.remove('half')
+        this.$('.hvp-vol-wrap').classList.remove('zero')
+      }
     })
     this.ele.addEventListener('mouseover', () => {
       this.$('.hvp-controls').style.opacity = 1
@@ -122,6 +147,15 @@ class HyperVidPlayer extends Widget {
       kf.callback()
       kf.ran = true
     })
+
+    this._updateProgress(ct)
+  }
+
+  _updateProgress (_ct) {
+    const progressBar = this.$('.progress')
+    let percentage = Math.floor((100 / this.$('video').duration) * _ct)
+    progressBar.value = percentage
+    progressBar.innerHTML = percentage + '%'
   }
 }
 
