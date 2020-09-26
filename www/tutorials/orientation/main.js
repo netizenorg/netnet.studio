@@ -31,7 +31,7 @@ window.TUTORIAL = {
       WIDGETS['example-widget'].open()
       WIDGETS['example-widget'].update({ left: 20, top: 20 }, 500)
     },
-    content: 'Widgets are windows which might contain, images, videos or any number of interactive components. You can move them around by clicking and dragging them by their title bars. You can close the Widget by clicking on the <b>✖</b>.',
+    content: 'Widgets are windows which might contain images, videos, or any number of interactive components. You can move them around by clicking and dragging them by their title bars. You can close the Widget by clicking on the <b>✖</b>.',
     options: { cool: (e) => e.goTo('move-netnet') }
   }, {
     id: 'move-netnet',
@@ -457,7 +457,7 @@ window.TUTORIAL = {
       TUTORIAL._menusChecked.wig = true
       STORE.unsubscribe('widgets', TUTORIAL.waitForWigMenu)
     },
-    content: 'This is were I keep any widgets I think you might want to reuse. These will change a bit depending on which tutorial you\'re on, but you can "star" most of these widgets when you have them open if you\'d prefer I always keep them in this menu.',
+    content: 'This is where I keep any widgets I think you might want to reuse. These will change a bit depending on which tutorial you\'re on, but you can "star" most of these widgets when you have them open if you\'d prefer I always keep them in this menu.',
     options: { ok: (e) => e.goTo('wig-menu2') }
   }, {
     id: 'wig-menu2',
