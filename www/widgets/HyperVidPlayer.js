@@ -152,7 +152,7 @@ class HyperVidPlayer extends Widget {
   _updateProgress (_ct) {
     const progressBar = this.$('.progress')
     const percentage = Math.floor((100 / this.$('video').duration) * _ct)
-    if (isNaN(percentage)) return
+    if (!percentage || isNaN(percentage)) return
     progressBar.value = percentage
     progressBar.innerHTML = percentage + '%'
   }
