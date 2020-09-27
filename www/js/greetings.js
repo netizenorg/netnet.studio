@@ -153,7 +153,7 @@ window.greetings = {
     document.querySelector('#loader').style.opacity = '0'
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
-      const delay = window.localStorage.getItem('username') ? 500 : 1000
+      const delay = window.localStorage.getItem('username') ? 500 : 5000
       setTimeout(() => {
         if (!STORE.is('SHOWING')) self.welcome()
       }, delay)

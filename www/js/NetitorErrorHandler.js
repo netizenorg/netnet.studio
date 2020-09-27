@@ -8,7 +8,6 @@ class NetitorErrorHandler {
   static ignore (err) {
     function confirm (e, err, specific) {
       const time = STORE.getTransitionTime()
-      console.log(err, specific);
       NNE.addErrorException(err, specific)
       const errExcStr = JSON.stringify(NNE._errExceptions)
       window.localStorage.setItem('error-exceptions', errExcStr)
