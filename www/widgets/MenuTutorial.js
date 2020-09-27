@@ -47,13 +47,18 @@ class MenuTutorial extends Widget {
   }
 
   _createTutorialsList () {
-    window.fetch('api/tutorials', { method: 'GET' })
-      .then(res => res.json())
-      .then(json => {
-        this._numberOfTutorials = json.length
-        this._tutorialMetaData = []
-        json.forEach(dir => this._addTut(dir))
-      })
+    window.utils.get('tutorials/metameta.json', (meta) => {
+      const json = meta.order
+      this._numberOfTutorials = json.length
+      this._tutorialMetaData = []
+      json.forEach(dir => this._addTut(dir))
+    })
+    // window.utils.get('api/tutorials', (json) => {
+    //   json = json.filter(f => !f.includes('.json'))
+    //   this._numberOfTutorials = json.length
+    //   this._tutorialMetaData = []
+    //   json.forEach(dir => this._addTut(dir))
+    // })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
