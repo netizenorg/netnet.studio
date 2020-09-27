@@ -128,16 +128,36 @@ window.greetings = {
       window.utils.netitorUpdate()
       // When any layout or other transition finishes remove loader...
       window.NNW._whenCSSTransitionFinished(() => {
-        document.querySelector('#loader').style.opacity = '0'
-        setTimeout(() => {
-          document.querySelector('#loader').style.display = 'none'
-          const delay = window.localStorage.getItem('username') ? 500 : 1000
-          setTimeout(() => {
-            if (!STORE.is('SHOWING')) self.welcome()
-          }, delay)
-        }, 1000) // NOTE this ms should match #loader transition-duration
+        const auth = window.localStorage.getItem('beta-pw-auth')
+        if (auth === 'true') return self.enterStudio()
+        const pw = document.querySelector('#loader > div:nth-child(2)')
+        const ld = document.querySelector('#loader > div:nth-child(1)')
+        pw.addEventListener('keydown', (e) => {
+          if (e.keyCode === 13) {
+            if (e.target.value === 'adalovelace') {
+              self.enterStudio()
+              window.localStorage.setItem('beta-pw-auth', 'true')
+            } else {
+              window.alert('woops wrong password! If you want to be a beta tester send us an email hi@netizen.org')
+            }
+          }
+        })
+        ld.style.display = 'none'
+        pw.style.display = 'block'
       })
     }
+  },
+
+  enterStudio: () => {
+    const self = window.greetings
+    document.querySelector('#loader').style.opacity = '0'
+    setTimeout(() => {
+      document.querySelector('#loader').style.display = 'none'
+      const delay = window.localStorage.getItem('username') ? 500 : 1000
+      setTimeout(() => {
+        if (!STORE.is('SHOWING')) self.welcome()
+      }, delay)
+    }, 1000) // NOTE this ms should match #loader transition-duration
   },
 
   welcome: () => {
