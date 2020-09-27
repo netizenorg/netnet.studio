@@ -434,7 +434,7 @@ iframe { width: 100vw; height: 100vh }
       title: 'Computer Chronicles (1992)',
       source: {
         url: 'https://archive.org/details/virtualreali',
-        text: 'Computer Chronicles episdoe on Virtual Reality'
+        text: 'Computer Chronicles episode on Virtual Reality'
       }
     }),
     'vr-abc': new HyperVidPlayer({
