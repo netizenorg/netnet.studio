@@ -36,6 +36,16 @@ button {
   color: #fff;
   opacity: 1;
   transition: opacity 1s;
+  font-size: 20px;
+}
+
+#loader #password {
+  color: #fff;
+  border: 2px solid rgb(28, 28, 54);
+  padding: 20px;
+  background: rgba(28,28,54,0.5);
+  border-radius: 25px;
+  font-size: 20px;
 }
 
 #netnet {
