@@ -1,4 +1,4 @@
-/* global MenuItem, TextBubble, NNW, STORE, SearchBar */
+/* global AlertBubble, TextBubble, NNW, STORE, SearchBar */
 /*
   -----------
      info
@@ -94,7 +94,7 @@ class MenuManager {
     }
 
     this._setupNetnetFace()
-    this._setupMenuItems()
+    this._setupAlertBubbles()
     this._setupAlertItem()
     this._setupTextBubble()
     this.search = new SearchBar()
@@ -140,13 +140,13 @@ class MenuManager {
   showMenu () {
     this.updatePosition()
     this.setFace('◕', '✖', '◕')
-    this._toggleRadialMenuItems(true)
+    this._toggleRadialAlertBubbles(true)
     this._opened = 'mis'
   }
 
   hideMenu () {
     this.setFace('◕', '◞', '◕')
-    this._toggleRadialMenuItems(false)
+    this._toggleRadialAlertBubbles(false)
     if (this._opened === 'mis') this._opened = false
   }
 
@@ -244,7 +244,7 @@ class MenuManager {
     const exceptWelcome = (welc && menu === 'tis') || (!welc)
     if (welc) this.setFace('◕', '◞', '◕')
     else if (this._tempFace) this.setFace(...this._tempFace)
-    if (this.opened === 'mis') this._toggleRadialMenuItems(true)
+    if (this.opened === 'mis') this._toggleRadialAlertBubbles(true)
     else if (this.opened === 'ais') this._toggleAlertItem(true)
     if (menu && exceptWelcome) {
       this[menu].style.transition = `opacity ${t}ms`
@@ -268,7 +268,7 @@ class MenuManager {
     if (!welc) this._tempFace = this.getFace()
     else this._tempFace = null
     this.setFace('◕', '◞', '◕')
-    if (this.opened === 'mis') this._toggleRadialMenuItems(false)
+    if (this.opened === 'mis') this._toggleRadialAlertBubbles(false)
     else if (this.opened === 'ais') this._toggleAlertItem(false)
     else if (!this.opened) return
     this[menu].style.transition = `opacity ${t}ms`
@@ -329,7 +329,7 @@ class MenuManager {
     this._spinEyes = true
   }
 
-  _setupMenuItems () {
+  _setupAlertBubbles () {
     this.mis = document.createElement('div')
     this.mis.id = 'menu-items-parent'
     this.ele.appendChild(this.mis)
@@ -337,7 +337,7 @@ class MenuManager {
 
     let index = 0
     for (const key in this.itemOpts) {
-      const mi = new MenuItem({
+      const mi = new AlertBubble({
         title: key,
         icon: this.itemOpts[key].path,
         click: this.itemOpts[key].click,
@@ -356,7 +356,7 @@ class MenuManager {
     this.ele.appendChild(this.ais)
     this.ais.style.position = 'absolute'
 
-    this.alertBubble = new MenuItem({
+    this.alertBubble = new AlertBubble({
       title: 'information',
       icon: 'images/alerts/information.png',
       offset: -15
@@ -420,7 +420,7 @@ class MenuManager {
     }
   }
 
-  _toggleRadialMenuItems (show) {
+  _toggleRadialAlertBubbles (show) {
     this.items.forEach(mi => {
       if (NNW.layout === 'dock-left') {
         mi.toggle(show, this.radius, 0.5, Math.PI * 1.6)

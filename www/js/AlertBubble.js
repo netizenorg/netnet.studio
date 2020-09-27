@@ -14,7 +14,7 @@
      usage
   -----------
 
-  const mi = new MenuItem({
+  const mi = new AlertBubble({
     title: 'name',            // name of item, appears on hover
     icon: 'path/to/icon.png', // path to menu item icon
     click: () => {},          // function to call when clicked
@@ -36,7 +36,7 @@
   mi.click() // to call it's click funciton
 
 */
-class MenuItem {
+class AlertBubble {
   constructor (opts) {
     this._title = opts.title || ''
     this._icon = opts.icon || ''
@@ -171,4 +171,4 @@ class MenuItem {
   }
 }
 
-window.MenuItem = MenuItem
+window.AlertBubble = AlertBubble
