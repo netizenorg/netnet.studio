@@ -1,4 +1,4 @@
-/* global Widget, NNT, NNE, STORE */
+/* global Widget, NNT, STORE */
 /*
   -----------
      info
