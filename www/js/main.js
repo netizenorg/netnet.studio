@@ -23,9 +23,10 @@ window.NNM = new MenuManager()
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 NNE.on('lint-error', (e) => {
   // if (e.length > 0) {
-  //   catchError = JSON.stringify({ rule: e[0].rule, message: e[0].message })
-  //   console.log(catchError);
+  //   console.log(NNE._err2str(e[0]));
+  //   console.log(NNE._err2str(e[0], true));
   // }
+  if (STORE._layingout) return // avoid throwing errors during a layout change
   const errz = NetitorErrorHandler.parse(e)
   if (errz) STORE.dispatch('SHOW_ERROR_ALERT', errz)
   else if (!errz && STORE.is('SHOWING_ERROR')) STORE.dispatch('CLEAR_ERROR')

@@ -1,4 +1,4 @@
-/* global STORE, NNE */
+/* global STORE, NNE, Convo */
 class NetitorErrorHandler {
   // NOTE: if we decide to create higher-level error logic, for example
   // infering a higher level error based on a particular set of errors
@@ -6,26 +6,28 @@ class NetitorErrorHandler {
   // then we'll need tow work that logic into this handler
 
   static ignore (err) {
-    function confirmed () {
+    function confirm (e, err, specific) {
+      const time = STORE.getTransitionTime()
+      console.log(err, specific);
+      NNE.addErrorException(err, specific)
       const errExcStr = JSON.stringify(NNE._errExceptions)
       window.localStorage.setItem('error-exceptions', errExcStr)
-      STORE.dispatch('SHOW_EDU_TEXT', {
-        content: 'Ok, that\'s the last time I\'ll <i>bug</i> you about it. If you change your mind later you can always run <code>resetErrors()</code> in the Functions Menu.',
-        options: { cool: () => STORE.dispatch('CLEAR_ERROR') }
-      })
+      STORE.dispatch('CLEAR_ERROR')
+      setTimeout(() => e.goTo('confirm'), time)
     }
-    STORE.dispatch('SHOW_EDU_TEXT', {
-      content: 'Are you sure you want me to ignore this type of error from now on?',
+    window.convo = new Convo([{
+      id: 'ignore',
+      content: 'Are you sure you want me to ignore this type of error from now on? If so, would you like me to ignore this <i>specific</i> error, or all similar errors as well?',
       options: {
-        Yes: () => {
-          const time = STORE.getTransitionTime()
-          NNE.addErrorException(err)
-          STORE.dispatch('CLEAR_ERROR')
-          setTimeout(() => confirmed(), time)
-        },
-        No: () => STORE.dispatch('HIDE_EDU_TEXT')
+        'Yes, but only this specific error': (e) => confirm(e, err, true),
+        'Yes, ignore all errors of this type': (e) => confirm(e, err),
+        'No, never mind': (e) => e.hide()
       }
-    })
+    }, {
+      id: 'confirm',
+      content: 'Ok, that\'s the last time I\'ll <i>bug</i> you about it. If you change your mind later you can always run <code>resetErrors()</code> in the Functions Menu.',
+      options: { thanks: (e) => e.hide() }
+    }])
   }
 
   static createErrorOpts (i, arr) {
@@ -71,7 +73,7 @@ class NetitorErrorHandler {
 
     if (eve.length > 0) {
       // check for errors caused by a-frame custom elements......
-      const ce = eve.filter(e => e.rule.id === 'standard-elements')
+      const ce = eve.filter(e => e.rule && e.rule.id === 'standard-elements')
       if (ce.length > 0 && !window.utils._libs.includes('aframe')) {
         const lib = window.utils.checkForLibs('aframe', eve[0])
         if (lib) return
