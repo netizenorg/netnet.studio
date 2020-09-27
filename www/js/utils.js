@@ -67,6 +67,30 @@ window.utils = {
     NNE.addCustomRoot(null)
   },
 
+  getUserData: () => {
+    const ls = window.localStorage
+    const ee = JSON.parse(ls.getItem('error-exceptions')).map(e => JSON.parse(e))
+    return {
+      username: ls.getItem('username'),
+      starredWidgets: ls.getItem('stared-widgets'),
+      editor: {
+        code: ls.getItem('code'),
+        layout: ls.getItem('layout'),
+        theme: ls.getItem('theme'),
+        errorExceptions: ee
+      },
+      github: {
+        owner: ls.getItem('owner'),
+        savedProjects: ls.getItem('saved-projects'),
+        openedProject: ls.getItem('opened-preoject'),
+        projectURL: ls.getItem('project-url'),
+        indexSha: ls.getItem('index-sha'),
+        lastCommitMsg: ls.getItem('last-commit-msg'),
+        lastCommitCode: ls.getItem('last-commit-code')
+      }
+    }
+  },
+
   setProjectData: (data) => {
     const ls = window.localStorage
     if (data.name) ls.setItem('opened-project', data.name)
