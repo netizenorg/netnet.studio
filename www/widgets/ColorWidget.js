@@ -116,6 +116,18 @@ class ColorWidget extends Widget {
         div.clr-row1 {
           display: flex;
           justify-content: space-between;
+          width: 670px;
+        }
+
+        div.clr-row1 div {
+          display: block;
+          flex: 0 0 60%;
+        }
+
+        div.clr-row1 div#clr-wig-sliders {
+          display: block;
+          flex: 0 0 40%;
+          max-width: 255px;
         }
 
         #clr-wig-sample {
@@ -124,10 +136,6 @@ class ColorWidget extends Widget {
           border-radius: 50%;
           margin: 50px 100px 50px 50px;
           background: var(--clr-wig-composite);
-        }
-
-        #clr-wig-sliders {
-          width: 255px;
         }
 
         #clr-wig-sliders > span {
