@@ -50,6 +50,7 @@ window.greetings = {
 
   loader: () => {
     const self = window.greetings
+    window.utils.runFaviconUpdate()
     window.utils.loadConvoData('welcome-screen', () => {
       self.convos = window.convos['welcome-screen'](self)
       STORE.subscribe('tutorials', (tuts) => {
@@ -141,6 +142,7 @@ window.greetings = {
               self.enterStudio()
               window.localStorage.setItem('beta-pw-auth', 'true')
             } else {
+              e.target.value = ''
               window.alert('woops wrong password! If you want to be a beta tester send us an email hi@netizen.org')
             }
           }

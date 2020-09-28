@@ -204,6 +204,13 @@ window.utils = {
 
   // ~ ~ ~ misc && main.js helpers
 
+  runFaviconUpdate: () => {
+    const favi = document.querySelector('link[rel="icon"]')
+    favi.setAttribute('href', 'images/eye-close.png')
+    setTimeout(() => favi.setAttribute('href', 'images/eye.png'), 250)
+    setTimeout(() => window.utils.runFaviconUpdate(), 2 * 60 * 1000)
+  },
+
   windowResize: () => {
     window.NNW._resizeWindow({
       clientX: window.NNW.win.offsetWidth,
