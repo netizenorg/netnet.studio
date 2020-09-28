@@ -260,7 +260,9 @@ class MenuFunctions extends Widget {
   }
 
   changeLayout () {
-    STORE.dispatch('CHANGE_LAYOUT', this.layoutsSel.value)
+    if (this.layoutsSel.value.length > 0) {
+      STORE.dispatch('CHANGE_LAYOUT', this.layoutsSel.value)
+    }
   }
 
   changeTheme () {

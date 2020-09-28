@@ -229,10 +229,11 @@ class SearchBar {
           word: `${s.click}()`,
           alts: s.alts,
           clck: () => {
-            WIDGETS['functions-menu'].open()
-            const id = `func-menu-${sub.replace(/ /g, '-')}`
-            WIDGETS['functions-menu'].toggleSubMenu(id)
-            WIDGETS['functions-menu'][s.click]()
+            if (s.select) {
+              WIDGETS['functions-menu'].open()
+              const id = `func-menu-${sub.replace(/ /g, '-')}`
+              WIDGETS['functions-menu'].toggleSubMenu(id)
+            } else WIDGETS['functions-menu'][s.click]()
           }
         })
       })
