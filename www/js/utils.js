@@ -195,11 +195,10 @@ window.utils = {
   },
 
   closeTopMostWidget: () => {
-    const arr = []
-    const W = WIDGETS
-    for (const w in W) if (W[w].opened) arr.push(W[w])
-    arr.sort((a, b) => parseFloat(b.z) - parseFloat(a.z))
-    if (arr[0]) arr[0].close()
+    const wigs = Object.keys(WIDGETS)
+      .filter(w => WIDGETS[w].opened)
+      .sort((a, b) => Number(WIDGETS[b].zIndex) - Number(WIDGETS[a].zIndex))
+    if (wigs[0]) WIDGETS[wigs[0]].close()
   },
 
   // ~ ~ ~ misc && main.js helpers
