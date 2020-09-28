@@ -27,8 +27,8 @@ window.greetings.widgets = {
   'ws-credits': new Widget({
     listed: false,
     width: 630,
-    title: 'netnet.studio',
-    innerHTML: '<p>netnet is a netizen.org project being designed and devloped by Nick Briz and Sarah Rooney with creative support from Jon Satrom and administrative support form Mike Constantino.</p><p>netizen.org is a collective of new media artists and activists on a mission to reestablish human agency in the information age through community and digital programming. Geolocated in Chicago, Illinois—at the intersection of digital literacy and net art—netizen.org transforms users into netizens, which are critically engaged citizens of the net.</p><p style="text-align: center"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/netizen.png" alt="netizen.org"></p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a> and the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a>.</p><p style="display:flex; justify-content:space-around; align-items:center;"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/cosa-bw.png" alt="the Clinic for Open Source Arts"><img style="display:inline-block;width:273px;" src="convos/welcome-screen/files/saic-cp.png" alt="the Contemporary Practices Department at the School of the Art Institute of Chicago"></p>'
+    title: 'netnet.studio credits',
+    innerHTML: '<br><p style="text-align: center"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/netizen.png" alt="netizen.org"></p><br><p>netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and devloped by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with creative support from <a href="http://jonsatrom.com/" target="_blank">Jon Satrom</a> and administrative support form <a href="#", target="_blank">Mike Constantino</a>. Our interdisciplinary intern is <a href="#" target="_blank">Ilai Gilbert</a>.</p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a> and the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a>.</p><br><p style="display:flex; justify-content:space-around; align-items:center;"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/cosa-bw.png" alt="the Clinic for Open Source Arts"><img style="display:inline-block;width:273px;" src="convos/welcome-screen/files/saic-cp.png" alt="the Contemporary Practices Department at the School of the Art Institute of Chicago"></p>'
   }),
   'report-a-bug': new Widget({
     listed: false,
@@ -551,20 +551,18 @@ window.convos['welcome-screen'] = (self) => {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
       }
     },
-    content: 'Is this layout ok? Want me to change the theme or anything?',
+    content: `Great, here's a blank canvas. If you want me to remember what you've sketched use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut. Click my face if you need anything else.`,
     options: {
-      'this is fine': (e) => e.goTo('this-is-fine'),
-      'that would be nice': (e) => e.goTo('layout-help')
+      ok: (e) => e.hide(),
+      'remember my sketch?': (e) => e.goTo('explain-ctrl-s')
     }
   }, {
-    id: 'this-is-fine',
-    before: () => { window._lastConvo = 'this-is-fine' },
-    content: `Great, just click my face if you need anything. If at any point you want me to save your progress locally use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut`,
-    options: { ok: (e) => e.hide() }
+    id: 'explain-ctrl-s',
+    content: `When you use the <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+S</b> shortcut I'll save your progress "locally" in your ${Averigua.browserInfo().name} browser. This way when you leave and come back to the studio later on, we can keep working on your code where you last left off.`,
+    options: { 'oh, thanks!': (e) => e.goTo('thanks-for-saving') }
   }, {
-    id: 'layout-help',
-    before: () => { window._lastConvo = 'layout-help' },
-    content: 'You can change all of my editor settings in my "Functions" menu, just click my face to launch the menu options.',
+    id: 'thanks-for-saving',
+    content: `No problem ${ls.getItem('username') || ''}, just click on my face when you need anything else!`,
     options: { ok: (e) => e.hide() }
   }]
 
