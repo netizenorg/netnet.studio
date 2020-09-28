@@ -29,6 +29,21 @@ window.greetings.widgets = {
     width: 630,
     title: 'netnet.studio',
     innerHTML: '<p>netnet is a netizen.org project being designed and devloped by Nick Briz and Sarah Rooney with creative support from Jon Satrom and administrative support form Mike Constantino.</p><p>netizen.org is a collective of new media artists and activists on a mission to reestablish human agency in the information age through community and digital programming. Geolocated in Chicago, Illinois—at the intersection of digital literacy and net art—netizen.org transforms users into netizens, which are critically engaged citizens of the net.</p><p style="text-align: center"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/netizen.png" alt="netizen.org"></p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a> and the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a>.</p><p style="display:flex; justify-content:space-around; align-items:center;"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/cosa-bw.png" alt="the Clinic for Open Source Arts"><img style="display:inline-block;width:273px;" src="convos/welcome-screen/files/saic-cp.png" alt="the Contemporary Practices Department at the School of the Art Institute of Chicago"></p>'
+  }),
+  'report-a-bug': new Widget({
+    listed: false,
+    width: window.innerWidth * 0.5,
+    title: 'Bug Report',
+    innerHTML: `<p style="display:none;"><b>data</b></p>
+    <textarea id="bug-report-data" rows="6" style="width: 100%; color: var(--netizen-meta); border: 2px solid var(--netizen-meta); padding: 20px; background: #fff0; border-radius: 5px; font-size: 18px;"></textarea>
+    <p style="display:none;"><b>metadata</b></p>
+    <textarea id="bug-report-meta-data" rows="5" style="display:none; width: 100%; color: var(--netizen-meta); border: 2px solid var(--netizen-meta); padding: 20px; background: #fff0; border-radius: 5px; font-size: 18px;"></textarea>`
+  }),
+  'report-feedback': new Widget({
+    listed: false,
+    width: window.innerWidth * 0.5,
+    title: 'Comment Box',
+    innerHTML: '<textarea id="feedback-report-data" placeholder="please share any and all feedback, ideas, suggestions, critique, etc" rows="6" style="width: 100%; color: var(--netizen-meta); border: 2px solid var(--netizen-meta); padding: 20px; background: #fff0; border-radius: 5px; font-size: 18px;"></textarea>'
   })
 }
 
@@ -37,7 +52,117 @@ STORE.dispatch('LOAD_WIDGETS', window.greetings.widgets)
 window.convos['welcome-screen'] = (self) => {
   // TODO: link keywords to "wikipedia" widgets (i-frame browser widget)
   const betaMessage = '◕ ◞ ◕ oops! that tutorial isn\'t ready yet! netnet.stuio is still in <beta>, get in touch if you want to help $upport us: hi@netizen.org'
+
   const ls = window.localStorage
+
+  const iWantToSektch = (e) => {
+    const prevCode = window.utils.savedCode()
+    const owner = window.localStorage.getItem('owner')
+    const opened = window.localStorage.getItem('opened-project')
+    if (owner && opened) {
+      e.goTo('open-project')
+    } else if (owner && prevCode) {
+      e.goTo('local-or-open-project')
+    } else if (prevCode) {
+      e.goTo('work-on-saved-code')
+    } else {
+      e.goTo('blank-canvas-layout')
+    }
+  }
+
+  /*  (((
+      (((MISC shared content objects)))
+      (((
+  */
+  const miscInfo = [{
+    id: 'main-menu-init',
+    before: () => {
+      if (WIDGETS['ws-credits'].opened) {
+        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+      }
+    },
+    content: 'What do you want to do?',
+    options: {
+      'i want to learn': (e) => {
+        window.greetings.injectStarterCode()
+        e.goTo('start-learning')
+      },
+      'i want to sketch': (e) => iWantToSektch(e),
+      'what\'s netnet?': (e) => {
+        if (STORE.state.layout !== 'welcome') {
+          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        }
+        e.goTo('whois')
+      }
+    }
+  }, {
+    id: 'main-menu', // same as above but one extra option
+    before: () => {
+      if (WIDGETS['ws-credits'].opened) {
+        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+      }
+    },
+    content: 'What do you want to do?',
+    options: {
+      'i want to learn': (e) => {
+        window.greetings.injectStarterCode()
+        e.goTo('start-learning')
+      },
+      'i want to sketch': (e) => iWantToSektch(e),
+      'what\'s netnet?': (e) => {
+        if (STORE.state.layout !== 'welcome') {
+          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        }
+        e.goTo('whois')
+      },
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'wrong-user',
+    content: `It's not? woops! I can't actually <i>see you</i>, just your computer. It seems someone named ${ls.getItem('username')} was on this computer before you.`,
+    options: {
+      'I see, let\'s reboot then!': (e) => WIDGETS['functions-menu'].reboot()
+    },
+    after: () => { NNM.setFace('Ó', '﹏', 'Ò', false) }
+  }, {
+    id: 'we-have-met',
+    content: 'Really? Hmmm, you may have recently cleared your browser data and by doing so have also deleted my memory. No big deal, we can reintroduce ourselves.',
+    options: {
+      ok: (e) => self.goTo('get-started-first-time'),
+      'no thanks': (e) => {
+        const codeInUrl = NNE.hasCodeInHash && window.utils.url.shortCode
+        if (codeInUrl) e.goTo('ok-no-intro')
+        else e.hide() // assuming got here viea tutorial param
+      }
+    }
+  }, {
+    id: 'we-have-not-met',
+    content: 'I didn\'t think so. Shall we introduce ourselves before you dive into stuff?',
+    options: {
+      ok: (e) => self.goTo('get-started-first-time'),
+      'no thanks': (e) => {
+        const codeInUrl = NNE.hasCodeInHash && window.utils.url.shortCode
+        if (codeInUrl) e.goTo('ok-no-intro')
+        else e.hide() // assuming got here viea tutorial param
+      }
+    }
+  }, {
+    id: 'ok-no-intro',
+    before: () => {
+      if (STORE.state.layout === 'welcome') {
+        STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+      }
+    },
+    content: 'Ok, feel free to experiment with the code. Click my face if you need anything.',
+    options: { ok: (e) => e.hide() }
+  }, {
+    id: 'explain-url-code',
+    content: 'The URL in your browser\'s address bar contains some URL parameters including some code to preload into the editor, isn\'t that what you want?',
+    options: {
+      'oh yea! thanks!': (e) => e.hide(),
+      'nope, lets\'s start over': (e) => e.goTo('main-menu')
+    }
+  }]
 
   /*  (((
       (((ABOUT netnet content objects)))
@@ -421,9 +546,9 @@ window.convos['welcome-screen'] = (self) => {
     id: 'blank-canvas-layout',
     before: () => {
       WIDGETS['functions-menu']._newProject()
+      window.utils.netitorUpdate()
       if (STORE.state.layout === 'welcome') {
         STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
-        window.utils.netitorUpdate()
       }
     },
     content: 'Is this layout ok? Want me to change the theme or anything?',
@@ -447,85 +572,138 @@ window.convos['welcome-screen'] = (self) => {
       (((MISC shared content objects)))
       (((
   */
-  const miscInfo = [{
-    id: 'main-menu',
+  const bugReport = [{
+    id: 'report-a-issue',
     before: () => {
-      if (WIDGETS['ws-credits'].opened) {
-        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
-      }
+      setTimeout(() => {
+        NNM.setFace('ŏ', '.', 'ŏ', false)
+      }, STORE.getTransitionTime() + 100)
+      window._bugReportMetaData = window.utils.bugMetaData()
     },
-    content: 'What do you want to do?',
+    content: `Oh no! What went wrong ${ls.getItem('username')}?`,
     options: {
-      'i want to learn': (e) => {
-        window.greetings.injectStarterCode()
-        e.goTo('start-learning')
+      'I think I found a bug': (e) => e.goTo('bug-found'),
+      'nothing, I just have some feedback': (e) => e.goTo('some-feedback'),
+      'that\'s not my name': (e) => e.goTo('wrong-user')
+    }
+  }, {
+    id: 'bug-found',
+    before: () => WIDGETS['report-a-bug'].open(),
+    content: 'Ok, try to describe as best as you can what the bug is and how it occurred. Let me know when you\'re finished.',
+    options: {
+      ok: (e) => {
+        WIDGETS['report-a-bug'].close()
+        e.goTo('ready-to-submit')
       },
-      'i want to sketch': (e) => {
-        const prevCode = window.utils.savedCode()
-        const owner = window.localStorage.getItem('owner')
-        const opened = window.localStorage.getItem('opened-project')
-        if (owner && opened) {
-          e.goTo('open-project')
-        } else if (owner && prevCode) {
-          e.goTo('local-or-open-project')
-        } else if (prevCode) {
-          e.goTo('work-on-saved-code')
-        } else {
-          e.goTo('blank-canvas-layout')
-        }
-      },
-      'what\'s netnet?': (e) => {
-        if (STORE.state.layout !== 'welcome') {
-          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
-        }
-        e.goTo('whois')
+      'never mind': (e) => {
+        WIDGETS['report-a-bug'].close()
+        e.hide()
       }
     }
   }, {
-    id: 'wrong-user',
-    content: `It's not? woops! I can't actually <i>see you</i>, just your computer. It seems someone named ${ls.getItem('username')} was on this computer before you.`,
+    id: 'ready-to-submit',
+    content: 'Ok thanks! Because my creators at <a href="http://netizen.org" target="_blank">netizen.org</a> are so stringent about privacy, they\'re not recording any of your data on their servers, which is great for your privacy, but makes it difficult for them to debug. Would you mind if I sent them a bit of metadata to help them out?',
     options: {
-      'I see, let\'s reboot then!': (e) => WIDGETS['functions-menu'].reboot()
-    },
-    after: () => { NNM.setFace('Ó', '﹏', 'Ò', false) }
-  }, {
-    id: 'we-have-met',
-    content: 'Really? Hmmm, you may have recently cleared your browser data and by doing so have also deleted my memory. No big deal, we can reintroduce ourselves.',
-    options: {
-      ok: (e) => self.goTo('get-started-first-time'),
-      'no thanks': (e) => {
-        const codeInUrl = NNE.hasCodeInHash && window.utils.url.shortCode
-        if (codeInUrl) e.goTo('ok-no-intro')
-        else e.hide() // assuming got here viea tutorial param
-      }
+      'ok, send it with metadata': (e) => e.goTo('send-bug-report'),
+      'ok, send it without metadata': (e) => e.goTo('bug-no-metadata'),
+      'wait, what kind of metadata?': (e) => e.goTo('bug-metadata')
     }
   }, {
-    id: 'we-have-not-met',
-    content: 'I didn\'t think so. Shall we introduce ourselves before you dive into stuff?',
+    id: 'bug-metadata',
+    content: 'Pretty standard stuff which most websites record (but rarely ask for permission). Specifically, I want to send them your studio setup (browser info, editor settings, etc) as well as the last set of actions you took before the bug occurred, would you like to see the raw data I\'m talking about?',
     options: {
-      ok: (e) => self.goTo('get-started-first-time'),
-      'no thanks': (e) => {
-        const codeInUrl = NNE.hasCodeInHash && window.utils.url.shortCode
-        if (codeInUrl) e.goTo('ok-no-intro')
-        else e.hide() // assuming got here viea tutorial param
-      }
+      'yes please': (e) => e.goTo('display-bug-meta-data'),
+      'no thanks': (e) => e.goTo('not-interested-in-meta-data')
     }
   }, {
-    id: 'ok-no-intro',
+    id: 'display-bug-meta-data',
     before: () => {
-      if (STORE.state.layout === 'welcome') {
-        STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
-      }
+      const metadata = window._bugReportMetaData
+      const metaField = document.querySelector('#bug-report-meta-data')
+      metaField.textContent = JSON.stringify(metadata, null, 2)
+      WIDGETS['report-a-bug'].open()
+      WIDGETS['report-a-bug'].$('p').forEach(p => { p.style.display = 'block' })
+      WIDGETS['report-a-bug'].$('#bug-report-meta-data').style.display = 'block'
     },
-    content: 'Ok, feel free to experiment with the code. Click my face if you need anything.',
-    options: { ok: (e) => e.hide() }
-  }, {
-    id: 'explain-url-code',
-    content: 'The URL in your browser\'s address bar contains some URL parameters including some code to preload into the editor, isn\'t that what you want?',
+    content: 'Great, I\'m glad you\'re curious! I\'ve included it in the bug report so you can see. Are you comfortable with me including this metadata in your bug report?',
     options: {
-      'oh yea! thanks!': (e) => e.hide(),
-      'nope, lets\'s start over': (e) => e.goTo('main-menu')
+      'sure, it seems helpful': (e) => {
+        WIDGETS['report-a-bug'].close()
+        e.goTo('send-bug-report')
+      },
+      'no, report it without metadata': (e) => {
+        WIDGETS['report-a-bug'].close()
+        e.goTo('bug-no-metadata')
+      }
     }
+  }, {
+    id: 'not-interested-in-meta-data',
+    content: 'No problem, it\'s pretty boring stuff anyways. I\'ll send them your bug report now, can I include the metadata?',
+    options: {
+      'ok, send it with metadata': (e) => e.goTo('send-bug-report'),
+      'ok, send it without metadata': (e) => e.goTo('bug-no-metadata'),
+      'wait, what kind of metadata?': (e) => e.goTo('bug-metadata')
+    }
+  }, {
+    id: 'bug-no-metadata',
+    content: 'Without metadata it will be trickier for the artists at <a href="http://netizen.org" target="_blank">netizen.org</a> to fix this bug, but they\'re pretty talented... so I\'m sure they\'ll figure it out... eventually. Should I send them your bug report (without metadata) now?',
+    options: {
+      yes: (e) => e.goTo('send-bug-report-no-meta'),
+      'on second thought...': (e) => e.goTo('ready-to-submit')
+    }
+  }, {
+    id: 'send-bug-report',
+    before: () => {
+      WIDGETS['report-a-bug'].close()
+      window.utils.post('./api/bug-report', {
+        report: document.querySelector('#bug-report-data').value,
+        metadata: window._bugReportMetaData
+      })
+    },
+    content: 'Thanks, it\'s very helpful! I sent a message to the server for them to take a look at. If this is a MAJOR issue, feel free to send them an email: hi@netizen.org',
+    options: { cool: (e) => e.hide() }
+  }, {
+    id: 'send-bug-report-no-meta',
+    before: () => {
+      WIDGETS['report-a-bug'].close()
+      window.utils.post('./api/bug-report', {
+        report: document.querySelector('#bug-report-data').value
+      })
+    },
+    content: 'Thanks! I sent a message to the server (without your metadata) for them to take a look at. If this is a MAJOR issue, feel free to send them an email: hi@netizen.org',
+    options: { cool: (e) => e.hide() }
+  }, {
+    id: 'some-feedback',
+    before: () => WIDGETS['report-feedback'].open(),
+    content: 'Fantastic! My creators at <a href="http://netizen.org" target="_blank">netizen.org</a> really value feedback. It would be great if you could also share a little about yourself, like your name, email and maybe a little about your background. Let me know when you\'re finished.',
+    options: {
+      'finished, send away!': (e) => e.goTo('send-feedback'),
+      'never mind': (e) => e.goTo('no-feedback')
+    }
+  }, {
+    id: 'no-feedback',
+    content: 'You sure? They really would love to hear from you...',
+    options: {
+      'ok, sure': (e) => e.goTo('some-feedback'),
+      'ok, but this is more of a bug': (e) => {
+        WIDGETS['report-feedback'].close()
+        e.goTo('bug-found')
+      },
+      'maybe later': (e) => {
+        WIDGETS['report-feedback'].close()
+        e.hide()
+      }
+    }
+  }, {
+    id: 'send-feedback',
+    before: (e) => {
+      WIDGETS['report-feedback'].close()
+      window.utils.post('./api/feedback-report', {
+        message: document.querySelector('#feedback-report-data').value
+      })
+    },
+    content: 'Thanks so much! I\'ve sent the message along to our server for them to take a look. If you\'d like to reach out to directly feel free to send an email to: hi@netizen.org',
+    options: { cool: (e) => e.hide() }
   }]
 
   // ..........................                 ..........................
@@ -537,7 +715,7 @@ window.convos['welcome-screen'] = (self) => {
     content: `Oh hi ${ls.getItem('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('main-menu'),
-      'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
+      'i want to report an issue': (e) => e.goTo('report-a-issue')
     }
   }, {
     id: 'url-param-tutorial-returning',
@@ -600,7 +778,7 @@ window.convos['welcome-screen'] = (self) => {
     id: 'get-started-returning',
     content: `Welcome back ${ls.getItem('username')}!`,
     options: {
-      'hi netnet!': (e) => e.goTo('main-menu'),
+      'hi netnet!': (e) => e.goTo('main-menu-init'),
       'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
     }
   }, {
@@ -655,7 +833,7 @@ window.convos['welcome-screen'] = (self) => {
       'hypermedia?': (e) => e.goTo('hypermedia'),
       'ok, cool!': (e) => {
         if (self.introducing) self.postIntro()
-        else e.goTo('main-menu')
+        else e.goTo('main-menu-init')
       }
     }
   }]
@@ -666,6 +844,7 @@ window.convos['welcome-screen'] = (self) => {
     ...madeUpName, // objects used in path when user opts out on sharing name
     ...backgroundInfo, // objects used for netnet's "about" info
     ...learnInfo, // objects used for 'main-menu' dialogue's learn option
-    ...makeInfo // objects used for 'main-menu' dialogue's make option
+    ...makeInfo, // objects used for 'main-menu' dialogue's make option
+    ...bugReport // objects for bug reporting convos
   ]
 }

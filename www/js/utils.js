@@ -1,4 +1,4 @@
-/* global NNE, STORE, Maths, WIDGETS, Convo */
+/* global NNE, STORE, Maths, WIDGETS, Convo, Averigua */
 window.convos = {}
 window.utils = {
 
@@ -23,7 +23,7 @@ window.utils = {
     opts.body = data ? JSON.stringify(data) : undefined
     window.fetch(url, opts)
       .then(res => res.json())
-      .then(res => cb(res))
+      .then(res => { if (cb) cb(res) })
       .catch(err => console.error(err))
   },
 
@@ -69,7 +69,9 @@ window.utils = {
 
   getUserData: () => {
     const ls = window.localStorage
-    const ee = JSON.parse(ls.getItem('error-exceptions')).map(e => JSON.parse(e))
+    const ee = ls.getItem('error-exceptions')
+      ? JSON.parse(ls.getItem('error-exceptions')).map(e => JSON.parse(e))
+      : null
     return {
       username: ls.getItem('username'),
       starredWidgets: ls.getItem('stared-widgets'),
@@ -102,6 +104,23 @@ window.utils = {
       const c = (data.code.indexOf('\n') === data.code.length - 1)
         ? data.code.substr(0, data.code.length - 1) : data.code
       ls.setItem('last-commit-code', c)
+    }
+  },
+
+  bugMetaData: () => {
+    const actions = STORE.history.actions.map(a => {
+      const d = { action: a.type }
+      if (a.data && !(a.data instanceof Array)) {
+        if (a.data.content) d.data = a.data.content
+        else d.data = a.data
+      }
+      return d
+    })
+    const user = window.utils.getUserData()
+    user.platform = Averigua.platformInfo()
+    return {
+      studioSetup: user,
+      userActions: actions.slice(actions.length - 50)
     }
   },
 
@@ -226,9 +245,10 @@ window.utils = {
   netitorUpdate: () => {
     // HACK: for some reason, sometimes the netitor doesn't reflect
     // the actual the current code in it's value, but reassigning it does
-    window.NNW._whenCSSTransitionFinished(() => {
-      NNE.code = NNE.cm.getValue()
-    })
+    setTimeout(() => { NNE.code = NNE.cm.getValue() }, 100)
+    // window.NNW._whenCSSTransitionFinished(() => {
+    //   NNE.code = NNE.cm.getValue()
+    // })
   },
 
   _libs: [],
@@ -301,10 +321,8 @@ window.utils = {
       NNE.addCustomElements(data.elements)
       NNE.addCustomAttributes(data.attributes)
       WIDGETS['aframe-component-widget'].listed = true
-      for (const attr in data.attributes) {
-        NNE.addErrorException(`{"rule":{"id":"attr-whitespace","description":"All attributes should be separated by only one space and not have leading/trailing whitespace.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-whitespace"},"message":"The attributes of [ ${attr} ] must be separated by only one space."}`)
-        NNE.addErrorException(`{"rule":{"id":"attr-value-not-empty","description":"All attributes must have values.","link":"https://github.com/thedaviddias/HTMLHint/wiki/attr-value-not-empty"},"message":"The attribute [ ${attr} ] must have a value."}`)
-      }
+      NNE.addErrorException(JSON.stringify({ rule: 'attr-whitespace' }))
+      NNE.addErrorException(JSON.stringify({ rule: 'attr-value-not-empty' }))
     })
     window.utils._libs.push('aframe')
   }

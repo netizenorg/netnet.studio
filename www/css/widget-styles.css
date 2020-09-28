@@ -288,13 +288,13 @@
   background: var(--bg-color);
 }
 
-#func-menu-content #func-menu-hi {
+#func-menu-content #func-menu-wig {
   position: relative;
   padding: 0 0 8px;
   cursor: pointer;
   transition: color var(--transition-time) ease;
 }
-#func-menu-content #func-menu-hi > span.icon {
+#func-menu-content #func-menu-wig > span.icon {
   position: absolute;
   display: block;
   top: 35%;
@@ -305,8 +305,8 @@
   background-color: var(--netizen-meta);
   transition: color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-#func-menu-content #func-menu-hi > span.icon:before,
-#func-menu-content #func-menu-hi > span.icon:after {
+#func-menu-content #func-menu-wig > span.icon:before,
+#func-menu-content #func-menu-wig > span.icon:after {
   content: '';
   position: absolute;
   display: block;
@@ -318,11 +318,11 @@
   border-radius: 20px;
   transition: color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-#func-menu-content #func-menu-hi > span.icon:before {
+#func-menu-content #func-menu-wig > span.icon:before {
   transform-origin: center;
   transform: translate(1px, -125%) scaleY(1) rotate(45deg);
 }
-#func-menu-content #func-menu-hi > span.icon:after {
+#func-menu-content #func-menu-wig > span.icon:after {
   transform-origin: center;
   transform: translate(1px, 45%) scaleY(1) rotate(-45deg);
 }
@@ -336,7 +336,7 @@
   padding-bottom: 0;
 }
 #func-menu-content .func-menu-dropdown:hover,
-#func-menu-content #func-menu-hi:hover {
+#func-menu-content #func-menu-wig:hover {
   color: var(--netizen-match-color);
 }
 #func-menu-content .func-menu-dropdown > span {
@@ -360,9 +360,9 @@
 }
 #func-menu-content .func-menu-dropdown:hover > span:before,
 #func-menu-content .func-menu-dropdown:hover > span:after,
-#func-menu-content #func-menu-hi:hover > span.icon,
-#func-menu-content #func-menu-hi:hover > span.icon:before,
-#func-menu-content #func-menu-hi:hover > span.icon:after {
+#func-menu-content #func-menu-wig:hover > span.icon,
+#func-menu-content #func-menu-wig:hover > span.icon:before,
+#func-menu-content #func-menu-wig:hover > span.icon:after {
   background-color: var(--netizen-match-color);
 }
 #func-menu-content .func-menu-dropdown > span:before {
@@ -380,7 +380,7 @@
   transform: translate(0, -50%) scaleY(-1) rotate(-45deg);
 }
 #func-menu-content .func-menu-dropdown span:focus,
-#func-menu-content #func-menu-hi:focus {
+#func-menu-content #func-menu-wig:focus {
   outline: 1px solid var(--netizen-meta);
   outline-offset: 0;
   box-shadow: none;

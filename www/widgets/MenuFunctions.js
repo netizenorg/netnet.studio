@@ -105,7 +105,7 @@ class MenuFunctions extends Widget {
           float: 'func-menu-opacity-input'
         }
       ],
-      'reset options': [
+      'reset studio': [
         {
           click: 'resetErrors',
           alts: ['reset', 'ignored', 'dismissed', 'errors']
@@ -117,6 +117,16 @@ class MenuFunctions extends Widget {
         {
           click: 'reboot',
           alts: ['restart', 'clear', 'start over']
+        }
+      ],
+      'report an issue': [
+        {
+          click: 'reportBug',
+          alts: ['bug', 'error', 'report', 'issue']
+        },
+        {
+          click: 'leaveFeedback',
+          alts: ['feedback', 'idea', 'report', 'issue']
         }
       ]
     }
@@ -283,6 +293,14 @@ class MenuFunctions extends Widget {
     window.convo = new Convo(this.convos['refresh-netnet'])
   }
 
+  reportBug () {
+    window.convo = new Convo(window.greetings.convos, 'bug-found')
+  }
+
+  leaveFeedback () {
+    window.convo = new Convo(window.greetings.convos, 'some-feedback')
+  }
+
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
     const subSecParent = this.$(`#${id}`)
@@ -306,23 +324,23 @@ class MenuFunctions extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _createContent (quote, author) {
+  _createContent () {
     this.innerHTML = `
       <div id="func-menu-content">
-        <div id="func-menu-hi" tabindex="0">
-          hi netnet!
+        <div id="func-menu-wig" tabindex="0">
+          widgets menu
           <span class="icon"></span>
         </div>
       </div>
     `
 
-    this.$('#func-menu-hi').addEventListener('click', () => {
-      this.startMenu()
-      this.$('#func-menu-hi').blur()
+    this.$('#func-menu-wig').addEventListener('click', () => {
+      WIDGETS['widgets-menu'].open()
+      this.$('#func-menu-wig').blur()
     })
-    this.$('#func-menu-hi').addEventListener('keypress', (e) => {
+    this.$('#func-menu-wig').addEventListener('keypress', (e) => {
       if (e.which === 13) {
-        this.startMenu()
+        WIDGETS['widgets-menu'].open()
       }
     })
 
