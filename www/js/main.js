@@ -77,13 +77,13 @@ window.addEventListener('keydown', (e) => {
     STORE.dispatch('CHANGE_OPACITY', 1)
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+    STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
+    window.NNM.search.open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
     // ...
   } else if (e.keyCode === 27) { // esc
