@@ -328,7 +328,7 @@ window.convos['welcome-screen'] = (self) => {
       const b = p.browser.name.toLowerCase().substr(0, 4)
       let content = `<i>${a}</i> because you're on a ${p.platform} device; <i>${b}</i> becuase you're using version ${p.browser.version} of the ${p.browser.name} browser;`
       if (window.greetings.city) {
-        const c = window.greetings.city.substr(0, 4)
+        const c = window.greetings.city.toLowerCase().substr(0, 4)
         content += ` <i>${c}</i> because you're currently located in the city of ${window.greetings.city};`
       }
       return content
