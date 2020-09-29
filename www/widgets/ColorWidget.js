@@ -116,6 +116,18 @@ class ColorWidget extends Widget {
         div.clr-row1 {
           display: flex;
           justify-content: space-between;
+          width: 670px;
+        }
+
+        div.clr-row1 div {
+          display: block;
+          flex: 0 0 60%;
+        }
+
+        div.clr-row1 div#clr-wig-sliders {
+          display: block;
+          flex: 0 0 40%;
+          max-width: 255px;
         }
 
         #clr-wig-sample {
@@ -124,10 +136,6 @@ class ColorWidget extends Widget {
           border-radius: 50%;
           margin: 50px 100px 50px 50px;
           background: var(--clr-wig-composite);
-        }
-
-        #clr-wig-sliders {
-          width: 255px;
         }
 
         #clr-wig-sliders > span {
@@ -232,9 +240,16 @@ class ColorWidget extends Widget {
           border-radius: 5px;
         }
 
+        .clr-wig-svg {
+          position: relative;
+          left: -15px;
+          width: 120px;
+          height: 120px;
+          display: block;
+          margin: 25px auto;
+        }
+
         .clr-wig-svg-text {
-          font-size: 150px;
-          font-family: sans-serif;
           fill: var(--clr-wig-composite);
           fill-opacity: 1;
           stroke: none;
@@ -243,9 +258,13 @@ class ColorWidget extends Widget {
       <div class="clr-row1">
         <!-- <div id="clr-wig-sample"></div> -->
         <div>
-          <svg xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(83.5,115)">
-              <text xml:space="preserve" class="clr-wig-svg-text">◕</text>
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve" class="clr-wig-svg">
+            <g>
+              <path class="clr-wig-svg-text" d="M100.28,0c27.93,0,51.49,9.79,70.7,29.35c19.2,19.57,28.81,43.63,28.81,72.18c0,18.79-5.81,36.85-17.44,54.19
+                c-8.93,13.39-20.84,24.01-35.74,31.84c-14.9,7.84-30.65,11.76-47.26,11.76c-26.99,0-50.3-9.86-69.92-29.59
+                C9.81,150.02,0,126.6,0,99.51c0-14.12,3.11-27.87,9.34-41.27s14.79-24.81,25.69-34.26C53.51,8,75.26,0,100.28,0z M100.28,12.93
+                c-24.29,0-44.87,8.38-61.74,25.15c-16.87,16.77-25.3,37.19-25.3,61.28l86.74,0.47L100.28,12.93z"/>
             </g>
           </svg>
           <div id="clr-wig-codes">
