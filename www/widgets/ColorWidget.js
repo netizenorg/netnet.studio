@@ -99,6 +99,74 @@ class ColorWidget extends Widget {
     this.$('#clr-wig-alpha-slider').value = this.alpha
   }
 
+
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•new color maths
+  // found these on stackoverflow!! i'll clean this up when i have time,
+  // but for now, these seem to be working pretty well
+  new_hsl2hex (h, s, l) {
+    h /= 360
+    s /= 100
+    l /= 100
+    
+    let r, g, b
+    
+    if (s === 0) {
+      r = g = b = l // achromatic
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1
+        if (t > 1) t -= 1
+        if (t < 1 / 6) return p + (q - p) * 6 * t
+        if (t < 1 / 2) return q
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+        return p
+      }
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+      const p = 2 * l - q
+      r = hue2rgb(p, q, h + 1 / 3)
+      g = hue2rgb(p, q, h)
+      b = hue2rgb(p, q, h - 1 / 3)
+    }
+
+    const toHex = x => {
+      const hex = Math.round(x * 255).toString(16)
+      return hex.length === 1 ? '0' + hex : hex
+    }
+
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  }
+
+  static hsl2rgb (h, s, l) {
+    h /= 360
+    s /= 100
+    l /= 100
+    const c = this._hsl2hsv(h, s, l)
+    return this._hsv2rgb(c.h, c.s, c.v)
+  }
+
+  // h has to be from [0,360] and s,v have to be from [0,1]
+  // outputs r,g,b from [0,1] so have to Math.ceil it
+  new_hsl2rgb (h,s,l) {
+    // "scale" h and l from btwn 1 and 100 to values btwn 0 and 1
+    const scale = (num, in_min, in_max, out_min, out_max) => {
+      return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    }
+    s = Math.round(scale(s, 0, 100, 0, 1) * 10) / 10
+    l = Math.round(scale(l, 0, 100, 0, 1) * 10) / 10
+
+    let a = s * Math.min(l, 1-l)
+    let f = (n, k = (n + h/30) % 12) => l - a * Math.max(Math.min(k-3, 9-k, 1), -1)
+    
+    return {
+      r: Math.ceil(f(0)*255),
+      g: Math.ceil(f(8)*255),
+      b: Math.ceil(f(4)*255)
+    }
+  }
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.sry 4 tha mess
+
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
@@ -392,11 +460,11 @@ class ColorWidget extends Widget {
     document.documentElement.style.setProperty('--clr-wig-composite', c)
 
     const hex = (arr && arr[0] === 'hex')
-      ? arr[1] : Color.hsl2hex(this.hue, this.sat, this.val)
+      ? arr[1] : this.new_hsl2hex(this.hue, this.sat, this.val)
     const hexA = Color.alpha2hex(this.alpha)
     const rgb = (arr && arr[0] === 'rgb')
       ? { r: arr[2], g: arr[3], b: arr[4] }
-      : Color.hsl2rgb(this.hue, this.sat, this.val)
+      : this.new_hsl2rgb(this.hue, this.sat, this.val)
 
     this.$('#clr-wig-hsl-input').value = c
     this.$('#clr-wig-hex-input').value = this.alpha < 1 ? hex + hexA : hex
