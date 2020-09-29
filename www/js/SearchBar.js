@@ -135,7 +135,6 @@ class SearchBar {
     const term = e.target.value
     let results = this.fuse.search(term)
     results = results.filter(o => o.score < 0.5)
-    console.log(results)
     const div = this.ele.querySelector('#search-results')
     div.innerHTML = ''
     results.forEach(res => {
@@ -233,6 +232,7 @@ class SearchBar {
             WIDGETS['functions-menu'].open()
             const id = `func-menu-${sub.replace(/ /g, '-')}`
             WIDGETS['functions-menu'].toggleSubMenu(id)
+            WIDGETS['functions-menu'][s.click]()
           }
         })
       })

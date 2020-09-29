@@ -136,6 +136,28 @@ router.post('/api/expand-url', (req, res) => {
   }
 })
 
+router.post('/api/bug-report', (req, res) => {
+  const time = Date.now()
+  const dir = path.join(__dirname, '../data/bug-reports')
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir)
+  const file = `${dir}/${time}.json`
+  fs.writeFile(file, JSON.stringify(req.body, null, 2), (err) => {
+    if (err) res.json({ success: false, error: err })
+    else res.json({ success: true })
+  })
+})
+
+router.post('/api/feedback-report', (req, res) => {
+  const time = Date.now()
+  const dir = path.join(__dirname, '../data/feedback-reports')
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir)
+  const file = `${dir}/${time}.json`
+  fs.writeFile(file, JSON.stringify(req.body, null, 2), (err) => {
+    if (err) res.json({ success: false, error: err })
+    else res.json({ success: true })
+  })
+})
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   GITHUB

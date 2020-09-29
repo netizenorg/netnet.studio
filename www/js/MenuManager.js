@@ -62,12 +62,11 @@ class MenuManager {
 
     this._opened = false
     this.itemOpts = {
-      search: {
-        path: 'images/menu/search.png',
+      hi: {
+        path: 'images/menu/hi.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          if (this.search.opened) this.search.close()
-          else this.search.open()
+          window.greetings.startMenu()
         }
       },
       functions: {
@@ -77,11 +76,19 @@ class MenuManager {
           STORE.dispatch('OPEN_WIDGET', 'functions-menu')
         }
       },
-      widgets: {
-        path: 'images/menu/widget.png',
+      // widgets: {
+      //   path: 'images/menu/widget.png',
+      //   click: () => {
+      //     STORE.dispatch('TOGGLE_MENU')
+      //     STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
+      //   }
+      // },
+      search: {
+        path: 'images/menu/search.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
+          if (this.search.opened) this.search.close()
+          else this.search.open()
         }
       },
       tutorials: {
@@ -106,7 +113,9 @@ class MenuManager {
 
     this.ele.querySelector('#face').addEventListener('click', () => {
       if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
-      else if (!STORE.is('TUTORIAL_LOADED')) window.greetings.welcome()
+      else if (STORE.is('TUTORIAL_LOADED')) {
+        STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+      } else if (!STORE.is('TUTORIAL_LOADED')) window.greetings.welcome()
     })
   }
 

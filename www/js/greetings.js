@@ -1,4 +1,4 @@
-/* global Convo, Averigua, STORE, NNE, NNT, WIDGETS */
+/* global Convo, Averigua, STORE, NNE, NNT, NNM, WIDGETS */
 window.greetings = {
   convos: null,
   city: null,
@@ -38,6 +38,9 @@ window.greetings = {
   },
 
   startMenu: () => {
+    setTimeout(() => {
+      NNM.setFace('◠', '◡', '◠', false)
+    }, STORE.getTransitionTime() + 100)
     window.convo = new Convo(window.greetings.convos, 'default-greeting')
   },
 
@@ -47,6 +50,7 @@ window.greetings = {
 
   loader: () => {
     const self = window.greetings
+    window.utils.runFaviconUpdate()
     window.utils.loadConvoData('welcome-screen', () => {
       self.convos = window.convos['welcome-screen'](self)
       STORE.subscribe('tutorials', (tuts) => {
@@ -138,6 +142,7 @@ window.greetings = {
               self.enterStudio()
               window.localStorage.setItem('beta-pw-auth', 'true')
             } else {
+              e.target.value = ''
               window.alert('woops wrong password! If you want to be a beta tester send us an email hi@netizen.org')
             }
           }
@@ -153,7 +158,7 @@ window.greetings = {
     document.querySelector('#loader').style.opacity = '0'
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
-      const delay = window.localStorage.getItem('username') ? 500 : 5000
+      const delay = window.localStorage.getItem('username') ? 100 : 5000
       setTimeout(() => {
         if (!STORE.is('SHOWING')) self.welcome()
       }, delay)

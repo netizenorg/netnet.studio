@@ -9,8 +9,11 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="svg5"
-   sodipodi:docname="eye.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+   sodipodi:docname="blink.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:export-filename="/home/nbriz/PROJECTS/NETIZEN/PROJECTS/NETNET/REPOS/netnet.studio/www/images/blink.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <metadata
      id="metadata11">
     <rdf:RDF>
@@ -19,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -39,12 +42,25 @@
      id="namedview7"
      showgrid="false"
      inkscape:zoom="2.36"
-     inkscape:cx="50.089973"
+     inkscape:cx="-23.850705"
      inkscape:cy="50.10182"
      inkscape:window-x="3316"
      inkscape:window-y="562"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="49.576271,117.79661"
+       orientation="1,0"
+       id="guide839"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="129.66102,50"
+       orientation="0,1"
+       id="guide841"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
@@ -52,14 +68,13 @@
      transform="translate(0,-223)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:128.33076477px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#c76ebc;fill-opacity:1;stroke:none;stroke-width:3.20826888;"
-       x="-6.1809015"
-       y="306.21768"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:128.33067322px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#c76ebc;fill-opacity:1;stroke:none;stroke-width:3.20826888"
+       x="27.293676"
+       y="308.33633"
        id="text817"><tspan
          sodipodi:role="line"
-         id="tspan815"
-         x="-6.1809015"
-         y="306.21768"
-         style="stroke-width:3.20826888;fill:#c76ebc;fill-opacity:1;">◕</tspan></text>
+         id="tspan818"
+         x="27.293676"
+         y="308.33633">-</tspan></text>
   </g>
 </svg>
