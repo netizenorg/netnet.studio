@@ -67,7 +67,8 @@ router.get('/api/tutorials', (req, res) => {
 })
 
 router.get('/api/user-geo', (req, res) => {
-  exec(`curl http://ip-api.com/json/${req.ip}`, (err, stdout) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  exec(`curl http://ip-api.com/json/${ip}`, (err, stdout) => {
     if (err) res.json({ success: false, error: err })
     else res.json({ success: true, data: JSON.parse(stdout) })
   })
