@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, NNT, Widget */
+/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, Widget */
 window.greetings.widgets = {
   'ws-xanadu': new Widget({
     listed: false,
