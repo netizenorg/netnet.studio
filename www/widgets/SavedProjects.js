@@ -115,11 +115,14 @@ class SavedProjects extends Widget {
   }
 
   _initList () {
+    if (window.localStorage.getItem('owner')) this.listed = true
+    else this.listed = false
+
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) {
         window.utils.get('./api/github/username', (res) => {
           if (!res.success) return
-          window.localStorage.setItem('owner', res.data.login)
+          window.utils.setUserData('owner', res.data.login)
         })
         window.utils.get('./api/github/saved-projects', (res) => {
           if (!res.success) return

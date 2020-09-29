@@ -127,6 +127,9 @@ class UploadAssets extends Widget {
   _initList () {
     const owner = window.localStorage.getItem('owner')
     const repo = window.localStorage.getItem('opened-project')
+    if (repo) this.listed = true
+    else this.listed = false
+
     if (!owner || !repo) {
       this.sec.innerHTML = '<div>save your project before uploading assets</div><div><span id="upload-assets-help" class="link">need help?</span></div>'
       this.$('#upload-assets-help').addEventListener('click', () => {

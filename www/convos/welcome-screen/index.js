@@ -427,11 +427,9 @@ window.convos['welcome-screen'] = (self) => {
     }
   }, {
     id: 'where-to',
-    content: 'Personaly, I always recommend starting at the beginning. Which at the moment is the <i>Orientation</i>. I can launch it for you, but you could also just click it yourself.',
+    before: () => { WIDGETS['tutorials-menu'].open() },
+    content: 'Personaly, I always recommend starting at the beginning. Which at the moment is the <b>Orientation</b>. Go ahead and click <i>Orientation</i> in the <b>Tutorials Menu</b> to get started!',
     options: {
-      'sure, but I like when you do it': (e) => {
-        NNT.load('orientation', (e) => { e.goTo('getting-started') })
-      },
       'actually, I changed my mind': (e) => {
         WIDGETS['tutorials-menu'].close()
         e.goTo('main-menu')

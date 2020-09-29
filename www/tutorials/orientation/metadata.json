@@ -14,10 +14,9 @@
     "1: Widgets": "pre-widget",
     "2: The Code Editor": "code-editor",
     "3: Errors and Info": "markup",
-    "4: Functions Menu": "pre-func-menu",
-    "5: Widgets Menu": "pre-wig-menu",
-    "6: Tutorials Menu": "pre-tut-menu",
-    "7: Search Bar": "pre-search-bar"
+    "4: Main Menu": "pre-ex-main-menu",
+    "5: Functions Menu": "pre-func-menu",
+    "6: Search Bar": "pre-search-bar"
   },
   "references": [
     {
@@ -27,6 +26,10 @@
     {
       "note": "Kay, Alan & Adele Goldberg. Personal Dynamic Computer. March 1977",
       "url": "http://www.newmediareader.com/book_samples/nmr-26-kay.pdf"
+    },
+    {
+      "note": "Nelson, Ted. Computer Lib/Dream Machines. 1974",
+      "url": "http://www.newmediareader.com/book_samples/nmr-21-nelson.pdf"
     },
     {
       "note": "Greene, Rachel. A History of Internet Art. Artforum, Vol. 38. 2000",

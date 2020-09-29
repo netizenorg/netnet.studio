@@ -67,12 +67,12 @@ window.utils = {
     NNE.addCustomRoot(null)
   },
 
-  getUserData: () => {
+  getUserData: (type) => {
     const ls = window.localStorage
     const ee = ls.getItem('error-exceptions')
       ? JSON.parse(ls.getItem('error-exceptions')).map(e => JSON.parse(e))
       : null
-    return {
+    const data = {
       username: ls.getItem('username'),
       starredWidgets: ls.getItem('stared-widgets'),
       editor: {
@@ -84,18 +84,41 @@ window.utils = {
       github: {
         owner: ls.getItem('owner'),
         savedProjects: ls.getItem('saved-projects'),
-        openedProject: ls.getItem('opened-preoject'),
+        openedProject: ls.getItem('opened-project'),
         projectURL: ls.getItem('project-url'),
         indexSha: ls.getItem('index-sha'),
         lastCommitMsg: ls.getItem('last-commit-msg'),
         lastCommitCode: ls.getItem('last-commit-code')
       }
     }
+    if (type) {
+      if (Object.keys(data).includes(type)) return data[type]
+      else if (Object.keys(window.localStorage).includes(type)) {
+        return window.localStorage.getItem(type)
+      }
+    } else return data
+  },
+
+  setUserData: (type, value) => {
+    if (!value) window.localStorage.removeItem(type)
+    else window.localStorage.setItem(type, value)
+
+    const data = window.utils.getUserData()
+    if (WIDGETS['saved-projects']) {
+      if (data.github.owner) WIDGETS['saved-projects'].listed = true
+      else WIDGETS['saved-projects'].listed = false
+    }
+    if (WIDGETS['assets-widget']) {
+      if (data.github.openedProject) WIDGETS['assets-widget'].listed = true
+      else WIDGETS['assets-widget'].listed = false
+    }
+    return data
   },
 
   setProjectData: (data) => {
+    const u = window.utils
     const ls = window.localStorage
-    if (data.name) ls.setItem('opened-project', data.name)
+    if (data.name) u.setUserData('opened-project', data.name)
     if (data.message) ls.setItem('last-commit-msg', data.message)
     if (data.sha) ls.setItem('index-sha', data.sha)
     if (data.url) ls.setItem('project-url', data.url)

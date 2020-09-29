@@ -1,4 +1,4 @@
-/* global AlertBubble, TextBubble, NNW, STORE, SearchBar */
+/* global AlertBubble, TextBubble, NNW, STORE, SearchBar, NNT */
 /*
   -----------
      info
@@ -65,8 +65,18 @@ class MenuManager {
       hi: {
         path: 'images/menu/hi.png',
         click: () => {
-          STORE.dispatch('TOGGLE_MENU')
-          window.greetings.startMenu()
+          if (STORE.is('TUTORIAL_LOADED')) {
+            const url = STORE.state.tutorial.url
+            if (url === 'tutorials/orientation') {
+              NNT.goTo('ex-hi-menu')
+            } else {
+              STORE.dispatch('TOGGLE_MENU')
+              window.greetings.startMenu()
+            }
+          } else {
+            STORE.dispatch('TOGGLE_MENU')
+            window.greetings.startMenu()
+          }
         }
       },
       functions: {
