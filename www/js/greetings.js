@@ -229,7 +229,7 @@ window.greetings = {
       window.utils.get('./api/user-geo', (res) => {
         if (res.success && res.data.city) {
           self.city = res.data.city
-          const c = res.data.city.substr(0, 4)
+          const c = res.data.city.toLowerCase().substr(0, 4)
           window.localStorage.setItem('username', a + b + c)
         }
       })

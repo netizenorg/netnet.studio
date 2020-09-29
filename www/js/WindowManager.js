@@ -262,8 +262,8 @@ class WindowManager {
 
   _stayInFrame () { // ensure that the textBubble is always readable in frame
     setTimeout(() => {
-      // 20 is the "bottom =" offset, see NNM.updatePosition()
-      const offset = this.win.offsetTop - NNM.tis.offsetHeight - 20
+      // 30 is the "bottom =" offset +a little extra, see NNM.updatePosition()
+      const offset = this.win.offsetTop - NNM.tis.offsetHeight - 30
       if (offset < 0) {
         this.win.style.transition = 'top .5s cubic-bezier(0.165, 0.84, 0.44, 1)'
         setTimeout(() => {

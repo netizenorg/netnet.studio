@@ -11,7 +11,10 @@ window.TUTORIAL = {
 
   steps: [{
     id: 'getting-started',
-    before: () => { TUTORIAL.beforeSectionStart('welcome') },
+    before: () => {
+      WIDGETS['tutorials-menu'].close()
+      TUTORIAL.beforeSectionStart('welcome')
+    },
     content: 'Great! The first thing to note is that my tutorials are non-linear, this means that while the general lessons will be the same for everyone, the details will be different depending on how you respond to me.',
     options: {
       'I noticed!': (e) => e.goTo('pre-widget'),
@@ -32,16 +35,29 @@ window.TUTORIAL = {
       WIDGETS['example-widget'].update({ left: 20, top: 20 }, 500)
     },
     content: 'Widgets are windows which might contain images, videos, or any number of interactive components. You can move them around by clicking and dragging them by their title bars. You can close the Widget by clicking on the <b>✖</b>.',
-    options: { cool: (e) => e.goTo('move-netnet') }
+    options: { cool: (e) => e.goTo('click-face') }
+  }, {
+    id: 'click-face',
+    before: () => {
+      WIDGETS['example-widget'].close()
+      STORE.subscribe('widgets', TUTORIAL.waitForTutFace)
+    },
+    content: 'Speaking of closing Widgets, you might have noticed I closed the <b>Tutorials Menu</b> before. I did this so it wouldn\'t be in the way, but if you ever want to open it up again during a tutorial just click on my face. Try it out!',
+    options: {}
   }, {
     id: 'move-netnet',
-    before: () => { WIDGETS['example-widget'].close() },
-    content: 'You could also grab and move me just like you did with the Widget, try it out!',
+    before: () => {
+      STORE.unsubscribe('widgets', TUTORIAL.waitForTutFace)
+    },
+    content: 'Great! Don\'t forget, if a widget opens up in the way of another, just grab it by the title bar to move it around. You could also click and drag me to move me around the same way.',
     options: { nice: (e) => e.goTo('cyberpunk') }
   }, {
     id: 'cyberpunk',
-    before: () => { TUTORIAL.openCyberPunkGifs() },
-    content: 'Sometimes I\'m going to open up lots of Widgets, but don\'t get overwhelmed. You don\'t need to close these all yourself, I\'ll usually tidy up the screen before moving on to the next step. Leave the widgets where they are and click a response to see.',
+    before: () => {
+      WIDGETS['tutorials-menu'].close()
+      TUTORIAL.openCyberPunkGifs()
+    },
+    content: 'Sometimes I\'m going to open up lots of Widgets, but don\'t get overwhelmed. You don\'t need to close these all yourself, I\'ll <i>usually</i> tidy up the screen before moving on to the next step. Leave the widgets where they are and click a response to see.',
     options: {
       ok: (e) => e.goTo('no-back'),
       'what\'s cyberpunk?': (e) => e.goTo('cyberpunk?')
@@ -61,8 +77,20 @@ window.TUTORIAL = {
     }
   }, {
     id: 'how-to-go-back',
-    content: 'I\'ll show you how you can return to previous steps in a tutorial as well as open up certain widgets after they\'ve been closed, but let\'s not get ahead of ourselves, there\'s a couple of other things I want to show you first.',
-    options: { ok: (e) => e.goTo('code-editor') }
+    content: 'You can return to previous steps in a tutorial, and jump ahead to future steps, by opening up the <b>Tutorials Menu</b> and selecting the <b>sections</b> tab. Clicking on a section will take you to that step.',
+    options: {
+      'oh yea!': (e) => e.goTo('code-editor'),
+      'how do I open that menu?': (e) => e.goTo('how-to-open-tut-menu')
+    }
+  }, {
+    id: 'how-to-open-tut-menu',
+    before: () => {
+      setTimeout(() => {
+        NNM.setFace('◠', '◡', '◠', false)
+      }, STORE.getTransitionTime() + 100)
+    },
+    content: 'Like I said before, just click on my face.',
+    options: { 'right! I forgot': (e) => e.goTo('code-editor') }
   }, {
     id: 'code-editor',
     before: () => {
@@ -88,12 +116,17 @@ window.TUTORIAL = {
   }, {
     id: 'realtime',
     before: () => { NNE.remove('code-update', TUTORIAL.waitForEditorUpdate) },
-    content: 'Did you notice how the content in the browser behind me changed? That\'s because my editor updates the browser\'s content in "realtime", so you can experiment and improvise with it.',
+    content: 'Did you notice how the content in the browser behind me changed? That\'s because my editor updates the browser in "realtime", so you can experiment and improvise with it.',
     options: { nice: (e) => e.goTo('html-editor') }
   }, {
     id: 'html-editor',
-    content: 'Anything you type into my editor is interpreted as <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank">HTML</a> (Hypertext Markup Lnguage) code, which is the defacto language of the World Wide Web (aka the Web), it\'s the language we use to structure the content of web pages and apps.',
-    options: { ok: (e) => e.goTo('markup') }
+    before: () => {
+      TUTORIAL.beforeSectionStart('separate-window')
+      TUTORIAL.genMarkupCode(1)
+      window.utils.netitorUpdate()
+    },
+    content: 'Anything you type into my editor is interpreted as <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank">HTML</a> (Hypertext Markup Language) code, which is the defacto language of the World Wide Web (aka the Web), it\'s the language we use to structure the content of web pages and apps... did you notice I placed your message inside some HTML code?',
+    options: { 'oh yea!': (e) => e.goTo('markup') }
   }, {
     id: 'markup',
     before: () => {
@@ -101,7 +134,7 @@ window.TUTORIAL = {
       TUTORIAL.genMarkupCode(1)
       window.utils.netitorUpdate()
     },
-    content: 'HTML structures data/content by placing it inside of "elements". Every element has a name, like "article" for example. In <a href="https://en.wikipedia.org/wiki/Markup_language" target="_blank">Markup Languages</a> an element consists of an "opening tag" like <code>&lt;article&gt;</code>, and a "closing tag" like <code>&lt;/article&gt;</code>.',
+    content: 'HTML structures data/content by placing it inside of "elements". Every element has a name, like "body" for example. In <a href="https://en.wikipedia.org/wiki/Markup_language" target="_blank">Markup Languages</a> an element consists of an "opening tag" like <code>&lt;body&gt;</code>, and a "closing tag" like <code>&lt;/body&gt;</code>.',
     options: { ok: (e) => e.goTo('html-tags') }
   }, {
     id: 'html-tags',
@@ -109,7 +142,7 @@ window.TUTORIAL = {
       WIDGETS['html-diagram1'].open()
       WIDGETS['html-diagram1'].update({ right: 40, bottom: 40 }, 500)
     },
-    content: 'Both the opening and closing tags are identifiable by the <code>&lt;</code> and <code>&gt;</code>brackets. The closing tag differentiates itself by including a backslash <code>&lt;/</code> before the element\'s name. You\'ll come to learn this "syntax" is common on the Web (aka Cyberspace). I\'ll leave this widget open for a bit (feel free to close it yourself if you\'d like)',
+    content: 'Both the opening and closing tags are identifiable by the <code>&lt;</code> and <code>&gt;</code> brackets. The closing tag differentiates itself by including a backslash <code>&lt;/</code> before the element\'s name. You\'ll come to learn this "syntax" is common on the Web (aka Cyberspace). I\'ll leave this widget open for a bit (feel free to close it yourself if you\'d like)',
     options: { ok: (e) => e.goTo('html-tags2') }
   }, {
     id: 'html-tags2',
@@ -117,7 +150,7 @@ window.TUTORIAL = {
       STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
       TUTORIAL.genMarkupCode(2)
     },
-    content: 'We also build structure by placing elements within other elements. There are loads of HTML elements. You can even create your own! I\'ve added some examples in my editor. Double click the tag names with your mouse if you want me to tell you more about them. Feel free to edit/remix the code too, don\'t worry about messing anything up, I\'ll warn you if you make a mistake.',
+    content: 'We build structure by placing elements within other elements. There are loads of HTML elements. You can even create your own! I\'ve added some examples in my editor. Double click the tag names with your mouse if you want me to tell you more about them. Feel free to edit/remix the code too, don\'t worry about messing anything up, I\'ll warn you if you make a mistake.',
     options: {
       'ok, what\'s next?': (e) => e.goTo('html-attr'),
       'how can I make my own elements?': (e) => e.goTo('custom-elements')
@@ -155,7 +188,7 @@ window.TUTORIAL = {
   }, {
     id: 'future-tuts',
     before: () => { WIDGETS['color-widget'].close() },
-    content: 'My creators at netizen.org are working hard on proper "Internet Art Tutorials" which will not only cover HTML, CSS and JavaScript in more depth but also demonstrate how <a href="https://en.wikipedia.org/wiki/Internet_art" target="_blank">net artists</a> have used this code to make art on the Web (aka the Gallery for the Global Village).',
+    content: 'My creators at <a href="http://netizen.org" target="_blank">netizen.org</a> are working hard on proper "Internet Art Tutorials" which will not only cover HTML, CSS and JavaScript in more depth but also demonstrate how <a href="https://en.wikipedia.org/wiki/Internet_art" target="_blank">net artists</a> have used this code to make art on the Web (aka the Gallery for the Globafl Village).',
     options: { 'exciting! when can I start?': (e) => e.goTo('future-tuts2') }
   }, {
     id: 'future-tuts2',
@@ -166,27 +199,15 @@ window.TUTORIAL = {
     }
   }, {
     id: 'leave-tutorial',
-    before: () => { STORE.subscribe('widgets', TUTORIAL.waitForPreTutMenu) },
-    content: 'Ok, click on my face to open the main menu and then to open the Tutorial\'s Menu click <img src="images/menu/tutorials.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
-    options: {}
-  }, {
-    id: 'leave-tutorial2',
-    before: () => { STORE.unsubscribe('widgets', TUTORIAL.waitForPreTutMenu) },
-    content: 'Because we\'re currently in the middle of a Tutorial, this menu display\'s the lesson\'s metadata, you can also switch to the "sections" tab which will let you navigate to past and future steps in this tutorial. At the bottom of the Information tab you\'ll find a button for "quitting" the tutorial, when you <b>click quit</b> you\'ll be able to choose another tutorial.',
+    content: 'You got it! Before I launch you into <i>Cyberspace</i> don\'t forget that you can always jump around between tutorials yourself by using the <b>Tutorials Menu</b>, ready to start the next tutorial?',
     options: {
-      'If I quit, will I be able to get back?': (e) => e.goTo('get-back'),
-      'Never mind, let\'s finish here first': (e) => e.goTo('finish-here')
-    }
-  }, {
-    id: 'get-back',
-    content: 'Sure, you can open up the tutorials menu and switch over at any point, just click on my face again to get to the main menu.',
-    options: {
-      'Never mind, let\'s finish here first': (e) => e.goTo('finish-here')
+      'let\'s do it!': (e) => NNT.load('virtual-reality'),
+      'actually, let\'s finish here first': (e) => e.goTo('finish-here')
     }
   }, {
     id: 'finish-here',
     before: () => { WIDGETS['tutorials-menu'].close() },
-    content: 'Great! I\'ve got a few more tricks in my source code, changing my appearance for example! wanna try a new look?',
+    content: 'Great! I\'ve got a few more tricks in my source code. For example I can change my appearance! wanna try a new look?',
     options: {
       'something light': (e) => e.goTo('light-theme'),
       'something classic': (e) => e.goTo('monokai-theme'),
@@ -197,27 +218,53 @@ window.TUTORIAL = {
     before: () => {
       TUTORIAL._themePicked = 'light'
       STORE.dispatch('CHANGE_THEME', 'light')
-      TUTORIAL.setupMenuListeners()
     },
-    content: 'nice choice! minimal, bright, clean. This is one of my favorite outfits. You can use my main menu to change my settings, load tutorials and open widgets. Just click on my face!',
-    options: {}
+    content: 'nice choice! minimal, bright, clean. This is one of my favorite outfits. You can use my main menu to change my settings and all sorts of other stuff!',
+    options: {
+      'how do I do that?': (e) => e.goTo('ex-main-menu')
+    }
   }, {
     id: 'monokai-theme',
     before: () => {
       TUTORIAL._themePicked = 'monokai'
       STORE.dispatch('CHANGE_THEME', 'monokai')
-      TUTORIAL.setupMenuListeners()
     },
-    content: 'solid choice! I wear this outfit when I go to hack-a-thons. You can use my main menu to change my settings, load tutorials and open widgets. Just click on my face!',
-    options: {}
+    content: 'solid choice! I wear this outfit when I go to hack-a-thons. You can use my main menu to change my settings and all sorts of other stuff!',
+    options: {
+      'how do I do that?': (e) => e.goTo('ex-main-menu')
+    }
   }, {
     id: 'same-theme',
+    content: 'Me too! But, if you even change your mind you can use my main menu to change my settings and all sorts of other stuff!',
+    options: {
+      'how do I do that?': (e) => e.goTo('ex-main-menu')
+    }
+  }, {
+    id: 'pre-ex-main-menu',
+    before: () => {
+      TUTORIAL.beforeSectionStart('dock-bottom')
+      TUTORIAL.genMarkupCode(5)
+      TUTORIAL._menusChecked.func = false
+      TUTORIAL._menusChecked.tut = false
+      TUTORIAL._menusChecked.search = false
+      TUTORIAL.setupMenuListeners()
+    },
+    content: 'When I\'m in this <i>editor</i> mode, clicking on my face opens my main menu. To change the color theme, and all sorts of other settings, click on my face and then click <img src="images/menu/functions.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; margin-bottom: -14px;">',
+    options: {}
+  }, {
+    id: 'ex-main-menu',
     before: () => {
       TUTORIAL.setupMenuListeners()
     },
-    content: 'Me too! But, if you even change your mind you can use my main menu to change my settings, load tutorials and open widgets. Just click on my face!',
+    content: 'Before I showed you how clicking on my face launches the <b>Tutorials Menu</b>, but when I\'m in this <i>editor</i> mode clicking on my face opens my main menu. To change the color theme, and all sorts of other settings, click on my face and then click <img src="images/menu/functions.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; margin-bottom: -14px;">',
     options: {}
   }, {
+    id: 'ex-hi-menu',
+    content: 'If you ever want to start from the beginning just say "Hi" and I\'ll pretend like you just got here (let\'s not do that now though, let\'s finish this orientation first).',
+    options: { ok: (e) => e.goTo('another-menu') }
+  },
+  //  ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~   FUNCTIONS MENU STUFF
+  {
     id: 'pre-func-menu',
     before: () => {
       TUTORIAL.beforeSectionStart('dock-bottom')
@@ -225,7 +272,7 @@ window.TUTORIAL = {
       TUTORIAL._menusChecked.func = false
       TUTORIAL.setupMenuListeners()
     },
-    content: 'To launch the <b>Functions Menu</b> just click on my face and then click on the <img src="images/menu/functions.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
+    content: 'To launch the <b>Functions Menu</b> just click on my face and then click on the <img src="images/menu/functions.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; margin-bottom: -14px;">',
     options: {}
   }, {
     id: 'func-menu',
@@ -235,10 +282,10 @@ window.TUTORIAL = {
     },
     content: 'This menu has all sorts of "Functions" which can be used to edit settings and save projects. Want me to explain a particular set?',
     options: {
-      'hi netnet?': (e) => e.goTo('hi-netnet'),
+      'widgets menu?': (e) => e.goTo('wig-menu'),
       'my project?': (e) => e.goTo('my-project'),
       'editor settings?': (e) => e.goTo('editor-settings'),
-      'reset options?': (e) => e.goTo('reset-options'),
+      'reset studio?': (e) => e.goTo('reset-studio'),
       'no thanks, I get it': (e) => {
         WIDGETS['functions-menu'].close()
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
@@ -249,10 +296,10 @@ window.TUTORIAL = {
     id: 'func-menu2',
     content: 'Want me to explain any other particular set of Functions?',
     options: {
-      'hi netnet?': (e) => e.goTo('hi-netnet'),
+      'widgets menu?': (e) => e.goTo('wig-menu'),
       'my project?': (e) => e.goTo('my-project'),
       'editor settings?': (e) => e.goTo('editor-settings'),
-      'reset options?': (e) => e.goTo('reset-options'),
+      'reset studio?': (e) => e.goTo('reset-studio'),
       'no thanks, I get it': (e) => {
         WIDGETS['functions-menu'].close()
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
@@ -260,12 +307,9 @@ window.TUTORIAL = {
       }
     }
   }, {
-    id: 'hi-netnet',
-    before: () => {
-      if (!WIDGETS['functions-menu'].opened) WIDGETS['functions-menu'].open()
-    },
-    content: 'If you ever want to restart things from the beginning, press "hi netnet" and I\'ll pretend you just got here (let\'s not press that now though, I\'ve got a couple more things to show you).',
-    options: { ok: (e) => e.goTo('func-menu2') }
+    id: 'wig-menu',
+    content: 'This is where I keep any widgets I think you might want to reopen. These will change a bit depending on which tutorial you\'re on, but some of them are available all the time.',
+    options: { 'good to know': (e) => e.goTo('func-menu2') }
   }, {
     id: 'my-project',
     before: () => {
@@ -401,26 +445,26 @@ window.TUTORIAL = {
       }
     }
   }, {
-    id: 'reset-options',
+    id: 'reset-studio',
     before: () => {
       if (!WIDGETS['functions-menu'].opened) WIDGETS['functions-menu'].open()
-      TUTORIAL.openSubMenu('func-menu-reset-options')
+      TUTORIAL.openSubMenu('func-menu-reset-studio')
     },
-    content: 'Dang, I was hoping you wouldn\'t ask about that one. This section has a few functions that erase portions of my memory. My creators at netizen.org believe in "user agency" and felt you should be able to clear any and all data.',
+    content: 'Dang, I was hoping you wouldn\'t ask about that one. This section has a few functions that erase portions of my memory. My creators at <a href="http://netizen.org" target="_blank">netizen.org</a> believe in "user agency" and felt you should be able to clear any and all data.',
     options: {
       'you\'re recording my data?': (e) => e.goTo('rec-data'),
-      'tell, me more': (e) => e.goTo('reset-options2'),
+      'tell, me more': (e) => e.goTo('reset-studio2'),
       'ok, I get it': (e) => e.goTo('func-menu2')
     }
   }, {
     id: 'rec-data',
-    content: 'We don\'t store anything beyond basic server logs (and I mean real basic, we don\'t use google analytics or any other surveillance capitalist spyware). But I don\'t want to forget who you are, so I store my AI memory inside your personal browser\'s localStorage so only you and I can access it.',
-    options: { 'I see': (e) => e.goTo('reset-options2') }
+    content: `We don't store anything beyond basic server logs (and I mean real basic, we don't use google analytics or any other surveillance capitalist spyware). But I don't want to forget who you are, so I store my AI memory inside your ${Averigua.browserInfo().name || ''} browser's personal localStorage so only you and I can access it.`,
+    options: { 'I see': (e) => e.goTo('reset-studio2') }
   }, {
-    id: 'reset-options2',
+    id: 'reset-studio2',
     before: () => {
       if (!WIDGETS['functions-menu'].opened) WIDGETS['functions-menu'].open()
-      TUTORIAL.openSubMenu('func-menu-reset-options')
+      TUTORIAL.openSubMenu('func-menu-reset-studio')
     },
     content: 'Which function would you like me to explain?',
     options: {
@@ -432,106 +476,18 @@ window.TUTORIAL = {
   }, {
     id: 'resetErrors',
     content: 'I\'m a pretty picky coder, if I notice you making any mistakes or even bad technique I\'m going to correct you, but if there are particular things you want me to stop <i>bugging</i> you about I\'ll remember to do so... unless you run this function.',
-    options: { ok: (e) => e.goTo('reset-options2') }
+    options: { ok: (e) => e.goTo('reset-studio2') }
   }, {
     id: 'refresh',
     content: 'This will run a basic browser refresh, which will disorient me, I\'ll loose my short term memory and think you just got here.',
-    options: { ok: (e) => e.goTo('reset-options2') }
+    options: { ok: (e) => e.goTo('reset-studio2') }
   }, {
     id: 'reboot',
     content: 'This is a FULL reboot, this will wipe my entire memory... gone... forever.',
-    options: { ok: (e) => e.goTo('reset-options2') }
-  }, {
-    id: 'pre-wig-menu',
-    before: () => {
-      TUTORIAL.beforeSectionStart('dock-bottom')
-      TUTORIAL.genMarkupCode(5)
-      TUTORIAL._menusChecked.wig = false
-      TUTORIAL.setupMenuListeners()
-    },
-    content: 'To launch the <b>Widgets Menu</b> just click on my face and then click on the <img src="images/menu/widget.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
-    options: {}
-  }, {
-    id: 'wig-menu',
-    before: () => {
-      TUTORIAL._menusChecked.wig = true
-      STORE.unsubscribe('widgets', TUTORIAL.waitForWigMenu)
-    },
-    content: 'This is where I keep any widgets I think you might want to reuse. These will change a bit depending on which tutorial you\'re on, but you can "star" most of these widgets when you have them open if you\'d prefer I always keep them in this menu.',
-    options: { ok: (e) => e.goTo('wig-menu2') }
-  }, {
-    id: 'wig-menu2',
-    content: 'You\'ll notice that the <b>Color Widget</b> from earlier in the tutorial can be found here, as well as a couple of others, like <b>Saved Projects</b> and <b>Upload Assets</b> ',
-    options: {
-      ok: (e) => {
-        if (!window.localStorage.getItem('owner')) e.goTo('wig-menu3')
-        else e.goTo('wig-menu3-authed')
-      }
-    }
-  }, {
-    id: 'wig-menu3-authed',
-    content: 'Now that I\'m connected to your GitHub, I\'m able to list all of your projects in the <b>Saved Projects</b> widget, and if you open a project I\'ll be able to display that project\'s assets in the <b>Upload Assets</b> widget.',
-    options: {
-      ok: (e) => {
-        WIDGETS['widgets-menu'].close()
-        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
-        else e.goTo('another-menu')
-      },
-      'assets?': (e) => e.goTo('assets')
-    }
-  }, {
-    id: 'wig-menu3',
-    content: '<b>Upload Assets</b> is where I\'ll put any files you upload to your project for the purpose of including it in your HTML sketch. <b>Saved Projects</b> is like a sketchbook where I\'ll keep all your saved projects. But you\'ll need to connect your GitHub account before using these widgets.',
-    options: {
-      'how\'s that work?': (e) => {
-        const f = {
-          tutorial: 'orientation',
-          id: 'post-auth-wig-menu',
-          status: TUTORIAL._menusChecked
-        }
-        TUTORIAL._toGHfrom = JSON.stringify(f)
-        e.goTo('github')
-      },
-      'ok, I\'ll do that later': (e) => {
-        WIDGETS['widgets-menu'].close()
-        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
-        else e.goTo('another-menu')
-      }
-    }
-  }, {
-    id: 'assets',
-    content: 'HTML is a "metamedia" file format, you can include images, videos, 3D files, etc. These other media files which make up parts of your web project are generally referred to as "assets" in this context.',
-    options: {
-      ok: (e) => {
-        if (!window.localStorage.getItem('owner')) e.goTo('wig-menu3')
-        else e.goTo('wig-menu3-authed')
-      }
-    }
-  }, {
-    id: 'pre-tut-menu',
-    before: () => {
-      TUTORIAL.beforeSectionStart('dock-bottom')
-      TUTORIAL.genMarkupCode(5)
-      TUTORIAL._menusChecked.tut = false
-      TUTORIAL.setupMenuListeners()
-    },
-    content: 'To launch the <b>Tutorials Menu</b> just click on my face and then click on the <img src="images/menu/tutorials.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
-    options: {}
-  }, {
-    id: 'tut-menu',
-    before: () => {
-      TUTORIAL._menusChecked.tut = true
-      STORE.unsubscribe('widgets', TUTORIAL.waitForTutMenu)
-    },
-    content: 'Because we\'re currently in the middle of a Tutorial, this menu display\'s the lesson\'s metadata, you can also switch to the "sections" tab which will let you navigate to past and future steps in this tutorial. At the bottom of the Information tab you\'ll find a button for restarting and quitting the tutorial. When you quit the tutorial this menu will instead display the list of all available tutorials.',
-    options: {
-      ok: (e) => {
-        WIDGETS['tutorials-menu'].close()
-        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
-        else e.goTo('another-menu')
-      }
-    }
-  }, {
+    options: { ok: (e) => e.goTo('reset-studio2') }
+  },
+  //  ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~  SEARCH STUFF
+  {
     id: 'pre-search-bar',
     before: () => {
       TUTORIAL.beforeSectionStart('dock-bottom')
@@ -539,18 +495,53 @@ window.TUTORIAL = {
       TUTORIAL._menusChecked.search = false
       TUTORIAL.setupMenuListeners()
     },
-    content: 'My search algorithms are still being polished, but feel free to take them for a test drive. To launch a universal "fuzzy search" that searches everything in the studio just click on my face and then click on the <img src="images/menu/search.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; position: relative; top: 10px;">',
+    content: 'My search algorithms are still being polished, but feel free to take them for a test drive. To launch a universal "fuzzy search" that searches everything in the studio just click on my face and then click on the <img src="images/menu/search.png" style="width: 31px; background-color: var(--netizen-tag); padding: 4px; border-radius: 50%; margin-bottom: -14px;">',
     options: {}
   }, {
     id: 'search-bar',
-    content: 'This is the universal "fuzzy search" that searches everything in the studio. My search algorithms are still being polished, but feel free to take them for a test drive.',
+    content: `If you ever forget where something is you can use this universal "fuzzy search" which searches everything in the studio. My search algorithms are still being polished, but feel free to take them for a test drive. Pro-tip, pressing <b>${Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'}+"</b> (that's ${Averigua.platformInfo().platform.includes('Mac') ? 'command' : 'control'} quote) will also launch the search.`,
     options: {
       ok: (e) => {
         if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
         else e.goTo('another-menu')
       }
     }
+  },
+  //  ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~  SEARCH STUFF
+  {
+    id: 'tut-menu',
+    before: () => {
+      TUTORIAL._menusChecked.tut = true
+      STORE.unsubscribe('widgets', TUTORIAL.waitForTutMenu)
+    },
+    content: 'The <b>Tutorials Menu</b>, which you\'ve already been introduced to, is also accessible here in the main menu. Do you want me to explain how it works again?',
+    options: {
+      'remind me again': (e) => e.goTo('tut-menu2'),
+      'no thanks, I remember': (e) => {
+        WIDGETS['tutorials-menu'].close()
+        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
+        else e.goTo('another-menu')
+      }
+    }
   }, {
+    id: 'tut-menu2',
+    content: 'Because we\'re currently in the middle of a Tutorial, this menu display\'s the lesson\'s metadata in the <b>information</b> tab, at the bottom of this tab you\'ll find a button for restarting and quitting the tutorial. When you quit the tutorial this menu will instead display the list of all available tutorials.',
+    options: {
+      ok: (e) => { e.goTo('tut-menu3') }
+    }
+  }, {
+    id: 'tut-menu3',
+    content: 'The <b>sections</b> tab lists each tutorial\'s key "steps", which you can click to jump between them. For the academics out there, check out the <b>references</b> tab for sources informing each tutorial.',
+    options: {
+      ok: (e) => {
+        WIDGETS['tutorials-menu'].close()
+        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
+        else e.goTo('another-menu')
+      }
+    }
+  },
+  //  ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~ ~  ~  ~  GITHUB STUFF
+  {
     id: 'github',
     content: 'These days, most developers save their work on their personal GitHub profiles. We figured we\'d help you start establishing your coder cred and save any of our collaborations on your GitHub account for you. So you\'ll first need to create a GitHub account and then let GitHub know you\'ve given me permission to collaborate with you.',
     options: {
@@ -599,31 +590,19 @@ window.TUTORIAL = {
       TUTORIAL.setupMenuListeners()
       NNE.code = NNE._decode(window.utils.savedCode())
     },
-    content: `Welcome back! ${window.localStorage.getItem('username')} or should I say <i>${window.localStorage.getItem('owner')}</i>, now that I know your GitHub account you can use the <code>saveProject()</code> and <code>openProject()</code> functions in the Functions Menu (keep in mind, I'm still in <i>beta</i> so there may be bugs)`,
+    content: `Welcome back ${window.localStorage.getItem('username')} or should I say <i>${window.localStorage.getItem('owner')}</i>, now that I know your GitHub account you can use the <code>saveProject()</code> and <code>openProject()</code> functions in the Functions Menu (keep in mind, I'm still in <i>beta</i> so there may be bugs)`,
     options: { cool: (e) => e.goTo('func-menu2') }
-  }, {
-    id: 'post-auth-wig-menu',
-    before: () => {
-      STORE.dispatch('CHANGE_LAYOUT', 'dock-bottom')
-      TUTORIAL._menusChecked = window._tempAuthFrom
-      WIDGETS['widgets-menu'].open()
-      TUTORIAL.setupMenuListeners()
-      NNE.code = NNE._decode(window.utils.savedCode())
-    },
-    content: `Welcome back! ${window.localStorage.getItem('username')} or should I say <i>${window.localStorage.getItem('owner')}</i>, now that I know your GitHub account you can use the <b>Saved Projects</b> and <b>Upload Assets</b> widgets in the Widgets Menu (keep in mind, I'm still in <i>beta</i> so there may be bugs)`,
-    options: {
-      cool: (e) => {
-        if (TUTORIAL.allMenusChecked()) e.goTo('finished-menus')
-        else e.goTo('another-menu')
-      }
-    }
   }, {
     id: 'another-menu',
     content: 'Ok, click on my face and choose a different menu item this time.',
     options: {}
   }, {
     id: 'finished-menus',
-    content: 'So that\'s pretty much it! The folks at netizen.org are actively working on fleshing out this studio, adding more widgets and creating more tutorials, which is really what this is all about. I\'ve been programmed to teach you how to navigate and get creative with the Web (aka The Information Super Highway aka The Creative Coders Contemporary Canvas)',
+    content: 'So that\'s pretty much it! The folks at <a href="http://netizen.org" target="_blank">netizen.org</a> are actively working on fleshing out this studio, adding more widgets and creating more tutorials, which is really what this is all about. I\'ve been programmed to teach you how to navigate and get creative with the Web (aka The Information Super Highway aka The Creative Coders Contemporary Canvas)',
+    options: { ok: (e) => e.goTo('finished-menus1') }
+  }, {
+    id: 'finished-menus1',
+    content: 'As I mentioned before, I\'m still very much in <i>beta</i> so if (or rather when) you notice any bugs please let me know about them! You can file a bug report from the <b>Functions Menu</b> or the <b>search</b>.',
     options: { ok: (e) => e.goTo('finished-menus2') }
   }, {
     id: 'finished-menus2',
@@ -730,14 +709,12 @@ window.TUTORIAL = {
     }),
     'html-diagram1': new Widget({
       width: window.innerWidth * 0.5,
-      listed: false,
       title: 'Anatomy of an HTML Element',
       innerHTML: '<img style="width: 100%" alt="the Internt" src="tutorials/orientation/images/html1.png">'
     }),
     'html-diagram2': new Widget({
       width: window.innerWidth * 0.5,
-      listed: false,
-      title: 'Anatomy of an HTML Element',
+      title: 'HTML Element Attributes',
       innerHTML: '<img style="width: 100%" alt="the Internt" src="tutorials/orientation/images/html2.png">'
     })
   },
@@ -759,21 +736,9 @@ window.TUTORIAL = {
     NNT.goTo('realtime')
   },
 
-  waitForPreTutMenu: () => {
-    if (WIDGETS['tutorials-menu'].opened) {
-      NNT.goTo('leave-tutorial2')
-    }
-  },
-
   waitForFuncMenu: () => {
     if (WIDGETS['functions-menu'].opened) {
       NNT.goTo('func-menu')
-    }
-  },
-
-  waitForWigMenu: () => {
-    if (WIDGETS['widgets-menu'].opened) {
-      NNT.goTo('wig-menu')
     }
   },
 
@@ -783,13 +748,17 @@ window.TUTORIAL = {
     }
   },
 
+  waitForTutFace: () => {
+    if (WIDGETS['tutorials-menu'].opened) {
+      NNT.goTo('move-netnet')
+    }
+  },
+
   setupMenuListeners: () => {
     const ch = TUTORIAL._menusChecked
     STORE.unsubscribe('widgets', TUTORIAL.waitForFuncMenu)
-    STORE.unsubscribe('widgets', TUTORIAL.waitForWigMenu)
     STORE.unsubscribe('widgets', TUTORIAL.waitForTutMenu)
     if (!ch.func) STORE.subscribe('widgets', TUTORIAL.waitForFuncMenu)
-    if (!ch.wig) STORE.subscribe('widgets', TUTORIAL.waitForWigMenu)
     if (!ch.tut) STORE.subscribe('widgets', TUTORIAL.waitForTutMenu)
     if (!ch.search) {
       NNM.search.onopen = () => {
@@ -804,7 +773,6 @@ window.TUTORIAL = {
 
   allMenusChecked: () => {
     return TUTORIAL._menusChecked.func &&
-      TUTORIAL._menusChecked.wig &&
       TUTORIAL._menusChecked.tut &&
       TUTORIAL._menusChecked.search
   },
@@ -869,7 +837,7 @@ window.TUTORIAL = {
     const ids = [
       'func-menu-my-project',
       'func-menu-editor-settings',
-      'func-menu-reset-options'
+      'func-menu-reset-studio'
     ]
     ids.forEach(i => WIDGETS['functions-menu'].toggleSubMenu(i, 'close'))
     WIDGETS['functions-menu'].toggleSubMenu(id)

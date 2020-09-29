@@ -20,7 +20,7 @@ http.listen(port, () => console.log(`listening on: ${port}`))
 if (process.env.PROD) {
   const proxy = require('redbird')({
     port: 80,
-    xfwd: false,
+    // xfwd: false,
     letsencrypt: { path: 'certs', port: 3000 },
     ssl: { port: 443 }
   })

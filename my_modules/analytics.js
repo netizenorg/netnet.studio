@@ -30,8 +30,7 @@ module.exports = (req, res, next) => {
   const dev = device(req.headers['user-agent'], { parseUserAgent: true })
   const data = {
     timestamp: Date.now(),
-    ip: req.ip,
-    ips: req.ips,
+    ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
     url: {
       host: req.headers.host,
       path: req.originalUrl

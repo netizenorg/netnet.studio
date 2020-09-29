@@ -190,7 +190,10 @@ class Widget {
     // trigger transition
     setTimeout(() => {
       for (const prop in opts) this._css(prop, opts[prop])
-      setTimeout(() => { this.ele.style.transition = 'none' }, time)
+      setTimeout(() => {
+        this.ele.style.transition = 'none'
+        this._stayInFrame()
+      }, time)
       this._recentered = false
     }, 25)
   }

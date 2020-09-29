@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, NNT, Widget */
+/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, Widget */
 window.greetings.widgets = {
   'ws-xanadu': new Widget({
     listed: false,
@@ -28,7 +28,7 @@ window.greetings.widgets = {
     listed: false,
     width: 630,
     title: 'netnet.studio credits',
-    innerHTML: '<br><p style="text-align: center"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/netizen.png" alt="netizen.org"></p><br><p>netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and devloped by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with creative support from <a href="http://jonsatrom.com/" target="_blank">Jon Satrom</a> and administrative support form <a href="#", target="_blank">Mike Constantino</a>. Our interdisciplinary intern is <a href="#" target="_blank">Ilai Gilbert</a>.</p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a> and the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a>.</p><br><p style="display:flex; justify-content:space-around; align-items:center;"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/cosa-bw.png" alt="the Clinic for Open Source Arts"><img style="display:inline-block;width:273px;" src="convos/welcome-screen/files/saic-cp.png" alt="the Contemporary Practices Department at the School of the Art Institute of Chicago"></p>'
+    innerHTML: '<br><p style="text-align: center"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/netizen.png" alt="netizen.org"></p><br><p>netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and devloped by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with creative support from <a href="http://jonsatrom.com/" target="_blank">Jon Satrom</a> and administrative support form <a href="#", target="_blank">Mike Constantino</a>. Our interdisciplinary intern is <a href="http://ilai.link" target="_blank">Ilai Gilbert</a>.</p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a> and the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a>.</p><br><p style="display:flex; justify-content:space-around; align-items:center;"><img style="display:inline-block;width:177px;" src="convos/welcome-screen/files/cosa-bw.png" alt="the Clinic for Open Source Arts"><img style="display:inline-block;width:273px;" src="convos/welcome-screen/files/saic-cp.png" alt="the Contemporary Practices Department at the School of the Art Institute of Chicago"></p>'
   }),
   'report-a-bug': new Widget({
     listed: false,
@@ -328,8 +328,8 @@ window.convos['welcome-screen'] = (self) => {
       const b = p.browser.name.toLowerCase().substr(0, 4)
       let content = `<i>${a}</i> because you're on a ${p.platform} device; <i>${b}</i> becuase you're using version ${p.browser.version} of the ${p.browser.name} browser;`
       if (window.greetings.city) {
-        const c = window.greetings.city.substr(0, 4)
-        content += `<i>${c}</i> because you're currently located in the city of ${window.greetings.city};`
+        const c = window.greetings.city.toLowerCase().substr(0, 4)
+        content += ` <i>${c}</i> because you're currently located in the city of ${window.greetings.city};`
       }
       return content
     })(),
@@ -363,7 +363,7 @@ window.convos['welcome-screen'] = (self) => {
     after: () => { NNM.setFace('ŏ', 'ー', 'ŏ', false) }
   }, {
     id: 'which-are-you',
-    content: 'I\'m the latter. I only use the data I need in order to work, like knowing what browser you\'re using. And personal data like your name is only stored on your browser, it neves gets sent to my server.',
+    content: 'I\'m the latter. I only use the data I need in order to work, like knowing what browser you\'re using. And personal data like your name is only stored on your browser, it never gets sent to my server.',
     options: {
       'and what\'s Surveillance Capitalism?': (e) => e.goTo('surveillance-capitalism'),
       'how can I trust you?': (e) => e.goTo('trust')
@@ -427,11 +427,9 @@ window.convos['welcome-screen'] = (self) => {
     }
   }, {
     id: 'where-to',
-    content: 'Personaly, I always recommend starting at the beginning. Which at the moment is the <i>Orientation</i>. I can launch it for you, but you could also just click it yourself.',
+    before: () => { WIDGETS['tutorials-menu'].open() },
+    content: 'Personaly, I always recommend starting at the beginning. Which at the moment is the <b>Orientation</b>. Go ahead and click <i>Orientation</i> in the <b>Tutorials Menu</b> to get started!',
     options: {
-      'sure, but I like when you do it': (e) => {
-        NNT.load('orientation', (e) => { e.goTo('getting-started') })
-      },
       'actually, I changed my mind': (e) => {
         WIDGETS['tutorials-menu'].close()
         e.goTo('main-menu')
