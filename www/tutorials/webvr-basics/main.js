@@ -502,7 +502,7 @@ window.TUTORIAL = {
     options: { ok: (e) => e.goTo('vr-ethics') }
   }, {
     id: 'vr-ethics',
-    content: 'VR headsets already have the capability to 3D scan your physical environment in order to propertly track your movements in space. This data, while serving a functional purpose, can be easily <a href="https://uploadvr.com/report-vr-data-collection-stanford/" target="_blank">abused in a surveillance capitalist context</a>. And technology like <a href="https://www.wired.com/story/eye-tracking-vr/" target="_blank">eye tracking</a> is just around the corner. That\'s not to mention the larger more existential considerations we\'ll inevitably be confronted with as the technology proliferates.',
+    content: 'VR headsets already have the capability to 3D scan your physical environment in order to properly track your movements in space. This data, while serving a functional purpose, can be easily <a href="https://uploadvr.com/report-vr-data-collection-stanford/" target="_blank">abused in a surveillance capitalist context</a>. And technology like <a href="https://www.wired.com/story/eye-tracking-vr/" target="_blank">eye tracking</a> is just around the corner. That\'s not to mention the larger more existential considerations we\'ll inevitably be confronted with as the technology proliferates.',
     options: {
       'very true': (e) => e.goTo('lets-play'),
       'existential?': (e) => {
