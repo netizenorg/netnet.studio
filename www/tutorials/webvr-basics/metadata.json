@@ -6,7 +6,7 @@
     "preferred": "Nick",
     "url": "http://nickbriz.com"
   },
-  "description": "In this tutorial we'll learn some the WebVR basics by getting started with the <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> library. We'll write some code together and create our first WebVR collaboration.",
+  "description": "In this tutorial we'll learn some of the WebVR basics by getting started with the <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> library. We'll write some code together and create our first WebVR collaboration.",
   "keywords": ["vr", "ar", "xr", "history", "theory", "cyberpunk", "the-cave", "osmose"],
   "main": "main.js",
   "checkpoints": {
