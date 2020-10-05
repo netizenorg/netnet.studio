@@ -530,7 +530,7 @@ window.TUTORIAL = {
     }
   }, {
     id: 'advice',
-    content: 'Try editing some of these entities, maybe change their <a href="https://aframe.io/docs/1.0.0/components/geometry.html#sidebar" target="_blank">geometry</a> or <a href="https://aframe.io/docs/1.0.0/components/material.html#sidebar" target="_blank">material</a>. You could also try experimenting more with There you can learn more about <a href="https://aframe.io/docs/1.0.0/components/animation.html#sidebar" target="_blank">animations</a>. Don\'t forget that you can double click on any of these components to learn more about them. Taking a look through A-Frame\'s <a href="https://aframe.io/docs/1.0.0/ target="_blank">documentation page</a> is also a great way to learn about what else you can do and get some ideas.',
+    content: 'Try editing some of these entities, maybe change their <a href="https://aframe.io/docs/1.0.0/components/geometry.html#sidebar" target="_blank">geometry</a> or <a href="https://aframe.io/docs/1.0.0/components/material.html#sidebar" target="_blank">material</a>. Taking a look through A-Frame\'s <a href="https://aframe.io/docs/1.0.0/ target="_blank">documentation page</a> is also a great way to learn about what else is possible. There you can learn more about <a href="https://aframe.io/docs/1.0.0/components/animation.html#sidebar" target="_blank">animations</a> as well as discover other components and get other ideas. Don\'t forget that you can double click on any of these components to learn more about them.',
     options: {
       'ok thanks!': (e) => e.goTo('remix')
     }
