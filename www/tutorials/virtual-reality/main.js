@@ -214,7 +214,7 @@ iframe { width: 100vw; height: 100vh }
   }, {
     id: 'code-reveal',
     edit: false,
-    content: 'I know I know, there\'s a lot of code to talk about here, but if you take a minute to read through it, I bet you could figure out what most of the code does. You can also <i>double-click</i> on pieces of code you want to learn more about and I\'ll epxlain it to you.',
+    content: 'I know I know, there\'s a lot of code to talk about here, but if you take a minute to read through it, I bet you could figure out what most of the code does. You can also <i>double-click</i> on pieces of code you want to learn more about and I\'ll explain it to you.',
     options: {
       'so how do I make something like this?': (e) => e.goTo('code-reduced'),
       'why can\'t I edit this code?': (e) => e.goTo('code-not-editable')
