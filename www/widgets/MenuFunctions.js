@@ -144,7 +144,7 @@ class MenuFunctions extends Widget {
 
   startMenu () {
     if (STORE.is('TUTORIAL_LOADED')) {
-      window.convo = new Convo(this.convos['exit-tutorial'])
+      window.convo = new Convo(this.convos, 'exit-tutorial')
     } else {
       this.close()
       window.greetings.startMenu()
@@ -156,10 +156,10 @@ class MenuFunctions extends Widget {
     const opened = window.localStorage.getItem('opened-project')
     if (opened) {
       this.convos = window.convos['functions-menu'](this)
-      window.convo = new Convo(this.convos['share-saved-project'])
+      window.convo = new Convo(this.convos, 'share-saved-project')
     } else {
       STORE.dispatch('SHARE_URL')
-      window.convo = new Convo(this.convos['share-sketch'])
+      window.convo = new Convo(this.convos, 'share-sketch')
     }
   }
 
@@ -169,18 +169,18 @@ class MenuFunctions extends Widget {
       if (res.success) { // if user is authenticated
         if (window.localStorage.getItem('opened-project')) {
           if (window.localStorage.getItem('last-commit-msg') === 'init') {
-            window.convo = new Convo(this.convos['save-newish-project'])
+            window.convo = new Convo(this.convos, 'save-newish-project')
           } else {
             this.convos = window.convos['functions-menu'](this)
-            window.convo = new Convo(this.convos['save-open-project'])
+            window.convo = new Convo(this.convos, 'save-open-project')
           }
         } else { // if this is a new project ...
-          window.convo = new Convo(this.convos['create-new-project'])
+          window.convo = new Convo(this.convos, 'create-new-project')
         }
         window.utils.updateRoot()
       } else { // if user has not authenticated
         window.utils.updateRoot()
-        window.convo = new Convo(this.convos['user-needs-login-to-save'])
+        window.convo = new Convo(this.convos, 'user-needs-login-to-save')
       }
     })
   }
@@ -188,7 +188,7 @@ class MenuFunctions extends Widget {
   _openProject () {
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) WIDGETS['saved-projects'].open()
-      else window.convo = new Convo(this.convos['user-needs-login-to-open'])
+      else window.convo = new Convo(this.convos, 'user-needs-login-to-open')
     })
   }
 
@@ -201,7 +201,7 @@ class MenuFunctions extends Widget {
     else if (currCode === blankCanv) this._openProject()
     else {
       this.convos = window.convos['functions-menu'](this)
-      window.convo = new Convo(this.convos['unsaved-changes-b'])
+      window.convo = new Convo(this.convos, 'unsaved-changes')
     }
   }
 
@@ -219,10 +219,10 @@ class MenuFunctions extends Widget {
       const currCode = NNE._encode(NNE.code)
       if (lastCode === currCode) {
         this.convos = window.convos['functions-menu'](this)
-        window.convo = new Convo(this.convos['start-new-project'])
+        window.convo = new Convo(this.convos, 'start-new-project')
       } else {
         this.convos = window.convos['functions-menu'](this)
-        window.convo = new Convo(this.convos['unsaved-changes'])
+        window.convo = new Convo(this.convos, 'unsaved-changes')
       }
     }
   }
@@ -248,14 +248,14 @@ class MenuFunctions extends Widget {
   runUpdate () {
     NNE.update()
     if (NNE.autoUpdate) {
-      window.convo = new Convo(this.convos['no-need-to-update'])
+      window.convo = new Convo(this.convos, 'no-need-to-update')
     }
   }
 
   autoUpdate () {
     NNE.autoUpdate = this.autoUpdateSel.value === 'true'
     if (!NNE.autoUpdate) {
-      window.convo = new Convo(this.convos['need-to-update'])
+      window.convo = new Convo(this.convos, 'need-to-update')
     }
   }
 
@@ -274,7 +274,7 @@ class MenuFunctions extends Widget {
   }
 
   resetErrors () {
-    window.convo = new Convo(this.convos['confirm-errors-reset'])
+    window.convo = new Convo(this.convos, 'confirm-errors-reset')
   }
 
   _resetErrors () {
@@ -282,17 +282,17 @@ class MenuFunctions extends Widget {
     NNE.clearErrorExceptions()
     setTimeout(() => {
       if (!STORE.is('SHOWING_ERROR')) {
-        window.convo = new Convo(this.convos['errors-reset-confirmation'])
+        window.convo = new Convo(this.convos, 'errors-reset-confirmation')
       }
     }, STORE.getTransitionTime())
   }
 
   reboot () {
-    window.convo = new Convo(this.convos['reboot-netnet'])
+    window.convo = new Convo(this.convos, 'reboot-netnet')
   }
 
   refresh () {
-    window.convo = new Convo(this.convos['refresh-netnet'])
+    window.convo = new Convo(this.convos, 'refresh-netnet')
   }
 
   reportBug () {
@@ -451,7 +451,7 @@ class MenuFunctions extends Widget {
         NNE.code = window.atob(data)
       },
       error: (err) => {
-        window.convo = new Convo(this.convos['temp-disclaimer'])
+        window.convo = new Convo(this.convos, 'temp-disclaimer')
         console.error('MenuFunctions:', err)
       }
     })
@@ -504,14 +504,14 @@ class MenuFunctions extends Widget {
           window.utils.post('./api/shorten-url', data, (res) => {
             if (!res.success) {
               console.error(res.error)
-              window.convo = new Convo(this.convos['oh-no-error'])
+              window.convo = new Convo(this.convos, 'oh-no-error')
               setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
             } else {
               const waitForDramaticEffect = time < 2000 ? 2000 : time
               setTimeout(() => {
                 window.localStorage.setItem('project-url', res.url)
                 this.convos = window.convos['functions-menu'](this)
-                window.convo = new Convo(this.convos['url-shortened'])
+                window.convo = new Convo(this.convos, 'url-shortened')
                 window.utils.processingFace = false
               }, waitForDramaticEffect)
             }
@@ -551,9 +551,9 @@ class MenuFunctions extends Widget {
       if (res.error) { // if there's an error creating the repo
         console.error(res.error)
         if (res.error.errors[0].message.includes('name already exists')) {
-          window.convo = new Convo(this.convos['project-already-exists'])
+          window.convo = new Convo(this.convos, 'project-already-exists')
         } else {
-          window.convo = new Convo(this.convos['oh-no-error'])
+          window.convo = new Convo(this.convos, 'oh-no-error')
         }
         setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
       } else { // otherwise let the user know it's all good!
@@ -566,7 +566,7 @@ class MenuFunctions extends Widget {
         })
         WIDGETS['saved-projects'].add(res.name)
         this.convos = window.convos['functions-menu'](this)
-        window.convo = new Convo(this.convos['new-project-created'])
+        window.convo = new Convo(this.convos, 'new-project-created')
       }
     })
   }
@@ -583,12 +583,12 @@ class MenuFunctions extends Widget {
     }
     window.utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {
-        window.convo = new Convo(this.convos['oh-no-error'])
+        window.convo = new Convo(this.convos, 'oh-no-error')
         setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
       } else {
         window.localStorage.setItem('project-url', res.data.html_url)
         this.convos = window.convos['functions-menu'](this)
-        window.convo = new Convo(this.convos['publish-to-ghpages'])
+        window.convo = new Convo(this.convos, 'publish-to-ghpages')
       }
     })
   }
@@ -607,13 +607,13 @@ class MenuFunctions extends Widget {
     }
     window.utils.post('./api/github/save-project', data, (res) => {
       if (!res.success) {
-        window.convo = new Convo(this.convos['oh-no-error'])
+        window.convo = new Convo(this.convos, 'oh-no-error')
         setTimeout(() => NNM.setFace('ŏ', '︵', 'ŏ', false), time)
       } else {
         window.localStorage.setItem('index-sha', res.data.content.sha)
         window.localStorage.setItem('last-commit-msg', res.data.commit.message)
         window.localStorage.setItem('last-commit-code', NNE._encode(NNE.code))
-        window.convo = new Convo(this.convos['project-saved'])
+        window.convo = new Convo(this.convos, 'project-saved')
       }
     })
   }
