@@ -37,7 +37,7 @@ class AFrameComponentWidget extends Widget {
 
     this.on('open', () => {
       window.convo = new Convo({
-        content: 'The color widget helps you create color codes to inject into your project. It will insert code wherever your cursor is placed, or replace code you currently have highlighted/selected.'
+        content: 'The A-Frame component widgets let\'s you update and preview changes to an entity\'s scale, rotation and position component.'
       })
     })
 
@@ -137,7 +137,7 @@ class AFrameComponentWidget extends Widget {
 
   _resetGUI () {
     this.$('#af-comp-wig-gui').innerHTML = ''
-    this.$('#af-comp-wig-main > p').textContent = 'Double click on an entity\'s component (aka attribute) to load up it\'s properties GUI'
+    this.$('#af-comp-wig-main > p').textContent = 'Double click on an entity\'s scale, rotation or position component to load up it\'s XYZ GUI. The entity must have an <code>id</code> defined.'
   }
 
   _displayGUI (comp) {
@@ -151,7 +151,7 @@ class AFrameComponentWidget extends Widget {
   }
 
   _missingId (comp) {
-    this.$('#af-comp-wig-main > p').innerHTML = `The <code>&lt;a-entity&gt;</code> you've selected <code>${comp}</code> compoenent for is missing an <code>id</code>. You must add an <code>id="example"</code> in order for the Widget to be able to modify it.`
+    this.$('#af-comp-wig-main > p').innerHTML = 'The <code>&lt;a-entity&gt;</code> you\'ve selected the component from is missing an <code>id</code>. You must add an <code>id="example"</code> in order for the Widget to be able to modify it. Make sure no two entity\'s have the same id'
   }
 
   // ...........................................................................

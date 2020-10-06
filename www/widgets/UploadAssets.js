@@ -29,6 +29,7 @@ class UploadAssets extends Widget {
     this._setupFileUploader()
     this._createContent()
     this._initList()
+    this.onchange = null
 
     this.convos = null
     window.utils.loadConvoData('upload-assets', () => {
@@ -36,6 +37,27 @@ class UploadAssets extends Widget {
       // localStorage data is going to launch (to ensure latest data)
       this.convos = window.convos['upload-assets'](this)
     })
+  }
+
+  get assets () {
+    const files = []
+    let l = this.$('#assets-drop > div')
+    if (!l) return files
+    l = (l instanceof window.HTMLElement) ? [l] : l
+    for (let i = 0; i < l.length; i++) {
+      files.push(l[i].textContent.substr(2))
+    }
+    return files
+  }
+
+  set assets (v) {
+    console.warn('UploadAssets: assets property is read only')
+  }
+
+  deleteFile (name) {
+    this._delete = name
+    this.convos = window.convos['upload-assets'](this)
+    window.convo = new Convo(this.convos['confirm-delete'])
   }
 
   _postDeletion () {
@@ -54,12 +76,6 @@ class UploadAssets extends Widget {
       this._delete = null
       this._initList()
     })
-  }
-
-  deleteFile (name) {
-    this._delete = name
-    this.convos = window.convos['upload-assets'](this)
-    window.convo = new Convo(this.convos['confirm-delete'])
   }
 
   uploadFile (file) {
@@ -109,6 +125,8 @@ class UploadAssets extends Widget {
     upload.style.margin = '22px'
     upload.addEventListener('click', () => this.fu.input.click())
     this.sec.appendChild(upload)
+    // ...
+    if (typeof this.onchange === 'function') this.onchange(this.assets)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -169,10 +187,6 @@ class UploadAssets extends Widget {
     // setup FileUploader
     this.fu = new FileUploader({
       maxSize: 5000,
-      filter: (type) => {
-        if (!type.includes('image/') && type !== 'text/plain') return false
-        else return true // TODO: test 3d files
-      },
       ready: (file) => this.uploadFile(file),
       error: (err) => {
         console.error('UploadAssets:', err)

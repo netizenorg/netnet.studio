@@ -111,6 +111,7 @@ window.utils = {
     if (WIDGETS['assets-widget']) {
       if (data.github.openedProject) WIDGETS['assets-widget'].listed = true
       else WIDGETS['assets-widget'].listed = false
+      if (WIDGETS['assets-widget'].listed) WIDGETS['assets-widget']._initList()
     }
     return data
   },
@@ -151,7 +152,7 @@ window.utils = {
     const owner = window.localStorage.getItem('owner')
     const repo = window.localStorage.getItem('opened-project')
     if (owner && repo) {
-      const path = `https://raw.githubusercontent.com/${owner}/${repo}/master/`
+      const path = `https://raw.githubusercontent.com/${owner}/${repo}/main/`
       NNE.addCustomRoot(path)
     } else {
       NNE.addCustomRoot(null)
@@ -299,15 +300,14 @@ window.utils = {
     function done (e) {
       e.hide()
       // show the convo netnet tried to show before this func consumed it
-      const last = window._lastConvo
-      if (last === 'save') { // go here via save >> GH redirect
+      if (window._lastConvo === 'save') { // go here via save >> GH redirect
         const obj = WIDGETS['functions-menu'].convos['create-new-project']
         window.convo = new Convo(obj)
-      } else if (last === 'open') { // go here via open >> GH redirect
+      } else if (window._lastConvo === 'open') { // go here via open >> GH redirect
         WIDGETS['saved-projects'].open()
-      } else if (last && window.greetings.convos) {
+      } else if (window._lastConvo && window.greetings.convos) {
         // go here via 'i want to sketch' in welcome screen
-        window.convo = new Convo(window.greetings.convos, last)
+        window.convo = new Convo(window.greetings.convos, window._lastConvo)
       }
     }
     if (window.utils._libs.includes('aframe')) return

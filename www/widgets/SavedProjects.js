@@ -28,7 +28,7 @@ class SavedProjects extends Widget {
     super(opts)
     this.key = 'saved-projects'
     this.keywords = ['saved', 'opened', 'projects', 'work']
-    this.title = 'Saved Projects'
+    this.title = 'GitHub Projects'
     this._initList()
     this._createContent()
     this.updateView()

@@ -1,0 +1,25 @@
+{
+  "title": "Working with Assets",
+  "subtitle": "Image Textures and 3D Files",
+  "author": {
+    "name": "Nick Briz",
+    "preferred": "Nick",
+    "url": "http://nickbriz.com"
+  },
+  "description": "In this tutorial we'll build on the WebVR basics by from the Creating a Scene with <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> tutorial. We'll learn how to import assets like image textures and 3D models into our projects and incorporate them into our scenes. ",
+  "keywords": ["vr", "xr", "obj", "gltf", "mtl", "jpg", "png", "textures", "3d", "assets"],
+  "main": "main.js",
+  "checkpoints": {
+    "Introduction": "intro",
+    "Image Assets": "upload-assets",
+    "3D Models": "3d-assets",
+    "OBJ Files": "obj-assets",
+    "GLTF Files": "gltf-assets"
+  },
+  "references": [
+    {
+      "note": "A-Frame.js, Open Source Library. <a href=\"https://github.com/ngokevin\" target=\"_blank\">Kevin Ngo</a>, <a href=\"https://github.com/dmarcos\" target=\"_blank\">Diego Marcos</a>, <a href=\"https://github.com/cvan\" target=\"_blank\">Christopher Robert Van Wiemeersch</a>, <a href=\"https://github.com/donmccurdy\" target=\"_blank\">Don McCurdy</a> and other <a href=\"https://github.com/aframevr/aframe/graphs/contributors\" target=\"_blank\">contributors</a>",
+      "url": "https://aframe.io/"
+    }
+  ]
+}

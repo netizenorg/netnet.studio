@@ -182,6 +182,7 @@ window.greetings = {
           if (!self.returningUser) self.introducing = 'tutorial'
           if (self.returningUser) window.convo = new Convo(self.convos, oUsr)
           else window.convo = new Convo(self.convos, nUsr)
+          WIDGETS['tutorials-menu'].open()
         }, STORE.getTransitionTime())
       })
     } else if (urlHasCode) {
