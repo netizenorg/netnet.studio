@@ -182,12 +182,17 @@ window.TUTORIAL = {
       color: 'rgba(255, 255, 255, 0.15)'
     },
     content: 'You may want to upload other images and try out other textures, but I want to work with 3D models first and then I\'ll stop making edits to our sketch.',
-    options: { 'sounds good': (e) => e.goTo('3d-assets') }
+    options: { 'sounds good': (e) => e.goTo('rm-box') }
   },
   // ------------------------------------------------ 3D ASSETS ----------------
   {
+    id: 'rm-box',
+    before: () => { TUTORIAL.setup('rm-box', 'dock-left') },
+    content: 'Before we go any further, I\'m going to remove our box to get it out of our way for now.',
+    options: { sure: (e) => e.goTo('3d-assets') }
+  }, {
     id: '3d-assets',
-    before: () => { TUTORIAL.setup('starter', 'dock-left') },
+    before: () => { TUTORIAL.setup('rm-box', 'dock-left') },
     content: 'There are lots of different 3D model file types out there, and while it\'s technically possible to load up pretty much anything into a browser, we\'ll stick to <b>OBJ</b> and <b>GLTF</b> files because those are the types for which <a href="https://aframe.io/docs/1.0.0/introduction/models.html" target="_blank">A-Frame has built-in support</a>.',
     options: {
       ok: (e) => e.goTo('download-3d'),
@@ -201,18 +206,13 @@ window.TUTORIAL = {
     id: 'download-3d',
     content: 'Before we move onto the next step, you\'ll need to have either an <b>OBJ</b> or <b>GLTF</b> file to upload. If you\'ve got your own, great! If not you can download a <a href="https://creativecommons.org/" target="_blank">creative commons</a> licensed model for free on <a href="https://poly.google.com/" target="_blank">Google Poly</a>.',
     options: {
-      ok: (e) => e.goTo('rm-box'),
+      ok: (e) => e.goTo('asset-manager'),
       'Is Poly the only option?': (e) => e.goTo('only-poly')
     }
   }, {
     id: 'only-poly',
     content: 'Nope, there are loads of other sites you can download and purchase 3D models from, including <a href="https://3dwarehouse.sketchup.com/" target="_blank">3D Wherehouse</a>, <a href="https://www.thingiverse.com/" target="_blank">Thingiverse</a>, <a href="https://www.turbosquid.com/Search/3D-Models/free" target="_blank">Turbosquid</a>, <a href="https://archive3d.net/" target="_blank">Archive3D</a> and <a href="https://clara.io/" target="_blank">Clara</a>. But Poly has exactly the file types (and file sizes) we\'re looking for.',
-    options: { cool: (e) => e.goTo('rm-box') }
-  }, {
-    id: 'rm-box',
-    before: () => { TUTORIAL.setup('rm-box', 'dock-left') },
-    content: 'Before we go any further, I\'m going to remove our box to get it out of our way for now.',
-    options: { sure: (e) => e.goTo('asset-manager') }
+    options: { cool: (e) => e.goTo('asset-manager') }
   }, {
     id: 'asset-manager',
     before: () => {
