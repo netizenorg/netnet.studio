@@ -390,7 +390,7 @@ router.post('/api/github/gh-pages', (req, res) => {
         return octokit.request('POST /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo,
-          source: { branch: 'master' },
+          source: { branch: 'main' },
           mediaType: { previews: ['switcheroo'] }
         })
       }
