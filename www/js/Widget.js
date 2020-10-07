@@ -223,7 +223,7 @@ class Widget {
 
   emit (eve, e) {
     this.events[eve].forEach(e => {
-      e(eve)
+      e(this.events)
     })
   }
 
