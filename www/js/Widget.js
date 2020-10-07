@@ -221,9 +221,9 @@ class Widget {
     this.events[eve].push(callback)
   }
 
-  emit (eve, e) {
-    this.events[eve].forEach(e => {
-      e(this.events)
+  emit (eve, data) {
+    this.events[eve].forEach(i => {
+      i(data)
     })
   }
 
