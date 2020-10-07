@@ -215,9 +215,16 @@ class Widget {
 
   on (eve, callback) {
     if (!this.events[eve]) {
-      return console.error(`Widget: ${eve} is not a Widget event`)
+      // return console.error(`Widget: ${eve} is not a Widget event`)
+      this.events[eve] = []
     }
     this.events[eve].push(callback)
+  }
+
+  emit (eve, e) {
+    this.events[eve].forEach(e => {
+      e(eve)
+    })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
