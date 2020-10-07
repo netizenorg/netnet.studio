@@ -52,6 +52,9 @@
   w.on('open', callback)
   w.on('close', callback)
 
+  // to fire all registered callbacks of an event
+  w.emit('click',data)
+
   // when using update() to position the widget (left/right/top/bottom)
   // you must pass number values (not strings), for example:
   w.update({ top: 29, right: 20 }, 500)
@@ -222,8 +225,8 @@ class Widget {
   }
 
   emit (eve, data) {
-    this.events[eve].forEach(i => {
-      i(data)
+    this.events[eve].forEach(callback => {
+      callback(data)
     })
   }
 
