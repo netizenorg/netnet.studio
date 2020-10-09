@@ -1,4 +1,4 @@
-/* global AlertBubble, TextBubble, NNW, STORE, SearchBar, NNT */
+/* global AlertBubble, TextBubble, NNW, STORE, SearchBar, NNT, Averigua */
 /*
   -----------
      info
@@ -315,9 +315,12 @@ class MenuManager {
   setFace (leftEye, mouth, rightEye, spinEyes) {
     if (spinEyes === false) this._spinEyes = false
     else this._spinEyes = true
-    this.ele.querySelector('#face > span:nth-child(1)').textContent = leftEye
-    this.ele.querySelector('#face > span:nth-child(2)').textContent = mouth
-    this.ele.querySelector('#face > span:nth-child(3)').textContent = rightEye
+    leftEye = this._face(leftEye, 'leftEye')
+    mouth = this._face(mouth, 'mouth')
+    rightEye = this._face(rightEye, 'rightEye')
+    this.ele.querySelector('#face > span:nth-child(1)').innerHTML = leftEye
+    this.ele.querySelector('#face > span:nth-child(2)').innerHTML = mouth
+    this.ele.querySelector('#face > span:nth-child(3)').innerHTML = rightEye
     this.ele.querySelector('#face > span:nth-child(1)')
       .style.transform = 'rotate(0rad)'
     this.ele.querySelector('#face > span:nth-child(3)')
@@ -340,9 +343,9 @@ class MenuManager {
   _setupNetnetFace () {
     this.ele.innerHTML = `
       <div id="face">
-        <span>◕</span>
-        <span>◞</span>
-        <span>◕</span>
+        <span>${this._face('◕', 'leftEye')}</span>
+        <span>${this._face('◞', 'mouth')}</span>
+        <span>${this._face('◕', 'rightEye')}</span>
       </div>
     `
     this._spinEyes = true
@@ -417,6 +420,39 @@ class MenuManager {
     } else {
       leftEye.style.transform = null
       rightEye.style.transform = null
+    }
+  }
+
+  _face (char, type) {
+    // BUG: main eye chars look tiny on Mac-Chrome && Mac-Safari
+    // https://stackoverflow.com/questions/64283424/drastic-font-size-inconsistency-across-browsers-for-specific-unicode-characters
+    const isMac = Averigua.platformInfo().platform.includes('Mac')
+    const isSafari = Averigua.browserInfo().name === 'Safari'
+    const isChrome = Averigua.browserInfo().name === 'Chrome'
+    const face = this.ele.querySelector('#face')
+    const targ = (char === '◞' || char === '◕')
+    if (!face) return char
+    else if (isMac && (isSafari || isChrome) && targ) {
+      face.style.transition = 'none'
+      const fs = STORE.state.layout === 'welcome' ? '64px' : '25px'
+      face.style.setProperty('font-size', fs, 'important')
+      face.style.margin = STORE.state.layout === 'welcome' ? '79px auto' : '0'
+      if (type === 'leftEye') {
+        const m = STORE.state.layout === 'welcome' ? '-24px' : '-12px'
+        face.children[0].style.margin = m
+      } else if (type === 'rightEye') {
+        const m = STORE.state.layout === 'welcome' ? '-9px' : '-6px'
+        face.children[2].style.marginLeft = m
+      } else if (type === 'mouth') {
+        // ...
+      }
+      return char
+    } else {
+      const fs = STORE.state.layout === 'welcome' ? '44px' : 'inherit'
+      face.style.setProperty('font-size', fs, 'important')
+      face.children[0].style.margin = 'auto'
+      face.children[2].style.marginLeft = 'auto'
+      return char
     }
   }
 

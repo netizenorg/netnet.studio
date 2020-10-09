@@ -532,7 +532,7 @@ window.convos['welcome-screen'] = (self) => {
       },
       'this is fine': (e) => {
         window.utils.clearProjectData()
-        e.goTo('this-is-fine')
+        e.hide()
       }
     }
   }, {
