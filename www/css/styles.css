@@ -96,6 +96,10 @@ button {
 
 #nn-window > #nn-menu > #face  {
   cursor: pointer;
+  height: 26px;
+  font-family: sans-serif;
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
   transition: font-size var(--layout-transition-time);
 }
 

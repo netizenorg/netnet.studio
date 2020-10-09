@@ -1,4 +1,4 @@
-/* global Maths, Color, NNM, NNE, STORE, Averigua */
+/* global Maths, Color, NNM, NNE, STORE */
 /*
   -----------
      info
@@ -294,33 +294,6 @@ class WindowManager {
     }, STORE.getTransitionTime())
   }
 
-  _fixMacEyes () {
-    // BUG: main eye chars look tiny on Mac-Chrome && Mac-Safari
-    if (typeof NNM === 'undefined') {
-      return setTimeout(() => this._fixMacEyes(), 250)
-    }
-    const isMac = Averigua.platformInfo().platform.includes('Mac')
-    const isSafari = Averigua.browserInfo().name === 'Safari'
-    const isChrome = Averigua.browserInfo().name === 'Chrome'
-    if (isMac && (isSafari || isChrome)) {
-      const face = NNM.ele.querySelector('#face')
-      const leftEye = face.children[0]
-      // const mouth = face.children[1]
-      const rightEye = face.children[2]
-      if (STORE.state.layout === 'welcome') {
-        face.style.setProperty('font-size', '64px', 'important')
-        face.style.margin = '79px auto'
-        leftEye.style.margin = '-24px'
-        rightEye.style.marginLeft = '-9px'
-      } else {
-        face.style.setProperty('font-size', '25px', 'important')
-        face.style.margin = '0'
-        leftEye.style.margin = '-12px'
-        rightEye.style.marginLeft = '-6px'
-      }
-    }
-  }
-
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
 
   _mouseMove (e) {
@@ -534,7 +507,6 @@ class WindowManager {
       this.menu.style.height = '100%'
       // this.menu.style.cursor = 'grab'
     }
-    this._fixMacEyes()
   }
 
   _toggleTransition (bool) {
