@@ -63,7 +63,7 @@
 class Widget {
   constructor (opts) {
     opts = opts || {}
-    this._key = null
+    this._key = opts.key
     this._title = opts.title || 'netnet widget'
     this._innerHTML = opts.innerHTML || ''
     this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
@@ -171,17 +171,17 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   open () {
-    if (STORE.state.widgets.map(w => w.ref).includes(this)) {
+    if (Object.keys(WIDGETS).map(w => WIDGETS[w]).includes(this)) {
       this._stayInFrame()
-      STORE.dispatch('OPEN_WIDGET', this)
+      this._display('visible')
       this.events.open.forEach(func => func())
     } else {
-      console.error('Widget: this widget was never loaded to the STORE')
+      console.error('Widget: this widget was never loaded via WindowManager')
     }
   }
 
   close () {
-    STORE.dispatch('CLOSE_WIDGET', this)
+    this._display('hidden')
     this.events.close.forEach(func => func())
   }
 
@@ -212,8 +212,8 @@ class Widget {
     // Widgets open... safe assumption i hope
     this.zIndex = 200
     let z = 100
-    STORE.state.widgets
-      .forEach(w => { if (w.key !== this.key) w.ref.zIndex = ++z })
+    Object.keys(WIDGETS)
+      .forEach(key => { if (key !== this.key) WIDGETS[key].zIndex = ++z })
   }
 
   on (eve, callback) {
@@ -270,7 +270,7 @@ class Widget {
 
   _updateIfListed () {
     // if this instance is set to be listed && if it has it's key property set
-    // (ie. if it was instantiated via a 'LOAD_WIDGETS' action)
+    // (ie. if it was instantiated via a NNW.loadWidgets)
     if (this.listed && this.key) {
       // display star span
       this.ele.querySelector('.w-top-bar .star').style.display = 'inline'
@@ -295,14 +295,14 @@ class Widget {
     // the widget has this.listed === true (some widgets like those used in
     // as sub-menus should not be listed) and also if the widget has it's
     // key property set. a key property is set when the widget is instantiated
-    // by having dispatched a LOAD_WIDGETS actions, like...
-    // STORE.dispatch('LOAD_WIDGETS', { keyname: new Widget() })
+    // and passed a key (ex: new Widget({ key: 'keyname' })) or when a list
+    // are loaded via NNW.loadWidgets({ 'keyname': widgetInstance })
     // (which is how any Widgets defined in a tutorial are loaded)
     // or, if the Widget is a more complex class, extended from this base
     // class && defined in it's own file in the www/widgets/ directory
     // then it needs to have been given a this.key = 'something' in it's
-    // constructor in ordfer for it to have been automatically instantiated
-    // by the WindowManager (which wil also dispatch a LOAD_WIDGETS action)
+    // constructor in order for it to have been automatically instantiated
+    // by the WindowManager
     let stared = window.localStorage.getItem('stared-widgets')
     stared = stared ? JSON.parse(stared) : []
     if (stared.includes(this.key)) { // unstar it
@@ -345,11 +345,16 @@ class Widget {
   }
 
   _display (value) {
-    // used by StateManager's render() method when OPEN/CLOSE_WIDGET dispatched
     if (value === 'visible' && this.ele.style.visibility === 'hidden') {
       this.bring2front()
     }
     this.ele.style.visibility = value
+    // update STORE
+    const data = Object.keys(WIDGETS)
+      .map(w => WIDGETS[w])
+      .filter(w => w.opened)
+      .map(w => w.key)
+    STORE.dispatch('UPDATED_WIDGETS', data)
   }
 
   _stayInFrame () {

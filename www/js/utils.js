@@ -1,4 +1,4 @@
-/* global NNE, STORE, Maths, WIDGETS, Convo, Averigua */
+/* global NNE, NNW, STORE, Maths, WIDGETS, Convo, Averigua */
 window.convos = {}
 window.utils = {
 
@@ -37,7 +37,7 @@ window.utils = {
         if (widget.key) {
           const data = {}
           data[widget.key] = widget
-          STORE.dispatch('LOAD_WIDGETS', data)
+          NNW.loadWidgets(data)
         } else {
           // NOTE: the widget class itself has been injected into the page,
           // but it has not been instantiated because it was missing it's key.
@@ -207,15 +207,15 @@ window.utils = {
   },
 
   keepWidgetsInFrame: () => {
-    STORE.state.widgets.forEach(w => {
-      const maxLeft = window.innerWidth - w.ref.ele.offsetWidth
-      const maxTop = window.innerHeight - w.ref.ele.offsetHeight
-      if (w.ref.ele.offsetLeft > maxLeft) {
-        w.ref.update({ right: 20 })
-      } else if (w.ref.ele.offsetTop > maxTop) {
-        w.ref.update({ bottom: 20 })
+    for (const w in WIDGETS) {
+      const maxLeft = window.innerWidth - WIDGETS[w].ele.offsetWidth
+      const maxTop = window.innerHeight - WIDGETS[w].ele.offsetHeight
+      if (WIDGETS[w].ele.offsetLeft > maxLeft) {
+        WIDGETS[w].update({ right: 20 })
+      } else if (WIDGETS[w].ele.offsetTop > maxTop) {
+        WIDGETS[w].update({ bottom: 20 })
       }
-    })
+    }
   },
 
   closeTopMostWidget: () => {

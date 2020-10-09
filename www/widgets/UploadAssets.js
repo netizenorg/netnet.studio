@@ -1,4 +1,4 @@
-/* global Widget, Convo, FileUploader, NNM, STORE */
+/* global Widget, Convo, FileUploader, NNM, WIDGETS */
 /*
   -----------
      info
@@ -177,7 +177,7 @@ class UploadAssets extends Widget {
           word: a.name,
           subs: a.name.split('.'),
           alts: [],
-          clck: () => { STORE.dispatch('OPEN_WIDGET', this.key) }
+          clck: () => { WIDGETS[this.key].open() }
         }
       })
     NNM.search.addToDict(arr)

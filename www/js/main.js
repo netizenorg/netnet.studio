@@ -77,10 +77,10 @@ window.addEventListener('keydown', (e) => {
     STORE.dispatch('CHANGE_OPACITY', 1)
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+    window.WIDGETS['tutorials-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+    window.WIDGETS['functions-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
     window.NNM.search.open()

@@ -1,4 +1,4 @@
-/* global STORE, NNT, NNE, Fuse, WIDGETS */
+/* global STORE, NNT, NNE, NNW, Fuse, WIDGETS */
 /*
   -----------
      info
@@ -39,12 +39,8 @@ class SearchBar {
       if (this.loadedTutorialsData < 1) this._loadData('tutorials', e)
       this.loadedTutorialsData++
     })
-    STORE.subscribe('widgets', (e) => {
-      // 2, b/c the general widgets load call doesnt fire until
-      // after the welcome widgets load call
-      if (this.loadedWidgetsData < 2) this._loadData('widgets', e)
-      this.loadedWidgetsData++
-    })
+
+    NNW.onWidgetLoaded((keys) => this._loadData('widgets', keys))
 
     document.addEventListener('keydown', (e) => {
       if (this.opened) {
@@ -244,19 +240,24 @@ class SearchBar {
   _loadData (type, data) {
     const arr = []
     if (type === 'widgets') {
-      data.filter(w => {
+      data.filter(key => {
         const keys = ['functions-menu', 'widgets-menu']
-        if (w.ref.listed || keys.includes(w.ref.key)) return w
+        if (WIDGETS[key].listed || keys.includes(key)) return WIDGETS[key]
         else return false
-      }).forEach(w => {
-        if (w.key === 'functions-menu') this._createFuncMenuObj(w.ref.subs)
-        const obj = {
-          type: 'widgets',
-          word: w.ref.title,
-          alts: w.ref.keywords || [],
-          clck: () => { WIDGETS[w.ref.key].open() }
+      }).forEach(k => {
+        const w = WIDGETS[k]
+        if (k === 'functions-menu') this._createFuncMenuObj(w.subs)
+        else {
+          const obj = {
+            type: 'widgets',
+            word: w.title,
+            alts: w.keywords || [],
+            clck: () => { WIDGETS[w.key].open() }
+          }
+          const included = this.dict
+            .filter(o => o.type === obj.type && o.word === obj.word)
+          if (included.length === 0) arr.push(obj)
         }
-        arr.push(obj)
       })
     } else if (type === 'tutorials') {
       data.forEach(t => {

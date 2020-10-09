@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, WIDGETS */
+/* global TUTORIAL, STORE, WIDGETS, NNW */
 /*
   -----------
      info
@@ -50,27 +50,34 @@ class TutorialManager {
 
   next () {
     const index = Number(STORE.state.tutorial.id)
+    this._resetVids()
     STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
   }
 
   prev () {
     const index = Number(STORE.state.tutorial.id)
+    this._resetVids()
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
   }
 
   goTo (id) {
+    this._resetVids()
     STORE.dispatch('TUTORIAL_GOTO', id)
   }
 
   hide () { STORE.dispatch('HIDE_TUTORIAL_TEXT') }
 
-  open (name) { STORE.dispatch('OPEN_WIDGET', name) }
+  open (name) { WIDGETS[name].open() }
 
-  close (name) { STORE.dispatch('CLOSE_WIDGET', name) }
+  close (name) { WIDGETS[name].close() }
 
-  end () { STORE.dispatch('TUTORIAL_FINISHED') }
+  quit () {
+    STORE.dispatch('TUTORIAL_FINISHED')
+  }
 
-  fin () { STORE.dispatch('TUTORIAL_FINISHED') }
+  end () { this.quit() }
+
+  fin () { this.quit() }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -83,6 +90,13 @@ class TutorialManager {
       steps: 'the TUTORIAL object is missing the steps Array'
     }
     console.error(`TutorialManager: ${errz[t]}`)
+  }
+
+  _resetVids () {
+    for (const w in TUTORIAL.widgets) {
+      const v = TUTORIAL.widgets[w].$('video')
+      if (v) v.currentTime = 0
+    }
   }
 
   _loadScript (json, root, cb) {
@@ -123,7 +137,7 @@ class TutorialManager {
         // NOTE: this will only load tutorials for which there are existing
         // classes in www/widgets. if a new widget class type needs to be
         // added to the page use window.utils.loadWidgetClass(path, filename)
-        STORE.dispatch('LOAD_WIDGETS', TUTORIAL.widgets)
+        NNW.loadWidgets(TUTORIAL.widgets)
       }
 
       // run tutorial's onload event
@@ -142,7 +156,7 @@ class TutorialManager {
     const options = {
       'yes, let\'s do it!': (e) => {
         e.goTo(i)
-        STORE.dispatch('CLOSE_WIDGET', 'tutorials-menu')
+        WIDGETS['tutorials-menu'].close()
       },
       'no, i changed my mind': (e) => {
         STORE.dispatch('TUTORIAL_FINISHED')

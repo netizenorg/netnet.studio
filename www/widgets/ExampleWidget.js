@@ -25,8 +25,7 @@ class ExampleWidget extends Widget {
 
     // NOTE: must have key if you want the WindowManager to automatically
     // instantiate it. Otherwise, the assumption is that it will be instantiated
-    // later by displatching a LOAD_WIDGETS action, for example:
-    // STORE.dispatch('LOAD_WIDGETS', { key: new ExampleWidget() })
+    // later using NNW.loadWidget() or NNW.loadWidgets()
     // at which point it's key will be assigned based on the property name
     this.key = 'example-widget'
 

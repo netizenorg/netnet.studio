@@ -47,7 +47,7 @@ window.greetings.widgets = {
   })
 }
 
-STORE.dispatch('LOAD_WIDGETS', window.greetings.widgets)
+NNW.loadWidgets(window.greetings.widgets)
 
 window.convos['welcome-screen'] = (self) => {
   // TODO: link keywords to "wikipedia" widgets (i-frame browser widget)
@@ -78,7 +78,7 @@ window.convos['welcome-screen'] = (self) => {
     id: 'main-menu-init',
     before: () => {
       if (WIDGETS['ws-credits'].opened) {
-        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+        WIDGETS['ws-credits'].close()
       }
     },
     content: 'What do you want to do?',
@@ -99,7 +99,7 @@ window.convos['welcome-screen'] = (self) => {
     id: 'main-menu', // same as above but one extra option
     before: () => {
       if (WIDGETS['ws-credits'].opened) {
-        STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+        WIDGETS['ws-credits'].close()
       }
     },
     content: 'What do you want to do?',
@@ -171,7 +171,7 @@ window.convos['welcome-screen'] = (self) => {
   const backgroundInfo = [{
     id: 'whois',
     before: () => {
-      STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+      WIDGETS['ws-credits'].open()
       setTimeout(() => {
         WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
         const x = WIDGETS['ws-credits'].width + 50
@@ -216,7 +216,7 @@ window.convos['welcome-screen'] = (self) => {
     content: 'Because he feels the web is a "watered down" version of his Xanadu Project, which he was working on long before the web came out, but unlike the Web, it\'s had some trouble gaining traction.',
     options: {
       'What\'s Xanadu got over the Web?': (e) => {
-        STORE.dispatch('OPEN_WIDGET', 'ws-xanadu')
+        WIDGETS['ws-xanadu'].open()
         setTimeout(() => {
           WIDGETS['ws-xanadu'].update({ left: 20, top: 20 }, 500)
           const x = WIDGETS['ws-xanadu'].width + 50
@@ -232,7 +232,7 @@ window.convos['welcome-screen'] = (self) => {
     content: 'I\'ll let Ted explain that himself.',
     options: {
       'I see, and netnet?': (e) => {
-        STORE.dispatch('CLOSE_WIDGET', 'ws-xanadu')
+        WIDGETS['ws-xanadu'].close()
         WIDGETS['ws-xanadu'].recenter()
         WIDGETS['ws-xanadu'].$('video').pause()
         NNW.updatePosition()
@@ -244,9 +244,9 @@ window.convos['welcome-screen'] = (self) => {
     content: 'Metamedia is one way to think about the Internet and computers, as an artistic medium which consists of "a wide range of already-existing and not-yet-invented media". I\'m here to help you fully realize that potential!',
     options: {
       'tell me more...': (e) => {
-        STORE.dispatch('OPEN_WIDGET', 'ws-alan')
-        STORE.dispatch('OPEN_WIDGET', 'ws-adele')
-        STORE.dispatch('OPEN_WIDGET', 'ws-smalltalk')
+        WIDGETS['ws-alan'].open()
+        WIDGETS['ws-adele'].open()
+        WIDGETS['ws-smalltalk'].open()
         setTimeout(() => {
           WIDGETS['ws-alan'].update({ bottom: 20, right: 20 }, 1000)
           WIDGETS['ws-adele'].update({ left: 50, top: 20 }, 1000)
@@ -264,9 +264,9 @@ window.convos['welcome-screen'] = (self) => {
     content: 'Adele Goldberg and Alan Kay coined the term "metamedia" in 1977, when computers were huge institution owned machines, they <a href="http://www.newmediareader.com/book_samples/nmr-26-kay.pdf" target="_blank">imagined</a> "personal" computers. While working on that they made the first computers with real "graphical user interfaces" at Xerox PARC, a system they called SmallTalk.',
     options: {
       'I see, and netnet?': (e) => {
-        STORE.dispatch('CLOSE_WIDGET', 'ws-alan')
-        STORE.dispatch('CLOSE_WIDGET', 'ws-adele')
-        STORE.dispatch('CLOSE_WIDGET', 'ws-smalltalk')
+        WIDGETS['ws-alan'].close()
+        WIDGETS['ws-adele'].close()
+        WIDGETS['ws-smalltalk'].close()
         WIDGETS['ws-alan'].recenter()
         WIDGETS['ws-adele'].recenter()
         WIDGETS['ws-smalltalk'].recenter()
@@ -815,7 +815,7 @@ window.convos['welcome-screen'] = (self) => {
   }, {
     id: 'name-entered',
     before: () => {
-      STORE.dispatch('OPEN_WIDGET', 'ws-credits')
+      WIDGETS['ws-credits'].open()
       setTimeout(() => {
         WIDGETS['ws-credits'].update({ left: 20, top: 20 }, 500)
         const x = WIDGETS['ws-credits'].width + 50
