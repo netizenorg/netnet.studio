@@ -66,6 +66,13 @@ class GenWidget extends Widget {
     slider.setAttribute('value', opts.value || '50')
     slider.className = 'gen-slider'
     slider.addEventListener('change', opts.change())
+    const label = document.createElement('section')
+    label.innerHTML = opts.label || ''
+    label.className = 'gen-slider-label'
+    el.appendTextNode(label)
+    const bubble = document.createElement('div')
+    bubble.style = 'width: 15px;height: 15px;border-radius: 50%;border: 2px solid var(--netizen-meta);transform: translate(-7px,17px);position: relative;left: 127px;'
+    bubble.className = 'gen-slider-bubble'
 
     el.appendChild(slider)
     return el
