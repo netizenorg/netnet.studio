@@ -155,7 +155,7 @@ class MenuTutorial extends Widget {
         STORE.dispatch('TUTORIAL_GOTO', '__START__')
       })
       this.$('#tut-menu-quit').addEventListener('click', () => {
-        STORE.dispatch('TUTORIAL_FINISHED')
+        NNT.quit()
         STORE.dispatch('CHANGE_LAYOUT', 'welcome')
         window.greetings.injectStarterCode()
         window.greetings.mainMenu()
@@ -171,7 +171,8 @@ class MenuTutorial extends Widget {
       d.textContent = cp
       d.className = 'link'
       d.addEventListener('click', () => {
-        STORE.dispatch('TUTORIAL_GOTO', t.checkpoints[cp])
+        NNT.closeWidgets()
+        NNT.goTo(t.checkpoints[cp])
         window.utils.netitorUpdate()
       })
       ele.appendChild(d)

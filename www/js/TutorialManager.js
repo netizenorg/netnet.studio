@@ -50,18 +50,18 @@ class TutorialManager {
 
   next () {
     const index = Number(STORE.state.tutorial.id)
-    this._resetVids()
+    this._resetVideos()
     STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
   }
 
   prev () {
     const index = Number(STORE.state.tutorial.id)
-    this._resetVids()
+    this._resetVideos()
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
   }
 
   goTo (id) {
-    this._resetVids()
+    this._resetVideos()
     STORE.dispatch('TUTORIAL_GOTO', id)
   }
 
@@ -72,12 +72,20 @@ class TutorialManager {
   close (name) { WIDGETS[name].close() }
 
   quit () {
+    this.closeWidgets()
+    NNW.removeWidgets(TUTORIAL.widgets)
     STORE.dispatch('TUTORIAL_FINISHED')
   }
 
   end () { this.quit() }
 
   fin () { this.quit() }
+
+  closeWidgets () {
+    Object.keys(TUTORIAL.widgets)
+      .filter(key => STORE.state.widgets.includes(key))
+      .forEach(key => WIDGETS[key].close())
+  }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -92,7 +100,7 @@ class TutorialManager {
     console.error(`TutorialManager: ${errz[t]}`)
   }
 
-  _resetVids () {
+  _resetVideos () {
     for (const w in TUTORIAL.widgets) {
       const v = TUTORIAL.widgets[w].$('video')
       if (v) v.currentTime = 0
@@ -159,7 +167,7 @@ class TutorialManager {
         WIDGETS['tutorials-menu'].close()
       },
       'no, i changed my mind': (e) => {
-        STORE.dispatch('TUTORIAL_FINISHED')
+        this.quit()
         window.greetings.injectStarterCode()
         window.greetings.mainMenu()
       }
