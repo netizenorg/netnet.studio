@@ -1,4 +1,4 @@
-/* global Maths, Color, NNM, NNE, STORE */
+/* global Maths, Color, NNM, NNE, STORE, Widget, WIDGETS */
 /*
   -----------
      info
@@ -128,6 +128,15 @@ class WindowManager {
   }
 
   expandShortURL (shortCode, cb) {
+    function exErr (err) {
+      let m = 'Oh dang! looks like something went wrong trying to expand'
+      m += ' the short code in this URL.'
+      if (err) m += ` It seems that ${err}`
+      STORE.dispatch('SHOW_EDU_TEXT', {
+        content: m, options: { ok: () => { STORE.dispatch('HIDE_EDU_TEXT') } }
+      })
+    }
+
     window.fetch('./api/expand-url', {
       method: 'POST',
       headers: {
@@ -137,7 +146,7 @@ class WindowManager {
       body: JSON.stringify({ key: shortCode })
     }).then(res => res.json())
       .then(json => {
-        if (json.error) this._expandURLerror(json.error)
+        if (json.error) exErr(json.error)
         else {
           window.location.hash = json.hash
           // const opa = new URL(window.location).searchParams.get('opacity')
@@ -146,16 +155,52 @@ class WindowManager {
           if (cb) cb()
         }
       })
-      .catch(() => { this._expandURLerror() })
+      .catch(() => { exErr() })
   }
 
-  _expandURLerror (err) {
-    let m = 'Oh dang! looks like something went wrong trying to expand'
-    m += ' the short code in this URL.'
-    if (err) m += ` It seems that ${err}`
-    STORE.dispatch('SHOW_EDU_TEXT', {
-      content: m, options: { ok: () => { STORE.dispatch('HIDE_EDU_TEXT') } }
-    })
+  loadWidget (widget, key) {
+    key = key || widget.key
+    if (typeof key !== 'string') {
+      console.warn('WindowManager: a widget\'s key value should be a string')
+    } else if (!key) {
+      console.warn('WindowManager: failed to load a widget without a key value')
+    } else if (WIDGETS[key]) {
+      console.warn(`WindowManager: WIDGETS.${key} already exists`)
+    } else if (!(widget instanceof Widget)) {
+      console.warn(`WindowManager: failed to load ${key}, it's not a Widget`)
+    } else {
+      if (widget.key !== key) widget.key = key
+      WIDGETS[key] = widget
+    }
+    this._widgetUpdate()
+  }
+
+  loadWidgets (data) {
+    for (const key in data) this.loadWidget(data[key], key)
+  }
+
+  removeWidget (widget) {
+    if (typeof widget === 'string') {
+      delete WIDGETS[widget]
+    } else if (widget instanceof Widget) {
+      delete WIDGETS[widget.key]
+    } else {
+      console.warn(`WindowManager: failed to remove ${widget}`)
+    }
+    this._widgetUpdate()
+  }
+
+  removeWidgets (data) {
+    if (data instanceof Array) {
+      data.forEach(key => this.removeWidget(key))
+    } else {
+      for (const key in data) this.removeWidget(key)
+    }
+  }
+
+  onWidgetLoaded (callback) {
+    if (!this.wigListeners) this.wigListeners = []
+    if (!this.wigListeners.includes(callback)) this.wigListeners.push(callback)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -195,7 +240,20 @@ class WindowManager {
           if (widget.key) data[widget.key] = widget
         }
       })
-      STORE.dispatch('LOAD_WIDGETS', data)
+      this.loadWidgets(data)
+    }
+  }
+
+  _widgetUpdate () {
+    // alert widget listeners that a widgets have been loaded/removed
+    this.wigListeners.forEach(cb => cb(Object.keys(WIDGETS)))
+    // check if any widgets have been opened or closed
+    const opened = Object.keys(WIDGETS)
+      .map(w => WIDGETS[w])
+      .filter(w => w.opened)
+      .map(w => w.key)
+    if (JSON.stringify(STORE.state.widgets) !== JSON.stringify(opened)) {
+      STORE.dispatch('UPDATED_WIDGETS', opened)
     }
   }
 

@@ -1,4 +1,4 @@
-/* global AlertBubble, TextBubble, NNW, STORE, SearchBar, NNT, Averigua */
+/* global AlertBubble, TextBubble, NNW, STORE, SearchBar, NNT, Averigua, WIDGETS */
 /*
   -----------
      info
@@ -83,14 +83,14 @@ class MenuManager {
         path: 'images/menu/functions.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'functions-menu')
+          WIDGETS['functions-menu'].open()
         }
       },
       // widgets: {
       //   path: 'images/menu/widget.png',
       //   click: () => {
       //     STORE.dispatch('TOGGLE_MENU')
-      //     STORE.dispatch('OPEN_WIDGET', 'widgets-menu')
+      //     WIDGETS['widgets-menu'].open()
       //   }
       // },
       search: {
@@ -105,7 +105,7 @@ class MenuManager {
         path: 'images/menu/tutorials.png',
         click: () => {
           STORE.dispatch('TOGGLE_MENU')
-          STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+          WIDGETS['tutorials-menu'].open()
         }
       }
     }
@@ -124,7 +124,7 @@ class MenuManager {
     this.ele.querySelector('#face').addEventListener('click', () => {
       if (STORE.state.layout !== 'welcome') STORE.dispatch('TOGGLE_MENU')
       else if (STORE.is('TUTORIAL_LOADED')) {
-        STORE.dispatch('OPEN_WIDGET', 'tutorials-menu')
+        WIDGETS['tutorials-menu'].open()
       } else if (!STORE.is('TUTORIAL_LOADED')) window.greetings.welcome()
     })
   }

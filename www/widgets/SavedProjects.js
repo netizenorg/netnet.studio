@@ -1,4 +1,4 @@
-/* global Widget, STORE, Convo, NNE, NNM */
+/* global Widget, STORE, Convo, NNE, NNM, WIDGETS */
 /*
   -----------
      info
@@ -150,7 +150,7 @@ class SavedProjects extends Widget {
           word: proj,
           subs: [],
           alts: [],
-          clck: () => { STORE.dispatch('OPEN_WIDGET', this.key) }
+          clck: () => { WIDGETS[this.key].open() }
         }
       })
     NNM.search.addToDict(arr)

@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, STORE */
+/* global NNW, Widget, WIDGETS */
 /*
   -----------
      info
@@ -27,13 +27,14 @@ class MenuWidgets extends Widget {
     this.listed = false // make sure it doesn't show up in Widgets Menu
     this.resizable = false
     this.keywords = ['gizmos', 'tools', 'toolbar', 'doodad', 'gui', 'interface', 'windows', 'helpers']
-    STORE.subscribe('widgets', (arr) => { this.updateView() })
+    NNW.onWidgetLoaded((keys) => { this.updateView() })
   }
 
   updateView () {
     // first order list by most recently LOADED, OPENED or CLOSED
-    let keyList = STORE.state.widgets
-      .filter(w => w.ref.listed).map(w => w.key).reverse()
+    let keyList = Object.keys(WIDGETS).map(w => {
+      return { ref: WIDGETS[w], key: w }
+    }).filter(w => w.ref.listed).map(w => w.key).reverse()
     // then remove any starred widgets && place them on top
     let stared = window.localStorage.getItem('stared-widgets')
     stared = stared ? JSON.parse(stared) : []

@@ -164,7 +164,7 @@ class MenuFunctions extends Widget {
   }
 
   saveProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    WIDGETS['functions-menu'].close()
     window.utils.get('./api/github/auth-status', (res) => {
       if (res.success) { // if user is authenticated
         if (window.localStorage.getItem('opened-project')) {
@@ -193,7 +193,7 @@ class MenuFunctions extends Widget {
   }
 
   openProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    WIDGETS['functions-menu'].close()
     const lastCode = window.localStorage.getItem('last-commit-code')
     const currCode = window.btoa(NNE.code)
     const blankCanv = 'PCFET0NUWVBFIGh0bWw+'
@@ -212,7 +212,7 @@ class MenuFunctions extends Widget {
   }
 
   newProject () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    WIDGETS['functions-menu'].close()
     if (!window.localStorage.getItem('opened-project')) this._newProject()
     else {
       const lastCode = window.localStorage.getItem('last-commit-code')
@@ -228,7 +228,7 @@ class MenuFunctions extends Widget {
   }
 
   uploadCode () {
-    STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+    WIDGETS['functions-menu'].close()
     this.fu.input.click()
   }
 
@@ -446,7 +446,7 @@ class MenuFunctions extends Widget {
       dropping: (e) => { STORE.dispatch('CHANGE_OPACITY', 0.5) },
       dropped: (e) => { STORE.dispatch('CHANGE_OPACITY', 1) },
       ready: (file) => {
-        STORE.dispatch('CLOSE_WIDGET', 'functions-menu')
+        WIDGETS['functions-menu'].close()
         const data = file.data.split('data:text/html;base64,')[1]
         NNE.code = window.atob(data)
       },

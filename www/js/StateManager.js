@@ -1,4 +1,4 @@
-/* global NNW, NNM, NNE, WIDGETS, Widget */
+/* global NNW, NNM, NNE */
 /*
   -----------
      info
@@ -56,7 +56,7 @@ class StateManager {
       hash: window.location.hash ? 'has-hash' : 'no-hash',
       theme: 'dark', // the netitor's syntax highlight theme
       background: false, // false means netitor has transparent background
-      widgets: [], // widgets which have been instantiated via STORE
+      widgets: [], // keys of widgets which are currently opened
       tutorials: [], // metadata list of 'in-house' tutorials
       menu: false, // displaying main menu or not
       eduinfo: { display: false, payload: null },
@@ -84,10 +84,7 @@ class StateManager {
       'CHANGE_THEME', // 'theme-name' or { theme, background }
       // ............
       'LOAD_TUTORIALS', // array of metadata objects
-      'LOAD_WIDGETS', // object { key: referenceToWidgetInstance }
-      'OPEN_WIDGET', // referenceToWidgetInstance
-      'CLOSE_WIDGET', // referenceToWidgetInstance
-      'DELETE_WIDGET' // referenceToWidgetInstance
+      'UPDATED_WIDGETS' // array of opened widget keys
     ]
     this.eduActionTypes = [
       'SHOW_EDU_ALERT', // { content, options }
@@ -126,15 +123,7 @@ class StateManager {
   }
 
   didChange (p) {
-    const equalArr = (a, b) => {
-      if (p === 'widgets') {
-        // HACK: to avoid https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value
-        a = a.map(w => { return { key: w.key, visible: w.visible } })
-        b = b.map(w => { return { key: w.key, visible: w.visible } })
-      }
-      return JSON.stringify(a) === JSON.stringify(b)
-    }
-
+    const equalArr = (a, b) => JSON.stringify(a) === JSON.stringify(b)
     const prior = p.includes('.')
       ? this.prior[p.split('.')[0]][p.split('.')[1]] : this.prior[p]
     const current = p.includes('.')
@@ -223,8 +212,7 @@ class StateManager {
     } else if (type === 'TUTORIAL_LOADED') {
       return Object.keys(s.tutorial.steps).length > 0
     } else if (type === 'WIDGET_OPEN') {
-      const wig = this.state.widgets.filter(w => w.key === key)[0]
-      return wig ? wig.visible : false
+      return s.widgets.includes(key)
     }
   }
 
@@ -255,7 +243,7 @@ class StateManager {
     } else if (type === 'CHANGE_THEME') {
       act = this.updateTheme(type, data); ren = 'netitor'
     } else if (type.includes('_WIDGET')) {
-      act = this.updateWidgets(type, data); ren = 'widgets'
+      act = { type, data }; ren = 'widgets'
     } else if (type === 'LOAD_TUTORIALS') {
       act = { type, data }; ren = 'none'
     } else if (type === 'TOGGLE_MENU') {
@@ -321,58 +309,6 @@ class StateManager {
       return { type, data: { theme: data, background: this.state.background } }
     } else {
       return { type, data: { theme: data.theme, background: data.background } }
-    }
-  }
-
-  updateWidgets (type, data) {
-    // NOTE: this action creator "breaks the rules" a little bit, as it
-    // also has the "side effect" of updating the global WIDGETS obj
-    let wig, key
-    if (typeof data === 'object' && !(data instanceof Widget)) { // collection
-      // LOAD_WIDGETS
-      const arr = [...this.state.widgets]
-      for (const key in data) {
-        if (WIDGETS[key]) {
-          console.warn(`StateManager: WIDGETS.${key} already exists`)
-        } else if (!(data[key] instanceof Widget)) {
-          console.warn(`StateManager: ignoring ${key}, it's not a Widget`)
-        } else {
-          WIDGETS[key] = data[key]
-          if (WIDGETS[key].key !== key) WIDGETS[key].key = key
-          arr.push({ key, ref: WIDGETS[key], visible: false })
-        }
-      }
-      return { type, data: arr }
-      // ...
-    } else { // single widget (key or reference)
-      // OPEN, CLOSE or DELETE
-      wig = (typeof data === 'string') ? WIDGETS[data] : data
-      key = (typeof data === 'string') ? key : undefined
-      // ....ERROR CHECK....
-      if (!wig) {
-        console.warn(`StateManager: WIDGETS['${data}'], does not exist`)
-        return { type, data: [...this.state.widgets] }
-      } else if (!(wig instanceof Widget)) {
-        console.warn(`StateManager: ignoring "${wig}", it's not a Widget`)
-        return { type, data: [...this.state.widgets] }
-      }
-      if (!key) {
-        key = this.state.widgets
-          .filter(w => w.ref === wig)
-          .map(w => w.key)[0]
-      }
-      // ....CREATE ACTION....
-      wig = this.state.widgets.filter(w => w.ref === wig)[0]
-      const arr = this.state.widgets.filter(w => w.key !== key)
-      if (type === 'OPEN_WIDGET' || type === 'CLOSE_WIDGET') {
-        if (type === 'OPEN_WIDGET') wig.visible = true
-        else if (type === 'CLOSE_WIDGET') wig.visible = false
-        arr.push(wig)
-        return { type, data: arr }
-      } else if (type === 'DELETE_WIDGET') {
-        delete WIDGETS[key]
-      }
-      return { type, data: arr }
     }
   }
 
@@ -760,20 +696,13 @@ class StateManager {
     }
   }
 
-  renderWidgets () {
-    this.state.widgets.forEach(w => {
-      if (w.visible) w.ref._display('visible')
-      else w.ref._display('hidden')
-    })
-  }
-
   render (change) {
     if (change.includes('netitor')) {
       this.renderNetitor(change)
     } else if (change === 'window') {
       this.renderWindowManager()
     } else if (change === 'widgets') {
-      this.renderWidgets()
+      // ...
     } else if (change === 'netnet') {
       this.renderMenuManager()
       this.resetErrorMarkers()

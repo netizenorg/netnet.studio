@@ -1,4 +1,4 @@
-/* global Convo, Averigua, STORE, NNE, NNT, NNM, WIDGETS */
+/* global Convo, Averigua, STORE, NNE, NNT, NNM, NNW, WIDGETS */
 window.greetings = {
   convos: null,
   city: null,
@@ -59,9 +59,9 @@ window.greetings = {
           self.ready()
         }
       })
-      STORE.subscribe('widgets', (wigs) => {
+      NNW.onWidgetLoaded((keys) => {
         if (!self.loaded.widgets &&
-          wigs.length > Object.keys(self.widgets).length) {
+          keys.length > Object.keys(self.widgets).length) {
           self.loaded.widgets = true
           self.ready()
         }
@@ -253,7 +253,7 @@ window.greetings = {
     // to introduce themselves, if they do, this redirects them after they've
     // finished their introductions
     if (WIDGETS['ws-credits'].opened) {
-      STORE.dispatch('CLOSE_WIDGET', 'ws-credits')
+      WIDGETS['ws-credits'].close()
     }
     const self = window.greetings
     if (self.introducing === 'tutorial') {
