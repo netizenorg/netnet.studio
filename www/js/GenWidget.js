@@ -40,7 +40,7 @@ class GenWidget extends Widget {
     const el = document.createElement('div')
     const input = document.createElement('input')
     input.setAttribute('type', 'text')
-    input.addEventListener('change', opts.change())
+    input.addEventListener('change', (e) => opts.change(e))
 
     const insertButton = document.createElement('button')
     insertButton.setAttribute('type', 'button')
@@ -65,7 +65,7 @@ class GenWidget extends Widget {
     slider.setAttribute('step', opts.step || '1')
     slider.setAttribute('value', opts.value || '50')
     slider.className = 'gen-slider'
-    slider.addEventListener('change', opts.change())
+    slider.addEventListener('change', (e) => opts.change(e))
     const label = document.createElement('section')
     label.innerHTML = opts.label || ''
     label.className = 'gen-slider-label'
