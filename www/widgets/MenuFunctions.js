@@ -81,13 +81,17 @@ class MenuFunctions extends Widget {
           alts: ['tidy', 'format', 'clean', 'indent']
         },
         {
-          click: 'runUpdate',
-          alts: ['update', 'render', 'compile']
+          click: 'toggleErrors',
+          alts: ['toggle', 'error', 'warning', 'messages']
         },
         {
           click: 'autoUpdate',
           alts: ['update', 'render', 'auto', 'compile'],
           select: 'func-menu-update-select'
+        },
+        {
+          click: 'runUpdate',
+          alts: ['update', 'render', 'compile']
         },
         {
           click: 'changeLayout',
@@ -139,6 +143,10 @@ class MenuFunctions extends Widget {
       // NOTE: need to rerun this everytime a convo which relies on
       // localStorage data is going to launch (to ensure latest data)
       this.convos = window.convos['functions-menu'](this)
+    })
+
+    STORE.subscribe('layout', (e) => {
+      this._hideIrrelevantOpts('func-menu-editor-settings')
     })
   }
 
@@ -245,9 +253,21 @@ class MenuFunctions extends Widget {
     NNE.tidy()
   }
 
+  toggleErrors () {
+    NNE.lint = !NNE.lint
+    NNE.update()
+    if (!NNE.lint) {
+      STORE.dispatch('CLEAR_ERROR')
+      window.convo = new Convo(this.convos, 'toggle-errors-off')
+    } else {
+      window.convo = new Convo(this.convos, 'toggle-errors-on')
+    }
+  }
+
   runUpdate () {
     NNE.update()
     if (NNE.autoUpdate) {
+      this.convos = window.convos['functions-menu'](this)
       window.convo = new Convo(this.convos, 'no-need-to-update')
     }
   }
@@ -257,6 +277,7 @@ class MenuFunctions extends Widget {
     if (!NNE.autoUpdate) {
       window.convo = new Convo(this.convos, 'need-to-update')
     }
+    this._hideIrrelevantOpts('func-menu-editor-settings')
   }
 
   changeLayout () {
@@ -306,6 +327,7 @@ class MenuFunctions extends Widget {
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
     const subSecParent = this.$(`#${id}`)
+    this._hideIrrelevantOpts(id, type)
     if (type === 'close') {
       subSec.style.display = 'none'
       subSecParent.classList.remove('open')
@@ -409,6 +431,24 @@ class MenuFunctions extends Widget {
     }
 
     if (this._recentered) this.update({ left: 20, bottom: 20 })
+  }
+
+  _hideIrrelevantOpts (id, type) {
+    function hideIf (b, condition) {
+      if (condition) b.style.display = 'none'
+      else b.style.display = 'block'
+    }
+
+    if (id === 'func-menu-editor-settings' && !type) {
+      const btns = this.$('button')
+      for (let i = 0; i < btns.length; i++) {
+        if (btns[i].textContent.includes('runUpdate')) {
+          hideIf(btns[i], NNE.autoUpdate)
+        } else if (btns[i].textContent.includes('changeLayout')) {
+          hideIf(btns[i], STORE.state.layout === 'welcome')
+        }
+      }
+    }
   }
 
   _creatOption (value, parent) {
