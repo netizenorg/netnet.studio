@@ -49,6 +49,7 @@ class MenuTutorial extends Widget {
   _createTutorialsList () {
     window.utils.get('tutorials/metameta.json', (meta) => {
       const json = meta.order
+      this._tutorialOrder = meta.order
       this._numberOfTutorials = json.length
       this._tutorialMetaData = []
       json.forEach(dir => this._addTut(dir))
@@ -71,7 +72,21 @@ class MenuTutorial extends Widget {
   _displayList () {
     const parent = document.createElement('div')
     parent.id = 'tut-menu-content'
-    STORE.state.tutorials.forEach(t => {
+
+    let tuts = [...STORE.state.tutorials]
+    const ordered = []
+    this._tutorialOrder.forEach(tut => {
+      let found = false
+      tuts = tuts.filter(t => {
+        if (!found && t.dirname === tut) {
+          ordered.push(t)
+          found = true
+          return false
+        } else return true
+      })
+    })
+
+    ordered.forEach(t => {
       const d = document.createElement('div')
       const title = document.createElement('div')
       title.textContent = t.title
