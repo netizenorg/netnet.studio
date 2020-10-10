@@ -187,6 +187,7 @@ class MenuTutorial extends Widget {
       d.className = 'link'
       d.addEventListener('click', () => {
         NNT.closeWidgets()
+        STORE.dispatch('CHANGE_OPACITY', 1)
         NNT.goTo(t.checkpoints[cp])
         window.utils.netitorUpdate()
       })
