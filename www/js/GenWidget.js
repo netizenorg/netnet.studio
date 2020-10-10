@@ -82,12 +82,24 @@ class GenWidget extends Widget {
     return el
   }
 
-  parseCSS (string) {
-    const parsedCode = {}
-    const line = string.split(':')
-    line[1] = line[1].split(' ')
-    parsedCode.line[0] = line[1]
-    return parsedCode
+  parceCSS (string) {
+    const parsedCode = { property: 'css-property', value: ['10px'] }
+    if (hasColon(string)) {
+      const line = string.split(':')
+      line[1] = line[1].split(' ')
+      const valueArr = line[1].filter(el => el.trim().length > 0)
+      console.log(valueArr)
+      parsedCode[line[0]] = valueArr
+      console.log(parsedCode)
+      return parsedCode
+    } else {
+      return parsedCode
+    }
+
+    function hasColon (str) {
+      const colon = new RegExp(':')
+      return colon.test(str)
+    }
   }
 }
 
