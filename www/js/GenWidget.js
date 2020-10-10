@@ -40,7 +40,7 @@ class GenWidget extends Widget {
     const el = document.createElement('div')
     const input = document.createElement('input')
     input.setAttribute('type', 'text')
-    input.addEventListener('change', (e) => opts.change(e))
+    input.addEventListener('input', (e) => opts.change(e))
 
     const insertButton = document.createElement('button')
     insertButton.setAttribute('type', 'button')
