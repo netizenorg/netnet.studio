@@ -69,7 +69,18 @@ class MenuWidgets extends Widget {
       }
     })
     this.innerHTML = parent
-    if (this._recentered) this.update({ right: 20, top: 20 })
+    if (this._recentered) this._pos()
+  }
+
+  _pos () {
+    if (!WIDGETS['functions-menu']) {
+      setTimeout(() => this._pos(), 500)
+      return
+    }
+    const funcLeft = WIDGETS['functions-menu'].ele.offsetLeft
+    const funcWidth = WIDGETS['functions-menu'].ele.offsetWidth
+    const funcTop = WIDGETS['functions-menu'].ele.offsetTop
+    this.update({ top: funcTop, left: funcLeft + funcWidth + 20 })
   }
 }
 
