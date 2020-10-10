@@ -58,6 +58,7 @@ class GenWidget extends Widget {
   createSlider (opts) {
     const el = document.createElement('div')
     el.className = 'gen-slider-div'
+
     const slider = document.createElement('input')
     slider.setAttribute('type', 'range')
     slider.setAttribute('min', opts.min || '1')
@@ -65,16 +66,19 @@ class GenWidget extends Widget {
     slider.setAttribute('step', opts.step || '1')
     slider.setAttribute('value', opts.value || '50')
     slider.className = 'gen-slider'
-    slider.addEventListener('change', (e) => opts.change(e))
-    const label = document.createElement('section')
+    slider.addEventListener('change', function (e) {
+      opts.change(e)
+    })
+    const label = document.createElement('span')
     label.innerHTML = opts.label || ''
     label.className = 'gen-slider-label'
-    el.appendChild(label)
+
     const bubble = document.createElement('div')
     bubble.style = 'width: 15px;height: 15px;border-radius: 50%;border: 2px solid var(--netizen-meta);transform: translate(-7px,17px);position: relative;left: 127px;'
     bubble.className = 'gen-slider-bubble'
 
     el.appendChild(slider)
+    el.appendChild(label)
     return el
   }
 

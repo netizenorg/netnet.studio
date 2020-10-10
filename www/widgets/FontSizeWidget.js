@@ -44,4 +44,4 @@ class FontSizeWidget extends GenWidget {
     this.innerHTML = sec
   }
 }
-window.ExampleWidget = FontSizeWidget
+window.FontSizeWidget = FontSizeWidget
