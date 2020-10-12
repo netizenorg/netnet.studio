@@ -171,6 +171,7 @@ class TutorialManager {
     }
     return {
       id: '___START___',
+      before: () => STORE.dispatch('CHANGE_OPACITY', 1),
       content: `Ok, I've loaded a tutorial called ${m.title}:
       ${m.subtitle}; shall we get started?`,
       options: options,

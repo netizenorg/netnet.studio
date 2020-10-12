@@ -255,12 +255,20 @@ window.convos['functions-menu'] = (self) => {
       'never mind, I\'ll do it': (e) => e.hide()
     }
   }, {
+    id: 'toggle-errors-on',
+    content: 'Ok, <b>error messages</b> is back on! From here on out I\'ll let you know if I spot any errors or issues in the code.',
+    options: { 'ok, thanks': (e) => e.hide() }
+  }, {
+    id: 'toggle-errors-off',
+    content: 'Ok, <b>error messages</b> has been toggled off for this session! If I notice any errors from here on out I\'ll keep them to myself.',
+    options: { 'ok, thanks': (e) => e.hide() }
+  }, {
     id: 'no-need-to-update',
-    content: 'You\'ve got <code>autoUpdate(true)</code> so there\'s no need to manually <code>runUpdate()</code>, I\'ll update the output for you soon as you make a change to your code.',
+    content: `You've got <code>autoUpdate(true)</code> so there's no need to manually <code>runUpdate()</code>, I'll update the output for you soon as you make a change to your code${NNE.lint ? ', assuming I don\'t spot any errors of course' : ''}.`,
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'need-to-update',
-    content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press ${hotkey}+Enter`,
+    content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press ${hotkey}+S`,
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'temp-disclaimer',

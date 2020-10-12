@@ -50,6 +50,7 @@ window.greetings = {
 
   loader: () => {
     const self = window.greetings
+    if (Averigua.isMobile()) return self.mobile()
     window.utils.runFaviconUpdate()
     window.utils.loadConvoData('welcome-screen', () => {
       self.convos = window.convos['welcome-screen'](self)
@@ -67,6 +68,14 @@ window.greetings = {
         }
       })
     })
+  },
+
+  mobile: () => {
+    const ld = document.querySelector('#loader > div:nth-child(1)')
+    ld.style.maxWidth = '1200px'
+    ld.style.padding = '10px'
+    ld.style.lineHeight = '32px'
+    ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
   },
 
   ready: () => {

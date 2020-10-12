@@ -216,7 +216,7 @@ class SearchBar {
         clck: () => {
           WIDGETS['functions-menu'].open()
           const id = `func-menu-${sub.replace(/ /g, '-')}`
-          WIDGETS['functions-menu'].toggleSubMenu(id)
+          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
         }
       })
       subs[sub].forEach(s => {
@@ -228,7 +228,7 @@ class SearchBar {
             if (s.select) {
               WIDGETS['functions-menu'].open()
               const id = `func-menu-${sub.replace(/ /g, '-')}`
-              WIDGETS['functions-menu'].toggleSubMenu(id)
+              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
             } else WIDGETS['functions-menu'][s.click]()
           }
         })
