@@ -38,17 +38,20 @@ class GenWidget extends Widget {
 
   createCodeField (opts) {
     const el = document.createElement('div')
+    el.setAttribute('value', '12')
     const input = document.createElement('input')
     input.setAttribute('type', 'text')
-    input.addEventListener('input', (e) => opts.change(e))
+    input.addEventListener('input', (e) => {
+      el.setAttribute('value', input.value)
+      opts.change(e)
+    })
 
     const insertButton = document.createElement('button')
     insertButton.setAttribute('type', 'button')
     insertButton.appendChild(document.createTextNode('insert'))
-    insertButton.addEventListener('click', insert())
-    function insert () {
+    insertButton.addEventListener('click', () => {
       NNE.cm.replaceSelection(input.value)
-    }
+    })
 
     el.appendChild(input)
     el.appendChild(insertButton)
@@ -66,7 +69,9 @@ class GenWidget extends Widget {
     slider.setAttribute('step', opts.step || '1')
     slider.setAttribute('value', opts.value || '50')
     slider.className = 'gen-slider'
-    slider.addEventListener('change', function (e) {
+    slider.addEventListener('input', function (e) {
+      el.setAttribute('value', slider.value)
+      // console.log(slider.value)
       opts.change(e)
     })
     const label = document.createElement('span')
