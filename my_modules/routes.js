@@ -42,6 +42,10 @@ router.get('/FileUploader.js', (req, res) => {
   res.sendFile(path.join(__dirname, '../node_modules/FileUploader/FileUploader.js'))
 })
 
+router.get('/tutorials/:lesson', (req, res) => {
+  res.redirect('/?tutorial=' + req.params.lesson)
+})
+
 router.get('/api/videos/:video', (req, res) => {
   const v = req.params.video
   if (!v) res.json({ success: false, error: 'URL is missing video id/name' })

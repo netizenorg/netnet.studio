@@ -1,4 +1,4 @@
-/* global TUTORIAL, STORE, WIDGETS, NNW */
+/* global TUTORIAL, STORE, WIDGETS, NNW, utils, Convo */
 /*
   -----------
      info
@@ -51,17 +51,20 @@ class TutorialManager {
   next () {
     const index = Number(STORE.state.tutorial.id)
     this._resetVideos()
+    this._checkPoint(index)
     STORE.dispatch('TUTORIAL_NEXT_STEP', index + 1)
   }
 
   prev () {
     const index = Number(STORE.state.tutorial.id)
     this._resetVideos()
+    this._checkPoint(index)
     STORE.dispatch('TUTORIAL_PREV_STEP', index - 1)
   }
 
   goTo (id) {
     this._resetVideos()
+    this._checkPoint(id)
     STORE.dispatch('TUTORIAL_GOTO', id)
   }
 
@@ -74,12 +77,43 @@ class TutorialManager {
   quit () {
     this.closeWidgets()
     NNW.removeWidgets(TUTORIAL.widgets)
+    window.greetings.injectStarterCode()
     STORE.dispatch('TUTORIAL_FINISHED')
+    utils.setUserData('tutorial-lesson', null)
+    utils.setUserData('tutorial-steps', null)
   }
 
   end () { this.quit() }
 
   fin () { this.quit() }
+
+  pickUpAt (step) {
+    this.goTo(step)
+    utils.netitorUpdate()
+    window.convo = new Convo([{
+      content: `Last time you were here you were in the midst of the <i>${this.metadata.title}</i> tutorial. Do you want to continue where you left off?`,
+      options: {
+        'yea!': (e) => {
+          WIDGETS['tutorials-menu'].close()
+          e.hide()
+        },
+        'no thanks': (e) => {
+          for (const wig in TUTORIAL.widgets) {
+            if (TUTORIAL.widgets[wig].opened) TUTORIAL.widgets[wig].close()
+          }
+          WIDGETS['tutorials-menu'].open()
+          e.goTo('no')
+        }
+      }
+    }, {
+      id: 'no',
+      content: 'Ok, do you want to restart this tutorial from the beginning or quit it all together?',
+      options: {
+        'let\'s restart it': (e) => { this.goTo('__START__') },
+        'let\'s quit': (e) => this.quit()
+      }
+    }])
+  }
 
   closeWidgets () {
     Object.keys(TUTORIAL.widgets)
@@ -107,8 +141,16 @@ class TutorialManager {
     }
   }
 
+  _checkPoint (id) {
+    const cp = this.metadata.checkpoints
+    const keys = Object.keys(cp).map(k => cp[k])
+    if (keys.includes(id)) utils.setUserData('tutorial-step', id)
+  }
+
   _loadScript (json, root, cb) {
     this.metadata = json // TODO: validate metadata....
+    utils.setUserData('tutorial-lesson', root)
+    utils.setUserData('tutorial-steps', '__START__')
     const s = document.createElement('script')
     if (root.indexOf('tutorials/') === 0) {
       // internally hosted
@@ -172,16 +214,19 @@ class TutorialManager {
         window.greetings.mainMenu()
       }
     }
-    if (!WIDGETS['tutorials-menu'].opened) {
-      options['open tutorials menu'] = (e) => {
-        WIDGETS['tutorials-menu'].open()
-      }
-    }
     return {
       id: '___START___',
-      before: () => STORE.dispatch('CHANGE_OPACITY', 1),
-      content: `Ok, I've loaded a tutorial called ${m.title}:
-      ${m.subtitle}; shall we get started?`,
+      before: () => {
+        STORE.dispatch('CHANGE_OPACITY', 1)
+        if (STORE.state.layout !== 'welcome') {
+          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        }
+        if (!WIDGETS['tutorials-menu'].opened) {
+          WIDGETS['tutorials-menu'].open()
+        }
+      },
+      content: `Ok, I've loaded a tutorial called <i>${m.title}:
+      ${m.subtitle}</i>; shall we get started?`,
       options: options,
       scope: this
     }
