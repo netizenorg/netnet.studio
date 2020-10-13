@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, Widget */
+/* global Averigua, WIDGETS, STORE, NNM, NNW, NNE, NNT, Widget, utils */
 window.greetings.widgets = {
   'ws-xanadu': new Widget({
     listed: false,
@@ -70,6 +70,22 @@ window.convos['welcome-screen'] = (self) => {
     }
   }
 
+  const iWantToLearn = (e) => {
+    const tut = utils.getUserData('tutorial')
+    if (tut.lesson && tut.step) {
+      const lesson = tut.lesson.indexOf('tutorials/') === 0
+        ? tut.lesson.split('/')[1] : tut.lesson
+      e.hide()
+      NNT.load(lesson, () => {
+        WIDGETS['tutorials-menu'].open()
+        if (tut.step) NNT.pickUpAt(tut.step)
+      })
+    } else {
+      window.greetings.injectStarterCode()
+      e.goTo('start-learning')
+    }
+  }
+
   /*  (((
       (((MISC shared content objects)))
       (((
@@ -83,10 +99,7 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: 'What do you want to do?',
     options: {
-      'i want to learn': (e) => {
-        window.greetings.injectStarterCode()
-        e.goTo('start-learning')
-      },
+      'i want to learn': (e) => iWantToLearn(e),
       'i want to sketch': (e) => iWantToSektch(e),
       'what\'s netnet?': (e) => {
         if (STORE.state.layout !== 'welcome') {
@@ -104,10 +117,7 @@ window.convos['welcome-screen'] = (self) => {
     },
     content: 'What do you want to do?',
     options: {
-      'i want to learn': (e) => {
-        window.greetings.injectStarterCode()
-        e.goTo('start-learning')
-      },
+      'i want to learn': (e) => iWantToLearn(e),
       'i want to sketch': (e) => iWantToSektch(e),
       'what\'s netnet?': (e) => {
         if (STORE.state.layout !== 'welcome') {

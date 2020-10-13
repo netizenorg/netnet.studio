@@ -1,4 +1,4 @@
-/* global Convo, Averigua, STORE, NNE, NNT, NNM, NNW, WIDGETS */
+/* global Convo, Averigua, STORE, NNE, NNT, NNM, NNW, WIDGETS, utils */
 window.greetings = {
   convos: null,
   city: null,
@@ -51,8 +51,8 @@ window.greetings = {
   loader: () => {
     const self = window.greetings
     if (Averigua.isMobile()) return self.mobile()
-    window.utils.runFaviconUpdate()
-    window.utils.loadConvoData('welcome-screen', () => {
+    utils.runFaviconUpdate()
+    utils.loadConvoData('welcome-screen', () => {
       self.convos = window.convos['welcome-screen'](self)
       STORE.subscribe('tutorials', (tuts) => {
         if (!self.loaded.tutorials) {
@@ -88,21 +88,21 @@ window.greetings = {
             AFTER EVERYTHING HAS LOADED
             ...BEGIN INTRO LOGIC...
       */
-      const tut = window.utils.url.tutorial
+      const tut = utils.url.tutorial
 
       // check for opacity in URL parameters
-      const opc = window.utils.url.opacity
+      const opc = utils.url.opacity
       if (opc) STORE.dispatch('CHANGE_OPACITY', opc)
       // check for theme in URL param or user picked theme in localStorage
-      const thm = window.utils.url.theme || window.localStorage.getItem('theme')
+      const thm = utils.url.theme || window.localStorage.getItem('theme')
       if (thm) STORE.dispatch('CHANGE_THEME', thm)
       // does the user have any error exceptions saved locally
       const erx = window.localStorage.getItem('error-exceptions')
       if (erx) JSON.parse(erx).forEach(e => NNE.addErrorException(e))
 
       // if there is some prior code to display
-      const prevCode = window.utils.savedCode()
-      const shortCode = window.utils.url.shortCode
+      const prevCode = utils.savedCode()
+      const shortCode = utils.url.shortCode
       const redirect = window.localStorage.getItem('pre-auth-from')
       if (!tut && redirect) { // ...if redirected here via GitHub auth
         // ...pick up where they left off...
@@ -110,14 +110,14 @@ window.greetings = {
         if (layout) STORE.dispatch('CHANGE_LAYOUT', layout)
         self.handleLoginRedirect()
       } else if (!tut && shortCode) { // ...if there's a ?c=[code] URL param
-        window.utils.clearProjectData()
+        utils.clearProjectData()
         self.netnetToCorner()
         window.NNW.expandShortURL(shortCode, () => {
           NNE.loadFromHash()
           self.welcome()
         })
       } else if (!tut && NNE.hasCodeInHash) { // ...if there's a #code/... URL hash
-        window.utils.clearProjectData()
+        utils.clearProjectData()
         self.netnetToCorner()
         NNE.loadFromHash()
         self.welcome()
@@ -138,7 +138,7 @@ window.greetings = {
         self.welcome()
       }
 
-      window.utils.netitorUpdate()
+      utils.netitorUpdate()
       // When any layout or other transition finishes remove loader...
       window.NNW._whenCSSTransitionFinished(() => {
         const auth = window.localStorage.getItem('beta-pw-auth')
@@ -177,13 +177,22 @@ window.greetings = {
   welcome: () => {
     const self = window.greetings
     // self.convos = window.convos['welcome-screen'](self)
-    const urlHasCode = NNE.hasCodeInHash || window.utils.url.shortCode
-    const urlHasTutorial = window.utils.url.tutorial
-
-    if (urlHasTutorial) {
+    const urlHasCode = NNE.hasCodeInHash || utils.url.shortCode
+    let urlHasTutorial = utils.url.tutorial
+    if (urlHasTutorial || urlHasTutorial === '') {
       //
       //  TUTORIAL WELCCOME
       //
+      if (urlHasTutorial === '') {
+        const tut = utils.getUserData('tutorial')
+        if (tut.lesson && tut.lesson.indexOf('tutorials/') === 0) {
+          urlHasTutorial = tut.lesson.split('/')[1]
+        } else if (tut.lesson) urlHasTutorial = tut.lesson
+      }
+      if (!urlHasTutorial) {
+        window.convo = new Convo(self.convos, 'get-started-returning')
+        return
+      }
       NNT.load(urlHasTutorial, () => {
         setTimeout(() => {
           const oUsr = 'url-param-tutorial-returning'
@@ -192,6 +201,8 @@ window.greetings = {
           if (self.returningUser) window.convo = new Convo(self.convos, oUsr)
           else window.convo = new Convo(self.convos, nUsr)
           WIDGETS['tutorials-menu'].open()
+          const tut = utils.getUserData('tutorial')
+          if (tut.step !== '__START__') NNT.pickUpAt(tut.step)
         }, STORE.getTransitionTime())
       })
     } else if (urlHasCode) {
@@ -236,7 +247,7 @@ window.greetings = {
       const a = p.platform.substr(0, 3)
       const b = p.browser.name.toLowerCase().substr(0, 4)
       window.localStorage.setItem('username', a + b)
-      window.utils.get('./api/user-geo', (res) => {
+      utils.get('./api/user-geo', (res) => {
         if (res.success && res.data.city) {
           self.city = res.data.city
           const c = res.data.city.toLowerCase().substr(0, 4)
@@ -284,13 +295,13 @@ window.greetings = {
     }
 
     if (WIDGETS['functions-menu']) {
-      const prevCode = window.utils.savedCode() || NNE._encode('<!DOCTYPE html>')
+      const prevCode = utils.savedCode() || NNE._encode('<!DOCTYPE html>')
       const from = window.localStorage.getItem('pre-auth-from')
       if (from === 'save' || from === 'open') window._lastConvo = from
       // if redirected from a-frame tutorial, make sure to re-setup a-frame
       if (NNE.code.includes('aframe.js"') ||
         NNE.code.includes('aframe.min.js"')) {
-        window.utils.setupAframeEnv()
+        utils.setupAframeEnv()
       }
       if (from === 'save') {
         NNE.code = NNE._decode(prevCode)
@@ -302,6 +313,6 @@ window.greetings = {
         waitForOwner(JSON.parse(from))
       }
       window.localStorage.removeItem('pre-auth-from')
-    } else setTimeout(window.utils.handleLoginRedirect, 250)
+    } else setTimeout(utils.handleLoginRedirect, 250)
   }
 }

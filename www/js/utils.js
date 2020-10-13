@@ -89,6 +89,10 @@ window.utils = {
         indexSha: ls.getItem('index-sha'),
         lastCommitMsg: ls.getItem('last-commit-msg'),
         lastCommitCode: ls.getItem('last-commit-code')
+      },
+      tutorial: {
+        lesson: ls.getItem('tutorial-lesson'),
+        step: ls.getItem('tutorial-step')
       }
     }
     if (type) {

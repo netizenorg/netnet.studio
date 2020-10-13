@@ -181,8 +181,10 @@ class WindowManager {
 
   removeWidget (widget) {
     if (typeof widget === 'string') {
+      if (WIDGETS[widget].opened) WIDGETS[widget].close()
       delete WIDGETS[widget]
     } else if (widget instanceof Widget) {
+      if (WIDGETS[widget.key].opened) WIDGETS[widget.key].close()
       delete WIDGETS[widget.key]
     } else {
       console.warn(`WindowManager: failed to remove ${widget}`)

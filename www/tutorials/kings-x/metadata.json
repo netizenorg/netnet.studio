@@ -1,0 +1,40 @@
+{
+  "title": "&#64; kings x",
+  "subtitle": "a \"behind the browser\" look at early net.art",
+  "author": {
+    "name": "Nick Briz",
+    "preferred": "Nick",
+    "url": "http://nickbriz.com"
+  },
+  "description": "Self proclaimed \"artivist\" (artist + activist), Heath Bunting was among the first wave of artists to embrace the Web as a space for artistic interventions. Here we'll take a look at one of his earliest, and most written about, pieces of \"net.art\" <i>King's Cross Phone In</i> (1994). \"In this work, the web was used to transform a commuter hub, King's Cross train station (London), into a venue for social and musical spectacles.\" —<i>Rachel Greene (author of Internet Art)</i>.",
+  "keywords": ["net.art", "html", "activism", "artivist", "hactivist"],
+  "main": "main.js",
+  "checkpoints": {
+    "0: Hacktivism 1994": "intro",
+    "1: King's Cross Phone In": "intro5",
+    "2: Hypertext Markup Language": "html-info",
+    "3: Heath's Source Code": "remix0",
+    "4: File Paths": "file-path1",
+    "5: Mistakes": "mistakes1",
+    "6: The World Wide Web Consortium": "w3c",
+    "7: Artivist Coding Challenge": "prompt"
+  },
+  "references": [
+    {
+      "note": "Greene, Rachel. Internet Art. Thames & Hudson. 2004",
+      "url": "https://thamesandhudson.com.au/product/internet-art/"
+    },
+    {
+      "note": "Greene, Rachel. Web Work: A History of Internet Art. Artforum. May 2000",
+      "url": "https://netart.rocks/files/webwork.pdf"
+    },
+    {
+      "note": "Tribe, Mark, Reena Jana. New Media Art. Taschen. May 2007",
+      "url": "https://netart.rocks/files/webwork.pdf"
+    },
+    {
+      "note": "Kaplan, Zachary et al. Net Art Anthology. Rhizome.org. 2019",
+      "url": "https://anthology.rhizome.org/"
+    }
+  ]
+}

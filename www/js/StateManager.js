@@ -664,7 +664,9 @@ class StateManager {
       this._layingout = true
       NNM.fadeOut()
       NNW.layout = this.state.layout
-      window.localStorage.setItem('layout', this.state.layout)
+      if (this.state.layout !== 'welcome') {
+        window.localStorage.setItem('layout', this.state.layout)
+      }
       NNW._whenCSSTransitionFinished(() => {
         this._layingout = false
         this.renderNetitor()
