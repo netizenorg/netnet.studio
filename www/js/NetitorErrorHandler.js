@@ -30,30 +30,44 @@ class NetitorErrorHandler {
   }
 
   static createErrorOpts (i, arr) {
+    const okIfix = () => {
+      STORE.dispatch('HIDE_ERROR_TEXT')
+      const jsErrz = arr.map(e => e.language).filter(e => e === 'javascript')
+      if (jsErrz.length === 0) {
+        const h = document.querySelector('.CodeMirror-hints')
+        if (NNE._auto && !h) NNE.update()
+      }
+    }
+
     if (arr.length > 1) {
       if (i === 0) {
         return {
-          'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
-          'notice something else?': () => STORE.dispatch('NEXT_ERROR'),
+          'yes please!': () => STORE.dispatch('NEXT_ERROR'),
+          'no thanks': (e) => okIfix()
+        }
+      } else if (i === 1) {
+        return {
+          'ok, i\'ll fix it.': () => okIfix(),
+          'what else?': () => STORE.dispatch('NEXT_ERROR'),
           'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
         }
       } else if (i === arr.length - 1) {
         return {
-          'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
+          'ok, i\'ll fix it.': () => okIfix(),
           'wait, go back': () => STORE.dispatch('PREV_ERROR'),
           'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
         }
       } else {
         return {
-          'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
+          'ok, i\'ll fix it.': () => okIfix(),
           'wait, go back': () => STORE.dispatch('PREV_ERROR'),
-          'notice something else?': () => STORE.dispatch('NEXT_ERROR'),
+          'what else?': () => STORE.dispatch('NEXT_ERROR'),
           'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
         }
       }
     } else {
       return {
-        'ok, i\'ll fix it.': () => STORE.dispatch('HIDE_ERROR_TEXT'),
+        'ok, i\'ll fix it.': () => okIfix(),
         'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
       }
     }
@@ -78,6 +92,15 @@ class NetitorErrorHandler {
         if (lib) return
       } // .......................................................
 
+      if (eve.length > 1) {
+        const m = `Hmmm, I've noticed ${eve.length} potential issus in your code, want me to show you what they might be?`
+        eve.unshift({
+          type: eve[0].type,
+          friendly: m,
+          message: m
+        })
+      }
+
       return eve.map((err, i) => {
         const markerColor = err.type === 'error' ? 'red' : 'yellow'
         const highlightColor = err.type === 'error'
@@ -85,7 +108,8 @@ class NetitorErrorHandler {
 
         let msg = err.friendly || err.message
         msg = msg.replace(msg[0], msg[0].toLowerCase())
-        msg = (i === 0) ? `Hmmm, ${msg}` : `Or maybe, ${msg}`
+        if (eve.length === 1) msg = `Hmmm, ${msg}`
+        else msg = (i <= 1) ? msg : `Also, ${msg}`
 
         return {
           line: err.line,
