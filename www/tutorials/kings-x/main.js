@@ -634,8 +634,8 @@ window.TUTORIAL = {
     'greene-quote': new Widget({
       width: 817,
       listed: false,
-      title: 'mistakes, code and art',
-      innerHTML: '<blockquote style="font-size: 22px; line-height: 25px;">"The calls created a musical intervention that disrupted the daily routine of urban transportation hub, as commuters circulating through the station chatted with strangers from around the world who were ringing up to say hello. Network functionality was understood on the level of the friendly phone call, as public space was reconfigured aurally and socially. Bunting\'s modus operandi since 1994 has been to create works/events that ware as facile, low-tech, and straightforward as graffiti: simple subversions backed by anarchic conviction. To netizens he is something of a folk hero."</blockquote><div style="text-align:right; font-size: 22px; line-height: 25px;">—Rachel Greene</div>'
+      title: 'from Web Work: A History of Internet Art',
+      innerHTML: '<blockquote style="font-size: 22px; line-height: 25px;">"The calls created a musical intervention that disrupted the daily routine of the urban transportation hub, as commuters circulating through the station chatted with strangers from around the world who were ringing up to say hello. Network functionality was understood on the level of the friendly phone call, as public space was reconfigured aurally and socially. Bunting\'s modus operandi since 1994 has been to create works/events that ware as facile, low-tech, and straightforward as graffiti: simple subversions backed by anarchic conviction. To netizens he is something of a folk hero."</blockquote><div style="text-align:right; font-size: 22px; line-height: 25px;">—Rachel Greene</div>'
     }),
     'jodi-my-desktop': new Widget({
       width: window.innerWidth * 0.5,
@@ -649,7 +649,7 @@ window.TUTORIAL = {
     }),
     'eva-and-franco': new Widget({
       width: window.innerWidth * 0.33,
-      title: 'Life Sharing by Evan and Franco Mattes',
+      title: 'Life Sharing by Eva and Franco Mattes',
       innerHTML: '<img style="width: 100%" alt="the Internt" src="tutorials/kings-x/images/life-sharing.jpg"><p>"For three years, the couple made the contents of their home computer accessible to the public. All of the contents–including files, emails, bank statements, and so on–were available in real time to be read, copied, and downloaded. Life Sharing was a proto-typical meditation on living online. Made long before social media’s widespread influence, the work pointed towards the blurring of the public and private spheres that characterize our current moment. " (source: <a href="https://anthology.rhizome.org/life-sharing" target="_blank">Net Art Anthology</a>)</p>'
     })
   },
