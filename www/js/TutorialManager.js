@@ -150,7 +150,7 @@ class TutorialManager {
   _loadScript (json, root, cb) {
     this.metadata = json // TODO: validate metadata....
     utils.setUserData('tutorial-lesson', root)
-    utils.setUserData('tutorial-steps', '__START__')
+    utils.setUserData('tutorial-step', '__START__')
     const s = document.createElement('script')
     if (root.indexOf('tutorials/') === 0) {
       // internally hosted
