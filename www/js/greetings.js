@@ -38,10 +38,16 @@ window.greetings = {
   },
 
   startMenu: () => {
+    const hi = (t) => { window.convo = new Convo(window.greetings.convos, t) }
     setTimeout(() => {
       NNM.setFace('◠', '◡', '◠', false)
     }, STORE.getTransitionTime() + 100)
-    window.convo = new Convo(window.greetings.convos, 'default-greeting')
+    if (!utils.getUserData('username')) {
+      if (STORE.state.layout !== 'welcome') {
+        STORE.dispatch('CHANGE_LAYOUT', 'welcome')
+        NNW._whenCSSTransitionFinished(() => hi('get-started-first-time'))
+      } else hi('get-started-first-time')
+    } else hi('default-greeting')
   },
 
   mainMenu: () => {
@@ -114,28 +120,27 @@ window.greetings = {
         self.netnetToCorner()
         window.NNW.expandShortURL(shortCode, () => {
           NNE.loadFromHash()
-          self.welcome()
         })
       } else if (!tut && NNE.hasCodeInHash) { // ...if there's a #code/... URL hash
         utils.clearProjectData()
-        self.netnetToCorner()
         NNE.loadFromHash()
-        self.welcome()
+        if (NNE.code === '<!DOCTYPE html>') {
+          utils.netitorUpdate()
+          if (STORE.state.layout !== 'dock-left') {
+            STORE.dispatch('CHANGE_LAYOUT', 'dock-left')
+          }
+        } else self.netnetToCorner()
       } else if (!tut && prevCode && self.returningUser) {
         // inserting code into editor && setting prev-layout is handled in convo
         // ... 'I want to sketch' > 'work-on-saved-code'
         window.greetings.injectStarterCode()
-        self.welcome() // ...&& welcome them.
       } else if (!tut) { // ...otherwise ...
         window.greetings.injectStarterCode()
       }
 
       // if URL has a tutorial param, jump right into welcome
-      if (tut) {
-        if (STORE.state.layout !== 'welcome') {
-          STORE.dispatch('CHANGE_LAYOUT', 'welcome')
-        }
-        self.welcome()
+      if (tut && STORE.state.layout !== 'welcome') {
+        STORE.dispatch('CHANGE_LAYOUT', 'welcome')
       }
 
       utils.netitorUpdate()
@@ -209,7 +214,10 @@ window.greetings = {
       //
       //  PRELOADED CODE WELCOME
       //
-      if (self.returningUser) {
+      if (NNE.code === '<!DOCTYPE html>') {
+        // assuming https://netnet.studio/sketch
+        // so no convo ... just display editor
+      } else if (self.returningUser) {
         window.convo = new Convo(self.convos, 'url-param-code-returning')
       } else {
         self.introducing = 'code-hash'

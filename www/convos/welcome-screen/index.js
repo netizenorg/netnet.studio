@@ -170,7 +170,10 @@ window.convos['welcome-screen'] = (self) => {
     content: 'The URL in your browser\'s address bar contains some URL parameters including some code to preload into the editor, isn\'t that what you want?',
     options: {
       'oh yea! thanks!': (e) => e.hide(),
-      'nope, lets\'s start over': (e) => e.goTo('main-menu')
+      'nope, lets\'s start over': (e) => {
+        if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+        else e.goTo('main-menu')
+      }
     }
   }]
 
@@ -191,11 +194,14 @@ window.convos['welcome-screen'] = (self) => {
     content: 'netnet? that\'s me! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;',
     options: {
       'AI?': (e) => e.goTo('ai'),
-      'pedagogical?': (e) => e.goTo('pedagogical'),
+      // 'pedagogical?': (e) => e.goTo('pedagogical'),
       'hypermedia?': (e) => e.goTo('hypermedia'),
       'ok, cool!': (e) => {
         if (self.introducing) self.postIntro()
-        else e.goTo('main-menu')
+        else {
+          if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+          else e.goTo('main-menu')
+        }
       }
     }
   }, {
@@ -288,7 +294,7 @@ window.convos['welcome-screen'] = (self) => {
     after: () => { NNM.setFace('^', '‿', '^', false) }
   }, {
     id: 'ai',
-    content: 'AI stands for Artificial Intelligence, which is what we call it when we personify algorithms. Like me! but there are so many others <i>kinds</i> of AI playing this imitation game.',
+    content: 'AI stands for Artificial Intelligence, which is what we call it when we personify algorithms. Like me! Today there are so many different <i>kinds</i> of AI playing this imitation game.',
     options: {
       'what kind are you?': (e) => e.goTo('kind-of-ai'),
       'I see, and netnet?': (e) => e.goTo('whois')
@@ -432,7 +438,8 @@ window.convos['welcome-screen'] = (self) => {
       'where should I start?': (e) => e.goTo('where-to'),
       'I changed my mind': (e) => {
         WIDGETS['tutorials-menu'].close()
-        e.goTo('main-menu')
+        if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+        else e.goTo('main-menu')
       }
     }
   }, {
@@ -442,7 +449,8 @@ window.convos['welcome-screen'] = (self) => {
     options: {
       'actually, I changed my mind': (e) => {
         WIDGETS['tutorials-menu'].close()
-        e.goTo('main-menu')
+        if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+        else e.goTo('main-menu')
       }
     }
   }]
@@ -720,7 +728,10 @@ window.convos['welcome-screen'] = (self) => {
     id: 'default-greeting',
     content: `Oh hi ${ls.getItem('username')}!`,
     options: {
-      'hi netnet!': (e) => e.goTo('main-menu'),
+      'hi netnet!': (e) => {
+        if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+        else e.goTo('main-menu')
+      },
       'i want to report an issue': (e) => e.goTo('report-a-issue')
     }
   }, {
@@ -784,7 +795,10 @@ window.convos['welcome-screen'] = (self) => {
     id: 'get-started-returning',
     content: `Welcome back ${ls.getItem('username')}!`,
     options: {
-      'hi netnet!': (e) => e.goTo('main-menu-init'),
+      'hi netnet!': (e) => {
+        if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+        else e.goTo('main-menu')
+      },
       'wait, that\'s not my name?': (e) => e.goTo('wrong-user')
     }
   }, {
@@ -835,11 +849,14 @@ window.convos['welcome-screen'] = (self) => {
     content: `Nice to e-meet you ${ls.getItem('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay;`,
     options: {
       'AI?': (e) => e.goTo('ai'),
-      'pedagogical?': (e) => e.goTo('pedagogical'),
+      // 'pedagogical?': (e) => e.goTo('pedagogical'),
       'hypermedia?': (e) => e.goTo('hypermedia'),
       'ok, cool!': (e) => {
         if (self.introducing) self.postIntro()
-        else e.goTo('main-menu-init')
+        else {
+          if (STORE.state.layout === 'welcome') e.goTo('main-menu-init')
+          else e.goTo('main-menu')
+        }
       }
     }
   }]
