@@ -47,28 +47,28 @@ class NetitorErrorHandler {
         }
       } else if (i === 1) {
         return {
-          'ok, i\'ll fix it.': () => okIfix(),
-          'what else?': () => STORE.dispatch('NEXT_ERROR'),
-          'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
+          'ok, what else?': () => STORE.dispatch('NEXT_ERROR'),
+          'ignore this error': () => NetitorErrorHandler.ignore(arr[i]),
+          'ok, i\'ll fix it.': () => okIfix()
         }
       } else if (i === arr.length - 1) {
         return {
-          'ok, i\'ll fix it.': () => okIfix(),
           'wait, go back': () => STORE.dispatch('PREV_ERROR'),
-          'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
+          'ignore this error': () => NetitorErrorHandler.ignore(arr[i]),
+          'ok, i\'ll fix it.': () => okIfix()
         }
       } else {
         return {
-          'ok, i\'ll fix it.': () => okIfix(),
+          'ok, what else?': () => STORE.dispatch('NEXT_ERROR'),
           'wait, go back': () => STORE.dispatch('PREV_ERROR'),
-          'what else?': () => STORE.dispatch('NEXT_ERROR'),
-          'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
+          'ignore this error': () => NetitorErrorHandler.ignore(arr[i]),
+          'ok, i\'ll fix it.': () => okIfix()
         }
       }
     } else {
       return {
-        'ok, i\'ll fix it.': () => okIfix(),
-        'ignore this error': () => NetitorErrorHandler.ignore(arr[i])
+        'ignore this error': () => NetitorErrorHandler.ignore(arr[i]),
+        'ok, i\'ll fix it.': () => okIfix()
       }
     }
   }
