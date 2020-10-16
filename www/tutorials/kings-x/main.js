@@ -4,48 +4,126 @@ window.TUTORIAL = {
     NNE.addCustomRoot('tutorials/kings-x/')
     NNE.code = `<!DOCTYPE html>
 <style>
+  @font-face {
+    font-family: "retro windows";
+    src: url(fonts/px_sans_nouveaux.woff2) format("woff2"),
+      url(fonts/px_sans_nouveaux.woff) format("woff"),
+      url(fonts/px_sans_nouveaux.ttf);
+  }
+
   body {
     background: #81c994;
   }
 
   a { text-decoration: none; }
 
-  section {
+  .icons {
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
     height: 100px
   }
 
-  img {
+  .icons-sub {
+    display: flex;
+  }
+
+  .icons img {
+    width: 56px;
+  }
+
+  .icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
     margin: 10px;
   }
+
+  .filename {
+    font-family: "retro windows";
+    font-size: 12px;
+    color: #000;
+    word-break: break-all
+  }
+
+  .start-menu {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 58px;
+    display: grid;
+    grid-template-columns: 152px auto 319px;
+  }
+
+  .start-menu-1 {
+    background-image: url(images/icons/start-menu-1.png);
+  }
+
+  .start-menu-2 {
+    background-image: url(images/icons/start-menu-2.png);
+  }
+
+  .start-menu-3 {
+    background-image: url(images/icons/start-menu-3.png);
+  }
+
+  .clock {
+    font-family: "retro windows";
+    font-size: 18px;
+    display: inline-block;
+    transform: translate(175px, 15px);
+  }
 </style>
-<section>
-  <div>
-    <img src="images/icons/computer.png" alt="computer icon">
-    <a href="https://www.windows93.net/" target="_blank">
-      <img src="images/icons/floppy.png" alt="windows floppy icon">
-    </a>
-  </div>
-  <div>
-    <a href="https://en.wikipedia.org/wiki/AIM_(software)" target="_blank">
-      <img src="images/icons/aim.png" alt="computer icon">
-    </a>
-    <a href="https://archive.org/details/msdos_dos_manager_1999" target="_blank">
+<section class="icons">
+  <div class="icons-sub">
+    <span class="icon">
+      <img src="images/icons/computer.png" alt="computer icon">
+      <span class="filename">My Computer</span>
+    </span>
+    <a href="https://archive.org/details/msdos_dos_manager_1999" target="_blank" class="icon">
       <img src="images/icons/dos.png" alt="dos icon">
+      <span class="filename">DOS</span>
     </a>
   </div>
-  <div>
-    <a href="http://www.irational.org/heath/treasures/photo/heath_bunting/porlock_fishing_boat_heath_bunting_kayle_brandon.jpg" target="_blank">
+  <div class="icons-sub">
+    <a href="https://www.windows93.net/" target="_blank" class="icon">
+      <img src="images/icons/floppy.png" alt="windows floppy icon">
+      <span class="filename">Windows 93 - by Jenkenpopp</span>
+    </a>
+  </div>
+  <div class="icons-sub">
+    <a href="http://www.irational.org/heath/treasures/photo/heath_bunting/porlock_fishing_boat_heath_bunting_kayle_brandon.jpg" target="_blank" class="icon">
       <img src="images/icons/image.png" alt="image icon">
+      <span class="filename">porlock_fishing_boat_heath_bunting_kayle_brandon.jpg</span>
     </a>
   </div>
 </section>
+<section class="start-menu">
+  <div class="start-menu-1"></div>
+  <div class="start-menu-2"></div>
+  <div class="start-menu-3">
+    <span class="clock">20:48</span>
+  </div>
+</section>
 <script>
-//   document.querySelector('img[alt="dos icon"]')
-//     .addEventListener('click', () => {
-
-//     })
+  function clock () {
+    setTimeout(clock, 1000)
+    const c = document.querySelector('.clock')
+    const d = new Date()
+    const hh = d.getHours()
+    let m = d.getMinutes()
+    let s = d.getSeconds()
+    let dd = 'AM'
+    let h = hh
+    if (h >= 12) { h = hh - 12; dd = 'PM' }
+    if (h === 0) h = 12
+    h = h < 10 ? "0" + h : h
+    m = m < 10 ? "0" + m : m
+    s = s < 10 ? "0" + s : s
+    c.textContent = h + ':' + m + ':' + s + ' ' + dd
+  }
+  clock()
 </script>
 `
   },
