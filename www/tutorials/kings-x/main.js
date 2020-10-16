@@ -2,7 +2,52 @@
 window.TUTORIAL = {
   onload: () => {
     NNE.addCustomRoot('tutorials/kings-x/')
-    NNE.code = '<!DOCTYPE html>'
+    NNE.code = `<!DOCTYPE html>
+<style>
+  body {
+    background: #81c994;
+  }
+
+  a { text-decoration: none; }
+
+  section {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    height: 100px
+  }
+
+  img {
+    margin: 10px;
+  }
+</style>
+<section>
+  <div>
+    <img src="images/icons/computer.png" alt="computer icon">
+    <a href="https://www.windows93.net/" target="_blank">
+      <img src="images/icons/floppy.png" alt="windows floppy icon">
+    </a>
+  </div>
+  <div>
+    <a href="https://en.wikipedia.org/wiki/AIM_(software)" target="_blank">
+      <img src="images/icons/aim.png" alt="computer icon">
+    </a>
+    <a href="https://archive.org/details/msdos_dos_manager_1999" target="_blank">
+      <img src="images/icons/dos.png" alt="dos icon">
+    </a>
+  </div>
+  <div>
+    <a href="http://www.irational.org/heath/treasures/photo/heath_bunting/porlock_fishing_boat_heath_bunting_kayle_brandon.jpg" target="_blank">
+      <img src="images/icons/image.png" alt="image icon">
+    </a>
+  </div>
+</section>
+<script>
+//   document.querySelector('img[alt="dos icon"]')
+//     .addEventListener('click', () => {
+
+//     })
+</script>
+`
   },
 
   steps: [{
@@ -608,7 +653,7 @@ window.TUTORIAL = {
     'mosaic-browser': new Widget({
       width: window.innerWidth * 0.33,
       title: 'Mosaic Web Browser',
-      innerHTML: '<img style="width: 100%" alt="Mosaic Web Browser" src="tutorials/kings-x/images/mosaic.jpg">'
+      innerHTML: '<img style="width: 100%" alt="Mosaic Web Browser" src="tutorials/kings-x/images/mosaic-headless.jpg">'
     }),
     'heath-and-kayle': new Widget({
       width: window.innerWidth * 0.33,
@@ -660,7 +705,15 @@ window.TUTORIAL = {
     }
     WIDGETS['tutorials-menu'].close()
     WIDGETS['mosaic-browser'].open()
-    WIDGETS['mosaic-browser'].update({ left: 20, top: 20 }, 500)
+    TUTORIAL.styleMosaicWidget()
+    WIDGETS['mosaic-browser'].update({ left: 132, top: 60 }, 500)
+  },
+
+  styleMosaicWidget: () => {
+    WIDGETS['mosaic-browser'].ele.style.padding = '0'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-top-bar').style.padding = '10px 15px'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-top-bar').style.marginBottom = '0'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-innerHTML').style.padding = '0'
   },
 
   codeStep: (n) => {
