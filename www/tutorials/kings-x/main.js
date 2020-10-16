@@ -145,7 +145,7 @@ window.TUTORIAL = {
     id: 'intro3',
     before: () => {
       WIDGETS['mosaic-browser'].close()
-      NNE.code = '<!DOCTYPE html><iframe src="http://irational.org/borderxing/home.html" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
+      NNE.code = '<!DOCTYPE html><iframe src="https://irational.org/borderxing/home.html" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
     },
     content: 'For example, in Heath and Kayle\'s legendary project <a href="http://irational.org/borderxing/home.html" target="_blank">BorderXing Guide</a> (2002) a collection of instructions and documentation for how to surreptitiously cross European borders. For these artists the Internet is a means to an end; an online intervention for instigating offline situations.',
     options: { wow: (e) => e.goTo('intro4') }
