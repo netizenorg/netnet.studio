@@ -584,6 +584,11 @@ class StateManager {
       NNE.marker(line, clrz[0])
       if (this.is('SHOWING_ERROR_TEXT')) NNE.highlight(line, col, clrz[1])
       else NNE.highlight(null)
+      if (this.state.errors.list.length > 1) {
+        this.state.errors.list.forEach(err => {
+          NNE.marker(err.line, err.colors[0])
+        })
+      }
     } else {
       NNE.marker(null)
       NNE.highlight(null)
@@ -625,13 +630,23 @@ class StateManager {
 
       // ...but if something else is, hide that first,
       if (NNM.displaying.length > 0) {
+        // if we already have tha lert open, check if it's one we need to hide
+        const hideInfo = (this.is('SHOWING_ERROR_ALERT') &&
+          NNM.ais.children[0].title === 'information')
+        const hideErr = (this.is('SHOWING_EDU_ALERT') &&
+          NNM.ais.children[0].title !== 'information')
+        // hide whatever needs hiding first
         if (NNM.displaying.includes('menu')) NNM.hideMenu()
-        if (NNM.displaying.includes('alert')) NNM.hideAlert()
+        if (NNM.displaying.includes('alert')) {
+          if (hideInfo || hideErr) NNM.hideAlert()
+        }
         if (NNM.displaying.includes('text')) NNM.hideTextBubble()
         // ...wait for hiding transition to finish before showing me
         // ...wait for hiding transition to finish before showing menu
         const tt = this.getTransitionTime()
-        setTimeout(() => NNM.showAlert(type, data), tt)
+        setTimeout(() => {
+          if (!NNM.displaying.includes('alert')) NNM.showAlert(type, data)
+        }, tt)
       } else { // ...if nothing was previously showing, show the alert.
         NNM.showAlert(type, data)
       }

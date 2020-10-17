@@ -543,7 +543,7 @@ class WindowManager {
     setTimeout(() => {
       this._toggleTransition(false)
       callback()
-    }, t)
+    }, t + 100) // little extra to avoid bugs
   }
 
   _showEditor (show) {

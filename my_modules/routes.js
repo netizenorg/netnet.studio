@@ -46,6 +46,10 @@ router.get('/tutorials/:lesson', (req, res) => {
   res.redirect('/?tutorial=' + req.params.lesson)
 })
 
+router.get('/sketch', (req, res) => {
+  res.redirect('/#code/eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=')
+})
+
 router.get('/api/videos/:video', (req, res) => {
   const v = req.params.video
   if (!v) res.json({ success: false, error: 'URL is missing video id/name' })

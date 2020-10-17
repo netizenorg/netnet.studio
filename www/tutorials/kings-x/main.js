@@ -2,7 +2,130 @@
 window.TUTORIAL = {
   onload: () => {
     NNE.addCustomRoot('tutorials/kings-x/')
-    NNE.code = '<!DOCTYPE html>'
+    NNE.code = `<!DOCTYPE html>
+<style>
+  @font-face {
+    font-family: "retro windows";
+    src: url(fonts/px_sans_nouveaux.woff2) format("woff2"),
+      url(fonts/px_sans_nouveaux.woff) format("woff"),
+      url(fonts/px_sans_nouveaux.ttf);
+  }
+
+  body {
+    background: #81c994;
+  }
+
+  a { text-decoration: none; }
+
+  .icons {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    height: 100px
+  }
+
+  .icons-sub {
+    display: flex;
+  }
+
+  .icons img {
+    width: 56px;
+  }
+
+  .icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    margin: 10px;
+  }
+
+  .filename {
+    font-family: "retro windows";
+    font-size: 12px;
+    color: #000;
+    word-break: break-all
+  }
+
+  .start-menu {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 58px;
+    display: grid;
+    grid-template-columns: 152px auto 319px;
+  }
+
+  .start-menu-1 {
+    background-image: url(images/icons/start-menu-1.png);
+  }
+
+  .start-menu-2 {
+    background-image: url(images/icons/start-menu-2.png);
+  }
+
+  .start-menu-3 {
+    background-image: url(images/icons/start-menu-3.png);
+  }
+
+  .clock {
+    font-family: "retro windows";
+    font-size: 18px;
+    display: inline-block;
+    transform: translate(175px, 15px);
+  }
+</style>
+<section class="icons">
+  <div class="icons-sub">
+    <span class="icon">
+      <img src="images/icons/computer.png" alt="computer icon">
+      <span class="filename">My Computer</span>
+    </span>
+    <a href="https://archive.org/details/msdos_dos_manager_1999" target="_blank" class="icon">
+      <img src="images/icons/dos.png" alt="dos icon">
+      <span class="filename">DOS</span>
+    </a>
+  </div>
+  <div class="icons-sub">
+    <a href="https://www.windows93.net/" target="_blank" class="icon">
+      <img src="images/icons/floppy.png" alt="windows floppy icon">
+      <span class="filename">Windows 93 - by Jenkenpopp</span>
+    </a>
+  </div>
+  <div class="icons-sub">
+    <a href="http://www.irational.org/heath/treasures/photo/heath_bunting/porlock_fishing_boat_heath_bunting_kayle_brandon.jpg" target="_blank" class="icon">
+      <img src="images/icons/image.png" alt="image icon">
+      <span class="filename">porlock_fishing_boat_heath_bunting_kayle_brandon.jpg</span>
+    </a>
+  </div>
+</section>
+<section class="start-menu">
+  <div class="start-menu-1"></div>
+  <div class="start-menu-2"></div>
+  <div class="start-menu-3">
+    <span class="clock">20:48</span>
+  </div>
+</section>
+<script>
+  function clock () {
+    setTimeout(clock, 1000)
+    const c = document.querySelector('.clock')
+    const d = new Date()
+    const hh = d.getHours()
+    let m = d.getMinutes()
+    let s = d.getSeconds()
+    let dd = 'AM'
+    let h = hh
+    if (h >= 12) { h = hh - 12; dd = 'PM' }
+    if (h === 0) h = 12
+    h = h < 10 ? "0" + h : h
+    m = m < 10 ? "0" + m : m
+    s = s < 10 ? "0" + s : s
+    c.textContent = h + ':' + m + ':' + s + ' ' + dd
+  }
+  clock()
+</script>
+`
   },
 
   steps: [{
@@ -22,14 +145,14 @@ window.TUTORIAL = {
     id: 'intro3',
     before: () => {
       WIDGETS['mosaic-browser'].close()
-      NNE.code = '<!DOCTYPE html><iframe src="http://irational.org/borderxing/home.html" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
+      NNE.code = '<!DOCTYPE html><iframe src="https://irational.org/borderxing/home.html" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
     },
     content: 'For example, in Heath and Kayle\'s legendary project <a href="http://irational.org/borderxing/home.html" target="_blank">BorderXing Guide</a> (2002) a collection of instructions and documentation for how to surreptitiously cross European borders. For these artists the Internet is a means to an end; an online intervention for instigating offline situations.',
     options: { wow: (e) => e.goTo('intro4') }
   }, {
     id: 'intro4',
     before: () => {
-      NNE.code = '<!DOCTYPE html><iframe src="http://irational.org/heath/borderxing/fr.it/" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
+      NNE.code = '<!DOCTYPE html><iframe src="https://irational.org/heath/borderxing/fr.it/" style="position: absolute; top:0; left:0; border:none; width: 100vw; height: 100vh;"></iframe>'
     },
     content: 'The project contained routes and instructions for crossing various European borders undetected and without a passport. The site also included documentation from Heath and Kayle\'s own attempts at crossing these borders, with notes like "Spring and Autumn crossing recommended. Route has been used by refugees before successfully. Take enough food for 10 hour walk."',
     options: { rad: (e) => e.goTo('intro5') }
@@ -608,7 +731,7 @@ window.TUTORIAL = {
     'mosaic-browser': new Widget({
       width: window.innerWidth * 0.33,
       title: 'Mosaic Web Browser',
-      innerHTML: '<img style="width: 100%" alt="Mosaic Web Browser" src="tutorials/kings-x/images/mosaic.jpg">'
+      innerHTML: '<img style="width: 100%" alt="Mosaic Web Browser" src="tutorials/kings-x/images/mosaic-headless.jpg">'
     }),
     'heath-and-kayle': new Widget({
       width: window.innerWidth * 0.33,
@@ -634,8 +757,8 @@ window.TUTORIAL = {
     'greene-quote': new Widget({
       width: 817,
       listed: false,
-      title: 'mistakes, code and art',
-      innerHTML: '<blockquote style="font-size: 22px; line-height: 25px;">"The calls created a musical intervention that disrupted the daily routine of urban transportation hub, as commuters circulating through the station chatted with strangers from around the world who were ringing up to say hello. Network functionality was understood on the level of the friendly phone call, as public space was reconfigured aurally and socially. Bunting\'s modus operandi since 1994 has been to create works/events that ware as facile, low-tech, and straightforward as graffiti: simple subversions backed by anarchic conviction. To netizens he is something of a folk hero."</blockquote><div style="text-align:right; font-size: 22px; line-height: 25px;">—Rachel Greene</div>'
+      title: 'from Web Work: A History of Internet Art',
+      innerHTML: '<blockquote style="font-size: 22px; line-height: 25px;">"The calls created a musical intervention that disrupted the daily routine of the urban transportation hub, as commuters circulating through the station chatted with strangers from around the world who were ringing up to say hello. Network functionality was understood on the level of the friendly phone call, as public space was reconfigured aurally and socially. Bunting\'s modus operandi since 1994 has been to create works/events that ware as facile, low-tech, and straightforward as graffiti: simple subversions backed by anarchic conviction. To netizens he is something of a folk hero."</blockquote><div style="text-align:right; font-size: 22px; line-height: 25px;">—Rachel Greene</div>'
     }),
     'jodi-my-desktop': new Widget({
       width: window.innerWidth * 0.5,
@@ -649,7 +772,7 @@ window.TUTORIAL = {
     }),
     'eva-and-franco': new Widget({
       width: window.innerWidth * 0.33,
-      title: 'Life Sharing by Evan and Franco Mattes',
+      title: 'Life Sharing by Eva and Franco Mattes',
       innerHTML: '<img style="width: 100%" alt="the Internt" src="tutorials/kings-x/images/life-sharing.jpg"><p>"For three years, the couple made the contents of their home computer accessible to the public. All of the contents–including files, emails, bank statements, and so on–were available in real time to be read, copied, and downloaded. Life Sharing was a proto-typical meditation on living online. Made long before social media’s widespread influence, the work pointed towards the blurring of the public and private spheres that characterize our current moment. " (source: <a href="https://anthology.rhizome.org/life-sharing" target="_blank">Net Art Anthology</a>)</p>'
     })
   },
@@ -660,7 +783,15 @@ window.TUTORIAL = {
     }
     WIDGETS['tutorials-menu'].close()
     WIDGETS['mosaic-browser'].open()
-    WIDGETS['mosaic-browser'].update({ left: 20, top: 20 }, 500)
+    TUTORIAL.styleMosaicWidget()
+    WIDGETS['mosaic-browser'].update({ left: 132, top: 60 }, 500)
+  },
+
+  styleMosaicWidget: () => {
+    WIDGETS['mosaic-browser'].ele.style.padding = '0'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-top-bar').style.padding = '10px 15px'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-top-bar').style.marginBottom = '0'
+    WIDGETS['mosaic-browser'].ele.querySelector('.w-innerHTML').style.padding = '0'
   },
 
   codeStep: (n) => {
