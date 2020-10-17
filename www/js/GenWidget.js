@@ -34,15 +34,35 @@ class GenWidget extends Widget {
   constructor (opts) {
     super(opts)
     console.log('genwidget constructed')
+    this.observer = new window.MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes') {
+          console.log(mutation)
+          if (mutation.attributeName === 'value' &&
+          mutation.target === this.codeField &&
+          this.codeField.value !== this.codeField.children[0].value) {
+            this.codeField.children[0].value = this.codeField.value
+            console.log(this.codeField.value)
+            console.log(this.codeField.children[0].value)
+          }
+        }
+      })
+    })
   }
 
   createCodeField (opts) {
     const el = document.createElement('div')
+    el.className = 'gen-code-field-element'
+    this.codeField = el
     el.setAttribute('value', '12')
+    this.observer.observe(el, {
+      attributes: true
+    })
     const input = document.createElement('input')
     input.setAttribute('type', 'text')
     input.addEventListener('input', (e) => {
-      el.setAttribute('value', input.value)
+      // el.setAttribute('value', input.value)
+      console.log(el)
       opts.change(e)
     })
 
@@ -70,7 +90,7 @@ class GenWidget extends Widget {
     slider.setAttribute('value', opts.value || '50')
     slider.className = 'gen-slider'
     slider.addEventListener('input', function (e) {
-      el.setAttribute('value', slider.value)
+      // el.setAttribute('value', slider.value)
       // console.log(slider.value)
       opts.change(e)
     })
