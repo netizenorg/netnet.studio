@@ -1,4 +1,4 @@
-/* global Widget, NNE */
+/* global Widget, NNE, HTMLElement */
 /*
   -----------
      info
@@ -30,6 +30,33 @@
   })
 
 */
+class CodeField extends HTMLElement {
+  connectedCallback () {
+    this.innerHTML = `<div>
+        <button>insert</button>
+        <input type="text">
+    </div>`
+  }
+
+  get value () {
+    return this.getAttribute('value')
+  }
+
+  set value (val) {
+    this.setAttribute('value', val)
+  }
+
+  static get observedAttributes () {
+    return ['value']
+  }
+
+  attributeChangedCallback (attrName, oldVal, newVal) {
+    if (newVal !== oldVal) this[attrName] = newVal
+  }
+}
+
+window.customElements.define('code-field', CodeField)
+
 class GenWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -51,30 +78,38 @@ class GenWidget extends Widget {
   }
 
   createCodeField (opts) {
-    const el = document.createElement('div')
+    // const el = document.createElement('div')
+    // el.className = 'gen-code-field-element'
+    // this.codeField = el
+    // el.setAttribute('value', '12')
+    // this.observer.observe(el, {
+    //   attributes: true
+    // })
+    // const input = document.createElement('input')
+    // input.setAttribute('type', 'text')
+    // input.addEventListener('input', (e) => {
+    //   // el.setAttribute('value', input.value)
+    //   console.log(el)
+    //   opts.change(e)
+    // })
+    const el = document.createElement('code-field')
     el.className = 'gen-code-field-element'
     this.codeField = el
-    el.setAttribute('value', '12')
-    this.observer.observe(el, {
-      attributes: true
-    })
-    const input = document.createElement('input')
-    input.setAttribute('type', 'text')
-    input.addEventListener('input', (e) => {
-      // el.setAttribute('value', input.value)
-      console.log(el)
-      opts.change(e)
-    })
+    console.log(el)
+    // const input = el.children[1]
+    // const insertButton = el.children[0]
+    const input = el.querySelector('input')
+    const insertButton = el.querySelector('button')
 
-    const insertButton = document.createElement('button')
-    insertButton.setAttribute('type', 'button')
-    insertButton.appendChild(document.createTextNode('insert'))
+    // const insertButton = document.createElement('button')
+    // insertButton.setAttribute('type', 'button')
+    // insertButton.appendChild(document.createTextNode('insert'))
     insertButton.addEventListener('click', () => {
       NNE.cm.replaceSelection(input.value)
     })
-
-    el.appendChild(input)
-    el.appendChild(insertButton)
+    //
+    // el.appendChild(input)
+    // el.appendChild(insertButton)
     return el
   }
 
