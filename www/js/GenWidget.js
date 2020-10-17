@@ -78,35 +78,20 @@ class GenWidget extends Widget {
   }
 
   createCodeField (opts) {
-    // const el = document.createElement('div')
-    // el.className = 'gen-code-field-element'
-    // this.codeField = el
-    // el.setAttribute('value', '12')
-    // this.observer.observe(el, {
-    //   attributes: true
-    // })
-    // const input = document.createElement('input')
-    // input.setAttribute('type', 'text')
-    // input.addEventListener('input', (e) => {
-    //   // el.setAttribute('value', input.value)
-    //   console.log(el)
-    //   opts.change(e)
-    // })
     const el = document.createElement('code-field')
     el.className = 'gen-code-field-element'
     this.codeField = el
-    const input = el.children[0].querySelector('input')
-    const insertButton = el.children[0].querySelector('button')
-
-    // const insertButton = document.createElement('button')
-    // insertButton.setAttribute('type', 'button')
-    // insertButton.appendChild(document.createTextNode('insert'))
-    insertButton.addEventListener('click', () => {
-      NNE.cm.replaceSelection(input.value)
+    el.setAttribute('value', '12')
+    this.observer.observe(el, {
+      attributes: true
     })
+    // const input = el.children[0].querySelector('input')
+    // const insertButton = el.children[0].querySelector('button')
     //
-    // el.appendChild(input)
-    // el.appendChild(insertButton)
+    // insertButton.addEventListener('click', () => {
+    //   NNE.cm.replaceSelection(input.value)
+    // })
+
     return el
   }
 
