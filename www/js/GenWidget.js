@@ -95,11 +95,8 @@ class GenWidget extends Widget {
     const el = document.createElement('code-field')
     el.className = 'gen-code-field-element'
     this.codeField = el
-    console.log(el)
-    // const input = el.children[1]
-    // const insertButton = el.children[0]
-    const input = el.querySelector('input')
-    const insertButton = el.querySelector('button')
+    const input = el.children[0].querySelector('input')
+    const insertButton = el.children[0].querySelector('button')
 
     // const insertButton = document.createElement('button')
     // insertButton.setAttribute('type', 'button')
