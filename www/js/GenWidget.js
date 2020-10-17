@@ -78,6 +78,13 @@ class GenWidget extends Widget {
   }
 
   createCodeField (opts) {
+    // const input = document.createElement('input')
+    // input.setAttribute('type', 'text')
+    // input.addEventListener('input', (e) => {
+    //   // el.setAttribute('value', input.value)
+    //   console.log(el)
+    //   opts.change(e)
+    // })
     const el = document.createElement('code-field')
     el.className = 'gen-code-field-element'
     this.codeField = el
@@ -90,6 +97,12 @@ class GenWidget extends Widget {
     //
     // insertButton.addEventListener('click', () => {
     //   NNE.cm.replaceSelection(input.value)
+    // })
+    //
+    // input.addEventListener('input', (e) => {
+    //   // el.setAttribute('value', input.value)
+    //   console.log(el)
+    //   opts.change(e)
     // })
 
     return el
