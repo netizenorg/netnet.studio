@@ -31,11 +31,28 @@
 
 */
 class CodeField extends HTMLElement {
-  connectedCallback () {
+  connectedCallback (opts) {
     this.innerHTML = `<div>
         <button>insert</button>
         <input type="text">
     </div>`
+
+    this.input = this.querySelector('input')
+    this.insertButton = this.querySelector('button')
+
+    this.querySelector('button').addEventListener('click', () => {
+      const val = this.querySelector('input').value
+      this.from = NNE.cm.getCursor('from')
+      this.to = NNE.cm.getCursor('to')
+      NNE.cm.replaceSelection(val)
+      const t = { line: this.to.line, ch: this.from.ch + val.length }
+      NNE.cm.setSelection(this.from, t)
+    })
+
+    this.querySelector('input').addEventListener('input', (e) => {
+      this.setAttribute('value', e.target.value)
+      this.change(e)
+    })
   }
 
   get value () {
@@ -44,6 +61,10 @@ class CodeField extends HTMLElement {
 
   set value (val) {
     this.setAttribute('value', val)
+    const input = this.querySelector('input')
+    if (input) {
+      input.value = val
+    }
   }
 
   static get observedAttributes () {
@@ -61,49 +82,13 @@ class GenWidget extends Widget {
   constructor (opts) {
     super(opts)
     console.log('genwidget constructed')
-    this.observer = new window.MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes') {
-          console.log(mutation)
-          if (mutation.attributeName === 'value' &&
-          mutation.target === this.codeField &&
-          this.codeField.value !== this.codeField.children[0].value) {
-            this.codeField.children[0].value = this.codeField.value
-            console.log(this.codeField.value)
-            console.log(this.codeField.children[0].value)
-          }
-        }
-      })
-    })
   }
 
   createCodeField (opts) {
-    // const input = document.createElement('input')
-    // input.setAttribute('type', 'text')
-    // input.addEventListener('input', (e) => {
-    //   // el.setAttribute('value', input.value)
-    //   console.log(el)
-    //   opts.change(e)
-    // })
     const el = document.createElement('code-field')
-    el.className = 'gen-code-field-element'
-    this.codeField = el
     el.setAttribute('value', '12')
-    this.observer.observe(el, {
-      attributes: true
-    })
-    // const input = el.children[0].querySelector('input')
-    // const insertButton = el.children[0].querySelector('button')
-    //
-    // insertButton.addEventListener('click', () => {
-    //   NNE.cm.replaceSelection(input.value)
-    // })
-    //
-    // input.addEventListener('input', (e) => {
-    //   // el.setAttribute('value', input.value)
-    //   console.log(el)
-    //   opts.change(e)
-    // })
+    el.value = 13
+    el.change = opts.change
 
     return el
   }
