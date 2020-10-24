@@ -124,11 +124,10 @@ class HyperVidPlayer extends Widget {
       </div>
       <div style="font-size:12px">
         <a href="${opts.video}" target="_blank">download video</a>
-        ${opts.source ? `<p class="hvp-copy">
+        ${opts.source ? `
             (source:<a href="${opts.source.url}" target="_blank">
               ${opts.source.text}
-            </a>)
-          </p>` : ''}
+            </a>)` : ''}
       </div>
       ${opts.text ? '<p class="hvp-copy">' + opts.text + '</p>' : ''}
     `
