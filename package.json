@@ -7,7 +7,8 @@
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
     "env-file": "echo \"PORT = 8001\" > .env",
-    "update-netitor": "rm -rf node_modules/netitor/; npm install"
+    "update-netitor": "rm -rf node_modules/netitor/; npm install",
+    "tut": "node www/tutorials/create-tutorial-data.js"
   },
   "repository": {
     "type": "git",
