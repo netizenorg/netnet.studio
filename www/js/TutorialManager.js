@@ -137,7 +137,7 @@ class TutorialManager {
   _resetVideos () {
     for (const w in TUTORIAL.widgets) {
       const v = TUTORIAL.widgets[w].$('video')
-      if (v) v.currentTime = 0
+      if (v && !TUTORIAL.widgets[w].opened) v.currentTime = 0
     }
   }
 
