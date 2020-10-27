@@ -123,21 +123,32 @@ class GenWidget extends Widget {
   }
 
   parceCSS (string) {
-    const parsedCode = { property: 'css-property', value: ['10px'] }
+    const parsedCode = { property: 'css-property', value: ['13.37px'] }
     if (hasColon(string)) {
-      const line = string.split(':')
-      line[1] = line[1].split(' ')
-      const valueArr = line[1].filter(el => el.trim().length > 0)
-      console.log(valueArr)
-      parsedCode[line[0]] = valueArr
-      console.log(parsedCode)
-      return parsedCode
+      if (hasParentheses(string)) {
+        const regExp = /\(([^)]+)\)/
+        let matches = regExp.exec(string)
+        console.log(string)
+        console.log(matches[1])
+      } else {
+        const line = string.split(':')
+        line[1] = line[1].split(' ')
+        const valueArr = line[1].filter(el => el.trim().length > 0)
+        console.log(valueArr)
+        parsedCode[line[0]] = valueArr
+        console.log(parsedCode)
+        return parsedCode
+      }
     } else {
       return parsedCode
     }
 
     function hasColon (str) {
       const colon = new RegExp(':')
+      return colon.test(str)
+    }
+    function hasParentheses (str) {
+      const colon = new RegExp('()')
       return colon.test(str)
     }
   }
