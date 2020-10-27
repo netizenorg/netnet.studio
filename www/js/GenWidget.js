@@ -123,37 +123,36 @@ class GenWidget extends Widget {
   }
 
   parceCSS (string) {
-    const parsedCode = { property: 'css-property', value: ['13.37px'] }
-    if (hasColon(string)) {
-      if (hasParentheses(string)) {
-        const regExp = /\(([^)]+)\)/g
-        const matches = regExp.exec(string)
-        console.log(string)
-        console.log(matches)
-        if (matches) {
-          const line = string.split(':')
-          line[1] = line[1].split(' ')
-          const valueArr = line[1].filter(el => el.trim().length > 0)
-          console.log(valueArr)
-          parsedCode.property = line[0]
-          parsedCode.value = valueArr
-          console.log(parsedCode)
-          return parsedCode
-        }
-        return parsedCode
-      }
+    const parsedCode = {
+      property: 'css-property',
+      value: ['13.37px']
+    }
+    const regExp = /\(([^)]+)\)/g
+    let matches = regExp.exec(string)
+    const line = string.split(':')
+    parsedCode.property = line[0]
+
+    if (matches) {
+      const funcs = line[1].split(' ')
+        .filter(item => item.includes('('))
+        .map(item => item.split('(')[0])
+
+      matches = matches.map((item) => {
+        item.replace(/[()]/g, '')
+        return item.split(',')
+      })
+      console.log(matches)
+      matches.forEach((item, index) => {
+        item.unshift(funcs[index])
+      })
+      parsedCode.value = matches
     } else {
-      return parsedCode
+      line[1] = line[1].split(' ')
+      const valueArr = line[1].filter(el => el.trim().length > 0)
+      parsedCode.value = valueArr
     }
 
-    function hasColon (str) {
-      const colon = new RegExp(':')
-      return colon.test(str)
-    }
-    function hasParentheses (str) {
-      const colon = new RegExp('()')
-      return colon.test(str)
-    }
+    return parsedCode
   }
 }
 
