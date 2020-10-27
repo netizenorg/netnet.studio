@@ -114,6 +114,10 @@ class SearchBar {
   }
 
   addToDict (arr) {
+    const strfy = this.dict.map(i => JSON.stringify({ t: i.type, w: i.word }))
+    const diff = arr.map(i => JSON.stringify({ t: i.type, w: i.word }))
+      .filter(i => !strfy.includes(i)).map((s, i) => i)
+    arr = arr.filter((o, i) => diff.includes(i))
     this.dict = this.dict.concat(arr)
     this.fuse = new Fuse(this.dict, {
       ignoreLocation: true,

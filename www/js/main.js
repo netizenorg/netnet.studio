@@ -23,8 +23,9 @@ window.NNM = new MenuManager()
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 NNE.on('lint-error', (e) => {
   // if (e.length > 0) {
-  //   console.log(NNE._err2str(e[0]));
-  //   console.log(NNE._err2str(e[0], true));
+  //   const ez = e.map(err => NNE._err2str(err))
+  //   // const ez = e.map(err => NNE._err2str(err, true))
+  //   console.log(ez)
   // }
   if (STORE._layingout) return // avoid throwing errors during a layout change
   const errz = NetitorErrorHandler.parse(e)
@@ -94,5 +95,8 @@ window.addEventListener('keydown', (e) => {
     e.stopPropagation() // TODO... not working :(
     window.NNM.search.open()
     return false
+  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 49) { // 1
+    // TEMP... open video streaming widget
+    window.WIDGETS['stream-video'].open()
   }
 })

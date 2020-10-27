@@ -12,7 +12,16 @@
 
   // it's important that the file-name matches the class-name because
   // this widget is instantiated by the WindowManager as...
-  WIDGETS['Example Widget'] = new HyperVidPlayer()
+
+  WIDGETS['Example Widget'] = new HyperVidPlayer({
+    video: 'api/videos/vr1-computer-chronicles.mp4',
+    width: window.innerWidth * 0.375,
+    title: 'Computer Chronicles (1992)',
+    source: {
+      url: 'https://archive.org/details/virtualreali',
+      text: 'Computer Chronicles episode on Virtual Reality'
+    }
+  })
 
   // this class inherits all the properties/methods of the base Widget class
   // refer to www/js/Widget.js to see what those are
@@ -41,6 +50,7 @@ class HyperVidPlayer extends Widget {
   set src (v) { this.$('video').src = v }
 
   play () {
+    this.$('.hvp-pause-screen').style.display = 'none'
     this.$('.hvp-toggle > span').classList.remove('play')
     this.$('.hvp-toggle > span').classList.add('pause')
     this.$('video').play()
@@ -48,6 +58,8 @@ class HyperVidPlayer extends Widget {
   }
 
   pause () {
+    this._updatePauseClock()
+    this.$('.hvp-pause-screen').style.display = 'block'
     this.$('.hvp-toggle > span').classList.remove('pause')
     this.$('.hvp-toggle > span').classList.add('play')
     this.$('video').pause()
@@ -86,6 +98,14 @@ class HyperVidPlayer extends Widget {
   _createHTML (opts) {
     this.innerHTML = `
       <div class="hvp-wrap">
+        <div class="hvp-pause-screen">
+          <span>PAUSE ▌▌</span>
+          <span>PAUSE ▌▌</span>
+          <span>PAUSE ▌▌</span>
+          <span>00:00:00</span>
+          <span>00:00:00</span>
+          <span>00:00:00</span>
+        </div>
         <video style="display:block; width:100%" src="${opts.video}"></video>
         <div class="hvp-controls">
           <div class="hvp-toggle">
@@ -102,12 +122,14 @@ class HyperVidPlayer extends Widget {
           </div>
         </div>
       </div>
+      <div style="font-size:12px">
+        <a href="${opts.video}" target="_blank">download video</a>
+        ${opts.source ? `
+            (source:<a href="${opts.source.url}" target="_blank">
+              ${opts.source.text}
+            </a>)` : ''}
+      </div>
       ${opts.text ? '<p class="hvp-copy">' + opts.text + '</p>' : ''}
-      ${opts.source ? `<p class="hvp-copy">
-          (source:<a href="${opts.source.url}" target="_blank">
-            ${opts.source.text}
-          </a>)
-        </p>` : ''}
     `
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
     this.$('.hvp-vol').addEventListener('change', () => {
@@ -133,6 +155,30 @@ class HyperVidPlayer extends Widget {
       setTimeout(() => { this.$('.hvp-controls').style.opacity = 0 }, 250)
     })
     this.on('close', () => this.pause())
+
+    this.$('video').addEventListener('ended', () => {
+      this.$('video').currentTime = 0
+      this.pause()
+    })
+
+    this.$('.hvp-toggle > span').classList.remove('pause')
+    this.$('.hvp-toggle > span').classList.add('play')
+  }
+
+  _updatePauseClock () {
+    const c1 = this.$('.hvp-pause-screen > span:nth-child(4)')
+    const c2 = this.$('.hvp-pause-screen > span:nth-child(5)')
+    const c3 = this.$('.hvp-pause-screen > span:nth-child(6)')
+    const t = this.$('video').currentTime
+    const h = '00'
+    let m = Math.floor(t / 60)
+    let s = Math.round(t % 60)
+    if (m < 10) m = '0' + m
+    if (s < 10) s = '0' + s
+    c1.textContent = h + ':' + m + ':' + s
+    c2.textContent = h + ':' + m + ':' + s
+    c3.textContent = h + ':' + m + ':' + s
+    return t
   }
 
   _loop () {
@@ -142,7 +188,7 @@ class HyperVidPlayer extends Widget {
     const ct = this.$('video').currentTime
     const kfs = this.keyframes.filter(kf => ct > kf.time && !kf.ran)
     kfs.forEach(kf => {
-      kf.callback()
+      kf.callback(this)
       kf.ran = true
     })
 

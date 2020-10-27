@@ -1,0 +1,39 @@
+{
+  "title": "<i>Form</i>-alism",
+  "subtitle": "the Web as a new artistic medium",
+  "author": {
+    "name": "Nick Briz",
+    "preferred": "Nick",
+    "url": "http://nickbriz.com"
+  },
+  "description": "For many artists, the Web was a means to an end. As we discussed in the last tutorial, for <a href=\"https://anthology.rhizome.org/communication-creates-conflict\" target=\"_blank\">irational.org</a> (Heath Bunting, Kayle Brandon, Rachel Baker, etc.) it was a tool for \"hacktivist\" intervention, for others like <a href=\"https://anthology.rhizome.org/brandon\" target=\"_blank\">Shu Lea Cheang</a> it was a new means to \"explore the construction and perception of identity\" (Tribe/Jana) and for others, like <a href=\"https://en.wikipedia.org/wiki/Learning_to_Love_You_More\" target=\"_blank\">Miranda July and Harrell Fletcher</a> a space to experiment with new forms of collaboration and participatory art. But the Web was also a new medium and for many artists, discovering, and perhaps also defining, what that meant was the most exciting part. What would be the Web's inherent features? it's aesthetics? it's dynamics? it's conventions? tropes? cliches? strengths? weaknesses? In this tutorial we'll look at a couple of different responses to this question by early net artists: jodi.org and \"Form Art\".",
+  "keywords": [],
+  "main": "main.js",
+  "checkpoints": {
+    "0: jodi.org": "jodi.org",
+    "1: glitchy emails": "incomprehensible-emails",
+    "2: ASCII Art": "ascii-art",
+    "3: the source code": "jodi-src-1",
+    "4: Form Art": "form-art",
+    "5: Cyberfeminism": "cyberfeminism",
+    "6: in </closing>": "in-&lt;/closing&gt;"
+  },
+  "references": [
+    {
+      "note": "Greene, Rachel. Internet Art. Thames & Hudson. 2004",
+      "url": "https://thamesandhudson.com.au/product/internet-art/"
+    },
+    {
+      "note": "Greene, Rachel. Web Work: A History of Internet Art. Artforum. May 2000",
+      "url": "https://netart.rocks/files/webwork.pdf"
+    },
+    {
+      "note": "Tribe, Mark, Reena Jana. New Media Art. Taschen. May 2007",
+      "url": "https://netart.rocks/files/webwork.pdf"
+    },
+    {
+      "note": "Kaplan, Zachary et al. Net Art Anthology. Rhizome.org. 2019",
+      "url": "https://anthology.rhizome.org/"
+    }
+  ]
+}
