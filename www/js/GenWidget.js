@@ -129,8 +129,8 @@ class GenWidget extends Widget {
         const regExp = /\(([^)]+)\)/g
         const matches = regExp.exec(string)
         console.log(string)
-        console.log(matches[0])
-        if (matches[0] == null) {
+        console.log(matches)
+        if (matches) {
           const line = string.split(':')
           line[1] = line[1].split(' ')
           const valueArr = line[1].filter(el => el.trim().length > 0)
@@ -140,6 +140,7 @@ class GenWidget extends Widget {
           console.log(parsedCode)
           return parsedCode
         }
+        return parsedCode
       }
     } else {
       return parsedCode
