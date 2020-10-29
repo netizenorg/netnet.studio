@@ -51,13 +51,45 @@
   background-color: var(--netizen-meta);
 }
 
-.widget > .w-top-bar > span:nth-child(1) {
+.widget > .w-top-bar > .w-top-bar__title {
+  display: inline-block;
   position: relative;
+  width: 100%;
   font-size: 20px;
   letter-spacing: -0.02em;
   font-weight: 400;
   cursor: default;
   pointer-events: none;
+  overflow: hidden;
+}
+.widget > .w-top-bar > .w-top-bar__title.marquee {
+  -webkit-mask-image: linear-gradient(to left, transparent 2%, black 13%);
+  mask-image: linear-gradient(to left, transparent 2%, black 13%);
+}
+.widget > .w-top-bar > .w-top-bar__title.marquee > span {
+  transform: translate3d(0, 0, 0);
+  animation: 15s marquee 1s linear infinite;
+}
+@keyframes marquee {
+  0% {
+    transform: translate3d(0%, 0, 0);
+  }
+  25% {
+    transform: translate3d(0%, 0, 0);
+  }
+  65% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  65.0001% {
+    transform: translate3d(90%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+.widget > .w-top-bar > .w-top-bar__title > span {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .widget > .w-top-bar .close {
