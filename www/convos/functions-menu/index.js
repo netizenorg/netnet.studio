@@ -1,4 +1,4 @@
-/* global Averigua, NNE, NNT */
+/* global Averigua, NNE, STORE */
 window.convos['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac')
     ? 'CMD' : 'CTRL'
@@ -227,7 +227,7 @@ window.convos['functions-menu'] = (self) => {
         code !== 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') {
           window.localStorage.setItem('code', code)
         }
-        NNT.quit()
+        STORE.dispatch('TUTORIAL_FINISHED')
         window.greetings.startMenu()
       }
     }
