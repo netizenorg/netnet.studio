@@ -128,7 +128,7 @@ class GenWidget extends Widget {
       value: ['13.37px']
     }
     const regExp = /\(([^)]+)\)/g
-    let matches = regExp.exec(string)
+    let matches = string.match(regExp)
     const line = string.split(':')
     parsedCode.property = line[0]
 
@@ -138,10 +138,9 @@ class GenWidget extends Widget {
         .map(item => item.split('(')[0])
 
       matches = matches.map((item) => {
-        item.replace(/[()]/g, '')
+        item = item.replace(/[()]/g, '')
         return item.split(',')
       })
-      console.log(matches)
       matches.forEach((item, index) => {
         item.unshift(funcs[index])
       })
