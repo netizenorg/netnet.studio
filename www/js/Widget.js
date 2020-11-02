@@ -372,8 +372,8 @@ class Widget {
   }
 
   _marquee () {
-    let titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
-    let titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
+    const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
+    const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
     if (titleSpanWidth >= titleWidth) {
       this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
       this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
