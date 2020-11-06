@@ -527,7 +527,7 @@ window.TUTORIAL = {
     content: 'For example, here we\'ve created a CSS rule for the <code>a</code> selector\'s <code>:hover</code> state. This CSS rule will only apply to an <code>a</code> tag if and when you hover over it with your mouse.',
     options: { ok: (e) => e.goTo('the-"cascade"') }
   }, {
-    id: 'the-"cascade"',
+    id: 'the-cascade',
     code: `<!DOCTYPE html>
 <style>
   a {
