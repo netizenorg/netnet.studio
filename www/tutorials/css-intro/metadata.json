@@ -1,0 +1,41 @@
+{
+  "title": "CSS",
+  "subtitle": "\"Fashion changes, but style endures\"",
+  "author": {
+    "name": "Nick Briz",
+    "preferred": "Nick",
+    "url": "http://nickbriz.com"
+  },
+  "description": "When the web was first introduced in 1990 there was only HTML code, which handled both structuring the content of a document as well as the style of its presentation. In the years that followed it became obvious that the <i>style</i> of a web document should be handled separately from the structure of it's content, and so there were a few different proposals for how that could be handled. One such proposal for a style coding language came from Håkon W Lie who <a href=\"http://www.w3.org/People/howcome/p/cascade.html\" target=\"_blank\">debuted CHSS</a> (Cascading HTML Style Sheets, later renamed CSS) at a Web conference in Chicago in 1994. The rest is history.",
+  "keywords": [],
+  "main": "main.js",
+  "checkpoints": {
+    "0: A New Language": "a-new-language",
+    "1: CSS Art": "css-art",
+    "2: CSS Basics": "css-basics",
+    "3: CSS selectors": "css-selectors",
+    "4: the \"cascade\"": "the-\"cascade\""
+  },
+  "references": [
+    {
+      "note": "Bloom, Zach. The Languages Which Almost Became CSS. Eager. May 2017",
+      "url": "https://eager.io/blog/the-languages-which-almost-were-css/"
+    },
+    {
+      "note": "Wium Lie, Håkon, Bert Bos. Cascading Style Sheets: Designing for the Web. Addison-Wesley Professional. April 2005.",
+      "url": "https://www.w3.org/Style/LieBos2e/history/"
+    },
+    {
+      "note": "Sfetcu, Nicolae. Web Design & Development. 2014",
+      "url": "https://books.google.com/books?id=jAGSAwAAQBAJ&lpg=PA1927&dq=Sfetcu%2C%20Nicolae.%20Web%20Design%20%26%20Development%3A%20Nicolae%20Sfetcu%2C%202014&pg=PT75#v=onepage&q&f=false"
+    },
+    {
+      "note": "Romano, Aja. How your web browser affects your online reality, explained in one image. Vox.com. 2018",
+      "url": "https://www.vox.com/2018/5/3/17309078/digital-art-diana-a-smith-francine-coded-browser-art"
+    },
+    {
+      "note": "Pearson, Jordan. This Stunning Image Made With Pure Code Is Like a Mood Ring For Your Browser. VICE.com. 2018",
+      "url": "https://www.vice.com/en/article/9kgx7p/painting-made-with-code-html-pure-css-browser-art-diana-smith?utm_source=vicetwitterca"
+    }
+  ]
+}
