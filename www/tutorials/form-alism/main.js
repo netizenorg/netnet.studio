@@ -268,7 +268,7 @@ window.TUTORIAL = {
       utils.netitorUpdate()
     },
     id: 'jodi-src-11',
-    content: 'Let\'s return to the ASCII and jodi.org\'s classic "mistake". As we discussed int he lat tutorial, the spaces and line breaks in our HTML code are purely for own sanity, so we can read our code clearly. The browser doesn\'t actually pay attention to spaces and line breaks, and so if you create a composition out of text which includes specific number of spaces and breaks (which is necessary when making ASCII art) it won\'t actually be displayed correctly.',
+    content: 'Let\'s return to the ASCII and jodi.org\'s classic "mistake". As we discussed in the last tutorial, the spaces and line breaks in our HTML code are purely for own sanity, so we can read our code clearly. The browser doesn\'t actually pay attention to spaces and line breaks, and so if you create a composition out of text which includes specific number of spaces and breaks (which is necessary when making ASCII art) it won\'t actually be displayed correctly.',
     options: { ok: (e) => e.goTo('jodi-src-12') }
   }, {
     id: 'jodi-src-12',

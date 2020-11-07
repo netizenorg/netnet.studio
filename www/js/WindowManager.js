@@ -90,6 +90,24 @@ class WindowManager {
     } else this._adjustOpacity(v)
   }
 
+  get height () {
+    const options = NNM.tis.querySelector('.text-bubble-options').offsetHeight
+    const nnwindow = this.win.offsetHeight
+    const textBubble = NNM.tis.offsetHeight
+    const margin = 4
+    return nnwindow + margin + options + textBubble
+  }
+
+  get width () {
+    const options = NNM.tis.querySelector('.text-bubble-options').offsetWidth
+    const nnwindow = this.win.offsetWidth
+    const textBubble = NNM.tis.offsetWidth
+    const width = nnwindow > textBubble
+      ? nnwindow : textBubble > options
+        ? textBubble : options
+    return width
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

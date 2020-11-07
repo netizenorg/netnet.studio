@@ -16,6 +16,7 @@ let holdCheckpoint = null
 const has = { hypervid: false, widget: false }
 const steps = []
 const widgets = []
+const codeBlocks = []
 
 createMetadata()
 createMainJS()
@@ -82,7 +83,7 @@ function addB4 (str, wig) {
       WIDGETS['${wig}'].open()
       WIDGETS['${wig}'].update({ left: 20, top: 20 }, 500)
     },`
-    arr.splice(1, 0, xtra)
+    arr.splice(2, 0, xtra)
   }
   return arr.join('\n')
 }
@@ -244,6 +245,16 @@ function createTangent (line) {
   steps[idx] = step.replace(`nn-${idx + 1}`, next)
 }
 
+function createCodeBlock (line) {
+  if (line.includes('```')) {
+    // const lang = line.split('```')[1]
+    // console.log(lang) // TODO for later when working on multi-language tabs
+    codeBlocks.push({ step: steps.length - 1, code: '' })
+  } else {
+    codeBlocks[codeBlocks.length - 1].code += line + '\n'
+  }
+}
+
 // ` * ~ . _ . ~ * ` * ~ . _ . ~ * ` * ~ . _ . ~ * ` * ~ . _ . ~ * ` * ~  main
 
 function createMainJS () {
@@ -252,13 +263,15 @@ function createMainJS () {
   const start = fulllist.indexOf(titles[2])
   const end = fulllist.indexOf(titles[titles.length - 1])
   const list = fulllist.slice(start, end)
-  let ignoring = false
+  let inCodeBlock = false
   for (let i = 0; i < list.length; i++) {
     const line = list[i]
-    const dismiss = ['----', '```']
-    if (line.indexOf('```') === 0) ignoring = !ignoring
-    if (!ignoring && !dismiss.includes(line)) {
-      if (line.indexOf('>') === 0) { // found quotation
+    const dismiss = ['----']
+    if (line.indexOf('```') === 0) inCodeBlock = !inCodeBlock
+    if (!dismiss.includes(line)) {
+      if (inCodeBlock) {
+        createCodeBlock(line)
+      } else if (line.indexOf('>') === 0) { // found quotation
         has.widget = true
         createQuotationWidget(line)
       } else if (line.indexOf('[![') === 0) { // found Video
@@ -275,10 +288,17 @@ function createMainJS () {
       } else if (line.indexOf('##') === 0) { // found a Check Point
         holdCheckpoint = line.split('## ')[1].toLowerCase().replace(/ /g, '-')
       } else { // found a step
-        createStep(line)
+        if (line !== '```') createStep(line)
       }
     }
   }
+
+  codeBlocks.forEach(c => {
+    const arr = steps[c.step].split('\n')
+    const code = '    code: `' + c.code + '    `,'
+    arr.splice(2, 0, code)
+    steps[c.step] = arr.join('\n')
+  })
 
   let globalVars = 'NNE'
   if (has.widget) globalVars += ' Widget WIDGETS'
