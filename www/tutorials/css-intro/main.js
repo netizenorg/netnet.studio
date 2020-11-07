@@ -87,8 +87,10 @@ window.TUTORIAL = {
 
       WIDGETS['-Idea-Channel-quote-w1'].open()
       WIDGETS['-Idea-Channel-quote-w1'].update({ right: 20, top: 20 }, 500)
+
+      WIDGETS['idea-channel'].at(293, (v) => { v.pause() })
     },
-    content: 'As artists, writing CSS is about more than just changing "the defaults" however. As Internet culture video essayists "Idea Channel" explain, if the HTML default look is like a web-page\'s "clothes" CSS, in all it\'s expressive potential, is like "fashion". Take a few mins to watch their video to hear more on that.',
+    content: 'As artists, writing CSS is about more than just changing "the defaults" however. As Internet culture video essayists "Idea Channel" explain, if the HTML default look is like a web-page\'s "clothes" CSS, in all it\'s expressive potential, is like "fashion". Take 5 minutes to watch their video to hear more on that.',
     options: { 'ok, let\'s move on': (e) => e.goTo('css-art') }
   }, {
     id: 'css-art',
@@ -605,7 +607,11 @@ window.TUTORIAL = {
     'idea-channel': new HyperVidPlayer({
       video: 'api/videos/css-idea-channel.mp4',
       width: window.innerWidth * 0.33,
-      title: 'Is CSS and Website Design a Fashion Statement? | Idea Channel | PBS Digital Studios'
+      title: 'Is CSS and Website Design a Fashion Statement? | Idea Channel | PBS Digital Studios',
+      source: {
+        url: 'https://www.youtube.com/watch?v=6akcfoJ05Aw',
+        text: 'PBS Idea Channel on YouTube'
+      }
     }),
     '-Idea-Channel-quote-w1': new Widget({
       width: window.innerWidth * 0.33,
@@ -625,7 +631,11 @@ window.TUTORIAL = {
     'Diana-Smith-Interview': new HyperVidPlayer({
       video: 'api/videos/diana-smith-css-art.mp4',
       width: window.innerWidth * 0.5,
-      title: 'Diana Smith | VICE Interview'
+      title: 'Diana Smith | VICE Interview',
+      source: {
+        url: 'https://video.vice.com/en_ca/video/this-painting-is-made-of-pure-web-code/5b9ad409be40775f7049ff9f',
+        text: 'Daily Vice'
+      }
     }),
     'Pure-CSS-Gaze-by-Diana-A-Smith-w5': new Widget({
       width: 385,
