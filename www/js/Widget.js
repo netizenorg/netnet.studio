@@ -121,7 +121,7 @@ class Widget {
       return console.error('Widget: title property must be set to a string')
     } else {
       this._title = v
-      this.ele.querySelector('.w-top-bar > span.w-top-bar__title > span').textContent = v
+      this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
     }
   }
 
@@ -174,7 +174,6 @@ class Widget {
     if (Object.keys(WIDGETS).map(w => WIDGETS[w]).includes(this)) {
       this._stayInFrame()
       this._display('visible')
-      this._marquee()
       this.events.open.forEach(func => func())
     } else {
       console.error('Widget: this widget was never loaded via WindowManager')
@@ -246,9 +245,7 @@ class Widget {
     this.ele.className = 'widget'
     this.ele.innerHTML = `
       <div class="w-top-bar">
-        <span class="w-top-bar__title">
-          <span>${this._title}</span>
-        </span>
+        <span>${this._title}</span>
         <span>
           <span class="star">☆</span>
           <!-- <span class="star" style="opacity: 0.5"> -->
@@ -368,15 +365,6 @@ class Widget {
     if (this.ele.offsetLeft < 2) this.left = 2
     else if (this.ele.offsetLeft > window.innerWidth) {
       this.left = window.innerWidth - this.ele.offsetWidth - 10
-    }
-  }
-
-  _marquee () {
-    let titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
-    let titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
-    if (titleSpanWidth >= titleWidth) {
-      this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
-      this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
     }
   }
 
