@@ -49,6 +49,7 @@ class MenuTutorial extends Widget {
   _createTutorialsList () {
     window.utils.get('tutorials/metameta.json', (meta) => {
       const json = meta.order
+      this._tutorialOrder = meta.order
       this._numberOfTutorials = json.length
       this._tutorialMetaData = []
       json.forEach(dir => this._addTut(dir))
@@ -71,7 +72,21 @@ class MenuTutorial extends Widget {
   _displayList () {
     const parent = document.createElement('div')
     parent.id = 'tut-menu-content'
-    STORE.state.tutorials.forEach(t => {
+
+    let tuts = [...STORE.state.tutorials]
+    const ordered = []
+    this._tutorialOrder.forEach(tut => {
+      let found = false
+      tuts = tuts.filter(t => {
+        if (!found && t.dirname === tut) {
+          ordered.push(t)
+          found = true
+          return false
+        } else return true
+      })
+    })
+
+    ordered.forEach(t => {
       const d = document.createElement('div')
       const title = document.createElement('div')
       title.textContent = t.title
@@ -155,7 +170,7 @@ class MenuTutorial extends Widget {
         STORE.dispatch('TUTORIAL_GOTO', '__START__')
       })
       this.$('#tut-menu-quit').addEventListener('click', () => {
-        STORE.dispatch('TUTORIAL_FINISHED')
+        NNT.quit()
         STORE.dispatch('CHANGE_LAYOUT', 'welcome')
         window.greetings.injectStarterCode()
         window.greetings.mainMenu()
@@ -171,7 +186,9 @@ class MenuTutorial extends Widget {
       d.textContent = cp
       d.className = 'link'
       d.addEventListener('click', () => {
-        STORE.dispatch('TUTORIAL_GOTO', t.checkpoints[cp])
+        NNT.closeWidgets()
+        STORE.dispatch('CHANGE_OPACITY', 1)
+        NNT.goTo(t.checkpoints[cp])
         window.utils.netitorUpdate()
       })
       ele.appendChild(d)
