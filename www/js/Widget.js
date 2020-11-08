@@ -368,6 +368,15 @@ class Widget {
     }
   }
 
+  _marquee () {
+    const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
+    const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
+    if (titleSpanWidth >= titleWidth) {
+      this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
+      this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _shouldResize (e) {
