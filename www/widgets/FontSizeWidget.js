@@ -7,21 +7,16 @@ class FontSizeWidget extends GenWidget {
     this.title = 'Font Size Widget'
     this.data = '24px'
     this._createHTML()
-
-    this.on('data-update', (val) => {
-      this.data = val
-      this.codeField.value = `font-size: ${val};`
-      this.fontSlider.value = window.parseInt(val)
-    })
   }
 
   _codeFieldUpdate (e) {
     const css = this.parceCSS(e.target.value)
-    this.emit('data-update', css.value[0])
+    this.fontSlider.value = window.parseInt(css.value[1])
   }
 
   _fontSliderUpdate (e) {
-    this.emit('data-update', e.target.value + 'px')
+    this.data = Number(e.target.value)
+    this.codeField.value = `font-size: ${this.data}px;`
   }
 
   _createHTML () {
