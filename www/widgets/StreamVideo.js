@@ -25,7 +25,7 @@ class StreamVideo extends Widget {
 
     this.key = 'stream-video'
     this.listed = false
-    this.rtcOpts = { audio: true, video: true }
+    this.rtcOpts = { audio: false, video: true }
 
     // here's some more example code...
     this.title = 'streeeeeeamz'
