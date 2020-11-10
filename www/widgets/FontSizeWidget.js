@@ -11,7 +11,7 @@ class FontSizeWidget extends GenWidget {
 
   _codeFieldUpdate (e) {
     const css = this.parceCSS(e.target.value)
-    this.fontSlider.value = window.parseInt(css.value[1])
+    this.fontSlider.value = window.parseInt(css.value[0])
   }
 
   _fontSliderUpdate (e) {
