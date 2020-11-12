@@ -6,7 +6,7 @@
     "preferred": "Nick",
     "url": "http://nickbriz.com"
   },
-  "description": "In this tutorial we'll build on the WebVR basics by from the Creating a Scene with <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> tutorial. We'll learn how to import assets like image textures and 3D models into our projects and incorporate them into our scenes. ",
+  "description": "In this tutorial we'll build on the WebVR basics from the Creating a Scene with <a href=\"https://aframe.io/\" target=\"_blank\">A-Frame</a> tutorial. We'll learn how to import assets like image textures and 3D models into our projects and incorporate them into our scenes. ",
   "keywords": ["vr", "xr", "obj", "gltf", "mtl", "jpg", "png", "textures", "3d", "assets"],
   "main": "main.js",
   "checkpoints": {

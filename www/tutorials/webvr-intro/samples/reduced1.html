@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+<a-scene renderer="antialias: true">
+  <a-assets>
+    <a-asset-item id="palm-obj" src="models/QueenPalmTree.obj"></a-asset-item>
+  </a-assets>
+  <a-sky src="images/bg.jpg"></a-sky>
+
+  <a-entity id="floor"
+    geometry="primitive: plane; width: 6; height: 6;"
+    material="src: images/tile.png; opacity: 0.5"
+    position="0 0 -4" rotation="-90 0 0"></a-entity>
+
+  <a-entity
+    obj-model="obj: #palm-obj"
+    material="color: #c76ebc; wireframe: true;"
+    position="-0.62 0 -3.7"
+    rotation="21 -64 -7"
+    scale="0.18 0.18 0.18"></a-entity>
+
+  <a-entity
+    obj-model="obj: #palm-obj"
+    material="color: #c76ebc; wireframe: true;"
+    position="-0.47 0 -3.9"
+    scale="0.25 0.25 0.25"></a-entity>
+
+</a-scene>

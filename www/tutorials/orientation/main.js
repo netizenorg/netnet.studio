@@ -201,7 +201,7 @@ window.TUTORIAL = {
     id: 'leave-tutorial',
     content: 'You got it! Before I launch you into <i>Cyberspace</i> don\'t forget that you can always jump around between tutorials yourself by using the <b>Tutorials Menu</b>, ready to start the next tutorial?',
     options: {
-      'let\'s do it!': (e) => NNT.load('virtual-reality'),
+      'let\'s do it!': (e) => NNT.load('webvr-intro'),
       'actually, let\'s finish here first': (e) => e.goTo('finish-here')
     }
   }, {
@@ -608,7 +608,7 @@ window.TUTORIAL = {
     id: 'finished-menus2',
     content: 'If you\'d like, we can jump right into our first tutorial? Keep in mind I\'m still very much in beta so send any/all feedback to my creators via email to hi@netizen.org',
     options: {
-      'let\'s do it!': (e) => NNT.load('virtual-reality'),
+      'let\'s do it!': (e) => NNT.load('webvr-intro'),
       'no thanks': (e) => {
         e.end()
         window.greetings.mainMenu()

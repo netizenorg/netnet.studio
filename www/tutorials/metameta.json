@@ -1,3 +1,3 @@
 {
-  "order": [ "orientation", "virtual-reality", "webvr-basics", "webvr-assets"]
+  "order": [ "orientation", "webvr-intro", "webvr-basics", "webvr-assets", "webvr-outro"]
 }

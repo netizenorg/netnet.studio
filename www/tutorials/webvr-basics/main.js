@@ -38,7 +38,7 @@ window.TUTORIAL = {
       'sounds important, let\'s do that first!': (e) => {
         STORE.dispatch('CHANGE_LAYOUT', 'welcome')
         NNW.updatePosition()
-        NNT.load('virtual-reality')
+        NNT.load('webvr-intro')
       },
       'that\'s ok, let\'s continue': (e) => e.goTo('intro-aside')
     }
