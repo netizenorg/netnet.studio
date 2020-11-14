@@ -608,7 +608,7 @@ iframe { width: 100vw; height: 100vh }
       width: window.innerWidth * 0.5,
       listed: false,
       title: 'Dust by Mária Júdová and Andrej Boleslavský (2016)',
-      innerHTML: '<video style="width: 100%" loop src="api/videos/dust-vr.mp4"></video><p><a href="https://www.youtube.com/watch?v=EzsG1uqfDTQ" target="_blank">Dust</a>, by Mária Júdová and Andrej Boleslavský, is a Virtual Reality piece which invites the audience to experience dance performance from the perspective of eternal particle travelling in space.</p>'
+      innerHTML: '<video style="width: 100%" loop src="api/videos/dust-vr.mp4"></video><p><a href="https://vimeo.com/210525711" target="_blank">Dust</a>, by Mária Júdová and Andrej Boleslavský, is a Virtual Reality piece which invites the audience to experience dance performance from the perspective of eternal particle travelling in space.</p>'
     })
   },
 
