@@ -116,9 +116,11 @@ class TutorialManager {
   }
 
   closeWidgets () {
-    Object.keys(TUTORIAL.widgets)
-      .filter(key => STORE.state.widgets.includes(key))
-      .forEach(key => WIDGETS[key].close())
+    if (TUTORIAL.widgets) {
+      Object.keys(TUTORIAL.widgets)
+        .filter(key => STORE.state.widgets.includes(key))
+        .forEach(key => WIDGETS[key].close())
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
