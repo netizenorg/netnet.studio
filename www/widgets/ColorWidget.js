@@ -17,6 +17,9 @@
   // https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets
 
   WIDGETS['color-widget'].updateColor(str) // takes a color string
+
+  // linear-gradient gradient
+  https://netnet.studio/#code/eJw1jzFPwzAQhff8iiMsILkkKoIhuFlaZhhYmJAbn+0Tjh3ZF0qE+O+4EV3upE/v3nsnrw4v+7f312dwPPq+kpkXj30FoOkLfsoGOJFm18H24XH6flqJQ7KOO7jfXshRDZ82xTnoDY3KYgeeAqq0sUlpwsA3HMGjYQEJtYBr0xoBRz+jgGFRoZDWtAIW9D6eVtHt2fm3ks1/JUmjhZyGXb0m5Kb0ssi5cTN+XGLupmBrUJ53tcY8JJqYYoBoYD2qi015rJfNef4BkghQxw==
 */
 class ColorWidget extends Widget {
   constructor (opts) {
@@ -108,9 +111,9 @@ class ColorWidget extends Widget {
     h /= 360
     s /= 100
     l /= 100
-    
+
     let r, g, b
-    
+
     if (s === 0) {
       r = g = b = l // achromatic
     } else {
@@ -157,7 +160,7 @@ class ColorWidget extends Widget {
 
     let a = s * Math.min(l, 1-l)
     let f = (n, k = (n + h/30) % 12) => l - a * Math.max(Math.min(k-3, 9-k, 1), -1)
-    
+
     return {
       r: Math.ceil(f(0)*255),
       g: Math.ceil(f(8)*255),

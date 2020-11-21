@@ -17,6 +17,7 @@ class FontSizeWidget extends Widget {
   _fontSliderUpdate (e) {
     this.data = Number(e.target.value)
     this.codeField.value = `font-size: ${this.data}px;`
+    //...
   }
 
   _createHTML () {
@@ -26,7 +27,9 @@ class FontSizeWidget extends Widget {
     })
 
     this.fontSlider = this.createSlider({
-      background: '#f00',
+      background: 'linear-gradient(to left, red, #f0f, blue, cyan, #0f0, yellow, red)',
+      bubble: 'red',
+      value: 24,
       min: 0,
       max: 100,
       label: 'PX',

@@ -59,20 +59,26 @@
   // you must pass number values (not strings), for example:
   w.update({ top: 29, right: 20 }, 500)
 
-  // ..........
+  // widget class also includes methods for generating custom elements
+  // specifically desinged for creating code generator widgets.
 
-  this.codeField = this.createCodeField({
+  w.codeField = w.createCodeField({
     value: 'font-size 24px;',
-    change: (e) => this._codeFieldUpdate(e)
+    change: (e) => { }
   })
 
-  this.slider = w.createSlider({
+  w.slider = w.createSlider({
     background: '#f00',
     min: 0,
     max: 100,
     label: 'PX'
-    change: (e) => this._fontSliderUpdate(e)
+    change: e) => { }
   })
+
+  // there is also a method for parsing CSS strings which can be helpful in
+  // CSS generator widgets
+  const str = 'margin: 10px calc(50vw - 10px)'
+  w.parceCSS(str)
 
 */
 class Widget {
@@ -251,70 +257,85 @@ class Widget {
     const el = document.createElement('code-field')
     el.value = opts.value
     el.change = opts.change
-
     return el
   }
 
   createSlider (opts) {
     const el = document.createElement('code-slider')
-    el.value = opts.value
+    el.value = opts.value || 50
     el.change = opts.change
-    el.min = opts.min
-    el.max = opts.max
-    el.step = opts.step
-    el.label = opts.label
+    el.min = opts.min || 1
+    el.max = opts.max || 255
+    el.step = opts.step || 1
+    el.label = opts.label || ''
     el.bubble = opts.bubble
-    el.background = opts.background
-
-    // if bubble is undefined, div is hidden
-    // background is a string defined by user
-
+    el.background = opts.background || 'var(--netizen-meta)'
     return el
   }
 
   parceCSS (string) {
-    const parsedCode = {
-      property: 'css-property',
-      value: ['13.37px']
-    }
+    const parsedCode = { property: '', value: [] }
+
     const regExp = /\(([^)]+)\)/g
-    let matches = string.match(regExp)
+    let matches = string.match(regExp) // find css functions
+
     const line = string.split(':')
     parsedCode.property = line[0]
 
     if (matches) {
+      // store CSS function names
       const funcs = line[1].split(' ')
         .filter(item => item.includes('('))
         .map(item => item.split('(')[0])
 
+      // create string version of all CSS vals (including non functions)
+      let valueArr = line[1]
+      matches.forEach(m => { valueArr = valueArr.replace(m, '') })
+
+      // create mutli-dimentoinal-array of CSS function arguments
       matches = matches.map((item) => {
         item = item.replace(/[()]/g, '')
         return item.split(',')
       })
+      // add coresponding func name to start of the arrays
       matches.forEach((item, index) => {
         item.unshift(funcs[index])
       })
-      parsedCode.value = matches
-    } else {
-      line[1] = line[1].split(' ')
-      const valueArr = line[1]
+
+      // interweave non-function values && function values together
+      let count = 0
+      valueArr = valueArr.split(' ')
         .filter(el => el.trim().length > 0)
         .map(el => el.replace(';', ''))
+        .map(v => {
+          if (funcs.includes(v)) {
+            const nxtArr = matches[count]
+            count++
+            return nxtArr
+          } else return v
+        })
+
+      parsedCode.value = valueArr
+    } else {
+      const valueArr = line[1].split(' ')
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+
       parsedCode.value = valueArr
     }
 
     return parsedCode
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
   $ (selector) {
     const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
     if (e.length > 1) return e
     else return e[0]
   }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createWindow () {
     this.ele = document.createElement('div')

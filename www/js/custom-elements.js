@@ -1,4 +1,14 @@
-/* global HTMLElement NNE */
+/* global HTMLElement NNE Maths */
+/*
+  -----------
+     info
+  -----------
+
+  These custom elements are used by the base Widget class specifically for
+  creating CSS generator widgets that make use of <code-field> and
+  <code-slider> elements
+
+*/
 class CodeSlider extends HTMLElement {
   constructor () {
     super()
@@ -11,69 +21,118 @@ class CodeSlider extends HTMLElement {
     label.innerHTML = this.label || ''
     label.className = 'gen-slider-label'
     this.innerHTML = `<style>
+      :root {
+        --__code-slider-bg: var(--netizen-meta);
+        --__code-slider-bubble-bg: #fff;
+      }
+
+      .__code-slider-parent {
+        /* TODO width property/attribute maybe */
+        width: 255px;
+      }
+
       .__code-slider-bubble {
-        width: 15px;
-        height: 15px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         border: 2px solid var(--netizen-meta);
-        transform: translate(-7px,17px);
+        transform: translate(-8px, -4px);
         position: relative;
         left: 127px;
+        background: var(--__code-slider-bubble-bg);
       }
+
+      .__code-slider-label {
+        position: absolute;
+        left: 15px;
+        top: 38px;
+        font-size: 10px;
+      }
+
+      .__code-slider-range {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 10px;
+        border-radius: 5px;
+        outline: none;
+        border: 1px solid var(--netizen-meta);
+        background: var(--__code-slider-bg);
+      }
+
+      .__code-slider-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 4px;
+        height: 24px;
+        background: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .__code-slider-range::-moz-range-thumb {
+        width: 4px;
+        height: 24px;
+        background: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
       .__code-slider-num {
         color: var(--netizen-meta);
-        transform: translate(-12px, 5px);
+        transform: translate(-12px, -12px);
         text-align: center;
         position: relative;
         width: 27px;
         left: 127px;
       }
-      .__code-slider-range {
-        -webkit-appearance: none;
-        /* width: 100%; */
-        width: 255px;
-        height: 10px;
-        border-radius: 5px;
-        outline: none;
-        border: 1px solid var(--netizen-meta);
-      }
 
-      .__code-slider-range ::-webkit-slider-thumb >input{
-        -webkit-appearance: none;
-        appearance: none;
-        width: 4px;
-        height: 24px;
-        background: #fff;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-
-      .__code-slider-range ::-moz-range-thumb >input{
-        -webkit-appearance: none;
-        appearance: none;
-        width: 4px;
-        height: 24px;
-        background: #fff;
-        cursor: pointer;
-        border-radius: 5px;
-      }
     </style>
 
-    <div>
-    <div class="__code-slider-bubble"></div>
-        <span class='__code-slider-label'style='margin-right:20px;'>${this.label || ''}</span>
-        <input class='__code-slider-range' type='range'
-          min=${this.min || 1}
-          max=${this.max || 100}
-          step=${this.step || 1}
-          value=${this.value || 50}>
-        <div id="clr-wig-val-num" class="clr-wig-num">50</div>
+    <div class="__code-slider-parent">
+      <span class="__code-slider-label"
+        style="padding-right: ${this.label.length > 0 ? '20px' : '0'};">${this.label}</span>
+      <div class="__code-slider-bubble"></div>
+      <input class="__code-slider-range" type="range"
+        min="${this.min}"
+        max="${this.max}"
+        step="${this.step}"
+        value="${this.value}">
+      <div class="__code-slider-num">${this.value}</div>
     </div>`
 
     this.querySelector('input').addEventListener('input', (e) => {
       this.setAttribute('value', e.target.value)
+      this.thumbUpdate()
       this.change(e)
     })
+
+    this.thumbUpdate()
+    this.updateColors(this.background, this.bubble)
+  }
+
+  change () {
+    // this gets assigned in Widget.js createSlider method
+  }
+
+  thumbUpdate (v) {
+    const w = parseInt(this.querySelector('.__code-slider-range').style.width) || 255
+    const min = parseInt(this.min)
+    const max = parseInt(this.max)
+    const p = Maths.map(parseInt(this.value), min, max, 4, w - 4)
+    this.querySelector('.__code-slider-bubble').style.left = `${p}px`
+    this.querySelector('.__code-slider-num').style.left = `${p}px`
+    this.querySelector('.__code-slider-num').textContent = this.value
+  }
+
+  updateColors (slider, bubble) {
+    if (slider) {
+      document.documentElement.style
+        .setProperty('--__code-slider-bg', slider)
+    }
+    if (bubble) {
+      document.documentElement.style
+        .setProperty('--__code-slider-bubble-bg', bubble)
+    }
   }
 
   syncProps2Attr () {
@@ -83,8 +142,7 @@ class CodeSlider extends HTMLElement {
         Object.defineProperty(this, attr, {
           get () { return this.getAttribute(attr) },
           set (v) {
-            console.log(attr, v)
-            if (v) this.setAttribute(attr, v)
+            if (v !== null || typeof v !== 'undefined') this.setAttribute(attr, v)
             else this.removeAttribute(attr)
           }
         })
@@ -93,18 +151,23 @@ class CodeSlider extends HTMLElement {
   }
 
   static get observedAttributes () {
-    return ['value', 'min', 'max', 'step', 'label']
+    return ['value', 'min', 'max', 'step', 'label', 'bubble', 'background']
   }
 
   attributeChangedCallback (attrName, oldVal, newVal) {
     if (newVal !== oldVal) this[attrName] = newVal
-    if (attrName === 'value') {
-      this.querySelector('input').value = newVal
-    } else if (attrName === 'label') {
+
+    if (!this.querySelector('input')) return
+
+    if (attrName === 'label') {
       this.querySelector('span').innerHTML = newVal
+    } else if (['value', 'min', 'max', 'step'].includes(attrName)) {
+      this.querySelector('input')[attrName] = newVal
+    } else if (attrName === 'background') {
+      this.updateColors(newVal)
+    } else if (attrName === 'bubble') {
+      this.updateColors(null, newVal)
     }
-    // change position of bubble here
-    // if the user decides to change min or max, listen for attrName === min, etc, make sure that the attribute changes to match
   }
 }
 
@@ -113,7 +176,7 @@ window.customElements.define('code-slider', CodeSlider)
 class CodeField extends HTMLElement {
   connectedCallback (opts) {
     this.innerHTML = `<style>
-      .__code-slider-codes{
+      .__code-field{
         background-color: var(--netizen-meta);
         font-family: monospace;
         color: var(--netizen-hint-color);
@@ -126,7 +189,7 @@ class CodeField extends HTMLElement {
     </style>
     <div>
         <button>insert</button>
-        <input class='__code-slider-codes' type="text">
+        <input class='__code-field' type="text">
     </div>`
     this.querySelector('input').value = this.value
 
@@ -143,6 +206,10 @@ class CodeField extends HTMLElement {
       this.setAttribute('value', e.target.value)
       this.change(e)
     })
+  }
+
+  change () {
+    // this gets assigned in Widget.js createCodeField method
   }
 
   get value () {
