@@ -48,9 +48,12 @@ class NetitorEduInfoHandler {
         eve.nfo.status !== 'core')
         ? `This ${type} is ${eve.nfo.status}. ` : ''
 
+    const more = eve.nfo.url
+      ? `<a href="${eve.nfo.url}" target="_blank">Learn more?</a>` : ''
+
     return `
       <h1>${eve.nfo.keyword.html}</h1>
-      <p>${eve.nfo.description.html} ${snfo} ${note}</p>
+      <p>${eve.nfo.description.html} ${snfo} ${note} ${more}</p>
     `
   }
 
@@ -77,9 +80,12 @@ class NetitorEduInfoHandler {
     const status = (eve.nfo.status && eve.nfo.status !== 'standard')
       ? `. (<b>NOTE</b>: this CSS feature is ${eve.nfo.status}). ` : ''
 
+    const more = eve.nfo.url
+      ? `<a href="${eve.nfo.url}" target="_blank">Learn more?</a>` : ''
+
     return `
         <h1>${eve.nfo.keyword.html}</h1>
-        <p>${eve.nfo.description.html} ${status}</p>
+        <p>${eve.nfo.description.html} ${status} ${more}</p>
       `
   }
 
