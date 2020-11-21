@@ -59,6 +59,27 @@
   // you must pass number values (not strings), for example:
   w.update({ top: 29, right: 20 }, 500)
 
+  // widget class also includes methods for generating custom elements
+  // specifically desinged for creating code generator widgets.
+
+  w.codeField = w.createCodeField({
+    value: 'font-size 24px;',
+    change: (e) => { }
+  })
+
+  w.slider = w.createSlider({
+    background: '#f00',
+    min: 0,
+    max: 100,
+    label: 'PX'
+    change: e) => { }
+  })
+
+  // there is also a method for parsing CSS strings which can be helpful in
+  // CSS generator widgets
+  const str = 'margin: 10px calc(50vw - 10px)'
+  w.parceCSS(str)
+
 */
 class Widget {
   constructor (opts) {
@@ -121,7 +142,7 @@ class Widget {
       return console.error('Widget: title property must be set to a string')
     } else {
       this._title = v
-      this.ele.querySelector('.w-top-bar > span.w-top-bar__title > span').textContent = v
+      this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
     }
   }
 
@@ -174,7 +195,6 @@ class Widget {
     if (Object.keys(WIDGETS).map(w => WIDGETS[w]).includes(this)) {
       this._stayInFrame()
       this._display('visible')
-      this._marquee()
       this.events.open.forEach(func => func())
     } else {
       console.error('Widget: this widget was never loaded via WindowManager')
@@ -231,9 +251,81 @@ class Widget {
     })
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ CSS GENERATOR HELPERS
+
+  createCodeField (opts) {
+    const el = document.createElement('code-field')
+    el.value = opts.value
+    el.change = opts.change
+    return el
+  }
+
+  createSlider (opts) {
+    const el = document.createElement('code-slider')
+    el.value = opts.value || 50
+    el.change = opts.change
+    el.min = opts.min || 1
+    el.max = opts.max || 255
+    el.step = opts.step || 1
+    el.label = opts.label || ''
+    el.bubble = opts.bubble
+    el.background = opts.background || 'var(--netizen-meta)'
+    return el
+  }
+
+  parceCSS (string) {
+    const parsedCode = { property: '', value: [] }
+
+    const regExp = /\(([^)]+)\)/g
+    let matches = string.match(regExp) // find css functions
+
+    const line = string.split(':')
+    parsedCode.property = line[0]
+
+    if (matches) {
+      // store CSS function names
+      const funcs = line[1].split(' ')
+        .filter(item => item.includes('('))
+        .map(item => item.split('(')[0])
+
+      // create string version of all CSS vals (including non functions)
+      let valueArr = line[1]
+      matches.forEach(m => { valueArr = valueArr.replace(m, '') })
+
+      // create mutli-dimentoinal-array of CSS function arguments
+      matches = matches.map((item) => {
+        item = item.replace(/[()]/g, '')
+        return item.split(',')
+      })
+      // add coresponding func name to start of the arrays
+      matches.forEach((item, index) => {
+        item.unshift(funcs[index])
+      })
+
+      // interweave non-function values && function values together
+      let count = 0
+      valueArr = valueArr.split(' ')
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+        .map(v => {
+          if (funcs.includes(v)) {
+            const nxtArr = matches[count]
+            count++
+            return nxtArr
+          } else return v
+        })
+
+      parsedCode.value = valueArr
+    } else {
+      const valueArr = line[1].split(' ')
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+
+      parsedCode.value = valueArr
+    }
+
+    return parsedCode
+  }
 
   $ (selector) {
     const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
@@ -241,14 +333,16 @@ class Widget {
     else return e[0]
   }
 
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
   _createWindow () {
     this.ele = document.createElement('div')
     this.ele.className = 'widget'
     this.ele.innerHTML = `
       <div class="w-top-bar">
-        <span class="w-top-bar__title">
-          <span>${this._title}</span>
-        </span>
+        <span>${this._title}</span>
         <span>
           <span class="star">☆</span>
           <!-- <span class="star" style="opacity: 0.5"> -->
