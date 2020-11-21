@@ -1,6 +1,6 @@
-/* global GenWidget */
+/* global Widget */
 
-class FontSizeWidget extends GenWidget {
+class FontSizeWidget extends Widget {
   constructor (opts) {
     super(opts)
     this.key = 'font-size-widget'

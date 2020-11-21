@@ -59,6 +59,21 @@
   // you must pass number values (not strings), for example:
   w.update({ top: 29, right: 20 }, 500)
 
+  // ..........
+
+  this.codeField = this.createCodeField({
+    value: 'font-size 24px;',
+    change: (e) => this._codeFieldUpdate(e)
+  })
+
+  this.slider = w.createSlider({
+    background: '#f00',
+    min: 0,
+    max: 100,
+    label: 'PX'
+    change: (e) => this._fontSliderUpdate(e)
+  })
+
 */
 class Widget {
   constructor (opts) {
@@ -228,6 +243,67 @@ class Widget {
     this.events[eve].forEach(callback => {
       callback(data)
     })
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ CSS GENERATOR HELPERS
+
+  createCodeField (opts) {
+    const el = document.createElement('code-field')
+    el.value = opts.value
+    el.change = opts.change
+
+    return el
+  }
+
+  createSlider (opts) {
+    const el = document.createElement('code-slider')
+    el.value = opts.value
+    el.change = opts.change
+    el.min = opts.min
+    el.max = opts.max
+    el.step = opts.step
+    el.label = opts.label
+    el.bubble = opts.bubble
+    el.background = opts.background
+
+    // if bubble is undefined, div is hidden
+    // background is a string defined by user
+
+    return el
+  }
+
+  parceCSS (string) {
+    const parsedCode = {
+      property: 'css-property',
+      value: ['13.37px']
+    }
+    const regExp = /\(([^)]+)\)/g
+    let matches = string.match(regExp)
+    const line = string.split(':')
+    parsedCode.property = line[0]
+
+    if (matches) {
+      const funcs = line[1].split(' ')
+        .filter(item => item.includes('('))
+        .map(item => item.split('(')[0])
+
+      matches = matches.map((item) => {
+        item = item.replace(/[()]/g, '')
+        return item.split(',')
+      })
+      matches.forEach((item, index) => {
+        item.unshift(funcs[index])
+      })
+      parsedCode.value = matches
+    } else {
+      line[1] = line[1].split(' ')
+      const valueArr = line[1]
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+      parsedCode.value = valueArr
+    }
+
+    return parsedCode
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
