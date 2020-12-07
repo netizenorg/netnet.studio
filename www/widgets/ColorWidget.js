@@ -18,8 +18,6 @@
 
   WIDGETS['color-widget'].updateColor(str) // takes a color string
 
-  // linear-gradient gradient
-  https://netnet.studio/#code/eJw1jzFPwzAQhff8iiMsILkkKoIhuFlaZhhYmJAbn+0Tjh3ZF0qE+O+4EV3upE/v3nsnrw4v+7f312dwPPq+kpkXj30FoOkLfsoGOJFm18H24XH6flqJQ7KOO7jfXshRDZ82xTnoDY3KYgeeAqq0sUlpwsA3HMGjYQEJtYBr0xoBRz+jgGFRoZDWtAIW9D6eVtHt2fm3ks1/JUmjhZyGXb0m5Kb0ssi5cTN+XGLupmBrUJ53tcY8JJqYYoBoYD2qi015rJfNef4BkghQxw==
 */
 class ColorWidget extends Widget {
   constructor (opts) {
@@ -30,12 +28,17 @@ class ColorWidget extends Widget {
     this.resizable = false
     this.title = 'Color Widget'
 
+    this._SubWin = 'hsl'
     const de = document.documentElement
     const clr = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
     const hsl = Color.hex2hsl(clr)
     this.hue = hsl.h
     this.sat = hsl.s
-    this.val = hsl.l
+    this.lit = hsl.l
+    const rgb = Color.hex2rgb(clr)
+    this.red = rgb.r
+    this.green = rgb.g
+    this.blue = rgb.b
     this.alpha = 1
 
     this._createHTML()
@@ -47,268 +50,204 @@ class ColorWidget extends Widget {
     })
 
     NNE.on('edu-info', (e) => {
-      const c = Color.match(e.data.toLowerCase())
-      if (c) this.updateColor(c)
-      setTimeout(() => {
-        if (c && c[0] === 'hex') {
-          this.from = NNE.cm.getCursor('from')
-          this.to = NNE.cm.getCursor('to')
-          const f = { line: this.from.line, ch: this.from.ch - 1 }
-          NNE.cm.setSelection(f, this.to)
-        }
-      }, 100)
+      const clrs = ['rgb', 'rgba', 'hsl', 'hsla']
+      let s = e.data.toLowerCase()
+      if (e.type === 'keyword' && NNE.edu.css.colors[e.data]) {
+        s = NNE.edu.css.colors[e.data].rgb
+      }
+      const c = Color.match(s)
+      if (c) {
+        this._changeSubWin(c[0])
+        this.updateColor(c)
+      } else if (clrs.includes(s)) {
+        setTimeout(() => {
+          // give NetitorEduInfoHandler time to re-select entire color string
+          // && then check again...
+          const sel = NNE.cm.getSelection().toLowerCase()
+          const c = Color.match(sel)
+          if (c) {
+            this._changeSubWin(c[0])
+            this.updateColor(c)
+          }
+        }, 200)
+      }
     })
   }
 
   updateColor (c) {
+    if (typeof c === 'string') c = Color.match(c.toLowerCase())
     if (c && c !== null) {
       if (c[2]) c[2] = Number(c[2]) || parseInt(c[2])
       if (c[3]) c[3] = Number(c[3]) || parseInt(c[3])
       if (c[4]) c[4] = Number(c[4]) || parseInt(c[4])
       if (c[0] === 'hex') {
-        const hsl = Color.hex2hsl(c[1])
-        this.hue = hsl.h
-        this.sat = hsl.s
-        this.val = hsl.l
+        const rgb = Color.hex2rgb(c[1])
+        this.red = rgb.r
+        this.green = rgb.g
+        this.blue = rgb.b
         if (c[1].length === 9) this.alpha = c[1].substring(7, 9)
         else if (c[1].length === 5) this.alpha = c[1].substring(4, 5)
         else this.alpha = 1
         this.alpha = this.alpha === 1 ? 1 : Color.hex2alpha(this.alpha)
+        this._SubWin = 'hex'
+        this._updateRGB()
       } else if (c[0] === 'rgb') {
-        const hsl = Color.rgb2hsl(c[2], c[3], c[4])
-        this.hue = hsl.h
-        this.sat = hsl.s
-        this.val = hsl.l
+        this.red = c[2]
+        this.green = c[3]
+        this.blue = c[4]
         this.alpha = c[5]
+        this._SubWin = 'rgb'
+        this._updateRGB()
       } else if (c[0] === 'hsl') {
         this.hue = c[2]
         this.sat = c[3]
-        this.val = c[4]
+        this.lit = c[4]
         this.alpha = c[5]
+        this._SubWin = 'hsl'
+        this._updateHSL()
       }
+    } else {
+      if (this._SubWin === 'hsl') this._updateHSL()
+      else this._updateRGB()
     }
+  }
 
+  _updateHSL () {
     this.alpha = Math.floor(this.alpha * 100) / 100
 
-    this._updateSlider(this.hue, 'hue')
-    this._updateSlider(this.sat, 'sat')
-    this._updateSlider(this.val, 'val')
-    this._updateSlider(this.alpha, 'alpha')
-    this._updateColor(c)
+    const clr = this.alpha < 1
+      ? `hsla(${this.hue}, ${this.sat}%, ${this.lit}%, ${this.alpha})`
+      : `hsl(${this.hue}, ${this.sat}%, ${this.lit}%)`
+    document.documentElement.style.setProperty('--clr-wig-composite', clr)
 
-    this.$('#clr-wig-hue-slider').value = this.hue
-    this.$('#clr-wig-sat-slider').value = this.sat
-    this.$('#clr-wig-val-slider').value = this.val
-    this.$('#clr-wig-alpha-slider').value = this.alpha
+    this.hueSlider.bubble = `hsl(${this.hue}, 100%, 50%)`
+    this.hueSlider.updateThumb(this.hue)
+
+    const satbg = `linear-gradient(to left, hsl(${this.hue}, 100%, 50%), white)`
+    this.satSlider.background = satbg
+    const satlit = Maths.map(this.sat, 0, 100, 100, 50)
+    this.satSlider.bubble = `hsl(${this.hue}, ${this.sat}%, ${satlit}%)`
+    this.satSlider.updateThumb(this.sat)
+
+    const byte = Maths.map(this.lit, 0, 100, 0, 255)
+    this.litSlider.bubble = `rgb(${byte}, ${byte}, ${byte})`
+    this.litSlider.updateThumb(this.lit)
+
+    const opac = `linear-gradient(to left, hsl(${this.hue}, ${this.sat}%, ${this.lit}%), #fff0)`
+    this.alphaSlider.bubble = clr
+    this.alphaSlider.background = opac
+    this.alphaSlider.updateThumb(this.alpha)
+    this.alphaSlider.ele.style.opacity = this.alpha < 1 ? 1 : 0.33
+
+    this.hslField.value = clr
+    this.hslField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
   }
 
+  _updateRGB () {
+    // const isHex = this._SubWin === 'hex' ? 'hex' : null
+    const clr = this.alpha < 1
+      ? `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
+      : `rgb(${this.red}, ${this.green}, ${this.blue})`
+    document.documentElement.style.setProperty('--clr-wig-composite', clr)
 
+    this.redSlider.bubble = `rgb(${this.red}, 0, 0)`
+    this.redSlider.updateThumb(this.red, this._SubWin)
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•new color maths
-  // found these on stackoverflow!! i'll clean this up when i have time,
-  // but for now, these seem to be working pretty well
-  new_hsl2hex (h, s, l) {
-    h /= 360
-    s /= 100
-    l /= 100
+    this.greenSlider.bubble = `rgb(0, ${this.green}, 0)`
+    this.greenSlider.updateThumb(this.green, this._SubWin)
 
-    let r, g, b
+    this.blueSlider.bubble = `rgb(0, 0, ${this.blue})`
+    this.blueSlider.updateThumb(this.blue, this._SubWin)
 
-    if (s === 0) {
-      r = g = b = l // achromatic
-    } else {
-      const hue2rgb = (p, q, t) => {
-        if (t < 0) t += 1
-        if (t > 1) t -= 1
-        if (t < 1 / 6) return p + (q - p) * 6 * t
-        if (t < 1 / 2) return q
-        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-        return p
-      }
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-      const p = 2 * l - q
-      r = hue2rgb(p, q, h + 1 / 3)
-      g = hue2rgb(p, q, h)
-      b = hue2rgb(p, q, h - 1 / 3)
-    }
+    const opac = `linear-gradient(to left, rgb(${this.red}, ${this.green}, ${this.blue}), #fff0)`
+    this.alphaSlider.bubble = clr
+    this.alphaSlider.background = opac
+    this.alphaSlider.updateThumb(this.alpha, this._SubWin)
+    this.alphaSlider.ele.style.opacity = this.alpha < 1 ? 1 : 0.33
 
-    const toHex = x => {
-      const hex = Math.round(x * 255).toString(16)
-      return hex.length === 1 ? '0' + hex : hex
-    }
+    this.rgbField.value = clr
+    this.rgbField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
 
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+    this.hexField.value = this.alpha < 1
+      ? Color.rgb2hex(this.red, this.green, this.blue) + Color.alpha2hex(this.alpha)
+      : Color.rgb2hex(this.red, this.green, this.blue)
+    this.hexField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
   }
-
-  static hsl2rgb (h, s, l) {
-    h /= 360
-    s /= 100
-    l /= 100
-    const c = this._hsl2hsv(h, s, l)
-    return this._hsv2rgb(c.h, c.s, c.v)
-  }
-
-  // h has to be from [0,360] and s,v have to be from [0,1]
-  // outputs r,g,b from [0,1] so have to Math.ceil it
-  new_hsl2rgb (h,s,l) {
-    // "scale" h and l from btwn 1 and 100 to values btwn 0 and 1
-    const scale = (num, in_min, in_max, out_min, out_max) => {
-      return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-    }
-    s = Math.round(scale(s, 0, 100, 0, 1) * 10) / 10
-    l = Math.round(scale(l, 0, 100, 0, 1) * 10) / 10
-
-    let a = s * Math.min(l, 1-l)
-    let f = (n, k = (n + h/30) % 12) => l - a * Math.max(Math.min(k-3, 9-k, 1), -1)
-
-    return {
-      r: Math.ceil(f(0)*255),
-      g: Math.ceil(f(8)*255),
-      b: Math.ceil(f(4)*255)
-    }
-  }
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.sry 4 tha mess
-
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+
+  _changeSubWin (type) {
+    // highlight button
+    this.$('.__clr-wig-sub-btn').forEach(b => {
+      b.style.color = null; b.style.backgroundColor = null
+    })
+    const ele = type === 'hsl'
+      ? this.$('.__clr-wig-sub-btn')[0]
+      : type === 'rgb'
+        ? this.$('.__clr-wig-sub-btn')[1]
+        : this.$('.__clr-wig-sub-btn')[2]
+    ele.style.color = 'var(--bg-color)'
+    ele.style.backgroundColor = 'var(--netizen-match-color)'
+
+    // syncronize colors
+    if (type === 'hsl' && this._SubWin !== type) {
+      const hsl = Color.rgb2hsl(this.red, this.green, this.blue)
+      this.hue = hsl.h
+      this.sat = hsl.s
+      this.lit = hsl.l
+    } else if (type !== 'hsl' && this._SubWin === 'hsl') {
+      const rgb = Color.hsl2rgb(this.hue, this.sat, this.lit)
+      this.red = rgb.r
+      this.green = rgb.g
+      this.blue = rgb.b
+    }
+    this._SubWin = type
+
+    // toggle appropriate sliders / fields
+    const types = ['hsl', 'rgb', 'hex']
+    types.forEach(t => { this[t + 'Field'].ele.style.display = 'none' })
+    this[type + 'Field'].ele.style.display = 'block'
+    // ...
+    const hsls = ['hue', 'sat', 'lit']
+    const rgbs = ['red', 'green', 'blue']
+    if (type === 'hsl') {
+      hsls.forEach(t => { this[t + 'Slider'].ele.style.display = 'block' })
+      rgbs.forEach(t => { this[t + 'Slider'].ele.style.display = 'none' })
+    } else {
+      hsls.forEach(t => { this[t + 'Slider'].ele.style.display = 'none' })
+      rgbs.forEach(t => { this[t + 'Slider'].ele.style.display = 'block' })
+    }
+    this.updateColor()
+  }
 
   _createHTML () {
     this.innerHTML = `
       <style>
         :root {
           --clr-wig-composite: hsl(180, 50%, 50%);
-          --clr-wig-hue: hsl(180, 50%, 50%);
-          --clr-wig-sat: hsl(180, 50%, 50%);
-          --clr-wig-val: hsl(180, 0%, 50%);
-          --clr-wig-alpha: hsla(180, 0%, 50%, 1);
         }
-
         div.clr-row1 {
           display: flex;
           justify-content: space-between;
-          width: 670px;
+          width: 640px;
         }
 
-        div.clr-row1 div {
+        div.clr-row1 > div {
           display: block;
           flex: 0 0 60%;
         }
 
-        div.clr-row1 div#clr-wig-sliders {
+        #clr-wig-sliders {
           display: block;
           flex: 0 0 40%;
           max-width: 255px;
         }
 
-        #clr-wig-sample {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          margin: 50px 100px 50px 50px;
-          background: var(--clr-wig-composite);
-        }
-
-        #clr-wig-sliders > span {
-          display: inline-block;
-          transform: translate(-31px, 27px);
-        }
-
-        .clr-wig-bubble {
-          width: 15px;
-          height: 15px;
-          border-radius: 50%;
-          border: 2px solid var(--netizen-meta);
-          transform: translate(-7px,17px);
-          position: relative;
-          left: 127px;
-        }
-
-        .clr-wig-num {
-          color: var(--netizen-meta);
-          transform: translate(-12px, 5px);
-          text-align: center;
-          position: relative;
-          width: 27px;
-          left: 127px;
-        }
-
-        #clr-wig-sliders > input[type="range"] {
-          -webkit-appearance: none;
-          width: 100%;
-          height: 10px;
-          border-radius: 5px;
-          outline: none;
-          border: 1px solid var(--netizen-meta);
-        }
-
-        #clr-wig-sliders > input::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 4px;
-          height: 24px;
-          background: #fff;
-          cursor: pointer;
-          border-radius: 5px;
-        }
-
-        #clr-wig-sliders > input::-moz-range-thumb {
-          width: 4px;
-          height: 24px;
-          background: #fff;
-          cursor: pointer;
-          border-radius: 5px;
-        }
-
-        #clr-wig-hue-bubble {
-          background: var(--clr-wig-hue);
-        }
-
-
-        input#clr-wig-hue-slider {
-          background-image: url(images/widgets/hue_gradient.png);
-        }
-
-        #clr-wig-sat-bubble {
-          background: var(--clr-wig-sat);
-        }
-
-        input#clr-wig-sat-slider {
-          background: linear-gradient(90deg, #fff 0%, var(--clr-wig-hue) 100%);
-        }
-
-        #clr-wig-val-bubble {
-          background: var(--clr-wig-val);
-        }
-
-        input#clr-wig-val-slider {
-          background: linear-gradient(90deg, #000 0%, #fff 100%);
-        }
-
-        #clr-wig-alpha-bubble {
-          background: var(--clr-wig-alpha);
-        }
-
-        input#clr-wig-alpha-slider {
-          border: none !important;
-          background: linear-gradient(90deg, #fff0 0%, var(--clr-wig-hue) 100%);
-        }
-
         #clr-wig-codes {
-          margin-right: 54px;
+          /* margin-right: 54px; */
           position: relative;
           z-index: 2;
-        }
-
-        #clr-wig-codes > input {
-          background-color: var(--netizen-meta);
-          font-family: monospace;
-          color: var(--netizen-hint-color);
-          padding: 6px;
-          border: none;
-          margin: 6px;
-          width: 250px;
-          border-radius: 5px;
         }
 
         .clr-wig-svg {
@@ -329,6 +268,9 @@ class ColorWidget extends Widget {
       <div class="clr-row1">
         <!-- <div id="clr-wig-sample"></div> -->
         <div>
+          <button class="__clr-wig-sub-btn">hsl</button>
+          <button class="__clr-wig-sub-btn">rgb</button>
+          <button class="__clr-wig-sub-btn">hex</button>
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
              viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve" class="clr-wig-svg">
             <g>
@@ -339,141 +281,127 @@ class ColorWidget extends Widget {
             </g>
           </svg>
           <div id="clr-wig-codes">
-            <button id="clr-wig-hex-btn">insert</button>
-            <input id="clr-wig-hex-input"><br>
-            <button id="clr-wig-rgb-btn">insert</button>
-            <input id="clr-wig-rgb-input"><br>
-            <button id="clr-wig-hsl-btn">insert</button>
-            <input id="clr-wig-hsl-input"><br>
+            <!-- INJECT CODE FILEDS HERE -->
           </div>
         </div>
         <div id="clr-wig-sliders">
-          <div id="clr-wig-hue-bubble" class="clr-wig-bubble"></div>
-          <span>H</span>
-          <input type="range" min="0" max="360" value="180" id="clr-wig-hue-slider">
-          <div id="clr-wig-hue-num" class="clr-wig-num">180</div>
-
-          <div id="clr-wig-sat-bubble" class="clr-wig-bubble"></div>
-          <span>S</span>
-          <input type="range" min="0" max="100" value="50" id="clr-wig-sat-slider">
-          <div id="clr-wig-sat-num" class="clr-wig-num">50</div>
-
-          <div id="clr-wig-val-bubble" class="clr-wig-bubble"></div>
-          <span>L</span>
-          <input type="range" min="0" max="100" value="50" id="clr-wig-val-slider">
-          <div id="clr-wig-val-num" class="clr-wig-num">50</div>
-
-          <div id="clr-wig-alpha-bubble" class="clr-wig-bubble"></div>
-          <span id="clr-wig-alpha-span">A</span>
-          <input type="range" min="0" max="1" step="0.01" value="1" id="clr-wig-alpha-slider">
-          <div id="clr-wig-alpha-num" class="clr-wig-num">1</div>
+          <!-- INJECT CODE SLIDERS HERE -->
         </div>
       </div>
     `
 
+    this.$('.__clr-wig-sub-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this._changeSubWin(e.target.textContent)
+      })
+    })
+
+    // code fields -------------------------------------------------------------
+
+    const fieldUpdate = (e) => {
+      const c = Color.match(e.target.value.toLowerCase())
+      if (c) {
+        this.updateColor(c)
+        e.target.style.background = 'var(--netizen-meta)'
+      } else { e.target.style.background = 'red' }
+    }
+
+    this.hexField = this.createCodeField({
+      value: Color.hsl2hex(this.hue, this.sat, this.lit),
+      change: (e) => fieldUpdate(e)
+    })
+
+    const rgb = Color.hsl2rgb(this.hue, this.sat, this.lit)
+    this.rgbField = this.createCodeField({
+      value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+      change: (e) => fieldUpdate(e)
+    })
+
+    this.hslField = this.createCodeField({
+      value: `hsl(${this.hue}, ${this.sat}%, ${this.lit}%)`,
+      change: (e) => fieldUpdate(e)
+    })
+
+    this.$('#clr-wig-codes').appendChild(this.hexField)
+    this.$('#clr-wig-codes').appendChild(this.rgbField)
+    this.$('#clr-wig-codes').appendChild(this.hslField)
+
+    // sliders -----------------------------------------------------------------
+
+    this.hueSlider = this.createSlider({
+      label: 'Hue',
+      background: 'linear-gradient(to left, red, #f0f, blue, cyan, #0f0, yellow, red)',
+      min: 0,
+      max: 360,
+      change: (e) => { this.hue = Number(e.target.value); this.updateColor() }
+    })
+
+    this.satSlider = this.createSlider({
+      label: 'Saturation',
+      background: `linear-gradient(to left, hsl(${this.hue}, 100%, 50%), white)`,
+      min: 0,
+      max: 100,
+      change: (e) => { this.sat = Number(e.target.value); this.updateColor() }
+    })
+
+    this.litSlider = this.createSlider({
+      label: 'Lightness',
+      background: 'linear-gradient(to left, white, black)',
+      min: 0,
+      max: 100,
+      change: (e) => { this.lit = Number(e.target.value); this.updateColor() }
+    })
+
+    this.redSlider = this.createSlider({
+      label: 'Red',
+      background: 'linear-gradient(to left, #f00, transparent)',
+      min: 0,
+      max: 255,
+      change: (e) => { this.red = Number(e.target.value); this.updateColor() }
+    })
+
+    this.greenSlider = this.createSlider({
+      label: 'Green',
+      background: 'linear-gradient(to left, #0f0, transparent)',
+      min: 0,
+      max: 255,
+      change: (e) => { this.green = Number(e.target.value); this.updateColor() }
+    })
+
+    this.blueSlider = this.createSlider({
+      label: 'Blue',
+      background: 'linear-gradient(to left, #00f, transparent)',
+      min: 0,
+      max: 255,
+      change: (e) => { this.blue = Number(e.target.value); this.updateColor() }
+    })
+
+    this.alphaSlider = this.createSlider({
+      label: 'Alpha (transparency)',
+      background: `linear-gradient(to left, hsl(${this.hue}, ${this.sat}%, ${this.lit}%), #fff0)`,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      change: (e) => { this.alpha = Number(e.target.value); this.updateColor() }
+    })
+
+    this.$('#clr-wig-sliders').appendChild(this.hueSlider)
+    this.$('#clr-wig-sliders').appendChild(this.satSlider)
+    this.$('#clr-wig-sliders').appendChild(this.litSlider)
+    this.$('#clr-wig-sliders').appendChild(this.redSlider)
+    this.$('#clr-wig-sliders').appendChild(this.greenSlider)
+    this.$('#clr-wig-sliders').appendChild(this.blueSlider)
+    this.$('#clr-wig-sliders').appendChild(this.alphaSlider)
+
+    // -------------------------------------------------------------------------
+
+    this._changeSubWin('hsl')
     this.updateColor()
 
     window.addEventListener('mousemove', () => {
       const r = NNM.ele.querySelector('#face > span:nth-child(1)').style.transform
       this.$('svg').style.transform = r
     })
-
-    this.$('#clr-wig-hue-slider')
-      .addEventListener('input', (e) => this._onSliderInput(e, 'hue'))
-
-    this.$('#clr-wig-sat-slider')
-      .addEventListener('input', (e) => this._onSliderInput(e, 'sat'))
-
-    this.$('#clr-wig-val-slider')
-      .addEventListener('input', (e) => this._onSliderInput(e, 'val'))
-
-    this.$('#clr-wig-alpha-slider')
-      .addEventListener('input', (e) => this._onSliderInput(e, 'alpha'))
-
-    this.$('#clr-wig-hex-btn')
-      .addEventListener('click', (e) => this._onButtonClick(e, 'hex'))
-
-    this.$('#clr-wig-rgb-btn')
-      .addEventListener('click', (e) => this._onButtonClick(e, 'rgb'))
-
-    this.$('#clr-wig-hsl-btn')
-      .addEventListener('click', (e) => this._onButtonClick(e, 'hsl'))
-
-    this.$('#clr-wig-hex-input')
-      .addEventListener('change', (e) => this._onInputChange(e, 'hex'))
-
-    this.$('#clr-wig-rgb-input')
-      .addEventListener('change', (e) => this._onInputChange(e, 'rgb'))
-
-    this.$('#clr-wig-hsl-input')
-      .addEventListener('change', (e) => this._onInputChange(e, 'hsl'))
-  }
-
-  _onSliderInput (e, t) {
-    const v = this[t] = e.target.value
-    this._updateSlider(v, t)
-    this._updateColor()
-  }
-
-  _onButtonClick (e, type) {
-    const val = this.$(`#clr-wig-${type}-input`).value
-    this.from = NNE.cm.getCursor('from')
-    this.to = NNE.cm.getCursor('to')
-    NNE.cm.replaceSelection(val)
-    const t = { line: this.to.line, ch: this.from.ch + val.length }
-    NNE.cm.setSelection(this.from, t)
-  }
-
-  _onInputChange (e, type) {
-    const val = e.target.value
-    this.updateColor(Color.match(val))
-  }
-
-  _updateSlider (v, type) {
-    const p = type === 'hue'
-      ? Maths.map(v, 0, 360, 3, 252) : type === 'alpha'
-        ? Maths.map(v, 0, 1, 3, 252) : Maths.map(v, 0, 100, 3, 252)
-    this.$(`#clr-wig-${type}-num`).textContent = v
-    this.$(`#clr-wig-${type}-num`).style.left = `${p}px`
-    this.$(`#clr-wig-${type}-bubble`).style.left = `${p}px`
-
-    const as = [
-      '#clr-wig-alpha-bubble',
-      '#clr-wig-alpha-span',
-      '#clr-wig-alpha-slider',
-      '#clr-wig-alpha-num'
-    ]
-    if (this.alpha < 1) as.forEach(a => { this.$(a).style.opacity = 1 })
-    else as.forEach(a => { this.$(a).style.opacity = 0.25 })
-  }
-
-  _updateColor (arr) {
-    const hue = `hsl(${this.hue}, 50%, 50%)`
-    const sat = `hsl(${this.hue}, ${this.sat}%, 50%)`
-    const val = `hsl(180, 0%, ${this.val}%)`
-    const alpha = `hsla(${this.hue}, 50%, 50%, ${this.alpha})`
-    document.documentElement.style.setProperty('--clr-wig-hue', hue)
-    document.documentElement.style.setProperty('--clr-wig-sat', sat)
-    document.documentElement.style.setProperty('--clr-wig-val', val)
-    document.documentElement.style.setProperty('--clr-wig-alpha', alpha)
-
-    const c = this.alpha < 1
-      ? `hsla(${this.hue}, ${this.sat}%, ${this.val}%, ${this.alpha})`
-      : `hsl(${this.hue}, ${this.sat}%, ${this.val}%)`
-    document.documentElement.style.setProperty('--clr-wig-composite', c)
-
-    const hex = (arr && arr[0] === 'hex')
-      ? arr[1] : this.new_hsl2hex(this.hue, this.sat, this.val)
-    const hexA = Color.alpha2hex(this.alpha)
-    const rgb = (arr && arr[0] === 'rgb')
-      ? { r: arr[2], g: arr[3], b: arr[4] }
-      : this.new_hsl2rgb(this.hue, this.sat, this.val)
-
-    this.$('#clr-wig-hsl-input').value = c
-    this.$('#clr-wig-hex-input').value = this.alpha < 1 ? hex + hexA : hex
-    this.$('#clr-wig-rgb-input').value = this.alpha < 1
-      ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${this.alpha})`
-      : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
   }
 }
 

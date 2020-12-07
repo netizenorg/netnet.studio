@@ -16,18 +16,10 @@ class CodeSlider extends HTMLElement {
   }
 
   connectedCallback (opts) {
-    const label = document.createElement('span')
-    // label.style.margin = '0px 20px 0px 0px'
-    label.innerHTML = this.label || ''
-    label.className = 'gen-slider-label'
     this.innerHTML = `<style>
-      :root {
-        --__code-slider-bg: var(--netizen-meta);
-        --__code-slider-bubble-bg: #fff;
-      }
-
       .__code-slider-parent {
         /* TODO width property/attribute maybe */
+        position: relative;
         width: 255px;
       }
 
@@ -35,18 +27,19 @@ class CodeSlider extends HTMLElement {
         width: 16px;
         height: 16px;
         border-radius: 50%;
-        border: 2px solid var(--netizen-meta);
+        border: 1px solid var(--netizen-meta);
         transform: translate(-8px, -4px);
         position: relative;
         left: 127px;
-        background: var(--__code-slider-bubble-bg);
+        background: #fff;
       }
 
       .__code-slider-label {
         position: absolute;
-        left: 15px;
-        top: 38px;
+        left: 0px;
+        top: 30px;
         font-size: 10px;
+        margin-top: 0 !important;
       }
 
       .__code-slider-range {
@@ -56,34 +49,37 @@ class CodeSlider extends HTMLElement {
         border-radius: 5px;
         outline: none;
         border: 1px solid var(--netizen-meta);
-        background: var(--__code-slider-bg);
+        background: var(--netizen-meta);
       }
 
       .__code-slider-range::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 4px;
+        width: 6px;
         height: 24px;
         background: #fff;
         cursor: pointer;
         border-radius: 5px;
+        border: 1px solid var(--netizen-meta);
       }
 
       .__code-slider-range::-moz-range-thumb {
-        width: 4px;
+        width: 6px;
         height: 24px;
         background: #fff;
         cursor: pointer;
         border-radius: 5px;
+        border: 1px solid var(--netizen-meta);
       }
 
       .__code-slider-num {
         color: var(--netizen-meta);
-        transform: translate(-12px, -12px);
+        transform: translate(-14px, 3px);
         text-align: center;
         position: relative;
         width: 27px;
         left: 127px;
+        margin-top: 0 !important;
       }
 
     </style>
@@ -102,37 +98,36 @@ class CodeSlider extends HTMLElement {
 
     this.querySelector('input').addEventListener('input', (e) => {
       this.setAttribute('value', e.target.value)
-      this.thumbUpdate()
+      this.updateThumb()
       this.change(e)
     })
 
-    this.thumbUpdate()
-    this.updateColors(this.background, this.bubble)
+    this.updateThumb()
+    this.querySelector('.__code-slider-range').style.background = this.background
+    this.querySelector('.__code-slider-bubble').style.background = this.bubble
+
+    this.ele = this.querySelector('.__code-slider-parent')
   }
 
   change () {
     // this gets assigned in Widget.js createSlider method
   }
 
-  thumbUpdate (v) {
+  updateThumb (v, t) {
+    if (typeof v !== 'undefined') this.value = v
     const w = parseInt(this.querySelector('.__code-slider-range').style.width) || 255
-    const min = parseInt(this.min)
-    const max = parseInt(this.max)
-    const p = Maths.map(parseInt(this.value), min, max, 4, w - 4)
+    const min = parseFloat(this.min)
+    const max = parseFloat(this.max)
+    const p = Maths.map(parseFloat(this.value), min, max, 3, w - 3)
     this.querySelector('.__code-slider-bubble').style.left = `${p}px`
     this.querySelector('.__code-slider-num').style.left = `${p}px`
-    this.querySelector('.__code-slider-num').textContent = this.value
-  }
-
-  updateColors (slider, bubble) {
-    if (slider) {
-      document.documentElement.style
-        .setProperty('--__code-slider-bg', slider)
-    }
-    if (bubble) {
-      document.documentElement.style
-        .setProperty('--__code-slider-bubble-bg', bubble)
-    }
+    if (t === 'hex' || t === 'HEX') {
+      let val = (min === 0 && max === 1)
+        ? Math.round(Maths.map(parseFloat(v), 0, 1, 0, 255)).toString(16)
+        : parseInt(v).toString(16)
+      if (t === 'HEX') val = val.toUpperCase()
+      this.querySelector('.__code-slider-num').textContent = val
+    } else this.querySelector('.__code-slider-num').textContent = this.value
   }
 
   syncProps2Attr () {
@@ -164,9 +159,9 @@ class CodeSlider extends HTMLElement {
     } else if (['value', 'min', 'max', 'step'].includes(attrName)) {
       this.querySelector('input')[attrName] = newVal
     } else if (attrName === 'background') {
-      this.updateColors(newVal)
+      this.querySelector('.__code-slider-range').style.background = newVal
     } else if (attrName === 'bubble') {
-      this.updateColors(null, newVal)
+      this.querySelector('.__code-slider-bubble').style.background = newVal
     }
   }
 }
@@ -202,10 +197,12 @@ class CodeField extends HTMLElement {
       NNE.cm.setSelection(this.from, t)
     })
 
-    this.querySelector('input').addEventListener('input', (e) => {
+    this.querySelector('input').addEventListener('change', (e) => {
       this.setAttribute('value', e.target.value)
       this.change(e)
     })
+
+    this.ele = this.querySelector('div')
   }
 
   change () {

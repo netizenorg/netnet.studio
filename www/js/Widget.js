@@ -261,12 +261,13 @@ class Widget {
   }
 
   createSlider (opts) {
+    opts = opts || {}
     const el = document.createElement('code-slider')
-    el.value = opts.value || 50
-    el.change = opts.change
-    el.min = opts.min || 1
-    el.max = opts.max || 255
-    el.step = opts.step || 1
+    el.value = (typeof opts.value === 'undefined') ? 50 : opts.value
+    el.change = opts.change || function () {}
+    el.min = (typeof opts.min === 'undefined') ? 1 : opts.min
+    el.max = (typeof opts.max === 'undefined') ? 255 : opts.max
+    el.step = (typeof opts.step === 'undefined') ? 1 : opts.step
     el.label = opts.label || ''
     el.bubble = opts.bubble
     el.background = opts.background || 'var(--netizen-meta)'

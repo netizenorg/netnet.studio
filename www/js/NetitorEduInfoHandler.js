@@ -124,7 +124,8 @@ class NetitorEduInfoHandler {
             : val
       } else if (type === 'rgb' || type === 'hsl') {
         r.hex = type === 'rgb'
-          ? Color.rgb2hex(c[2], c[3], c[4]) : Color.hsl2hex(c[2], c[3], c[4])
+          ? Color.rgb2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
+          : Color.hsl2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
         if (alpha) r.hex += Color.alpha2hex(alpha)
       }
 
@@ -158,14 +159,44 @@ class NetitorEduInfoHandler {
     }
   }
 
+  static selectColor (e, type) {
+    if (type === 'hex') {
+      const c = Color.match(e.data.toLowerCase())
+      setTimeout(() => {
+        if (c && c[0] === 'hex') {
+          const from = NNE.cm.getCursor('from')
+          const to = NNE.cm.getCursor('to')
+          const f = { line: from.line, ch: from.ch - 1 }
+          NNE.cm.setSelection(f, to)
+        }
+      }, 100)
+    } else {
+      const to = NNE.cm.getCursor('to')
+      const s = NNE.cm.getLine(to.line)
+      const from = s.indexOf(e.data)
+      const f = { line: to.line, ch: from }
+      for (let i = to.ch; i < s.length; i++) {
+        if (s[i] === ')') { to.ch = i + 1; break }
+      }
+      setTimeout(() => {
+        NNE.cm.setSelection(f, to)
+        const sel = NNE.cm.getSelection()
+        e.data = sel
+        this.parse(e)
+      }, 100)
+    }
+  }
+
   static parse (eve) {
     const c = Color.match(eve.data.toLowerCase())
     const k = NNE.edu.css.colors[eve.data]
-    // if (c) {
-    //   console.log('IN IT', c, '#', NNE.cm.getSelection());
-    //   if (c[0] === 'hex' && c[1] !== '#' + NNE.cm.getSelection()) return null
-    //   else if (c[1] !== NNE.cm.getSelection()) return null
-    // }
+
+    const clrs = ['rgb', 'rgba', 'hsl', 'hsla']
+    if (c && c[0] === 'hex') this.selectColor(eve, 'hex')
+    else if (clrs.includes(eve.data)) {
+      this.selectColor(eve) // non hex
+      return // b/c selectColor will reparse once full string is selected
+    }
 
     if (!c && !k && !eve.nfo) return null // TODO handle these differently?
 
@@ -179,7 +210,7 @@ class NetitorEduInfoHandler {
       ok: () => { STORE.dispatch('HIDE_EDU_TEXT') }
     }
     // TODO: as we create more widgets this should prolly be re-org
-    if (c) {
+    if (c || k) {
       opts['open color widget'] = () => {
         WIDGETS['color-widget'].open()
       }
@@ -190,9 +221,14 @@ class NetitorEduInfoHandler {
       }
     }
 
-    return {
+    const edu = {
       content: cnt,
       options: opts
+    }
+
+    if (edu) {
+      if (STORE.is('SHOWING_EDU_TEXT')) STORE.dispatch('SHOW_EDU_TEXT', edu)
+      else STORE.dispatch('SHOW_EDU_ALERT', edu)
     }
   }
 }

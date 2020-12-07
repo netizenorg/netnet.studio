@@ -40,11 +40,8 @@ NNE.on('cursor-activity', (e) => {
 
 NNE.on('edu-info', (e) => {
   // console.log(e);
-  const edu = NetitorEduInfoHandler.parse(e)
-  if (edu) {
-    if (STORE.is('SHOWING_EDU_TEXT')) STORE.dispatch('SHOW_EDU_TEXT', edu)
-    else STORE.dispatch('SHOW_EDU_ALERT', edu)
-  }
+  // STORE.dispatch('SHOW_EDU_ALERT', edu) called inside .parse() method
+  NetitorEduInfoHandler.parse(e)
 })
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
