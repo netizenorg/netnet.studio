@@ -115,7 +115,8 @@
   max-height: 500px;
   margin: 0;
   color: var(--netizen-meta);
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #search-results > div {
