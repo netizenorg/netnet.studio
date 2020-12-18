@@ -78,7 +78,7 @@
   // there is also a method for parsing CSS strings which can be helpful in
   // CSS generator widgets
   const str = 'margin: 10px calc(50vw - 10px)'
-  w.parceCSS(str)
+  w.parseCSS(str)
 
 */
 class Widget {
@@ -274,7 +274,7 @@ class Widget {
     return el
   }
 
-  parceCSS (string) {
+  parseCSS (string) {
     const parsedCode = { property: '', value: [] }
 
     const regExp = /\(([^)]+)\)/g
