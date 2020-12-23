@@ -81,7 +81,7 @@ class Widget {
     this._innerHTML = opts.innerHTML || ''
     this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
     this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
-    this._closable = (typeof opts.closable === 'boolean') ? opts._closable : true
+    this._closable = (typeof opts.closable === 'boolean') ? opts.closable : true
 
     this.mousedown = false
 
@@ -155,6 +155,9 @@ class Widget {
       else if (v instanceof HTMLElement) c.appendChild(v)
     }
   }
+
+  get closable () { return this._closable }
+  set closable (v) { this._closable = v }
 
   get left () { return parseInt(this.ele.style.left) }
   set left (v) { this._css('left', v) }
@@ -271,7 +274,7 @@ class Widget {
           <span>${this._title}</span>
         </span>
         <span>
-          ${this._closable ? '<span class="close">✖</span>' : ''}
+          ${this.closable ? '<span class="close">✖</span>' : ''}
         </span>
       </div>
       <div class="w-innerHTML">${this.innerHTML}</div>
@@ -291,12 +294,12 @@ class Widget {
     // before i called u, so FYI any updates to CSS/structure need to be updated
     // in _createWindow() as well as in the title's setter (ie: set title (v) {...} )
 
-    // const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
-    // const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
-    // if (titleSpanWidth >= titleWidth) {
-    //   this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
-    //   this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
-    // }
+    const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
+    const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
+    if (titleSpanWidth >= titleWidth) {
+      this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
+      this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
+    }
   }
 
   _display (value) {
