@@ -1,24 +1,4 @@
 /* global Widget */
-/*
-  -----------
-     info
-  -----------
-
-  Explain what this widget is for and what it does...
-
-  -----------
-     usage
-  -----------
-
-  // it's important that the file-name matches the class-name because
-  // this widget is instantiated by the WindowManager as...
-  WIDGETS['Example Widget'] = new StreamVideo()
-
-  // this class inherits all the properties/methods of the base Widget class
-  // refer to www/js/Widget.js to see what those are
-  // or take a look at the wiki...
-  // https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets
-*/
 class StreamVideo extends Widget {
   constructor (opts) {
     super(opts)

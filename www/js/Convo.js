@@ -1,56 +1,14 @@
-/* global NNE, STORE */
+/* global NNE, NNW, utils */
 /*
-  -----------
-     info
-  -----------
 
-  This class can be used to create linear and non-linear conversations with
-  netnet. It works almost exactly like the TutorialManager (except without all
-  the extra logic related to tutorials). the ArrayOfContentObjects you pass
-  into the constructor should look exactly like that of the steps array of
-  tutorials.
-
-  NOTE: This class is dependent on the external STORE (StateManager) as well
-  as the NNE (the netitor instance).
-
-  -----------
-     usage
-  -----------
-
-  // simplest convo is passed a single content object
-  const chat = new Convo(contentObject)
-
-  // when passed an array of content objects, the convo starts with
-  // the first object in that array
-  const chat = new Convo(ArrayOfContentObjects)
-
-  // you can pass an optional second arg with the ID of a content object
-  // in the array you'd prefer to start with (instead of the first one)
-  const chat = new Convo(ArrayOfContentObjects, startID)
-
-  // methods include...
-  chat.next() // jump to next step
-  chat.prev() // jump to previous step
-  chat.goTo(id) // to jump to a specific step in the tutorial
-  chat.hide() // hides text bubble
-
-  // when creating custom options in a content object, you have access to both
-  // the scope of the Convo instance, as well as the text bubble, the former
-  // is useful for calling Convo methods (next, hide, etc) the latter is useful
-  // for accessing the DOM of the text bubble, for example:
-
-  window.convo = new Convo({
-    content: 'Hey there, <input placeholder="what\'s new?">',
-    options: {
-      'that\'s what': (c, t) => {
-        const v = t.$('input').value
-        // do something with inptu value
-      },
-      'nothing much': (e) => e.hide()
-    }
-  })
-
+Convo.load('example-convo', () => {
+  const convoArray = window.CONVOS['example-convo']()
+  const convoInstance = new Convo(convoArray)
+})
 */
+
+window.CONVOS = {}
+
 class Convo {
   constructor (data, start) {
     if (typeof data !== 'object' && !(data instanceof Array)) {
@@ -60,6 +18,29 @@ class Convo {
     else this.data = this._mapData([data])
     this.id = start || Object.keys(this.data)[0]
     this._update(this.id)
+  }
+
+  /*
+    // inside another class
+    this.convo = null
+    Convo.load('example-convo', () => {
+      // NOTE: need to rerun this everytime a convo which relies on
+      // localStorage data is going to launch (to ensure latest data)
+      this.convos = window.CONVOS['example-convo'](this)
+    })
+
+    // inside a method w/in that class
+    this.convos = window.CONVOS['example-convo'](this)
+    window.convo = new Convo(this.convos['convo-object-key'])
+  */
+
+  static load (name, cb) {
+    const s = document.createElement('script')
+    s.setAttribute('src', `convos/${name}/index.js`)
+    s.setAttribute('type', 'text/javascript')
+    s.onerror = (e) => { console.error(`Convo.load: failed to load ${name}`) }
+    s.onload = () => { if (cb) cb() }
+    document.body.appendChild(s)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -72,7 +53,7 @@ class Convo {
 
   goTo (id) { this._update(id) }
 
-  hide () { STORE.dispatch('HIDE_EDU_TEXT') }
+  hide () { NNW.menu.textBubble.fadeOut() }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -80,43 +61,51 @@ class Convo {
 
   _update (id) {
     this.id = id
-    const time = STORE.getTransitionTime()
+    const time = utils.getVal('--menu-fades-time')
     const obj = this.data[this.id]
 
     // pre hoook
-    if (typeof obj.before === 'function') obj.before()
+    if (typeof obj.before === 'function') obj.before(this, obj.scope)
 
     // update
-    STORE.dispatch('SHOW_EDU_TEXT', {
+    NNW.menu.textBubble.update({
       content: obj.content,
       options: obj.options,
       scope: obj.scope
     })
+
+    if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
+      NNW.keepInFrame()
+    }
+
     setTimeout(() => {
-      if (typeof obj.code === 'string') NNE.code = obj.code
-      if (typeof obj.edit === 'boolean') {
-        if (obj.edit) STORE.dispatch('ENABLE_EDITING')
-        else STORE.dispatch('DISABLE_EDITING')
+      if (typeof obj.code === 'string') {
+        NNE.code = obj.code
+        setTimeout(() => { NNE.cm.refresh() }, 10)
       }
+
+      if (typeof obj.edit === 'boolean') {
+        if (obj.edit) NNE.cm.setOption('readOnly', false)
+        else NNE.cm.setOption('readOnly', true)
+      }
+
       if (obj.highlight) {
         NNE.highlight()
         const t = typeof obj.highlight
         if (t === 'number' || t === 'object') NNE.highlight(obj.highlight)
       }
+
       if (typeof obj.layout === 'string') {
-        STORE.dispatch('CHANGE_LAYOUT', obj.layout)
-      }
-      if (typeof obj.opacity === 'number') {
-        STORE.dispatch('CHANGE_OPACITY', obj.opacity)
+        NNW.layout = obj.layout
+        if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
+          NNW.keepInFrame()
+        }
       }
 
       // post hook
-      if (typeof obj.after === 'function') obj.after()
+      if (typeof obj.after === 'function') obj.after(this, obj.scope)
     }, time)
   }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // ...these are identical to TutorialManager's
 
   _mapData (steps) {
     const dict = {}

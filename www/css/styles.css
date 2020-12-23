@@ -3,9 +3,46 @@
   --bg-color: #000;
   --layout-transition-time: 1s;
   --menu-fades-time: 500ms;
+  --sarah-ease: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@font-face {
+    font-family: 'fira-sans-bold';
+    src: url('fonts/firasans-bold-webfont.woff2') format('woff2'),
+         url('fonts/firasans-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'fira-sans-regular';
+    src: url('fonts/firasans-regular-webfont.woff2') format('woff2'),
+         url('fonts/firasans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 * { box-sizing: border-box; }
+
+*::-moz-selection {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+}
+
+*::selection {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+}
+
+code::-moz-selection {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}
+
+code::selection {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}
 
 body {
   overflow: hidden;
@@ -16,7 +53,7 @@ input,
 button {
   box-sizing: border-box;
   padding: 0; margin: 0;
-  font-family: "better-serif", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -55,8 +92,7 @@ button {
   width: 100vw;
   height: 100vh;
   z-index: -30;
-
-  transition: filter .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: filter .5s var(--sarah-ease);
 }
 
 #nn-output {
@@ -77,15 +113,6 @@ button {
   background-color: rgba(0, 0, 0, 0);
 }
 
-#nn-window > #nn-bg-canvas {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: -10;
-}
-
 #nn-window > #nn-menu {
   display: flex;
   align-items: flex-end;
@@ -101,6 +128,11 @@ button {
   text-rendering: auto;
   -webkit-font-smoothing: auto;
   transition: font-size var(--layout-transition-time);
+}
+
+#nn-window > #nn-menu > #face svg  {
+  transition: width var(--layout-transition-time),
+    height var(--layout-transition-time);
 }
 
 #nn-window > #nn-menu > #face > span {

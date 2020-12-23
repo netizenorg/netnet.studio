@@ -1,86 +1,78 @@
-/* global HTMLElement, STORE, WIDGETS */
+/* global HTMLElement, WIDGETS, utils */
+window.WIDGETS = { // GLOBAL WIDGETS OBJECT
+  // all named/keyed instantiated widgets are properties of this global object
+  loaded: ['Widget.js'], // list of filenames of all currently loaded widgets
+  instantiated: [], // list of keys of all currently instantiated widgets
+  list: () => WIDGETS.instantiated.map(key => WIDGETS[key]), // array of widgets
+  load: (filename, cbfunc) => {
+    const s = document.createElement('script')
+    s.setAttribute('src', `widgets/${filename}`)
+    s.onload = () => {
+      WIDGETS.loaded.push(filename)
+      // instantiate widget unless skipAutoInstantiation is set to true
+      const className = filename.split('.')[0]
+      if (window[className].skipAutoInstantiation !== true) {
+        const wig = new window[className]()
+        if (!wig.key) console.error(`WIDGETS: ${className} is missing it's key`)
+        WIDGETS[wig.key] = wig
+        WIDGETS.instantiated.push(wig.key)
+        if (cbfunc) cbfunc(wig)
+      } else { if (cbfunc) cbfunc() }
+    }
+    s.onerror = () => {
+      const error = `widgets/${filename} does not exist`
+      if (cbfunc) cbfunc({ error })
+      else console.error(`WIDGET: ${error}`)
+    }
+    document.body.appendChild(s)
+  },
+  create: (opts) => {
+    opts = opts || {}
+    if (!opts.type) opts.type = 'Widget'
+    const wig = new window[opts.type](opts)
+    const key = opts.key || `anon-${Date.now()}`
+    WIDGETS[key] = wig
+    WIDGETS.instantiated.push(key)
+    return wig
+  },
+  open: (key, filename) => {
+    if (WIDGETS.instantiated.includes(key)) WIDGETS[key].open()
+    else if (filename) WIDGETS.load(filename, w => w.open())
+    else { // make a guess about the filename based on keyname conventions
+      const cap = (s) => s[0].toUpperCase() + s.substr(1)
+      const arr = key.split('-')
+      const name = arr.map(w => cap(w)).join('') + '.js'
+      WIDGETS.load(name, w => w.open())
+    }
+  },
+  close: (key) => {
+    if (WIDGETS.instantiated.includes(key)) WIDGETS[key].close()
+    else console.error(`WIDGETS: ${key} was never instantiated`)
+  }
+}
+
 /*
-  -----------
-     info
-  -----------
 
-  This class is used to create widgets, which is any additional functionality
-  or information we want to display in it's own movable pop up window. It can
-  be used on it's own to create simple widgets, but it can also be extended
-  to make more complex widgets (see widgets/example.js)
+WIDGETS.create({
+  type: 'Widget',
+  key: 'my-new-widget'
+})
 
-  NOTE: this class is dependent on a couple of outside variables, see globals
-  in the comment on the fist line for global JS variables it references
-
-  -----------
-     usage
-  -----------
-
-  const w = new Widget({
-    title: 'settings',  // required
-    innerHTML: element, // optional html string or HTMLElement
-    resizable: true,    // optional (can user resize)
-    listed: true,       // optional (can user star && display in Widgets Menu?)
-    left: 20,           // optional
-    top: 20,            // optional
-    zIndex: 100,        // optional (make sure it's always between 100 && 200)
-    width: 500,         // optional
-    height: 500         // optional
-  })
-
-  w.innerHTML = element
-  w.title = 'settings'
-  w.resizable = false
-  w.left = 20
-  w.top =  '50vh'
-  w.bottom = 20
-  w.right =  '50vh'
-  w.zIndex = 100
-  w.width = '50vw'
-  w.height = '50vh'
-
-  w.opened // read only property, returns true/false
-
-  w.open()                // display
-  w.close()               // hide
-
-  w.recenter() // recenters the widget
-  w.update(cssObj, transitionTime) // to update CSS
-  w.bring2front() // places widget's z-index above all other widgets
-
-  // to create event listeners
-  w.on('open', callback)
-  w.on('close', callback)
-
-  // to fire all registered callbacks of an event
-  w.emit('click',data)
-
-  // when using update() to position the widget (left/right/top/bottom)
-  // you must pass number values (not strings), for example:
-  w.update({ top: 29, right: 20 }, 500)
-
-  // widget class also includes methods for generating custom elements
-  // specifically desinged for creating code generator widgets.
-
-  w.codeField = w.createCodeField({
-    value: 'font-size 24px;',
-    change: (e) => { }
-  })
-
-  w.slider = w.createSlider({
-    background: '#f00',
-    min: 0,
-    max: 100,
-    label: 'PX'
-    change: e) => { }
-  })
-
-  // there is also a method for parsing CSS strings which can be helpful in
-  // CSS generator widgets
-  const str = 'margin: 10px calc(50vw - 10px)'
-  w.parseCSS(str)
+const w = new Widget({
+  title: 'netnet widget', // for widget title bar
+  innerHTML: '',          // html string or HTMLElement
+  closable: true,         // allow user to close the widget
+  resizable: true,        // allow user to resize the widget
+  listed: true,           // should widget be listed in search results
+  left: 20,               //
+  top: 20,                //
+  zIndex: 100,            // make sure it's always between 100 && 200
+  width: 500,             //
+  height: 500             //
+})
 
 */
+
 class Widget {
   constructor (opts) {
     opts = opts || {}
@@ -89,6 +81,8 @@ class Widget {
     this._innerHTML = opts.innerHTML || ''
     this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
     this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
+    this._closable = (typeof opts.closable === 'boolean') ? opts._closable : true
+
     this.mousedown = false
 
     this.events = {
@@ -97,23 +91,70 @@ class Widget {
     }
 
     this._createWindow()
-    this._updateIfListed()
 
     const s = ['top', 'right', 'bottom', 'left', 'zIndex', 'width', 'height']
     s.forEach(p => { this[`_${p}`] = null })
     for (const prop in opts) if (s.includes(prop)) this._css(prop, opts[prop])
 
-    // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ .  event listeners
-    const wu = window.utils
     window.addEventListener('mousedown', (e) => this._mouseDown(e), true)
     window.addEventListener('mouseup', (e) => this._mouseUp(e), true)
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
-    window.addEventListener('mousemove', (e) => wu.updateShadow(e, this))
+    window.addEventListener('mousemove', (e) => utils.updateShadow(e, this.ele))
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ properties
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  get key () { return this._key }
+  set key (v) {
+    if (typeof v !== 'string') {
+      return console.error('Widget: key property must be set to a string')
+    } else {
+      this._key = v
+    }
+  }
+
+  get listed () { return this._listed }
+  set listed (v) {
+    if (typeof v !== 'boolean') {
+      return console.error('Widget: listed property must be set to a boolean')
+    } else {
+      this._listed = v
+      // TODO update the Search dict so that it's no longer listed ???????????
+    }
+  }
+
+  get resizable () { return this._resizable }
+  set resizable (v) { this._resizable = v }
+
+  get opened () { return this.ele.style.visibility === 'visible' }
+  set opened (v) { console.error('Widget: opened property is read only') }
+
+  get title () { return this._title }
+  set title (v) {
+    if (typeof v !== 'string') {
+      return console.error('Widget: title property must be set to a string')
+    } else {
+      this._title = v
+      this.ele.querySelector('.w-top-bar__title > span').textContent = v
+      this._marquee()
+    }
+  }
+
+  get innerHTML () { return this._innerHTML }
+  set innerHTML (v) {
+    if (typeof v !== 'string' && !(v instanceof HTMLElement)) {
+      const m = 'innerHTML string or an instanceof HTMLElement'
+      return console.error('Widget: innerHTML property must be an ' + m)
+    } else {
+      this._innerHTML = v
+      const c = this.ele.querySelector('.w-innerHTML')
+      c.innerHTML = ''
+      if (typeof v === 'string') c.innerHTML = v
+      else if (v instanceof HTMLElement) c.appendChild(v)
+    }
+  }
 
   get left () { return parseInt(this.ele.style.left) }
   set left (v) { this._css('left', v) }
@@ -127,7 +168,7 @@ class Widget {
   get bottom () { return window.innerHeight - this.height - this.top }
   set bottom (v) { this._css('bottom', v) }
 
-  get zIndex () { return this.ele.style.zIndex }
+  get zIndex () { return parseInt(this.ele.style.zIndex) }
   set zIndex (v) { this._css('zIndex', v) }
 
   get width () { return this.ele.offsetWidth }
@@ -136,69 +177,34 @@ class Widget {
   get height () { return this.ele.offsetHeight }
   set height (v) { this._css('height', v) }
 
-  get title () { return this._title }
-  set title (v) {
-    if (typeof v !== 'string') {
-      return console.error('Widget: title property must be set to a string')
-    } else {
-      this._title = v
-      this.ele.querySelector('.w-top-bar > span:nth-child(1)').textContent = v
-    }
-  }
-
-  get resizable () { return this._resizable }
-  set resizable (v) { this._resizable = v }
-
-  get opened () { return this.ele.style.visibility === 'visible' }
-  set opened (v) { console.error('Widget: opened property is read only') }
-
-  get key () { return this._key }
-  set key (v) {
-    if (typeof v !== 'string') {
-      return console.error('Widget: key property must be set to a string')
-    } else {
-      this._key = v
-      this._updateIfListed()
-    }
-  }
-
-  get listed () { return this._listed }
-  set listed (v) {
-    if (typeof v !== 'boolean') {
-      return console.error('Widget: listed property must be set to a boolean')
-    } else {
-      this._listed = v
-      this._updateIfListed()
-      if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].updateView()
-    }
-  }
-
-  get innerHTML () { return this._innerHTML }
-  set innerHTML (v) {
-    if (typeof v !== 'string' && !(v instanceof HTMLElement)) {
-      const m = 'html string or an instanceof HTMLElement'
-      return console.error('Widget: innerHTML property must be an ' + m)
-    } else {
-      this._innerHTML = v
-      const c = this.ele.querySelector('.w-innerHTML')
-      c.innerHTML = ''
-      if (typeof v === 'string') c.innerHTML = v
-      else if (v instanceof HTMLElement) c.appendChild(v)
-    }
-  }
-
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  open () {
-    if (Object.keys(WIDGETS).map(w => WIDGETS[w]).includes(this)) {
-      this._stayInFrame()
-      this._display('visible')
-      this.events.open.forEach(func => func())
-    } else {
-      console.error('Widget: this widget was never loaded via WindowManager')
+  $ (selector) {
+    const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
+    if (e.length > 1) return e
+    else return e[0]
+  }
+
+  on (eve, cb) {
+    if (!this.events[eve]) { this.events[eve] = [] }
+    this.events[eve].push(cb)
+  }
+
+  emit (eve, data) {
+    if (this.events[eve] instanceof Array) {
+      this.events[eve].forEach((cb, i) => {
+        data.unsubscribe = () => { this.events[eve].splice(i, 1) }
+        cb(data)
+      })
     }
+  }
+
+  open () {
+    this.keepInFrame()
+    this._display('visible')
+    this.events.open.forEach(func => func())
   }
 
   close () {
@@ -209,14 +215,13 @@ class Widget {
   update (opts, time) {
     time = time || 0
     const t = `${time}ms`
-    const ease = 'cubic-bezier(0.165, 0.84, 0.44, 1)'
-    this.ele.style.transition = `all ${t} ${ease}`
+    this.ele.style.transition = `all ${t} var(--sarah-ease)`
     // trigger transition
     setTimeout(() => {
       for (const prop in opts) this._css(prop, opts[prop])
       setTimeout(() => {
         this.ele.style.transition = 'none'
-        this._stayInFrame()
+        this.keepInFrame()
       }, time)
       this._recentered = false
     }, 25)
@@ -228,111 +233,30 @@ class Widget {
     this._recentered = true
   }
 
-  bring2front () {
-    // NOTE: this will work so long as there are less than 100
-    // Widgets open... safe assumption i hope
-    this.zIndex = 200
-    let z = 100
-    Object.keys(WIDGETS)
-      .forEach(key => { if (key !== this.key) WIDGETS[key].zIndex = ++z })
-  }
-
-  on (eve, callback) {
-    if (!this.events[eve]) {
-      // return console.error(`Widget: ${eve} is not a Widget event`)
-      this.events[eve] = []
+  keepInFrame () {
+    if (this.ele.offsetTop < 2) this.top = 2
+    else if (this.ele.offsetTop > window.innerHeight) {
+      this.bottom = 2
     }
-    this.events[eve].push(callback)
+    if (this.ele.offsetLeft < 2) this.left = 2
+    else if (this.ele.offsetLeft > window.innerWidth) {
+      this.left = window.innerWidth - this.ele.offsetWidth - 10
+    }
   }
 
-  emit (eve, data) {
-    this.events[eve].forEach(callback => {
-      callback(data)
-    })
+  bring2front () {
+    let z = 100
+    const allWidgets = WIDGETS.list()
+      .filter(w => w.key !== this.key)
+      .sort((a, b) => { return parseFloat(a.zIndex) - parseFloat(b.zIndex) })
+
+    allWidgets.forEach(w => { w.zIndex = ++z })
+    this.zIndex = ++z
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ CSS GENERATOR HELPERS
 
-  createCodeField (opts) {
-    const el = document.createElement('code-field')
-    el.value = opts.value
-    el.change = opts.change
-    return el
-  }
-
-  createSlider (opts) {
-    opts = opts || {}
-    const el = document.createElement('code-slider')
-    el.value = (typeof opts.value === 'undefined') ? 50 : opts.value
-    el.change = opts.change || function () {}
-    el.min = (typeof opts.min === 'undefined') ? 1 : opts.min
-    el.max = (typeof opts.max === 'undefined') ? 255 : opts.max
-    el.step = (typeof opts.step === 'undefined') ? 1 : opts.step
-    el.label = opts.label || ''
-    el.bubble = opts.bubble
-    el.background = opts.background || 'var(--netizen-meta)'
-    return el
-  }
-
-  parseCSS (string) {
-    const parsedCode = { property: '', value: [] }
-
-    const regExp = /\(([^)]+)\)/g
-    let matches = string.match(regExp) // find css functions
-
-    const line = string.split(':')
-    parsedCode.property = line[0]
-
-    if (matches) {
-      // store CSS function names
-      const funcs = line[1].split(' ')
-        .filter(item => item.includes('('))
-        .map(item => item.split('(')[0])
-
-      // create string version of all CSS vals (including non functions)
-      let valueArr = line[1]
-      matches.forEach(m => { valueArr = valueArr.replace(m, '') })
-
-      // create mutli-dimentoinal-array of CSS function arguments
-      matches = matches.map((item) => {
-        item = item.replace(/[()]/g, '')
-        return item.split(',')
-      })
-      // add coresponding func name to start of the arrays
-      matches.forEach((item, index) => {
-        item.unshift(funcs[index])
-      })
-
-      // interweave non-function values && function values together
-      let count = 0
-      valueArr = valueArr.split(' ')
-        .filter(el => el.trim().length > 0)
-        .map(el => el.replace(';', ''))
-        .map(v => {
-          if (funcs.includes(v)) {
-            const nxtArr = matches[count]
-            count++
-            return nxtArr
-          } else return v
-        })
-
-      parsedCode.value = valueArr
-    } else {
-      const valueArr = line[1].split(' ')
-        .filter(el => el.trim().length > 0)
-        .map(el => el.replace(';', ''))
-
-      parsedCode.value = valueArr
-    }
-
-    return parsedCode
-  }
-
-  $ (selector) {
-    const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
-    if (e.length > 1) return e
-    else return e[0]
-  }
+  // TODO: ...Ilai's code goes here...
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -343,13 +267,11 @@ class Widget {
     this.ele.className = 'widget'
     this.ele.innerHTML = `
       <div class="w-top-bar">
-        <span>${this._title}</span>
+        <span class="w-top-bar__title">
+          <span>${this._title}</span>
+        </span>
         <span>
-          <span class="star">☆</span>
-          <!-- <span class="star" style="opacity: 0.5"> -->
-            <!-- <img src="images/chicago-star.png" style="width: 25px;"> -->
-          <!-- </span> -->
-          <span class="close">✖</span>
+          ${this._closable ? '<span class="close">✖</span>' : ''}
         </span>
       </div>
       <div class="w-innerHTML">${this.innerHTML}</div>
@@ -357,70 +279,32 @@ class Widget {
     document.body.appendChild(this.ele)
     this.ele.style.visibility = 'hidden'
 
-    this.ele.querySelector('.w-top-bar .close')
-      .addEventListener('click', () => this.close())
-
-    this.ele.querySelector('.w-top-bar .star')
-      .addEventListener('click', () => this._star())
+    const close = this.ele.querySelector('.w-top-bar .close')
+    if (close) close.addEventListener('click', () => this.close())
 
     this.recenter()
+    this._marquee()
   }
 
-  _updateIfListed () {
-    // if this instance is set to be listed && if it has it's key property set
-    // (ie. if it was instantiated via a NNW.loadWidgets)
-    if (this.listed && this.key) {
-      // display star span
-      this.ele.querySelector('.w-top-bar .star').style.display = 'inline'
-      // set appropriate star character if user has starred it
-      let stared = window.localStorage.getItem('stared-widgets')
-      stared = stared ? JSON.parse(stared) : []
-      if (stared.includes(this.key)) {
-        this.ele.querySelector('.w-top-bar .star').textContent = '★'
-        // this.ele.querySelector('.w-top-bar .star').style.opacity = 1
-      } else {
-        this.ele.querySelector('.w-top-bar .star').textContent = '☆'
-        // this.ele.querySelector('.w-top-bar .star').style.opacity = 0.5
-      }
-    } else { // hide star span
-      this.ele.querySelector('.w-top-bar .star').style.display = 'none'
+  _marquee () {
+    // @Sarah: i started to change the HTML in _createWindow to try to match this
+    // before i called u, so FYI any updates to CSS/structure need to be updated
+    // in _createWindow() as well as in the title's setter (ie: set title (v) {...} )
+
+    // const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
+    // const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
+    // if (titleSpanWidth >= titleWidth) {
+    //   this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
+    //   this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
+    // }
+  }
+
+  _display (value) {
+    if (value === 'visible' && this.ele.style.visibility === 'hidden') {
+      this.bring2front()
     }
+    this.ele.style.visibility = value
   }
-
-  _star () {
-    // this method runs when the user clicks the star icon
-    // as noted in _updateIfListed(), the icon only shows up if the instanceof
-    // the widget has this.listed === true (some widgets like those used in
-    // as sub-menus should not be listed) and also if the widget has it's
-    // key property set. a key property is set when the widget is instantiated
-    // and passed a key (ex: new Widget({ key: 'keyname' })) or when a list
-    // are loaded via NNW.loadWidgets({ 'keyname': widgetInstance })
-    // (which is how any Widgets defined in a tutorial are loaded)
-    // or, if the Widget is a more complex class, extended from this base
-    // class && defined in it's own file in the www/widgets/ directory
-    // then it needs to have been given a this.key = 'something' in it's
-    // constructor in order for it to have been automatically instantiated
-    // by the WindowManager
-    let stared = window.localStorage.getItem('stared-widgets')
-    stared = stared ? JSON.parse(stared) : []
-    if (stared.includes(this.key)) { // unstar it
-      this.ele.querySelector('.w-top-bar .star').textContent = '☆'
-      // this.ele.querySelector('.w-top-bar .star').style.opacity = 1
-      const i = stared.indexOf(this.key)
-      stared.splice(i, 1)
-      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
-    } else { // star it
-      this.ele.querySelector('.w-top-bar .star').textContent = '★'
-      // this.ele.querySelector('.w-top-bar .star').style.opacity = 0.5
-      stared.push(this.key)
-      stared = stared.reverse()
-      window.localStorage.setItem('stared-widgets', JSON.stringify(stared))
-    }
-    // udpate Widgets Menu to reflect changes
-    if (WIDGETS['widgets-menu']) WIDGETS['widgets-menu'].updateView()
-  }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _css (prop, val) {
     const p = ['top', 'right', 'bottom', 'left']
@@ -442,39 +326,6 @@ class Widget {
     }
   }
 
-  _display (value) {
-    if (value === 'visible' && this.ele.style.visibility === 'hidden') {
-      this.bring2front()
-    }
-    this.ele.style.visibility = value
-    // update STORE
-    const data = Object.keys(WIDGETS)
-      .map(w => WIDGETS[w])
-      .filter(w => w.opened)
-      .map(w => w.key)
-    STORE.dispatch('UPDATED_WIDGETS', data)
-  }
-
-  _stayInFrame () {
-    if (this.ele.offsetTop < 2) this.top = 2
-    else if (this.ele.offsetTop > window.innerHeight) {
-      this.top = window.innerHeight - this.ele.offsetTop - 10
-    }
-    if (this.ele.offsetLeft < 2) this.left = 2
-    else if (this.ele.offsetLeft > window.innerWidth) {
-      this.left = window.innerWidth - this.ele.offsetWidth - 10
-    }
-  }
-
-  _marquee () {
-    const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
-    const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
-    if (titleSpanWidth >= titleWidth) {
-      this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
-      this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
-    }
-  }
-
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _shouldResize (e) {
@@ -490,7 +341,6 @@ class Widget {
       if (e.target.className === 'w-top-bar') {
         this.ele.querySelector('.w-top-bar').style.cursor = 'move'
       }
-      document.body.style.userSelect = 'none'
       // if it wasn't clicked on bottom right, then we shouldn't resize
       if (this.mousedown === 'widget' && !this._shouldResize(e)) {
         this.mousedown = false
@@ -504,8 +354,8 @@ class Widget {
     this.mousedown = false
     this.winOff = null
     this.ele.querySelector('.w-top-bar').style.cursor = 'grab'
-    document.body.style.userSelect = 'auto'
-    this._stayInFrame()
+    this.keepInFrame()
+    utils.selecting(true)
   }
 
   _mouseMove (e) {
@@ -514,6 +364,9 @@ class Widget {
     if (this._shouldResize(e)) {
       this.ele.style.cursor = 'se-resize'
     } else this.ele.style.cursor = 'auto'
+
+    if (this.ele.style.cursor === 'auto') utils.selecting(true)
+    else utils.selecting(false)
 
     // move or resize window
     if (this.mousedown === 'w-top-bar') {
