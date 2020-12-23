@@ -157,7 +157,11 @@ class Widget {
   }
 
   get closable () { return this._closable }
-  set closable (v) { this._closable = v }
+  set closable (v) {
+    this._closable = v
+    const close = v ? '<span class="close">✖</span>' : ''
+    this.ele.querySelector('.w-top-bar__close').innerHTML = close
+  }
 
   get left () { return parseInt(this.ele.style.left) }
   set left (v) { this._css('left', v) }
@@ -273,7 +277,7 @@ class Widget {
         <span class="w-top-bar__title">
           <span>${this._title}</span>
         </span>
-        <span>
+        <span class="w-top-bar__close">
           ${this.closable ? '<span class="close">✖</span>' : ''}
         </span>
       </div>
@@ -290,15 +294,13 @@ class Widget {
   }
 
   _marquee () {
-    // @Sarah: i started to change the HTML in _createWindow to try to match this
-    // before i called u, so FYI any updates to CSS/structure need to be updated
-    // in _createWindow() as well as in the title's setter (ie: set title (v) {...} )
-
     const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
     const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
     if (titleSpanWidth >= titleWidth) {
       this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
       this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
+    } else {
+      this.ele.querySelector('.w-top-bar__title').classList.remove('marquee')
     }
   }
 
