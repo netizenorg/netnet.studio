@@ -50,4 +50,11 @@ router.get('/api/custom-elements', (req, res) => {
   })
 })
 
+router.get('/api/face-assets', (req, res) => {
+  fs.readdir(path.join(__dirname, '../www/images/faces'), (err, list) => {
+    if (err) return console.log(err)
+    else res.json(list)
+  })
+})
+
 module.exports = router

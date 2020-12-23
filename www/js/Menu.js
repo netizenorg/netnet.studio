@@ -1,7 +1,13 @@
 /* global NNW, utils */
 class Menu {
   constructor (win) {
-    this.face = 'basic'
+    this.face = {
+      leftEye: '◕',
+      mouth: '◞',
+      rightEye: '◕',
+      lookAtCursor: true,
+      animation: 'blink'
+    }
     this.itemOpts = {
       hi: {
         path: 'images/menu/hi.png',
@@ -64,7 +70,7 @@ class Menu {
     const center = this.ele.querySelector('#face > span:nth-child(2)')
     if (!center) return
     this.items.style.top = center.offsetTop + 'px'
-    this.items.style.left = center.offsetLeft + 'px'
+    this.items.style.left = center.offsetLeft + 11 + 'px'
     if (this.textBubble) {
       const win = document.querySelector('#nn-window')
       this.textBubble.style.bottom = win.offsetHeight + 35 + 'px'
@@ -73,18 +79,35 @@ class Menu {
     }
   }
 
-  updateFace (t) {
+  updateFace (obj) {
     if (!window.NNW) return
-    this.face = t || 'basic'
+    obj = obj || {}
+
+    if (obj.leftEye) this.face.leftEye = obj.leftEye
+    if (obj.mouth) this.face.mouth = obj.mouth
+    if (obj.rightEye) this.face.rightEye = obj.rightEye
+
+    this.face.lookAtCursor = typeof obj.lookAtCursor === 'boolean'
+      ? obj.lookAtCursor : true
+
+    if (obj.animation) {
+      this.face.animation = obj.animation
+      this._runFaceAnimation()
+    }
+
     const face = document.querySelectorAll('#face > span')
-    face[0].innerHTML = this._eye()
-    face[1].innerHTML = this._mouth()
-    face[2].innerHTML = this._eye()
+    face[0].innerHTML = this._char2SVG(this.face.leftEye)
+    face[1].innerHTML = this._char2SVG(this.face.mouth)
+    face[2].innerHTML = this._char2SVG(this.face.rightEye)
   }
 
   toggleMenu (show) {
     this.updatePosition()
     if (typeof show === 'undefined') show = !this.opened
+
+    if (show) this.updateFace({ mouth: '✖' })
+    else this.updateFace({ mouth: '◞' })
+
     const radius = this.items.children.length * 25
     this.items.querySelectorAll('menu-item').forEach(item => {
       if (NNW.layout === 'dock-left') {
@@ -92,7 +115,7 @@ class Menu {
       } else if (NNW.layout === 'dock-bottom') {
         item.toggle(show, radius, 0.5, Math.PI)
       } else if (NNW.layout === 'separate-window') {
-        item.toggle(show, radius * 0.8, 1, Math.PI)
+        item.toggle(show, radius * 0.8, 1, Math.PI * 1.25)
       } else if (NNW.layout === 'full-screen') {
         item.toggle(show, radius * 1.33, 0.32, Math.PI * 1.54)
       } else if (show && NNW.layout === 'welcome') {
@@ -147,13 +170,39 @@ class Menu {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• FACE STUFF
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸
 
+  _loadFaceAssets (cb) {
+    this._faceAssets = { null: '' }
+    let ready = false
+    utils.get('api/face-assets', (json) => {
+      json.forEach(svg => {
+        const name = svg.split('.')[0]
+        const key = name === 'mouth-dot' ? '.' : name
+        utils.get(`images/faces/${svg}`, (code) => {
+          let start = 0
+          let end = 0
+          const arr = code.split('\n')
+          arr.forEach((s, i) => {
+            if (s.indexOf('<g') === 0) start = i
+            else if (s.indexOf('</g') === 0) end = i + 1
+          })
+          this._faceAssets[key] = arr.slice(start, end).join('\n')
+          // ...
+          if (!ready && this._faceAssets['◕'] && this._faceAssets['◞']) {
+            ready = true
+            cb()
+          }
+        }, true)
+      })
+    })
+  }
+
   _setupFace () {
     const face = document.createElement('div')
     face.setAttribute('id', 'face')
     face.innerHTML = `
-    <span>${this._eye('basic')}</span>
-    <span>${this._mouth('basic')}</span>
-    <span>${this._eye('basic')}</span>
+    <span><!-- this.face.leftEye --></span>
+    <span><!-- this.face.mouth --></span>
+    <span><!-- this.face.rightEye --></span>
     `
     this.ele.appendChild(face)
     face.addEventListener('click', () => {
@@ -162,39 +211,51 @@ class Menu {
       // else if tutorials are loaded: open tutorials menu
       // else if tutorials not loaded launch welcome text bubble
     })
-    this._spinEyes = true
+    // when necessary assets are loaded, set default face && run blink animation
+    this._loadFaceAssets(() => this.updateFace({ animation: 'blink' }))
   }
 
-  _mouth () {
-    const mouths = {
-      basic: '<span>◞</span>'
-      // TODO: more SVG mouths
-    }
-    return mouths[this.face]
-  }
-
-  _eye (t) {
+  _char2SVG (char) {
     const fg = NNW.getThemeColors().fg
     const sz = NNW.layout === 'welcome' ? '64px' : '20px'
-    const eye = {
-      basic: `
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-         viewBox="0 0 200 200" xml:space="preserve" style="enable-background:new 0 0 200 200; fill: ${fg}; height: ${sz}">
-        <g>
-          <path class="clr-wig-svg-text" d="M100.28,0c27.93,0,51.49,9.79,70.7,29.35c19.2,19.57,28.81,43.63,28.81,72.18c0,18.79-5.81,36.85-17.44,54.19
-            c-8.93,13.39-20.84,24.01-35.74,31.84c-14.9,7.84-30.65,11.76-47.26,11.76c-26.99,0-50.3-9.86-69.92-29.59
-            C9.81,150.02,0,126.6,0,99.51c0-14.12,3.11-27.87,9.34-41.27s14.79-24.81,25.69-34.26C53.51,8,75.26,0,100.28,0z M100.28,12.93
-            c-24.29,0-44.87,8.38-61.74,25.15c-16.87,16.77-25.3,37.19-25.3,61.28l86.74,0.47L100.28,12.93z"/>
-        </g>
-      </svg>
-      `
-      // TODO: more SVG eyes
-    }
-    return eye[this.face]
+    return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+       viewBox="0 0 200 200" xml:space="preserve" style="enable-background:new 0 0 200 200; fill: ${fg}; height: ${sz}">
+      ${this._faceAssets[char]}
+    </svg>`
   }
 
-  _startBlinking () {
-    // TODO
+  _runFaceAnimation () {
+    // remove any current animations
+    if (this._faceAnimTO) clearTimeout(this._faceAnimTO)
+    NNW.menu.ele.querySelector('#face').style.animation = ''
+    NNW.menu.ele.querySelector('#face').style.animationTimingFunction = ''
+    NNW.menu.ele.querySelector('#face').style.animationIterationCount = ''
+
+    // run new animation
+    if (this.face.animation === 'blink') {
+      if (this.face.leftEye === '-') {
+        this._faceAnimTO = setTimeout(() => {
+          this.updateFace({ leftEye: '◕', rightEye: '◕', lookAtCursor: true })
+          this._runFaceAnimation()
+        }, 150)
+      } else {
+        this._faceAnimTO = setTimeout(() => {
+          this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
+          this._runFaceAnimation()
+        }, Math.random() * 3000 + 5000)
+      }
+    } else if (this.face.animation === 'processing') {
+      this._faceAnimTO = setTimeout(() => {
+        if (this.face.leftEye === '◉') {
+          this.updateFace({ leftEye: '☉', rightEye: '◉' })
+        } else this.updateFace({ leftEye: '◉', rightEye: '☉' })
+        this._runFaceAnimation()
+      }, 500)
+    } else if (this.face.animation === 'bounce') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'bounce 1s'
+      NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
+      NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
+    }
   }
 
   _lookAt (eye, x, y) {
@@ -212,7 +273,7 @@ class Menu {
   _moveEyes (e) {
     const leftEye = this.ele.querySelector('#face > span:nth-child(1)')
     const rightEye = this.ele.querySelector('#face > span:nth-child(3)')
-    if (leftEye && rightEye && this._spinEyes) {
+    if (leftEye && rightEye && this.face.lookAtCursor) {
       this._lookAt(leftEye, e.clientX, e.clientY)
       this._lookAt(rightEye, e.clientX, e.clientY)
     } else if (leftEye && rightEye) {
