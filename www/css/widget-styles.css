@@ -8,7 +8,7 @@
   min-height: 150px;
   color: var(--bg-color);
   background-color: transparent;
-  padding: 10px 15px;
+  padding: 5px 15px 10px;
   border: 1px solid var(--netizen-meta);
   border-radius: 15px;
   overflow: hidden;
@@ -99,6 +99,7 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+  vertical-align: middle;
 
   /*just making this invisible for rn*/
   color: var(--netizen-meta);
