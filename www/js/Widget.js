@@ -268,7 +268,6 @@ class Widget {
   _createWindow () {
     this.ele = document.createElement('div')
     this.ele.className = 'widget'
-    console.log(this._closable)
     this.ele.innerHTML = `
       <div class="w-top-bar">
         <span class="w-top-bar__title">
