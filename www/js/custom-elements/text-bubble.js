@@ -45,11 +45,17 @@ class TextBubble extends HTMLElement {
   }
 
   update (o) {
-    this.fadeOut(null, () => {
+    if (this.opened) {
+      this.fadeOut(null, () => {
+        this.updateContent(o.content)
+        this.updateOptions(o.options, o.scope)
+        this.fadeIn()
+      })
+    } else {
       this.updateContent(o.content)
       this.updateOptions(o.options, o.scope)
       this.fadeIn()
-    })
+    }
   }
 
   updateContent (content) {

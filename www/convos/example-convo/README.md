@@ -4,7 +4,7 @@ To run the test, navigate to netnet in your browser, open the dev console and ru
 
 ```js
 Convo.load('example-convo', () => {
-  const convoArray = window.convos['example-convo']()
+  const convoArray = window.CONVOS['example-convo']()
   const convoInstance = new Convo(convoArray)
   console.log(convoInstance)
 })
@@ -14,7 +14,7 @@ Convo.load('example-convo', () => {
 Here's a convo template:
 
 ```js
-window.convos['THIS-NAME-SHOULD-MATCH-ITS-FOLDER'] = (self) => {
+window.CONVOS['THIS-NAME-SHOULD-MATCH-ITS-FOLDER'] = (self) => {
   // LOCAL VARIABLES HERE
   const example = 'of a local variable'
   console.log('example', example)

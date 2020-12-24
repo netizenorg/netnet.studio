@@ -7,7 +7,7 @@ Convo.load('example-convo', () => {
 })
 */
 
-window.CONVOS = {}
+window.CONVOS = {} // global convos object, contains all loaded convo functions
 
 class Convo {
   constructor (data, start) {

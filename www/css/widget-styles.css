@@ -226,6 +226,8 @@
 #func-menu-content {
   min-width: 290px;
   color: var(--netizen-meta);
+  webkit-user-select: none;
+  user-select: none;
 }
 
 #func-menu-content .func-menu-sub-section {
@@ -322,13 +324,13 @@
   background: var(--bg-color);
 }
 
-#func-menu-content #func-menu-wig {
+#func-menu-content #func-menu-login {
   position: relative;
   padding: 0 0 8px;
   cursor: pointer;
   transition: color var(--transition-time) ease;
 }
-#func-menu-content #func-menu-wig > span.icon {
+#func-menu-content #func-menu-login > span.icon {
   position: absolute;
   display: block;
   top: 35%;
@@ -339,8 +341,8 @@
   background-color: var(--netizen-meta);
   transition: color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-#func-menu-content #func-menu-wig > span.icon:before,
-#func-menu-content #func-menu-wig > span.icon:after {
+#func-menu-content #func-menu-login > span.icon:before,
+#func-menu-content #func-menu-login > span.icon:after {
   content: '';
   position: absolute;
   display: block;
@@ -352,11 +354,11 @@
   border-radius: 20px;
   transition: color .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-#func-menu-content #func-menu-wig > span.icon:before {
+#func-menu-content #func-menu-login > span.icon:before {
   transform-origin: center;
   transform: translate(1px, -125%) scaleY(1) rotate(45deg);
 }
-#func-menu-content #func-menu-wig > span.icon:after {
+#func-menu-content #func-menu-login > span.icon:after {
   transform-origin: center;
   transform: translate(1px, 45%) scaleY(1) rotate(-45deg);
 }
@@ -370,7 +372,7 @@
   padding-bottom: 0;
 }
 #func-menu-content .func-menu-dropdown:hover,
-#func-menu-content #func-menu-wig:hover {
+#func-menu-content #func-menu-login:hover {
   color: var(--netizen-match-color);
 }
 #func-menu-content .func-menu-dropdown > span {
@@ -394,9 +396,9 @@
 }
 #func-menu-content .func-menu-dropdown:hover > span:before,
 #func-menu-content .func-menu-dropdown:hover > span:after,
-#func-menu-content #func-menu-wig:hover > span.icon,
-#func-menu-content #func-menu-wig:hover > span.icon:before,
-#func-menu-content #func-menu-wig:hover > span.icon:after {
+#func-menu-content #func-menu-login:hover > span.icon,
+#func-menu-content #func-menu-login:hover > span.icon:before,
+#func-menu-content #func-menu-login:hover > span.icon:after {
   background-color: var(--netizen-match-color);
 }
 #func-menu-content .func-menu-dropdown > span:before {
@@ -414,7 +416,7 @@
   transform: translate(0, -50%) scaleY(-1) rotate(-45deg);
 }
 #func-menu-content .func-menu-dropdown span:focus,
-#func-menu-content #func-menu-wig:focus {
+#func-menu-content #func-menu-login:focus {
   outline: 1px solid var(--netizen-meta);
   outline-offset: 0;
   box-shadow: none;
@@ -517,30 +519,4 @@
 }
 #tut-menu-content #tut-menu-buttons button:focus:after {
   opacity: 1;
-}
-
-
-/* fav widgets menu */
-#wig-menu-content {
-  min-width: 170px;
-}
-
-#wig-menu-content > div.link {
-  position: relative;
-  padding: 0;
-  margin: 0 0 15px;
-}
-
-#wig-menu-content > div.link:last-of-type {
-  margin: 0 0 10px;
-}
-
-#wig-menu-content > div.link > span {
-  position: absolute;
-  top: 49%;
-  left: -21px;
-  transform: translateY(-50%);
-  font-size: inherit;
-  color: inherit;
-  pointer-events: none;
 }

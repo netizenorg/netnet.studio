@@ -10,8 +10,17 @@ const NNE = new Netitor({
 
 window.NNW = new NetNet()
 
+window.WIDGETS.load('FunctionsMenu.js')
+
+window.utils.get('/api/custom-elements', (json) => {
+  json.forEach(filename => {
+    window.utils.loadFile(`js/custom-elements/${filename}`)
+  })
+})
+
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
+
 NNE.on('lint-error', (e) => {
   console.log(e);
 })
@@ -22,12 +31,6 @@ NNE.on('cursor-activity', (e) => {
 
 NNE.on('edu-info', (e) => {
   console.log(e);
-})
-
-window.utils.get('/api/custom-elements', (json) => {
-  json.forEach(filename => {
-    window.utils.loadFile(`js/custom-elements/${filename}`)
-  })
 })
 
 window.addEventListener('keydown', (e) => {
@@ -55,7 +58,7 @@ window.addEventListener('keydown', (e) => {
     // window.WIDGETS['tutorials-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    // window.WIDGETS['functions-menu'].open()
+    window.WIDGETS['functions-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
     // window.NNM.search.open()

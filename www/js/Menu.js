@@ -1,4 +1,4 @@
-/* global NNW, utils */
+/* global NNW, WIDGETS, utils */
 class Menu {
   constructor (win) {
     this.face = {
@@ -29,8 +29,8 @@ class Menu {
       functions: {
         path: 'images/menu/functions.png',
         click: () => {
-          // STORE.dispatch('TOGGLE_MENU')
-          // WIDGETS['functions-menu'].open()
+          NNW.menu.toggleMenu(false)
+          WIDGETS['functions-menu'].open()
         }
       },
       search: {
