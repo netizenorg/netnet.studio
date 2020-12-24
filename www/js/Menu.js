@@ -1,4 +1,4 @@
-/* global NNW, WIDGETS, utils */
+/* global NNW, WIDGETS, utils, SearchBar */
 class Menu {
   constructor (win) {
     this.face = {
@@ -36,9 +36,9 @@ class Menu {
       search: {
         path: 'images/menu/search.png',
         click: () => {
-          // STORE.dispatch('TOGGLE_MENU')
-          // if (this.search.opened) this.search.close()
-          // else this.search.open()
+          NNW.menu.toggleMenu(false)
+          if (this.search.opened) this.search.close()
+          else this.search.open()
         }
       },
       guide: {
@@ -55,7 +55,7 @@ class Menu {
     window.addEventListener('DOMContentLoaded', (e) => {
       this._setupFace() // netnet's face
       this._setupTextBubble() // <text-bubble> element
-      // TODO: this.search = new SearchBar()
+      this.search = new SearchBar()
       this.updatePosition()
     })
   }

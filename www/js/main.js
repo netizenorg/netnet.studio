@@ -4,6 +4,7 @@ const NNE = new Netitor({
   ele: '#nn-editor',
   render: '#nn-output',
   background: false,
+  renderWithErrors: true,
   // code: window.greetings.getStarterCode()
   code: '<!DOCTYPE html>\n<h1>hello world wide web</h1>'
 })
@@ -61,17 +62,18 @@ window.addEventListener('keydown', (e) => {
     window.WIDGETS['functions-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    // window.NNM.search.open()
+    window.NNW.menu.search.open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
     // ...
   } else if (e.keyCode === 27) { // esc
-    // if (window.NNM.search.opened) window.NNM.search.close()
+    if (window.NNW.menu.search.opened) window.NNW.menu.search.close()
     // else window.utils.closeTopMostWidget()
   } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
-    // e.preventDefault() // CTRL/CMD+SHIFT+P
-    // e.stopPropagation() // TODO... not working :(
-    // window.NNM.search.open()
-    // return false
+    e.preventDefault() // CTRL/CMD+SHIFT+P
+    e.stopPropagation() // TODO... not working :(
+    window.event.cancelBubble = true
+    window.NNW.menu.search.open()
+    return false
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 49) { // 1
     // TEMP... open video streaming widget
     window.WIDGETS.open('stream-video')
