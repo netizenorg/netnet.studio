@@ -24,7 +24,7 @@ class NetNet {
     this.canv = this._createCanvas()
     // ...canvas background visible when theme { background: false }
 
-    this.layout = this._layout = 'welcome'
+    this.layout = 'welcome'
 
     NNE.on('render-update', () => this._bubbleUpiFrameEvents())
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
@@ -246,6 +246,7 @@ class NetNet {
   }
 
   _adjustLayout (v) {
+    if (v === this._layout) return
     const old = this._layout
     this._toggleTransition(true)
     this._layout = v
