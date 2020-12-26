@@ -120,6 +120,12 @@ class SearchBar {
     // ...we'll need to remove "my sketch" from dict && add "my project"
 
     const arr = []
+    arr.push({
+      type: 'Functions Menu',
+      word: 'login', // TODO change to logout if currently logged in
+      alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
+      clck: () => { WIDGETS['functions-menu'].open() }
+    })
     for (const submenu in WIDGETS['functions-menu'].subs) {
       const funcs = WIDGETS['functions-menu'].subs[submenu]
       arr.push({
@@ -171,7 +177,9 @@ class SearchBar {
       type: 'netnet',
       word: 'main menu',
       alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
-      clck: () => { window.greetings.startMenu() }
+      clck: () => {
+        // TODO: new main menu convo
+      }
     })
 
     // TODO push edu-info data as well, so it's discoverable via search

@@ -1,4 +1,4 @@
-/* global WIDGETS, Maths, Convo */
+/* global WIDGETS, Maths, Convo, NNE */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -37,6 +37,45 @@ window.utils = {
     return document.createElement(name).constructor !== window.HTMLElement
   },
 
+  closeTopMostWidget: () => {
+    const wigs = Object.keys(WIDGETS)
+      .filter(w => WIDGETS[w].opened)
+      .sort((a, b) => Number(WIDGETS[b].zIndex) - Number(WIDGETS[a].zIndex))
+    if (wigs[0]) WIDGETS[wigs[0]].close()
+  },
+
+  // Netitor related stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  spotlighting: false,
+  spotLightCode: (lines) => {
+    const editorLines = document.querySelectorAll('.CodeMirror-code > div')
+    if (typeof lines === 'number') lines = [lines - 1]
+    else if (lines instanceof Array) lines = lines.map(n => n - 1)
+    editorLines.forEach((d, i) => {
+      d.style.transition = 'opacity var(--menu-fades-time) var(--sarah-ease)'
+      if (!(lines instanceof Array)) setTimeout(() => { d.style.opacity = 1 })
+      else if (!lines.includes(i)) setTimeout(() => { d.style.opacity = 0.25 })
+      else setTimeout(() => { d.style.opacity = 1 })
+    })
+    if (lines instanceof Array && lines.length > 0) {
+      window.utils.spotlighting = true
+    } else window.utils.spotlighting = false
+  },
+
+  markErrors: (arr) => {
+    NNE.marker(null)
+    // TODO: include callback functions on markers that launch netnet convo
+    // which explains they can launch the CodeReview widget to learn more
+    arr.forEach(e => {
+      if (e.type === 'warning') NNE.marker(e.line, 'yellow')
+      else NNE.marker(e.line, 'red')
+    })
+  },
+
+  // CSS related stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
   afterLayoutTransition: (callback) => {
     const prop = '--layout-transition-time'
     const de = document.documentElement
@@ -47,13 +86,14 @@ window.utils = {
     setTimeout(() => { callback() }, t + 100) // little extra to avoid bugs
   },
 
-  getVal: (prop) => {
+  getVal: (prop) => { // get value of a CSS variable
     const de = document.documentElement
     const t = window.getComputedStyle(de).getPropertyValue(prop)
     return t.includes('ms') ? parseInt(t) : t.includes('s')
       ? parseInt(t) * 1000 : t
   },
 
+  // apply an object of CSS declarations to an element's styles
   css: (ele, obj) => { for (const key in obj) ele.style[key] = obj[key] },
 
   updateShadow: (e, ele, o) => {
@@ -80,6 +120,9 @@ window.utils = {
       document.body.style.webkitUserSelect = 'none'
     }
   },
+
+  // dev testing utilities
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   testConvo: (convoName) => {
     convoName = convoName || 'example-convo'

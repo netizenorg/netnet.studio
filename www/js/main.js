@@ -1,4 +1,4 @@
-/* global Netitor, NetNet */
+/* global Netitor, NetNet, utils, WIDGETS, NNW */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -11,7 +11,7 @@ const NNE = new Netitor({
 
 window.NNW = new NetNet()
 
-window.WIDGETS.load('FunctionsMenu.js')
+WIDGETS.load('FunctionsMenu.js')
 
 window.utils.get('/api/custom-elements', (json) => {
   json.forEach(filename => {
@@ -22,12 +22,12 @@ window.utils.get('/api/custom-elements', (json) => {
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
-NNE.on('lint-error', (e) => {
-  console.log(e);
+NNE.on('cursor-activity', (e) => {
+  if (utils.spotlighting) utils.spotLightCode('clear')
 })
 
-NNE.on('cursor-activity', (e) => {
-
+NNE.on('lint-error', (e) => {
+  utils.markErrors(e)
 })
 
 NNE.on('edu-info', (e) => {
@@ -42,40 +42,35 @@ window.addEventListener('keydown', (e) => {
     // window.utils.localSave()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
-    // window.WIDGETS['functions-menu'].openFile()
+    // TODO if user logged in .openProject() else .uploadCode()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
     e.preventDefault()
-    window.NNW.nextLayout()
-    // STORE.dispatch('NEXT_LAYOUT')
+    NNW.nextLayout()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
     e.preventDefault()
-    window.NNW.prevLayout()
-    // STORE.dispatch('PREV_LAYOUT')
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 75) { // k
-    e.preventDefault()
-    // STORE.dispatch('CHANGE_OPACITY', 1)
+    NNW.prevLayout()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
     e.preventDefault()
-    // window.WIDGETS['tutorials-menu'].open()
+    // WIDGETS['tutorials-menu'].open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
     e.preventDefault()
-    window.WIDGETS['functions-menu'].open()
+    WIDGETS.open('functions-menu')
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
     e.preventDefault()
-    window.NNW.menu.search.open()
+    NNW.menu.search.open()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
     // ...
   } else if (e.keyCode === 27) { // esc
-    if (window.NNW.menu.search.opened) window.NNW.menu.search.close()
-    // else window.utils.closeTopMostWidget()
+    if (NNW.menu.search.opened) NNW.menu.search.close()
+    else window.utils.closeTopMostWidget()
   } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
     e.preventDefault() // CTRL/CMD+SHIFT+P
     e.stopPropagation() // TODO... not working :(
     window.event.cancelBubble = true
-    window.NNW.menu.search.open()
+    NNW.menu.search.open()
     return false
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 49) { // 1
     // TEMP... open video streaming widget
-    window.WIDGETS.open('stream-video')
+    WIDGETS.open('stream-video')
   }
 })
