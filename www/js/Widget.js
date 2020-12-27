@@ -263,7 +263,80 @@ class Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ CSS GENERATOR HELPERS
 
-  // TODO: ...Ilai's code goes here...
+  createCodeField (opts) {
+    const el = document.createElement('code-field')
+    el.value = opts.value
+    el.change = opts.change
+    return el
+  }
+
+  createSlider (opts) {
+    opts = opts || {}
+    const el = document.createElement('code-slider')
+    el.value = (typeof opts.value === 'undefined') ? 50 : opts.value
+    el.change = opts.change || function () {}
+    el.min = (typeof opts.min === 'undefined') ? 1 : opts.min
+    el.max = (typeof opts.max === 'undefined') ? 255 : opts.max
+    el.step = (typeof opts.step === 'undefined') ? 1 : opts.step
+    el.label = opts.label || ''
+    el.bubble = opts.bubble
+    el.background = opts.background || 'var(--netizen-meta)'
+    return el
+  }
+
+  parseCSS (string) {
+    const parsedCode = { property: '', value: [] }
+
+    const regExp = /\(([^)]+)\)/g
+    let matches = string.match(regExp) // find css functions
+
+    const line = string.split(':')
+    parsedCode.property = line[0]
+
+    if (matches) {
+      // store CSS function names
+      const funcs = line[1].split(' ')
+        .filter(item => item.includes('('))
+        .map(item => item.split('(')[0])
+
+      // create string version of all CSS vals (including non functions)
+      let valueArr = line[1]
+      matches.forEach(m => { valueArr = valueArr.replace(m, '') })
+
+      // create mutli-dimentoinal-array of CSS function arguments
+      matches = matches.map((item) => {
+        item = item.replace(/[()]/g, '')
+        return item.split(',')
+      })
+      // add coresponding func name to start of the arrays
+      matches.forEach((item, index) => {
+        item.unshift(funcs[index])
+      })
+
+      // interweave non-function values && function values together
+      let count = 0
+      valueArr = valueArr.split(' ')
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+        .map(v => {
+          if (funcs.includes(v)) {
+            const nxtArr = matches[count]
+            count++
+            return nxtArr
+          } else return v
+        })
+
+      parsedCode.value = valueArr
+    } else {
+      const valueArr = line[1].split(' ')
+        .filter(el => el.trim().length > 0)
+        .map(el => el.replace(';', ''))
+
+      parsedCode.value = valueArr
+    }
+
+    return parsedCode
+  }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
