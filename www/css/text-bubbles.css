@@ -32,6 +32,7 @@
   border-radius: 6px;
   color: var(--bg-color);
   background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
   font-size: 14px;
   line-height: 1.4em;
   font-weight: 700;
@@ -130,7 +131,7 @@
   /* resets */
   color: inherit;
   border-bottom: none;
-  background-image: none; 
+  background-image: none;
 }
 
 .text-bubble > section h1 code {

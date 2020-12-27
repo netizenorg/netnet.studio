@@ -22,6 +22,14 @@
     font-style: normal;
 }
 
+@font-face { /* https://github.com/tonsky/FiraCode */
+  font-family: 'fira-code';
+  src: url('fonts/FiraCode-Regular.woff2') format('woff2'),
+    url("fonts/FiraCode-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
 @keyframes bounce {
   0% { transform: translateY(0); }
   30% { transform: translateY(-50px); }

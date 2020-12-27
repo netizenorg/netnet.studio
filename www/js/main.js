@@ -12,6 +12,7 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 WIDGETS.load('FunctionsMenu.js')
+WIDGETS.load('CodeReview.js')
 
 window.utils.get('/api/custom-elements', (json) => {
   json.forEach(filename => {
@@ -27,11 +28,16 @@ NNE.on('cursor-activity', (e) => {
 })
 
 NNE.on('lint-error', (e) => {
-  utils.markErrors(e)
+  WIDGETS['code-review'].updateIssues(e)
 })
 
 NNE.on('edu-info', (e) => {
   console.log(e);
+})
+
+window.addEventListener('resize', (e) => {
+  window.utils.windowResize()
+  window.utils.keepWidgetsInFrame()
 })
 
 window.addEventListener('keydown', (e) => {

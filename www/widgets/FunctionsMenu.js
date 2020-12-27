@@ -1,4 +1,4 @@
-/* global Widget, Convo, NNE, NNW, FileUploader */
+/* global Widget, Convo, NNE, NNW, FileUploader, WIDGETS */
 class FunctionsMenu extends Widget {
   constructor (opts) {
     super(opts)
@@ -97,7 +97,7 @@ class FunctionsMenu extends Widget {
 
   codeReview () {
     // TODO: once new erorr system widget is finished
-    window.convo = new Convo(this.convos, 'coming-soon')
+    WIDGETS.open('code-review')
   }
 
   tidyCode () {

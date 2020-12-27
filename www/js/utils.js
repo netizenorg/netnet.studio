@@ -1,4 +1,4 @@
-/* global WIDGETS, Maths, Convo, NNE */
+/* global WIDGETS, Maths, Convo, NNW */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -38,10 +38,29 @@ window.utils = {
   },
 
   closeTopMostWidget: () => {
-    const wigs = Object.keys(WIDGETS)
-      .filter(w => WIDGETS[w].opened)
-      .sort((a, b) => Number(WIDGETS[b].zIndex) - Number(WIDGETS[a].zIndex))
-    if (wigs[0]) WIDGETS[wigs[0]].close()
+    const wigs = WIDGETS.list()
+      .filter(w => w.opened)
+      .sort((a, b) => Number(b.zIndex) - Number(a.zIndex))
+    if (wigs[0]) wigs[0].close()
+  },
+
+  keepWidgetsInFrame: () => {
+    WIDGETS.list().forEach(w => {
+      const maxLeft = window.innerWidth - w.ele.offsetWidth
+      const maxTop = window.innerHeight - w.ele.offsetHeight
+      if (w.ele.offsetLeft > maxLeft) {
+        w.update({ right: 20 })
+      } else if (w.ele.offsetTop > maxTop) {
+        w.update({ bottom: 20 })
+      }
+    })
+  },
+
+  windowResize: () => {
+    window.NNW._resizeWindow({
+      clientX: window.NNW.win.offsetWidth,
+      clientY: window.NNW.win.offsetHeight
+    })
   },
 
   // Netitor related stuff
@@ -61,16 +80,6 @@ window.utils = {
     if (lines instanceof Array && lines.length > 0) {
       window.utils.spotlighting = true
     } else window.utils.spotlighting = false
-  },
-
-  markErrors: (arr) => {
-    NNE.marker(null)
-    // TODO: include callback functions on markers that launch netnet convo
-    // which explains they can launch the CodeReview widget to learn more
-    arr.forEach(e => {
-      if (e.type === 'warning') NNE.marker(e.line, 'yellow')
-      else NNE.marker(e.line, 'red')
-    })
   },
 
   // CSS related stuff
@@ -97,6 +106,7 @@ window.utils = {
   css: (ele, obj) => { for (const key in obj) ele.style[key] = obj[key] },
 
   updateShadow: (e, ele, o) => {
+    if (!NNW.themeConfig[NNW.theme].shadow) o = 0
     const opac = (typeof o === 'undefined') ? 0.75 : o
     const center = {
       x: ele.getBoundingClientRect().left,
