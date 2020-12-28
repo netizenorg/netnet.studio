@@ -12,18 +12,7 @@ class Menu {
       hi: {
         path: 'images/menu/hi.png',
         click: () => {
-          // if (STORE.is('TUTORIAL_LOADED')) {
-          //   const url = STORE.state.tutorial.url
-          //   if (url === 'tutorials/orientation') {
-          //     NNT.goTo('ex-hi-menu')
-          //   } else {
-          //     STORE.dispatch('TOGGLE_MENU')
-          //     window.greetings.startMenu()
-          //   }
-          // } else {
-          //   STORE.dispatch('TOGGLE_MENU')
-          //   window.greetings.startMenu()
-          // }
+          // TODO: session greeting logic
         }
       },
       functions: {
@@ -44,8 +33,7 @@ class Menu {
       guide: {
         path: 'images/menu/tutorials.png',
         click: () => {
-          // STORE.dispatch('TOGGLE_MENU')
-          // WIDGETS['tutorials-menu'].open()
+          // TODO: launch Tutorial Guide
         }
       }
     }
@@ -69,8 +57,13 @@ class Menu {
   updatePosition () {
     const center = this.ele.querySelector('#face > span:nth-child(2)')
     if (!center) return
-    this.items.style.top = center.offsetTop + 'px'
-    this.items.style.left = center.offsetLeft + 11 + 'px'
+    if (NNW.layout === 'welcome') {
+      this.items.style.top = center.offsetTop + 28 + 'px'
+      this.items.style.left = center.offsetLeft + 36 + 'px'
+    } else {
+      this.items.style.top = center.offsetTop + 'px'
+      this.items.style.left = center.offsetLeft + 11 + 'px'
+    }
     if (this.textBubble) {
       const win = document.querySelector('#nn-window')
       this.textBubble.style.bottom = win.offsetHeight + 35 + 'px'
@@ -118,8 +111,8 @@ class Menu {
         item.toggle(show, radius * 0.8, 1, Math.PI * 1.25)
       } else if (NNW.layout === 'full-screen') {
         item.toggle(show, radius * 1.33, 0.32, Math.PI * 1.54)
-      } else if (show && NNW.layout === 'welcome') {
-        item.toggle(false)
+      } else if (NNW.layout === 'welcome') {
+        item.toggle(show, radius * 1.33, 0.3, Math.PI * 1.77)
       } else if (!show) {
         item.toggle(false)
       }
@@ -205,12 +198,7 @@ class Menu {
     <span><!-- this.face.rightEye --></span>
     `
     this.ele.appendChild(face)
-    face.addEventListener('click', () => {
-      if (NNW.layout !== 'welcome') this.toggleMenu()
-      // TODO
-      // else if tutorials are loaded: open tutorials menu
-      // else if tutorials not loaded launch welcome text bubble
-    })
+    face.addEventListener('click', () => this.toggleMenu())
     // when necessary assets are loaded, set default face && run blink animation
     this._loadFaceAssets(() => this.updateFace({ animation: 'blink' }))
   }

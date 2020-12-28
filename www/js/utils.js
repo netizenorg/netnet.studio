@@ -1,4 +1,4 @@
-/* global WIDGETS, Maths, Convo, NNW */
+/* global WIDGETS, Maths, Convo, NNW  */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -57,7 +57,7 @@ window.utils = {
   },
 
   windowResize: () => {
-    window.NNW._resizeWindow({
+    NNW._resizeWindow({
       clientX: window.NNW.win.offsetWidth,
       clientY: window.NNW.win.offsetHeight
     })
@@ -84,6 +84,13 @@ window.utils = {
 
   // CSS related stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  loadStyleSheet: (name) => {
+    const link = document.createElement('link')
+    link.setAttribute('rel', 'stylesheet')
+    link.setAttribute('href', `css/${name}.css`)
+    document.head.appendChild(link)
+  },
 
   afterLayoutTransition: (callback) => {
     const prop = '--layout-transition-time'

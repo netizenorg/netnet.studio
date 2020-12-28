@@ -49,6 +49,10 @@
   color: var(--bg-color);
 }
 
+code {
+  font-family: "fira-code", inconsolata, monospace;
+}
+
 code::-moz-selection {
   background-color: var(--bg-color);
   color: var(--fg-color);

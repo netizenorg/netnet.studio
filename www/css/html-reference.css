@@ -1,0 +1,276 @@
+.html-reference-widget {
+  width: 600px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.html-reference-widget--slide {
+  display: none;
+  opacity: 0;
+  transition: opacity var(--menu-fades-time) var(--sarah-ease);
+  grid-template-columns: 1fr 1fr 1fr;
+  padding-top: 24px;
+}
+
+.html-reference-widget--sec-link {
+  display: inline-block;
+  color: var(--netizen-meta);
+  font-size: 24px;
+  margin: 8px;
+  transition: color .5s ease, border .5s ease;
+  border-bottom: 2px solid var(--netizen-meta);
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+}
+
+.html-reference-widget--sec-link:hover {
+  color: var(--netizen-match-color);
+  border-bottom: 2px solid var(--netizen-match-color);
+  cursor: pointer;
+}
+
+.html-reference-widget--nav {
+  width: 660px;
+  padding: 4px;
+  position: absolute;
+  top: -7px;
+  left: -15px;
+  display: flex;
+  justify-content: space-between;
+  background: var(--fg-color);
+  color: var(--bg-color);
+}
+
+.html-reference-widget--nav span {
+  cursor: pointer;
+}
+
+.html-reference-widget--list-heading {
+  font-size: 24px;
+  text-transform: uppercase;
+  margin: 20px 0px;
+}
+
+.html-reference-widget--list-item {
+  cursor: pointer;
+  font-family: "fira-code", inconsolata, monospace;
+}
+
+.html-reference-widget--tag-link,
+.html-reference-widget--attr-link {
+  color: var(--netizen-attribute);
+  cursor: pointer;
+  display: inline-block;
+  margin: 0px 5px;
+  border-bottom: 1px solid var(--netizen-attribute);
+}
+
+.html-reference-widget--tag-link {
+  color: var(--netizen-tag);
+  border-bottom: 1px solid var(--netizen-tag);
+}
+
+/* copied from prior text-bubble styles */
+
+.html-reference-widget > .html-reference-widget--slide {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+.html-reference-widget > .html-reference-widget--slide p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45em;
+}
+
+.html-reference-widget > .html-reference-widget--slide code {
+  position: relative;
+  top: -0.1em;
+  padding: .1em 0.3em 0.2em;
+  border-radius: 6px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: 700;
+  cursor: text;
+}
+.html-reference-widget > .html-reference-widget--slide b {
+  font-weight: 700;
+}
+.html-reference-widget > .html-reference-widget--slide i {
+  font-style: italic;
+}
+.html-reference-widget > .html-reference-widget--slide input {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  padding: 4px 5px;
+  border: 1px solid var(--netizen-hint-shadow);
+  background-color: var(--netizen-hint-shadow);
+  color: var(--netizen-meta);
+  font-size: 0.9em;
+}
+.html-reference-widget > .html-reference-widget--slide input::placeholder {
+  color: var(--netizen-meta);
+  opacity: 0.8;
+}
+.html-reference-widget > .html-reference-widget--slide input:focus {
+  outline: 1px solid var(--fg-color);
+  outline-offset: 2px;
+}
+.html-reference-widget > .html-reference-widget--slide a {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .5s ease, border .5s ease;
+
+  /*underline*/
+  text-decoration: underline;
+  text-underline-position: under;
+}
+.html-reference-widget > .html-reference-widget--slide a:hover {
+  color: var(--netizen-match-color);
+}
+.html-reference-widget > .html-reference-widget--slide a:active {
+  color: var(--netizen-attribute);
+}
+.html-reference-widget > .html-reference-widget--slide a:active:after {
+  background-color: var(--netizen-attribute);
+}
+.html-reference-widget > .html-reference-widget--slide a code {
+  text-decoration: underline;
+  text-underline-position: under;
+  cursor: pointer;
+  transition: color .5s ease;
+  text-shadow: none;
+}
+.html-reference-widget > .html-reference-widget--slide a:hover code {
+  color: var(--netizen-match-color);
+}
+
+
+/* styles for all possible text bubble h1s/headers */
+.html-reference-widget > .html-reference-widget--slide h1 {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  margin-bottom: 12px;
+  color: var(--fg-color);
+  font-size: 20px;
+  line-height: 1.2em;
+  font-weight: 400;
+  transform: skew(0);
+  transition: color .2s ease;
+  z-index: 1;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1 a {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .2s ease;
+
+  /* resets */
+  background: transparent;
+  border-bottom: none;
+  padding-bottom: 0;
+  text-shadow: none;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1 a:after {
+  display: none;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1 a:hover {
+  /* resets */
+  color: inherit;
+  border-bottom: none;
+  background-image: none;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1 code {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  color: var(--fg-color);
+  text-decoration: none;
+  transition: color .2s ease;
+  /* resets */
+  top: auto;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  line-height: 1.2em;
+  cursor: pointer;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1 a:hover code {
+  color: inherit;
+}
+
+.html-reference-widget > .html-reference-widget--slide h1:before {
+  content: '';
+  position: absolute;
+  display: block;
+  top: 1px;
+  left: -2px;
+
+  width: 100%;
+  height: 95%;
+
+  padding: 0px 2px;
+
+  background-color: var(--netizen-hint-shadow);
+
+  z-index: -1;
+
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.html-reference-widget > .html-reference-widget--slide h1:after {
+  content: '';
+  position: absolute;
+  display: block;
+  top: 1px;
+  right: -4px;
+
+  width: 2px;
+  height: 95%;
+
+  background-color: var(--netizen-meta);
+
+  animation: hdrCursorBlink 1.5s infinite linear;
+  transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes hdrCursorBlink {
+  0% { opacity: 0; }
+  25% { opacity: 0; }
+  26% { opacity: 1; }
+  75% { opacity: 1; }
+  76% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.html-reference-widget > .html-reference-widget--slide h1:hover {
+  color: var(--fg-color);
+  transform: skew(-5deg);
+  cursor: pointer;
+}
+.html-reference-widget > .html-reference-widget--slide h1:hover a {
+  color: var(--fg-color);
+}
+.html-reference-widget > .html-reference-widget--slide h1:hover:before {
+  transform: scaleX(1);
+}
+.html-reference-widget > .html-reference-widget--slide h1:hover:after {
+  right: calc(100% + 2px);
+}

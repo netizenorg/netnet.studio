@@ -1,0 +1,35 @@
+{
+  "tag bracket": {
+    "bubble": "In markup languages (like HTML and others), the <code>&lt;</code> (less-than) and <code>&gt;</code> (greater-than) symbols are <i>syntax</i> used to create <i>tags</i>. <br><br> Tags usually come in pairs, an opening <code>&lt;tag&gt;</code> followed by some content and then a closing <code>&lt;/tag&gt;</code> (differentiated by the forward slash). <br><br> A pair of tags are referred to as an element. Different markup languages have their own list of elements, some even let you create your own!"
+  },
+  "comment": {
+    "bubble": "Most coding languages allow you to leave comments in your code. In HTML you can create a comment by starting it with <code>&lt;!--</code> and ending with <code>--&gt;</code>. Code are instructions, it's how you tell the browser what you want it to display, but browsers ignore comments. Comments are for people, not machines.<br><br>Coders use them for all sorts of reasons, most often for leaving notes explaining how the code works (future you will thank you for that). It's also a great way to credit any code snippets you've copy+pasted from somewhere else. They can also be used to \"comment out\" code, to ignore it temporarily without having to remove it.<br><br>The shortcut key <b>CTRL+/</b> (control forward-slash), or <b>CMD+/</b> (command forward-slash) on Mac, can be used to comment out lines of code."
+  },
+  "link": {
+    "bubble": "The <code>&lt;link&gt;</code> element is most commonly used to import a CSS file (most commonly referred to as a \"stylesheet\") into the HTML page, so that the rules defined in the stylesheet can be applied to any of the elements on this page. The <code>link</code> can also be used to preload resources (like fonts) and to set your projects icons (for mobile apps and browser tabs)."
+  },
+  "h1": {
+    "bubble": "The <code>&lt;h1&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h1&gt;</code> heading is the largest",
+    "example": "<h1>Hello World Wide Web</h1>"
+  },
+  "h2": {
+    "bubble": "The <code>&lt;h2&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h2&gt;</code> heading is the second largest",
+    "example": "<h2>Hello World Wide Web</h2>"
+  },
+  "h3": {
+    "bubble": "The <code>&lt;h3&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h3&gt;</code> heading is the third largest",
+    "example": "<h3>Hello World Wide Web</h3>"
+  },
+  "h4": {
+    "bubble": "The <code>&lt;h4&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h4&gt;</code> heading is the fourth largest",
+    "example": "<h4>Hello World Wide Web</h4>"
+  },
+  "h5": {
+    "bubble": "The <code>&lt;h5&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h5&gt;</code> heading is the fifth largest",
+    "example": "<h5>Hello World Wide Web</h5>"
+  },
+  "h6": {
+    "bubble": "The <code>&lt;h6&gt;</code> element is used to create a heading, like the title of a section or the by-line of a article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h6&gt;</code> heading is the smallest",
+    "example": "<h6>Hello World Wide Web</h6>"
+  }
+}

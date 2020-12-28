@@ -12,12 +12,11 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 WIDGETS.load('FunctionsMenu.js')
+WIDGETS.load('HTMLReference.js')
 WIDGETS.load('CodeReview.js')
 
-window.utils.get('/api/custom-elements', (json) => {
-  json.forEach(filename => {
-    window.utils.loadFile(`js/custom-elements/${filename}`)
-  })
+utils.get('/api/custom-elements', (list) => {
+  list.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
 })
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -33,11 +32,12 @@ NNE.on('lint-error', (e) => {
 
 NNE.on('edu-info', (e) => {
   console.log(e);
+  if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
 })
 
 window.addEventListener('resize', (e) => {
-  window.utils.windowResize()
-  window.utils.keepWidgetsInFrame()
+  utils.windowResize()
+  utils.keepWidgetsInFrame()
 })
 
 window.addEventListener('keydown', (e) => {
@@ -45,7 +45,7 @@ window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
     // if (!NNE.autoUpdate) NNE.update()
-    // window.utils.localSave()
+    // utils.localSave()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
     // TODO if user logged in .openProject() else .uploadCode()
@@ -68,7 +68,7 @@ window.addEventListener('keydown', (e) => {
     // ...
   } else if (e.keyCode === 27) { // esc
     if (NNW.menu.search.opened) NNW.menu.search.close()
-    else window.utils.closeTopMostWidget()
+    else utils.closeTopMostWidget()
   } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
     e.preventDefault() // CTRL/CMD+SHIFT+P
     e.stopPropagation() // TODO... not working :(

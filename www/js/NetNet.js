@@ -191,6 +191,9 @@ class NetNet {
   }
 
   _resizeWindow (e) {
+    const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
+    if (tbWasOpened) this.menu.updatePosition()
+
     if (this.layout === 'dock-bottom') {
       this.win.style.height = window.innerHeight - e.clientY + 'px'
       this.rndr.style.height = e.clientY + 'px'
