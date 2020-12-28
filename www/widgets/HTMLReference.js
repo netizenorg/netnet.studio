@@ -267,7 +267,7 @@ class HTMLReference extends Widget {
       if (nfo.flow === 'inline') {
         d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements" target="_blank">inline</a> element.`
       } else if (nfo.flow === 'block') {
-        d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
+        d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
       }
       if (nfo.singleton) {
         d.innerHTML += `${nfo.flow ? ' ' : ''}The <b>${name}</b> element is${nfo.flow ? ' also' : ''} a "void element" (aka "singleton tag"), which means it consists ony of an opening tag, it does not require a closing tag.`
