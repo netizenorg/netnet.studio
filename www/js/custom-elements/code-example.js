@@ -22,6 +22,16 @@ class CodeExample extends HTMLElement {
         border-radius: 5px;
       }
 
+      .hljs *::-moz-selection {
+        background-color: var(--fg-color) !important;
+        color: var(--bg-color) !important;
+      }
+
+      .hljs *::selection {
+        background-color: var(--fg-color) !important;
+        color: var(--bg-color) !important;
+      }
+
       pre.hljs > code.html,
       pre.hljs > code.css,
       pre.hljs > code.javascript {

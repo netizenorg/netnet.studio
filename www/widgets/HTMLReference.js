@@ -11,6 +11,28 @@ class HTMLReference extends Widget {
     NNW.on('theme-change', () => { this._createHTML() })
 
     this.title = 'HTML Reference'
+
+    // options objects for <widget-slide> .updateSlide() method
+    this.mainOpts = {
+      name: 'html-reference-main',
+      widget: this,
+      ele: this._createMainSlide()
+    }
+
+    this.eleListOpts = {
+      name: 'html-reference-elements',
+      widget: this,
+      back: this.mainOpts,
+      list: this._createList('elements')
+    }
+
+    this.attrListOpts = {
+      name: 'html-reference-attributes',
+      widget: this,
+      back: this.mainOpts,
+      list: this._createList('attributes')
+    }
+
     this._createHTML()
   }
 
@@ -57,53 +79,43 @@ class HTMLReference extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _fadeInSlide (sel, display) {
-    const ele = typeof sel === 'string' ? this.$(sel) : sel
-    ele.style.display = display || 'block'
-    setTimeout(() => { ele.style.opacity = 1 }, 10)
-    if (this.ele.offsetTop + this.ele.offsetHeight > window.innerHeight - 10) {
-      this.update({ bottom: 10 }, 500)
-    }
-  }
-
-  _fadeOutSlide (sel, callback) {
-    const ele = typeof sel === 'string' ? this.$(sel) : sel
-    ele.style.opacity = 0
-    setTimeout(() => {
-      ele.style.display = 'none'
-      if (callback) callback()
-    }, utils.getVal('--menu-fades-time'))
-  }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
   _createHTML () {
-    this.innerHTML = ''
-    utils.loadStyleSheet(this.key)
+    if (!utils.customElementReady('widget-slide')) {
+      setTimeout(() => this._createHTML(), 100)
+      return
+    }
 
-    const div = document.createElement('div')
-    div.className = 'html-reference-widget'
-    this.innerHTML = div
-
-    this._createMainSlide()
-    this._createListSlide('elements')
-    this._createListSlide('attributes')
+    this.slide = document.createElement('widget-slide')
+    this.innerHTML = this.slide
+    this.slide.updateSlide(this.mainOpts)
   }
 
   _createMainSlide () {
-    const slide = document.createElement('div')
-    slide.className = 'html-reference-widget--slide'
-    slide.setAttribute('name', 'main')
-    slide.style.display = 'block'
-    slide.style.opacity = 1
-    slide.innerHTML = `
+    const div = document.createElement('div')
+    div.innerHTML = `
+      <style>
+        .html-reference-widget--sec-link {
+          display: inline-block;
+          color: var(--netizen-meta);
+          font-size: 24px;
+          margin: 8px;
+          transition: color .5s ease, border .5s ease;
+          border-bottom: 2px solid var(--netizen-meta);
+          text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+        }
+
+        .html-reference-widget--sec-link:hover {
+          color: var(--netizen-match-color);
+          border-bottom: 2px solid var(--netizen-match-color);
+          cursor: pointer;
+        }
+      </style>
       <p>
         The Web is a creative medium and core to the craft are three coding languages, HTML, CSS and JavaScript. The most fundamental of these is HTML, or Hypertext Markup Language. HTML is used to create the structure of a Web project.
       </p>
       <br>
-      <!-- <div class="html-reference-widget--sec-link" name="intro">
-        TODO: add links to intro HTML tutorials when tutorials are ready
-      </div>
+      <!--
+      TODO: add high-level HTML notes here
       <br> -->
       <div class="html-reference-widget--sec-link" name="elements" style="color: var(--netizen-tag)">
         List of HTML elements
@@ -113,106 +125,54 @@ class HTMLReference extends Widget {
         List of HTML attributes
       </div>`
 
-    this.$('.html-reference-widget').appendChild(slide)
+    div.querySelector('.html-reference-widget--sec-link[name="elements"]')
+      .addEventListener('click', () => this.slide.updateSlide(this.eleListOpts))
 
-    const displayList = (type) => {
-      this._fadeOutSlide('.html-reference-widget--slide[name="main"]', () => {
-        this._fadeInSlide(`.html-reference-widget--slide[name="${type}"]`, 'grid')
-      })
-    }
+    div.querySelector('.html-reference-widget--sec-link[name="attributes"]')
+      .addEventListener('click', () => this.slide.updateSlide(this.attrListOpts))
 
-    this.$('.html-reference-widget--sec-link[name="elements"]')
-      .addEventListener('click', () => displayList('elements'))
-
-    this.$('.html-reference-widget--sec-link[name="attributes"]')
-      .addEventListener('click', () => displayList('attributes'))
+    return div
   }
 
-  _createNav (parent, obj) {
-    const n = document.createElement('div')
-    n.className = 'html-reference-widget--nav'
-    for (const t in obj) {
-      const b = document.createElement('span')
-      b.textContent = t === 'back' ? '❮ BACK' : 'NEXT ❯'
-      b.addEventListener('click', () => obj[t]())
-      n.appendChild(b)
-    }
-    parent.appendChild(n)
-  }
-
-  _createListSlide (type) {
-    const headings = []
-    const slide = document.createElement('div')
-    slide.className = 'html-reference-widget--slide'
-    slide.setAttribute('name', type)
-
-    this._createNav(slide, {
-      back: () => {
-        this._fadeOutSlide(slide, () => {
-          this._fadeInSlide('.html-reference-widget--slide[name="main"]')
-        })
-      }
-    })
-
-    // create content items (links && headings)
-    const newHeading = (letter) => {
-      const l = document.createElement('div')
-      l.className = 'html-reference-widget--list-heading'
-      l.textContent = letter
-      headings.push(letter)
-      slide.appendChild(l)
-    }
-
-    const newItem = (name, t) => {
-      const item = document.createElement('div')
-      item.className = 'html-reference-widget--list-item'
-      if (t === 'elements') {
-        item.innerHTML = `<span style="color:var(--netizen-tag-bracket);">&lt;</span><span style="color:var(--netizen-tag);">${name}</span><span style="color:var(--netizen-tag-bracket);">&gt;</span>`
-      } else if (t === 'attributes') {
-        item.innerHTML = `<span style="color:var(--netizen-attribute);">${name}</span>`
-      }
-
-      const nfo = NNE.edu.html[t][name]
-      item.addEventListener('click', () => this._createInfoSlide(t, name, nfo))
-      slide.appendChild(item)
-    }
-
+  _createList (type) {
+    const list = []
     Object.keys(NNE.edu.html[type]).sort().forEach(name => {
-      if (!headings.includes(name[0])) newHeading(name[0])
-      newItem(name, type)
+      const item = { name }
+      if (type === 'elements') {
+        item.html = `<span style="color:var(--netizen-tag-bracket);">&lt;</span><span style="color:var(--netizen-tag);">${name}</span><span style="color:var(--netizen-tag-bracket);">&gt;</span>`
+      } else if (type === 'attributes') {
+        item.html = `<span style="color:var(--netizen-attribute);">${name}</span>`
+      }
+      item.click = () => {
+        const nfo = NNE.edu.html[type][name]
+        this._createInfoSlide(type, name, nfo)
+      }
+      list.push(item)
     })
-
-    // place content items into 3 columns
-    const sel = '.html-reference-widget--list-item, .html-reference-widget--list-heading'
-    const items = [...slide.querySelectorAll(sel)]
-    const max = Math.ceil(Object.keys(NNE.edu.html[type]).length / 3)
-    for (let i = items.length - 1; i >= 0; i--) slide.querySelectorAll(sel)[i].remove()
-    for (let i = 0; i < 3; i++) {
-      const col = document.createElement('div')
-      const rows = items.slice(i * max, (i + 1) * max)
-      rows.forEach(item => col.appendChild(item))
-      slide.appendChild(col)
-    }
-    this.$('.html-reference-widget').appendChild(slide)
+    return list
   }
 
   _createInfoSlide (type, name, nfo) {
-    const info = this.$('.html-reference-widget--slide[name="info"]')
-    if (info) info.remove()
+    const div = document.createElement('div')
     if (!nfo) nfo = NNE.edu.html[type][name]
 
-    const slide = document.createElement('div')
-    slide.className = 'html-reference-widget--slide'
-    slide.setAttribute('name', 'info')
-
-    this._createNav(slide, {
-      back: () => {
-        this._fadeOutSlide(slide, () => {
-          slide.remove()
-          this._fadeInSlide(`.html-reference-widget--slide[name="${type}"]`, 'grid')
-        })
+    const style = document.createElement('style')
+    style.innerHTML = `
+      .html-reference-widget--tag-link,
+      .html-reference-widget--attr-link {
+        color: var(--netizen-attribute);
+        cursor: pointer;
+        display: inline-block;
+        margin: 0px 5px;
+        border-bottom: 1px solid var(--netizen-attribute);
       }
-    })
+
+      .html-reference-widget--tag-link {
+        color: var(--netizen-tag);
+        border-bottom: 1px solid var(--netizen-tag);
+      }
+    `
+    div.appendChild(style)
 
     const h1 = document.createElement('h1')
     if (type === 'elements') {
@@ -223,33 +183,26 @@ class HTMLReference extends Widget {
       h1.innerHTML = nfo.keyword.html
       h1.querySelector('a').style.color = 'var(--netizen-attribute)'
     }
-
-    slide.appendChild(h1)
+    div.appendChild(h1)
 
     if (nfo.status !== 'standard') {
       const d = document.createElement('div')
       d.innerHTML = `Be warned! this element is <b>${nfo.status}</b> so it may not work on all browsers`
-      slide.appendChild(d)
+      div.appendChild(d)
     }
 
     const description = document.createElement('p')
     description.innerHTML = nfo.description.html
-    slide.appendChild(description)
+    div.appendChild(description)
 
-    if (type === 'elements') this._createElementDetails(slide, name, nfo)
-    else if (type === 'attributes') this._createAttributeDetails(slide, name, nfo)
+    if (type === 'elements') this._createElementDetails(div, name, nfo)
+    else if (type === 'attributes') this._createAttributeDetails(div, name, nfo)
 
-    this.$('.html-reference-widget').appendChild(slide)
-
-    const main = '.html-reference-widget--slide[name="main"]'
-    const eleb4 = '.html-reference-widget--slide[name="elements"]'
-    const attrb4 = '.html-reference-widget--slide[name="attributes"]'
-    const fout = this.$(eleb4).style.opacity === '1'
-      ? eleb4 : this.$(attrb4).style.opacity === '1' ? attrb4 : main
-    this._fadeOutSlide(fout, () => {
-      const ex = this.$('code-example')
-      if (ex) ex.updateExample(this.data[name].example, 'html')
-      this._fadeInSlide(slide)
+    this.slide.updateSlide({
+      name: `html-reference-${type}-${name}`,
+      widget: this,
+      back: type === 'elements' ? this.eleListOpts : this.attrListOpts,
+      ele: div
     })
   }
 
@@ -258,6 +211,9 @@ class HTMLReference extends Widget {
     if (extras && extras.example) {
       const ce = document.createElement('code-example')
       slide.appendChild(ce)
+      setTimeout(() => {
+        ce.updateExample(extras.example, 'html')
+      }, utils.getVal('--menu-fades-time') + 100)
     } else {
       slide.appendChild(document.createElement('br'))
     }
@@ -300,6 +256,9 @@ class HTMLReference extends Widget {
     if (extras && extras.example) {
       const ce = document.createElement('code-example')
       slide.appendChild(ce)
+      setTimeout(() => {
+        ce.updateExample(extras.example, 'html')
+      }, utils.getVal('--menu-fades-time') + 100)
     }
     if (nfo.note) {
       const d = document.createElement('div')

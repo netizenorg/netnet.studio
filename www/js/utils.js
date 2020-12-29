@@ -86,6 +86,7 @@ window.utils = {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   loadStyleSheet: (name) => {
+    if (document.querySelector(`link[href="css/${name}.css"]`)) return
     const link = document.createElement('link')
     link.setAttribute('rel', 'stylesheet')
     link.setAttribute('href', `css/${name}.css`)

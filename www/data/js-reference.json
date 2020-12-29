@@ -1,0 +1,5 @@
+{
+  "function": {
+    "bubble": "A <b>function</b> is a reusable piece of code.<br><br>Algorithms and programs are ultimately a series of instructions that you write for the computer to follow, much the same way a recipe is a series of instructions for a cook to follow. When your algorithmic recipe requires repeating similar sets of instructions at different points in your program, it can be useful to encapsulate that sub-set of instructions into it's own module, creating a <b>function</b> is one way of doing that. <br><br>A pastry recipe might require grabbing a whisk, placing in the bowl and rotating it for some number of seconds, at different points. So it might be helpful to abstract those steps into a \"stir\" <b>function</b>."
+  }
+}
