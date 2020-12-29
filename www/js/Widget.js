@@ -35,14 +35,14 @@ window.WIDGETS = { // GLOBAL WIDGETS OBJECT
     WIDGETS.instantiated.push(key)
     return wig
   },
-  open: (key, filename) => {
-    if (WIDGETS.instantiated.includes(key)) WIDGETS[key].open()
-    else if (filename) WIDGETS.load(filename, w => w.open())
+  open: (key, filename, cb) => {
+    if (WIDGETS.instantiated.includes(key)) WIDGETS[key].open(cb)
+    else if (filename) WIDGETS.load(filename, w => w.open(cb))
     else { // make a guess about the filename based on keyname conventions
       const cap = (s) => s[0].toUpperCase() + s.substr(1)
       const arr = key.split('-')
       const name = arr.map(w => cap(w)).join('') + '.js'
-      WIDGETS.load(name, w => w.open())
+      WIDGETS.load(name, w => w.open(cb))
     }
   },
   close: (key) => {
@@ -208,15 +208,17 @@ class Widget {
     }
   }
 
-  open () {
+  open (func) {
     this.keepInFrame()
     this._display('visible')
     this.events.open.forEach(func => func())
+    if (func) return func(this)
   }
 
-  close () {
+  close (func) {
     this._display('hidden')
     this.events.close.forEach(func => func())
+    if (func) return func(this)
   }
 
   update (opts, time) {

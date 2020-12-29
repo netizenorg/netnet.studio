@@ -232,7 +232,8 @@
 
 #func-menu-content .func-menu-sub-section {
   padding: 4px 5px;
-  background-color: var(--netizen-meta)
+  background-color: var(--netizen-meta);
+  border-radius: 5px;
 }
 
 #func-menu-content button {

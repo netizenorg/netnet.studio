@@ -17,6 +17,7 @@ class CodeReview extends Widget {
 
     this.on('open', () => this._opened())
     NNW.on('theme-change', () => this.updateIssues())
+    NNE.cm.on('scroll', (e) => this._netitorScroll(e))
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key]() })
   }
@@ -36,6 +37,13 @@ class CodeReview extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  _positionMarkers () {
+    const x = document.querySelector('.CodeMirror-gutter-elt').offsetWidth
+    document.querySelectorAll('.CodeMirror-gutter-elt > div').forEach(m => {
+      m.style.transform = `translate(${x}px, 9px)`
+    })
+  }
+
   _markErrors (arr) {
     NNE.marker(null)
     const lines = []
@@ -43,9 +51,14 @@ class CodeReview extends Widget {
       if (lines.includes(e.line)) return
       lines.push(e.line)
       const clk = () => this._explainError(e)
-      if (e.type === 'warning') NNE.marker(e.line, 'yellow', clk)
+      if (e.type === 'warning') NNE.marker(e.line, 'orange', clk)
       else NNE.marker(e.line, 'red', clk)
     })
+    this._positionMarkers()
+  }
+
+  _netitorScroll (e) {
+    if (this.issues.length > 0) this._markErrors(this.issues)
   }
 
   _textBubble (id) {
@@ -63,7 +76,9 @@ class CodeReview extends Widget {
     if (!this.opened) {
       opts['run Code Review'] = () => this.open()
     }
+    NNE.cm.scrollIntoView({ line: err.line - 1 })
     utils.spotLightCode(err.line)
+    this._positionMarkers()
     window.convo = new Convo({
       content: err.friendly,
       options: opts

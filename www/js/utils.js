@@ -68,15 +68,22 @@ window.utils = {
 
   spotlighting: false,
   spotLightCode: (lines) => {
-    const editorLines = document.querySelectorAll('.CodeMirror-code > div')
-    if (typeof lines === 'number') lines = [lines - 1]
-    else if (lines instanceof Array) lines = lines.map(n => n - 1)
-    editorLines.forEach((d, i) => {
+    if (typeof lines === 'number') lines = [lines]
+    const codeLines = [...document.querySelectorAll('.CodeMirror-code > div')]
+    const nums = [...document.querySelectorAll('.CodeMirror-linenumber')].slice(1)
+    const dict = {}
+    nums.forEach((g, i) => { dict[g.textContent] = codeLines[i] })
+
+    for (const num in dict) {
+      const d = dict[num] // code line element
+      const n = Number(num) // gutter number
       d.style.transition = 'opacity var(--menu-fades-time) var(--sarah-ease)'
-      if (!(lines instanceof Array)) setTimeout(() => { d.style.opacity = 1 })
-      else if (!lines.includes(i)) setTimeout(() => { d.style.opacity = 0.25 })
-      else setTimeout(() => { d.style.opacity = 1 })
-    })
+      if (lines instanceof Array) { // line numbers to spotlight...
+        if (lines.includes(n)) setTimeout(() => { d.style.opacity = 1 })
+        else setTimeout(() => { d.style.opacity = 0.25 })
+      } else setTimeout(() => { d.style.opacity = 1 }) // nothing to spotlight
+    }
+
     if (lines instanceof Array && lines.length > 0) {
       window.utils.spotlighting = true
     } else window.utils.spotlighting = false

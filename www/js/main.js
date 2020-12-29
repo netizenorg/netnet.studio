@@ -6,13 +6,14 @@ const NNE = new Netitor({
   background: false,
   renderWithErrors: true,
   // code: window.greetings.getStarterCode()
-  code: '<!DOCTYPE html>\n<h1>hello world wide web</h1>'
+  code: '<h1>hello world wide web</h1>'
 })
 
 window.NNW = new NetNet()
 
 WIDGETS.load('FunctionsMenu.js')
 WIDGETS.load('HTMLReference.js')
+WIDGETS.load('JSReference.js')
 WIDGETS.load('CodeReview.js')
 
 utils.get('/api/custom-elements', (list) => {
@@ -26,13 +27,19 @@ NNE.on('cursor-activity', (e) => {
   if (utils.spotlighting) utils.spotLightCode('clear')
 })
 
+NNE.cm.on('scroll', (e) => {
+  if (utils.spotlighting) utils.spotLightCode('clear')
+})
+
 NNE.on('lint-error', (e) => {
   WIDGETS['code-review'].updateIssues(e)
 })
 
 NNE.on('edu-info', (e) => {
   console.log(e);
+  if (e.line && e.type) utils.spotLightCode(e.line)
   if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
+  else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
 })
 
 window.addEventListener('resize', (e) => {
@@ -44,8 +51,8 @@ window.addEventListener('keydown', (e) => {
   // console.log(e.keyCode);
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
     e.preventDefault()
-    // if (!NNE.autoUpdate) NNE.update()
-    // utils.localSave()
+    if (!NNE.autoUpdate) NNE.update()
+    WIDGETS['functions-menu'].saveSketch()
   } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
     e.preventDefault()
     // TODO if user logged in .openProject() else .uploadCode()

@@ -201,32 +201,49 @@ class SearchBar {
 
     // TODO push edu-info data as well, so it's discoverable via search
     // maybe it simply launches the Convo bubble? maybe it also opens an appendix widget?
-
-    Object.keys(NNE.edu.html.elements).forEach(element => {
-      arr.push({
-        type: 'netnet.html elements',
-        word: `&lt;${element}&gt;`,
-        alts: ['element', 'tag', element],
-        clck: () => {
-          const nfo = NNE.edu.html.elements[element]
-          WIDGETS['html-reference']._createInfoSlide('elements', element, nfo)
-          WIDGETS['html-reference'].open()
-        }
+    const html = ['elements', 'attributes']
+    html.forEach(type => {
+      Object.keys(NNE.edu.html[type]).forEach(data => {
+        arr.push({
+          type: 'netnet.html elements',
+          word: `&lt;${data}&gt;`,
+          alts: ['element', 'tag', type],
+          clck: () => {
+            const nfo = NNE.edu.html[type][data]
+            type = type.substr(0, type.length - 1) // rmv "s"
+            WIDGETS['html-reference'].textBubble({ data, type, nfo })
+            WIDGETS['html-reference'].open()
+          }
+        })
       })
     })
 
-    Object.keys(NNE.edu.html.attributes).forEach(attribute => {
-      arr.push({
-        type: 'netnet.html attributes',
-        word: `${attribute}`,
-        alts: ['attribute', attribute],
-        clck: () => {
-          const nfo = NNE.edu.html.attributes[attribute]
-          WIDGETS['html-reference']._createInfoSlide('attributes', attribute, nfo)
-          WIDGETS['html-reference'].open()
-        }
-      })
-    })
+    // Object.keys(NNE.edu.html.elements).forEach(element => {
+    //   arr.push({
+    //     type: 'netnet.html elements',
+    //     word: `&lt;${element}&gt;`,
+    //     alts: ['element', 'tag', element],
+    //     clck: () => {
+    //       const nfo = NNE.edu.html.elements[element]
+    //       WIDGETS['html-reference'].textBubble({ nfo, type: 'element', data: element })
+    //       WIDGETS['html-reference'].open()
+    //     }
+    //   })
+    // })
+    //
+    // Object.keys(NNE.edu.html.attributes).forEach(attribute => {
+    //   arr.push({
+    //     type: 'netnet.html attributes',
+    //     word: `${attribute}`,
+    //     alts: ['attribute', attribute],
+    //     clck: () => {
+    //       const nfo = NNE.edu.html.attributes[attribute]
+    //
+    //       WIDGETS['html-reference'].textBubble({ nfo, type: 'attribute', data: attribute })
+    //       WIDGETS['html-reference'].open()
+    //     }
+    //   })
+    // })
 
     this.addToDict(arr)
   }

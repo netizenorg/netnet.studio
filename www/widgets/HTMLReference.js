@@ -5,6 +5,7 @@ class HTMLReference extends Widget {
     this.key = 'html-reference'
     this.listed = true
     this.keywords = ['html', 'elements', 'attributes', 'reference']
+    this.resizable = false
 
     utils.get('./data/html-reference.json', (json) => { this.data = json })
 
@@ -40,7 +41,7 @@ class HTMLReference extends Widget {
     if (!eve) return
     else if (eve.type === 'tag bracket') {
       const content = this.data['tag bracket'].bubble
-      const options = { ok: (e) => { e.hide() } }
+      const options = { ok: (e) => { utils.spotLightCode('clear'); e.hide() } }
       window.convo = new Convo({ content, options })
       return
     } else if (!eve.nfo) return
@@ -62,7 +63,7 @@ class HTMLReference extends Widget {
 
     const options = {
       'tell me more': () => more(),
-      ok: (e) => { e.hide() }
+      ok: (e) => { utils.spotLightCode('clear'); e.hide() }
     }
 
     const extras = this.data[eve.data]
@@ -185,7 +186,7 @@ class HTMLReference extends Widget {
     }
     div.appendChild(h1)
 
-    if (nfo.status !== 'standard') {
+    if (typeof nfo.status !== 'undefined' && nfo.status !== 'standard') {
       const d = document.createElement('div')
       d.innerHTML = `Be warned! this element is <b>${nfo.status}</b> so it may not work on all browsers`
       div.appendChild(d)

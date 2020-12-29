@@ -36,7 +36,7 @@ class CodeExample extends HTMLElement {
       pre.hljs > code.css,
       pre.hljs > code.javascript {
         background-color: transparent !important;
-        color: var(--netizen-atom);
+        color: var(--netizen-text);
       }
 
       .hljs-meta,
