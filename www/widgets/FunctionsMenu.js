@@ -5,7 +5,7 @@ class FunctionsMenu extends Widget {
     this.title = 'Functions Menu'
     this.key = 'functions-menu'
     this.keywords = ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
-    // this.listed = false
+    this.listed = false // SearchBar has its own special logix for this widget
     this.resizable = false
 
     const ghAuthedMenu = [

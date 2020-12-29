@@ -1,4 +1,4 @@
-/* global utils, Fuse, WIDGETS */
+/* global utils, Fuse, WIDGETS, NNE */
 class SearchBar {
   constructor () {
     this.fuse = null
@@ -100,6 +100,13 @@ class SearchBar {
   search (e) {
     const term = e.target.value
     let results = this.fuse.search(term)
+    results = results.map(res => {
+      // down score reference results to avoid drowning others out
+      const downScore = res.item.alts.includes('element') ||
+        res.item.alts.includes('attribute')
+      if (downScore) res.score += 0.2
+      return res
+    })
     results = results.filter(o => o.score < 0.5)
     const resultsDiv = this.ele.querySelector('#search-results')
     resultsDiv.innerHTML = ''
@@ -159,10 +166,20 @@ class SearchBar {
   }
 
   _loadWidgetsData () {
-    // TODO:
-    // hitup a api/widgets to find widgets that haven't been loaded yet && add them to dict
-    // ...check that they have this.listed = true (or at least that they don't have it = false)
-    this.loaded.widgets = true
+    utils.get('./api/widgets', (list) => {
+      const arr = []
+      list.forEach(file => {
+        file.keywords.push('widget')
+        arr.push({
+          type: 'Widgets',
+          word: file.title,
+          alts: file.keywords,
+          clck: () => WIDGETS.open(file.key, file.filename)
+        })
+      })
+      this.addToDict(arr)
+      this.loaded.widgets = true
+    })
   }
 
   _loadTutorialsData () {
@@ -184,6 +201,32 @@ class SearchBar {
 
     // TODO push edu-info data as well, so it's discoverable via search
     // maybe it simply launches the Convo bubble? maybe it also opens an appendix widget?
+
+    Object.keys(NNE.edu.html.elements).forEach(element => {
+      arr.push({
+        type: 'netnet.html elements',
+        word: `&lt;${element}&gt;`,
+        alts: ['element', 'tag', element],
+        clck: () => {
+          const nfo = NNE.edu.html.elements[element]
+          WIDGETS['html-reference']._createInfoSlide('elements', element, nfo)
+          WIDGETS['html-reference'].open()
+        }
+      })
+    })
+
+    Object.keys(NNE.edu.html.attributes).forEach(attribute => {
+      arr.push({
+        type: 'netnet.html attributes',
+        word: `${attribute}`,
+        alts: ['attribute', attribute],
+        clck: () => {
+          const nfo = NNE.edu.html.attributes[attribute]
+          WIDGETS['html-reference']._createInfoSlide('attributes', attribute, nfo)
+          WIDGETS['html-reference'].open()
+        }
+      })
+    })
 
     this.addToDict(arr)
   }

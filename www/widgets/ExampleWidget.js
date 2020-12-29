@@ -19,6 +19,7 @@ class ExampleWidget extends Widget {
 
     // If you want this widget to show up in the SearchBar results it helps
     // (but is not required) to create a keywords array of related words
+    // (NOTE: for search result API purposes, this must be written on one line)
     this.keywords = ['example', 'demo', 'template']
 
     // here's some more example code...
