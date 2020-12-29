@@ -6,9 +6,7 @@ class CodeReview extends Widget {
     super(opts)
     this.key = 'code-review'
     this.listed = true
-    this.keywords = [
-      'error', 'mistakes', 'lint', 'audit', 'review', 'check', 'assessment'
-    ]
+    this.keywords = ['error', 'mistakes', 'lint', 'audit', 'review', 'check', 'assessment']
 
     // here's some more example code...
     this.title = 'Code Review'
