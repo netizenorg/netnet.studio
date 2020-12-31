@@ -31,9 +31,13 @@ window.WIDGETS = { // GLOBAL WIDGETS OBJECT
     if (!opts.type) opts.type = 'Widget'
     const wig = new window[opts.type](opts)
     const key = opts.key || `anon-${Date.now()}`
-    WIDGETS[key] = wig
-    WIDGETS.instantiated.push(key)
-    return wig
+    if (WIDGETS.instantiated.includes(key)) {
+      window.alert(`ERROR: looks like a ${key} widget already exists`)
+    } else {
+      WIDGETS[key] = wig
+      WIDGETS.instantiated.push(key)
+      return wig
+    }
   },
   open: (key, filename, cb) => {
     if (WIDGETS.instantiated.includes(key)) WIDGETS[key].open(cb)
@@ -243,6 +247,9 @@ class Widget {
   }
 
   keepInFrame () {
+    const o = this.ele.offsetTop + this.ele.offsetHeight
+    if (o > window.innerHeight - 10) this.update({ bottom: 10 }, 500)
+
     if (this.ele.offsetTop < 2) this.top = 2
     else if (this.ele.offsetTop > window.innerHeight) {
       this.bottom = 2
