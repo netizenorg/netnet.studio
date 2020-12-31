@@ -24,7 +24,7 @@ class ExampleWidget extends Widget {
 
     // here's some more example code...
     this.title = 'This is an Example Title'
-    this._exampleMethodForCreatingContent(opts)
+    this._createHTML(opts)
   }
 
   // most widgets are meant to be instantiated only once (automatically on load
@@ -34,7 +34,7 @@ class ExampleWidget extends Widget {
   // then this should return true (to avoid being auto-instantiated on load)
   static get skipAutoInstantiation () { return false }
 
-  _exampleMethodForCreatingContent (opts) {
+  _createHTML (opts) {
     opts = opts || {}
     const message = opts.message || 'options object does not include a message'
     this.innerHTML = `
