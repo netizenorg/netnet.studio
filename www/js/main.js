@@ -5,19 +5,28 @@ const NNE = new Netitor({
   render: '#nn-output',
   background: false,
   renderWithErrors: true,
-  // code: window.greetings.getStarterCode()
   code: '<h1>hello world wide web</h1>'
 })
 
 window.NNW = new NetNet()
 
-WIDGETS.load('FunctionsMenu.js')
-WIDGETS.load('HTMLReference.js')
-WIDGETS.load('JSReference.js')
-WIDGETS.load('CodeReview.js')
+const coreWidgets = [
+  'FunctionsMenu.js',
+  'StudentSession.js',
+  'HTMLReference.js',
+  'JSReference.js',
+  'CodeReview.js'
+]
+coreWidgets.forEach(file => WIDGETS.load(file))
 
-utils.get('/api/custom-elements', (list) => {
-  list.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
+utils.get('/api/custom-elements', (elements) => {
+  elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
+
+  utils.whenLoaded(elements, coreWidgets, () => { // when everythings loaded...
+    // ...check URL for params, && fade out load screen when ready
+    const param = utils.checkURL()
+    if (param === 'none') WIDGETS['student-session'].greetStudent()
+  })
 })
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

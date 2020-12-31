@@ -67,6 +67,8 @@ class Convo {
     // pre hoook
     if (typeof obj.before === 'function') obj.before(this, obj.scope)
 
+    if (NNW.menu.opened) NNW.menu.toggleMenu(false)
+
     // update
     NNW.menu.textBubble.update({
       content: obj.content,

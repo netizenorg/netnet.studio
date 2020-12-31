@@ -195,7 +195,7 @@ class SearchBar {
       word: 'main menu',
       alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
       clck: () => {
-        // TODO: new main menu convo
+        WIDGETS['student-session'].greetStudent()
       }
     })
 

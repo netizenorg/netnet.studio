@@ -1,11 +1,11 @@
-/* global Widget, Convo, NNE, NNW, FileUploader, WIDGETS */
+/* global Widget, Convo, NNE, NNW, FileUploader, WIDGETS, Maths, utils */
 class FunctionsMenu extends Widget {
   constructor (opts) {
     super(opts)
     this.title = 'Functions Menu'
     this.key = 'functions-menu'
     this.keywords = ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
-    this.listed = false // SearchBar has its own special logix for this widget
+    this.listed = true
     this.resizable = false
 
     const ghAuthedMenu = [
@@ -43,8 +43,17 @@ class FunctionsMenu extends Widget {
         hrAfter: true
       },
       {
+        click: 'saveSketch',
+        alts: ['progress', 'save', 'state']
+      },
+      {
         click: 'shareSketch',
         alts: ['share', 'link', 'save']
+      },
+      {
+        click: 'newSketch',
+        alts: ['new', 'sketch', 'blank', 'canvas'],
+        hrAfter: true
       },
       {
         click: 'downloadCode',
@@ -88,7 +97,7 @@ class FunctionsMenu extends Widget {
     this._initValues()
     this._setupListeners()
 
-    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key]() })
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -120,8 +129,26 @@ class FunctionsMenu extends Widget {
   }
 
   shareSketch () {
-    // TODO ...
-    window.convo = new Convo(this.convos, 'coming-soon')
+    NNE.saveToHash()
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'generated-sketch-url')
+  }
+
+  saveSketch () {
+    window.convo = new Convo(this.convos, 'session-saved')
+    this.sesh.setSavePoint()
+  }
+
+  newSketch () {
+    const name = this.sesh.getData('username')
+    const adj = [
+      'Super Rad', 'Amazing', 'Spectacular', 'Revolutionary', 'Contemporary'
+    ]
+    NNW.layout = 'dock-left'
+    NNE.code = typeof name === 'string'
+      ? `<h1>${Maths.random(adj)} Net Art</h1>\n<h2>by ${name}</h2>`
+      : '<h1>Hello World Wide Web!</h1>'
+    window.convo = new Convo(this.convos, 'blank-canvas-ready')
   }
 
   downloadCode () {
@@ -138,11 +165,15 @@ class FunctionsMenu extends Widget {
     this.fu.input.click()
   }
 
-  autoUpdate () {
-    NNE.autoUpdate = this.autoUpdateSel.value === 'true'
-    if (!NNE.autoUpdate) {
+  autoUpdate (val) {
+    const gotVal = typeof val === 'boolean'
+    NNE.autoUpdate = gotVal ? val : this.autoUpdateSel.value === 'true'
+
+    if (this.sesh) this.sesh.setData('auto-update', NNE.autoUpdate.toString())
+
+    if (!NNE.autoUpdate && !gotVal) {
       window.convo = new Convo(this.convos, 'need-to-update')
-    } else if (window.convo && window.convo.id === 'need-to-update') {
+    } else if (!gotVal && window.convo && window.convo.id === 'need-to-update') {
       window.convo.hide()
     }
     this._hideIrrelevantOpts('func-menu-editor-settings')
@@ -158,7 +189,10 @@ class FunctionsMenu extends Widget {
 
   changeTheme () {
     NNW.theme = this.themesSel.value
+    this.sesh.setData('theme', NNW.theme)
   }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
@@ -185,6 +219,45 @@ class FunctionsMenu extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _demonstrateCreditComment () {
+    const name = this.sesh.getData('username') || 'me'
+    const credit = `<!-- this code was hand crafted by ${name} -->\n`
+    NNE.cm.setSelection({ line: 0, ch: 0 })
+    NNE.cm.replaceSelection(credit)
+    setTimeout(() => {
+      utils.spotLightCode(1)
+      window.convo = new Convo(this.convos, 'show-me-how-to-comment')
+    }, utils.getVal('--menu-fades-time'))
+  }
+
+  _shortenURL (layout) {
+    utils.spotLightCode('clear')
+    NNW.menu.switchFace('processing')
+    window.convo = new Convo(this.convos, 'ok-processing')
+    const time = utils.getVal('--layout-transition-time')
+    setTimeout(() => {
+      const data = { hash: window.location.hash }
+      utils.post('./api/shorten-url', data, (res) => {
+        if (!res.success) {
+          NNW.menu.switchFace('upset')
+          console.error(res.error)
+          window.convo = new Convo(this.convos, 'oh-no-error')
+        } else {
+          NNW.menu.switchFace('default')
+          this._tempCode = res.key
+          this.convos = window.CONVOS['functions-menu'](this)
+          if (layout) window.convo = new Convo(this.convos, 'no-hide-short')
+          else window.convo = new Convo(this.convos, 'shorten-url')
+        }
+      })
+    }, time)
+  }
+
+  _shareLongCodeWithLayout () {
+    this.convos = window.CONVOS['functions-menu'](this)
+    window.convo = new Convo(this.convos, 'no-hide-long')
+  }
 
   _createHTML () {
     this.innerHTML = `
@@ -295,9 +368,15 @@ class FunctionsMenu extends Widget {
   }
 
   _initValues () {
+    if (!WIDGETS['student-session']) {
+      setTimeout(() => this._initValues(), 100)
+      return
+    }
+    this.sesh = WIDGETS['student-session']
     this.autoUpdateSel = this.$('#func-menu-update-select')
     this._creatOption('true', this.autoUpdateSel)
     this._creatOption('false', this.autoUpdateSel)
+    this.autoUpdateSel.value = this.sesh.getData('auto-update')
     this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
     this.layoutsSel = this.$('#func-menu-layout-select')
     NNW.layouts.filter(l => l !== 'welcome')
@@ -339,12 +418,14 @@ class FunctionsMenu extends Widget {
     })
 
     NNW.on('theme-change', () => {
-      this.themesSel.value = NNW.theme
+      if (this.themesSel) this.themesSel.value = NNW.theme
     })
 
     NNW.on('layout-change', () => {
-      this.layoutsSel.value = NNW.layout
-      this._hideIrrelevantOpts('func-menu-editor-settings')
+      if (this.layoutsSel) {
+        this.layoutsSel.value = NNW.layout
+        this._hideIrrelevantOpts('func-menu-editor-settings')
+      }
     })
   }
 

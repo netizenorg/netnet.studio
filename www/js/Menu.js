@@ -12,7 +12,7 @@ class Menu {
       hi: {
         path: 'images/menu/hi.png',
         click: () => {
-          // TODO: session greeting logic
+          WIDGETS['student-session'].greetStudent()
         }
       },
       functions: {
@@ -38,6 +38,7 @@ class Menu {
       }
     }
 
+    this.faceLoaded = false
     this._setupMenu(win) // radial menu of <menu-item> elements
     window.addEventListener('mousemove', (e) => this._moveEyes(e))
     window.addEventListener('DOMContentLoaded', (e) => {
@@ -74,6 +75,7 @@ class Menu {
 
   updateFace (obj) {
     if (!window.NNW) return
+    this.faceLoaded = true
     obj = obj || {}
 
     if (obj.leftEye) this.face.leftEye = obj.leftEye
@@ -94,9 +96,33 @@ class Menu {
     face[2].innerHTML = this._char2SVG(this.face.rightEye)
   }
 
+  switchFace (type) {
+    // a few shortcuts for commonly used faces to reduce code redundency
+    const lookAtCursor = false
+    const newFace = (f) => NNW.menu.updateFace(f)
+    const commonFaces = {
+      default: {
+        leftEye: '◕', mouth: '◞', rightEye: '◕', lookAtCursor: true, animation: 'blink'
+      },
+      processing: {
+        leftEye: '◉', mouth: '⌄', rightEye: '☉', lookAtCursor, animation: 'processing'
+      },
+      happy: {
+        leftEye: '◠', mouth: '◡', rightEye: '◠', lookAtCursor, animation: 'bounce'
+      },
+      upset: {
+        leftEye: '⇀', mouth: '^', rightEye: '↼', lookAtCursor, animation: 'shake'
+      }
+    }
+    if (commonFaces[type]) newFace(commonFaces[type])
+    else console.warn(`netnet: there is no ${type} face`)
+  }
+
   toggleMenu (show) {
     this.updatePosition()
     if (typeof show === 'undefined') show = !this.opened
+
+    if (show && this.textBubble.opened) window.convo.hide()
 
     if (show) this.updateFace({ mouth: '✖' })
     else this.updateFace({ mouth: '◞' })
@@ -220,6 +246,7 @@ class Menu {
     NNW.menu.ele.querySelector('#face').style.animationIterationCount = ''
 
     // run new animation
+    // NOTE: CSS defined found in www/css/styles.css
     if (this.face.animation === 'blink') {
       if (this.face.leftEye === '-') {
         this._faceAnimTO = setTimeout(() => {
@@ -243,6 +270,8 @@ class Menu {
       NNW.menu.ele.querySelector('#face').style.animation = 'bounce 1s'
       NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
       NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
+    } else if (this.face.animation === 'shake') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both'
     }
   }
 

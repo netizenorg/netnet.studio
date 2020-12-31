@@ -1,6 +1,3 @@
-const axios = require('axios')
-const triplesec = require('triplesec')
-const { Octokit } = require('@octokit/core')
 const express = require('express')
 const bodyParser = require('body-parser')
 const router = express.Router()
@@ -32,7 +29,7 @@ frontEndDependencies.forEach(dep => {
 })
 
 router.get('/sketch', (req, res) => {
-  res.redirect('/#code/eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=')
+  res.redirect('?layout=dock-left/#code/eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=')
 })
 
 router.get('/api/videos/:video', (req, res) => {
@@ -88,6 +85,57 @@ router.get('/api/widgets', (req, res) => {
     })
     res.json(wigs)
   })
+})
+
+router.get('/api/user-geo', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  exec(`curl http://ip-api.com/json/${ip}`, (err, stdout) => {
+    if (err) res.json({ success: false, error: err })
+    else res.json({ success: true, data: JSON.parse(stdout) })
+  })
+})
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
+
+function shortenURL (req, res, dbPath) {
+  const urlsDict = require(dbPath)
+  const index = Object.keys(urlsDict).length
+  const key = (index === 0) ? '0' : utils.b10tob64(index)
+  let repeatEntry = false
+  for (const key in urlsDict) {
+    if (urlsDict[key] === req.body.hash) { repeatEntry = key; break }
+  }
+  if (repeatEntry) {
+    const url = `https://netnet.studio/?c=${repeatEntry}`
+    res.json({ success: true, url, key: repeatEntry })
+  } else {
+    urlsDict[key] = req.body.hash
+    fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
+      if (err) res.json({ success: false, error: err })
+      else {
+        const url = `https://netnet.studio/?c=${key}`
+        res.json({ success: true, url, key })
+      }
+    })
+  }
+}
+
+router.post('/api/shorten-url', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
+  utils.checkForJSONFile(req, res, dbPath, () => {
+    shortenURL(req, res, dbPath)
+  })
+})
+
+router.post('/api/expand-url', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
+  const urlsDict = require(dbPath)
+  const hash = urlsDict[req.body.key]
+  if (typeof hash === 'string') {
+    res.json({ success: 'success', hash })
+  } else {
+    res.json({ error: `${req.body.key} is not in the database.` })
+  }
 })
 
 module.exports = router

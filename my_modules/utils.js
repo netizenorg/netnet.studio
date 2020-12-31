@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 function b10tob64 (num) {
   const order = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
   const base = order.length
@@ -26,4 +28,16 @@ function b64tob10 (str) {
   return num
 }
 
-module.exports = { b10tob64, b64tob10 }
+function checkForJSONFile (req, res, dbPath, callback) {
+  fs.stat(dbPath, (err, stat) => {
+    if (err == null) callback(req, res, dbPath)
+    else if (err.code === 'ENOENT') {
+      fs.writeFile(dbPath, '{}', (err) => {
+        if (err) res.json({ success: false, error: err })
+        else callback(req, res, dbPath)
+      })
+    }
+  })
+}
+
+module.exports = { b10tob64, b64tob10, checkForJSONFile }

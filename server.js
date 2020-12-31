@@ -6,12 +6,14 @@ const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 const ANALYTICS = require('./my_modules/analytics.js')
 const ROUTES = require('./my_modules/routes.js')
+const GITHUB = require('./my_modules/github.js')
 const SOCKETS = require('./my_modules/sockets.js')
 const port = process.env.PORT || 80
 
 app.use(ANALYTICS)
 app.use(express.static(`${__dirname}/www`))
 app.use(ROUTES)
+app.use(GITHUB)
 
 io.on('connection', (socket) => SOCKETS(socket, io))
 
