@@ -133,6 +133,75 @@ class NetNet {
     return { fg, bg }
   }
 
+  update (opts, time) {
+    time = time || 0
+    const t = `${time}ms`
+    this.win.style.transition = `all ${t} var(--sarah-ease)`
+    // trigger transition
+    setTimeout(() => {
+      for (const prop in opts) this._css(prop, opts[prop])
+      setTimeout(() => {
+        this.win.style.transition = 'none'
+        this.keepInFrame()
+      }, time)
+    }, 25)
+  }
+
+  recenter (time) {
+    time = time || 0
+    const t = `${time}ms`
+    this.win.style.transition = `all ${t} var(--sarah-ease)`
+    if (this.layout !== 'welcome' && this.layout !== 'separate-window') return
+    this.win.style.display = 'block'
+    if (this._centerTO) clearTimeout(this._centerTO)
+    this._centerTO = setTimeout(() => {
+      this.win.style.left = window.innerWidth / 2 - this.width / 2 + 'px'
+      this.win.style.top = window.innerHeight / 2 - this.height / 2 + 'px'
+      this.win.style.opacity = 1
+      setTimeout(() => {
+        this.win.style.transition = 'none'
+        this.keepInFrame()
+      }, time)
+    }, 10)
+  }
+
+  keepInFrame () { // ensure that the textBubble is always readable in frame
+    setTimeout(() => {
+      // 35 is the "bottom =" offset +a little extra, see NNW.menu.updatePosition()
+      const offset = this.win.offsetTop - this.menu.textBubble.offsetHeight - 35
+      if (offset < 0) {
+        this.win.style.transition = 'top .5s var(--sarah-ease)'
+        setTimeout(() => {
+          const t = this.win.offsetTop + Math.abs(offset)
+          this.win.style.top = `${t + 10}px` // +10 for a little space
+          setTimeout(() => { this.win.style.transition = 'none' }, 500)
+        }, 10)
+      }
+      // check if text-bubbles are going off-frame left
+      if (this.layout === 'welcome' || this.layout === 'separate-window') {
+        const winRight = this.win.offsetLeft + this.win.offsetWidth
+        let tbWidth = 0
+        const btns = this.menu.textBubble.$('.text-bubble-options > button')
+        // +5 button margin
+        if (btns && btns.length > 0) btns.forEach(b => { tbWidth += b.offsetWidth + 5 })
+        else if (btns) { tbWidth += btns.offsetWidth + 5 }
+        // 0.8 b/c .text-bubble-options width:80%;
+        // divided by 2, b/c .text-bubble-options translateX(-50%)
+        const nudge = (this.menu.textBubble.offsetWidth -
+          (this.menu.textBubble.offsetWidth * 0.8)) / 2
+        if (tbWidth + nudge > winRight) {
+          this.win.style.transition = 'top .5s var(--sarah-ease)'
+          setTimeout(() => {
+            let l = this.win.offsetLeft
+            l += tbWidth + nudge - winRight
+            this.win.style.left = `${l + 20}px` // +20 for a little space
+            setTimeout(() => { this.win.style.transition = 'none' }, 500)
+          }, 10)
+        }
+      }
+    }, utils.getVal('--layout-transition-time'))
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
 
   _mouseMove (e) {
@@ -248,6 +317,34 @@ class NetNet {
     }
   }
 
+  _css (prop, val) {
+    const l = (this.layout !== 'welcome' || this.layout !== 'separate-window')
+    const p = ['top', 'right', 'bottom', 'left']
+    const s = ['width', 'height']
+    const bw = this.menu.textBubble.$('.text-bubble-options').offsetWidth
+    const ww = this.win.offsetWidth
+    const bh = this.menu.textBubble.$('.text-bubble-options').offsetHeight +
+      this.menu.textBubble.offsetHeight
+    if (s.includes(prop)) {
+      if (!l) return
+      this.win.style[prop] = (typeof val === 'number') ? `${val}px` : val
+    } else if (p.includes(prop)) {
+      if (!l) return
+      if (prop === 'left' || prop === 'right') {
+        val = bw > ww ? val + (bw - ww) : val
+        const left = (prop === 'left')
+          ? val : window.innerWidth - val - this.win.offsetWidth
+        this.win.style.left = `${left}px`
+      } else { // top || bottom
+        const top = (prop === 'top')
+          ? val + bh : window.innerHeight - val - this.win.offsetHeight
+        this.win.style.top = `${top}px`
+      }
+    } else {
+      this.win.style[prop] = val
+    }
+  }
+
   _adjustLayout (v) {
     if (v === this._layout) return
     const old = this._layout
@@ -343,43 +440,6 @@ class NetNet {
       this.canv.style.borderRadius = '15px 15px 1px 1px'
       utils.afterLayoutTransition(() => after())
     }
-  }
-
-  keepInFrame () { // ensure that the textBubble is always readable in frame
-    setTimeout(() => {
-      // 35 is the "bottom =" offset +a little extra, see NNM.updatePosition()
-      const offset = this.win.offsetTop - this.menu.textBubble.offsetHeight - 35
-      if (offset < 0) {
-        this.win.style.transition = 'top .5s var(--sarah-ease)'
-        setTimeout(() => {
-          const t = this.win.offsetTop + Math.abs(offset)
-          this.win.style.top = `${t + 10}px` // +10 for a little space
-          setTimeout(() => { this.win.style.transition = 'none' }, 500)
-        }, 10)
-      }
-      // check if text-bubbles are going off-frame left
-      if (this.layout === 'welcome' || this.layout === 'separate-window') {
-        const winRight = this.win.offsetLeft + this.win.offsetWidth
-        let tbWidth = 0
-        const btns = this.menu.textBubble.$('.text-bubble-options > button')
-        // +5 button margin
-        if (btns && btns.length > 0) btns.forEach(b => { tbWidth += b.offsetWidth + 5 })
-        else if (btns) { tbWidth += btns.offsetWidth + 5 }
-        // 0.8 b/c .text-bubble-options width:80%;
-        // divided by 2, b/c .text-bubble-options translateX(-50%)
-        const nudge = (this.menu.textBubble.offsetWidth -
-          (this.menu.textBubble.offsetWidth * 0.8)) / 2
-        if (tbWidth + nudge > winRight) {
-          this.win.style.transition = 'top .5s var(--sarah-ease)'
-          setTimeout(() => {
-            let l = this.win.offsetLeft
-            l += tbWidth + nudge - winRight
-            this.win.style.left = `${l + 20}px` // +20 for a little space
-            setTimeout(() => { this.win.style.transition = 'none' }, 500)
-          }, 10)
-        }
-      }
-    }, utils.getVal('--layout-transition-time'))
   }
 
   // + + + + NETITOR STUFF + + + +
