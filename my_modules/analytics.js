@@ -3,16 +3,10 @@ const path = require('path')
 const fs = require('fs')
 const exec = require('child_process').exec
 
-function addToAnalytics (data, filepath) {
-  const logs = require('../data/analytics.json')
-  logs.push(data)
-  fs.writeFile(filepath, JSON.stringify(logs), (err) => {
-    if (err) console.log(err)
-  })
-}
-
 function logData (data) {
-  const filepath = path.join(__dirname, '../data/analytics.json')
+  const d = new Date()
+  const filename = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}.json`
+  const filepath = path.join(__dirname, `../data/analytics/${filename}`)
   fs.stat(filepath, (err, stat) => {
     if (err === null) addToAnalytics(data, filepath)
     else if (err.code === 'ENOENT') {
@@ -24,16 +18,28 @@ function logData (data) {
   })
 }
 
+function addToAnalytics (data, filepath) {
+  const logs = require(filepath)
+  logs.push(data)
+  fs.writeFile(filepath, JSON.stringify(logs), (err) => {
+    if (err) console.log(err)
+  })
+}
+
 module.exports = (req, res, next) => {
-  if (req.originalUrl !== '/') return next() // only log reqs to the homepage
+  if (req.path !== '/') return next() // only log reqs to the homepage
+
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  if (ip.includes('ffff:')) ip = ip.split('ffff:')[1]
 
   const dev = device(req.headers['user-agent'], { parseUserAgent: true })
   const data = {
     timestamp: Date.now(),
-    ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+    ip,
     url: {
       host: req.headers.host,
-      path: req.originalUrl
+      path: req.path,
+      query: req.query
     },
     device: {
       type: dev.type,
