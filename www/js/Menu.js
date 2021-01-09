@@ -19,7 +19,7 @@ class Menu {
         path: 'images/menu/functions.png',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS['functions-menu'].open()
+          WIDGETS.open('functions-menu')
         }
       },
       search: {
@@ -33,7 +33,8 @@ class Menu {
       guide: {
         path: 'images/menu/tutorials.png',
         click: () => {
-          // TODO: launch Tutorial Guide
+          NNW.menu.toggleMenu(false)
+          WIDGETS.open('tutorials-guide')
         }
       }
     }
@@ -45,7 +46,7 @@ class Menu {
       this._setupFace() // netnet's face
       this._setupTextBubble() // <text-bubble> element
       this.search = new SearchBar()
-      this.updatePosition()
+      setTimeout(() => this.updatePosition(), 500)
     })
   }
 
@@ -257,7 +258,7 @@ class Menu {
         this._faceAnimTO = setTimeout(() => {
           this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
           this._runFaceAnimation()
-        }, Math.random() * 3000 + 5000)
+        }, Math.random() * 6000 + 8000)
       }
     } else if (this.face.animation === 'processing') {
       this._faceAnimTO = setTimeout(() => {

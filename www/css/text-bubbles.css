@@ -37,6 +37,7 @@
   line-height: 1.4em;
   font-weight: 700;
   cursor: text;
+  white-space: nowrap;
 }
 .text-bubble > section b {
   font-weight: 700;

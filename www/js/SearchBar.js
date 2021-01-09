@@ -103,7 +103,8 @@ class SearchBar {
     results = results.map(res => {
       // down score reference results to avoid drowning others out
       const downScore = res.item.alts.includes('element') ||
-        res.item.alts.includes('attribute')
+        res.item.alts.includes('attribute') ||
+        res.item.alts.includes('property')
       if (downScore) res.score += 0.2
       return res
     })
@@ -218,32 +219,20 @@ class SearchBar {
       })
     })
 
-    // Object.keys(NNE.edu.html.elements).forEach(element => {
-    //   arr.push({
-    //     type: 'netnet.html elements',
-    //     word: `&lt;${element}&gt;`,
-    //     alts: ['element', 'tag', element],
-    //     clck: () => {
-    //       const nfo = NNE.edu.html.elements[element]
-    //       WIDGETS['html-reference'].textBubble({ nfo, type: 'element', data: element })
-    //       WIDGETS['html-reference'].open()
-    //     }
-    //   })
-    // })
-    //
-    // Object.keys(NNE.edu.html.attributes).forEach(attribute => {
-    //   arr.push({
-    //     type: 'netnet.html attributes',
-    //     word: `${attribute}`,
-    //     alts: ['attribute', attribute],
-    //     clck: () => {
-    //       const nfo = NNE.edu.html.attributes[attribute]
-    //
-    //       WIDGETS['html-reference'].textBubble({ nfo, type: 'attribute', data: attribute })
-    //       WIDGETS['html-reference'].open()
-    //     }
-    //   })
-    // })
+    Object.keys(NNE.edu.css.properties)
+      .filter(name => name[0] !== '-')
+      .forEach(property => {
+        arr.push({
+          type: 'netnet.css properties',
+          word: property,
+          alts: ['property', 'tag', property],
+          clck: () => {
+            const nfo = NNE.edu.css.properties[property]
+            WIDGETS['css-reference'].textBubble({ nfo, type: 'property', data: property })
+            WIDGETS['css-reference'].open()
+          }
+        })
+      })
 
     this.addToDict(arr)
   }

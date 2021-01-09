@@ -7,6 +7,7 @@ class StudentSession extends Widget {
     this.keywords = ['login', 'logout', 'session', 'user', 'account', 'me', 'my', 'data']
 
     this.title = 'Your Session Data'
+    this.greeted = false
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -153,6 +154,7 @@ class StudentSession extends Widget {
       return
     }
 
+    // if netnet was hiding, let's center+display it
     if (NNW.win.style.display === 'none') NNW.recenter(1000)
 
     if (typeof this.getData('username') === 'string') {
@@ -160,6 +162,9 @@ class StudentSession extends Widget {
     } else {
       window.convo = new Convo(this.convos, 'first-time')
     }
+
+    this.greeted = true
+    this.convos = window.CONVOS[this.key](this)
   }
 
   checkForSavePoint () {
@@ -205,9 +210,9 @@ class StudentSession extends Widget {
     }
 
     if (window.localStorage.getItem('auto-update') === null) {
-      this.setData('auto-update', 'false')
+      this.setData('auto-update', 'true')
     }
-    const bool = (this.data.editor.autoUpdate === 'true')
+    const bool = (this.getData('auto-update') === 'true')
     WIDGETS['functions-menu'].autoUpdate(bool)
 
     if (window.localStorage.getItem('theme') === null) {

@@ -135,37 +135,11 @@ window.utils = {
       NNW.win.style.opacity = '0'
       NNW.win.style.display = 'none'
     }
+    NNW.menu.updatePosition() // HACK: sometimes textBubble doesn't position properly on load
     document.querySelector('#loader').style.opacity = '0'
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
     }, window.utils.getVal('--layout-transition-time'))
-  },
-
-  // Netitor related stuff
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
-  spotlighting: false,
-  spotLightCode: (lines) => {
-    if (typeof lines === 'number') lines = [lines]
-    const codeLines = [...document.querySelectorAll('.CodeMirror-code > div')]
-    const nums = [...document.querySelectorAll('.CodeMirror-linenumber')]
-      .filter(g => g.textContent.length > 0)
-    const dict = {}
-    nums.forEach((g, i) => { dict[g.textContent] = codeLines[i] })
-
-    for (const num in dict) {
-      const d = dict[num] // code line element
-      const n = Number(num) // gutter number
-      d.style.transition = 'opacity var(--menu-fades-time) var(--sarah-ease)'
-      if (lines instanceof Array) { // line numbers to spotlight...
-        if (lines.includes(n)) setTimeout(() => { d.style.opacity = 1 })
-        else setTimeout(() => { d.style.opacity = 0.25 })
-      } else setTimeout(() => { d.style.opacity = 1 }) // nothing to spotlight
-    }
-
-    if (lines instanceof Array && lines.length > 0) {
-      window.utils.spotlighting = true
-    } else window.utils.spotlighting = false
   },
 
   // CSS related stuff

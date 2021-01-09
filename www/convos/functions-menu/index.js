@@ -1,17 +1,18 @@
-/* global Averigua, WIDGETS, NNW */
+/* global Averigua, WIDGETS, NNW, NNE */
 window.CONVOS['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const hotkeyname = hotkey === 'CMD' ? 'command' : 'control'
   const shareURL = (opts) => {
     opts = opts || {}
+    const hash = NNE.generateHash()
     const root = window.location.protocol + '//' + window.location.host
     if (opts.layout && opts.short) {
       return `${root}/?c=${opts.short}&layout=${opts.layout}`
     } else if (opts.layout) {
-      return `${root}/?layout=${opts.layout}${window.location.hash}`
+      return `${root}/?layout=${opts.layout}${hash}`
     } else if (opts.short) {
       return `${root}/?c=${opts.short}`
-    } else return `${root}/${window.location.hash}`
+    } else return `${root}/${hash}`
   }
 
   return [{
@@ -26,8 +27,9 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'session-saved',
     content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later I\'ll give you the option to pick back up where you left off.',
     options: {
+      'ok thanks!': (e) => e.hide(),
       'session data?': () => WIDGETS.open('student-session'),
-      'ok thanks!': (e) => e.hide()
+      'I want to share it with others': (e) => e.goTo('generate-sketch-url')
     }
   }, {
     id: 'blank-canvas-ready',
@@ -40,8 +42,8 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...share sketch URL convos...
   // ...
   {
-    id: 'generated-sketch-url',
-    content: `The URL has been updated with your sketches data! <input value="${shareURL()}" style="display: inline-block; width: 100%"> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; it exists solely in your browser's URL. Copy+paste the current URL to share your sketch with anyone on the Internet. I'll hide from view so that your masterpiece remains unobstructed.`,
+    id: 'generate-sketch-url',
+    content: `Ok, here's a URL for your sketch! <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. I'll hide from view so that your masterpiece remains unobstructed.`,
     options: {
       'great, thanks!': (e) => e.hide(),
       'why is it so long?': (e) => e.goTo('why-so-long'),
@@ -77,35 +79,35 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'shorten-url',
-    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
+    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
     options: {
       'got it, thanks!': (e) => e.hide(),
       'hide from view?': (e) => e.goTo('hide-from-view-short')
     }
   }, {
     id: 'hide-from-view-long',
-    content: `I'm assuming you don't want me showing up on the other end when you share this link? <input value="${shareURL()}" style="display: inline-block; width: 100%"> I'll still be accessible via shortcuts, like <b>${hotkey}+'</b> (<i>${hotkeyname} quote</i>) to open my search bar, but if you'd prefer your code to be present when you share your sketch I can modify the URL to do so?`,
+    content: `I'm assuming you don't want me showing up on the other end when you share this link? <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> I'll still be accessible via shortcuts, like <b>${hotkey}+'</b> (<i>${hotkeyname} quote</i>) to open my search bar, but if you'd prefer your code to be present when you share your sketch I can modify the URL to do so?`,
     options: {
       'no thanks, i prefer you stay hidden': (e) => e.hide(),
       'yes please, i want my code present': (e) => self._shareLongCodeWithLayout()
     }
   }, {
     id: 'no-hide-long',
-    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%">`,
+    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide(),
       'why is the URL so long though?': (e) => e.goTo('why-so-long')
     }
   }, {
     id: 'hide-from-view-short',
-    content: `I'm assuming you don't want me showing up on the other end when you share this link? <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%"> I'll still be accessible via shortcuts, like <b>${hotkey}+'</b> (<i>${hotkeyname} quote</i>) to open my search bar, but if you'd prefer your code to be present when you share your sketch I can modify the URL to do so?`,
+    content: `I'm assuming you don't want me showing up on the other end when you share this link? <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> I'll still be accessible via shortcuts, like <b>${hotkey}+'</b> (<i>${hotkeyname} quote</i>) to open my search bar, but if you'd prefer your code to be present when you share your sketch I can modify the URL to do so?`,
     options: {
       'no thanks, i prefer you stay hidden': (e) => e.hide(),
       'yes please, i want my code present': (e) => self._shortenURL(true)
     }
   }, {
     id: 'no-hide-short',
-    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%">`,
+    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide()
     }

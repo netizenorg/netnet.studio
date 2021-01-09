@@ -158,6 +158,9 @@ class NetNet {
       this.win.style.left = window.innerWidth / 2 - this.width / 2 + 'px'
       this.win.style.top = window.innerHeight / 2 - this.height / 2 + 'px'
       this.win.style.opacity = 1
+      const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
+      if (tbWasOpened) this.menu.updatePosition()
+      this._canvasResize()
       setTimeout(() => {
         this.win.style.transition = 'none'
         this.keepInFrame()
@@ -277,7 +280,7 @@ class NetNet {
       this.win.style.height = e.clientY - parseInt(this.win.style.top) + 'px'
       this.menu.updatePosition()
     }
-    // NNE.code = NNE.cm.getValue() << old comment
+
     this._canvasResize(e)
   }
 
@@ -362,6 +365,7 @@ class NetNet {
       this._canvasResize()
       this.menu.updatePosition()
       if (tbWasOpened) this.menu.textBubble.fadeIn()
+      NNE.cm.refresh()
       this.emit('layout-change', { old, new: v })
     }
 
@@ -451,19 +455,16 @@ class NetNet {
       if (face) face.style.fontSize = 'inherit'
       if (face) face.style.margin = '0'
       this.menu.ele.style.alignItems = 'flex-end'
-      // this.menu.ele.style.width = 'auto'
       this.menu.ele.style.margin = 'auto'
       this.menu.ele.style.height = 'auto'
-      // this.menu.ele.style.cursor = 'auto'
+      NNE.cm.refresh()
     } else {
       this.edtr.style.display = 'none'
       if (face) face.style.fontSize = '44px'
       if (face) face.style.margin = '95px auto'
       this.menu.ele.style.alignItems = 'center'
-      // this.menu.ele.style.width = '60%'
       this.menu.ele.style.margin = 'none'
       this.menu.ele.style.height = '100%'
-      // this.menu.ele.style.cursor = 'grab'
     }
   }
 

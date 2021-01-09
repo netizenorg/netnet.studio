@@ -4,6 +4,9 @@
   width: 600px;
   max-height: 400px;
   overflow-y: auto;
+  padding: 0px 15px 0px 25px;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
 }
 
 .reference-widget--slide {
@@ -20,6 +23,7 @@
   position: absolute;
   top: -7px;
   left: -15px;
+  padding: 4px 30px;
   display: flex;
   justify-content: space-between;
   background: var(--fg-color);

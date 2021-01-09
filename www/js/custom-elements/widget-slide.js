@@ -40,6 +40,8 @@ class WidgetSlide extends HTMLElement {
         this._fadeInSlide(this._currentSlide)
       }
     }
+
+    this.scrollTop = 0
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS

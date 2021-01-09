@@ -22,12 +22,12 @@
     font-style: normal;
 }
 
-@font-face { /* https://github.com/tonsky/FiraCode */
-  font-family: 'fira-code';
-  src: url('fonts/FiraCode-Regular.woff2') format('woff2'),
-    url("fonts/FiraCode-Regular.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
+@font-face {
+    font-family: 'fira-mono-regular';
+    src: url('fonts/FiraMono-Regular.woff2') format('woff2'),
+         url('fonts/FiraMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @keyframes bounce {
@@ -57,7 +57,7 @@
 }
 
 code {
-  font-family: "fira-code", inconsolata, monospace;
+  font-family: "fira-mono-regular", inconsolata, monospace;
 }
 
 code::-moz-selection {
@@ -96,7 +96,7 @@ button {
   align-items: center;
   background-color: #1c1c36;
   background: radial-gradient(circle, rgba(106,106,167,1) 0%, rgba(28,28,54,1) 100%);
-  font-family: "fira-code", inconsolata, monospace;
+  font-family: "fira-mono-regular", inconsolata, monospace;
   color: #fff;
   opacity: 1;
   transition: opacity 1s;
@@ -171,6 +171,6 @@ button {
 #nn-window > #nn-editor {
   overflow-y: scroll;
   height: calc(100% - 60px);
-  scrollbar-width: none;
   scrollbar-color: var(--fg-color) rgba(0,0,0,0);
+  scrollbar-width: thin;
 }

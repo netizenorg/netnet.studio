@@ -4,7 +4,7 @@ window.CONVOS['student-session'] = (self) => {
 
   const coreConvo = [{
     id: 'returning-student',
-    content: `Welcome back ${self.getData('username')}!`,
+    content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('what-to-do'),
       'that\'s not my name?': (e) => e.goTo('diff-user')
@@ -13,12 +13,12 @@ window.CONVOS['student-session'] = (self) => {
     id: 'what-to-do',
     content: 'What do you want to do?',
     options: {
-      'I want to learn': (e) => e.goTo('coming-soon'),
+      'I want to learn': (e) => { e.hide(); WIDGETS.open('tutorials-guide') },
       'I want to sketch': (e) => self.checkForSavePoint()
     }
   }, {
     id: 'prior-save-state',
-    content: 'Looks like you saved the state of the studio session last time you were here, should we pick back up where you left off?',
+    content: `Looks like you saved the state of the studio session last time you were here, I can inject that code back into my editor for you now if you'd like. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to undo anything I inject.`,
     options: {
       'yes please': (e) => {
         e.hide()

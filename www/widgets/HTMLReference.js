@@ -7,41 +7,43 @@ class HTMLReference extends Widget {
     this.keywords = ['html', 'elements', 'attributes', 'reference']
     this.resizable = false
 
-    utils.get('./data/html-reference.json', (json) => { this.data = json })
-
-    NNW.on('theme-change', () => { this._createHTML() })
-
     this.title = 'HTML Reference'
 
-    // options objects for <widget-slide> .updateSlide() method
-    this.mainOpts = {
-      name: 'html-reference-main',
-      widget: this,
-      ele: this._createMainSlide()
-    }
+    utils.get('./data/html-reference.json', (json) => { this.data = json })
 
-    this.eleListOpts = {
-      name: 'html-reference-elements',
-      widget: this,
-      back: this.mainOpts,
-      list: this._createList('elements')
-    }
+    utils.get('./data/html-reference-main.html', (html) => {
+      // options objects for <widget-slide> .updateSlide() method
+      this.mainOpts = {
+        name: 'html-reference-main',
+        widget: this,
+        ele: this._createMainSlide(html)
+      }
 
-    this.attrListOpts = {
-      name: 'html-reference-attributes',
-      widget: this,
-      back: this.mainOpts,
-      list: this._createList('attributes')
-    }
+      this.eleListOpts = {
+        name: 'html-reference-elements',
+        widget: this,
+        back: this.mainOpts,
+        list: this._createList('elements')
+      }
 
-    this._createHTML()
+      this.attrListOpts = {
+        name: 'html-reference-attributes',
+        widget: this,
+        back: this.mainOpts,
+        list: this._createList('attributes')
+      }
+
+      this._createHTML()
+
+      NNW.on('theme-change', () => { this._createHTML() })
+    }, true)
   }
 
   textBubble (eve) {
     if (!eve) return
     else if (eve.type === 'tag bracket') {
       const content = this.data['tag bracket'].bubble
-      const options = { ok: (e) => { utils.spotLightCode('clear'); e.hide() } }
+      const options = { ok: (e) => { NNE.spotlight(null); e.hide() } }
       window.convo = new Convo({ content, options })
       return
     } else if (!eve.nfo) return
@@ -63,7 +65,7 @@ class HTMLReference extends Widget {
 
     const options = {
       'tell me more': () => more(),
-      ok: (e) => { utils.spotLightCode('clear'); e.hide() }
+      ok: (e) => { NNE.spotlight(null); e.hide() }
     }
 
     const extras = this.data[eve.data]
@@ -88,43 +90,17 @@ class HTMLReference extends Widget {
 
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
+
+    this.ele.style.padding = '5px 5px 10px'
+    this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
+    this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
+
     this.slide.updateSlide(this.mainOpts)
   }
 
-  _createMainSlide () {
+  _createMainSlide (html) {
     const div = document.createElement('div')
-    div.innerHTML = `
-      <style>
-        .html-reference-widget--sec-link {
-          display: inline-block;
-          color: var(--netizen-meta);
-          font-size: 24px;
-          margin: 8px;
-          transition: color .5s ease, border .5s ease;
-          border-bottom: 2px solid var(--netizen-meta);
-          text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-        }
-
-        .html-reference-widget--sec-link:hover {
-          color: var(--netizen-match-color);
-          border-bottom: 2px solid var(--netizen-match-color);
-          cursor: pointer;
-        }
-      </style>
-      <p>
-        The Web is a creative medium and core to the craft are three coding languages, HTML, CSS and JavaScript. The most fundamental of these is HTML, or Hypertext Markup Language. HTML is used to create the structure of a Web project.
-      </p>
-      <br>
-      <!--
-      TODO: add high-level HTML notes here
-      <br> -->
-      <div class="html-reference-widget--sec-link" name="elements" style="color: var(--netizen-tag)">
-        List of HTML elements
-      </div>
-      <br>
-      <div class="html-reference-widget--sec-link" name="attributes" style="color: var(--netizen-attribute)">
-        List of HTML attributes
-      </div>`
+    div.innerHTML = html
 
     div.querySelector('.html-reference-widget--sec-link[name="elements"]')
       .addEventListener('click', () => this.slide.updateSlide(this.eleListOpts))

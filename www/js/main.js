@@ -14,6 +14,7 @@ const coreWidgets = [
   'FunctionsMenu.js',
   'StudentSession.js',
   'HTMLReference.js',
+  'CSSReference.js',
   'JSReference.js',
   'CodeReview.js'
 ]
@@ -33,11 +34,7 @@ utils.get('/api/custom-elements', (elements) => {
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
 NNE.on('cursor-activity', (e) => {
-  if (utils.spotlighting) utils.spotLightCode('clear')
-})
-
-NNE.cm.on('scroll', (e) => {
-  if (utils.spotlighting) utils.spotLightCode('clear')
+  if (NNE._spotlighting) NNE.spotlight(null)
 })
 
 NNE.on('lint-error', (e) => {
@@ -45,9 +42,9 @@ NNE.on('lint-error', (e) => {
 })
 
 NNE.on('edu-info', (e) => {
-  console.log(e);
-  if (e.line && e.type) utils.spotLightCode(e.line)
+  if (e.line && e.type) NNE.spotlight(e.line)
   if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
+  if (e.language === 'css') WIDGETS['css-reference'].textBubble(e)
   else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
 })
 

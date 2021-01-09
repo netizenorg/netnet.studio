@@ -129,9 +129,9 @@ class FunctionsMenu extends Widget {
   }
 
   shareSketch () {
-    NNE.saveToHash()
+    // NNE.saveToHash() NOTE: hash generated in convo now
     this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'generated-sketch-url')
+    window.convo = new Convo(this.convos, 'generate-sketch-url')
   }
 
   saveSketch () {
@@ -226,13 +226,13 @@ class FunctionsMenu extends Widget {
     NNE.cm.setSelection({ line: 0, ch: 0 })
     NNE.cm.replaceSelection(credit)
     setTimeout(() => {
-      utils.spotLightCode(1)
+      NNE.spotlight(1)
       window.convo = new Convo(this.convos, 'show-me-how-to-comment')
     }, utils.getVal('--menu-fades-time'))
   }
 
   _shortenURL (layout) {
-    utils.spotLightCode('clear')
+    NNE.spotlight(null)
     NNW.menu.switchFace('processing')
     window.convo = new Convo(this.convos, 'ok-processing')
     const time = utils.getVal('--layout-transition-time')

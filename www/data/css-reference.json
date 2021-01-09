@@ -1,0 +1,5 @@
+{
+  "comment": {
+    "bubble": "Most coding languages allow you to leave comments in your code. In CSS you can create a comment by starting it with <code>/*</code> and ending with <code>*/</code>. Code are instructions, it's how you tell the browser what you want it to display, but browsers ignore comments. Comments are for people, not machines.<br><br>Coders use them for all sorts of reasons, most often for leaving notes explaining how the code works (future you will thank you for that). It's also a great way to credit any code snippets you've copy+pasted from somewhere else. They can also be used to \"comment out\" code, so that the browser ignores it temporarily without having to remove it.<br><br>The shortcut key <b>CTRL+/</b> (control forward-slash), or <b>CMD+/</b> (command forward-slash) on Mac, can be used to comment out lines of code."
+  }
+}

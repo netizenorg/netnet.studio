@@ -17,7 +17,6 @@ class CodeReview extends Widget {
 
     this.on('open', () => this._opened())
     NNW.on('theme-change', () => this.updateIssues())
-    NNE.cm.on('scroll', (e) => this._netitorScroll(e))
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key]() })
   }
@@ -37,13 +36,6 @@ class CodeReview extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _positionMarkers () {
-    const x = document.querySelector('.CodeMirror-gutter-elt').offsetWidth
-    document.querySelectorAll('.CodeMirror-gutter-elt > div').forEach(m => {
-      m.style.transform = `translate(${x}px, 9px)`
-    })
-  }
-
   _markErrors (arr) {
     NNE.marker(null)
     const lines = []
@@ -54,11 +46,6 @@ class CodeReview extends Widget {
       if (e.type === 'warning') NNE.marker(e.line, 'orange', clk)
       else NNE.marker(e.line, 'red', clk)
     })
-    this._positionMarkers()
-  }
-
-  _netitorScroll (e) {
-    if (this.issues.length > 0) this._markErrors(this.issues)
   }
 
   _textBubble (id) {
@@ -68,7 +55,7 @@ class CodeReview extends Widget {
 
   _explainError (err, loc) {
     const opts = {
-      'ok thanks': (e) => { utils.spotLightCode('clear'); e.hide() }
+      'ok thanks': (e) => { NNE.spotlight(null); e.hide() }
     }
     if (loc) {
       opts[`what's: ${loc}`] = () => this._textBubble('explain-line-numbers')
@@ -76,11 +63,10 @@ class CodeReview extends Widget {
     if (!this.opened) {
       opts['run Code Review'] = () => this.open()
     }
-    NNE.cm.scrollIntoView({ line: err.line - 1 })
-    utils.spotLightCode(err.line)
-    this._positionMarkers()
+    NNE.cm.scrollIntoView({ ch: 0, line: err.line - 1 })
+    setTimeout(() => NNE.spotlight(err.line), 100)
     window.convo = new Convo({
-      content: err.friendly,
+      content: `On line ${err.line}, ${err.friendly}`,
       options: opts
     })
   }
@@ -95,7 +81,7 @@ class CodeReview extends Widget {
   }
 
   _opened () {
-    utils.spotLightCode('clear')
+    NNE.spotlight(null)
     if (NNW.layout === 'dock-bottom') this.update({ left: 10, top: 10 })
     else if (NNW.layout === 'full-screen') this.update({ bottom: 10 })
     else this.update({ bottom: 10, right: 10 })
