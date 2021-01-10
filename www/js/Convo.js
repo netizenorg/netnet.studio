@@ -97,6 +97,10 @@ class Convo {
         if (t === 'number' || t === 'object') NNE.highlight(obj.highlight)
       }
 
+      if (obj.spotlight) {
+        NNE.spotlight(obj.spotlight)
+      }
+
       if (typeof obj.layout === 'string') {
         NNW.layout = obj.layout
         if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {

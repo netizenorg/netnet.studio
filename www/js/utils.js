@@ -63,6 +63,30 @@ window.utils = {
     })
   },
 
+  starterCode: () => {
+    const clr1 = window.utils.getVal('--netizen-string')
+    const clr2 = window.utils.getVal('--netizen-number')
+    const clr3 = window.utils.getVal('--netizen-keyword')
+    return `<!DOCTYPE html>
+<style>
+  @keyframes animBG {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+
+  body {
+    background: linear-gradient(230deg, ${clr1}, ${clr2}, ${clr3});
+    background-size: 300% 300%;
+    animation: animBG 30s infinite;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+</style>
+    `
+  },
+
   // page loading stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 

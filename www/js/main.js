@@ -5,7 +5,7 @@ const NNE = new Netitor({
   render: '#nn-output',
   background: false,
   renderWithErrors: true,
-  code: '<h1>hello world wide web</h1>'
+  code: ''
 })
 
 window.NNW = new NetNet()
@@ -51,6 +51,10 @@ NNE.on('edu-info', (e) => {
 window.addEventListener('resize', (e) => {
   utils.windowResize()
   utils.keepWidgetsInFrame()
+})
+
+window.addEventListener('load', () => {
+  NNE.code = utils.starterCode()
 })
 
 window.addEventListener('keydown', (e) => {

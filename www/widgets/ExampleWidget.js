@@ -1,10 +1,13 @@
 /* global Widget */
+// the comment above is just to let the standardJS linter know which global
+// variables we're going to use if your widget is going to interat with other
+// netnet global variables like NNE, NNW, etc. make sure to list them above
 class ExampleWidget extends Widget {
   constructor (opts) {
     super(opts)
 
-    // NOTE: must have key if you want the WIDGETS global to auto-instantiate it
-    // soon as it's loaded, ex: WIDGETS.load('ExampleWidget.js')
+    // NOTE: you key name must match your Widget's class name,
+    // for example MyWidget should have a key of 'my-widget'
     this.key = 'example-widget'
     // However, if this widget class is meant to be used to instantiate mulitple
     // instances of itself, then you should leave this null and set the

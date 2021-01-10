@@ -302,6 +302,8 @@ class Widget {
     const line = string.split(':')
     parsedCode.property = line[0]
 
+    if (line.length < 2) return null
+
     if (matches) {
       // store CSS function names
       const funcs = line[1].split(' ')
@@ -372,7 +374,7 @@ class Widget {
     if (close) close.addEventListener('click', () => this.close())
 
     this.recenter()
-    this._marquee()
+    setTimeout(() => this._marquee(), 100)
   }
 
   _marquee () {

@@ -94,7 +94,13 @@ class CodeSlider extends HTMLElement {
 
     this.updateThumb()
     this.querySelector('.__code-slider-range').style.background = this.background
-    this.querySelector('.__code-slider-bubble').style.background = this.bubble
+
+    if (typeof this.bubble !== 'undefined' && this.bubble !== 'undefined') {
+      this.querySelector('.__code-slider-bubble').style.background = this.bubble
+    } else {
+      this.querySelector('.__code-slider-bubble').style.display = 'none'
+      this.querySelector('.__code-slider-label').style.top = '15px'
+    }
 
     this.ele = this.querySelector('.__code-slider-parent')
   }
@@ -148,6 +154,7 @@ class CodeSlider extends HTMLElement {
       this.querySelector('span').innerHTML = newVal
     } else if (['value', 'min', 'max', 'step'].includes(attrName)) {
       this.querySelector('input')[attrName] = newVal
+      this.updateThumb()
     } else if (attrName === 'background') {
       this.querySelector('.__code-slider-range').style.background = newVal
     } else if (attrName === 'bubble') {
