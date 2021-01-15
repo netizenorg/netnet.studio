@@ -4,8 +4,9 @@
 	 viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve">
 <style type="text/css">
 	.st0{enable-background:new    ;}
+	.st1{fill:#D593CD;}
 </style>
 <g class="st0">
-	<path d="M27.75,194.06l-12.45,0.15l24.17-47.75l24.17,47.61l-12.6-0.15l-11.57-23.14L27.75,194.06z"/>
+	<path class="st1" d="M87.8,194.1l-12.4,0.1l24.2-47.8l24.2,47.6l-12.6-0.1l-11.6-23.1L87.8,194.1z"/>
 </g>
 </svg>
