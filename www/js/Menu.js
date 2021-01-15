@@ -83,6 +83,8 @@ class Menu {
     if (obj.mouth) this.face.mouth = obj.mouth
     if (obj.rightEye) this.face.rightEye = obj.rightEye
 
+    if (obj.leftEye) this._updateFavicon(obj.leftEye)
+
     this.face.lookAtCursor = typeof obj.lookAtCursor === 'boolean'
       ? obj.lookAtCursor : true
 
@@ -189,6 +191,11 @@ class Menu {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• FACE STUFF
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸
+
+  _updateFavicon (svg) {
+    if (svg === '.') svg = 'mouth-dot'
+    document.querySelector('link[rel="icon"]').href = `images/faces/${svg}.svg`
+  }
 
   _loadFaceAssets (cb) {
     this._faceAssets = { null: '' }
