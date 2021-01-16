@@ -229,6 +229,13 @@ class ColorWidget extends Widget {
           flex: 0 0 60%;
         }
 
+        .clr-wig-type-opts {
+          display: flex;
+          justify-content: space-between;
+          padding: 0px 0px 16px 0px;
+          width: 258px;
+        }
+
         #clr-wig-sliders {
           display: block;
           flex: 0 0 40%;
@@ -259,9 +266,6 @@ class ColorWidget extends Widget {
       <div class="clr-row1">
         <!-- <div id="clr-wig-sample"></div> -->
         <div>
-          <button class="__clr-wig-sub-btn">hsl</button>
-          <button class="__clr-wig-sub-btn">rgb</button>
-          <button class="__clr-wig-sub-btn">hex</button>
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
              viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve" class="clr-wig-svg">
             <g>
@@ -275,8 +279,15 @@ class ColorWidget extends Widget {
             <!-- INJECT CODE FILEDS HERE -->
           </div>
         </div>
-        <div id="clr-wig-sliders">
-          <!-- INJECT CODE SLIDERS HERE -->
+        <div>
+          <div class="clr-wig-type-opts">
+            <button class="__clr-wig-sub-btn">hsl</button>
+            <button class="__clr-wig-sub-btn">rgb</button>
+            <button class="__clr-wig-sub-btn">hex</button>
+          </div>
+          <div id="clr-wig-sliders">
+            <!-- INJECT CODE SLIDERS HERE -->
+          </div>
         </div>
       </div>
     `
