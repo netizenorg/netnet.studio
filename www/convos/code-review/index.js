@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS */
+/* global Averigua, WIDGETS, NNE */
 window.CONVOS['code-review'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const type = 'sketch' // TODO check if in GH project, change to "tab" or "file"
@@ -15,12 +15,15 @@ window.CONVOS['code-review'] = (self) => {
     id: 'could-indent',
     content: 'I didn\'t find any obvious issues with your code, although, personally I\'d indent things a little different from how you have it, want me to "tidy" your code?',
     options: {
-      'yes please': (e) => e.goTo('indent-review'),
+      'yes please': (e) => {
+        NNE.tidy()
+        e.goTo('indent-review')
+      },
       'no thanks': (e) => e.goTo('review-tidy')
     }
   }, {
     id: 'indent-review',
-    content: 'This is my preference, but like all AI I\'m biased. I\'m partial to a particularly conventional approach to code indentation, if you prefer the way you had it I can revert things back?',
+    content: 'This is my preference, but like all AI I\'m biased. I\'m partial to a certain conventional approach to code indentation, if you prefer the way you had it I can revert things back?',
     options: {
       'this looks good to me': (e) => done(e),
       'revert back to how it was': (e) => {
@@ -28,6 +31,12 @@ window.CONVOS['code-review'] = (self) => {
         codeReview.close()
         e.goTo('revert-tidy')
       }
+    }
+  }, {
+    id: 'revert-tidy',
+    content: 'No problem. There\'s no truly right or wrong way to indent code, the most important thing is to make sure your code is easy to read and that you remain consistent.',
+    options: {
+      'ok thanks': (e) => done(e)
     }
   }, {
     id: 'review-tidy',

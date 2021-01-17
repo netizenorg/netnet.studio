@@ -8,7 +8,6 @@ class CodeReview extends Widget {
     this.listed = true
     this.keywords = ['error', 'mistakes', 'lint', 'audit', 'review', 'check', 'assessment']
 
-    // here's some more example code...
     this.title = 'Code Review'
     this.info = ''
     this.tempCode = null
@@ -22,10 +21,11 @@ class CodeReview extends Widget {
   }
 
   updateIssues (e) {
+    const t = 'sketch' // TODO check if in GH project, change to "tab" or "file"
     if (e) this.issues = e
     this._markErrors(this.issues)
     const list = this.$('.code-review')
-    list.innerHTML = ''
+    list.innerHTML = `<h3>No issues were found in this ${t}</h3>`
     this.issues.forEach((err, i) => this._createErrDiv(err, i))
   }
 
@@ -91,8 +91,6 @@ class CodeReview extends Widget {
       this._textBubble('could-indent')
     } else {
       this._textBubble('error-free')
-      const t = 'sketch' // TODO check if in GH project, change to "tab" or "file"
-      this.$('.code-review').innerHTML = 'No issues where found in this' + t
     }
   }
 
