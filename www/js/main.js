@@ -1,4 +1,4 @@
-/* global Netitor, NetNet, utils, WIDGETS, NNW */
+/* global Netitor, NetNet, utils, WIDGETS */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -10,20 +10,21 @@ const NNE = new Netitor({
 
 window.NNW = new NetNet()
 
-const coreWidgets = [
+const initWidgets = [
   'FunctionsMenu.js',
   'StudentSession.js',
   'HTMLReference.js',
   'CSSReference.js',
   'JSReference.js',
-  'CodeReview.js'
+  'CodeReview.js',
+  'KeyboardShortcuts.js'
 ]
-coreWidgets.forEach(file => WIDGETS.load(file))
+initWidgets.forEach(file => WIDGETS.load(file))
 
 utils.get('/api/custom-elements', (elements) => {
   elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
 
-  utils.whenLoaded(elements, coreWidgets, () => { // when everythings loaded...
+  utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
     // ...check URL for params, && fade out load screen when ready
     const param = utils.checkURL()
     if (param === 'none') WIDGETS['student-session'].greetStudent()
@@ -57,43 +58,4 @@ window.addEventListener('load', () => {
   NNE.code = utils.starterCode()
 })
 
-window.addEventListener('keydown', (e) => {
-  // console.log(e.keyCode);
-  if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
-    e.preventDefault()
-    if (!NNE.autoUpdate) NNE.update()
-    WIDGETS['functions-menu'].saveSketch()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
-    e.preventDefault()
-    // TODO if user logged in .openProject() else .uploadCode()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
-    e.preventDefault()
-    NNW.nextLayout()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
-    e.preventDefault()
-    NNW.prevLayout()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
-    e.preventDefault()
-    // WIDGETS['tutorials-menu'].open()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
-    e.preventDefault()
-    WIDGETS.open('functions-menu')
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
-    e.preventDefault()
-    NNW.menu.search.open()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
-    // ...
-  } else if (e.keyCode === 27) { // esc
-    if (NNW.menu.search.opened) NNW.menu.search.close()
-    else utils.closeTopMostWidget()
-  } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
-    e.preventDefault() // CTRL/CMD+SHIFT+P
-    e.stopPropagation() // TODO... not working :(
-    window.event.cancelBubble = true
-    NNW.menu.search.open()
-    return false
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 49) { // 1
-    // TEMP... open video streaming widget
-    WIDGETS.open('stream-video')
-  }
-})
+// NOTE: KeyboardShortcuts Widget sets up keyboard event listeners

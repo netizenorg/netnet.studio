@@ -87,6 +87,16 @@ window.utils = {
     `
   },
 
+  tutorialOpen: () => {
+    const hvp = WIDGETS['hyper-video-player']
+    const tg = WIDGETS['tutorials-guide']
+    return (hvp && tg && tg.metadata !== null)
+  },
+
+  hotKey: () => {
+    return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  },
+
   // page loading stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
