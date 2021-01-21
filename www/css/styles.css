@@ -37,6 +37,13 @@
   100% { transform: translateY(0); }
 }
 
+@keyframes spring-up {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+  90% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
 @keyframes shake {
   10%, 90% { transform: translate3d(-1px, 0, 0); }
   20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -146,6 +153,8 @@ button {
   text-rendering: auto;
   -webkit-font-smoothing: auto;
   transition: font-size var(--layout-transition-time);
+  webkit-user-select: none;
+  user-select: none;
 }
 
 #nn-window > #nn-menu > #face svg  {

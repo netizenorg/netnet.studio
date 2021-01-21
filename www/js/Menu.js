@@ -111,7 +111,7 @@ class Menu {
         leftEye: '◉', mouth: '⌄', rightEye: '☉', lookAtCursor, animation: 'processing'
       },
       happy: {
-        leftEye: '◠', mouth: '◡', rightEye: '◠', lookAtCursor, animation: 'bounce'
+        leftEye: 'ᴖ', mouth: '◡', rightEye: 'ᴖ', lookAtCursor, animation: 'spring-up'
       },
       upset: {
         leftEye: '⇀', mouth: '^', rightEye: '↼', lookAtCursor, animation: 'shake'
@@ -276,6 +276,10 @@ class Menu {
       }, 500)
     } else if (this.face.animation === 'bounce') {
       NNW.menu.ele.querySelector('#face').style.animation = 'bounce 1s'
+      NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
+      NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
+    } else if (this.face.animation === 'spring-up') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'spring-up 0.7s'
       NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
       NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
     } else if (this.face.animation === 'shake') {

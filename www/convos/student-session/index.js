@@ -4,6 +4,7 @@ window.CONVOS['student-session'] = (self) => {
 
   const coreConvo = [{
     id: 'returning-student',
+    before: () => NNW.menu.switchFace('happy'),
     content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('what-to-do'),
@@ -11,6 +12,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'what-to-do',
+    before: () => NNW.menu.switchFace('default'),
     content: 'What do you want to do?',
     options: {
       'I want to learn': (e) => { e.hide(); WIDGETS.open('tutorials-guide') },
@@ -59,10 +61,14 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'name-entered',
+    before: () => NNW.menu.switchFace('happy'),
     content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?`,
     options: {
       'I want to learn': (e) => e.goTo('coming-soon'),
-      'I want to sketch': (e) => WIDGETS['functions-menu'].newSketch()
+      'I want to sketch': (e) => {
+        NNW.menu.switchFace('default')
+        WIDGETS['functions-menu'].newSketch()
+      }
     }
   }, {
     id: 'make-one-up',
@@ -70,11 +76,15 @@ window.CONVOS['student-session'] = (self) => {
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'diff-user',
-    before: () => self.clearAllData(),
+    before: () => {
+      NNW.menu.switchFace('default')
+      self.clearAllData()
+    },
     content: 'Woops! someone else might have been using this computer before you... sorry about that, where are my manners...',
     options: { 'it\'s ok': (e) => e.goTo('first-time') }
   }, {
     id: 'coming-soon',
+    before: () => NNW.menu.switchFace('default'),
     content: 'Sorry, that feature is still being refactored, should be ready soon.',
     options: { 'ah, ok': (e) => e.hide() }
   }]
