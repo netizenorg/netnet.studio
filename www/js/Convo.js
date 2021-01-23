@@ -108,6 +108,8 @@ class Convo {
         }
       }
 
+      NNW.menu.textBubble.$('.text-bubble-options').children[0].focus()
+
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)
     }, time)
