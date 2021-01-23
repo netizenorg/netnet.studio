@@ -72,7 +72,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'make-one-up',
-    content: 'Sorry, that feature is still being refactored, should be ready soon.',
+    content: 'Sorry, that feature is still being refactored, should be ready again soon.',
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'diff-user',
@@ -85,7 +85,7 @@ window.CONVOS['student-session'] = (self) => {
   }, {
     id: 'coming-soon',
     before: () => NNW.menu.switchFace('default'),
-    content: 'Sorry, that feature is still being refactored, should be ready soon.',
+    content: 'Sorry, that feature is still being refactored, should be ready again soon.',
     options: { 'ah, ok': (e) => e.hide() }
   }]
 

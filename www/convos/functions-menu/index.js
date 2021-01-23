@@ -124,7 +124,7 @@ window.CONVOS['functions-menu'] = (self) => {
     after: () => NNW.menu.switchFace('default')
   }, {
     id: 'coming-soon',
-    content: 'Sorry, that feature is still being refactored, should be ready soon.',
+    content: 'Sorry, that feature is still being refactored, should be ready again soon.',
     options: { 'ah, ok': (e) => e.hide() }
   }]
 }
