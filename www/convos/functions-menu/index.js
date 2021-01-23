@@ -28,8 +28,12 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later I\'ll give you the option to pick back up where you left off.',
     options: {
       'ok thanks!': (e) => e.hide(),
-      'session data?': () => WIDGETS.open('student-session'),
-      'I want to share it with others': (e) => e.goTo('generate-sketch-url')
+      'Can I download it?': (e) => {
+        e.hide()
+        self.downloadCode()
+      },
+      'Can I share it': (e) => self.shareSketch(),
+      'session data?': () => WIDGETS.open('student-session')
     }
   }, {
     id: 'blank-canvas-ready',

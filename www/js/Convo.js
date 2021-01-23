@@ -108,7 +108,8 @@ class Convo {
         }
       }
 
-      NNW.menu.textBubble.$('.text-bubble-options').children[0].focus()
+      const firstOpt = NNW.menu.textBubble.$('.text-bubble-options').children[0]
+      if (firstOpt) firstOpt.focus()
 
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)

@@ -8,29 +8,29 @@ class FunctionsMenu extends Widget {
     this.listed = true
     this.resizable = false
 
-    const ghAuthedMenu = [
-      {
-        click: 'codeReview',
-        alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
-      },
-      {
-        click: 'tidyCode',
-        alts: ['tidy', 'format', 'clean', 'indent'],
-        hrAfter: true
-      },
-      {
-        click: 'saveProject',
-        alts: ['save', 'github', 'project', 'repo', 'repository']
-      },
-      {
-        click: 'openProject',
-        alts: ['open', 'github', 'project', 'repo', 'repository']
-      },
-      {
-        click: 'newProject',
-        alts: ['new', 'blank', 'start', 'fresh', 'canvas']
-      }
-    ]
+    // const ghAuthedMenu = [
+    //   {
+    //     click: 'codeReview',
+    //     alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
+    //   },
+    //   {
+    //     click: 'tidyCode',
+    //     alts: ['tidy', 'format', 'clean', 'indent'],
+    //     hrAfter: true
+    //   },
+    //   {
+    //     click: 'saveProject',
+    //     alts: ['save', 'github', 'project', 'repo', 'repository']
+    //   },
+    //   {
+    //     click: 'openProject',
+    //     alts: ['open', 'github', 'project', 'repo', 'repository']
+    //   },
+    //   {
+    //     click: 'newProject',
+    //     alts: ['new', 'blank', 'start', 'fresh', 'canvas']
+    //   }
+    // ]
 
     const noAuthedMenu = [
       {
@@ -237,7 +237,7 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'ok-processing')
     const time = utils.getVal('--layout-transition-time')
     setTimeout(() => {
-      const data = { hash: window.location.hash }
+      const data = { hash: NNE.generateHash() }
       utils.post('./api/shorten-url', data, (res) => {
         if (!res.success) {
           NNW.menu.switchFace('upset')
@@ -353,9 +353,11 @@ class FunctionsMenu extends Widget {
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].textContent.includes('runUpdate')) {
           hideIf(btns[i], NNE.autoUpdate)
-        } else if (btns[i].textContent.includes('changeLayout')) {
-          hideIf(btns[i], NNW.layout === 'welcome')
         }
+        // NOTE: ...should we hide (or not) welcome layout in drop down?
+        // else if (btns[i].textContent.includes('changeLayout')) {
+        //   hideIf(btns[i], NNW.layout === 'welcome')
+        // }
       }
     }
   }
@@ -379,7 +381,8 @@ class FunctionsMenu extends Widget {
     this.autoUpdateSel.value = this.sesh.getData('auto-update')
     this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
     this.layoutsSel = this.$('#func-menu-layout-select')
-    NNW.layouts.filter(l => l !== 'welcome')
+    NNW.layouts
+      // .filter(l => l !== 'welcome') // NOTE: see other note
       .forEach(l => this._creatOption(l, this.layoutsSel))
     this.themesSel = this.$('#func-menu-themes-select')
     Object.keys(NNE.themes).forEach(l => this._creatOption(l, this.themesSel))
