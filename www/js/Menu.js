@@ -115,10 +115,13 @@ class Menu {
       },
       upset: {
         leftEye: '⇀', mouth: '^', rightEye: '↼', lookAtCursor, animation: 'shake'
+      },
+      menu: {
+        leftEye: '◕', mouth: '✖', rightEye: '◕', lookAtCursor: true
       }
     }
     if (commonFaces[type]) newFace(commonFaces[type])
-    else console.warn(`netnet: there is no ${type} face`)
+    else console.warn(`netnet: there is no ${type} face`, type)
   }
 
   toggleMenu (show) {
@@ -127,8 +130,10 @@ class Menu {
 
     if (show && this.textBubble.opened) window.convo.hide()
 
-    if (show) this.updateFace({ mouth: '✖' })
-    else this.updateFace({ mouth: '◞' })
+    if (typeof NNW !== 'undefined') {
+      if (show) this.switchFace('menu')
+      else this.switchFace('default')
+    }
 
     const radius = this.items.children.length * 25
     this.items.querySelectorAll('menu-item').forEach(item => {
@@ -296,6 +301,7 @@ class Menu {
     const offX = x - pos.x
     const offY = y - pos.y
     const rot = Math.atan2(offY, offX) + Math.PI * 0.75
+    if (!eye) return
     eye.querySelector('svg').style.transform = `rotate(${rot}rad)`
   }
 

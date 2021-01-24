@@ -111,21 +111,28 @@ class KeyboardShortcuts extends Widget {
       {
         hidden: true,
         key: `${utils.hotKey()} + 1`,
-        nfo: 'launch streaming video widget',
+        nfo: 'launch tutorial maker',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 49,
         callback: (e) => {
-          // TEMP... open video streaming widget
-          WIDGETS.open('stream-video')
+          WIDGETS.open('tutorial-maker')
         }
       },
       {
         hidden: true,
         key: `${utils.hotKey()} + 2`,
-        nfo: 'launch tutorial maker',
+        nfo: 'launch video stream/recorder',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 50,
         callback: (e) => {
-          // TEMP... open tutorial maker widget
-          WIDGETS.open('tutorial-maker')
+          WIDGETS.open('stream-video')
+        }
+      },
+      {
+        hidden: true,
+        key: `${utils.hotKey()} + 3`,
+        nfo: 'launch netitor key logger',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 51,
+        callback: (e) => {
+          WIDGETS.open('netitor-logger')
         }
       }
     ]

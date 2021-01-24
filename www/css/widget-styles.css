@@ -218,6 +218,17 @@
   opacity: 1;
 }
 
+.widget > .w-innerHTML input[type="text"] {
+  background-color: var(--netizen-meta);
+  font-family: 'fira-mono-regular', monospace;
+  color: var(--netizen-hint-color);
+  padding: 6px;
+  border: none;
+  margin: 6px;
+  width: 250px;
+  border-radius: 5px;
+}
+
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* styles for specific sub menu widgets */

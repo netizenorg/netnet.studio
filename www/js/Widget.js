@@ -231,6 +231,8 @@ class Widget {
     this.ele.style.transition = `all ${t} var(--sarah-ease)`
     // trigger transition
     setTimeout(() => {
+      // NOTE: width && height should alwasy be set before left, top, etc
+      // if props called in other order than _css won't render right
       for (const prop in opts) this._css(prop, opts[prop])
       setTimeout(() => {
         this.ele.style.transition = 'none'
@@ -249,14 +251,14 @@ class Widget {
   keepInFrame () {
     const o = this.ele.offsetTop + this.ele.offsetHeight
     if (o > window.innerHeight - 10) this.update({ bottom: 10 }, 500)
-
-    if (this.ele.offsetTop < 2) this.top = 2
+    else if (this.ele.offsetTop < 2) this.update({ top: 10 }, 500)
     else if (this.ele.offsetTop > window.innerHeight) {
       this.bottom = 2
     }
-    if (this.ele.offsetLeft < 2) this.left = 2
+    if (this.ele.offsetLeft < 2) this.update({ left: 10 }, 500)
     else if (this.ele.offsetLeft > window.innerWidth) {
-      this.left = window.innerWidth - this.ele.offsetWidth - 10
+      const l = window.innerWidth - this.ele.offsetWidth - 10
+      this.update({ left: l }, 500)
     }
   }
 
@@ -402,12 +404,16 @@ class Widget {
       this.ele.style[prop] = (typeof val === 'number') ? `${val}px` : val
     } else if (p.includes(prop)) {
       if (prop === 'left' || prop === 'right') {
+        const width = parseInt(this.ele.style.width)
+          ? parseInt(this.ele.style.width) : this.width
         const left = (prop === 'left')
-          ? val : window.innerWidth - val - this.width
+          ? val : window.innerWidth - val - width
         this.ele.style.left = `${left}px`
       } else { // top || bottom
+        const height = parseInt(this.ele.style.height)
+          ? parseInt(this.ele.style.height) : this.height
         const top = (prop === 'top')
-          ? val : window.innerHeight - val - this.height
+          ? val : window.innerHeight - val - height
         this.ele.style.top = `${top}px`
       }
     } else {

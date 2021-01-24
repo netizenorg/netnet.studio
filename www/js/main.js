@@ -10,6 +10,9 @@ const NNE = new Netitor({
 
 window.NNW = new NetNet()
 
+// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* INITIAL LOAD
+
 const initWidgets = [
   'FunctionsMenu.js',
   'StudentSession.js',

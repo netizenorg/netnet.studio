@@ -14,6 +14,7 @@
   opacity: 0;
   transition: opacity var(--menu-fades-time) var(--sarah-ease);
   grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
   padding-top: 24px;
 }
 

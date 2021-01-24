@@ -10,3 +10,14 @@ data/feedback-reports
 
 # ignoring large media files
 data/videos/*
+
+data/videos/*
+!www/videos/screen-saver.mp4
+!www/videos/screen-saver.ogv
+!www/videos/screen-saver.webm
+
+www/tutorials/*/*.mp4
+www/tutorials/*/*.webm
+www/tutorials/*/*.ogv
+www/tutorials/demo
+www/tutorials/test

@@ -61,14 +61,39 @@ class NetNet {
   get theme () { return NNE.theme }
   set theme (v) { this.updateTheme(v) }
 
+  get tbWidth () {
+    const m = 5 // option bubble margin
+    const stacked = ['dock-left', 'full-screen']
+    const btns = this.menu.textBubble.$('.text-bubble-options > button')
+    if (btns.length && btns.length > 0) {
+      if (stacked.includes(this.layout)) return [...btns][0].offsetWidth
+      else return [...btns].map(b => b.offsetWidth).reduce((a, b) => a + b + m)
+    } else return 0
+  }
+
+  get tbLeft () {
+    const zeros = ['dock-left', 'full-screen', 'dock-bottom']
+    const left = (zeros.includes(this.layout)) ? 0 : this.win.offsetLeft
+    const nnw = this.win.offsetWidth
+    const ro = (['dock-left', 'full-screen'].includes(this.layout)) ? 0 : 58
+    const tbw = this.tbWidth + ro // + right offset
+    return left - (tbw - nnw)
+  }
+
   get width () {
-    const options = this.menu.textBubble.$('.text-bubble-options').offsetWidth
-    const nnwindow = this.win.offsetWidth
-    const textBubble = this.menu.textBubble.offsetWidth
-    const width = nnwindow > textBubble
-      ? nnwindow : textBubble > options
-        ? textBubble : options
-    return width
+    const ro = (['dock-left', 'full-screen'].includes(this.layout)) ? 0 : 58
+    const options = this.tbWidth + ro // + right offset
+    const nnw = this.win.offsetWidth
+    const arr = (this.layout === 'dock-left') ? 27 : 0 // tb arrow width
+    const textBubble = this.menu.textBubble.offsetWidth + arr
+    const ignoreBubble = ['full-screen', 'dock-bottom']
+    const maxWidth = ['separate-window', 'welcome']
+    if (ignoreBubble.includes(this.layout)) return nnw
+    else if (maxWidth.includes(this.layout)) {
+      return Math.max(nnw, options, textBubble)
+    } else { // dock-left
+      return nnw + Math.max(options, textBubble)
+    }
   }
 
   get height () {
@@ -77,6 +102,40 @@ class NetNet {
     const textBubble = this.menu.textBubble.offsetHeight
     const margin = 4
     return nnwindow + margin + options + textBubble
+  }
+
+  get left () {
+    const nnw = this.win.offsetWidth
+    const tbw = this.tbWidth + 58 // + right offset (~58)
+    const zero = ['dock-left', 'full-screen', 'dock-bottom']
+    if (zero.includes(this.layout)) return 0
+    else if (['welcome', 'separate-window'].includes(this.layout)) {
+      if (tbw > nnw) return this.tbLeft
+      else return this.win.offsetLeft
+    } else return this.win.offsetLeft
+  }
+
+  get right () {
+    if (['full-screen', 'dock-bottom'].includes(this.layout)) return 0
+    const fromLeft = this.left + this.width
+    return window.innerWidth - fromLeft
+  }
+
+  get top () {
+    const options = this.menu.textBubble.$('.text-bubble-options').offsetHeight
+    const textBubble = this.menu.textBubble.offsetHeight
+    const margin = 11 // 4
+    const top = this.win.offsetTop - options - textBubble - margin
+    if (['full-screen', 'dock-left'].includes(this.layout)) return 0
+    else return top
+  }
+
+  get bottom () {
+    const fromTop = this.top + this.height
+    const bottom = window.innerHeight - fromTop
+    const zero = ['dock-left', 'full-screen', 'dock-bottom']
+    if (zero.includes(this.layout)) return 0
+    else return bottom
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -156,8 +215,8 @@ class NetNet {
     if (this._centerTO) clearTimeout(this._centerTO)
     this._centerTO = setTimeout(() => {
       this.win.style.left = window.innerWidth / 2 - this.width / 2 + 'px'
-      this.win.style.top = window.innerHeight / 2 - this.height / 2 + 'px'
-      this.win.style.opacity = 1
+      this.win.style.top = window.innerHeight / 2 - this.win.offsetHeight / 2 + 'px'
+      this.win.style.opacity = 1 // display if hidden via shared link URL
       const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
       if (tbWasOpened) this.menu.updatePosition()
       this._canvasResize()
@@ -168,41 +227,15 @@ class NetNet {
     }, 10)
   }
 
-  keepInFrame () { // ensure that the textBubble is always readable in frame
-    setTimeout(() => {
-      // 35 is the "bottom =" offset +a little extra, see NNW.menu.updatePosition()
-      const offset = this.win.offsetTop - this.menu.textBubble.offsetHeight - 35
-      if (offset < 0) {
-        this.win.style.transition = 'top .5s var(--sarah-ease)'
-        setTimeout(() => {
-          const t = this.win.offsetTop + Math.abs(offset)
-          this.win.style.top = `${t + 10}px` // +10 for a little space
-          setTimeout(() => { this.win.style.transition = 'none' }, 500)
-        }, 10)
-      }
-      // check if text-bubbles are going off-frame left
-      if (this.layout === 'welcome' || this.layout === 'separate-window') {
-        const winRight = this.win.offsetLeft + this.win.offsetWidth
-        let tbWidth = 0
-        const btns = this.menu.textBubble.$('.text-bubble-options > button')
-        // +5 button margin
-        if (btns && btns.length > 0) btns.forEach(b => { tbWidth += b.offsetWidth + 5 })
-        else if (btns) { tbWidth += btns.offsetWidth + 5 }
-        // 0.8 b/c .text-bubble-options width:80%;
-        // divided by 2, b/c .text-bubble-options translateX(-50%)
-        const nudge = (this.menu.textBubble.offsetWidth -
-          (this.menu.textBubble.offsetWidth * 0.8)) / 2
-        if (tbWidth + nudge > winRight) {
-          this.win.style.transition = 'top .5s var(--sarah-ease)'
-          setTimeout(() => {
-            let l = this.win.offsetLeft
-            l += tbWidth + nudge - winRight
-            this.win.style.left = `${l + 20}px` // +20 for a little space
-            setTimeout(() => { this.win.style.transition = 'none' }, 500)
-          }, 10)
-        }
-      }
-    }, utils.getVal('--layout-transition-time'))
+  keepInFrame () {
+    const pad = 10
+    const time = utils.getVal('--layout-transition-time')
+    if (['welcome', 'separate-window'].includes(this.layout)) {
+      if (this.bottom < 0) this.update({ bottom: pad }, time)
+      else if (this.top < 0) this.update({ top: pad }, time)
+      if (this.left < 0) this.update({ left: pad }, time)
+      else if (this.right < 0) this.update({ right: pad }, time)
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
@@ -219,11 +252,16 @@ class NetNet {
     }
 
     this._updateCursor(e)
-    if (this.mousedown) this._resizeWindow(e)
+    if (this.mousedown) {
+      this._toss('before', e)
+      this._resizeWindow(e)
+    }
     if (this.cursor === 'move') this._moveWindow(e)
   }
 
-  _mouseUp () {
+  _mouseUp (e) {
+    if (this.mousedown) this._toss('after')
+    if (this.mousedown) this.keepInFrame()
     this.mousedown = false
     this.cursor = 'auto'
     this.winOff = null
@@ -236,7 +274,28 @@ class NetNet {
     else if (e.target.id === 'nn-menu' && mw) {
       this.mousedown = true
       this.cursor = 'move'
+      utils.selecting(false)
       this.win.style.cursor = this.cursor
+    }
+  }
+
+  _toss (when, e) {
+    const mem = 3
+    const max = 200
+    if (this.layout !== 'welcome') return
+    if (when === 'before') {
+      if (!this._m) this._m = []
+      else if (this._m.length > mem) this._m.shift()
+      this._m.push({ x: e.clientX, y: e.clientY })
+    } else if (when === 'after' && this._m) {
+      const i = this._m.length - 1
+      let x = Math.round(Math.pow(this._m[i].x - this._m[0].x, 2) / 50)
+      let y = Math.round(Math.pow(this._m[i].y - this._m[0].y, 2) / 50)
+      if (x > max) x = max
+      if (y > max) y = max
+      if (this._m[0].x > this._m[i].x) x = -x
+      if (this._m[0].y > this._m[i].y) y = -y
+      this.update({ left: this.left + x, top: this.top + y }, 500)
     }
   }
 
@@ -324,14 +383,21 @@ class NetNet {
     const l = (this.layout !== 'welcome' || this.layout !== 'separate-window')
     const p = ['top', 'right', 'bottom', 'left']
     const s = ['width', 'height']
-    const bw = this.menu.textBubble.$('.text-bubble-options').offsetWidth
+
+    const ro = (['dock-left', 'full-screen'].includes(this.layout)) ? 0 : 58
+    const tbw = this.menu.textBubble.$('.text-bubble-options').offsetWidth
+    const bw = Math.max(tbw, this.tbWidth + ro)
     const ww = this.win.offsetWidth
-    const bh = this.menu.textBubble.$('.text-bubble-options').offsetHeight +
-      this.menu.textBubble.offsetHeight
-    if (s.includes(prop)) {
+
+    const oh = this.menu.textBubble.$('.text-bubble-options').offsetHeight
+    const tbh = this.menu.textBubble.offsetHeight
+    const bt = oh + tbh + 11 // margin
+    const bh = (['full-screen', 'dock-left'].includes(this.layout)) ? 0 : bt
+
+    if (s.includes(prop)) { // changing size
       if (!l) return
       this.win.style[prop] = (typeof val === 'number') ? `${val}px` : val
-    } else if (p.includes(prop)) {
+    } else if (p.includes(prop)) { // chaning position
       if (!l) return
       if (prop === 'left' || prop === 'right') {
         val = bw > ww ? val + (bw - ww) : val

@@ -1,50 +1,193 @@
-/* global Widget */
+/* global WIDGETS, Widget */
+// TODO: explore: https://webrtc.github.io/samples/src/content/getusermedia/record/
 class StreamVideo extends Widget {
   constructor (opts) {
     super(opts)
-
     this.key = 'stream-video'
     this.listed = false
-    this.rtcOpts = { audio: false, video: true }
 
-    // here's some more example code...
-    this.title = 'streeeeeeamz'
+    this.rtcOpts = {
+      audio: { echoCancellation: true },
+      video: { width: 720, height: 480 }
+    }
+    this.data = []
+    this.recorder = null
+
+    if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
+      WIDGETS.load('NetitorLogger.js')
+    }
+
+    this.on('close', () => {
+      if (window.stream) window.stream.getTracks().forEach(t => t.stop())
+      this._reset()
+    })
+
+    this.title = 'Live Streeeeeeamz'
     this._createHTML(opts)
+  }
+
+  startRecording (keylogger) {
+    this.data = []
+    // NOTE: in future might want to use .isTypeSupported
+    // to check for supported types, like:
+    // 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+    // 'video/webm;codecs=vp9,opus'
+    // 'video/webm;codecs=vp8,opus'
+    const opts = { mimeType: 'video/webm' }
+    this.recorder = new window.MediaRecorder(window.stream, opts)
+    this.recorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) this.data.push(e.data)
+    }
+    this.recorder.onerror = (e) => { this._handleError(e) }
+    this.recorder.onstop = (e) => {
+      window.stream.getTracks().forEach(t => t.stop())
+      this._displayRecording()
+      if (keylogger) WIDGETS['netitor-logger'].stopRecording()
+      this._tempFilename = window.prompt('name your video file')
+    }
+    this.recorder.start()
+    if (keylogger) WIDGETS['netitor-logger'].startRecording()
+  }
+
+  stopRecording () {
+    this.recorder.stop()
+    // this.download()
+  }
+
+  download () {
+    const blob = new window.Blob(this.data, { type: 'video/webm' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    document.body.appendChild(a)
+    a.style = 'display: none'
+    a.href = url
+    a.download = `${this._tempFilename || 'netnet-recording'}.webm`
+    a.click()
+    window.URL.revokeObjectURL(url)
+    setTimeout(() => {
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    }, 100)
   }
 
   // -------------------------- [ view ] ---------------------------------------
 
   _createHTML (opts) {
     this.innerHTML = `
-      <video style="width: 100%;display:none;" autoplay playsinline></video>
-      <button>start streaming</button>
+      <style>
+        @keyframes __av-strm-rec {
+          0% { background: rgba(255, 0, 0, 0); }
+          50% { background: rgba(255, 0, 0, 1);}
+          100% { background: rgba(255, 0, 0, 0); }
+        }
+        .__av-strm-row {
+          display: flex;
+          justify-content: space-around;
+        }
+        .__av-strm-controls {
+          display: none;
+          justify-content: space-around;
+        }
+        .__av-str-post-msg {
+          display: none;
+        }
+      </style>
+      <video name="vid-stream" style="width: 100%;display:none;" autoplay playsinline muted></video>
+      <div class="__rec-opts __av-strm-row">
+        <button name="stream">stream only</button>
+        <button name="record">stream + record</button>
+      </div>
+      <div class="__recorded-videos __av-strm-row ">
+        <div style="margin-top: 15px; text-align: center;">
+          <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
+          <p>(mute your audio or use headphones)</p>
+        </div>
+      </div>
+      <div class="__av-strm-controls">
+        <button name="start-rec">start recording</button>
+        <div>
+          <input type="checkbox" name="av-keylog-sync"> include keylogger
+        </div>
+      </div>
+      <div class="__av-str-post-msg" style="margin-top: 15px">
+        <button name="dl-kl">download</button>
+      </div>
     `
-    this.$('button').addEventListener('click', (e) => this._init(e))
+    this.$('[name="stream"]').addEventListener('click', (e) => this._init(e))
+    this.$('[name="record"]').addEventListener('click', (e) => this._init(e, true))
+    this.$('[name="start-rec"]').addEventListener('click', (e) => {
+      if (e.target.textContent === 'start recording') {
+        e.target.textContent = 'stop'
+        const k = this.$('[name="av-keylog-sync"]').checked
+        e.target.style.animation = '__av-strm-rec 1s infinite'
+        this.startRecording(k)
+      } else {
+        e.target.textContent = 'start recording'
+        e.target.style.animation = 'none'
+        this.stopRecording()
+      }
+    })
+
+    this.$('[name="dl-kl"]').addEventListener('click', () => {
+      this.download()
+      const k = this.$('[name="av-keylog-sync"]').checked
+      if (k) WIDGETS['netitor-logger'].download()
+    })
   }
 
   // -------------------------- [ WebRTC ] ------------------------------------
-  async _init (e) {
+
+  _reset () {
+    this.$('.__av-str-post-msg').style.display = 'none'
+    this.$('[name="vid-stream"]').style.display = 'none'
+    this.$('.__av-strm-controls').style.display = 'none'
+    this.$('.__rec-opts').style.display = 'flex'
+    this.$('.__recorded-videos').innerHTML = `
+    <div style="margin-top: 15px; text-align: center;">
+      <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
+      <p>(mute your audio or use headphones)</p>
+    </div>
+    `
+    this.keepInFrame()
+  }
+
+  _displayRecording () {
+    this.$('[name="vid-stream"]').style.display = 'none'
+    const video = document.createElement('video')
+    video.controls = true
+    const blob = new window.Blob(this.data, { type: 'video/webm' })
+    video.src = window.URL.createObjectURL(blob)
+    this.$('.__recorded-videos').appendChild(video)
+    this.$('.__av-strm-controls').style.display = 'none'
+    this.$('.__av-str-post-msg').style.display = 'block'
+    this.keepInFrame()
+  }
+
+  async _init (e, rec) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(this.rtcOpts)
       this._handleSuccess(stream)
       // e.target.disabled = true
-      this.$('video').style.display = 'inline'
-      e.target.style.display = 'none'
+      this.$('[name="vid-stream"]').style.display = 'inline'
+      this.$('.__rec-opts').style.display = 'none'
+      this.$('.__recorded-videos').innerHTML = ''
+      if (rec) this.$('.__av-strm-controls').style.display = 'flex'
     } catch (e) { this._handleError(e) }
   }
 
   _handleSuccess (stream) {
-    const video = this.$('video')
+    const video = this.$('[name="vid-stream"]')
     const videoTracks = stream.getVideoTracks()
     console.log('Got stream with constraints:', this.rtcOpts)
     console.log(`Using video device: ${videoTracks[0].label}`)
     window.stream = stream // make variable available to browser console
+    video.onloadeddata = () => this.keepInFrame()
     video.srcObject = stream
   }
 
   _handleError (e) {
     window.alert('error! see console')
-    console.log(e)
+    console.error(e)
   }
 }
 
