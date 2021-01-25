@@ -80,7 +80,7 @@ class CSSReference extends Widget {
     // update slide if necessary
     if (eve.type === 'property') this._createPropSlide(eve.data)
 
-    window.convo = new Convo({ content, options })
+    window.convo = new Convo({ content, options }, null, true)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods

@@ -44,7 +44,7 @@ class HTMLReference extends Widget {
     else if (eve.type === 'tag bracket') {
       const content = this.data['tag bracket'].bubble
       const options = { ok: (e) => { NNE.spotlight(null); e.hide() } }
-      window.convo = new Convo({ content, options })
+      window.convo = new Convo({ content, options }, null, true)
       return
     } else if (!eve.nfo) return
 
@@ -76,7 +76,7 @@ class HTMLReference extends Widget {
 
     this._createInfoSlide(eve.type + 's', eve.data, eve.nfo)
 
-    window.convo = new Convo({ content, options })
+    window.convo = new Convo({ content, options }, null, true)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods

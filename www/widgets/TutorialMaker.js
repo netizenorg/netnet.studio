@@ -309,11 +309,19 @@ class TutorialMaker extends Widget {
   _loadData (data) {
     this.keyframes = data.keyframes
     this.widgets = data.widgets
+    NNE.addCustomRoot(`tutorials/${this.metadata.id}/`)
     WIDGETS['hyper-video-player'].loadKeyframes(this.keyframes)
+    if (this.metadata.duration) {
+      WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
+    }
     for (const key in this.widgets) {
       if (!WIDGETS.instantiated.includes(key)) {
         WIDGETS.create(this.widgets[key])
       }
+    }
+    if (this.metadata.jsfile) {
+      const file = `tutorials/${this.metadata.id}/${this.metadata.jsfile}`
+      utils.loadFile(file, () => window.TUTORIAL.init())
     }
     this._updateView()
   }
@@ -529,6 +537,10 @@ class TutorialMaker extends Widget {
     else data.bottom = w.bottom
 
     if (w !== NNW) data.zIndex = w.zIndex
+    if (w === NNW && NNW.layout === 'separate-window') {
+      data.width = NNW.width
+      data.height = NNW.height
+    }
     return data
   }
 }

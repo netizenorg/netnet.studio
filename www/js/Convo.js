@@ -10,14 +10,14 @@ Convo.load('example-convo', () => {
 window.CONVOS = {} // global convos object, contains all loaded convo functions
 
 class Convo {
-  constructor (data, start) {
+  constructor (data, start, ignoreFocus) {
     if (typeof data !== 'object' && !(data instanceof Array)) {
       return console.error('Convo: constructor expects an object or array')
     }
     if (data instanceof Array) this.data = this._mapData(data)
     else this.data = this._mapData([data])
     this.id = start || Object.keys(this.data)[0]
-    this._update(this.id)
+    this._update(this.id, ignoreFocus)
   }
 
   /*
@@ -59,7 +59,7 @@ class Convo {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _update (id) {
+  _update (id, ignoreFocus) {
     this.id = id
     const time = utils.getVal('--menu-fades-time')
     const obj = this.data[this.id]
@@ -109,7 +109,7 @@ class Convo {
       }
 
       const firstOpt = NNW.menu.textBubble.$('.text-bubble-options').children[0]
-      if (firstOpt) firstOpt.focus()
+      if (!ignoreFocus && firstOpt) firstOpt.focus()
 
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)

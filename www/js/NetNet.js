@@ -65,7 +65,7 @@ class NetNet {
     const m = 5 // option bubble margin
     const stacked = ['dock-left', 'full-screen']
     const btns = this.menu.textBubble.$('.text-bubble-options > button')
-    if (btns.length && btns.length > 0) {
+    if (btns && btns.length && btns.length > 0) {
       if (stacked.includes(this.layout)) return [...btns][0].offsetWidth
       else return [...btns].map(b => b.offsetWidth).reduce((a, b) => a + b + m)
     } else return 0

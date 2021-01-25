@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo */
+/* global Widget, WIDGETS, utils, Convo, NNE */
 class TutorialsGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -26,9 +26,10 @@ class TutorialsGuide extends Widget {
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
+      NNE.addCustomRoot(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
-        this._loadVideoPlayer()
+        this._loadTutorial(name)
       })
     })
   }
@@ -156,7 +157,7 @@ class TutorialsGuide extends Widget {
     })
   }
 
-  _loadVideoPlayer () {
+  _loadTutorial (name) {
     WIDGETS.open('hyper-video-player', null, () => {
       if (this.metadata.keylogs) {
         utils.get(`tutorials/${this.loaded}/keylogs.json`, (json) => {
@@ -181,6 +182,15 @@ class TutorialsGuide extends Widget {
         if (!WIDGETS.instantiated.includes(key)) {
           WIDGETS.create(this.data.widgets[key])
         }
+      }
+
+      if (this.metadata.duration) {
+        WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
+      }
+
+      if (this.metadata.jsfile) {
+        const file = `tutorials/${name}/${this.metadata.jsfile}`
+        utils.loadFile(file, () => window.TUTORIAL.init())
       }
     })
   }

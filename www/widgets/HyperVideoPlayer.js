@@ -4,6 +4,7 @@ class HyperVideoPlayer extends Widget {
     super(opts)
     this.key = 'hyper-video-player'
     this.listed = false
+    this.duration = null
 
     this.keyframes = {}
     this.timecodes = []
@@ -41,15 +42,16 @@ class HyperVideoPlayer extends Widget {
 
   updateVideo (name, folder) {
     const path = folder ? `tutorials/${folder}` : 'videos'
-    if (this.video.canPlayType('video/webm') !== '') {
-      this.video.setAttribute('src', `${path}/${name}.webm`)
-    } else if (this.video.canPlayType('video/mp4') !== '') {
+    if (this.video.canPlayType('video/mp4') !== '') {
       this.video.setAttribute('src', `${path}/${name}.mp4`)
+    } else if (this.video.canPlayType('video/webm') !== '') {
+      this.video.setAttribute('src', `${path}/${name}.webm`)
     } else if (this.video.canPlayType('video/ogg') !== '') {
       this.video.setAttribute('src', `${path}/${name}.ogv`)
     } else {
       console.error('HyperVideoPlayer: this browser can\'t play videos')
     }
+    this.duration = this.video.duration
   }
 
   removeVideo () {
@@ -70,7 +72,9 @@ class HyperVideoPlayer extends Widget {
         this.logger.play(this.logger.running, delta)
         this._tempKL = null
       }
-      this._editable(false)
+      const kf = this._mostRecentKeyframe()
+      const b = kf ? this.keyframes[kf.timecode].editable : false
+      this._editable(b)
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
@@ -108,6 +112,7 @@ class HyperVideoPlayer extends Widget {
       this.logger.pause()
       this._tempKL = this._mostRecentKeylog()
       NNE.code = this._tempKL.code
+      this._tempCode = NNE.code
       this.logger.idx = this._tempKL.index
     } else this._tempKL = false
     this._tempCode = NNE.code
@@ -182,7 +187,9 @@ class HyperVideoPlayer extends Widget {
       } else if (kf.code && kf.code !== NNE.code) {
         if (!this.logger.running) this.logger.stop()
         NNE.code = kf.code
+        this._tempCode = NNE.code
       }
+      this._editable(kf.editable)
 
       // UPDATE NETNET'S LAYOUT
       const prevLayout = NNW.layout
@@ -300,7 +307,7 @@ class HyperVideoPlayer extends Widget {
       const margin = 30
       const off = this.ele.offsetLeft + this.$('.progress').offsetLeft + margin
       const pos = (e.clientX - off) / this.$('.progress').offsetWidth
-      this.video.currentTime = pos * this.video.duration
+      this.video.currentTime = pos * this.duration
       this.pause()
       this._updateProgressBar()
       this._resetKeyframeStatus()
@@ -312,7 +319,7 @@ class HyperVideoPlayer extends Widget {
 
   _updateProgressBar () {
     const ct = this.video.currentTime
-    const percentage = Math.round((100 / this.video.duration) * ct)
+    const percentage = Math.round((100 / this.duration) * ct)
     if (!percentage || isNaN(percentage)) return
     this.$('.progress').value = percentage
     this.$('.progress').innerHTML = percentage + '%'

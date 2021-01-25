@@ -138,6 +138,10 @@ window.utils = {
     if (Averigua.isMobile()) return window.utils.mobile()
     if (tutorial) {
       // TODO: load tutorial logix
+      const tm = WIDGETS['tutorials-guide']
+      if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial))
+      else tm.load(tutorial)
+      window.utils.fadeOutLoader(false)
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
       NNE.loadFromHash()
@@ -230,6 +234,17 @@ window.utils = {
     } else {
       document.body.style.userSelect = 'none'
       document.body.style.webkitUserSelect = 'none'
+    }
+  },
+
+  // netitor stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  netitorInput: (e) => {
+    if (NNE.cm.isReadOnly()) {
+      window.convo = new Convo({
+        content: 'Pause the video before you start editing and experimenting with the code.'
+      })
     }
   },
 

@@ -16,8 +16,6 @@ data/videos/*
 !www/videos/screen-saver.ogv
 !www/videos/screen-saver.webm
 
-www/tutorials/*/*.mp4
-www/tutorials/*/*.webm
-www/tutorials/*/*.ogv
-www/tutorials/demo
-www/tutorials/test
+# ignoring tutorial data for now, to avoid bloating things up
+www/tutorials/*
+!www/tutorials/list.json

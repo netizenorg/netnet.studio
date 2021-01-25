@@ -45,6 +45,8 @@ NNE.on('lint-error', (e) => {
   WIDGETS['code-review'].updateIssues(e)
 })
 
+NNE.cm.on('keydown', (e) => utils.netitorInput(e))
+
 NNE.on('edu-info', (e) => {
   if (e.line && e.type) NNE.spotlight(e.line)
   if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)

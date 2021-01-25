@@ -39,7 +39,7 @@ class JSReference extends Widget {
 
     // TODO: update HTML to display corresponding cheatsheet
 
-    window.convo = new Convo({ content, options })
+    window.convo = new Convo({ content, options }, null, true)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
