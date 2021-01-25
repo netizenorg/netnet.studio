@@ -16,7 +16,7 @@ class TutorialsGuide extends Widget {
     this.data = null
     this.loaded = null
     this.width = 500
-    this.height = 300
+    this.height = 345
 
     this.title = 'Learning Guide'
     this._createHTML()
@@ -106,7 +106,7 @@ class TutorialsGuide extends Widget {
       <div class="tutorials-guide">
         <h3 class="tutorials-guide__pre-title">welcome to</h3>
         <h1 class="tutorials-guide__title">The Learning Guide</h1>
-        <section class="tutorials-guide__table">
+        <!-- <section class="tutorials-guide__table">
           <div>
             <h2 class="tutorials-guide__sub-title2">Tutorials</h2>
             <div class="tutorials-guide__list"></div>
@@ -119,9 +119,10 @@ class TutorialsGuide extends Widget {
               <p><span class="tutorials-guide__link" name="html-attr">HTML Attributes List</span></p>
             </div>
           </div>
-        </section>
-        <h2 class="tutorials-guide__sub-title">Disclaimer</h2>
-        <p>Here you'll find an evolving list of interactive tutorials and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p>
+        </section> -->
+        <p>netnet.studio is still very much in progress, we're currently working on new tutorials and guides which will become available here (in BETA-2.0) soon as they're ready. If you're looking for the older Virtual Reality tutorials, those are available in the <a href="https://netnet.sutio/vr">BETA-1.0</a> version. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p>
+        <!-- <h2 class="tutorials-guide__sub-title">Disclaimer</h2>
+        <p>Here you'll find an evolving list of interactive tutorials and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p> -->
         <h2 class="tutorials-guide__sub-title">Thnx</h2>
         <p>netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and devloped by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with creative support from <a href="http://jonsatrom.com/" target="_blank">Jon Satrom</a> and administrative support from <a href="#", target="_blank">Mike Constantino</a>. Our interdisciplinary intern is <a href="http://ilai.link" target="_blank">Ilai Gilbert</a>.</p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a>, the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a> and <a href="https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design" target="_blank">Media Arts and Design at the University of Chicago</a>.</p>
         <div style="height:40px;"><!-- some padding --></div>
@@ -133,28 +134,28 @@ class TutorialsGuide extends Widget {
     this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
     this.ele.querySelector('.w-innerHTML').style.height = '100%'
 
-    const html = WIDGETS['html-reference']
-    this.$('[name="html-ref"]').addEventListener('click', () => {
-      html.slide.updateSlide(html.mainOpts); html.open()
-    })
-    this.$('[name="html-eles"]').addEventListener('click', () => {
-      html.slide.updateSlide(html.eleListOpts); html.open()
-    })
-    this.$('[name="html-attr"]').addEventListener('click', () => {
-      html.slide.updateSlide(html.attrListOpts); html.open()
-    })
-
-    utils.get('tutorials/list.json', (json) => {
-      json.listed.forEach(t => {
-        const div = document.createElement('div')
-        const span = document.createElement('span')
-        span.className = 'tutorials-guide__link'
-        span.textContent = t.txt
-        span.addEventListener('click', () => this.load(t.dir))
-        div.appendChild(span)
-        this.$('.tutorials-guide__list').appendChild(div)
-      })
-    })
+    // const html = WIDGETS['html-reference']
+    // this.$('[name="html-ref"]').addEventListener('click', () => {
+    //   html.slide.updateSlide(html.mainOpts); html.open()
+    // })
+    // this.$('[name="html-eles"]').addEventListener('click', () => {
+    //   html.slide.updateSlide(html.eleListOpts); html.open()
+    // })
+    // this.$('[name="html-attr"]').addEventListener('click', () => {
+    //   html.slide.updateSlide(html.attrListOpts); html.open()
+    // })
+    //
+    // utils.get('tutorials/list.json', (json) => {
+    //   json.listed.forEach(t => {
+    //     const div = document.createElement('div')
+    //     const span = document.createElement('span')
+    //     span.className = 'tutorials-guide__link'
+    //     span.textContent = t.txt
+    //     span.addEventListener('click', () => this.load(t.dir))
+    //     div.appendChild(span)
+    //     this.$('.tutorials-guide__list').appendChild(div)
+    //   })
+    // })
   }
 
   _loadTutorial (name) {

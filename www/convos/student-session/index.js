@@ -64,7 +64,7 @@ window.CONVOS['student-session'] = (self) => {
     before: () => NNW.menu.switchFace('happy'),
     content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?`,
     options: {
-      'I want to learn': (e) => e.goTo('coming-soon'),
+      'I want to learn': (e) => { e.hide(); WIDGETS.open('tutorials-guide') },
       'I want to sketch': (e) => {
         NNW.menu.switchFace('default')
         WIDGETS['functions-menu'].newSketch()
@@ -110,7 +110,7 @@ window.CONVOS['student-session'] = (self) => {
     id: 'made-up-name-entered',
     content: 'Like i said, I\'m netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?',
     options: {
-      'I want to learn': (e) => e.goTo('coming-soon'),
+      'I want to learn': (e) => { e.hide(); WIDGETS.open('tutorials-guide') },
       'I want to sketch': (e) => WIDGETS['functions-menu'].newSketch()
     }
   }, {
