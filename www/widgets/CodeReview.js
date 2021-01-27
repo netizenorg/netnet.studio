@@ -25,7 +25,8 @@ class CodeReview extends Widget {
     if (e) this.issues = e
     this._markErrors(this.issues)
     const list = this.$('.code-review')
-    list.innerHTML = `<h3>No issues were found in this ${t}</h3>`
+    if (this.issues.length > 0) list.innerHTML = ''
+    else list.innerHTML = `<h3>No issues were found in this ${t}</h3>`
     this.issues.forEach((err, i) => this._createErrDiv(err, i))
   }
 
