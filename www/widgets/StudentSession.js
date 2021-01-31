@@ -4,7 +4,7 @@ class StudentSession extends Widget {
     super(opts)
     this.key = 'student-session'
     this.listed = true
-    this.keywords = ['login', 'logout', 'session', 'user', 'account', 'me', 'my', 'data']
+    this.keywords = ['github', 'login', 'logout', 'session', 'user', 'account', 'me', 'my', 'data']
 
     this.title = 'Your Session Data'
     this.greeted = false
@@ -30,9 +30,11 @@ class StudentSession extends Widget {
         repos: ls.getItem('repos'),
         openedProject: ls.getItem('opened-project'),
         projectURL: ls.getItem('project-url'),
+        branch: ls.getItem('branch'),
         indexSha: ls.getItem('index-sha'),
         lastCommitMsg: ls.getItem('last-commit-msg'),
-        lastCommitCode: ls.getItem('last-commit-code')
+        lastCommitCode: ls.getItem('last-commit-code'),
+        ghpages: ls.getItem('ghpages')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -77,6 +79,13 @@ class StudentSession extends Widget {
     window.localStorage.setItem('last-saved-sketch', NNE.code)
     window.localStorage.setItem('last-saved-layout', NNW.layout)
     window.localStorage.setItem('last-saved-widgets', JSON.stringify(wigs))
+    this._createHTML()
+  }
+
+  clearSaveState () {
+    window.localStorage.removeItem('last-saved-sketch')
+    window.localStorage.removeItem('last-saved-layout')
+    window.localStorage.removeItem('last-saved-widgets')
   }
 
   restoreSavePoint () {
@@ -98,12 +107,15 @@ class StudentSession extends Widget {
     if (data.message) ls.setItem('last-commit-msg', data.message)
     if (data.sha) ls.setItem('index-sha', data.sha)
     if (data.url) ls.setItem('project-url', data.url)
+    if (data.ghpages) ls.setItem('ghpages', data.ghpages)
+    if (data.branch) ls.setItem('branch', data.branch)
     if (data.code) {
       // for some reason GitHub adds a '\n' at the end of the base64 string?
       const c = (data.code.indexOf('\n') === data.code.length - 1)
         ? data.code.substr(0, data.code.length - 1) : data.code
       ls.setItem('last-commit-code', c)
     }
+    this._createHTML()
   }
 
   clearProjectData () {
@@ -112,34 +124,72 @@ class StudentSession extends Widget {
     window.localStorage.removeItem('last-commit-code')
     window.localStorage.removeItem('index-sha')
     window.localStorage.removeItem('project-url')
+    window.localStorage.removeItem('ghpages')
+    window.localStorage.removeItem('branch')
     NNE.addCustomRoot(null)
+    if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
+    this._createHTML()
   }
 
   clearAllData () {
     window.localStorage.clear()
     this._init()
     this.deleteGitHubSession()
+    this.greetStudent()
   }
 
   deleteGitHubSession () {
     utils.get('./api/github/clear-cookie', (res) => {
+      this.authStatus = false
       this.clearProjectData()
-      console.log(res)
-      // TODO: message confirming + explaining
+      this.setData('owner', null)
+      this.setData('repos', null)
+      this._createHTML()
+      WIDGETS['functions-menu'].gitHubUpdated(false)
     })
   }
 
   authGitHubSession () {
-    // TODO...
-    window.convo = new Convo(this.convos, 'coming-soon')
+    utils.get('api/github/client-id', (json) => {
+      const id = `client_id=${json.message}`
+      const scope = 'scope=public_repo'
+      const url = `https://github.com/login/oauth/authorize?${id}&${scope}`
+      const a = document.createElement('a')
+      a.setAttribute('download', 'index.html')
+      a.setAttribute('href', url)
+      a.click()
+    })
+  }
+
+  chatGitHubAuth () {
+    window.convo = new Convo(this.convos, 'github-auth')
+  }
+
+  initGitHubData (json) {
+    if (json.success) {
+      utils.get('/api/github/username', (json) => {
+        if (json.data) this.setData('owner', json.data.login)
+        WIDGETS['functions-menu'].gitHubUpdated(true)
+      })
+      utils.get('/api/github/saved-projects', (json) => {
+        if (!json.data) return
+        const names = json.data.map(o => o.name)
+        this.setData('repos', names.join(', '))
+        WIDGETS['functions-menu'].gitHubProjectsUpdated()
+      })
+    } else {
+      this.authStatus = false
+      WIDGETS['functions-menu'].gitHubUpdated(false)
+    }
   }
 
   updateRoot () {
     const owner = window.localStorage.getItem('owner')
     const repo = window.localStorage.getItem('opened-project')
+    const main = window.localStorage.getItem('branch')
     if (owner && repo) {
       // TODO: address master v main change
-      const path = `https://raw.githubusercontent.com/${owner}/${repo}/main/`
+      const path = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
       NNE.addCustomRoot(path)
     } else {
       NNE.addCustomRoot(null)
@@ -168,7 +218,10 @@ class StudentSession extends Widget {
   }
 
   checkForSavePoint () {
-    if (typeof this.getData('last-saved-sketch') === 'string') {
+    if (typeof this.getData('opened-project') === 'string') {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'prior-opened-project')
+    } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {
       WIDGETS['functions-menu'].newSketch()
@@ -219,6 +272,8 @@ class StudentSession extends Widget {
       this.setData('theme', 'dark')
     }
     NNW.theme = this.data.editor.theme || 'dark'
+
+    utils.get('/api/github/auth-status', (json) => this.initGitHubData(json))
   }
 
   _onOpen () {
@@ -265,6 +320,7 @@ class StudentSession extends Widget {
         }
       </style>
       <div class="student-session">
+        <button name="reboot" style="align-self: flex-start;">Clear All My Data</button>
         <button name="general-data">?</button>
         <div>
           name:
@@ -289,7 +345,10 @@ class StudentSession extends Widget {
         </div>
         <div>
           opened widgets:
-          <input value="${this.data.lastSave.widgets}" readonly="readonly">
+          <input value="${
+            this.data.lastSave.widgets
+              ? this.data.lastSave.widgets.replace(/"/g, "'") : ''
+          }" readonly="readonly">
         </div>
         <h2><span>GitHub Data</span> <button name="github-data">?</button></h2>
         <div>
@@ -305,8 +364,16 @@ class StudentSession extends Widget {
           <input  value="${this.data.github.openedProject}" readonly="readonly">
         </div>
         <div>
+          branch:
+          <input  value="${this.data.github.branch}" readonly="readonly">
+        </div>
+        <div>
           project url:
           <input  value="${this.data.github.projectURL}" readonly="readonly">
+        </div>
+        <div>
+          hosted url:
+          <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
         <div>
           last commit code:
@@ -330,7 +397,7 @@ class StudentSession extends Widget {
 
     this.$('button[name="github"]').addEventListener('click', () => {
       if (this.authStatus) this.deleteGitHubSession()
-      else this.authGitHubSession()
+      else this.chatGitHubAuth()
     })
 
     this.$('button').forEach(b => b.addEventListener('click', (e) => {
@@ -347,13 +414,14 @@ class StudentSession extends Widget {
       utils.openPrivacyPolicy()
     })
 
+    this.$('[name="reboot"]').addEventListener('click', () => {
+      window.convo = new Convo(this.convos, 'reboot-session')
+    })
+
     this.title = 'Your Session Data'
     this.ele.style.padding = '5px 5px 10px'
     this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
     this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
-
-    // this.$('.student-session__title')
-    //   .addEventListener('click', () => this._ranColor())
   }
 }
 

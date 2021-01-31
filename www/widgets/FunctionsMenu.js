@@ -8,31 +8,7 @@ class FunctionsMenu extends Widget {
     this.listed = true
     this.resizable = false
 
-    // const ghAuthedMenu = [
-    //   {
-    //     click: 'codeReview',
-    //     alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
-    //   },
-    //   {
-    //     click: 'tidyCode',
-    //     alts: ['tidy', 'format', 'clean', 'indent'],
-    //     hrAfter: true
-    //   },
-    //   {
-    //     click: 'saveProject',
-    //     alts: ['save', 'github', 'project', 'repo', 'repository']
-    //   },
-    //   {
-    //     click: 'openProject',
-    //     alts: ['open', 'github', 'project', 'repo', 'repository']
-    //   },
-    //   {
-    //     click: 'newProject',
-    //     alts: ['new', 'blank', 'start', 'fresh', 'canvas']
-    //   }
-    // ]
-
-    const noAuthedMenu = [
+    this.ghAuthedMenu = [
       {
         click: 'codeReview',
         alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
@@ -43,16 +19,54 @@ class FunctionsMenu extends Widget {
         hrAfter: true
       },
       {
-        click: 'saveSketch',
-        alts: ['progress', 'save', 'state']
+        click: 'uploadAssets',
+        alts: ['files', 'upload', 'assets'],
+        hrAfter: true
+      },
+      {
+        click: 'newProject',
+        alts: ['new', 'blank', 'start', 'fresh', 'canvas']
+      },
+      {
+        click: 'openProject',
+        alts: ['open', 'github', 'project', 'repo', 'repository']
+      },
+      {
+        click: 'saveProject',
+        alts: ['save', 'github', 'project', 'repo', 'repository'],
+        hrAfter: true
+      },
+      {
+        click: 'publishProject',
+        alts: ['host', 'github', 'publish', 'public']
+      },
+      {
+        click: 'shareProject',
+        alts: ['share', 'github', 'project', 'link']
+      }
+    ]
+
+    this.noAuthedMenu = [
+      {
+        click: 'codeReview',
+        alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
+      },
+      {
+        click: 'tidyCode',
+        alts: ['tidy', 'format', 'clean', 'indent'],
+        hrAfter: true
+      },
+      {
+        click: 'newSketch',
+        alts: ['new', 'sketch', 'blank', 'canvas']
       },
       {
         click: 'shareSketch',
         alts: ['share', 'link', 'save']
       },
       {
-        click: 'newSketch',
-        alts: ['new', 'sketch', 'blank', 'canvas'],
+        click: 'saveSketch',
+        alts: ['progress', 'save', 'state'],
         hrAfter: true
       },
       {
@@ -65,7 +79,7 @@ class FunctionsMenu extends Widget {
       }
     ]
 
-    const editorSettingsMenu = [
+    this.editorSettingsMenu = [
       {
         click: 'autoUpdate',
         alts: ['update', 'render', 'auto', 'compile'],
@@ -87,12 +101,6 @@ class FunctionsMenu extends Widget {
       }
     ]
 
-    this.subs = {}
-    // TODO: if user is authenticated show auth menu, otherwise other menu
-    // this.subs['my project'] = ghAuthedMenu
-    this.subs['my sketch'] = noAuthedMenu
-    this.subs['editor settings'] = editorSettingsMenu
-
     this._createHTML()
     this._initValues()
     this._setupListeners()
@@ -105,7 +113,6 @@ class FunctionsMenu extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   codeReview () {
-    // TODO: once new erorr system widget is finished
     WIDGETS.open('code-review')
   }
 
@@ -113,23 +120,70 @@ class FunctionsMenu extends Widget {
     NNE.tidy()
   }
 
-  saveProject () {
-    // TODO: once github functionality is updated
-    window.convo = new Convo(this.convos, 'coming-soon')
+  uploadAssets () {
+    WIDGETS.open('project-files')
   }
 
-  openProject () {
-    // TODO: once github functionality is updated
-    window.convo = new Convo(this.convos, 'coming-soon')
+  saveProject (redirect) {
+    const op = WIDGETS['student-session'].data.github.openedProject
+    if (op) {
+      this.convos = window.CONVOS[this.key](this)
+      this._redirect = redirect // if trying to create 'new-project' or 'open-project'
+      const msg = WIDGETS['student-session'].getData('last-commit-msg')
+      if (msg === 'netnet initialized repo' || msg === 'Initial commit') {
+        window.convo = new Convo(this.convos, 'save-newish-project')
+      } else {
+        window.convo = new Convo(this.convos, 'save-open-project')
+      }
+    } else {
+      this.newProject()
+    }
   }
 
   newProject () {
-    // TODO: once github functionality is updated
-    window.convo = new Convo(this.convos, 'coming-soon')
+    const op = WIDGETS['student-session'].data.github.openedProject
+    const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
+    const currCode = window.btoa(NNE.code)
+    if (op && lastCode !== currCode) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
+    } else {
+      this.convos = window.CONVOS[this.key](this)
+      // if users says "yes" convo will call _createNewRepo()
+      window.convo = new Convo(this.convos, 'create-new-project')
+    }
   }
 
+  openProject () {
+    const op = WIDGETS['student-session'].data.github.openedProject
+    const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
+    const currCode = window.btoa(NNE.code)
+    this.convos = window.CONVOS[this.key](this)
+    if (op && lastCode !== currCode) {
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-open-proj')
+    } else {
+      // if user chooses a project to open, convo will call _openProject()
+      window.convo = new Convo(this.convos, 'open-project')
+    }
+  }
+
+  shareProject () {
+    const op = WIDGETS['student-session'].data.github.openedProject
+    if (op) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'share-project')
+    } else window.convo = new Convo(this.convos, 'cant-share-project')
+  }
+
+  publishProject () {
+    const op = WIDGETS['student-session'].data.github.openedProject
+    if (op) this._publishProject()
+    else window.convo = new Convo(this.convos, 'cant-publish-project')
+  }
+
+  // -------------
+
   shareSketch () {
-    // NNE.saveToHash() NOTE: hash generated in convo now
     this.convos = window.CONVOS[this.key](this)
     window.convo = new Convo(this.convos, 'generate-sketch-url')
   }
@@ -140,6 +194,7 @@ class FunctionsMenu extends Widget {
   }
 
   newSketch () {
+    WIDGETS['student-session'].clearSaveState()
     const name = this.sesh.getData('username')
     const adj = [
       'Super Rad', 'Amazing', 'Spectacular', 'Revolutionary', 'Contemporary'
@@ -148,7 +203,9 @@ class FunctionsMenu extends Widget {
     NNE.code = typeof name === 'string'
       ? `<h1>${Maths.random(adj)} Net Art</h1>\n<h2>by ${name}</h2>`
       : '<h1>Hello World Wide Web!</h1>'
-    window.convo = new Convo(this.convos, 'blank-canvas-ready')
+    setTimeout(() => {
+      window.convo = new Convo(this.convos, 'blank-canvas-ready')
+    }, utils.getVal('--layout-transition-time'))
   }
 
   downloadCode () {
@@ -193,6 +250,16 @@ class FunctionsMenu extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  gitHubUpdated (gh) {
+    this._createHTML(gh)
+    this._initValues()
+    this._setupListeners()
+  }
+
+  gitHubProjectsUpdated () {
+    this.convos = window.CONVOS[this.key](this)
+  }
 
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
@@ -259,11 +326,16 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'no-hide-long')
   }
 
-  _createHTML () {
+  _createHTML (gh) {
+    this.subs = {}
+    if (gh) this.subs['my project'] = this.ghAuthedMenu
+    else this.subs['my sketch'] = this.noAuthedMenu
+    this.subs['editor settings'] = this.editorSettingsMenu
+
     this.innerHTML = `
       <div id="func-menu-content">
         <div id="func-menu-login" tabindex="0">
-          login <!-- or logout -->
+          ${gh ? 'logout' : 'login'}
           <span class="icon"></span>
         </div>
       </div>
@@ -432,10 +504,168 @@ class FunctionsMenu extends Widget {
     })
   }
 
+  // -------------------------- PRIVATE GITHUB STUFF ---------------------------
+
   _login () {
     const status = this.$('#func-menu-login').textContent.trim()
-    console.log(status)
-    window.convo = new Convo(this.convos, 'coming-soon')
+    if (status === 'login') WIDGETS['student-session'].chatGitHubAuth()
+    else WIDGETS['student-session'].deleteGitHubSession()
+  }
+
+  _createNewRepo (c, t, v) {
+    WIDGETS['student-session'].clearSaveState()
+    window.convo = new Convo(this.convos, 'pushing-updates')
+    const data = { name: v, data: window.btoa(NNE.code) }
+    window.utils.post('./api/github/new-repo', data, (res) => {
+      NNW.menu.switchFace('default')
+      window.convo.hide()
+      if (res.error) { // if there's an error creating the repo
+        console.log('FunctionsMenu:', res)
+        if (res.error.errors[0].message.includes('name already exists')) {
+          window.convo = new Convo(this.convos, 'project-already-exists')
+        } else {
+          window.convo = new Convo(this.convos, 'oh-no-error')
+        }
+      } else { // otherwise let the user know it's all good!
+        WIDGETS['student-session'].setProjectData({
+          name: res.name,
+          message: 'netnet initialized repo',
+          sha: res.data.content.sha,
+          url: res.url,
+          branch: res.branch,
+          code: NNE._encode(NNE.code)
+        })
+        WIDGETS['student-session'].updateRoot()
+        // update ProjectFiles
+        if (!WIDGETS['project-files']) {
+          WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles([]))
+        } else WIDGETS['project-files'].updateFiles([])
+        // ...convo
+        if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'new-project-created')
+        // ... upldate list of repos...
+        utils.get('/api/github/saved-projects', (json) => {
+          if (!json.data) return
+          const names = json.data.map(o => o.name)
+          WIDGETS['student-session'].setData('repos', names.join(', '))
+          this.gitHubProjectsUpdated()
+        })
+      }
+    })
+  }
+
+  _openProject (repo) {
+    // TODO: update ghpages if it's public?
+    const ohNoErr = (res) => {
+      console.log('FunctionsMenu:', res)
+      window.convo = new Convo(this.convos, 'oh-no-error')
+    }
+    WIDGETS['student-session'].clearSaveState()
+    window.convo = new Convo(this.convos, 'opening-project')
+    const owner = WIDGETS['student-session'].data.github.owner
+    const filename = 'index.html'
+    const data = { filename, repo, owner }
+    utils.post('./api/github/open-project', data, (res) => {
+      if (!res.success) return ohNoErr(res)
+      const files = res.data.map(f => f.name)
+      if (files.includes('index.html')) {
+        WIDGETS['student-session'].setData('opened-project', repo)
+        // update ProjectFiles
+        if (!WIDGETS['project-files']) {
+          WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles(res.data))
+        } else WIDGETS['project-files'].updateFiles(res.data)
+        // get index.html data
+        utils.post('./api/github/open-file', data, (res) => {
+          if (!res.success) return ohNoErr(res)
+          const url = (res.data.html_url.includes('/blob/master'))
+            ? res.data.html_url.split('/blob/master')[0]
+            : res.data.html_url.split('/blob/main')[0]
+          const branch = (res.data.html_url.includes('/blob/master')) ? 'master' : 'main'
+          WIDGETS['student-session'].setData('project-url', url)
+          WIDGETS['student-session'].setData('branch', branch)
+          WIDGETS['student-session'].setData('index-sha', res.data.sha)
+          // // for some reason GitHub adds a '\n' at the end of the base64 string?
+          // const c = (data.code.indexOf('\n') === data.code.length - 1)
+          //   ? data.code.substr(0, data.code.length - 1) : data.code
+          const c = window.atob(res.data.content)
+          WIDGETS['student-session'].setData('last-commit-code', window.btoa(c))
+          const m = res.data.html_url.includes('/blob/master') ? 'master' : 'main'
+          WIDGETS['student-session'].updateRoot(m)
+          NNE.code = c
+          if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+          setTimeout(() => {
+            NNW.menu.switchFace('default')
+            window.convo = new Convo(this.convos, 'project-opened')
+          }, utils.getVal('--layout-transition-time'))
+        })
+        // update last commit data
+        utils.post('./api/github/get-commits', data, (res) => {
+          if (!res.success) return ohNoErr(res)
+          const msg = res.data[0].commit.message
+          WIDGETS['student-session'].setData('last-commit-msg', msg)
+        })
+      } else {
+        window.convo = new Convo(this.convos, 'not-a-web-project')
+      }
+    })
+  }
+
+  _updateProject (msg) {
+    WIDGETS['student-session'].clearSaveState()
+    window.convo = new Convo(this.convos, 'pushing-updates')
+    const data = {
+      owner: window.localStorage.getItem('owner'),
+      repo: window.localStorage.getItem('opened-project'),
+      sha: window.localStorage.getItem('index-sha'),
+      path: 'index.html',
+      message: msg,
+      code: window.btoa(NNE.code)
+    }
+    utils.post('./api/github/save-project', data, (res) => {
+      if (!res.success) {
+        console.log('FunctionsMenu:', res)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      } else {
+        NNW.menu.switchFace('default')
+        // if user was redirected to save te project while trying
+        // to create 'new-project' or 'open-project' && decided to
+        // save the currently open project before doing so
+        if (this._redirect) {
+          WIDGETS['student-session'].clearProjectData()
+          this.convos = window.CONVOS[this.key](this)
+          window.convo = new Convo(this.convos, this._redirect)
+          this._redirect = false
+        } else { // if user clicked saveProject()
+          WIDGETS['student-session'].setProjectData({
+            message: res.data.commit.message,
+            sha: res.data.content.sha,
+            code: NNE._encode(NNE.code)
+          })
+          window.convo = new Convo(this.convos, 'project-saved')
+        }
+      }
+    })
+  }
+
+  _publishProject () {
+    window.convo = new Convo(this.convos, 'pushing-updates')
+    const data = {
+      owner: window.localStorage.getItem('owner'),
+      repo: window.localStorage.getItem('opened-project'),
+      branch: window.localStorage.getItem('branch')
+    }
+    utils.post('./api/github/gh-pages', data, (res) => {
+      if (!res.success) {
+        console.log('FunctionsMenu:', res)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      } else {
+        NNW.menu.switchFace('default')
+        WIDGETS['student-session'].setData('ghpages', res.data.html_url)
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'published-to-ghpages')
+      }
+    })
   }
 }
 

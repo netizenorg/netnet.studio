@@ -67,7 +67,7 @@ window.utils = {
     const clr1 = window.utils.getVal('--netizen-string')
     const clr2 = window.utils.getVal('--netizen-number')
     const clr3 = window.utils.getVal('--netizen-keyword')
-    return `<!DOCTYPE html>
+    const sc = `<!DOCTYPE html>
 <style>
   @keyframes animBG {
     0% { background-position: 0% 50% }
@@ -85,6 +85,8 @@ window.utils = {
   }
 </style>
     `
+    window.utils.starterCodeB64 = window.btoa(sc)
+    return sc
   },
 
   tutorialOpen: () => {
@@ -120,7 +122,8 @@ window.utils = {
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
-    layout: new URL(window.location).searchParams.get('layout')
+    layout: new URL(window.location).searchParams.get('layout'),
+    github: new URL(window.location).searchParams.get('gh')
   },
 
   mobile: () => {
@@ -129,6 +132,15 @@ window.utils = {
     ld.style.padding = '10px'
     ld.style.lineHeight = '32px'
     ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
+  },
+
+  checkForDiffRoot: () => {
+    if (typeof window.utils.url.github === 'string') {
+      WIDGETS['student-session'].clearProjectData()
+      const a = window.utils.url.github.split('/')
+      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      NNE.addCustomRoot(path)
+    }
   },
 
   checkURL: () => {
@@ -144,6 +156,7 @@ window.utils = {
       window.utils.fadeOutLoader(false)
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
+      window.utils.checkForDiffRoot()
       NNE.loadFromHash()
       setTimeout(() => NNE.cm.refresh(), 10)
       if (layout) {
@@ -153,6 +166,7 @@ window.utils = {
       return 'code'
     } else if (code) {
       window.utils.post('./api/expand-url', { key: code }, (json) => {
+        window.utils.checkForDiffRoot()
         window.location.hash = json.hash
         NNE.loadFromHash()
         setTimeout(() => NNE.cm.refresh(), 10)

@@ -33,5 +33,5 @@ if (process.env.PROD) {
   proxy.register('netnet.studio', 'http://localhost:8001', config)
   proxy.register('www.netnet.studio', 'http://localhost:8001', config)
   // temporary home for the older VR tutorials while we continue to refactor
-  proxy.register('netnet.studio/vr', 'http://localhost:8002', config)
+  proxy.register('netnet.studio/beta-v1', 'http://localhost:8002', config)
 }

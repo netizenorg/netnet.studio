@@ -22,6 +22,28 @@ window.CONVOS['student-session'] = (self) => {
       'I want to sketch': (e) => self.checkForSavePoint()
     }
   }, {
+    id: 'prior-opened-project',
+    content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
+    options: {
+      'yes please': (e) => {
+        WIDGETS['functions-menu']._openProject(self.getData('opened-project'))
+      },
+      'no let\'s start from scratch': (e) => e.goTo('new-proj-or-sketch')
+    }
+  }, {
+    id: 'new-proj-or-sketch',
+    content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
+    options: {
+      'let\'s start a new project': (e) => {
+        self.clearProjectData()
+        WIDGETS['functions-menu'].newProject()
+      },
+      'I just want to sketch': (e) => {
+        self.clearProjectData()
+        WIDGETS['functions-menu'].newSketch()
+      }
+    }
+  }, {
     id: 'prior-save-state',
     content: `Looks like you saved the state of the studio session last time you were here, I can inject that code back into my editor for you now if you'd like. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to undo anything I inject.`,
     options: {
@@ -245,9 +267,41 @@ window.CONVOS['student-session'] = (self) => {
     }
   }]
 
+  const gitHub = [{
+    id: 'github-auth',
+    content: 'If you have a GitHub account I can connect to it and save your sketches to your GitHub as new repos. Should we get authenticated?',
+    options: {
+      'let\'s do it!': (e) => e.goTo('goto-github'),
+      'what\'s authenticated?': (e) => e.goTo('what-is-auth'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'what-is-auth',
+    content: 'GitHub will ask you to give me permission to send data to and from your account. I\'ll be using this permission to save projects (repos) to your GitHub.',
+    options: {
+      'ok, let\'s do it!': (e) => e.goTo('goto-github'),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'goto-github',
+    content: 'Ok, I\'m going to send you over to GitHub, then they\'ll send you back over here. This means you will loose any unsaved data you currently have open, is that cool?',
+    options: {
+      'yep, let\'s go': (e) => { e.hide(); self.authGitHubSession() },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'reboot-session',
+    content: 'This will wipe my entire memory, it will be like we first met...',
+    options: {
+      ok: (e) => { e.hide(); self.clearAllData() },
+      'no, never mind': (e) => e.hide()
+    }
+  }]
+
   return [
     ...coreConvo,
     ...madeUpName,
+    ...gitHub,
     ...sessionDataInfo
   ]
 }

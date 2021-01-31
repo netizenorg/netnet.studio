@@ -13,7 +13,9 @@ class KeyboardShortcuts extends Widget {
         callback: (e) => {
           e.preventDefault()
           if (!NNE.autoUpdate) NNE.update()
-          WIDGETS['functions-menu'].saveSketch()
+          if (window.localStorage.getItem('opened-project')) {
+            WIDGETS['functions-menu'].saveProject()
+          } else WIDGETS['functions-menu'].saveSketch()
         }
       },
       // {
