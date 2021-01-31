@@ -24,6 +24,7 @@ class CSSReference extends Widget {
       name: 'css-reference-properties',
       widget: this,
       back: this.mainOpts,
+      columns: 2,
       list: this._createPropsList()
     }
 

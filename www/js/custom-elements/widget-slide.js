@@ -98,6 +98,12 @@ class WidgetSlide extends HTMLElement {
     const headings = []
     const slide = document.createElement('div')
     slide.className = 'reference-widget--slide'
+    if (opts.columns) {
+      let c = ''
+      for (let i = 0; i < Number(opts.columns); i++) c += '1fr '
+      c = c.trim()
+      slide.style.gridTemplateColumns = c
+    }
     slide.setAttribute('name', opts.name)
 
     if (opts.back) this._createNav(slide, opts.back)
