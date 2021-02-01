@@ -127,16 +127,19 @@ class CodeExample extends HTMLElement {
         color: var(--netizen-variable);
       }
     `
-    this.appendChild(style)
-    const pre = document.createElement('pre')
-    const code = document.createElement('code')
-    pre.appendChild(code)
-    this.appendChild(pre)
-    this.updateExample()
-    hljs.highlightBlock(pre)
+    if (!this.querySelector('pre')) {
+      this.appendChild(style)
+      const pre = document.createElement('pre')
+      const code = document.createElement('code')
+      pre.appendChild(code)
+      this.appendChild(pre)
+      this.updateExample()
+      hljs.highlightBlock(pre)
+    }
   }
 
   updateExample (code, lang) {
+    if (!code) return
     // if (this._delayRetry) clearTimeout(this._delayRetry)
     // if (!this.querySelector('pre')) {
     //   console.log('not ready');

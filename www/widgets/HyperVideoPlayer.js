@@ -335,9 +335,10 @@ class HyperVideoPlayer extends Widget {
     let s = Math.round(t % 60)
     if (m < 10) m = '0' + m
     if (s < 10) s = '0' + s
-    c1.textContent = h + ':' + m + ':' + s
-    c2.textContent = h + ':' + m + ':' + s
-    c3.textContent = h + ':' + m + ':' + s
+    const dur = Math.round((this.duration / 60) * 10) / 10
+    c1.textContent = `${h}:${m}:${s} / ${dur} mins`
+    c2.textContent = `${h}:${m}:${s} / ${dur} mins`
+    c3.textContent = `${h}:${m}:${s} / ${dur} mins`
     return t
   }
 

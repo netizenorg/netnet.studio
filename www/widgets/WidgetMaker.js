@@ -131,28 +131,32 @@ class WidgetMaker extends Widget {
 
   _loadTemplate (t) {
     const tm = WIDGETS['tutorial-maker']
-    const path = (tm) ? `tutorials/${tm.metadata.id}` : 'videos'
+    const ipath = (tm) ? `tutorials/${tm.metadata.id}/images` : 'images'
+    const vpath = (tm) ? `tutorials/${tm.metadata.id}/videos` : 'videos'
     let val = ''
     if (t === 'info') {
-      val = `<h1>Some Info</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`
+      val = `<h1>INFO</h1>
+<p>INFO</p>`
     } else if (t === 'quote') {
-      val = `<blockquote cite="https://website.com/quote">
-  <p>This is a very inspirational and informative quote</p>
+      val = `<blockquote cite="HTTP">
+  <p>QUOTE</p>
   <cite>
-    &mdash; <a href="https://website.com/quote" target="_blank">Relevant Person</a>
+    &mdash; <a href="HTTP" target="_blank">PERSON</a>
   </cite>
 </blockquote>`
     } else if (t === 'image') {
-      val = `<img style="width:100%" src="tutorials/FOLDER/images/FILE.png">
+      val = `<img style="width:100%" src="${ipath}/FILE.png">
 <br>
 <p>
-  <a href="https://website.com" target="_blank">This</a> is an image.
+  <a href="HTTP" target="_blank">THIS</a> THING.
 </p>`
     } else if (t === 'video') {
-      val = `<video style="width: 100%" loop src="${path}/FILE.mp4"></video>
+      val = `<video controls style="width: 100%" poster="${ipath}/FILE.jpeg">
+        <source src="${vpath}/FILE.mp4" type="video/mp4">
+        <source src="${vpath}/FILE.webm" type="video/webm">
+      </video>
 <p>
-  <a href="https://website.com" target="_blank">This Video</a>, by this person | <a href="${path}/FILE.mp4" target="_blank">download video</a>
+  <a href="HTTP" target="_blank">VIDEO</a>, by PERSON | <a href="${vpath}/FILE.mp4" target="_blank">download video</a>
 </p>`
     }
     this.$('.__wig-maker-ta').value = val
