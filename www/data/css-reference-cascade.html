@@ -1,0 +1,34 @@
+<h2>The Cascade</h2>
+<p>
+  Often times you will have more than one CSS rule applying to the same element, understanding how CSS "cascades" helps clarify confusion over which takes precedence as well as enables you to write cleaner/simpler stylesheets with less code that takes advantage of the cascade.
+</p>
+
+<h2>what takes precedence?</h2>
+<p>You can copy and paste the code below into the editor to experiment with it and see what the rendered output looks like.</p>
+<code-example name="css-cascade-ex-1"></code-example>
+<ul>
+  <li>
+    <b>The Order</b>:<br>
+    When you have two identical selectors, the last of the two takes priority. Notice the two <i>p { }</i> selectors in the example above, the first sets the color to red, the second sets the color to gray. Because the second one is listed last in the stylesheet it will override the former and take precedence.
+  </li>
+  <br>
+  <li>
+    <b>Specificity</b>:<br>
+    The most specific selector takes precedence over the less specific. In the example above is more specific than <i>* { }</i> ,and <i>#main { }</i> is more specific than <i>h1 { }</i> . This is b/c the wildcard <i>*</i> selector means any/all elements (NOTE: the asterisk symbol is used this way in other coding languages as well) but the <i>h1</i> selector only targets <i>&lt;h1&gt;</i> elements (that's more specific) and the <i>#main</i> selector only targets the single element with that particular <i>id</i> assigned to them (that's even more specific). <b>NOTE</b>: the Specificity is more important that the order, so even though <i>h1 { }</i> is written after <i>#main</i> in the style sheet, the later takes precedence because it's a more specific selector.
+  </li>
+  <br>
+  <li>
+    <b>!important</b>:<br>
+    When you want to force precedence on something, you can override both of the previous rules by placing <code>!important</code> after any value in a CSS statement. Consider the first <i>&lt;h1&gt;</i>, it has the <i>#main { }</i> rules applied to it, which is why it gets colored purple instead of orange as specified in the <i>h1 { }</i> rules. The <i>#main { }</i> rules also includes <i>font-size: 28px;</i> and though <i>#main</i> is more specific, the <i>font-size in h1 { }</i> is set with importance <i>font-size: 18px !important;</i> and so the <i>&lt;h1&gt;</i> ends up being <i>18px</i> in size.
+  </li>
+</ul>
+
+<h2>other considerations</h2>
+<code-example name="css-cascade-ex-2"></code-example>
+<p>
+  In the example above the text will be purple, regardless of what was defined in the <i>.red-text { }</i> CSS rule because the inline styling always takes precedence over rules in an attached stylesheet or between <i>&lt;style&gt;</i>tags.
+</p>
+<code-example name="css-cascade-ex-3"></code-example>
+<p>
+  Notice that there's a space between "red" and "green" in the example above, this means there are two different classes in the stylesheet <i>.red { }</i> and <i>.green { }</i>. Both list of properties will be combined and applied to the <i>div</i>, but if there is a conflict, then the general "Last One" rule applies, whichever one of these two classes is defined last in the stylesheet takes precedence.
+</p>

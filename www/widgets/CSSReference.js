@@ -6,29 +6,52 @@ class CSSReference extends Widget {
     this.listed = true
     this.keywords = ['css', 'properties', 'reference']
     this.resizable = false
-
-    utils.get('./data/css-reference.json', (json) => { this.data = json })
-
-    NNW.on('theme-change', () => { this._createHTML() })
-
     this.title = 'CSS Reference'
 
-    // options objects for <widget-slide> .updateSlide() method
-    this.mainOpts = {
-      name: 'css-reference-main',
-      widget: this,
-      ele: this._createMainSlide()
+    const init = (html) => {
+      if (!utils.customElementReady('code-example')) {
+        setTimeout(() => init(html), 100)
+        return
+      }
+      // options objects for <widget-slide> .updateSlide() method
+      this.mainOpts = {
+        name: 'css-reference-main',
+        widget: this,
+        ele: this._createMainSlide(html)
+      }
+
+      utils.get('./data/css-reference-selectors.html', (sels) => {
+        this.selectorListOpts = {
+          name: 'css-reference-selectors',
+          widget: this,
+          back: this.mainOpts,
+          ele: this._createSelectorsSlide(sels)
+        }
+      }, true)
+
+      utils.get('./data/css-reference-cascade.html', (text) => {
+        this.cascadeOpts = {
+          name: 'css-reference-cascade',
+          widget: this,
+          back: this.mainOpts,
+          ele: this._createCascadeRef(text)
+        }
+      }, true)
+
+      this.propsListOpts = {
+        name: 'css-reference-properties',
+        widget: this,
+        back: this.mainOpts,
+        columns: 2,
+        list: this._createPropsList()
+      }
+
+      this._createHTML()
+      NNW.on('theme-change', () => { this._createHTML() })
     }
 
-    this.propsListOpts = {
-      name: 'css-reference-properties',
-      widget: this,
-      back: this.mainOpts,
-      columns: 2,
-      list: this._createPropsList()
-    }
-
-    this._createHTML()
+    utils.get('./data/css-reference.json', (json) => { this.data = json })
+    utils.get('./data/css-reference-main.html', (html) => init(html), true)
   }
 
   textBubble (eve) {
@@ -219,39 +242,95 @@ class CSSReference extends Widget {
     this.slide.updateSlide(this.mainOpts)
   }
 
-  _createMainSlide () {
+  _createMainSlide (html) {
     const div = document.createElement('div')
-    div.innerHTML = `
-      <style>
-        .css-reference-widget--sec-link {
-          display: inline-block;
-          color: var(--netizen-meta);
-          font-size: 24px;
-          margin: 8px;
-          transition: color .5s ease, border .5s ease;
-          border-bottom: 2px solid var(--netizen-meta);
-          text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-        }
-
-        .css-reference-widget--sec-link:hover {
-          color: var(--netizen-match-color);
-          border-bottom: 2px solid var(--netizen-match-color);
-          cursor: pointer;
-        }
-      </style>
-      <p>
-        Cascading Style Sheets, or CSS, was a language introduced to the Web in the mid 90s for the purpose of separating a webpage's "form" or "presentation" from it's "structure" or "content". Initially it handled things like layout, color changes and typography, but today in the era of CSS3, it has evolved to become a much more expressive language capable of creating interactive effects and animations.
-      </p>
-      <br>
-      <!--
-      TODO: add high-level HTML notes here
-      <br> -->
-      <div class="css-reference-widget--sec-link" name="properties" style="color: var(--netizen-property)">
-        List of CSS properties
-      </div>`
+    div.innerHTML = html
 
     div.querySelector('.css-reference-widget--sec-link[name="properties"]')
       .addEventListener('click', () => this.slide.updateSlide(this.propsListOpts))
+
+    div.querySelector('.css-reference-widget--sec-link[name="selectors"]')
+      .addEventListener('click', () => this.slide.updateSlide(this.selectorListOpts))
+
+    div.querySelector('.css-reference-widget--sec-link[name="cascade"]')
+      .addEventListener('click', () => this.slide.updateSlide(this.cascadeOpts))
+
+    const updateExamples = () => {
+      if (div.querySelector('[name="css-ex-1"]').children.length < 1) {
+        setTimeout(() => updateExamples(), 100)
+        return
+      }
+      const ex1 = 'h1, h2, h3 { color: purple; }'
+      div.querySelector('[name="css-ex-1"]').updateExample(ex1, 'css')
+      const ex2 = `<style>
+  .title {
+    color: #ff0000;
+    font-size: 24px;
+    font-family: sans-serif;
+  }
+</style>
+
+<div class="title">content</div>`
+      div.querySelector('[name="css-ex-2"]').updateExample(ex2, 'html')
+    }
+    updateExamples()
+
+    return div
+  }
+
+  _createSelectorsSlide (html) {
+    const div = document.createElement('div')
+    div.innerHTML = html
+
+    const updateExamples = () => {
+      if (div.querySelector('[name="css-sel-ex-1"]').children.length < 1) {
+        setTimeout(() => updateExamples(), 100)
+        return
+      }
+      const ex1 = '<div class="item red">hello</div>'
+      div.querySelector('[name="css-sel-ex-1"]').updateExample(ex1, 'html')
+      const ex2 = '<div class="big red">hello</div>'
+      div.querySelector('[name="css-sel-ex-2"]').updateExample(ex2, 'html')
+      const ex3 = `<div class="big">
+  <span class="red">hey!</span>
+</div>`
+      div.querySelector('[name="css-sel-ex-3"]').updateExample(ex3, 'html')
+      const ex4 = `a {
+  color: #ff00ff;
+  text-decoration: none;
+}
+a:hover {
+  color: #cc3399;
+}`
+      div.querySelector('[name="css-sel-ex-4"]').updateExample(ex4, 'css')
+      const ex5 = 'p::first-letter { font-size: 32px; }'
+      div.querySelector('[name="css-sel-ex-5"]').updateExample(ex5, 'css')
+    }
+    updateExamples()
+
+    return div
+  }
+
+  _createCascadeRef (html) {
+    const div = document.createElement('div')
+    div.innerHTML = html
+
+    const updateExamples = () => {
+      if (div.querySelector('[name="css-cascade-ex-1"]').children.length < 1) {
+        setTimeout(() => updateExamples(), 100)
+        return
+      }
+      utils.get('./data/css-reference-example-1.html', (text) => {
+        div.querySelector('[name="css-cascade-ex-1"]').updateExample(text, 'html')
+      }, true)
+
+      const ex2 = '<div style="color: purple;" class="red-text"> hello there! </div>'
+      div.querySelector('[name="css-cascade-ex-2"]').updateExample(ex2, 'html')
+
+      const ex3 = '<div class="red green"> hello there! </div>'
+      div.querySelector('[name="css-cascade-ex-3"]').updateExample(ex3, 'html')
+    }
+    updateExamples()
 
     return div
   }

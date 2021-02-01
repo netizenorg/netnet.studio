@@ -1,0 +1,115 @@
+<h2>CSS Selectors</h2>
+
+<p>
+  This is an overview of most of the ways you can write CSS Selectors, for more in depth info visit the Mozilla Developer Network's page on <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors" target="_blank">CSS selectors</a>
+</p>
+
+<ul>
+  <li>
+    <b>Universal Selector</b>: <code>* { }</code><br> this rule will apply to all elements on a page
+  </li>
+  <br>
+  <li>
+    <b>Type Selector</b>: <code>p { }</code><br> this rule will apply to all elements of the specified type (in this case <i>&lt;p&gt;</i>)
+  </li>
+  <br>
+  <li>
+    <b>Class Selector</b>: <code>.stuff { }</code><br> this rule will apply to all elements with a class attribute that matches it (for example <i>&lt;div class="stuff"&gt;</i>), you can mix type/class selectors like this <i>p.stuff { }</i>, that will only target <i>&lt;p&gt;</i> tags with a <i>class="stuff"</i>
+  </li>
+  <br>
+  <li>
+    <b>ID Selector</b>: <code>#info { }</code><br> this rule will apply to all elements with an <i>id</i> attribute that matches it (for example <i>&lt;div id="info"&gt;</i>)
+  </li>
+  <br>
+</ul>
+
+<p>
+  Here's a few selector examples designed specifically for selecting relatives (elements that are related to each other in some way)
+</p>
+
+<ul>
+  <li>
+    <b>Child Selector </b>: <code>p > a { }</code><br>
+    this rule will apply to all <i>&lt;a&gt;</i> elements directly inside of <i>&lt;p&gt;</i> elements (ie. any <i>&lt;a&gt;</i> which is a "child" of a <i>&lt;p&gt;</i>)
+  </li>
+  <br>
+  <li>
+    <b>Descendant Selector</b>: <code>p a { }</code><br>
+    this selector is just like the previous one, except that it will apply to all the <i>&lt;a&gt;</i> elements inside of <i>&lt;p&gt;</i> regardless of how deeply nested it is (ie. it can be a child of a child of a child of <i>&lt;p&gt;</i>)
+  </li>
+  <br>
+  <li>
+    <b>Adjacent Sibling Selector</b>: <code>h1+h2 { }</code><br>
+    this rule will apply to all <i>&lt;h2&gt;</i>elements that directly follows an <i>&lt;h1&gt;</i> element
+  </li>
+  <br>
+  <li>
+    <b>General Sibling Selector</b>: <code>h1~h2 { }</code><br>
+    this rule will apply to all <i>&lt;h2&gt;</i> elements that follows an <i>&lt;h1&gt;</i> element (doesn't have to directly follow, so long as they are "siblings")
+  </li>
+</ul>
+
+<p>
+  An element can have more than one CSS class, for example:
+  <code-example name="css-sel-ex-1"></code-example>
+  This <i>div</i> has two classes applied to it, each might do something specific. Rather than creating a custom class for each type of element in your page, you could create classes that are meant to be used more modularly and then add all that apply to any given element.
+</p>
+
+<ul>
+  <li>
+    <b>AND Selector</b>: <code>.big.red { }</code><br>
+    this rule will apply to any element that contains both the “big” and “red” class, for example:
+    <code-example name="css-sel-ex-2"></code-example>
+    <b>NOTE</b>: If you leave a space between <i>.big .red {}</i> then it will become a Descendant Selector and apply to all elements with a class of ‘red’ which are also children of elements with a class of ‘big’, ex:
+    <code-example name="css-sel-ex-3"></code-example>
+  </li>
+</ul>
+
+<p>
+  There is a set of "attribute selectors" which enable you to create CSS rules that target elements based on the attributes they have and in most cases their values)
+</p>
+
+<ul>
+  <li>
+    <b>Existence</b>: <code>[]</code><br>
+    the basic attribute selector, matches a specific attribute. ex: <i>a[target] { }</i> specifically targets the links on a page that also have a "target" attribute
+  </li>
+  <br>
+  <li>
+    <b>Equality</b>: <code>[=]</code><br>
+    selects elements wtih a specific attribute and value, ex: <i>a[target="_blank"] { } </i>will effect all the links that have a target attribute set to <i>"_blank"</i>
+  </li>
+  <br>
+  <li>
+    <b>Space</b>: <code>[~=]</code><br>
+    selects elements with a specific attribute whose value appears in a space seperated list, ex: <i>div[class~="center"] { }</i> will effect <i>&lt;div class="title center"&gt; welcome! &lt;div&gt;</i> as well as <i>&lt;div class="sub center"&gt; to my page &lt;div&gt;</i> as well as <i>&lt;div class="center"&gt; enjoy! &lt;div&gt;</i>
+  </li>
+  <br>
+  <li>
+    <b>Prefix</b>: <code>[^=]</code><br>
+    selects elements with an attribute who's value starts with a specific string, ex: <i>div[class^="t"] { } </i> will effect <i>&lt;div class="title"&gt; welcome! &lt;div&gt;</i>
+  </li>
+  <br>
+  <li>
+    <b>Substring</b>: <code>[*=]</code><br>
+    like prefix, except it selects elements with an attribute who's value contains the specified string anywhere, ex: <i>div[class*="loo"] { }</i> will effect <i>&lt;div class="lollapalooza"&gt; shibang! &lt;div&gt;</i>
+  </li>
+  <br>
+  <li>
+    <b>Suffix</b>: <code>[$=]</code><br>
+    like the last couple, except it selects the element with an attribute who's value contains the specified string at the end.
+  </li>
+</ul>
+
+<h2>pseudo-classes/elements</h2>
+
+<p>
+  Selector’s can also be followed by <b>pseudo-classes</b>, which specify a particular “state” the element can be in. The example below shows a very common use of the <i>:hover</i> pseudo-class.
+</p>
+
+<code-example name="css-sel-ex-4"></code-example>
+<p>
+  Similarly, selector’s can also be followed by <b>pseudo-elements</b> ( <i>::</i> instead of <i>:</i> ), rather then specify a special state, pseudo-elements target a specific part of the targeted element, for example:
+  <code-example name="css-sel-ex-5"></code-example>
+  This will make the first letter of every <i>&lt;p&gt;</i> element <i>32px</i>. A full list of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes" target="_blank">pseudo-classes</a> is available on the mozilla developer network as well as a full list of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements" target="_blank">pseudo-elements</a>. You can also find a list of every <a href="https://css-tricks.com/almanac/" target="_blank">CSS selector and property</a> in CSS-Tricks.com's almanac.
+</p>
