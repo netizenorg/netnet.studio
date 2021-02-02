@@ -1,24 +1,4 @@
-/* global Widget, NNM, NNE, Convo, Maths, Color */
-/*
-  -----------
-     info
-  -----------
-
-  This Widget helps you create hex, rgb/a, hsl/a color codes and inject them
-  into the netitor.
-
-  -----------
-     usage
-  -----------
-
-  // this class inherits all the properties/methods of the base Widget class
-  // refer to www/js/Widget.js to see what those are
-  // or take a look at the wiki...
-  // https://github.com/netizenorg/netnet.studio/wiki/Creating-Widgets
-
-  WIDGETS['color-widget'].updateColor(str) // takes a color string
-
-*/
+/* global Widget, NNW, NNE, Convo, Maths, Color, utils */
 class ColorWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -29,8 +9,7 @@ class ColorWidget extends Widget {
     this.title = 'Color Widget'
 
     this._SubWin = 'hsl'
-    const de = document.documentElement
-    const clr = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
+    const clr = utils.getVal('--netizen-tag')
     const hsl = Color.hex2hsl(clr)
     this.hue = hsl.h
     this.sat = hsl.s
@@ -47,6 +26,18 @@ class ColorWidget extends Widget {
       window.convo = new Convo({
         content: 'The color widget helps you create color codes to inject into your project. It will insert code wherever your cursor is placed, or replace code you currently have highlighted/selected.'
       })
+
+      const color = NNE.cm.getSelection().toLowerCase()
+      const c = Color.match(color)
+      const k = NNE.edu.css.colors[color]
+      if (c) {
+        this.updateColor(c)
+        this._changeSubWin(c[0])
+      } else if (k) {
+        const o = Color.match(k.rgb)
+        this.updateColor(o)
+        this._changeSubWin('rgb')
+      }
     })
 
     NNE.on('edu-info', (e) => {
@@ -61,7 +52,7 @@ class ColorWidget extends Widget {
         this.updateColor(c)
       } else if (clrs.includes(s)) {
         setTimeout(() => {
-          // give NetitorEduInfoHandler time to re-select entire color string
+          // give CSSReference time to re-select entire color string
           // && then check again...
           const sel = NNE.cm.getSelection().toLowerCase()
           const c = Color.match(sel)
@@ -238,6 +229,13 @@ class ColorWidget extends Widget {
           flex: 0 0 60%;
         }
 
+        .clr-wig-type-opts {
+          display: flex;
+          justify-content: space-between;
+          padding: 0px 0px 16px 0px;
+          width: 258px;
+        }
+
         #clr-wig-sliders {
           display: block;
           flex: 0 0 40%;
@@ -268,9 +266,6 @@ class ColorWidget extends Widget {
       <div class="clr-row1">
         <!-- <div id="clr-wig-sample"></div> -->
         <div>
-          <button class="__clr-wig-sub-btn">hsl</button>
-          <button class="__clr-wig-sub-btn">rgb</button>
-          <button class="__clr-wig-sub-btn">hex</button>
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
              viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve" class="clr-wig-svg">
             <g>
@@ -284,8 +279,15 @@ class ColorWidget extends Widget {
             <!-- INJECT CODE FILEDS HERE -->
           </div>
         </div>
-        <div id="clr-wig-sliders">
-          <!-- INJECT CODE SLIDERS HERE -->
+        <div>
+          <div class="clr-wig-type-opts">
+            <button class="__clr-wig-sub-btn">hsl</button>
+            <button class="__clr-wig-sub-btn">rgb</button>
+            <button class="__clr-wig-sub-btn">hex</button>
+          </div>
+          <div id="clr-wig-sliders">
+            <!-- INJECT CODE SLIDERS HERE -->
+          </div>
         </div>
       </div>
     `
@@ -399,7 +401,8 @@ class ColorWidget extends Widget {
     this.updateColor()
 
     window.addEventListener('mousemove', () => {
-      const r = NNM.ele.querySelector('#face > span:nth-child(1)').style.transform
+      const r = NNW.menu.ele
+        .querySelector('#face > span:nth-child(1) > svg').style.transform
       this.$('svg').style.transform = r
     })
   }

@@ -1,81 +1,33 @@
-/* global STORE, NNT, NNE, NNW, Fuse, WIDGETS */
-/*
-  -----------
-     info
-  -----------
-
-  This class is used to create netnet's speach/text bubble. While it can
-  technically be instantiated multiple times, it's really designed to be used
-  by the main menu, which only ever creates a single instance. (b/c there
-  should really only ever be one search bar present at any given time)
-
-  NOTE: this class is dependent on a couple of outside variables, see globals
-  in the comment on the fist line for global JS variables it references
-
-  -----------
-     usage
-  -----------
-
-  const search = new SearchBar()
-
-  search.opened       // true/false
-  search.open()       // opens search
-  search.close()      // closes search
-  search.search(term) // does the searching
-  search.addToDict(arr) // add array of search objects to internal dictionary
-
-*/
+/* global utils, Fuse, WIDGETS, NNE */
 class SearchBar {
   constructor () {
-    const t = window.getComputedStyle(document.documentElement)
-      .getPropertyValue('--menu-fades-time')
-    this.transitionTime = t.includes('ms') ? parseInt(t) : parseInt(t) * 1000
-    this.netnet = document.querySelector('#netnet')
-
+    this.fuse = null
     this.dict = []
-    this.loadedTutorialsData = 0
-    this.loadedWidgetsData = 0
-    STORE.subscribe('tutorials', (e) => {
-      if (this.loadedTutorialsData < 1) this._loadData('tutorials', e)
-      this.loadedTutorialsData++
-    })
 
-    NNW.onWidgetLoaded((keys) => this._loadData('widgets', keys))
+    this.events = {
+      open: [],
+      close: []
+    }
 
-    document.addEventListener('keydown', (e) => {
-      if (this.opened) {
-        const res = this.ele.querySelector('#search-results')
-        const arrows = (e.keyCode === 38 || e.keyCode === 40)
-        const divs = res.children
-        if (divs.length > 0 && arrows) {
-          let idx = (e.keyCode === 40) ? -1 : divs.length
-          for (let i = 0; i < divs.length; i++) {
-            if (divs[i].className === 'selected') {
-              divs[i].className = ''
-              idx = i; break
-            }
-          }
-          if (e.keyCode === 38) { // up arrow
-            idx = idx - 1 >= 0 ? idx - 1 : divs.length - 1
-          } else if (e.keyCode === 40) { // down arrow
-            idx = idx + 1 < divs.length ? idx + 1 : 0
-          }
-          divs[idx].className = 'selected'
-        } else if (divs.length > 0 && e.keyCode === 13) { // enter
-          let idx = null
-          for (let i = 0; i < divs.length; i++) {
-            if (divs[i].className === 'selected') {
-              idx = i; break
-            }
-          }
-          if (typeof idx === 'number') divs[idx].click()
-        }
-      }
-    })
+    this.loaded = {
+      functions: false,
+      widgets: false,
+      tutorials: false
+    }
+
+    this.type2color = {
+      'Functions Menu': 'var(--netizen-variable)',
+      Widgets: 'var(--netizen-operator)',
+      Tutorials: 'var(--netizen-string)',
+      netnet: 'var(--netizen-number)'
+    }
+
+    this._loadMiscData()
+    this._loadFunctionsMenuData()
+    this._loadWidgetsData()
+    this._loadTutorialsData()
 
     this._setupSearchBar()
-    this._loadData('edu-info', NNE.edu)
-    this._loadMiscData()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -94,30 +46,44 @@ class SearchBar {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•.¸ public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  on (eve, cb) {
+    if (!this.events[eve]) { this.events[eve] = [] }
+    this.events[eve].push(cb)
+  }
+
+  emit (eve, data) {
+    if (this.events[eve] instanceof Array) {
+      this.events[eve].forEach((cb, i) => {
+        data.unsubscribe = () => { this.events[eve].splice(i, 1) }
+        cb(data)
+      })
+    }
+  }
+
   open () {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
     this.ele.style.visibility = 'visible'
     setTimeout(() => {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
+      this.emit('open')
     }, 100)
-    if (this.onopen) this.onopen()
   }
 
   close () {
     this.ele.style.transition = 'opacity var(--menu-fades-time) ease-out'
+    setTimeout(() => { this.ele.style.opacity = 0 }, 10)
     setTimeout(() => {
-      this.ele.style.opacity = 0
-      this.netnet.style.filter = 'none'
-    }, 10)
-    setTimeout(() => { this.ele.style.visibility = 'hidden' }, this.transitionTime)
+      this.ele.style.visibility = 'hidden'
+      this.emit('open')
+    }, utils.getVal('--menu-fades-time'))
   }
 
   addToDict (arr) {
     const strfy = this.dict.map(i => JSON.stringify({ t: i.type, w: i.word }))
     const diff = arr.map(i => JSON.stringify({ t: i.type, w: i.word }))
       .filter(i => !strfy.includes(i)).map((s, i) => i)
-    arr = arr.filter((o, i) => diff.includes(i))
+    arr = arr.filter((o, i) => diff.includes(i)) // filter out duplicates
     this.dict = this.dict.concat(arr)
     this.fuse = new Fuse(this.dict, {
       ignoreLocation: true,
@@ -134,61 +100,173 @@ class SearchBar {
   search (e) {
     const term = e.target.value
     let results = this.fuse.search(term)
-    results = results.filter(o => o.score < 0.5)
-    const div = this.ele.querySelector('#search-results')
-    div.innerHTML = ''
-    results.forEach(res => {
-      const d = document.createElement('div')
-      d.setAttribute('tabindex', '0')
-      d.className = `${res.item.type}-results`
-      if (res.item.word === 'Functions') {
-        const m = res.matches[0].key === 'subs'
-          ? res.matches[0].value + '()' : 'Menu'
-        d.innerHTML = `<i class="f-results">(Functions)</i> &gt; ${m}`
-      } else if (res.item.type.includes('widgets')) {
-        const wrd = res.item.word
-        if (res.item.type === 'widgets') {
-          d.innerHTML = `<i class="w-results">(Widgets)</i> &gt; ${wrd}`
-        } else { // Functions Menu (sub menus)
-          const t = res.item.type.split('.')
-          if (t.length > 2) {
-            d.innerHTML = `<i class="w-results">(${t[1]})</i> &gt; ${t[2]} &gt; ${wrd}`
-          } else {
-            d.innerHTML = `<i class="w-results">(${t[1]})</i> &gt; ${wrd}`
-          }
-        }
-      } else if (res.item.type === 'tutorials') {
-        d.innerHTML = `<i class="t-results">(Tutorials)</i> &gt; ${res.item.word}`
-        if (res.matches[0] && res.matches[0].key === 'subs') {
-          d.innerHTML += ` &gt; ${res.matches[0].value}`
-        } else if (res.matches[1] && res.matches[1].key === 'subs') {
-          d.innerHTML += ` &gt; ${res.matches[1].value}`
-        }
-        d.className = 'tutorials-results'
-      } else if (res.item.type === 'netnet') {
-        d.innerHTML = `<i class="e-results">(netnet)</i> &gt; ${res.item.word}`
-        d.className = 'edu-results'
-      }
-      d.addEventListener('click', () => {
-        this.ele.querySelector('input').value = ''
-        div.innerHTML = ''
-        this.close()
-        if (typeof res.item.clck === 'function') res.item.clck()
-        else {
-          Object.assign(document.createElement('a'), {
-            target: '_blank', href: res.item.clck
-          }).click()
-        }
-      })
-      div.appendChild(d)
+    results = results.map(res => {
+      // down score reference results to avoid drowning others out
+      const downScore = res.item.alts.includes('element') ||
+        res.item.alts.includes('attribute') ||
+        res.item.alts.includes('property')
+      if (downScore) res.score += 0.2
+      return res
     })
+    results = results.filter(o => o.score < 0.5)
+    const resultsDiv = this.ele.querySelector('#search-results')
+    resultsDiv.innerHTML = ''
+    results.forEach(res => this._createSearchResult(res))
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _setupSearchBar (content, options) {
+  _loadFunctionsMenuData () {
+    if (!WIDGETS['functions-menu']) {
+      setTimeout(() => this._loadFunctionsMenuData(), 250)
+      return
+    }
+
+    // TODO: when user logins && "my sketch" turns into "my project"
+    // ...we'll need to remove "my sketch" from dict && add "my project"
+
+    const arr = []
+    arr.push({
+      type: 'Functions Menu',
+      word: 'login', // TODO change to logout if currently logged in
+      alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
+      clck: () => { WIDGETS['functions-menu'].open() }
+    })
+    for (const submenu in WIDGETS['functions-menu'].subs) {
+      const funcs = WIDGETS['functions-menu'].subs[submenu]
+      arr.push({
+        type: 'Functions Menu',
+        word: submenu,
+        alts: funcs.map(f => f.click),
+        clck: () => {
+          WIDGETS['functions-menu'].open()
+          const id = `func-menu-${submenu.replace(/ /g, '-')}`
+          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+        }
+      })
+      funcs.forEach(func => {
+        arr.push({
+          type: `Functions Menu.${submenu}`,
+          word: `${func.click}()`,
+          alts: func.alts,
+          clck: () => {
+            if (func.select) {
+              WIDGETS['functions-menu'].open()
+              const id = `func-menu-${submenu.replace(/ /g, '-')}`
+              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+            } else WIDGETS['functions-menu'][func.click]()
+          }
+        })
+      })
+    }
+
+    this.addToDict(arr)
+    this.loaded.functions = true
+  }
+
+  _loadWidgetsData () {
+    utils.get('./api/widgets', (list) => {
+      const arr = []
+      list.forEach(file => {
+        file.keywords.push('widget')
+        arr.push({
+          type: 'Widgets',
+          word: file.title,
+          alts: file.keywords,
+          clck: () => WIDGETS.open(file.key, file.filename)
+        })
+      })
+      this.addToDict(arr)
+      this.loaded.widgets = true
+    })
+  }
+
+  _loadTutorialsData () {
+    // TODO:
+    // hitup a similar api for tutorials && create those objects as well
+    this.loaded.tutorials = true
+  }
+
+  _loadMiscData () {
+    const arr = []
+    arr.push({
+      type: 'netnet',
+      word: 'main menu',
+      alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
+      clck: () => {
+        WIDGETS['student-session'].greetStudent()
+      }
+    })
+
+    // TODO push edu-info data as well, so it's discoverable via search
+    // maybe it simply launches the Convo bubble? maybe it also opens an appendix widget?
+    const html = ['elements', 'attributes']
+    html.forEach(type => {
+      Object.keys(NNE.edu.html[type]).forEach(data => {
+        arr.push({
+          type: 'netnet.html elements',
+          word: `&lt;${data}&gt;`,
+          alts: ['element', 'tag', type],
+          clck: () => {
+            const nfo = NNE.edu.html[type][data]
+            type = type.substr(0, type.length - 1) // rmv "s"
+            WIDGETS['html-reference'].textBubble({ data, type, nfo })
+            WIDGETS['html-reference'].open()
+          }
+        })
+      })
+    })
+
+    Object.keys(NNE.edu.css.properties)
+      .filter(name => name[0] !== '-')
+      .forEach(property => {
+        arr.push({
+          type: 'netnet.css properties',
+          word: property,
+          alts: ['property', 'tag', property],
+          clck: () => {
+            const nfo = NNE.edu.css.properties[property]
+            WIDGETS['css-reference'].textBubble({ nfo, type: 'property', data: property })
+            WIDGETS['css-reference'].open()
+          }
+        })
+      })
+
+    this.addToDict(arr)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _createSearchResult (res) {
+    const item = res.item
+    const type = item.type.split('.')
+    const resultsDiv = this.ele.querySelector('#search-results')
+
+    const d = document.createElement('div')
+    d.setAttribute('tabindex', '0')
+    d.innerHTML = `<i style="color: ${this.type2color[type[0]]}">${type[0]}</i>`
+    if (type.length > 1) d.innerHTML += ` &gt; ${type[1]}`
+    d.innerHTML += ` &gt; ${item.word}`
+
+    d.addEventListener('click', () => {
+      this.ele.querySelector('input').value = ''
+      resultsDiv.innerHTML = ''
+      this.close()
+      if (typeof item.clck === 'function') item.clck()
+      else {
+        Object.assign(document.createElement('a'), {
+          target: '_blank', href: item.clck
+        }).click()
+      }
+    })
+
+    resultsDiv.appendChild(d)
+  }
+
+  _setupSearchBar () {
     this.ele = document.createElement('div')
     this.ele.id = 'search-bar'
     this.ele.innerHTML = `
@@ -201,98 +279,45 @@ class SearchBar {
     this.ele.style.visibility = 'hidden'
     this.ele.style.opacity = '0'
     document.body.appendChild(this.ele)
+
     this.ele.querySelector('input')
       .addEventListener('input', (e) => this.search(e))
 
-    this.ele.querySelector('#search-overlay').addEventListener('click', (e) => {
-      if (this.opened) {
-        this.close()
+    this.ele.querySelector('#search-overlay')
+      .addEventListener('click', (e) => { if (this.opened) this.close() })
+
+    document.addEventListener('keydown', (e) => this._keyDown(e))
+  }
+
+  _keyDown (e) {
+    if (this.opened) {
+      const res = this.ele.querySelector('#search-results')
+      const arrows = (e.keyCode === 38 || e.keyCode === 40)
+      const divs = res.children
+      if (divs.length > 0 && arrows) {
+        let idx = (e.keyCode === 40) ? -1 : divs.length
+        for (let i = 0; i < divs.length; i++) {
+          if (divs[i].className === 'selected') {
+            divs[i].className = ''
+            idx = i; break
+          }
+        }
+        if (e.keyCode === 38) { // up arrow
+          idx = idx - 1 >= 0 ? idx - 1 : divs.length - 1
+        } else if (e.keyCode === 40) { // down arrow
+          idx = idx + 1 < divs.length ? idx + 1 : 0
+        }
+        divs[idx].className = 'selected'
+      } else if (divs.length > 0 && e.keyCode === 13) { // enter
+        let idx = null
+        for (let i = 0; i < divs.length; i++) {
+          if (divs[i].className === 'selected') {
+            idx = i; break
+          }
+        }
+        if (typeof idx === 'number') divs[idx].click()
       }
-    })
-  }
-
-  _createFuncMenuObj (subs) {
-    const arr = []
-    for (const sub in subs) {
-      arr.push({
-        type: 'widgets.Functions Menu',
-        word: sub,
-        clck: () => {
-          WIDGETS['functions-menu'].open()
-          const id = `func-menu-${sub.replace(/ /g, '-')}`
-          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-        }
-      })
-      subs[sub].forEach(s => {
-        arr.push({
-          type: `widgets.Functions Menu.${sub}`,
-          word: `${s.click}()`,
-          alts: s.alts,
-          clck: () => {
-            if (s.select) {
-              WIDGETS['functions-menu'].open()
-              const id = `func-menu-${sub.replace(/ /g, '-')}`
-              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-            } else WIDGETS['functions-menu'][s.click]()
-          }
-        })
-      })
     }
-    this.addToDict(arr)
-  }
-
-  _loadData (type, data) {
-    const arr = []
-    if (type === 'widgets') {
-      data.filter(key => {
-        const keys = ['functions-menu', 'widgets-menu']
-        if (WIDGETS[key].listed || keys.includes(key)) return WIDGETS[key]
-        else return false
-      }).forEach(k => {
-        const w = WIDGETS[k]
-        if (k === 'functions-menu') this._createFuncMenuObj(w.subs)
-        else {
-          const obj = {
-            type: 'widgets',
-            word: w.title,
-            alts: w.keywords || [],
-            clck: () => { WIDGETS[w.key].open() }
-          }
-          const included = this.dict
-            .filter(o => o.type === obj.type && o.word === obj.word)
-          if (included.length === 0) arr.push(obj)
-        }
-      })
-    } else if (type === 'tutorials') {
-      data.forEach(t => {
-        const obj = {
-          type: 'tutorials',
-          word: t.title,
-          subs: Object.keys(t.checkpoints) || [],
-          alts: t.keywords || [],
-          clck: () => {
-            WIDGETS['tutorials-menu'].open()
-            NNT.load(t.dirname)
-          }
-        }
-        arr.push(obj)
-      })
-    } else if (type === 'edu-info') {
-      // TODO open anatomy of "an html element widget" for elements/attributes
-      // type: 'netnet'
-    }
-    this.addToDict(arr)
-  }
-
-  _loadMiscData () {
-    const arr = []
-    arr.push({
-      type: 'netnet', // for "convos" like 'edu-info'
-      word: 'main menu',
-      alts: ['help', 'about', 'main', 'options', 'hello', 'netnet', 'hi', 'welcome'],
-      clck: () => { window.greetings.startMenu() }
-    })
-    this.addToDict(arr)
   }
 }
 

@@ -4,9 +4,9 @@
   "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web’s creative potential.",
   "main": "server.js",
   "scripts": {
+    "setup": "echo \"PORT = 8001\" > .env; npm install",
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
-    "env-file": "echo \"PORT = 8001\" > .env",
     "update-netitor": "rm -rf node_modules/netitor/; npm install",
     "tut": "node www/tutorials/create-tutorial-data.js"
   },

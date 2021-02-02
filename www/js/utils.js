@@ -1,8 +1,7 @@
-/* global NNE, NNW, STORE, Maths, WIDGETS, Convo, Averigua */
-window.convos = {}
+/* global WIDGETS, Maths, Convo, NNW, NNE, Averigua  */
 window.utils = {
 
-  get: function (url, cb, text) {
+  get: (url, cb, text) => {
     window.fetch(url, { method: 'GET' })
       .then(res => {
         if (text) return res.text()
@@ -27,179 +26,211 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
-  loadWidgetClass: (path, filename) => {
-    window.utils.get('api/widgets', (res) => {
-      const s = document.createElement('script')
-      s.setAttribute('src', `${path}/${filename}`)
-      s.onload = () => {
-        const className = filename.split('.')[0]
-        const widget = new window[className]()
-        if (widget.key) {
-          const data = {}
-          data[widget.key] = widget
-          NNW.loadWidgets(data)
-        } else {
-          // NOTE: the widget class itself has been injected into the page,
-          // but it has not been instantiated because it was missing it's key.
-          // the ommission of the key may be don intentionally if this
-          // widget is meant to be instantiated elsewhere later.
-        }
-      }
-      document.body.appendChild(s)
-    })
-  },
-
-  // ~ ~ ~ project data
-
-  clearAllData: () => {
-    window.localStorage.clear()
-    window.utils.get('./api/clear-cookie', (res) => {
-      window.location = window.location.origin
-    })
-  },
-
-  clearProjectData: () => {
-    window.localStorage.removeItem('opened-project')
-    window.localStorage.removeItem('last-commit-msg')
-    window.localStorage.removeItem('last-commit-code')
-    window.localStorage.removeItem('index-sha')
-    window.localStorage.removeItem('project-url')
-    NNE.addCustomRoot(null)
-  },
-
-  getUserData: (type) => {
-    const ls = window.localStorage
-    const ee = ls.getItem('error-exceptions')
-      ? JSON.parse(ls.getItem('error-exceptions')).map(e => JSON.parse(e))
-      : null
-    const data = {
-      username: ls.getItem('username'),
-      starredWidgets: ls.getItem('stared-widgets'),
-      editor: {
-        code: ls.getItem('code'),
-        layout: ls.getItem('layout'),
-        theme: ls.getItem('theme'),
-        errorExceptions: ee
-      },
-      github: {
-        owner: ls.getItem('owner'),
-        savedProjects: ls.getItem('saved-projects'),
-        openedProject: ls.getItem('opened-project'),
-        projectURL: ls.getItem('project-url'),
-        indexSha: ls.getItem('index-sha'),
-        lastCommitMsg: ls.getItem('last-commit-msg'),
-        lastCommitCode: ls.getItem('last-commit-code')
-      },
-      tutorial: {
-        lesson: ls.getItem('tutorial-lesson'),
-        step: ls.getItem('tutorial-step')
-      }
-    }
-    if (type) {
-      if (Object.keys(data).includes(type)) return data[type]
-      else if (Object.keys(window.localStorage).includes(type)) {
-        return window.localStorage.getItem(type)
-      }
-    } else return data
-  },
-
-  setUserData: (type, value) => {
-    if (!value) window.localStorage.removeItem(type)
-    else window.localStorage.setItem(type, value)
-
-    const data = window.utils.getUserData()
-    if (WIDGETS['saved-projects']) {
-      if (data.github.owner) WIDGETS['saved-projects'].listed = true
-      else WIDGETS['saved-projects'].listed = false
-    }
-    if (WIDGETS['assets-widget']) {
-      if (data.github.openedProject) WIDGETS['assets-widget'].listed = true
-      else WIDGETS['assets-widget'].listed = false
-      if (WIDGETS['assets-widget'].listed) WIDGETS['assets-widget']._initList()
-    }
-    return data
-  },
-
-  setProjectData: (data) => {
-    const u = window.utils
-    const ls = window.localStorage
-    if (data.name) u.setUserData('opened-project', data.name)
-    if (data.message) ls.setItem('last-commit-msg', data.message)
-    if (data.sha) ls.setItem('index-sha', data.sha)
-    if (data.url) ls.setItem('project-url', data.url)
-    if (data.code) {
-      // for some reason GitHub adds a '\n' at the end of the base64 string?
-      const c = (data.code.indexOf('\n') === data.code.length - 1)
-        ? data.code.substr(0, data.code.length - 1) : data.code
-      ls.setItem('last-commit-code', c)
-    }
-  },
-
-  bugMetaData: () => {
-    const actions = STORE.history.actions.map(a => {
-      const d = { action: a.type }
-      if (a.data && !(a.data instanceof Array)) {
-        if (a.data.content) d.data = a.data.content
-        else d.data = a.data
-      }
-      return d
-    })
-    const user = window.utils.getUserData()
-    user.platform = Averigua.platformInfo()
-    return {
-      studioSetup: user,
-      userActions: actions.slice(actions.length - 50)
-    }
-  },
-
-  updateRoot: () => {
-    const owner = window.localStorage.getItem('owner')
-    const repo = window.localStorage.getItem('opened-project')
-    if (owner && repo) {
-      const path = `https://raw.githubusercontent.com/${owner}/${repo}/main/`
-      NNE.addCustomRoot(path)
-    } else {
-      NNE.addCustomRoot(null)
-    }
-  },
-
-  // ~ ~ ~ widget helpers
-
-  loadConvoData: (path, cb) => {
+  loadFile: (path, callback) => {
     const s = document.createElement('script')
-    s.setAttribute('src', `convos/${path}/index.js`)
-    s.setAttribute('type', 'text/javascript')
-    s.onerror = (e) => { console.error(`loadConvo: failed to load ${path}`) }
-    s.onload = () => { if (cb) cb() }
+    s.setAttribute('src', path)
+    if (callback) s.onload = () => callback()
     document.body.appendChild(s)
   },
 
-  processingFace: false,
+  customElementReady: (name) => {
+    return document.createElement(name).constructor !== window.HTMLElement
+  },
 
-  _runProcessingFace: () => {
-    const face = window.NNM.getFace()
-    if (face[0] === '☉') window.NNM.setFace('◉', '⌄', '☉')
-    else if (face[0] === '◉') window.NNM.setFace('☉', '⌄', '◉')
+  closeTopMostWidget: () => {
+    const wigs = WIDGETS.list()
+      .filter(w => w.opened)
+      .sort((a, b) => Number(b.zIndex) - Number(a.zIndex))
+    if (wigs[0]) wigs[0].close()
+  },
+
+  keepWidgetsInFrame: () => {
+    WIDGETS.list().forEach(w => {
+      const maxLeft = window.innerWidth - w.ele.offsetWidth
+      const maxTop = window.innerHeight - w.ele.offsetHeight
+      if (w.ele.offsetLeft > maxLeft) {
+        w.update({ right: 20 })
+      } else if (w.ele.offsetTop > maxTop) {
+        w.update({ bottom: 20 })
+      }
+    })
+  },
+
+  windowResize: () => {
+    NNW._resizeWindow({
+      clientX: window.NNW.win.offsetWidth,
+      clientY: window.NNW.win.offsetHeight
+    })
+  },
+
+  starterCode: () => {
+    const clr1 = window.utils.getVal('--netizen-string')
+    const clr2 = window.utils.getVal('--netizen-number')
+    const clr3 = window.utils.getVal('--netizen-keyword')
+    const sc = `<!DOCTYPE html>
+<style>
+  @keyframes animBG {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+
+  body {
+    background: linear-gradient(230deg, ${clr1}, ${clr2}, ${clr3});
+    background-size: 300% 300%;
+    animation: animBG 30s infinite;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+</style>
+    `
+    window.utils.starterCodeB64 = window.btoa(sc)
+    return sc
+  },
+
+  tutorialOpen: () => {
+    const hvp = WIDGETS['hyper-video-player']
+    const tg = WIDGETS['tutorials-guide']
+    return (hvp && tg && tg.metadata !== null)
+  },
+
+  hotKey: () => {
+    return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  },
+
+  // page loading stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  whenLoaded: (eles, wigs, callback) => {
+    const textBubbleLoaded = NNW.menu.textBubble
+    const faceLoaded = NNW.menu.faceLoaded
+    const wigsloaded = wigs.filter(file => WIDGETS.loaded.includes(file))
+    const loadedCoreWidgets = wigsloaded.length === wigs.length
+
+    const elesloaded = eles.map(e => e.split('.')[0])
+      .filter(e => window.utils.customElementReady(e))
+    const loadedCustomElements = elesloaded.length === eles.length
+
+    if (faceLoaded && textBubbleLoaded && loadedCoreWidgets && loadedCustomElements) {
+      setTimeout(() => callback(), window.utils.getVal('--menu-fades-time'))
+    } else {
+      setTimeout(() => window.utils.whenLoaded(eles, wigs, callback), 100)
+    }
+  },
+
+  url: {
+    shortCode: new URL(window.location).searchParams.get('c'),
+    tutorial: new URL(window.location).searchParams.get('tutorial'),
+    layout: new URL(window.location).searchParams.get('layout'),
+    github: new URL(window.location).searchParams.get('gh')
+  },
+
+  mobile: () => {
+    const ld = document.querySelector('#loader > div:nth-child(1)')
+    ld.style.maxWidth = '1200px'
+    ld.style.padding = '10px'
+    ld.style.lineHeight = '32px'
+    ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
+  },
+
+  checkForDiffRoot: () => {
+    if (typeof window.utils.url.github === 'string') {
+      WIDGETS['student-session'].clearProjectData()
+      const a = window.utils.url.github.split('/')
+      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      NNE.addCustomRoot(path)
+    }
+  },
+
+  checkURL: () => {
+    const code = window.utils.url.shortCode
+    const layout = window.utils.url.layout
+    const tutorial = window.utils.url.tutorial
+    if (Averigua.isMobile()) return window.utils.mobile()
+    if (tutorial) {
+      // TODO: load tutorial logix
+      const tm = WIDGETS['tutorials-guide']
+      if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial))
+      else tm.load(tutorial)
+      window.utils.fadeOutLoader(false)
+      return 'tutorial'
+    } else if (window.location.hash.includes('#code/')) {
+      window.utils.checkForDiffRoot()
+      NNE.loadFromHash()
+      setTimeout(() => NNE.cm.refresh(), 10)
+      if (layout) {
+        NNW.layout = layout
+        window.utils.fadeOutLoader(false)
+      } else window.utils.fadeOutLoader(true)
+      return 'code'
+    } else if (code) {
+      window.utils.post('./api/expand-url', { key: code }, (json) => {
+        window.utils.checkForDiffRoot()
+        window.location.hash = json.hash
+        NNE.loadFromHash()
+        setTimeout(() => NNE.cm.refresh(), 10)
+        if (layout) {
+          NNW.layout = layout
+          window.utils.fadeOutLoader(false)
+        } else window.utils.fadeOutLoader(true)
+      })
+      return 'code'
+    } else {
+      window.utils.fadeOutLoader(false)
+      return 'none'
+    }
+  },
+
+  fadeOutLoader: (hide) => {
+    if (hide) {
+      NNW.win.style.opacity = '0'
+      NNW.win.style.display = 'none'
+    }
+    NNW.menu.updatePosition() // HACK: sometimes textBubble doesn't position properly on load
+    document.querySelector('#loader').style.opacity = '0'
     setTimeout(() => {
-      if (window.utils.processingFace) window.utils._runProcessingFace()
-      else window.NNM.setFace('◕', '◞', '◕')
-    }, 250)
+      document.querySelector('#loader').style.display = 'none'
+    }, window.utils.getVal('--layout-transition-time'))
   },
 
-  runProcessingFace: () => {
-    window.NNM.setFace('☉', '⌄', '◉')
-    window.utils.processingFace = true
-    window.utils._runProcessingFace()
+  // CSS related stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  loadStyleSheet: (name) => {
+    if (document.querySelector(`link[href="css/${name}.css"]`)) return
+    const link = document.createElement('link')
+    link.setAttribute('rel', 'stylesheet')
+    link.setAttribute('href', `css/${name}.css`)
+    document.head.appendChild(link)
   },
 
-  updateShadow: (e, self) => {
-    if (STORE.state.theme === 'light') {
-      self.ele.style.boxShadow = 'none'
-      return
-    } // no shadows for light theme
+  afterLayoutTransition: (callback) => {
+    const prop = '--layout-transition-time'
+    const de = document.documentElement
+    let t = window.getComputedStyle(de).getPropertyValue(prop)
+    const unit = t.includes('ms') ? 'ms' : 's'
+    t = Number(t.substr(0, t.indexOf(unit)))
+    if (unit === 's') t *= 1000
+    setTimeout(() => { callback() }, t + 100) // little extra to avoid bugs
+  },
+
+  getVal: (prop) => { // get value of a CSS variable
+    const de = document.documentElement
+    const t = window.getComputedStyle(de).getPropertyValue(prop)
+    return t.includes('ms') ? parseInt(t) : t.includes('s')
+      ? parseInt(t) * 1000 : t
+  },
+
+  // apply an object of CSS declarations to an element's styles
+  css: (ele, obj) => { for (const key in obj) ele.style[key] = obj[key] },
+
+  updateShadow: (e, ele, o) => {
+    if (!NNW.themeConfig[NNW.theme].shadow) o = 0
+    const opac = (typeof o === 'undefined') ? 0.75 : o
     const center = {
-      x: self.ele.getBoundingClientRect().left,
-      y: self.ele.getBoundingClientRect().top
+      x: ele.getBoundingClientRect().left,
+      y: ele.getBoundingClientRect().top
     }
     const x = e.clientX < center.x
       ? Maths.map(e.clientX, 0, center.x, 33, 0)
@@ -207,157 +238,83 @@ window.utils = {
     const y = e.clientY < center.y
       ? Maths.map(e.clientY, 0, center.y, 33, 0)
       : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
-    self.ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, 0.75)`
+    ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, ${opac})`
   },
 
-  keepWidgetsInFrame: () => {
-    for (const w in WIDGETS) {
-      const maxLeft = window.innerWidth - WIDGETS[w].ele.offsetWidth
-      const maxTop = window.innerHeight - WIDGETS[w].ele.offsetHeight
-      if (WIDGETS[w].ele.offsetLeft > maxLeft) {
-        WIDGETS[w].update({ right: 20 })
-      } else if (WIDGETS[w].ele.offsetTop > maxTop) {
-        WIDGETS[w].update({ bottom: 20 })
-      }
-    }
-  },
-
-  closeTopMostWidget: () => {
-    const wigs = Object.keys(WIDGETS)
-      .filter(w => WIDGETS[w].opened)
-      .sort((a, b) => Number(WIDGETS[b].zIndex) - Number(WIDGETS[a].zIndex))
-    if (wigs[0]) WIDGETS[wigs[0]].close()
-  },
-
-  // ~ ~ ~ misc && main.js helpers
-
-  runFaviconUpdate: () => {
-    const favi = document.querySelector('link[rel="icon"]')
-    favi.setAttribute('href', 'images/eye-close.png')
-    setTimeout(() => favi.setAttribute('href', 'images/eye.png'), 250)
-    setTimeout(() => window.utils.runFaviconUpdate(), 2 * 60 * 1000)
-  },
-
-  windowResize: () => {
-    window.NNW._resizeWindow({
-      clientX: window.NNW.win.offsetWidth,
-      clientY: window.NNW.win.offsetHeight
-    })
-  },
-
-  localSave: () => {
-    if (STORE.is('SHOWING_ERROR')) {
-      window.convo = new Convo({
-        content: 'I want to avoid saving any buggy code, fix the issue I noticed before trying to save it again, or ask me to ignore this particular issue if you don\'t want me to keep bugging you about it.'
-      })
+  selecting: (bool) => {
+    if (bool) {
+      document.body.style.userSelect = 'auto'
+      document.body.style.webkitUserSelect = 'auto'
     } else {
-      window.localStorage.setItem('code', NNE._encode(NNE.code))
-      if (NNE.autoUpdate) {
-        const m = 'Ok, I\'ll remember this sketch for you, in case you decide to leave the studio and come back later and want to keep working on it.'
-        const n = 'Of course, but you\'ll need to use the <code>saveProject()</code> function for that. Click on my face to open the <b>Functions Menu</b> &gt; <b>my project</b>'
-        const a = { ok: (e) => e.hide() }
-        const b = Object.assign({ 'can I save this to my GitHub?': (e) => e.goTo('gh') }, a)
-        let cnt
-        if (window.localStorage.getItem('owner')) {
-          cnt = [{ content: m, options: b }, { id: 'gh', content: n, options: a }]
-        } else {
-          cnt = [{ content: m, options: a }]
-        }
-        window.convo = new Convo(cnt)
-      }
+      document.body.style.userSelect = 'none'
+      document.body.style.webkitUserSelect = 'none'
     }
   },
 
-  savedCode: () => {
-    const code = window.localStorage.getItem('code')
-    if (code !== NNE._encode(window.greetings.getStarterCode()) &&
-    code !== 'eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=' &&
-    code !== 'eJyzUXTxdw6JDHBVyCjJzbHjAgAlvgST') return code
-    else return false
-  },
+  // netitor stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  netitorUpdate: () => {
-    // HACK: for some reason, sometimes the netitor doesn't reflect
-    // the actual the current code in it's value, but reassigning it does
-    setTimeout(() => { NNE.code = NNE.cm.getValue() }, 100)
-    // window.NNW._whenCSSTransitionFinished(() => {
-    //   NNE.code = NNE.cm.getValue()
-    // })
-  },
-
-  _libs: [],
-  checkForLibs: (type, err) => {
-    if (type === 'aframe') return window.utils.checkAframeEnv(err)
-  },
-
-  url: {
-    shortCode: new URL(window.location).searchParams.get('c'),
-    tutorial: new URL(window.location).searchParams.get('tutorial'),
-    opacity: new URL(window.location).searchParams.get('opacity'),
-    layout: new URL(window.location).searchParams.get('layout'),
-    theme: new URL(window.location).searchParams.get('theme')
-  },
-
-  // ~ ~ ~ 3rd party lib helpers
-
-  checkAframeEnv: (err) => {
-    function done (e) {
-      e.hide()
-      // show the convo netnet tried to show before this func consumed it
-      if (window._lastConvo === 'save') { // go here via save >> GH redirect
-        const obj = WIDGETS['functions-menu'].convos['create-new-project']
-        window.convo = new Convo(obj)
-      } else if (window._lastConvo === 'open') { // go here via open >> GH redirect
-        WIDGETS['saved-projects'].open()
-      } else if (window._lastConvo && window.greetings.convos) {
-        // go here via 'i want to sketch' in welcome screen
-        window.convo = new Convo(window.greetings.convos, window._lastConvo)
-      }
-    }
-    if (window.utils._libs.includes('aframe')) return
-    if (NNE.code.includes('aframe.js"') ||
-      NNE.code.includes('aframe.min.js"')) {
+  netitorInput: (e) => {
+    if (NNE.cm.isReadOnly()) {
       window.convo = new Convo({
-        content: 'It appears you\'re using the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, would you like me to load the A-Frame widgets, helpers and Error exceptions?',
-        options: {
-          'yes, that be great!': (e) => {
-            window.utils.setupAframeEnv()
-            done(e)
-          },
-          'no, you\'re mistaken.': (e) => done(e)
-        }
+        content: 'Pause the video before you start editing and experimenting with the code.'
       })
-      return true
-    } else if (err.message.indexOf('<a-') === 0) {
-      window.convo = new Convo([{
-        content: 'It appears you\'re trying to use a custom element from the <a href="https://aframe.io/" target="_blank">A-Frame</a> library, but the library is not present in your code? You must <a href="https://aframe.io/docs/1.0.0/introduction/installation.html#include-the-js-build" target="_blank">include it in a script tag</a>',
-        options: {
-          'ok I will': (e) => done(e),
-          'could you include it for me?': (e) => e.goTo('include')
-        }
-      }, {
-        id: 'include',
-        content: 'Sure, place your cursor at the place in my editor where you would like me to insert the code. Let me know when you\'re ready.',
-        options: {
-          'ok, ready!': (e) => {
-            NNE.cm.replaceSelection('<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>')
-            done(e)
-          }
-        }
-      }])
-      return true
     }
   },
 
-  setupAframeEnv: () => {
-    window.utils.get('api/data/aframe', (data) => {
-      NNE.addCustomElements(data.elements)
-      NNE.addCustomAttributes(data.attributes)
-      WIDGETS['aframe-component-widget'].listed = true
-      NNE.addErrorException(JSON.stringify({ rule: 'attr-whitespace' }))
-      NNE.addErrorException(JSON.stringify({ rule: 'attr-value-not-empty' }))
-    })
-    window.utils._libs.push('aframe')
-  }
+  // dev testing utilities
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  testConvo: (convoName) => {
+    convoName = convoName || 'example-convo'
+    Convo.load(convoName, () => {
+      const convoArray = window.CONVOS[convoName]()
+      const convoInstance = new Convo(convoArray)
+      console.log(convoInstance)
+    })
+  },
+
+  testWidget: (opts) => {
+    opts = (typeof opts === 'object') ? opts : {}
+    if (!opts.key) opts.key = `test-${Date.now()}`
+    if (!opts.innerHTML) opts.innerHTML = '<p> Hello! This is a test :) </p>'
+    const wig = WIDGETS.create(opts)
+    wig.open()
+    return wig
+  },
+
+  // misc simple WIDGETS
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  openPrivacyPolicy: () => {
+    if (!WIDGETS['student-session'].opened) WIDGETS.open('student-session')
+    if (WIDGETS['privacy-policy']) WIDGETS.open('privacy-policy')
+    else {
+      WIDGETS.create({
+        key: 'privacy-policy',
+        title: 'Privacy Policy',
+        innerHTML: `
+          <style>
+            .privacy-policy-widget {
+              max-width: 400px;
+              max-height: 400px;
+              overflow-y: scroll;
+              scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+              scrollbar-width: thin;
+            }
+          </style>
+          <div class="privacy-policy-widget">
+          <p>Don't get me started on "privacy policies", these days companies extract as much data as algorithmically possible—almost entirely unregulated—while they keep <i>their</i> code entirely private, protected by "intellectual property" laws (code which would otherwise reveal the egregious extent of their exploitation)</p>
+          <p>Here's our policy: my creators at <a href="http://netizen.org" target="_blank">netizen.org</a> are strong advocates of privacy and transparency, which is why they give you complete control of <b>Your Session Data</b> via this widget.</p>
+          <p>Any data about you that I save, whether it's personal data like your name or behavioral data like which widgets you've got opened and where you've placed them, is stored entirely locally in your browser on your computer and made accessible via this widget.</p>
+          <p>Nothing you do in the studio gets sent back to the server, with a couple of exceptions: if you opt-in to our URL shortener for shareable sketches, I'll send your code to the server to store in a data base of shortened URLs... as far as my creators know, there's no other way to shorten a URL. But feel free to disagree and update my code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a>.</p>
+          <p>The second exception happens if and when you connect your GitHub to allow me to save any work you make here in the studio as repositories in your GitHub account. In order to communicate with GitHub's servers I'll act as an intermediary, passing data along, but I don't store any of it on my server (again, refer to my open source code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a> for proof).</p>
+          <p>Lastly, we do store some server analytics, in order to make sure things run smoothly and to gain some high level insight on our traffic. This includes how many requests we're getting, when we're getting them, what sort of devices their coming from (operating system and browser) and where in the world they're coming from.</p>
+          <p>In order to be 100% sure we're not unintentionally sharing any data with third parties (which has happened to even the <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites" target="_blank">best intentioned</a> web developers) my creators wrote their own minimal <a href="https://github.com/netizenorg/netnet.studio/blob/master/my_modules/analytics.js" target="_blank">analytics code</a> from scratch (no google analytics here!).</p>
+          <p>Down with surveillance capitalist platforms! long live the World Wide Web! the people's platform!</p>
+          <p><3 netnet ◕ ◞ ◕</p>
+          </div>`
+      }).open()
+    }
+  }
 }

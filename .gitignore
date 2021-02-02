@@ -4,9 +4,18 @@ package-lock.json
 .env
 
 data/shortened-urls.json
-data/analytics.json
+data/analytics/*.json
 data/bug-reports
 data/feedback-reports
 
 # ignoring large media files
 data/videos/*
+
+data/videos/*
+!www/videos/screen-saver.mp4
+!www/videos/screen-saver.ogv
+!www/videos/screen-saver.webm
+
+# ignoring tutorial data for now, to avoid bloating things up
+www/tutorials/*
+!www/tutorials/list.json

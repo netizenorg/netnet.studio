@@ -5,12 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>netnet.studio</title>
-    <meta name="description" content="hi! (&#9685; &#9694; &#9685;) i'm netnet! an AI nested in a pedagogical cyberspace for fully realizing the Web's creative potential. part code playground; part interactive tutorial; part hypermedia essay; part realtime performance tool.">
+    <meta name="description" content="hi! (&#9685; &#9694; &#9685;) i'm netnet! an AI nested in a pedagogical cyberspace for fully realizing the Web's creative potential. part code playground + part interactive tutorial">
     <meta name="author" content="netizen.org">
+
+    <!--
+     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+   /                                    '.
+  | hi there! welcome to netnet.studio's |
+  | source code! hand-coded from scratch |
+  | w/love by the artists at netizen.org |
+   ` _ _ _ _ _ __ _ _ _ _ _ _ _ _ _ _  ,/
+                                    .'`
+                              ( ◕ ◞ ◕ )つ
+
+    -->
+
     <!-- social media stuff -->
     <meta property="og:title" content="netnet.studio">
     <meta property="og:description" content="hi! (&#9685; &#9694; &#9685;) i'm netnet! an AI nested in a pedagogical cyberspace for fully realizing the Web's creative potential. part code playground; part interactive tutorial; part hypermedia essay; part realtime performance tool.">
-    <meta property="og:image" content="[TODO: URL TO IMAGE]"> <!-- TODO -->
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
     <meta property="og:url" content="https://netnet.studio">
     <meta name="twitter:card" content="summary_large_image">
     <meta property="og:site_name" content="netnet.studio">
@@ -18,27 +31,26 @@
 
     <link rel="icon" type="image/png" href="images/eye.png">
 
-    <link rel="stylesheet" href="css/better-serif.css">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/widget-styles.css">
-    <link rel="stylesheet" href="css/search-bar.css">
-    <link rel="stylesheet" href="css/text-bubbles.css">
-    <link rel="stylesheet" href="css/hvp-ui.css">
+    <link rel="stylesheet" href="css/search-bar.css"> <!-- SearchBar.js -->
+    <link rel="stylesheet" href="css/widget-styles.css"> <!-- Widget.js -->
+
+    <link rel="stylesheet" href="css/hvp-ui.css"> <!-- widgets/HyperVideoPlayer.js -->
+    <link rel="stylesheet" href="css/project-files.css"> <!-- widgets/ProjectFiles.js -->
+
+    <link rel="stylesheet" href="css/text-bubbles.css"> <!-- <text-bubble> -->
+    <link rel="stylesheet" href="css/reference-widget.css"> <!-- <widget-slide> -->
+    <link rel="stylesheet" href="css/libs/hljs-default.css"> <!-- <code-example> -->
   </head>
   <body>
 
     <section id="loader">
-      <div>...loading...</div>
-      <div style="display: none;">
-        <input type="password" placeholder="password" id="password">
-      </div>
+      <div>&lt;!-- loading (◕ ◞ ◕) &lt;BETA-2.0&gt; --&gt;</div>
     </section>
 
     <section id="netnet">
       <div id="nn-output"></div>
       <div id="nn-window">
-        <canvas id="nn-bg-canvas"></canvas>
-        <div id="nn-menu"></div>
         <div id="nn-editor"></div>
       </div>
     </section>
@@ -49,20 +61,14 @@
     <script src="./FileUploader.js"></script>
     <script src="./netitor.min.js"></script>
     <script src="./js/libs/fuse.js"></script>
-    <script src="./js/NetitorEduInfoHandler.js"></script>
-    <script src="./js/NetitorErrorHandler.js"></script>
-    <script src="./js/StateManager.js"></script>
-    <script src="./js/TutorialManager.js"></script>
-    <script src="./js/WindowManager.js"></script>
-    <script src="./js/MenuManager.js"></script>
-    <script src="./js/utils.js"></script>
-    <script src="./js/AlertBubble.js"></script>
-    <script src="./js/TextBubble.js"></script>
-    <script src="./js/SearchBar.js"></script>
+    <script src="./js/libs/highlight.pack.js"></script>
+
     <script src="./js/Convo.js"></script>
-    <script src="./js/custom-elements.js"></script>
     <script src="./js/Widget.js"></script>
-    <script src="./js/greetings.js"></script>
+    <script src="./js/SearchBar.js"></script>
+    <script src="./js/Menu.js"></script>
+    <script src="./js/NetNet.js"></script>
+    <script src="./js/utils.js"></script>
     <script src="./js/main.js"></script>
   </body>
 </html>

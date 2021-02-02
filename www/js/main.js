@@ -1,99 +1,66 @@
-/* global
-  StateManager, Netitor,
-  TutorialManager, WindowManager, MenuManager,
-  NetitorErrorHandler, NetitorEduInfoHandler
-*/
-
-const STORE = new StateManager({
-  log: true
-})
+/* global Netitor, NetNet, utils, WIDGETS */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
   render: '#nn-output',
   background: false,
-  code: window.greetings.getStarterCode()
+  renderWithErrors: true,
+  code: ''
 })
 
-window.NNT = new TutorialManager()
-window.NNW = new WindowManager()
-window.NNM = new MenuManager()
+window.NNW = new NetNet()
+
+// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* INITIAL LOAD
+
+const initWidgets = [
+  'FunctionsMenu.js',
+  'StudentSession.js',
+  'HTMLReference.js',
+  'CSSReference.js',
+  'JSReference.js',
+  'CodeReview.js',
+  'KeyboardShortcuts.js'
+]
+initWidgets.forEach(file => WIDGETS.load(file))
+
+utils.get('/api/custom-elements', (elements) => {
+  elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
+
+  utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
+    // ...check URL for params, && fade out load screen when ready
+    const param = utils.checkURL()
+    if (param === 'none') WIDGETS['student-session'].greetStudent()
+  })
+})
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
-NNE.on('lint-error', (e) => {
-  // if (e.length > 0) {
-  //   const ez = e.map(err => NNE._err2str(err))
-  //   // const ez = e.map(err => NNE._err2str(err, true))
-  //   console.log(ez)
-  // }
-  if (STORE._layingout) return // avoid throwing errors during a layout change
-  const errz = NetitorErrorHandler.parse(e)
-  if (errz) STORE.dispatch('SHOW_ERROR_ALERT', errz)
-  else if (!errz && STORE.is('SHOWING_ERROR')) STORE.dispatch('CLEAR_ERROR')
-})
 
 NNE.on('cursor-activity', (e) => {
-  // console.log(e);
-  if (STORE.is('SHOWING_EDU_ALERT')) STORE.dispatch('HIDE_EDU_ALERT')
+  if (NNE._spotlighting) NNE.spotlight(null)
 })
+
+NNE.on('lint-error', (e) => {
+  WIDGETS['code-review'].updateIssues(e)
+})
+
+NNE.cm.on('keydown', (e) => utils.netitorInput(e))
 
 NNE.on('edu-info', (e) => {
-  // console.log(e);
-  // STORE.dispatch('SHOW_EDU_ALERT', edu) called inside .parse() method
-  NetitorEduInfoHandler.parse(e)
-})
-
-// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
-window.addEventListener('DOMContentLoaded', (e) => {
-  window.greetings.loader()
+  if (e.line && e.type) NNE.spotlight(e.line)
+  if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
+  if (e.language === 'css') WIDGETS['css-reference'].textBubble(e)
+  else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
 })
 
 window.addEventListener('resize', (e) => {
-  window.utils.windowResize()
-  window.utils.keepWidgetsInFrame()
+  utils.windowResize()
+  utils.keepWidgetsInFrame()
 })
 
-window.addEventListener('keydown', (e) => {
-  // console.log(e.keyCode);
-  if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // s
-    e.preventDefault()
-    if (!NNE.autoUpdate) NNE.update()
-    window.utils.localSave()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 79) { // o
-    e.preventDefault()
-    window.WIDGETS['functions-menu'].openFile()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 190) { // >
-    e.preventDefault()
-    STORE.dispatch('NEXT_LAYOUT')
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 188) { // <
-    e.preventDefault()
-    STORE.dispatch('PREV_LAYOUT')
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 75) { // k
-    e.preventDefault()
-    STORE.dispatch('CHANGE_OPACITY', 1)
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 76) { // l
-    e.preventDefault()
-    window.WIDGETS['tutorials-menu'].open()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 59) { // :
-    e.preventDefault()
-    window.WIDGETS['functions-menu'].open()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 222) { // "
-    e.preventDefault()
-    window.NNM.search.open()
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) { // enter
-    // ...
-  } else if (e.keyCode === 27) { // esc
-    if (window.NNM.search.opened) window.NNM.search.close()
-    else window.utils.closeTopMostWidget()
-  } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80) {
-    e.preventDefault() // CTRL/CMD+SHIFT+P
-    e.stopPropagation() // TODO... not working :(
-    window.NNM.search.open()
-    return false
-  } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 49) { // 1
-    // TEMP... open video streaming widget
-    window.WIDGETS['stream-video'].open()
-  }
+window.addEventListener('load', () => {
+  NNE.code = utils.starterCode()
 })
+
+// NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
