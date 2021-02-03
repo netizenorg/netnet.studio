@@ -77,40 +77,6 @@ router.get('/user/signin/callback', (req, res) => {
   }).catch(err => console.log(err))
 })
 
-// --------------------------------------------------
-// TEMPORARY (while we're still supporting v1 for CP)
-// NOTE: update .env when this is no longer necessary
-// --------------------------------------------------
-router.get('/user/signin/callback-v1', (req, res) => {
-  // assuming user was redirected here from GitHub Auth Page...
-  const code = `code=${req.query.code}` // ...we should have a user ?code=...
-  const root = 'https://github.com/login/oauth/access_token'
-  const id = `client_id=${process.env.GITHUB_CLIENT_ID_V1}`
-  const sec = `client_secret=${process.env.GITHUB_CLIENT_SECRET_V1}`
-  axios.post(`${root}?${id}&${sec}&${code}`, { // ask GitHub for Auth Token
-    method: 'post',
-    headers: { Accept: 'application/json' }
-  }).then(response => {
-    const token = response.data
-    const ermsg = '◕ ︵ ◕ oh no! looks like something went wrong with GitHub'
-    if (token.indexOf('error') === 0) return res.send(ermsg)
-    // ...assuming we don't get an error back, let's encrypt the token
-    triplesec.encrypt({
-      data: triplesec.Buffer.from(token),
-      key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
-    }, (err, buff) => {
-      if (err) return res.json(err)
-      else { // ...now let's create cookie w/encrypted token
-        const oneYear = 365 * 24 * 60 * 60 * 1000
-        res.cookie('AuthTokV1', buff.toString('hex'), {
-          maxAge: oneYear,
-          httpOnly: true
-        }).redirect('http://68.183.115.149:8002')
-      }
-    })
-  }).catch(err => console.log(err))
-})
-
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  Other GETs
 
 router.get('/api/github/username', (req, res) => {
