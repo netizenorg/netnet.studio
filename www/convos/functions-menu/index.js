@@ -87,11 +87,18 @@ window.CONVOS['functions-menu'] = (self) => {
       'actually, i\'ll keep working on this': (e) => e.hide()
     }
   }, {
+    id: 'clear-code?',
+    content: 'It appears you\'ve got some code in the editor, do you want this to be the start of your new project or should we delete this and start from scratch?',
+    options: {
+      'I want to keep it': (e) => e.goTo('create-new-project'),
+      'let\'s start from scratch': (e) => {
+        NNE.code = ''
+        e.goTo('create-new-project')
+      }
+    }
+  }, {
     id: 'create-new-project',
-    before: () => {
-      NNE.code = ''
-      WIDGETS['student-session'].clearProjectData()
-    },
+    before: () => { WIDGETS['student-session'].clearProjectData() },
     content: 'What would you like this new project to be called? <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),

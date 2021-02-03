@@ -149,8 +149,10 @@ class FunctionsMenu extends Widget {
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
     } else {
       this.convos = window.CONVOS[this.key](this)
+      if (NNE.code !== '') {
+        window.convo = new Convo(this.convos, 'clear-code?')
+      } else { window.convo = new Convo(this.convos, 'create-new-project') }
       // if users says "yes" convo will call _createNewRepo()
-      window.convo = new Convo(this.convos, 'create-new-project')
     }
   }
 
