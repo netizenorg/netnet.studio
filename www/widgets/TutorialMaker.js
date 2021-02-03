@@ -70,6 +70,7 @@ class TutorialMaker extends Widget {
       spotlight: this._tempSpotlight,
       layout: NNW.layout,
       netnet: this._getNetNetPos(),
+      scrollTo: this._getScrollPos(),
       keylog: this._getKeylog()
     }
     if (this.keyframes[idx].keylog) {
@@ -510,6 +511,11 @@ class TutorialMaker extends Widget {
     if (['welcome', 'separate-window'].includes(NNW.layout)) {
       return this._getSizeAndPosition(NNW)
     } else return {}
+  }
+
+  _getScrollPos () {
+    const s = NNE.cm.getScrollInfo()
+    return { x: s.left, y: s.top }
   }
 
   _getWigDetails (w) {

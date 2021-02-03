@@ -114,6 +114,7 @@ class HyperVideoPlayer extends Widget {
       NNE.code = this._tempKL.code
       this._tempCode = NNE.code
       this.logger.idx = this._tempKL.index
+      this._updateScrollBar()
     } else this._tempKL = false
     this._tempCode = NNE.code
     this._editable(true)
@@ -188,6 +189,7 @@ class HyperVideoPlayer extends Widget {
         if (!this.logger.running) this.logger.stop()
         NNE.code = kf.code
         this._tempCode = NNE.code
+        this._updateScrollBar()
       }
       this._editable(kf.editable)
 
@@ -202,6 +204,7 @@ class HyperVideoPlayer extends Widget {
       } else if (kf.layout && kf.layout !== prevLayout) {
         NNW.layout = kf.layout
       }
+      this._updateScrollBar()
 
       // UPDATE NETNET'S SPOT/HIGHLIGHT
       const lines = NNE.code.split('\n')
@@ -340,6 +343,14 @@ class HyperVideoPlayer extends Widget {
     c2.textContent = `${h}:${m}:${s} / ${dur} mins`
     c3.textContent = `${h}:${m}:${s} / ${dur} mins`
     return t
+  }
+
+  _updateScrollBar () {
+    const kf = this._mostRecentKeyframe().frame
+    if (kf.scrollTo) {
+      const { x, y } = kf.scrollTo
+      if (x || y) NNE.cm.scrollTo(x, y)
+    }
   }
 
   _glitchIt (base64) {
