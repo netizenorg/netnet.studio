@@ -104,8 +104,6 @@ router.get('/user/signin/callback-v1', (req, res) => {
         const oneYear = 365 * 24 * 60 * 60 * 1000
         res.cookie('AuthTokV1', buff.toString('hex'), {
           maxAge: oneYear,
-          secure: true,
-          sameSite: true,
           httpOnly: true
         }).redirect('http://68.183.115.149:8002')
       }
