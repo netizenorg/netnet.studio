@@ -357,11 +357,15 @@ class TutorialMaker extends Widget {
       else this.metadata[name[0]] = e.value
     })
 
-    WIDGETS['hyper-video-player'].title = this.metadata.title
+    const hvp = WIDGETS['hyper-video-player']
+    hvp.title = this.metadata.title
+    hvp.video.addEventListener('loadedmetadata', () => {
+      this.metadata.duration = Number(hvp.video.duration)
+    })
     if (this.metadata.videofile && this.metadata.videofile !== '') {
-      WIDGETS['hyper-video-player'].updateVideo(this.metadata.videofile, this.metadata.id)
+      hvp.updateVideo(this.metadata.videofile, this.metadata.id)
     } else {
-      WIDGETS['hyper-video-player'].updateVideo('screen-saver')
+      hvp.updateVideo('screen-saver')
     }
     this.innerHTML = this.toolsHTML
   }

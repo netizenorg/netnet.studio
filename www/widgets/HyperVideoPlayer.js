@@ -51,7 +51,6 @@ class HyperVideoPlayer extends Widget {
     } else {
       console.error('HyperVideoPlayer: this browser can\'t play videos')
     }
-    this.duration = this.video.duration
   }
 
   removeVideo () {
@@ -304,6 +303,10 @@ class HyperVideoPlayer extends Widget {
     this.video.addEventListener('timeupdate', () => {
       this._updateProgressBar()
       this.renderKeyframe()
+    })
+
+    this.video.addEventListener('loadedmetadata', () => {
+      this.duration = this.video.duration
     })
 
     this.$('.progress').addEventListener('click', (e) => {
