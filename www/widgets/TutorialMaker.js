@@ -310,7 +310,7 @@ class TutorialMaker extends Widget {
   _loadData (data) {
     this.keyframes = data.keyframes
     this.widgets = data.widgets
-    NNE.addCustomRoot(`tutorials/${this.metadata.id}/`)
+    // NNE.addCustomRoot(`tutorials/${this.metadata.id}/`)
     WIDGETS['hyper-video-player'].loadKeyframes(this.keyframes)
     if (this.metadata.duration) {
       WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
@@ -340,7 +340,7 @@ class TutorialMaker extends Widget {
 
   _loadMetadata (data) {
     this.metadata = data
-    // NNE.addCustomRoot(`tutorials/${data.id}/`)
+    NNE.addCustomRoot(`tutorials/${data.id}/`)
     this.metadataHTML.querySelectorAll('input').forEach(e => {
       const name = (e.name.includes('author')) ? e.name.split('-') : [e.name]
       if (e.name === 'keywords') e.value = this.metadata.keywords.join(', ')
