@@ -28,9 +28,9 @@ class ProjectFiles extends Widget {
         <div class="files-widget__header">
           <button name="upload">Upload Asset</button>
         </div>
-        <div class="files-widget__list">
+        <ul class="files-widget__list">
           <!-- upldateFiles populates this div -->
-        </div>
+        </ul>
       </div>
     `
 
@@ -53,15 +53,16 @@ class ProjectFiles extends Widget {
     files.forEach(file => {
       this.shaDict[file.name] = file.sha
 
-      const ele = document.createElement('div')
+      const ele = document.createElement('li')
       ele.className = 'files-widget__file'
 
       const name = document.createElement('span')
+      name.className = 'files-widget__name'
       name.textContent = file.name
 
       const del = document.createElement('span')
-      del.textContent = '(✖)'
-      del.className = 'files-widget--pointer'
+      del.textContent = ':'
+      del.className = 'files-widget__optns files-widget--pointer'
       del.addEventListener('click', () => this.deleteFile(file.name))
 
       ele.appendChild(name)

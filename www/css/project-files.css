@@ -18,11 +18,57 @@
   font-size: 32px;
 }
 
+.files-widget__list {
+  padding: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
 .files-widget__file {
-  margin: 10px
+  position: relative;
+  margin: 0;
+  border-radius: 6px;
+  padding: 2px 24px 1px 4px;
+  /*cursor: pointer;*/
+  overflow: hidden;
+}
+
+.files-widget__file::before {
+  content: '';
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background-color: var(--fg-color);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.files-widget__file:hover .files-widget__optns {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.files-widget__file:hover::before {
+  opacity: 0.3;
+}
+
+.files-widget__name {
+  position: relative;
+  cursor: default;
+}
+
+.files-widget__optns {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  padding: 0 4px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .files-widget--pointer {
   cursor: pointer;
-  margin: 0 8px;
 }
