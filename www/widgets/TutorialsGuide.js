@@ -120,7 +120,7 @@ class TutorialsGuide extends Widget {
             </div>
           </div>
         </section> -->
-        <p>netnet.studio is still very much in progress, we're currently working on new tutorials and guides which will become available here (in BETA-2.0) soon as they're ready. If you're looking for the older Virtual Reality tutorials, those are available in the <a href="https://netnet.sutio/vr">BETA-1.0</a> version. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p>
+        <p>netnet.studio is still very much in progress, we're currently working on new tutorials and guides which will become available here (in BETA-2.0) soon as they're ready. If you're looking for the older Virtual Reality tutorials, those are available in the <a href="http://68.183.115.149:8002/">BETA-1.0</a> version. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p>
         <!-- <h2 class="tutorials-guide__sub-title">Disclaimer</h2>
         <p>Here you'll find an evolving list of interactive tutorials and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p> -->
         <h2 class="tutorials-guide__sub-title">Thnx</h2>
