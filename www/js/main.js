@@ -38,7 +38,10 @@ utils.get('/api/custom-elements', (elements) => {
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
 NNE.on('cursor-activity', (e) => {
-  if (NNE._spotlighting) NNE.spotlight(null)
+  if (NNE._spotlighting) {
+    NNE.spotlight(null)
+    window.convo.hide()
+  } else utils.hideConvoIf()
 })
 
 NNE.on('lint-error', (e) => {

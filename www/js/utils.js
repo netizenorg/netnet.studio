@@ -262,6 +262,13 @@ window.utils = {
     }
   },
 
+  hideConvoIf: () => {
+    const ids = ['returning-student', 'what-to-do']
+    if (window.convo && ids.includes(window.convo.id)) {
+      window.convo.hide()
+    }
+  },
+
   // dev testing utilities
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
