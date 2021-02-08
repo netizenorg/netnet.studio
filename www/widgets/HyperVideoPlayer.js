@@ -74,6 +74,11 @@ class HyperVideoPlayer extends Widget {
       const kf = this._mostRecentKeyframe()
       const b = kf ? this.keyframes[kf.timecode].editable : false
       this._editable(b)
+      // HACK: b/c NetitorLogger uses timeouts, after a few seconds it gets
+      // outsof sync w/the video. at some point it might be worth rethinking
+      // how to keep the key logger playback && in sycn w/the video progress
+      if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+      this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
@@ -118,6 +123,25 @@ class HyperVideoPlayer extends Widget {
     this._tempCode = NNE.code
     this._editable(true)
     this._generatePauseScreen()
+    // HACK: see comment in the play() method
+    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+  }
+
+  toggleLogger () {
+    console.log('ran to logger');
+    if (this.logger.running) {
+      this.logger.pause()
+      this._tempKL = this._mostRecentKeylog()
+      NNE.code = this._tempKL.code
+      this.logger.idx = this._tempKL.index
+      this._updateScrollBar()
+      // ...
+      const delta = this._tempKL ? this._tempKL.delta : null
+      this.logger.play(this.logger.running, delta)
+      this._tempKL = null
+    }
+    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+    this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
   }
 
   toggle () {
