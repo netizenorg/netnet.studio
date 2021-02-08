@@ -128,7 +128,6 @@ class HyperVideoPlayer extends Widget {
   }
 
   toggleLogger () {
-    console.log('ran to logger');
     if (this.logger.running) {
       this.logger.pause()
       this._tempKL = this._mostRecentKeylog()
