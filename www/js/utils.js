@@ -157,8 +157,11 @@ window.utils = {
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
       window.utils.checkForDiffRoot()
-      NNE.loadFromHash()
-      setTimeout(() => NNE.cm.refresh(), 10)
+      NNE.code = ''
+      window.utils.afterLayoutTransition(() => {
+        NNE.loadFromHash()
+        setTimeout(() => NNE.cm.refresh(), 10)
+      })
       if (layout) {
         NNW.layout = layout
         window.utils.fadeOutLoader(false)
@@ -168,8 +171,11 @@ window.utils = {
       window.utils.post('./api/expand-url', { key: code }, (json) => {
         window.utils.checkForDiffRoot()
         window.location.hash = json.hash
-        NNE.loadFromHash()
-        setTimeout(() => NNE.cm.refresh(), 10)
+        NNE.code = ''
+        window.utils.afterLayoutTransition(() => {
+          NNE.loadFromHash()
+          setTimeout(() => NNE.cm.refresh(), 10)
+        })
         if (layout) {
           NNW.layout = layout
           window.utils.fadeOutLoader(false)
