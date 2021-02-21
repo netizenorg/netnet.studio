@@ -65,7 +65,11 @@ window.CONVOS['functions-menu'] = (self) => {
         self.downloadCode()
       },
       'Can I share it': (e) => self.shareSketch(),
-      'session data?': () => WIDGETS.open('student-session')
+      'session data?': () => WIDGETS.open('student-session'),
+      'submit to BROWSERFEST!!!': (e) => { e.hide() }
+    },
+    after: () => {
+      NNW.menu.textBubble.$('.text-bubble-options > button:nth-child(5)').className = 'rainbow-bg'
     }
   }, {
     id: 'blank-canvas-ready',
