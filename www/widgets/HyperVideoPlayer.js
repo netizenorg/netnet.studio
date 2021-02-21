@@ -15,9 +15,11 @@ class HyperVideoPlayer extends Widget {
       const tm = WIDGETS['tutorial-maker']
       if (tm && tm.opened) tm.close()
       else if (tg && tg.metadata) {
-        tg.quit(); tg.open(); this._editable(true)
+        tg.quit(); tg.open()
+        tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
+      NNE.cm.setOption('readOnly', false)
     })
 
     if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
@@ -340,6 +342,9 @@ class HyperVideoPlayer extends Widget {
       this.pause()
       this._updateProgressBar()
       this._resetKeyframeStatus()
+      if (window.convo.id === 'introducing-tutorial') {
+        utils.afterLayoutTransition(() => window.convo.hide())
+      }
     })
 
     this.$('.hvp-toggle > span').classList.remove('pause')
