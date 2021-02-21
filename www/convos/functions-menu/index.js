@@ -225,7 +225,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'project-opened',
-    content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Fnctions Menu</b>',
+    content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
     options: { ok: (e) => e.hide() }
   },
   // ... share gh project
