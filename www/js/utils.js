@@ -275,6 +275,64 @@ window.utils = {
     }
   },
 
+  _numHelpKeyDown: (e) => {
+    const keys = [38, 40]
+    if (keys.includes(e.keyCode)) {
+      e.preventDefault()
+      const str = NNE.cm.getSelection()
+      const val = parseInt(str)
+      const unt = str.replace(val, '')
+      const inc = e.shiftKey ? 10 : 1
+      const num = e.keyCode === 38 ? val + inc : val - inc
+      const from = NNE.cm.getCursor('from')
+      const to = NNE.cm.getCursor('to')
+      const newStr = num + unt
+      NNE.cm.replaceSelection(newStr)
+      const t = { line: to.line, ch: from.ch + newStr.length }
+      NNE.cm.setSelection(from, t)
+      NNE.spotlight(from.line + 1)
+    } else if (e.keyCode === 13) {
+      const from = NNE.cm.getCursor('from')
+      NNE.cm.setSelection(from, from)
+      NNE.spotlight(null)
+      window.convo.hide()
+      window.utils.numHelper(false)
+    }
+  },
+  numHelper: (show, e) => {
+    const u = window.utils
+    if (!u._mi) {
+      u._mi = document.createElement('menu-item')
+      u._mi.setAttribute('title', 'increase/decrease value')
+      u._mi.setAttribute('icon', 'images/menu/arrows.png')
+      document.body.appendChild(u._mi)
+      u._mi._positionTriangle(0)
+      u._mi.addEventListener('click', () => {
+        window.convo = new Convo({
+          content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
+          options: {
+            ok: (ev) => { NNE.spotlight(null); u.numHelper(false); ev.hide() }
+          }
+        })
+        window.addEventListener('keydown', u._numHelpKeyDown)
+      })
+    }
+    if (show) {
+      u._mi.update({ display: 'flex', left: e.clientX - 26, top: e.clientY + 50 })
+      setTimeout(() => {
+        u._mi.update({ opacity: 1, top: e.clientY + 30 }, 500)
+      }, 100)
+    } else {
+      setTimeout(() => {
+        const sel = parseInt(NNE.cm.getSelection())
+        if (typeof sel !== 'number' || isNaN(sel)) {
+          u._mi.update({ display: 'none', opacity: 0 })
+          window.removeEventListener('keydown', u._numHelpKeyDown)
+        }
+      }, 100)
+    }
+  },
+
   // dev testing utilities
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
