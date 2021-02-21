@@ -76,7 +76,8 @@ class StudentSession extends Widget {
     const wigs = WIDGETS.list()
       .filter(w => w.opened)
       .map(w => { return { key: w.key, top: w.top, left: w.left, zIndex: w.zIndex } })
-    window.localStorage.setItem('last-saved-sketch', NNE.code)
+    const code = NNE.generateHash()
+    window.localStorage.setItem('last-saved-sketch', code)
     window.localStorage.setItem('last-saved-layout', NNW.layout)
     window.localStorage.setItem('last-saved-widgets', JSON.stringify(wigs))
     this._createHTML()
@@ -89,7 +90,10 @@ class StudentSession extends Widget {
   }
 
   restoreSavePoint () {
-    NNE.code = window.localStorage.getItem('last-saved-sketch')
+    const code = window.localStorage.getItem('last-saved-sketch').substr(6)
+    const decoded = NNE._decode(code)
+    NNE.code = decoded
+    this.code = decoded
     setTimeout(() => { NNE.cm.refresh() }, 10)
     NNW.layout = window.localStorage.getItem('last-saved-layout')
     const wigs = JSON.parse(window.localStorage.getItem('last-saved-widgets'))
