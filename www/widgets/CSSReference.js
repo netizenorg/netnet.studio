@@ -77,7 +77,10 @@ class CSSReference extends Widget {
         this._createPropSlide(eve.data)
         this.open()
       } else {
-        const url = eve.nfo.url
+        let url = eve.nfo.url
+        // HACK: THIS SHOULD BE FIXED ON NETNET
+        if (url.includes('org//en-US/')) url = url.replace('org//en-US/', 'org/en-US/')
+        // ...
         const a = document.createElement('a')
         a.setAttribute('download', 'index.html')
         a.setAttribute('href', url)
@@ -235,7 +238,7 @@ class CSSReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '5px 5px 10px'
+    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
     this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
 

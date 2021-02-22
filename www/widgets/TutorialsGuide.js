@@ -2,30 +2,74 @@
 class TutorialsGuide extends Widget {
   constructor (opts) {
     super(opts)
+    this.title = 'Learning Guide (BETA-2.0)'
     this.key = 'tutorials-guide'
     this.keywords = [
-      'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
+      'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference', 'browser', 'browserfest'
     ]
 
-    // this.convoStack = []
-
     this.on('open', () => { this.update({ left: 20, top: 20 }, 500) })
+    this.resizable = false
 
     // currently loaded tutorial data
     this.metadata = null
     this.data = null
     this.loaded = null
-    this.width = 500
-    this.height = 345
 
-    this.title = 'Learning Guide'
-    this._createHTML()
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
+    this._createPage('mainOpts', 'learning-guide-main.html', null, (div) => {
+      // setup all the click listeners for the main page
+      div.querySelectorAll('[name^="page"]').forEach(span => {
+        const page = span.getAttribute('name').split(':')[1]
+        span.addEventListener('click', () => this.slide.updateSlide(this[page]))
+      })
+
+      div.querySelector('#bf-submission').addEventListener('click', () => {
+        window.convo = new Convo(this.convos, 'browserfest')
+      })
+
+      // create sub pages
+      this._createPage('aboutOpts', 'learning-guide-about.html', this.mainOpts)
+
+      this._createPage('tutsOpts', 'learning-guide-tuts.html', this.mainOpts, (div) => {
+        div.querySelectorAll('[name^="tut"]').forEach(ele => {
+          const tut = ele.getAttribute('name').split(':')[1]
+          ele.addEventListener('click', () => this.load(tut))
+        })
+      })
+
+      this._createPage('exOpts', 'learning-guide-exs.html', this.mainOpts, (div) => {
+        // div.querySelectorAll('[name^="ex"]').forEach(ele => {
+        //   const key = ele.getAttribute('name').split(':')[1]
+        //   ele.addEventListener('click', () => utils.loadExample(key))
+        // })
+        const ex = div.querySelector('.learning-guide__examples')
+        utils.get('api/examples', (res) => this._createExamplesList(ex, res))
+      })
+
+      this._createPage('refsOpts', 'learning-guide-refs.html', this.mainOpts, (div) => {
+        div.querySelectorAll('[name^="ref"]').forEach(ele => {
+          const arr = ele.getAttribute('name').split(':')
+          const widget = `${arr[1]}-reference`
+          ele.addEventListener('click', () => {
+            WIDGETS.open(widget, null, (w) => w.slide.updateSlide(w[arr[2]]))
+          })
+        })
+      })
+
+      // initial HTML
+      this._createHTML()
+    })
   }
 
   load (name) {
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
+      if (WIDGETS['student-session'].getData('opened-project')) {
+        WIDGETS['student-session'].clearProjectData()
+      }
       NNE.addCustomRoot(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
@@ -43,120 +87,64 @@ class TutorialsGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
-  _createHTML () {
-    this.innerHTML = `
-      <style>
-        @keyframes tutorial-guide-title {
-          0% { color: var(--netizen-string) }
-          50% { color: var(--netizen-number) }
-          100% { color: var(--netizen-keyword) }
-        }
-        .tutorials-guide {
-          overflow-y: auto;
-          padding: 0px 15px 0px 25px;
-          scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
-          scrollbar-width: thin;
-          height: 100%;
-        }
-        .tutorials-guide__pre-title {
-          text-align: center;
-          margin-bottom: 5px;
-        }
-        .tutorials-guide__title {
-          text-align: center;
-          line-height: 34px;
-          margin-top: 0px;
-          animation: tutorial-guide-title 10s infinite;
-        }
-        .tutorials-guide__sub-title,
-        .tutorials-guide__sub-title2 {
-          padding-bottom: 8px;
-          border-bottom: 2px solid var(--netizen-atom);
-        }
-        .tutorials-guide__sub-title2 {
-          margin: 0px 0px 20px 0px;
-        }
-        .tutorials-guide__table {
-          display: flex;
-          justify-content: space-around;
-          align-items: baseline;
-          margin-bottom: 35px;
-        }
-        .tutorials-guide__list {
-          /* display: block; */
-        }
-        .tutorials-guide__link {
-          position: relative;
-          color: var(--netizen-meta);
-          text-decoration: none;
-          transition: color .5s ease, border .5s ease;
-          /*underline*/
-          border-bottom: 1px solid var(--netizen-meta);
-          text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-        }
-        .tutorials-guide__link:hover {
-          color: var(--netizen-match-color);
-          border-bottom: 1px solid var(--netizen-match-color);
-          cursor: pointer;
-        }
-        .tutorials-guide__link:active {
-          color: var(--netizen-attribute);
-        }
-      </style>
-      <div class="tutorials-guide">
-        <h3 class="tutorials-guide__pre-title">welcome to</h3>
-        <h1 class="tutorials-guide__title">The Learning Guide</h1>
-        <!-- <section class="tutorials-guide__table">
-          <div>
-            <h2 class="tutorials-guide__sub-title2">Tutorials</h2>
-            <div class="tutorials-guide__list"></div>
-          </div>
-          <div>
-            <h2 class="tutorials-guide__sub-title2">References</h2>
-            <div>
-              <p><span class="tutorials-guide__link" name="html-ref">HTML Reference</span></p>
-              <p><span class="tutorials-guide__link" name="html-eles">HTML Elements List</span></p>
-              <p><span class="tutorials-guide__link" name="html-attr">HTML Attributes List</span></p>
-            </div>
-          </div>
-        </section> -->
-        <p>netnet.studio is still very much in progress, we're currently working on new tutorials and guides which will become available here (in BETA-2.0) soon as they're ready. If you're looking for the older Virtual Reality tutorials, those are available in the <a href="https://netnet.sutio/vr">BETA-1.0</a> version. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p>
-        <!-- <h2 class="tutorials-guide__sub-title">Disclaimer</h2>
-        <p>Here you'll find an evolving list of interactive tutorials and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. Questions, comments, feedback welcome: h<span></span>i@net<span></span>izen.org</p> -->
-        <h2 class="tutorials-guide__sub-title">Thnx</h2>
-        <p>netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and devloped by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with creative support from <a href="http://jonsatrom.com/" target="_blank">Jon Satrom</a> and administrative support from <a href="#", target="_blank">Mike Constantino</a>. Our interdisciplinary intern is <a href="http://ilai.link" target="_blank">Ilai Gilbert</a>.</p><p>netnet.studio was made possible with support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a>, the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a> and <a href="https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design" target="_blank">Media Arts and Design at the University of Chicago</a>.</p>
-        <div style="height:40px;"><!-- some padding --></div>
-      </div>
-    `
+  _createPage (type, page, b, cb) {
+    utils.get(`./data/${page}`, (html) => {
+      const div = document.createElement('div')
+      div.innerHTML = html
+      const name = page.split('.')[0]
+      // options objects for <widget-slide> .updateSlide() method
+      this[type] = { name: name, widget: this, back: b, ele: div }
+      if (cb) cb(div)
+    }, true)
+  }
 
-    this.ele.style.padding = '5px 5px 10px'
+  _createHTML () {
+    if (!utils.customElementReady('widget-slide')) {
+      setTimeout(() => this._createHTML(), 100)
+      return
+    }
+
+    this.slide = document.createElement('widget-slide')
+    this.innerHTML = this.slide
+
+    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
     this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
-    this.ele.querySelector('.w-innerHTML').style.height = '100%'
 
-    // const html = WIDGETS['html-reference']
-    // this.$('[name="html-ref"]').addEventListener('click', () => {
-    //   html.slide.updateSlide(html.mainOpts); html.open()
-    // })
-    // this.$('[name="html-eles"]').addEventListener('click', () => {
-    //   html.slide.updateSlide(html.eleListOpts); html.open()
-    // })
-    // this.$('[name="html-attr"]').addEventListener('click', () => {
-    //   html.slide.updateSlide(html.attrListOpts); html.open()
-    // })
-    //
-    // utils.get('tutorials/list.json', (json) => {
-    //   json.listed.forEach(t => {
-    //     const div = document.createElement('div')
-    //     const span = document.createElement('span')
-    //     span.className = 'tutorials-guide__link'
-    //     span.textContent = t.txt
-    //     span.addEventListener('click', () => this.load(t.dir))
-    //     div.appendChild(span)
-    //     this.$('.tutorials-guide__list').appendChild(div)
-    //   })
-    // })
+    this.slide.updateSlide(this.mainOpts)
   }
+
+  _createExamplesList (ele, res) {
+    if (res.success) {
+      const sections = {}
+      for (const key in res.data) {
+        const obj = res.data[key]
+        obj.key = key
+        if (!sections[obj.type]) { sections[obj.type] = [] }
+        sections[obj.type].push(obj)
+      }
+      for (const sec in sections) {
+        const div = document.createElement('div')
+        const h2 = document.createElement('h2')
+        h2.textContent = sec
+        div.appendChild(h2)
+        sections[sec].forEach(o => {
+          const span = document.createElement('span')
+          span.className = 'learning-guide--link'
+          span.textContent = o.name
+          span.addEventListener('click', () => utils.loadExample(o.key))
+          div.appendChild(span)
+          div.appendChild(document.createElement('br'))
+        })
+        ele.appendChild(div)
+      }
+    } else {
+      console.error('TutorialsGuide:', res)
+    }
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
 
   _loadTutorial (name) {
     WIDGETS.open('hyper-video-player', null, () => {

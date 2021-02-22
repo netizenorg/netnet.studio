@@ -94,6 +94,7 @@ class NetitorLogger extends Widget {
 
   _nextFrame (rec, i, delta) {
     if (this.run) clearTimeout(this.run)
+    const s = NNE.cm.getScrollInfo()
     this.idx = i
     if (i + 1 < rec.length) {
       NNE.code = rec[i].code
@@ -105,6 +106,7 @@ class NetitorLogger extends Widget {
       NNE.code = rec[i].code
       this.stop()
     }
+    NNE.cm.scrollTo(s.left, s.top)
   }
 
   _createHTML (opts) {

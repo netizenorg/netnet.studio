@@ -15,9 +15,12 @@ class HyperVideoPlayer extends Widget {
       const tm = WIDGETS['tutorial-maker']
       if (tm && tm.opened) tm.close()
       else if (tg && tg.metadata) {
-        tg.quit(); tg.open(); this._editable(true)
+        tg.quit(); tg.open()
+        // tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
+      NNE.cm.setOption('readOnly', false)
+      if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
 
     if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
@@ -51,7 +54,6 @@ class HyperVideoPlayer extends Widget {
     } else {
       console.error('HyperVideoPlayer: this browser can\'t play videos')
     }
-    this.duration = this.video.duration
   }
 
   removeVideo () {
@@ -75,6 +77,11 @@ class HyperVideoPlayer extends Widget {
       const kf = this._mostRecentKeyframe()
       const b = kf ? this.keyframes[kf.timecode].editable : false
       this._editable(b)
+      // HACK: b/c NetitorLogger uses timeouts, after a few seconds it gets
+      // outsof sync w/the video. at some point it might be worth rethinking
+      // how to keep the key logger playback && in sycn w/the video progress
+      if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+      this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
@@ -114,10 +121,29 @@ class HyperVideoPlayer extends Widget {
       NNE.code = this._tempKL.code
       this._tempCode = NNE.code
       this.logger.idx = this._tempKL.index
+      this._updateScrollBar()
     } else this._tempKL = false
     this._tempCode = NNE.code
     this._editable(true)
     this._generatePauseScreen()
+    // HACK: see comment in the play() method
+    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+  }
+
+  toggleLogger () {
+    if (this.logger.running) {
+      this.logger.pause()
+      this._tempKL = this._mostRecentKeylog()
+      NNE.code = this._tempKL.code
+      this.logger.idx = this._tempKL.index
+      this._updateScrollBar()
+      // ...
+      const delta = this._tempKL ? this._tempKL.delta : null
+      this.logger.play(this.logger.running, delta)
+      this._tempKL = null
+    }
+    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
+    this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
   }
 
   toggle () {
@@ -188,6 +214,7 @@ class HyperVideoPlayer extends Widget {
         if (!this.logger.running) this.logger.stop()
         NNE.code = kf.code
         this._tempCode = NNE.code
+        this._updateScrollBar()
       }
       this._editable(kf.editable)
 
@@ -202,6 +229,7 @@ class HyperVideoPlayer extends Widget {
       } else if (kf.layout && kf.layout !== prevLayout) {
         NNW.layout = kf.layout
       }
+      this._updateScrollBar()
 
       // UPDATE NETNET'S SPOT/HIGHLIGHT
       const lines = NNE.code.split('\n')
@@ -303,6 +331,10 @@ class HyperVideoPlayer extends Widget {
       this.renderKeyframe()
     })
 
+    this.video.addEventListener('loadedmetadata', () => {
+      this.duration = this.video.duration
+    })
+
     this.$('.progress').addEventListener('click', (e) => {
       const margin = 30
       const off = this.ele.offsetLeft + this.$('.progress').offsetLeft + margin
@@ -311,6 +343,9 @@ class HyperVideoPlayer extends Widget {
       this.pause()
       this._updateProgressBar()
       this._resetKeyframeStatus()
+      if (window.convo.id === 'introducing-tutorial') {
+        utils.afterLayoutTransition(() => window.convo.hide())
+      }
     })
 
     this.$('.hvp-toggle > span').classList.remove('pause')
@@ -340,6 +375,14 @@ class HyperVideoPlayer extends Widget {
     c2.textContent = `${h}:${m}:${s} / ${dur} mins`
     c3.textContent = `${h}:${m}:${s} / ${dur} mins`
     return t
+  }
+
+  _updateScrollBar () {
+    const kf = this._mostRecentKeyframe().frame
+    if (kf.scrollTo) {
+      const { x, y } = kf.scrollTo
+      if (x || y) NNE.cm.scrollTo(x, y)
+    }
   }
 
   _glitchIt (base64) {

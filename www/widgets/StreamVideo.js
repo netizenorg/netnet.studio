@@ -98,10 +98,10 @@ class StreamVideo extends Widget {
         <button name="record">stream + record</button>
       </div>
       <div class="__recorded-videos __av-strm-row ">
-        <div style="margin-top: 15px; text-align: center;">
+        <!-- <div style="margin-top: 15px; text-align: center;">
           <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
           <p>(mute your audio or use headphones)</p>
-        </div>
+        </div> -->
       </div>
       <div class="__av-strm-controls">
         <button name="start-rec">start recording</button>

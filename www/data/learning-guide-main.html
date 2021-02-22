@@ -1,0 +1,86 @@
+
+<style>
+  .learning-guide__header {
+    margin: -10px 0px 30px 0px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .learning-guide__header > * {
+    margin: 0px 2px;
+  }
+
+  .learning-guide__header > h2 {
+    animation: color-shift 10s infinite;
+  }
+
+  @keyframes color-shift {
+    0% { color: var(--netizen-string); }
+    50% { color: var(--netizen-number); }
+    100% { color: var(--netizen-keyword); }
+  }
+
+  .learning-guide__sec {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .learning-guide--link {
+    position: relative;
+    color: var(--netizen-meta);
+    text-decoration: none;
+    transition: color .5s ease, border .5s ease;
+    /*underline*/
+    border-bottom: 1px solid var(--netizen-meta);
+    text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+  }
+
+  .learning-guide--link:hover {
+    color: var(--netizen-match-color);
+    border-bottom: 1px solid var(--netizen-match-color);
+    cursor: pointer;
+  }
+
+  .learning-guide--link:active {
+    color: var(--netizen-attribute);
+  }
+
+  /* BROWSERFEST BUTTON */
+  .rainbow-bg {
+    background-image: linear-gradient(to right, #ffa50066, #ffff0066, #00800066, #00ffff66, #0000ff66, #ee82ee66) !important;
+    background-position-x: 0;
+    animation: pan-rainbow 5s infinite;
+    animation-timing-function: linear;
+  }
+
+  @keyframes pan-rainbow {
+    0% { background-position-x: 0px; }
+    100% { background-position-x: 182px; }
+  }
+</style>
+
+<header class="learning-guide__header">
+  <div>the</div>
+  <h2>Internet Artist's Guide</h2>
+  <div>to the</div>
+  <h2>World Wide Web</h2>
+</header>
+
+<p>
+  Here you'll find an evolving list of interactive tutorials, examples and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. <span class="learning-guide--link" name="page:aboutOpts">Learn more about us.</span>
+</p>
+
+<div class="learning-guide__sec">
+  <h2 class="learning-guide--link" name="page:tutsOpts">Tutorials</h2>
+  <h2 class="learning-guide--link" name="page:exOpts">Examples</h2>
+  <h2 class="learning-guide--link" name="page:refsOpts">Appendix</h2>
+</div>
+
+<br>
+
+<center>
+  <button id="bf-submission" class="rainbow-bg">Submit to BrowserFest!!!</button>
+</center>
+
+<br>
+<br>

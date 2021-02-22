@@ -121,6 +121,7 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
+    exampleCode: new URL(window.location).searchParams.get('ex'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh')
@@ -145,6 +146,7 @@ window.utils = {
 
   checkURL: () => {
     const code = window.utils.url.shortCode
+    const example = window.utils.url.exampleCode
     const layout = window.utils.url.layout
     const tutorial = window.utils.url.tutorial
     if (Averigua.isMobile()) return window.utils.mobile()
@@ -157,8 +159,11 @@ window.utils = {
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
       window.utils.checkForDiffRoot()
-      NNE.loadFromHash()
-      setTimeout(() => NNE.cm.refresh(), 10)
+      NNE.code = ''
+      window.utils.afterLayoutTransition(() => {
+        NNE.loadFromHash()
+        setTimeout(() => NNE.cm.refresh(), 10)
+      })
       if (layout) {
         NNW.layout = layout
         window.utils.fadeOutLoader(false)
@@ -168,14 +173,20 @@ window.utils = {
       window.utils.post('./api/expand-url', { key: code }, (json) => {
         window.utils.checkForDiffRoot()
         window.location.hash = json.hash
-        NNE.loadFromHash()
-        setTimeout(() => NNE.cm.refresh(), 10)
+        NNE.code = ''
+        window.utils.afterLayoutTransition(() => {
+          NNE.loadFromHash()
+          setTimeout(() => NNE.cm.refresh(), 10)
+        })
         if (layout) {
           NNW.layout = layout
           window.utils.fadeOutLoader(false)
         } else window.utils.fadeOutLoader(true)
       })
       return 'code'
+    } else if (example) {
+      window.utils.loadExample(example, true)
+      return 'example'
     } else {
       window.utils.fadeOutLoader(false)
       return 'none'
@@ -192,6 +203,22 @@ window.utils = {
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
     }, window.utils.getVal('--layout-transition-time'))
+  },
+
+  loadExample: (example) => {
+    window.utils.post('./api/example-data', { key: example }, (json) => {
+      NNE.addCustomRoot(null)
+      NNE.code = ''
+      NNW.layout = 'dock-left'
+      window.utils.afterLayoutTransition(() => {
+        NNE.code = NNE._decode(json.hash.substr(6))
+        setTimeout(() => NNE.cm.refresh(), 10)
+        window.utils.fadeOutLoader(false)
+        window.convo = new Convo({
+          content: 'Checkout this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.'
+        })
+      })
+    })
   },
 
   // CSS related stuff
@@ -259,6 +286,71 @@ window.utils = {
       window.convo = new Convo({
         content: 'Pause the video before you start editing and experimenting with the code.'
       })
+    }
+  },
+
+  hideConvoIf: () => {
+    const ids = ['returning-student', 'what-to-do']
+    if (window.convo && ids.includes(window.convo.id)) {
+      window.convo.hide()
+    }
+  },
+
+  _numHelpKeyDown: (e) => {
+    const keys = [38, 40]
+    if (keys.includes(e.keyCode)) {
+      e.preventDefault()
+      const str = NNE.cm.getSelection()
+      const val = parseInt(str)
+      const unt = str.replace(val, '')
+      const inc = e.shiftKey ? 10 : 1
+      const num = e.keyCode === 38 ? val + inc : val - inc
+      const from = NNE.cm.getCursor('from')
+      const to = NNE.cm.getCursor('to')
+      const newStr = num + unt
+      NNE.cm.replaceSelection(newStr)
+      const t = { line: to.line, ch: from.ch + newStr.length }
+      NNE.cm.setSelection(from, t)
+      NNE.spotlight(from.line + 1)
+    } else if (e.keyCode === 13) {
+      const from = NNE.cm.getCursor('from')
+      NNE.cm.setSelection(from, from)
+      NNE.spotlight(null)
+      window.convo.hide()
+      window.utils.numHelper(false)
+    }
+  },
+  numHelper: (show, e) => {
+    const u = window.utils
+    if (!u._mi) {
+      u._mi = document.createElement('menu-item')
+      u._mi.setAttribute('title', 'increase/decrease value')
+      u._mi.setAttribute('icon', 'images/menu/arrows.png')
+      document.body.appendChild(u._mi)
+      u._mi._positionTriangle(0)
+      u._mi.addEventListener('click', () => {
+        window.convo = new Convo({
+          content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
+          options: {
+            ok: (ev) => { NNE.spotlight(null); u.numHelper(false); ev.hide() }
+          }
+        })
+        window.addEventListener('keydown', u._numHelpKeyDown)
+      })
+    }
+    if (show) {
+      u._mi.update({ display: 'flex', left: e.clientX - 26, top: e.clientY + 50 })
+      setTimeout(() => {
+        u._mi.update({ opacity: 1, top: e.clientY + 30 }, 500)
+      }, 100)
+    } else {
+      setTimeout(() => {
+        const sel = parseInt(NNE.cm.getSelection())
+        if (typeof sel !== 'number' || isNaN(sel)) {
+          u._mi.update({ display: 'none', opacity: 0 })
+          window.removeEventListener('keydown', u._numHelpKeyDown)
+        }
+      }, 100)
     }
   },
 

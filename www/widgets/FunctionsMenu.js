@@ -98,6 +98,10 @@ class FunctionsMenu extends Widget {
         click: 'changeTheme',
         alts: ['theme', 'color', 'style', 'syntax highlight'],
         select: 'func-menu-themes-select'
+      },
+      {
+        click: 'viewYourData',
+        alts: []
       }
     ]
 
@@ -249,6 +253,10 @@ class FunctionsMenu extends Widget {
   changeTheme () {
     NNW.theme = this.themesSel.value
     this.sesh.setData('theme', NNW.theme)
+  }
+
+  viewYourData () {
+    WIDGETS.open('student-session')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

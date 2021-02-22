@@ -22,8 +22,9 @@
   width: 660px;
   padding: 4px;
   position: absolute;
-  top: -7px;
+  top: 0;
   left: -15px;
+  z-index: 2;
   padding: 4px 30px;
   display: flex;
   justify-content: space-between;

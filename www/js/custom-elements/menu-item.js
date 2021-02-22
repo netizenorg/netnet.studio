@@ -86,8 +86,47 @@ class MenuItem extends HTMLElement {
     }
   }
 
+  update (opts, time) {
+    time = time || 0
+    const t = `${time}ms`
+    const div = this.querySelector('div')
+    div.style.transition = `all ${t} var(--sarah-ease)`
+    // trigger transition
+    setTimeout(() => {
+      // NOTE: width && height should alwasy be set before left, top, etc
+      // if props called in other order than _css won't render right
+      for (const prop in opts) this._css(prop, opts[prop])
+      setTimeout(() => { div.style.transition = 'none' }, time)
+    }, 25)
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸
+
+  _css (prop, val) {
+    const p = ['top', 'right', 'bottom', 'left']
+    const s = ['width', 'height']
+    const div = this.querySelector('div')
+    if (s.includes(prop)) {
+      div.style[prop] = (typeof val === 'number') ? `${val}px` : val
+    } else if (p.includes(prop)) {
+      if (prop === 'left' || prop === 'right') {
+        const width = parseInt(div.style.width)
+          ? parseInt(div.style.width) : this.width
+        const left = (prop === 'left')
+          ? val : window.innerWidth - val - width
+        div.style.left = `${left}px`
+      } else { // top || bottom
+        const height = parseInt(div.style.height)
+          ? parseInt(div.style.height) : this.height
+        const top = (prop === 'top')
+          ? val : window.innerHeight - val - height
+        div.style.top = `${top}px`
+      }
+    } else {
+      div.style[prop] = val
+    }
+  }
 
   _positionTriangle (i) {
     const div = this.querySelector('div')

@@ -70,6 +70,7 @@ class TutorialMaker extends Widget {
       spotlight: this._tempSpotlight,
       layout: NNW.layout,
       netnet: this._getNetNetPos(),
+      scrollTo: this._getScrollPos(),
       keylog: this._getKeylog()
     }
     if (this.keyframes[idx].keylog) {
@@ -309,7 +310,7 @@ class TutorialMaker extends Widget {
   _loadData (data) {
     this.keyframes = data.keyframes
     this.widgets = data.widgets
-    NNE.addCustomRoot(`tutorials/${this.metadata.id}/`)
+    // NNE.addCustomRoot(`tutorials/${this.metadata.id}/`)
     WIDGETS['hyper-video-player'].loadKeyframes(this.keyframes)
     if (this.metadata.duration) {
       WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
@@ -339,7 +340,7 @@ class TutorialMaker extends Widget {
 
   _loadMetadata (data) {
     this.metadata = data
-    // NNE.addCustomRoot(`tutorials/${data.id}/`)
+    NNE.addCustomRoot(`tutorials/${data.id}/`)
     this.metadataHTML.querySelectorAll('input').forEach(e => {
       const name = (e.name.includes('author')) ? e.name.split('-') : [e.name]
       if (e.name === 'keywords') e.value = this.metadata.keywords.join(', ')
@@ -356,11 +357,15 @@ class TutorialMaker extends Widget {
       else this.metadata[name[0]] = e.value
     })
 
-    WIDGETS['hyper-video-player'].title = this.metadata.title
+    const hvp = WIDGETS['hyper-video-player']
+    hvp.title = this.metadata.title
+    hvp.video.addEventListener('loadedmetadata', () => {
+      this.metadata.duration = Number(hvp.video.duration)
+    })
     if (this.metadata.videofile && this.metadata.videofile !== '') {
-      WIDGETS['hyper-video-player'].updateVideo(this.metadata.videofile, this.metadata.id)
+      hvp.updateVideo(this.metadata.videofile, this.metadata.id)
     } else {
-      WIDGETS['hyper-video-player'].updateVideo('screen-saver')
+      hvp.updateVideo('screen-saver')
     }
     this.innerHTML = this.toolsHTML
   }
@@ -510,6 +515,11 @@ class TutorialMaker extends Widget {
     if (['welcome', 'separate-window'].includes(NNW.layout)) {
       return this._getSizeAndPosition(NNW)
     } else return {}
+  }
+
+  _getScrollPos () {
+    const s = NNE.cm.getScrollInfo()
+    return { x: s.left, y: s.top }
   }
 
   _getWigDetails (w) {

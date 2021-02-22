@@ -1,0 +1,122 @@
+{
+  "0": {
+    "type": "media elements",
+    "name": "img element",
+    "code": "#code/eJxNjk0OgjAQhfec4oUlCRa3CG68gFcopbSjpRhaDI3x7hbKwt3M935mGueDkdcM6KY+4BMHYOSzIlujuuyrlqS0r3GuqrdOiBVYHFmFwcg1Rlf4CUJaL2fQyJVEwXZjT+5leKh3Y8o+FudpCKWYot3G3pRLIjekbEleju5f+GYNOz7NGhoV3CzafL/kmKLBsZ5bER8qFc3mFEkeq3ybHxgbRhdw04t44j6FrTm//gCsNVDV"
+  },
+  "1": {
+    "type": "media elements",
+    "name": "audio element",
+    "code": "#code/eJxVks1u2zAQhO9+iqkvsgFLdJEgCBzZt16K3vIEtLiWCNMkS65sCEXfvSSlJu2NPzM7ux/ZRp4MnVbA2akJv3CTodf2gP0bBtL9wAd83e/vwxt+r1qxqFftl7rG5EZ00laMSAQeCHJU2u2gGd7IKULbcnyW3bUPbrQKdX2azeeRoS+5RqVg9JV24DBBKqVtf0DnLAdn4nHNYaT17CvlEUN3XJdlFGSoS7raO9/c/NMaxjm/eE6tKKolkEPqAucJlyDtdbx9tjIw+3gQ4hKIYu6ycaEXnpw3JBa1KBdRPL0+P7+8imJetbEL2nOmJ8Q8PGQa8q4VuTkw/iXEMsxU0ngYLWszuzKfu6YHBQwyE2NKPiaFh+ahXHvZU/Op/i7v8r0EJ0oq0SXjHgvwj0dAInMjy5h9ifQ/QZ3RuTNpp8dAgeDsfzmJfeSF1xHKdWOu1PwcKUzvhbgLm6rEVNuk/1DkL9SkF/x2T7sfOjJZSsoSV+2w2eJ4mus2ud3Ndpu/1MzwDwp01tw="
+  },
+  "2": {
+    "type": "media elements",
+    "name": "video element",
+    "code": "#code/eJxVUs1SgzAQvvcpdrhQOhbqjKcKvXlxvPUJ0mQL0ZBgskAZx3c3P4zW2yb7/ey3Se1oUXjaAFyMWODLFwA9s63URzg8x2OHsu3oCI+Hw9Slq2oHo5O6havCm6fegAxw1IQWJinQwK6KQCHdoNhyjMDEfR8dyeuy58bDtddNvNRkSrZ6Lwl7d9/43tTVOummTgbO8iaLpasct4h679iEtuyHpwzYSCYYNxnZETNQxgxrfaqrSAtSnigHCvGrynOENMC0WCOQZfzDAWc6J3DELEGQDLFHTVIlFnXo8Tj75B1zIMPIjBMKmCV1sT2wFss/9Cub2DkaAzcC4YLKzFHarWrBHRX2Pj8knrzeG3Elw2RML3OHFsHofz5+s46CDDQgDB+DTvk5ol3OXpWTsds8muSFR/8iwg8omRAvkz+9SedfBz0ymuUPsC2gOQXVMoy6LYrwJml/P+96v2w="
+  },
+  "3": {
+    "type": "CSS animations",
+    "name": "spinning gif",
+    "code": "#code/eJyFkmFLwzAQhr/vVxwDwQ1qO0WRbhP/h/ghNpfsNLmOJJUV2X/3mhZxUxFaSO+eu3svbzcx9Q4fZgAvre7hQw4AXgVLXEO1zp87JLtLNayq6n03hsoldJHYgnF4kNIDpBYa5IQByCuLsCwzqCnunerrDI61r11MZPqiaQVn6TvWjUnlyHJBCX08TcjEgL59R9BoVOcSKE5UCK+ykGleHl4EZI1BwjXs6YBOJdTroUWzC63HP+EmiNwCtcWYcUMBjSyX+aO88jy+YW+C8hgh7omnK6su4ANSUBxNG3wNsVEOL1cLCG2S6ZeVRrtY5x4At7/T11/06v6El4v/p/3N3beCSSh5+6Rc2s614ma4IkvBzZ8nwYpl+0QtFyy71HmX9VlGdyEfBuvjeVI8GrNiZDfYSGyIJXoOJvIyvTAdN2MzR4wq23qcbcrpB5xtRC/E0Gzn2ZZYWjKxnLQXg/Yriczh50oPn6Go3us="
+  },
+  "4": {
+    "type": "CSS animations",
+    "name": "swinging gifs",
+    "code": "#code/eJytksGKgzAQhu99ikHYY6xabUHbsu+x7CHERIbGREzcVkrffaNWK2U9reAh/vnmywzM0dhW8vMGwH2fF96KmpbcgLmiKuDuQoDgA+4gubApxMHPNYNHHyezfD/Lw+DPgsfwBpbFF5X25LHc+34+UGmDFrVKQeCN51kfzur7f6qwpB1FlOswHTp8v8qbmg6m2LzfWSxdBRGNYgPCqeEEFdGNfWfR8kFEmG6U6wOVQOXS7DWJz/LQzWl1lXYzV7ds3giXtHW56WmHRhOaLKB+lEz0bqSjJbH/guMJXlQfXnQy0rsFdTSh+wldEEfzng8jHS+JXc/dLmyO2+fWuaPbBzA1O3m2sbpGKs02xwItlURoeZG65iTcstwvUHgwbg4wSY3pjqF3/r8kWkOyW0MSryFJ1pDsneQXUyhMaw=="
+  },
+  "5": {
+    "type": "CSS animations",
+    "name": "spinning (+masked) video",
+    "code": "#code/eJxtUtFO5DAMfO9XWCshAaKkLOyBSlndr4TWbX2XJlHiXa5C/Ps5TRdWCKlNJpOxPXXdRJ4N7gsAeV5dN8O7AIBJh4FsDdXzcnyjjsca7qrq+JaZEWkYOVNjpjqK3ui5ht7gv0z9OUSmfi5bZxmtyFtZMeRLbWiwJTFO8fziI5s5UodudbOW331W15YmzeTEoejK6MnC3S4C2Z6sZPymKpkmskPZH2ybowxZ1KsPdQ08Ulw4cD20rkMY0GLQjJ0U5xFGZh9rpV7RWmTuEc1827pJtYa8nxVcqyVXOpZeJ7femXlw9nJbXUB1cSMvbNN+L2C3Ek9pTwJpoyCh4TGBp08qrVn2eIpbqO1JdoqTtFdn7fv9F+c+6AnjV4dyM0X7Dhy0jb0LUw3BsXznZdXhcPW8hEMu8ZPq/teZ7qMoGrUOUNGk6UmD1OQ/F0P7sllgVLENiLaM+ojhdvIPG9AHdmlYXjYcDrgB45xf8b5RS9hekuecxX8TSMMP"
+  },
+  "6": {
+    "type": "CSS art ticks",
+    "name": "pixel art (box-shadow hack)",
+    "code": "#code/eJyFl91uwjAMhe/3FLnZ3TpaBihhiHcpakYrdaTqDz+a9u5rHbYRNzmRKCL97PjEhWOx6/pbrfdPQhxMcRNf4wchPvP2WJ22In2nZamrY9lvRZam53K69T1e46uozveExnRVX5kxJT90ph56bTN701Bac7XrWn+M+6zTZ7u8VEVfzsrclwdzTboyL8xlvNVc/y45Xs3QNrV+oTgh1AbibMLZJshlivl0922JtwecEOAriflmhbmM6FMRfQkdgFSEzw8wbQ04IcDpfICriLwsiwhISCGVQR0AASnGsfRYfdIOOCHAZUSfiuizHUQBy4hC22IZ/g2mGFMHAY9tTx0EnKQDLiP6VESfbRAIsA1S2GQAJgS4FYACyASziE2hAOohCrA+6gmwfm4HQpuffkfFv8GL9HXdCZ13OqlOiRl6O2TuQ2lbmrNuH6ZNaDJMAg/14J8LHLpTgVN3JnDqOO4EW134xwGD7ixg0B0EvKY7BliqRIoUUsTc33dSB/LDhKDr+t7DhFLVTNFje7NZ1ceNmdfPsGvVvtM6kD/XEJxX5a0I1nTN3fdcQ1AhRczTZ9/+JRTF/NzXpyB0vZxTvLHr495WBamEqhRUxfzb3w6F7CAIXef2Fw5j17W9zQxj5th+j5th6727xf2PwdNuNN79bjG9/wC0oVBS"
+  },
+  "7": {
+    "type": "CSS art ticks",
+    "name": "single element sphere (cartoonish)",
+    "code": "#code/eJydVO1OgzAU/b+nuJkx0cRqh2ucde5dCi2jWilpyxwa391LCgzwK5GEpvTcj3NOb9j60Bi1A1gAcGdtgHfcARCS7klmjXUczvI8p/fpQwf4qlBORXDVonf4bL5DkxYV4k4MqNGlGspSertm9z1U6H1h8A097vapuEgYu4LTQq/ZZZvwscAltbLp6BaqzeSwovRQxIpS+8qIhkNu1DEePdU+6LzBBmVQJYZnuCoXQYHNS6KDevFTIBXZ897ZupQ9s4NwFyeDToSuo/iO06uWoeCQUFp1/XuWo6PKeh20LTmI1FtTB9U1tU4qR5yQukY+jJ7/TmZyKZfjGtiuOgLW1rKLPV1CFxicKHsathKZDg06nTAPSnhFbB3mEjlPVW4HqYOhy+XDWDv7Ip39qfyN6FKqI9KO30blmHc75AVbIcb6z17kZiZyNk4TSwjWIG3dkb/TeiS1IdgXDnR6HVEE/WqHyHFe/nBjtVnP7Rgd/eRH1L+eyF/P2P5rTJJ+cLc38SeAO6kPkBnh/eMyhi532xs83C0+AVZUOSU="
+  },
+  "8": {
+    "type": "CSS art ticks",
+    "name": "single element sphere (realistic)",
+    "code": "#code/eJyllNtuozAQhu/zFKNUlUAKqWGDkrhpnqO3NrbBrYORbVKyq777DoUmzXapVFWCYU5Y/3y2vPPhZOR+BkCdtQH+oAeQJLxMCmuso3CjlCJbfo+F1xkabsVpbDswV+qaArl/CyupyypQSAk5VkNKaN8YdqKgjOyG1FPrg1YnXL4Ossb2Aq10Q5EZXdaJDvLgrwucFc+ls20t3nUdmYsuOuOzvqVvKunkKLGxXgdtUSTj3po2yGG9Fy1CRSEjpOmu1X9IceuEdIljQreoJye3/4qh0BeZScr+i3qjQrvCSGABMTTdm1nAjWRc8DU6Ki0I531GcclF76zYeqvQEdk227A+QxjZbj5NRCmXyp4nO/Obz78x0hSPYBsKSfY+oZEqfIx/RgLb+3cBruQsyvJ8ARdDlmk8VdnEkK6m/oshW93Go3zHao9wDhT8s3x5jFC6kOVYVdrgQaLATeuiNG+6/7BlClum0H5JbZ1fQUt/jeHvRNdCdogxvd6g7NMGrb935HoaBAkMz5LkUxTSKQgXBru78QaY7YQ+QmGY9w/zgcp8v7vD5P4v/D8qLg=="
+  },
+  "9": {
+    "type": "audio sampling",
+    "name": "load track",
+    "code": "#code/eJxtU9uO2yAQfc9XzFtsqbHTrlZq3Wyk3tSXvvULCIxtujagAcexqv33DuCNklUlC8PMOXCYMxx8WAY8bgBOVi3wlycAo6BOmwb2n9OyR931oYH3+/25zyGlvRvE0kA74CWH/kw+6HbZSWsCGoZLHpFyUgy6MzsdcPT3CTmRt9SAs/o1+LI51KuqzcEd5aDlMwizzD0SgjUQegQnOoRgIaqAQEI+H2oXCV6SdiFeiIX4ADJc4AkMzjBro+xcfZmUtt+iyEsoyivOk2QcoytJKAJ+ndoW6bedSOINrDN3qJ9CG85ymvkVQwzKUHQmEjpzDUSCQq6PEUHblOWvnYyMS1AorcIk7LsIAgrFY7makbl3gJR/B8UpaSzh6bhis4wcZp3rpK5hsEKBiPzXIJfbrhGfLpk2eCmTAUke0zoMqdoZF0+FluyYYqN7gFYPmJFFhhALJaVNB6cFLAnTYUuIfIJRvlyhfQjON3V9zVSWutqhdQPWb0n1+nv48Onj42Md92gxyL7YphN9jQNXmLTcOS2M3cmeBfiK1W3LdKWKxZqC0Mcy8a8SRGLJ9hblLSbdj0H/q3ZZXosyI7cTqlSEs8YZyYNDGrX30cxrU3I6NSazlJXTyF1fxUdWCaV+nHn1S3t+Kaxim3p8y47eeBmd9EEQN2k8NU3TzrG6b4xj2/jN5M7/BzsEPNk="
+  },
+  "10": {
+    "type": "audio sampling",
+    "name": "loop sample",
+    "code": "#code/eJxtVMFu2zAMvfcreIsDtHa3dsOWtQXWrdhlt+0HFIm2tTqSIclxg6H/vifKbdNiQODYIp9IPj7yKqbDwDcnRFtvDvQXL0Q7FTrrNnT+RT57tl2fNvTu/HzflyNj4ziow4bagR/K0Z8pJtsezrR3iR3cNZ4cilENtnNnNvEuHhseT66aJYGTq/FGD1bfk3KHuefA5B2lnmlUHVPyFJMK6aoZs2/UwY4pp41wMZFOD3RNjmearTN+rr9OxvpvOZWHVK2f/WLQ8IN3rQOrxLdT23L45aeg+citc6+8fijrYIUZ+BoujnWqOpcBnXs+yADDYMGpZL1Y8WsaqULlhChKJOo4rWImUatg2ND2ID7b4OfIgVQLfl6grQ3IKdkdk034cjb2AOUGWNfVuJSEOXyIf0EKbTsPHlOvHMhE3BmEUAq26xDlJasUVOa9Q5l1Ad9O6ZQOfiINqAY+t+BNFahg8H6kyAkld7EgbSu4WeVIQJS70b7AI7isn29VA/KOo4ZmCtLY3Atog6xr/FQqjvnCp+u8BGyi2o0DcnmqMySrp0EFGn3IxJNv3xa3WXonCV/jbOKjk19ZWTi+PDq7cwYnH0sMkePMqz06EP0ASRiJEBm9NyDIB4Osi1yD7wLHiEQKWMEDHOXeLRXU2RcQNKH1uRE2ZtPswz2iCDMF6jgH8qgxxhJQQQQvKe/VMMlsiA2Zy4yIkIHeceq9OUVwSIsHPxdBtpPTQpNB9oZlUr6rpKgyeK6XHVDE/MpB7KdUbWVo1nR9s/gW1soxSCsvYnlcy5Q/DUJVWhJwbzBZrhC+D1ldbWCGrJyJS/JVn9IYN03zbKl96JqRPXrfvAU1y9/F+8+fPnxo8h0tJ91XK4kYGx4wocHqs9Eq58+kY7HejRertSRag0FXoW+5KvzVKgR1KOuhWh/7ZBKy0//IWS8zb7yedlBynZdqrYy52+Prp43YjLhvJeO6ApVHJKLmRU7YvoKWthcBSF+hPcqT3LZZTtL7J6RIKPZ+Ggy2NwoXRbwVitr6fYG8aEW23BTy3P3GvJ3SpbRsnTdzWbL/ADWWA74="
+  },
+  "11": {
+    "type": "audio sampling",
+    "name": "adjusting playback rate",
+    "code": "#code/eJyVU01v2zAMvfdX8BYba+y2WYEtSwt0H9hlp7bYXZFoW6stCRKdxBj630dJXpCu22GAYVvk0+MT+bQJNPV4ewawtWqCn/wDMAjfarOGiw9p2aFuO1rD5cXFrsshpYPrxbSGpsdDDv0YA+lmWkprCA3DJb/R56TodWuWmnAIp4nns009CzjbuFvZa/kEwkz7Dj2CNUAdghMtAlkIJDxtahexQXrtKMrmcoFA0gFuwOAe9toou6/uRqXtpyjlQEV5xAUvGcfoSnoUhB/HpkH/YEcv8QTWmheor0KblOWHGareWscA8iPOkdiMrZBP94yudqIfkfMrqGuIGRAEqwMEh6jmDVzHoKSiNZG3NcdArKqQW2kEacvZXLYZjYxrUCitwnS8z4IEFIrf5Ty4vPkFIOXPodimk5Zwcztjs44cZrH5J2WeyzSaVJdPUIjIBZ55vdKmhe0E1gvTYuMRgx2NCuUM7YhcWNf1MVNZ39YOreux/nNTPX9WV+/fXV/XkaNBkl2xSBVDjT13xGu5dFoYu5QdCwjV4FaLMgmt2B6m8BjiqfhTCe/FlGdalKeY2IQI+ltzynmyyspxYGtW8SZUQqkvO15904HtzHyL5M4Ft/KkibGFyZdFrsY94EHZIfJArw1L22Jv99G/HQqfDT2bBTy7BWQXuwJ2x2MgPeBvnle2Ckjfo7Pu6JFhxeV5dujoPReLofKfW6MS4e/F4B7tKcfqFQe8gav/53mthXneJhuV8Yrn2/oLdbpuRw=="
+  },
+  "12": {
+    "type": "cursed cursors",
+    "name": "custom mouse cursor",
+    "code": "#code/eJxNkNFuwyAMRd/zFX5cqyWQrg9TWu1fSOMEaxAi7Iym0/59qGTSHkD2xffIlyvL5vCjqgD6MGzwnQsAb+JEcwf68mwTDWI7aLX+SkWxSJOVItki3dbIIXawRvdC3kzIqkisoqG5D0npZqLx8ApmlVBM6gg0AweP0MeQGCODWASmB4IjTwJjiDsbChaIoT293/NZ7nBUfyCx+eE5AiM5hGQ4BxkyecvZPtdkBGc29M9iRRbulEopNfuy9XltbsHvu6uTbs9Kv6l87ynqheZkEV3NKI0V7wrwp6quav/NX0qKar0="
+  },
+  "13": {
+    "type": "cursed cursors",
+    "name": "animated cursor v1 (css)",
+    "code": "#code/eJyV0t0KwiAYBuDzXcV3EhTU5v5rjehWrNz20X5AXWOM3XtudhJ5YKCgL++jHpgLOdbs4jgAt+4xwqQWAA3lJbYZkPO6HfAhqwx8Ql6DTiqGZSV1VOno3nPR8Qx6Xm+xoSUTno6E12CLwiNuicVuD7SXnSa0VUWJnbppqRw+fSBuLADbQmWSLdVZTTWuTzYWnDZMfPf1o8kGpj9fsR4M4EdW1DfQ4GRFAwONQisaGmicWtHIQFPfisYGekysaPJDZ8fJPf3R3jh7xpY="
+  },
+  "14": {
+    "type": "cursed cursors",
+    "name": "animated cursor v2 (css)",
+    "code": "#code/eJyVlUtugzAQQPc9xWwqtVGDMeHfqKrUI+QETjBgBXCETRGKevc6Md20s5huAI/mzQc9yXtjl06+PQCwDXwcDnDSlQSrQVQVCDhNxurevUajx1t40dMIF9FI2DAHHXW1wNV9APRibNRQQvh6P86qsm0JPAw/Zx9ppWpa60OtD/m6JUxj96R6V9UwHzJsFGo46pmFQaPq5xcQk9UeEoNLtUq7XmvSdp0vDBIDaqjVoKy8JX89+MXutaFWnTRwXNzU52kWVg5GKL+Hy2mtvZiSsXmeg3WIbTwFJ92vM7Eo5DELd8w9fxpf1DC3UnZbI23Q2r7z5d7PcqlH0bt2v0b0/yp8hOu/l3fb3NiEyHKELYhshLA8JsI7DM6JcIzA0Y4IJxicEeEUgXcREc4wOCXCOQLHnAgXGEx2BBWMaifHFEvIvTHJEqqhHLMspSrKMc1SqqMc8yyjSsox0TKqpRwzLadqyjHVcqqnHHOtoIoaYa4VVFsizDV3k1Dxv7K5u2HP1tvvGyYbRec="
+  },
+  "15": {
+    "type": "cursed cursors",
+    "name": "animated cursor (js)",
+    "code": "#code/eJx9kjFvgzAQhXd+xSmqFFBTIBlTkqXqVnWqOsfBBk4ydoRNCIry33u205ZWTTdz9967zz4KY0cpthHAXvMRznQAaFlXo1pD/ug/B+S2WcMyz49DqDQC68aGUhNKZd8Z3a2h72SMLauFyULJZB1DtddDlqc1VskCWG+1M12iIruOjwo/njPLHlTfbmb5bFtkruZ6puzwYOkEUPWqtKgVMIVPPh/iBM6OIGBoZSxQBGyA67JvhbKpy0ldthE2pd5EeWSSlLt/qO/O5LhM0Hfe/jPcXyMNVsqj1OgXUstO1FitIMtA0vuKgLkXHaCCdgRiA11BoPBGSRUlTvbdM756cXzzUgncw9L7sIL407d1g5NJTP4H/SSFFFdtNIHnQrKRWrRvx28OQnCPjVKiESTiAZlS3rAVurfx14IWwZ74jfs3GVBxPaSM8+cjQbygsULR3eZSMz5ffO82cX9IWP4HpuTZEw=="
+  },
+  "16": {
+    "type": "cursed cursors",
+    "name": "emoji cursor trails (js)",
+    "code": "#code/eJyNVM1u1DAQvu9TjCpRJ3Q3SbetVG03y6HqAQm4wAFUcXATZ2OUxJHtbBJQJcSBA0/AjVfkERjb2d1020pc4oznm99vPEul+4KtJgB3Iu3hG/4AlFSuebWA6MqKOePrXC/gNIo2ubtKGqmEXEAjC+8opZoueEnXLFSb9UlXFleNzi6nS5QApUrFJNe6XoRh27ZBexYIuQ7nURQZPIGWpzqPyUVEhlAxwVAENpy1tZAoRhCZ6GCvbcYxyUSlZ4p/ZYvzy7q7IqulZp2G3jh6QVZ///z+vgzN1WppwqyO/CnQRgtTwP0E71zhk6UpHDH2QFElktfadCRrqkRzUUEiGdXsphRfOHjdFHp/aFQiKqWBGYWCGG6JiUqmYM4fw/lzOH+RzyMbSSs0eEt1HmSFENKzv3ibitLz4eXgNChYtda5fxgNbR3gFk2c3zAc8gRVo3NWsJJVGjIhHXTsomDoIBVJYyDBUJ4z8IgxJy4iAgPTwmvstXEWj1wZXVJQpd7R0rgjVjXTkvKCbDMy/MDxMdRCcdvKh/aWg2CnRCf0Tomi0YwcYAqWmfAdnACpu0OtFjUq+6eVZlDemzzQvRmVfXJs200zwTsrI6Aq2LBCJFz3aOfYBugWcEDUEqLgAl7B7BTwgRjiDgAhzP3pYN4jxP7e269kupGWqYm7Gs9cU6f7mbNZboeuwLQ7TKqmUrHXyJjVjvrk72D9czBs2B6VPYfads5BsfePcIe9CjqH7f8H2ztsBrMYuzi/cAwcFPOI9IdVPKL9ifQRk40xPAMvM8z5A1zisWHeduYVM6PxgZdMNNobETE1CyhCSs+iqTP198y1HBlvA5qmNxt8K2+4wifDpEdK0SgbABeBx3yIVwOR+xdLoWLtMItsw2QPGqODzhlYazDm6oklMNpMnnmOHCN/hBnMzzHBQf5kZVfc7s2bbRfQumZVep3zIvV25cB49PbX9/7ELE23HP8B9PvtvA=="
+  },
+  "17": {
+    "type": "cursed cursors",
+    "name": "drawing cursors (js)",
+    "code": "#code/eJyFVE1v2zAMvedXEL3YRl3bDZBLm3iHYcAK7LQetqEoUMVibGG2lElynKDofx8lOR/NtuxiWOJ75Hsk7bmxuxZLWCq+g1fomK6FvIPiHt5gnofgZDKvmNwwA/68uForI6xQhGNLo9re4v1VOc8DyMFNpcXalhOASkljYaQvgKuq71Da7FePeveILVZW6TgKgChxDP+aDYLbhhiDkFwNmZAS9Td3d4Q0KOrGnmE++8tjZbslwEio0X5U0uLWxtGU+2oHoOhYjU7iU9SoXt/ULTPEEKsohahBpu3+UHH/9nygNjXRJA7w4HLELm1TZ5xZZtCSKo5OQxGuja7oEIVyOSUyeQTXY/mn4jloatFCp3qD5EsS3uoeQ2T0yjj/tKFGfhHGItmmFrai+kn64gQWJbwSNKQRRF8zbfBB2vhcV+JhDiKgXIwqshZlTc2/gVv4AAXcUfAabj30L8bEPnDZmnDW3pLJJQ/ecqc26HzgiZE8d5PMVqJtH90OUp0XXS9ZPJ3NUjg+iqyYJS/nlK+0ZXFB0fTddqXvFyn0IozU+cKMWkryvlMjyF1YyBymJ7DdCexHgI1LuceJFcSHQSZeEddsCJvS1ClsU9gloTN+viT7dPAr1hoM15e75vDH6f+xPCH/f7P063/k8DpcEvophI/7N+p0Utk="
+  },
+  "18": {
+    "type": "cursed cursors",
+    "name": "look at cursor (js)",
+    "code": "#code/eJxdkU9rwkAQxc/NpxhCwQQ0sR7VeCv00J56qFIK3WYnyZZk1+5O1CB+907+SFMvyzLvN/OGN2tHTYkbD+DLyAbO/AEoUOUFLeFhPj8Uq64klduXollCVuKpL33XjlTWzFKjCTXjKb9oe1GUKtczRVi5sXDx1vHg6K1VlYOzaeKrSuTo4lxlLhbWmmPEX59nUOILDV3JbztcatWe2m3Z1FGvQALSpHXFJtFPjbZ5xRJTMjaYvP8f8TEJPe49Ki3ZQ0j5eOCmZ+V4f2S8MrXDyhxwMoUAQ0g2QyAjty3bDQOU5q43JamAGBa34O4GfOpC7ci7KyhPDGGUlor32MJssBgBzQjYXYHdH2BZfxFURIKEXgSymfLQsD9Bl2SXdkRWaJcZWzH+aQ0JwuD+bC9WyPCzvUu4ai/Tx/sL6rKrbA=="
+  },
+  "19": {
+    "type": "oscillations",
+    "name": "oscillating gif",
+    "code": "#code/eJyFUsFu2zAMvecriFzspI3tHnZJkwEDtp220w47DDuoEm1zsCRPYmobw/59tJQVLVCggGHTj4+P5JNOkZcB328AHrxZ4I8EAFaFjtwRmvv0O5Hh/gh3TfM4ZaRH6nrOUJ8hQ3Ec1HKEdsA5Q78ukaldDto7Rid0LW8MOakG6tyBGG18mSCrOjwEdAYDue4II804KEZzD/UedB+8RdjXr5N1kDkOaDqMid5SwNbPmf93c6qv+25OZDuIQZ+3SSPWHbWx1qaS71am4/NWgfZ2VJrX5fR2LYqiP/JqlywVGbSBMxivL1Y2qH5fMCzfcEDNPpTFj9dUfhY7qZanvTjN5B0oJxMwQrm72h9QhCJ/SLgwPgdlsbzSdomSuzOJE2f4KHDl/FQ+z0WthjXZVE1zl3FTpeUrL9MQL5L8qriv1EMsUxDJlUlyn6t3z/Wsmr+v90CqJnLGTxU5hyFje2nz7mWT6Up+q4VET9I3UIxzkQ5qA//bKGM+PYq7XyjKLULxdfDKFLfwZIgcaj6WfwJE4mA="
+  },
+  "20": {
+    "type": "oscillations",
+    "name": "circle gif",
+    "code": "#code/eJyFUl1LwzAUfe+vuBSh7ZxZFfYi20BQ8UGffPBBBGOSdoE2qcmtaxn7795+TDpQfEq45yPncLPSZQ7eiXWoS54rv8h15hdCMjpD4AWuQw7ClhUXCFJ7EW6CYOWF0xVuAiDIeAQhYQ3SirpUBtlnrVz7rAol0Lo4ev3N5S1KOrVkHttCscp6jdoason4h7dFjSoKiJHVRvQANxQQVZzAnsYATtEzHm/6MRHuHS9VPLKSnjJkQ10qsr2lMTN2F08xx6WuPaE7baTdMW2Mci9a4hZmkLKr5YTrBS86o4uUpenlBLBZ5hUSMgQDaK7/8FvOR0Z7ynhQOt/iQOkZh4l9Q85PHLfMaxP3ZWZDloQuY4HzMQRrJsL2KBTW/ytsB+FxH4XKukbvZ/vmUDXvpyDaasDaETt0mxoLcSnvvugXPGqPirrFUWG5jObws5rVYvw+3wFmyPY="
+  },
+  "21": {
+    "type": "oscillations",
+    "name": "circle canvas",
+    "code": "#code/eJyFk8FunDAQhu/7FKNcgJQYuhKXzWalqG2USOmlOfQaLzbGEtipbQIoyrt3bFMtiVJFQghmvn/m99jeWzd3/ABHzWZ4gZ4aIdUOykt4hX0Rk5vNvqbqmVoI/1dnT9pKJzVy9Gh1Nzh+eXbYFxHyuK2NfHKHDUCtlXWwyK+A6XrouXLkz8DN/MA7Xjtt0iQCSeYV4ZOMkrkWFaNUTI9EKsXNbx87IS2XonXvmNsQPHV2EwKLQHD3TSvHJ5cmWxa7BaoVCCk+wl1PBU+zDWaaQdV+kUCV7KnDKLxgGMBwNG/ddQgjcGNoz9OFygJSFL4xaWTXPfiRYfVHI4403VZVDqdXScoqe3wv+YVDSUvM5m+Gkb9dd+wU/TvZ+x7f0QBRekzXOUOZHOxHk4RzNLCtVqytaTB7gcbKr6uEbhrL/ajjCACm3X/qVflCzLsP9iUigXhdlfd79JO6llip0rCY8+glw49lAV8WE2RaCed/wlrbT4VzFOKUmaFj3OpW5DDlMPuJeUf4tIJQxn484zG9l9ZxNJ8mnaYsyWG1y4hZU2P/RPpKthCysUWrB3MhOmrxtMkmwYJ4i+Jt+Aup8xMU"
+  },
+  "22": {
+    "type": "oscillations",
+    "name": "lissajous gif",
+    "code": "#code/eJx1UktLAzEQvvdXDEXYrY+0Cl6kFQQVD3ryoCKCMZndBnaTmpm1u0j/u7MPpRW9Jd9j8n1M5q7MgaJZjF2pc6Rp7jKaLkMVj/JCEym5j0EXvBhrDy0OHT4+H43mZKJb8fkIwARPDMbCAmwwVYme1XuFsbnHAg2HmCbPfwx5SSat2SripkC1CuTYBS9TEv1GoagYk5EossqbjtBeYjKmE/gUGCCivEJ80cEiuI66xHRQTTpJH41diTL2UmDlwzrd5qK2riJh187bsFbOe4wPzvIS9mGmTk63tGR0gY+iPZqp2ez4N/MkTEvseEKWEbIwfWaA+uyfp04PB0Wzq7hBly+5l3SKzdb4WibfaV4qcj7teu4PMSdyGsodDClUveVsvp0m0I7z6S9n0zu/l1Vg1nZ63fusN6v6dZfksOq5ZuA27RqHStraqw/5IbeOGKVdmhRB2+QQfvY2nw5f6wvYR9OJ"
+  },
+  "23": {
+    "type": "oscillations",
+    "name": "lissajous canvas",
+    "code": "#code/eJyFk01vnDAQhu/7K0a5ACkFuhJStdmsVPVDrdRemkObW7y2AUtgp/YQFkX57x1jomVXW/UAmPHzel7P2FuHYyt3sDdihGfomK2V3kBxAy+wzcPkarXlTD8xB9P/7dWjcQqVIY7tnWl7lDdXu20eII87btUj7lYA3GiHMMtvQRjed1Jj9qeXdryTreRobBwFIEq8YhpmgxLYkGJQWpghU1pL+8vHjkgjVd3gGfN1Ch4z44GAWVBL/Gg0ygPG0VqEbIESBGk5wLeO1TJOVjRT9Zr7TQLTqmNIUXimMICVZN7hhylMwBfLOhnPVDIhee4TZ5Vq2ztfMlr9wdZ7Fq/LMoXjq8iKMnk4l/ykosQFzaYnxUhP9x0yBf+oOp/jExnItBni5ZxlQvXuUiXhmgysywXrOGvlb2LfkrPi3WSqYbqWgI1yoPtuL+05f//KF2X5X4WpKid9z0ItAQ6bfxgr05kYNxcaHJCJeFks75v9g2GTOaXjqSrX86YSGs2leDO7yA4L5fiq5MadKO8vKcegpIYJy4ZwarhI4ZDCSL197x/fBO/NnzKRMSE+P9HJ/64cStpGHLWGiSiFxcEhzFlORiLlV3R5rSqXU5S+ES1EFzJcrL+4RChp"
+  }
+}
