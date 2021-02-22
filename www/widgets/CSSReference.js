@@ -77,7 +77,10 @@ class CSSReference extends Widget {
         this._createPropSlide(eve.data)
         this.open()
       } else {
-        const url = eve.nfo.url
+        let url = eve.nfo.url
+        // HACK: THIS SHOULD BE FIXED ON NETNET
+        if (url.includes('org//en-US/')) url = url.replace('org//en-US/', 'org/en-US/')
+        // ...
         const a = document.createElement('a')
         a.setAttribute('download', 'index.html')
         a.setAttribute('href', url)
