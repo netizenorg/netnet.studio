@@ -138,4 +138,26 @@ router.post('/api/expand-url', (req, res) => {
   }
 })
 
+router.get('/api/examples', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/examples-urls.json')
+  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  if (typeof urlsDict[0] === 'object') {
+    res.json({ success: 'success', data: urlsDict })
+  } else {
+    res.json({ error: 'there was an issue loading the database', data: urlsDict })
+  }
+})
+
+router.post('/api/example-data', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/examples-urls.json')
+  // const urlsDict = require(dbPath)
+  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  const hash = urlsDict[req.body.key].code
+  if (typeof hash === 'string') {
+    res.json({ success: 'success', hash })
+  } else {
+    res.json({ error: `${req.body.key} is not in the database.` })
+  }
+})
+
 module.exports = router

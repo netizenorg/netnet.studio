@@ -121,6 +121,7 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
+    exampleCode: new URL(window.location).searchParams.get('ex'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh')
@@ -145,6 +146,7 @@ window.utils = {
 
   checkURL: () => {
     const code = window.utils.url.shortCode
+    const example = window.utils.url.exampleCode
     const layout = window.utils.url.layout
     const tutorial = window.utils.url.tutorial
     if (Averigua.isMobile()) return window.utils.mobile()
@@ -182,6 +184,9 @@ window.utils = {
         } else window.utils.fadeOutLoader(true)
       })
       return 'code'
+    } else if (example) {
+      window.utils.loadExample(example, true)
+      return 'example'
     } else {
       window.utils.fadeOutLoader(false)
       return 'none'
@@ -198,6 +203,22 @@ window.utils = {
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
     }, window.utils.getVal('--layout-transition-time'))
+  },
+
+  loadExample: (example) => {
+    window.utils.post('./api/example-data', { key: example }, (json) => {
+      NNE.addCustomRoot(null)
+      NNE.code = ''
+      NNW.layout = 'dock-left'
+      window.utils.afterLayoutTransition(() => {
+        NNE.code = NNE._decode(json.hash.substr(6))
+        setTimeout(() => NNE.cm.refresh(), 10)
+        window.utils.fadeOutLoader(false)
+        window.convo = new Convo({
+          content: 'Checkout this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.'
+        })
+      })
+    })
   },
 
   // CSS related stuff
