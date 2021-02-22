@@ -16,10 +16,11 @@ class HyperVideoPlayer extends Widget {
       if (tm && tm.opened) tm.close()
       else if (tg && tg.metadata) {
         tg.quit(); tg.open()
-        tg.update({ bottom: 20, right: 20 }, 500)
+        // tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
       NNE.cm.setOption('readOnly', false)
+      if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
 
     if (!WIDGETS.loaded.includes('NetitorLogger.js')) {

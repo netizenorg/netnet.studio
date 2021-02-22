@@ -15,7 +15,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'duplicate-file',
-    content: `You already have a file called <code>${self._upload}</code> uploaded to your project. Click the ✖ next to it's name to delete it before uploading a new version of that file.`,
+    content: `You already have a file called <code>${self._upload}</code> uploaded to your project. Click the trash icon next to it's name to delete it before uploading a new version of that file.`,
     options: { ok: (e) => e.hide() }
   }, {
     id: 'file-too-big',

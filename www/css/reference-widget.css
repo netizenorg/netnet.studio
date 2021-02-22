@@ -24,6 +24,7 @@
   position: absolute;
   top: 0;
   left: -15px;
+  z-index: 2;
   padding: 4px 30px;
   display: flex;
   justify-content: space-between;
