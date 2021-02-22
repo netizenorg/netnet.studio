@@ -141,6 +141,10 @@ router.post('/api/expand-url', (req, res) => {
 router.get('/api/examples', (req, res) => {
   const dbPath = path.join(__dirname, '../data/examples-urls.json')
   const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET'
+  })
   if (typeof urlsDict[0] === 'object') {
     res.json({ success: 'success', data: urlsDict })
   } else {
