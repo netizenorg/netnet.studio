@@ -215,7 +215,8 @@ window.utils = {
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
         window.convo = new Convo({
-          content: 'Checkout this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.'
+          id: 'demo-example',
+          content: 'Check out this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.'
         })
       })
     })
@@ -290,7 +291,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
