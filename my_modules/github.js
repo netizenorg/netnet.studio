@@ -107,6 +107,19 @@ router.get('/api/github/saved-projects', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\  [POST]
 
+router.post('/api/github/repo-data', (req, res) => {
+  // https://docs.github.com/en/rest/reference/repos#get-a-repository
+  const octokit = new Octokit()
+  octokit.request('GET /repos/{owner}/{repo}', {
+    owner: req.body.owner,
+    repo: req.body.repo
+  }).then(gitRes => {
+    res.json({ success: true, message: 'success', data: gitRes.data })
+  }).catch(err => {
+    res.json({ success: false, message: 'octokit error', error: err })
+  })
+})
+
 router.post('/api/github/new-repo', (req, res) => {
   const name = req.body.name
   const data = req.body.data

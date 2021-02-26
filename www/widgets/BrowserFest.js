@@ -18,7 +18,7 @@ class BrowserFest extends Widget {
     this._createFileUploader()
   }
 
-  _submitToBF () {
+  _preSubmitForkCheck () {
     const validity = this.$('[name="email"]').validity
     const url = this.$('[name="url"]').validity
     if (validity.valueMissing || validity.typeMismatch) {
@@ -42,6 +42,22 @@ class BrowserFest extends Widget {
       date: Date.now()
     }
 
+    this._submittingHTML()
+
+    const repoData = { owner: this.owner, repo: this.repo }
+    utils.post('/api/github/repo-data', repoData, (json) => {
+      if (json.data.fork) {
+        data.fork = {
+          owner: json.data.parent.owner.login,
+          repo: json.data.parent.name,
+          branch: json.data.parent.default_branch
+        }
+      } else { data.fork = false }
+      this._submitToBF(data, imgName)
+    })
+  }
+
+  _submitToBF (data, imgName) {
     const submitData = (data) => {
       utils.post('./api/browserfest/submission', data, (json) => {
         console.log(json)
@@ -54,7 +70,6 @@ class BrowserFest extends Widget {
     }
 
     if (this._bfthumb) {
-      this._submittingHTML()
       const ext = this._bfthumb.type.split('/')[1]
       data.thumbnail = `https://netnet.studio/${imgName}.${ext}`
       const formData = new window.FormData()
@@ -63,8 +78,11 @@ class BrowserFest extends Widget {
         .then(res => res.json())
         .then(json => { if (json.success) submitData(data) })
         .catch(err => console.error(err))
-    } else { this._submittingHTML(); submitData(data) }
+    } else { submitData(data) }
   }
+
+  // ---------------------------------------------------------------------------
+  // ----------------------------------------------------------- innerHTML -----
 
   _createFileUploader () {
     this.fu = new FileUploader({
@@ -184,7 +202,7 @@ class BrowserFest extends Widget {
     thumb.addEventListener('click', () => this.fu.input.click())
 
     this.$('[name="submit"]')
-      .addEventListener('click', () => this._submitToBF())
+      .addEventListener('click', () => this._preSubmitForkCheck())
   }
 }
 
