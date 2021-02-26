@@ -271,4 +271,18 @@ router.post('/api/github/gh-pages', (req, res) => {
   })
 })
 
+router.post('/api/github/fork', (req, res) => {
+  decryptToken(req, res, (octokit) => {
+    // https://docs.github.com/en/rest/reference/repos#create-a-fork
+    octokit.request('POST /repos/{owner}/{repo}/forks', {
+      owner: req.body.owner, /// owner of repo to fork
+      repo: req.body.repo // repo to fork
+    }).then(gitRes => {
+      res.json({ success: true, message: 'success', data: gitRes.data })
+    }).catch(err => {
+      res.json({ success: false, message: 'error updating ghpages', error: err })
+    })
+  })
+})
+
 module.exports = router

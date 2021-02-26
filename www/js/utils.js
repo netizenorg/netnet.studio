@@ -95,8 +95,30 @@ window.utils = {
     return (hvp && tg && tg.metadata !== null)
   },
 
+  forkRepo: () => {
+    NNW.menu.switchFace('processing')
+    const a = window.utils.url.github.split('/')
+    const data = { owner: a[0], repo: a[1] }
+    window.utils.post('./api/github/fork', data, (json) => {
+      WIDGETS['functions-menu']._openProject(json.data.name)
+      // json.data.default_branch // ex 'main'
+      // json.data.name // ex 'eduscraper'
+      // json.data.owner.login // ex 'nbriz'
+      // json.data.full_name  // ex 'nbriz/eduscraper'
+      // NOTE: maybe query repos list to make sure "openProject" is updated?
+      // or auto open it???
+    })
+  },
+
   hotKey: () => {
     return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  },
+
+  _Convo: (id) => {
+    Convo.load('utils-misc', () => {
+      const convos = window.CONVOS['utils-misc'](window.utils)
+      window.convo = new Convo(convos, id)
+    })
   },
 
   // page loading stuff
@@ -149,6 +171,7 @@ window.utils = {
     const example = window.utils.url.exampleCode
     const layout = window.utils.url.layout
     const tutorial = window.utils.url.tutorial
+    const github = window.utils.url.github
     if (Averigua.isMobile()) return window.utils.mobile()
     if (tutorial) {
       // TODO: load tutorial logix
@@ -169,6 +192,9 @@ window.utils = {
         window.utils.fadeOutLoader(false)
       } else window.utils.fadeOutLoader(true)
       return 'code'
+    } else if (github) {
+      window.utils.loadGithub(github)
+      return 'example'
     } else if (code) {
       window.utils.post('./api/expand-url', { key: code }, (json) => {
         window.utils.checkForDiffRoot()
@@ -205,6 +231,25 @@ window.utils = {
     }, window.utils.getVal('--layout-transition-time'))
   },
 
+  loadGithub: (github) => {
+    const a = github.split('/')
+    const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+    const rawHTML = `${path}index.html`
+    window.utils.get(rawHTML, (html) => {
+      NNE.addCustomRoot(path)
+      NNE.code = ''
+      NNW.layout = 'dock-left'
+      window.utils.afterLayoutTransition(() => {
+        NNE.code = html
+        setTimeout(() => NNE.cm.refresh(), 10)
+        window.utils.fadeOutLoader(false)
+        if (WIDGETS['student-session'].getData('owner')) {
+          window.utils._Convo('remix-github-project-logged-in')
+        } else { window.utils._Convo('remix-github-project-logged-out') }
+      })
+    }, true)
+  },
+
   loadExample: (example) => {
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
@@ -214,10 +259,7 @@ window.utils = {
         NNE.code = NNE._decode(json.hash.substr(6))
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
-        window.convo = new Convo({
-          id: 'demo-example',
-          content: 'Check out this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.'
-        })
+        window.utils._Convo('demo-example')
       })
     })
   },
@@ -283,11 +325,7 @@ window.utils = {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   netitorInput: (e) => {
-    if (NNE.cm.isReadOnly()) {
-      window.convo = new Convo({
-        content: 'Pause the video before you start editing and experimenting with the code.'
-      })
-    }
+    if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
   },
 
   hideConvoIf: () => {
@@ -330,12 +368,7 @@ window.utils = {
       document.body.appendChild(u._mi)
       u._mi._positionTriangle(0)
       u._mi.addEventListener('click', () => {
-        window.convo = new Convo({
-          content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
-          options: {
-            ok: (ev) => { NNE.spotlight(null); u.numHelper(false); ev.hide() }
-          }
-        })
+        u._Convo('num-helper')
         window.addEventListener('keydown', u._numHelpKeyDown)
       })
     }

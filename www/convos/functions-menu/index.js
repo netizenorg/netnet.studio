@@ -18,8 +18,7 @@ window.CONVOS['functions-menu'] = (self) => {
     } else if (opts.short) {
       return `${root}/?c=${opts.short}${gh}`
     } else if (gh) {
-      const agh = `?gh=${owner}/${repo}/${branch}`
-      return `${root}/${agh}${hash}`
+      return `${root}/?gh=${owner}/${repo}/${branch}`
     } else return `${root}/${hash}`
   }
 
@@ -244,12 +243,19 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'share-project',
     content: 'I can generate the usual share-link, but I could also publish your project to the Web for you?',
     options: {
-      'I\'ll take that share link': (e) => e.goTo('generate-sketch-url'),
+      'I\'ll take that share link': (e) => e.goTo('share-gh-url'),
+      'publish on the Web?': (e) => e.goTo('publish-to-web?')
+    }
+  }, {
+    id: 'share-gh-url',
+    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    options: {
+      'great thanks!': (e) => e.hide(),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
     }
   }, {
     id: 'publish-to-web?',
-    content: 'Because you have your project hosted on GitHub I can generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?',
+    content: `You could always <a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}/${WIDGETS['student-session'].getData('branch')}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved to your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
     options: {
       'yes please!': (e) => self.publishProject(),
       'oh, no thanks': (e) => e.hide()
