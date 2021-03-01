@@ -329,7 +329,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
