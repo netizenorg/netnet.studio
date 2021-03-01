@@ -88,7 +88,10 @@ class BrowserFest extends Widget {
     this.fu = new FileUploader({
       maxSize: 5000,
       types: ['image/jpeg', 'image/png', 'image/gif'],
-      ready: (file) => { this._bfthumb = file },
+      ready: (file) => {
+        this.$('[name="thumbnail-name"]').textContent = file.name
+        this._bfthumb = file
+      },
       error: (err) => {
         window.alert('oops! there was an issue (peep the console)')
         console.error(err)
@@ -190,6 +193,7 @@ class BrowserFest extends Widget {
         <textarea name="description" class="__bf-sub" style="width: 516px; height: 126px;" placeholder="demo description. instructions (anything you want the judges to know?), attribution (credit for media, assets, code snippets. this should also be in your comments) shoutouts (folks who helped, folks you respect. always a good idea to include these in the demo itself)"></textarea>
         <br>
         <button name="thumbnail">Upload Thumbnail</button>
+        <span name="thumbnail-name"></span>
         <button name="submit" style="float:right">Submit to BrowserFest</button>
       </div>
     `
