@@ -16,6 +16,10 @@ data/videos/*
 !www/videos/screen-saver.ogv
 !www/videos/screen-saver.webm
 
+data/browserfest-submissions.json
+data/browserfest-thumbnails/*
+!data/browserfest-thumbnails/.gitkeep
+
 # ignoring tutorial data for now, to avoid bloating things up
 www/tutorials/*
 !www/tutorials/list.json

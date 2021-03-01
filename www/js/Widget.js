@@ -249,6 +249,13 @@ class Widget {
   }
 
   keepInFrame () {
+    if (this.width >= window.innerWidth - 20) {
+      this.width = window.innerWidth - 20
+    }
+    if (this.height >= window.innerHeight - 20) {
+      this.height = window.innerHeight - 20
+    }
+
     const o = this.ele.offsetTop + this.ele.offsetHeight
     if (o > window.innerHeight - 10) this.update({ bottom: 10 }, 500)
     else if (this.ele.offsetTop < 2) this.update({ top: 10 }, 500)

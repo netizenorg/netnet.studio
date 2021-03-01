@@ -107,6 +107,19 @@ router.get('/api/github/saved-projects', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\  [POST]
 
+router.post('/api/github/repo-data', (req, res) => {
+  // https://docs.github.com/en/rest/reference/repos#get-a-repository
+  const octokit = new Octokit()
+  octokit.request('GET /repos/{owner}/{repo}', {
+    owner: req.body.owner,
+    repo: req.body.repo
+  }).then(gitRes => {
+    res.json({ success: true, message: 'success', data: gitRes.data })
+  }).catch(err => {
+    res.json({ success: false, message: 'octokit error', error: err })
+  })
+})
+
 router.post('/api/github/new-repo', (req, res) => {
   const name = req.body.name
   const data = req.body.data
@@ -263,6 +276,20 @@ router.post('/api/github/gh-pages', (req, res) => {
           mediaType: { previews: ['switcheroo'] }
         })
       }
+    }).then(gitRes => {
+      res.json({ success: true, message: 'success', data: gitRes.data })
+    }).catch(err => {
+      res.json({ success: false, message: 'error updating ghpages', error: err })
+    })
+  })
+})
+
+router.post('/api/github/fork', (req, res) => {
+  decryptToken(req, res, (octokit) => {
+    // https://docs.github.com/en/rest/reference/repos#create-a-fork
+    octokit.request('POST /repos/{owner}/{repo}/forks', {
+      owner: req.body.owner, /// owner of repo to fork
+      repo: req.body.repo // repo to fork
     }).then(gitRes => {
       res.json({ success: true, message: 'success', data: gitRes.data })
     }).catch(err => {

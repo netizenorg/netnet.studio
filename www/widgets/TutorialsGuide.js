@@ -27,6 +27,7 @@ class TutorialsGuide extends Widget {
 
       div.querySelector('#bf-submission').addEventListener('click', () => {
         window.convo = new Convo(this.convos, 'browserfest')
+        WIDGETS.open('browser-fest')
       })
 
       // create sub pages

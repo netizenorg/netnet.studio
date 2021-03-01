@@ -28,6 +28,7 @@ utils.get('/api/custom-elements', (elements) => {
   elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
 
   utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
+    WIDGETS['student-session'].clearProjectData()
     // ...check URL for params, && fade out load screen when ready
     const param = utils.checkURL()
     if (param === 'none') WIDGETS['student-session'].greetStudent()

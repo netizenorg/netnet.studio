@@ -32,6 +32,10 @@ class FunctionsMenu extends Widget {
         alts: ['open', 'github', 'project', 'repo', 'repository']
       },
       {
+        click: 'closeProject',
+        alts: ['quit', 'close', 'github', 'project', 'repo', 'repository']
+      },
+      {
         click: 'saveProject',
         alts: ['save', 'github', 'project', 'repo', 'repository'],
         hrAfter: true
@@ -161,6 +165,7 @@ class FunctionsMenu extends Widget {
   }
 
   openProject () {
+    if (WIDGETS['browser-fest']) WIDGETS['browser-fest'].close()
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
     const currCode = window.btoa(NNE.code)
@@ -170,6 +175,17 @@ class FunctionsMenu extends Widget {
     } else {
       // if user chooses a project to open, convo will call _openProject()
       window.convo = new Convo(this.convos, 'open-project')
+      // ...
+      WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
+    }
+  }
+
+  closeProject () {
+    const projOpen = WIDGETS['student-session'].getData('opened-project')
+    if (projOpen) {
+      WIDGETS['student-session'].clearProjectData()
+      NNE.code = ''
+      WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
     }
   }
 
@@ -440,6 +456,13 @@ class FunctionsMenu extends Widget {
         // else if (btns[i].textContent.includes('changeLayout')) {
         //   hideIf(btns[i], NNW.layout === 'welcome')
         // }
+      }
+    } else if (id === 'func-menu-my-project') {
+      const btns = this.$('button')
+      for (let i = 0; i < btns.length; i++) {
+        const closeBtn = btns[i].textContent.includes('closeProject')
+        const projOpen = WIDGETS['student-session'].getData('opened-project')
+        if (closeBtn) hideIf(btns[i], !projOpen)
       }
     }
   }

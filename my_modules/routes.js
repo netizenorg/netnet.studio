@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const router = express.Router()
 const path = require('path')
 const cookieParser = require('cookie-parser')
-// const multer = require('multer')
 const fs = require('fs')
 const exec = require('child_process').exec
 const utils = require('./utils.js')
@@ -162,6 +161,59 @@ router.post('/api/example-data', (req, res) => {
   } else {
     res.json({ error: `${req.body.key} is not in the database.` })
   }
+})
+
+// ************************
+// BROWSERFEST SUBMISSIONS
+// ************************
+
+const multer = require('multer')
+const bfimgs = path.join(__dirname, '../data/browserfest-thumbnails')
+const uploadImgStorage = multer.diskStorage({
+  destination: function (req, file, cb) { cb(null, bfimgs) },
+  filename: function (req, file, cb) { cb(null, file.originalname) }
+})
+const uploadImg = multer({ storage: uploadImgStorage }).single('image')
+
+// POST.......
+
+router.post('/api/browserfest/upload-image', async (req, res) => {
+  uploadImg(req, res, function (err) {
+    if (err) res.json({ success: false, error: err })
+    else res.json({ success: 'success', message: `${req.file.filename} uploaded` })
+  })
+})
+
+router.post('/api/browserfest/submission', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
+  utils.checkForJSONArrayFile(req, res, dbPath, () => {
+    const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+    if (bfsubs) {
+      bfsubs.push(req.body)
+      fs.writeFile(dbPath, JSON.stringify(bfsubs, null, 2), (err) => {
+        if (err) res.json({ success: false, error: err })
+        else res.json({ success: 'success' })
+      })
+    } else {
+      res.json({ error: 'there was an error with the database.' })
+    }
+  })
+})
+
+// GET ........
+
+router.use(express.static(path.join(__dirname, '../data/browserfest-thumbnails')))
+
+router.get('/api/browserfest/submissions', (req, res) => {
+  const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
+  const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET'
+  })
+  const msg = 'welcome h4x0r! to BrowserFest\'s API, here\'s that R4W data!'
+  if (bfsubs) res.json({ success: msg, data: bfsubs })
+  else res.json({ error: 'there was an error with the database.' })
 })
 
 module.exports = router
