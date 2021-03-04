@@ -214,9 +214,9 @@ window.utils = {
   },
 
   loadBlankSketch: () => {
-    NNE.code = ''
     NNW.layout = 'dock-left'
     window.utils.afterLayoutTransition(() => {
+      NNE.code = ''
       window.utils.fadeOutLoader(false)
       setTimeout(() => NNE.cm.refresh(), 10)
     })
