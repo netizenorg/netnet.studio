@@ -1,7 +1,11 @@
 /* global utils, WIDGETS, NNE */
 window.CONVOS['utils-misc'] = (self) => {
   // ... TODO: convo for "forking" when a ?gh= is present/loaded
-  const a = (() => { return window.utils.url.github.split('/') })()
+  const a = (() => {
+    const gh = window.utils.url.github
+    if (gh) return window.utils.url.github.split('/')
+    return []
+  })()
   return [{
     id: 'num-helper',
     content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
