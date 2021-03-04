@@ -101,12 +101,6 @@ window.utils = {
     const data = { owner: a[0], repo: a[1] }
     window.utils.post('./api/github/fork', data, (json) => {
       WIDGETS['functions-menu']._openProject(json.data.name)
-      // json.data.default_branch // ex 'main'
-      // json.data.name // ex 'eduscraper'
-      // json.data.owner.login // ex 'nbriz'
-      // json.data.full_name  // ex 'nbriz/eduscraper'
-      // NOTE: maybe query repos list to make sure "openProject" is updated?
-      // or auto open it???
     })
   },
 
@@ -146,7 +140,8 @@ window.utils = {
     exampleCode: new URL(window.location).searchParams.get('ex'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     layout: new URL(window.location).searchParams.get('layout'),
-    github: new URL(window.location).searchParams.get('gh')
+    github: new URL(window.location).searchParams.get('gh'),
+    widget: new URL(window.location).searchParams.get('w')
   },
 
   mobile: () => {
@@ -172,43 +167,23 @@ window.utils = {
     const layout = window.utils.url.layout
     const tutorial = window.utils.url.tutorial
     const github = window.utils.url.github
+    const widget = window.utils.url.widget
+    if (widget) WIDGETS.open(widget)
     if (Averigua.isMobile()) return window.utils.mobile()
     if (tutorial) {
-      // TODO: load tutorial logix
-      const tm = WIDGETS['tutorials-guide']
-      if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial))
-      else tm.load(tutorial)
-      window.utils.fadeOutLoader(false)
+      window.utils.loadTutorial(tutorial)
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
-      window.utils.checkForDiffRoot()
-      NNE.code = ''
-      window.utils.afterLayoutTransition(() => {
-        NNE.loadFromHash()
-        setTimeout(() => NNE.cm.refresh(), 10)
-      })
-      if (layout) {
-        NNW.layout = layout
-        window.utils.fadeOutLoader(false)
-      } else window.utils.fadeOutLoader(true)
+      window.utils.loadFromCodeHash(layout)
       return 'code'
+    } else if (window.location.hash.includes('#sketch')) {
+      window.utils.loadBlankSketch()
+      return 'sketch'
     } else if (github) {
       window.utils.loadGithub(github)
       return 'example'
     } else if (code) {
-      window.utils.post('./api/expand-url', { key: code }, (json) => {
-        window.utils.checkForDiffRoot()
-        window.location.hash = json.hash
-        NNE.code = ''
-        window.utils.afterLayoutTransition(() => {
-          NNE.loadFromHash()
-          setTimeout(() => NNE.cm.refresh(), 10)
-        })
-        if (layout) {
-          NNW.layout = layout
-          window.utils.fadeOutLoader(false)
-        } else window.utils.fadeOutLoader(true)
-      })
+      window.utils.loadShortCode(code, layout)
       return 'code'
     } else if (example) {
       window.utils.loadExample(example, true)
@@ -229,6 +204,51 @@ window.utils = {
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
     }, window.utils.getVal('--layout-transition-time'))
+  },
+
+  loadTutorial: (tutorial) => {
+    const tm = WIDGETS['tutorials-guide']
+    if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial))
+    else tm.load(tutorial)
+    window.utils.fadeOutLoader(false)
+  },
+
+  loadBlankSketch: () => {
+    NNE.code = ''
+    NNW.layout = 'dock-left'
+    window.utils.afterLayoutTransition(() => {
+      window.utils.fadeOutLoader(false)
+      setTimeout(() => NNE.cm.refresh(), 10)
+    })
+  },
+
+  loadFromCodeHash: (layout) => {
+    window.utils.checkForDiffRoot()
+    NNE.code = ''
+    window.utils.afterLayoutTransition(() => {
+      NNE.loadFromHash()
+      setTimeout(() => NNE.cm.refresh(), 10)
+    })
+    if (layout) {
+      NNW.layout = layout
+      window.utils.fadeOutLoader(false)
+    } else window.utils.fadeOutLoader(true)
+  },
+
+  loadShortCode: (code, layout) => {
+    window.utils.post('./api/expand-url', { key: code }, (json) => {
+      window.utils.checkForDiffRoot()
+      window.location.hash = json.hash
+      NNE.code = ''
+      window.utils.afterLayoutTransition(() => {
+        NNE.loadFromHash()
+        setTimeout(() => NNE.cm.refresh(), 10)
+      })
+      if (layout) {
+        NNW.layout = layout
+        window.utils.fadeOutLoader(false)
+      } else window.utils.fadeOutLoader(true)
+    })
   },
 
   loadGithub: (github) => {
@@ -329,7 +349,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }

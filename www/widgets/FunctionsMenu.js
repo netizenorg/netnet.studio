@@ -347,9 +347,9 @@ class FunctionsMenu extends Widget {
     }, time)
   }
 
-  _shareLongCodeWithLayout () {
+  _shareLongCodeHideLayout () {
     this.convos = window.CONVOS['functions-menu'](this)
-    window.convo = new Convo(this.convos, 'no-hide-long')
+    window.convo = new Convo(this.convos, 'hide-long')
   }
 
   _createHTML (gh) {

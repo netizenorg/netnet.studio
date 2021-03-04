@@ -3,11 +3,25 @@ window.CONVOS['student-session'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
   const coreConvo = [{
+    id: 'browserfest',
+    content: 'BrowserFest is an online competition and celebration of creative coding on the web! Submissions are open through April 5th. Submit your sketches and remix others’ in a chance to win prizes, fame, and glory. For workshops and other ways to connect, visit <a href="https://browserfest.netizen.org/" target="_blank">browserfest.netizen.org</a>',
+    options: {
+      'sounds cool!': (e) => e.hide()
+    }
+  }, {
     id: 'returning-student',
     content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('what-to-do'),
-      'that\'s not my name?': (e) => e.goTo('diff-user')
+      'that\'s not my name?': (e) => e.goTo('diff-user'),
+      'submit to BrowserFest': (e) => {
+        WIDGETS.open('browser-fest')
+        e.goTo('browserfest')
+      }
+    },
+    after: () => {
+      document.querySelector('.text-bubble-options > button:nth-child(3)')
+        .classList.add('opt-rainbow-bg')
     }
   }, {
     id: 'what-to-do',
