@@ -174,3 +174,17 @@ button {
   scrollbar-color: var(--fg-color) rgba(0,0,0,0);
   scrollbar-width: thin;
 }
+
+
+/* BROWSERFEST BUTTON */
+.opt-rainbow-bg {
+  background-image: linear-gradient(to right, #ffa50066, #ffff0066, #00800066, #00ffff66, #0000ff66, #ee82ee66) !important;
+  background-position-x: 0;
+  animation: opt-pan-rainbow 5s infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes opt-pan-rainbow {
+  0% { background-position-x: 0px; }
+  100% { background-position-x: 182px; }
+}
