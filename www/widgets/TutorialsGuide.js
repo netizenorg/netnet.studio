@@ -5,7 +5,7 @@ class TutorialsGuide extends Widget {
     this.title = 'Learning Guide (BETA-2.0)'
     this.key = 'tutorials-guide'
     this.keywords = [
-      'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference', 'browser', 'browserfest'
+      'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
 
     this.on('open', () => { this.update({ left: 20, top: 20 }, 500) })
@@ -26,8 +26,7 @@ class TutorialsGuide extends Widget {
       })
 
       div.querySelector('#bf-submission').addEventListener('click', () => {
-        window.convo = new Convo(this.convos, 'browserfest')
-        WIDGETS.open('browser-fest')
+        WIDGETS['functions-menu'].BrowserFest()
       })
 
       // create sub pages
@@ -156,10 +155,8 @@ class TutorialsGuide extends Widget {
       }
 
       WIDGETS['hyper-video-player'].video.onloadeddata = () => {
-        window.convo = new Convo({
-          id: 'introducing-tutorial',
-          content: `I've just loaded a tutorial by ${this.metadata.author.name} called "${this.metadata.title}", press the video players's <i>play</i> button to begin. Press the video player's <i>X</i> button at anytime to quit.`
-        })
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
       }

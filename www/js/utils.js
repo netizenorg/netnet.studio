@@ -162,6 +162,7 @@ window.utils = {
   },
 
   checkURL: () => {
+    const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const code = window.utils.url.shortCode
     const example = window.utils.url.exampleCode
     const layout = window.utils.url.layout
@@ -170,7 +171,10 @@ window.utils = {
     const widget = window.utils.url.widget
     if (widget) WIDGETS.open(widget)
     if (Averigua.isMobile()) return window.utils.mobile()
-    if (tutorial) {
+    if (typeof ghAuth === 'string') {
+      window.utils.loadGHRedirect()
+      return 'gh-redirect'
+    } else if (tutorial) {
       window.utils.loadTutorial(tutorial)
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
@@ -284,6 +288,42 @@ window.utils = {
     })
   },
 
+  loadGHRedirect: () => {
+    const code = window.localStorage.getItem('gh-auth-temp-code')
+    if (code.includes('raw.githubusercontent.com')) {
+      // if they were looking at someone else's GitHub poroject
+      // before they got redirected over to GitHub for auth...
+      const a = code.split('.com/')[1].split('/')
+      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const rawHTML = `${path}index.html`
+      window.utils.get(rawHTML, (html) => {
+        NNE.addCustomRoot(path)
+        NNE.code = ''
+        NNW.layout = 'dock-left'
+        window.utils.afterLayoutTransition(() => {
+          NNE.code = html
+          setTimeout(() => NNE.cm.refresh(), 10)
+          window.utils.fadeOutLoader(false)
+          window.utils._Convo('remix-github-project-auth-redirect')
+          // removeItem('gh-auth-temp-code') called in Convo data
+        })
+      }, true)
+    } else {
+      // if they had some code they were working on in the editor
+      // before they got redirected over to GitHub to auth...
+      const decoded = NNE._decode(code.substr(6))
+      NNE.addCustomRoot(null)
+      NNE.code = decoded
+      NNW.layout = 'dock-left'
+      window.utils.afterLayoutTransition(() => {
+        setTimeout(() => NNE.cm.refresh(), 10)
+        window.utils.fadeOutLoader(false)
+        window.localStorage.removeItem('gh-auth-temp-code')
+        window.utils._Convo('gh-redirected')
+      })
+    }
+  },
+
   // CSS related stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -349,7 +389,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }

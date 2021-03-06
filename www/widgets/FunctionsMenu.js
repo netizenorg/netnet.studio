@@ -46,7 +46,12 @@ class FunctionsMenu extends Widget {
       },
       {
         click: 'shareProject',
-        alts: ['share', 'github', 'project', 'link']
+        alts: ['share', 'github', 'project', 'link'],
+        hrAfter: true
+      },
+      {
+        click: 'BrowserFest',
+        alts: []
       }
     ]
 
@@ -116,6 +121,15 @@ class FunctionsMenu extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
 
+  // TEMPORARY
+  BrowserFest () {
+    if (WIDGETS['browser-fest']) {
+      WIDGETS['browser-fest'].submit()
+    } else {
+      WIDGETS.load('BrowserFest.js', (w) => w.submit())
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -134,7 +148,10 @@ class FunctionsMenu extends Widget {
 
   saveProject (redirect) {
     const op = WIDGETS['student-session'].data.github.openedProject
-    if (op) {
+    if (NNE._root && NNE._root.includes('raw.githubusercontent.com')) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+    } if (op) {
       this.convos = window.CONVOS[this.key](this)
       this._redirect = redirect // if trying to create 'new-project' or 'open-project'
       const msg = WIDGETS['student-session'].getData('last-commit-msg')
@@ -152,7 +169,10 @@ class FunctionsMenu extends Widget {
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
     const currCode = window.btoa(NNE.code)
-    if (op && lastCode !== currCode) {
+    if (NNE._root && NNE._root.includes('raw.githubusercontent.com')) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+    } else if (op && lastCode !== currCode) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
     } else {
@@ -542,7 +562,7 @@ class FunctionsMenu extends Widget {
   _login () {
     const status = this.$('#func-menu-login').textContent.trim()
     if (status === 'login') WIDGETS['student-session'].chatGitHubAuth()
-    else WIDGETS['student-session'].deleteGitHubSession()
+    else WIDGETS['student-session'].deleteGitHubSession(true)
   }
 
   _createNewRepo (c, t, v) {

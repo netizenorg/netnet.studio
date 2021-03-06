@@ -142,7 +142,7 @@ class StudentSession extends Widget {
     this.greetStudent()
   }
 
-  deleteGitHubSession () {
+  deleteGitHubSession (msg) {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
       this.clearProjectData()
@@ -150,10 +150,16 @@ class StudentSession extends Widget {
       this.setData('repos', null)
       this._createHTML()
       WIDGETS['functions-menu'].gitHubUpdated(false)
+      if (msg) window.convo = new Convo(this.convos, 'logged-out-of-gh')
     })
   }
 
   authGitHubSession () {
+    const temp = `#code/${NNE._encode('<h1>Hello World Wide Web</h1>')}`
+    const code = (window.btoa(NNE.code) === utils.starterCodeB64)
+      ? temp : NNE.generateHash()
+    if (NNE._root) window.localStorage.setItem('gh-auth-temp-code', NNE._root)
+    else window.localStorage.setItem('gh-auth-temp-code', code)
     utils.get('api/github/client-id', (json) => {
       const id = `client_id=${json.message}`
       const scope = 'scope=public_repo'

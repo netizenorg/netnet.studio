@@ -20,6 +20,11 @@ window.CONVOS['functions-menu'] = (self) => {
     } else return `${root}/${hash}`
   }
 
+  const a = (() => {
+    if (NNE._root) return NNE._root.split('.com/')[1].split('/')
+    else return []
+  })()
+
   const createNewRepo = (c, t) => {
     const v = t.$('input').value.replace(/\s/g, '-')
     const p = /^(\w|\.|-)+$/
@@ -75,6 +80,14 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...GitHub convos...
   // ...
   // ... saving new projs...
+  {
+    id: 'unsaved-changes-b4-fork-proj',
+    content: `It appears you've got  <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a> open. If you want to remix this project I can now create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you?`,
+    options: {
+      'yea let\'s remix it!': (e) => e.goTo('agree-to-fork'),
+      'no let\'s create a new project?': (e) => e.goTo('create-new-project')
+    }
+  },
   {
     id: 'unsaved-changes-b4-new-proj',
     content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
@@ -219,7 +232,20 @@ window.CONVOS['functions-menu'] = (self) => {
   }, {
     id: 'project-opened',
     content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
-    options: { ok: (e) => e.hide() }
+    options: {
+      ok: (e) => e.hide(),
+      'submit to BrowserFest': (e) => {
+        if (WIDGETS['browser-fest']) {
+          WIDGETS['browser-fest'].submit()
+        } else {
+          WIDGETS.load('BrowserFest.js', (w) => w.submit())
+        }
+      }
+    },
+    after: () => {
+      document.querySelector('.text-bubble-options > button:nth-child(2)')
+        .classList.add('opt-rainbow-bg')
+    }
   },
   // ... share gh project
   {
