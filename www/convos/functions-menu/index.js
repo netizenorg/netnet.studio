@@ -21,8 +21,9 @@ window.CONVOS['functions-menu'] = (self) => {
   }
 
   const a = (() => {
-    if (NNE._root) return NNE._root.split('.com/')[1].split('/')
-    else return []
+    if (NNE._root && NNE._root.includes('.com')) {
+      return NNE._root.split('.com/')[1].split('/')
+    } else return []
   })()
 
   const createNewRepo = (c, t) => {
