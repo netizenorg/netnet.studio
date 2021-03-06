@@ -1,11 +1,12 @@
-/* global */
+/* global  */
 window.CONVOS['tutorials-guide'] = (self) => {
-  // ...
+  const name = self.metadata ? self.metadata.author.name : ''
+  const title = self.metadata ? self.metadata.title : ''
   return [{
-    id: 'browserfest',
-    content: 'BrowserFest is an online competition and celebration of creative coding on the web! Submissions are open through April 5th. Submit your sketches and remix others’ in a chance to win prizes, fame, and glory. For workshops and other ways to connect, visit <a href="https://browserfest.netizen.org/" target="_blank">browserfest.netizen.org</a>',
+    id: 'introducing-tutorial',
+    content: `I've just loaded a tutorial by ${name} called "${title}", press the video players's <i>play</i> button to begin. Press the video player's <i>X</i> button at anytime to quit.`,
     options: {
-      'sounds cool!': (e) => e.hide()
+      ok: (e) => e.hide()
     }
   }]
 }

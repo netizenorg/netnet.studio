@@ -3,20 +3,13 @@ window.CONVOS['student-session'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
   const coreConvo = [{
-    id: 'browserfest',
-    content: 'BrowserFest is an online competition and celebration of creative coding on the web! Submissions are open through April 5th. Submit your sketches and remix others’ in a chance to win prizes, fame, and glory. For workshops and other ways to connect, visit <a href="https://browserfest.netizen.org/" target="_blank">browserfest.netizen.org</a>',
-    options: {
-      'sounds cool!': (e) => e.hide()
-    }
-  }, {
     id: 'returning-student',
     content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('what-to-do'),
       'that\'s not my name?': (e) => e.goTo('diff-user'),
       'submit to BrowserFest': (e) => {
-        WIDGETS.open('browser-fest')
-        e.goTo('browserfest')
+        WIDGETS['functions-menu'].BrowserFest()
       }
     },
     after: () => {
@@ -283,25 +276,31 @@ window.CONVOS['student-session'] = (self) => {
 
   const gitHub = [{
     id: 'github-auth',
-    content: 'If you have a GitHub account I can connect to it and save your sketches to your GitHub as new repos. Should we get authenticated?',
+    content: 'If you have a GitHub account I can connect to it and save your work to your GitHub as new repos. Should we get authenticated?',
     options: {
       'let\'s do it!': (e) => e.goTo('goto-github'),
-      'what\'s authenticated?': (e) => e.goTo('what-is-auth'),
+      'what do you mean?': (e) => e.goTo('what-is-auth'),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'what-is-auth',
-    content: 'GitHub will ask you to give me permission to send data to and from your account. I\'ll be using this permission to save projects (repos) to your GitHub.',
+    content: 'GitHub is a platform where coders share their open source projects and collaborate with each other. Your GitHub account is sort of like your code "portfolio". If you give me permission, I can send data to and from your account so that any projects you create here get saved as code repositories (aka repos) to your GitHub.',
     options: {
       'ok, let\'s do it!': (e) => e.goTo('goto-github'),
       'oh, never mind': (e) => e.hide()
     }
   }, {
     id: 'goto-github',
-    content: 'Ok, I\'m going to send you over to GitHub, then they\'ll send you back over here. This means you will loose any unsaved data you currently have open, is that cool?',
+    content: 'Ok, I\'m going to send you over to GitHub, then they\'ll send you back over here after you\'ve approved me. If you don\'t already have an account, you should be prompted to create one. Sounds good?',
     options: {
       'yep, let\'s go': (e) => { e.hide(); self.authGitHubSession() },
       'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'logged-out-of-gh',
+    content: 'Ok, I\'ve just disconnected from your GitHub and cleared all GitHub related data. You can keep sketching and following tutorials, but you won\'t be able to create new projects on your account until you log back in.',
+    options: {
+      ok: (e) => e.hide()
     }
   }, {
     id: 'reboot-session',

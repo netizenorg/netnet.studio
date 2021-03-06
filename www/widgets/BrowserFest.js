@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, FileUploader, utils */
+/* global WIDGETS, Widget, FileUploader, Convo, utils */
 class BrowserFest extends Widget {
   constructor (opts) {
     super(opts)
@@ -15,7 +15,28 @@ class BrowserFest extends Widget {
       this.branch = WIDGETS['student-session'].getData('branch')
       this._createHTML()
     })
+
     this._createFileUploader()
+  }
+
+  submit () {
+    if (this.convos) {
+      const owner = WIDGETS['student-session'].getData('owner')
+      const repo = WIDGETS['student-session'].getData('opened-project')
+      if (!owner) {
+        window.convo = new Convo(this.convos, 'bf-no-login')
+      } else if (!repo) {
+        window.convo = new Convo(this.convos, 'req-project')
+      } else {
+        this.open()
+        window.convo = new Convo(this.convos, 'browserfest')
+      }
+    } else {
+      Convo.load(this.key, () => {
+        this.convos = window.CONVOS[this.key](this)
+        this.submit()
+      })
+    }
   }
 
   _preSubmitForkCheck () {
@@ -62,7 +83,7 @@ class BrowserFest extends Widget {
       utils.post('./api/browserfest/submission', data, (json) => {
         console.log(json)
         if (json.success) {
-          this.innerHTML = `<p>Your project, ${data.title} has been submitted! You should see it displayed in the <a href="https://browserfest.netizen.org/gallery" target="_blank">BrowserFest Demo Gallery</a> soon.</p>`
+          this.innerHTML = `<p>Your project, ${data.title} has been submitted! You should see it displayed in the <a href="https://browserfest.netizen.org/gallery.html" target="_blank">BrowserFest Demo Gallery</a> soon.</p>`
         } else {
           this.innerHTML = '<p>Dang! seems there was an error (peep the conosle)! Close this widget and try again maybe? If you keep having troulbe send us an email: h<i></i>i@net<i></i>izen.org</p>'
         }
