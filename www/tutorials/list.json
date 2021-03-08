@@ -1,5 +1,7 @@
 {
   "listed": [
-    { "dir": "what-is-code", "txt": "What Is Code?" }
+    "what-is-code",
+    "html-crash-course",
+    "css-crash-course"
   ]
 }
