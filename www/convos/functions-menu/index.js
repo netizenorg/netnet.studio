@@ -21,8 +21,9 @@ window.CONVOS['functions-menu'] = (self) => {
   }
 
   const a = (() => {
-    if (NNE._root) return NNE._root.split('.com/')[1].split('/')
-    else return []
+    if (NNE._root && NNE._root.includes('.com')) {
+      return NNE._root.split('.com/')[1].split('/')
+    } else return []
   })()
 
   const createNewRepo = (c, t) => {
@@ -51,7 +52,7 @@ window.CONVOS['functions-menu'] = (self) => {
 
   return [{
     id: 'need-to-update',
-    content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press <b>${hotkey}+S</b>`,
+    content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press <b>${hotkey}+Enter</b>`,
     options: { 'got it': (e) => e.hide() }
   }, {
     id: 'temp-disclaimer',

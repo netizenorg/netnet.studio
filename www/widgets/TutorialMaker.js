@@ -104,7 +104,7 @@ class TutorialMaker extends Widget {
       <input type="text" name="author-name" placeholder="Author's Full Name"><br>
       <input type="text" name="author-preferred" placeholder="Author's Preferred Name"><br>
       <input type="text" name="author-url" placeholder="Author's Homepage"><br>
-      <input type="text" name="descirption" placeholder="A description of what the tutorial is about..."><br>
+      <input type="text" name="description" placeholder="A description of what the tutorial is about..."><br>
       <input type="text" name="videofile" placeholder="video filename (without extention)"><br>
       <input type="text" name="keywords" placeholder="comma, seperated, keywords"><br><br>
       <button name="update-metadata" style="margin: 5px 0px">enter</button>`

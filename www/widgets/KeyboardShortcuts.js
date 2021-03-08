@@ -8,25 +8,28 @@ class KeyboardShortcuts extends Widget {
     this.shortcuts = [
       {
         key: `${utils.hotKey()} + S`,
-        nfo: 'quick save/share options',
+        nfo: 'quick save / share options',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 83,
         callback: (e) => {
           e.preventDefault()
-          if (!NNE.autoUpdate) NNE.update()
           if (window.localStorage.getItem('opened-project')) {
             WIDGETS['functions-menu'].saveProject()
           } else WIDGETS['functions-menu'].saveSketch()
         }
       },
-      // {
-      //   key: `${utils.hotKey()} + O`,
-      //   nfo: '',
-      //   condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 79,
-      //   callback: (e) => {
-      //     e.preventDefault()
-      //     // TODO if user logged in .openProject() else .uploadCode()
-      //   }
-      // },
+      {
+        key: `${utils.hotKey()} + O`,
+        nfo: 'open project / upload sketch',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 79,
+        callback: (e) => {
+          e.preventDefault()
+          if (WIDGETS['student-session'].getData('owner')) {
+            WIDGETS['functions-menu'].openProject()
+          } else {
+            WIDGETS['functions-menu'].uploadCode()
+          }
+        }
+      },
       {
         key: `${utils.hotKey()} + >`,
         nfo: 'switch netnet to next layout',
@@ -47,7 +50,7 @@ class KeyboardShortcuts extends Widget {
       },
       {
         key: `${utils.hotKey()} + L`,
-        nfo: 'open the Tutorial\'s Guide',
+        nfo: 'open the Learning Guide',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 76,
         callback: (e) => {
           e.preventDefault()
@@ -72,14 +75,14 @@ class KeyboardShortcuts extends Widget {
           NNW.menu.search.open()
         }
       },
-      // {
-      //   key: `${utils.hotKey()} + Enter`,
-      //   nfo: '',
-      //   condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 13,
-      //   callback: (e) => {
-      //     //
-      //   }
-      // },
+      {
+        key: `${utils.hotKey()} + Enter`,
+        nfo: 'update (if autoUpdate is off)',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 13,
+        callback: (e) => {
+          // SEE _preventCodeMirrorDefaults BELLOW
+        }
+      },
       {
         key: 'spacebar',
         nfo: 'play/pause tutorial',
@@ -100,7 +103,7 @@ class KeyboardShortcuts extends Widget {
       {
         hidden: true,
         key: `${utils.hotKey()} + Shift + P`,
-        nfo: 'open search',
+        nfo: 'open the Search Bar',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80,
         callback: (e) => {
           e.preventDefault() // CTRL/CMD+SHIFT+P
@@ -143,6 +146,7 @@ class KeyboardShortcuts extends Widget {
     this.width = 400
     this._createHTML()
     this._createShortcuts()
+    this._preventCodeMirrorDefaults()
   }
 
   _createHTML () {
@@ -158,6 +162,18 @@ class KeyboardShortcuts extends Widget {
       }
     })
     this.innerHTML = ul
+  }
+
+  _preventCodeMirrorDefaults () {
+    // run update when autoUpdate(false) handler
+    NNE.cm.on('keyHandled', (a, b, e) => {
+      if (!NNE.autoUpdate && (b === 'Ctrl-Enter' || b === 'Cmd-Enter')) {
+        e.preventDefault()
+        e.stopPropagation()
+        NNE.cm.undo() // remove \n that Enter adds
+        NNE.update()
+      }
+    })
   }
 
   _createShortcuts () {

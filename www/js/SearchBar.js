@@ -19,6 +19,7 @@ class SearchBar {
       'Functions Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
       Tutorials: 'var(--netizen-string)',
+      Examples: 'var(--netizen-string)',
       netnet: 'var(--netizen-number)'
     }
 
@@ -85,6 +86,10 @@ class SearchBar {
       .filter(i => !strfy.includes(i)).map((s, i) => i)
     arr = arr.filter((o, i) => diff.includes(i)) // filter out duplicates
     this.dict = this.dict.concat(arr)
+    this.updateDict()
+  }
+
+  updateDict () {
     this.fuse = new Fuse(this.dict, {
       ignoreLocation: true,
       includeScore: true,
@@ -124,13 +129,15 @@ class SearchBar {
       return
     }
 
-    // TODO: when user logins && "my sketch" turns into "my project"
-    // ...we'll need to remove "my sketch" from dict && add "my project"
+    // remove previously created items if we login/logout
+    this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
+    this.updateDict()
+    const loggedIn = window.localStorage.getItem('owner')
 
     const arr = []
     arr.push({
       type: 'Functions Menu',
-      word: 'login', // TODO change to logout if currently logged in
+      word: loggedIn ? 'logout' : 'login',
       alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
       clck: () => { WIDGETS['functions-menu'].open() }
     })
@@ -184,9 +191,46 @@ class SearchBar {
   }
 
   _loadTutorialsData () {
-    // TODO:
-    // hitup a similar api for tutorials && create those objects as well
     this.loaded.tutorials = true
+    utils.get('tutorials/list.json', (json) => {
+      const arr = []
+      const len = json.listed.length
+      const update = () => { if (arr.length === len) this.addToDict(arr) }
+
+      json.listed.forEach(name => {
+        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+          arr.push({
+            type: 'Tutorials',
+            word: tut.title,
+            alts: tut.keywords,
+            clck: () => {
+              WIDGETS.open('tutorials-guide', null, (w) => w.load(name))
+            }
+          })
+          update()
+        })
+      })
+    })
+
+    utils.get('api/examples', (json) => {
+      const arr = []
+      const len = Object.keys(json.data).length
+      const update = () => { if (arr.length === len) this.addToDict(arr) }
+
+      for (const i in json.data) {
+        const ex = json.data[i]
+        const type = ex.type.split(' ').filter(s => !s.includes('element'))
+        const name = ex.name.split(' ').filter(s => !s.includes('element'))
+        const keywords = [...type, ...name]
+        arr.push({
+          type: 'Examples',
+          word: ex.name,
+          alts: keywords,
+          clck: () => { utils.loadExample(i) }
+        })
+        update()
+      }
+    })
   }
 
   _loadMiscData () {
@@ -200,8 +244,6 @@ class SearchBar {
       }
     })
 
-    // TODO push edu-info data as well, so it's discoverable via search
-    // maybe it simply launches the Convo bubble? maybe it also opens an appendix widget?
     const html = ['elements', 'attributes']
     html.forEach(type => {
       Object.keys(NNE.edu.html[type]).forEach(data => {

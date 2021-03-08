@@ -301,6 +301,7 @@ class FunctionsMenu extends Widget {
     this._createHTML(gh)
     this._initValues()
     this._setupListeners()
+    NNW.menu.search._loadFunctionsMenuData()
   }
 
   gitHubProjectsUpdated () {
@@ -561,8 +562,13 @@ class FunctionsMenu extends Widget {
 
   _login () {
     const status = this.$('#func-menu-login').textContent.trim()
-    if (status === 'login') WIDGETS['student-session'].chatGitHubAuth()
-    else WIDGETS['student-session'].deleteGitHubSession(true)
+    if (status === 'login') {
+      WIDGETS['student-session'].chatGitHubAuth()
+      if (this.events.login) this.emit('login', { data: null })
+    } else {
+      WIDGETS['student-session'].deleteGitHubSession(true)
+      if (this.events.logout) this.emit('logout', { data: null })
+    }
   }
 
   _createNewRepo (c, t, v) {
