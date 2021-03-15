@@ -106,7 +106,9 @@ class HyperVideoPlayer extends Widget {
       } else play()
     } else play()
     // if it's the first time we press play hide netnet's bubble
-    if (window.convo.id === 'introducing-tutorial') window.convo.hide()
+    if (window.convo && window.convo.id === 'introducing-tutorial') {
+      window.convo.hide()
+    }
   }
 
   pause () {
