@@ -33,10 +33,7 @@ class TutorialsGuide extends Widget {
       this._createPage('aboutOpts', 'learning-guide-about.html', this.mainOpts)
 
       this._createPage('tutsOpts', 'learning-guide-tuts.html', this.mainOpts, (div) => {
-        div.querySelectorAll('[name^="tut"]').forEach(ele => {
-          const tut = ele.getAttribute('name').split(':')[1]
-          ele.addEventListener('click', () => this.load(tut))
-        })
+        this._listTutorials(div)
       })
 
       this._createPage('exOpts', 'learning-guide-exs.html', this.mainOpts, (div) => {
@@ -141,6 +138,50 @@ class TutorialsGuide extends Widget {
     } else {
       console.error('TutorialsGuide:', res)
     }
+  }
+
+  _listTutorials (div) {
+    const tutHTML = (t) => {
+      const div = document.createElement('div')
+      div.innerHTML = `
+      <h2 class="learning-guide--link">
+        ${t.title} &nbsp;
+        <button name="tut:${t.id}">play</button>
+      </h2>
+      <p>${t.description}</p>
+      `
+      return div
+    }
+
+    const endCap = () => {
+      const div = document.createElement('div')
+      div.innerHTML = `<h2 class="learning-guide--link">MORE COMING SOON!!!</h2>
+      <p>
+        TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD
+      </p>
+      <br>
+      <br>`
+      return div
+    }
+
+    utils.get('tutorials/list.json', (json) => {
+      let count = 0
+      json.listed.forEach(name => {
+        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+          div.appendChild(tutHTML(tut))
+          count++
+          // ...
+          if (count === json.listed.length) {
+            div.appendChild(endCap())
+            div.querySelectorAll('[name^="tut"]').forEach(ele => {
+              const tut = ele.getAttribute('name').split(':')[1]
+              ele.addEventListener('click', () => this.load(tut))
+            })
+          }
+          // ...
+        })
+      })
+    })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
