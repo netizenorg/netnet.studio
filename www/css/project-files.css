@@ -49,19 +49,19 @@
 }
 
 .files-widget__overlay__svg svg .loading-bar:first-of-type {
-  animation: loadingAnim 1s linear infinite;
+  animation: loadingAnim 2s linear infinite;
 }
 .files-widget__overlay__svg svg .loading-bar:nth-of-type(2) {
-  animation: loadingAnim 1s linear .2s infinite;
+  animation: loadingAnim 2s linear .2s infinite;
 }
 .files-widget__overlay__svg svg .loading-bar:nth-of-type(3) {
-  animation: loadingAnim 1s linear .4s infinite;
+  animation: loadingAnim 2s linear .4s infinite;
 }
 .files-widget__overlay__svg svg .loading-bar:nth-of-type(4) {
-  animation: loadingAnim 1s linear .6s infinite;
+  animation: loadingAnim 2s linear .6s infinite;
 }
 .files-widget__overlay__svg svg .loading-bar:nth-of-type(5) {
-  animation: loadingAnim 1s linear .8s infinite;
+  animation: loadingAnim 2s linear .8s infinite;
 }
 
 @keyframes loadingAnim {
@@ -70,6 +70,9 @@
   }
   25% {
     fill: var(--fg-color);
+  }
+  50%{
+    fill:transparent;
   }
 }
 
