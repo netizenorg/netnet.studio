@@ -3,6 +3,9 @@
 }
 
 .files-widget__overlay {
+  display: none;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
@@ -10,9 +13,6 @@
   width: 100vw;
   height: 100vh;
   opacity: 1;
-  display: none;
-  justify-content: center;
-  align-items: center;
   /*font-size: 32px;*/
 }
 .files-widget__overlay::before {
