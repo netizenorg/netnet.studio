@@ -27,7 +27,7 @@ class TutorialMaker extends Widget {
     this._createHTML(opts)
 
     this.on('open', () => {
-      window.convo.hide()
+      if (window.convo) window.convo.hide()
       WIDGETS.open('hyper-video-player', null, () => {
         this.video = WIDGETS['hyper-video-player'].video
         this.video.addEventListener('timeupdate', () => this._timeUpdate())
