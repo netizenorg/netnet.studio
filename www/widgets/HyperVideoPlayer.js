@@ -153,6 +153,17 @@ class HyperVideoPlayer extends Widget {
     else this.pause()
   }
 
+  seek (time) {
+    if (time) this.video.currentTime = Number(time)
+    else { // assuming it was called by timeudpate event (ie. time already set)
+      this._updateProgressBar()
+      this.renderKeyframe()
+      const paused = this.video.paused
+      this.pause()
+      if (!paused) this.play()
+    }
+  }
+
   // .....  .....   .....   .....  .....  .....   .....   .....  .....
   // ..... RENDER KEYFRAME  .....  ..... RENDER KEYFRAME  .....  .....
   // .....  .....   .....   .....  .....  .....   .....   .....  .....
@@ -213,7 +224,7 @@ class HyperVideoPlayer extends Widget {
         this.logger.play(key, delta)
         if (this.video.paused) this.logger.pause()
       } else if (kf.code && kf.code !== NNE.code) {
-        if (!this.logger.running) this.logger.stop()
+        // if (!this.logger.running) this.logger.stop()
         NNE.code = kf.code
         this._tempCode = NNE.code
         this._updateScrollBar()
@@ -329,8 +340,7 @@ class HyperVideoPlayer extends Widget {
       this.pause()
     })
     this.video.addEventListener('timeupdate', () => {
-      this._updateProgressBar()
-      this.renderKeyframe()
+      this.seek()
     })
 
     this.video.addEventListener('loadedmetadata', () => {

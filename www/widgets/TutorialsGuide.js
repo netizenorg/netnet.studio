@@ -60,7 +60,7 @@ class TutorialsGuide extends Widget {
     })
   }
 
-  load (name) {
+  load (name, time) {
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
@@ -70,7 +70,7 @@ class TutorialsGuide extends Widget {
       NNE.addCustomRoot(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
-        this._loadTutorial(name)
+        this._loadTutorial(name, time)
       })
     })
   }
@@ -187,7 +187,7 @@ class TutorialsGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
 
-  _loadTutorial (name) {
+  _loadTutorial (name, time) {
     WIDGETS.open('hyper-video-player', null, () => {
       if (this.metadata.keylogs) {
         utils.get(`tutorials/${this.loaded}/keylogs.json`, (json) => {
@@ -200,6 +200,7 @@ class TutorialsGuide extends Widget {
         window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
+        if (time) WIDGETS['hyper-video-player'].seek(time)
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title

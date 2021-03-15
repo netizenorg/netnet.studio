@@ -139,6 +139,7 @@ window.utils = {
     shortCode: new URL(window.location).searchParams.get('c'),
     exampleCode: new URL(window.location).searchParams.get('ex'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
+    time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh'),
     widget: new URL(window.location).searchParams.get('w')
@@ -163,34 +164,29 @@ window.utils = {
 
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
-    const code = window.utils.url.shortCode
-    const example = window.utils.url.exampleCode
-    const layout = window.utils.url.layout
-    const tutorial = window.utils.url.tutorial
-    const github = window.utils.url.github
-    const widget = window.utils.url.widget
-    if (widget) WIDGETS.open(widget)
+    const url = window.utils.url
+    if (url.widget) WIDGETS.open(url.widget)
     if (Averigua.isMobile()) return window.utils.mobile()
     if (typeof ghAuth === 'string') {
       window.utils.loadGHRedirect()
       return 'gh-redirect'
-    } else if (tutorial) {
-      window.utils.loadTutorial(tutorial)
+    } else if (url.tutorial) {
+      window.utils.loadTutorial(url.tutorial, url.time)
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
-      window.utils.loadFromCodeHash(layout)
+      window.utils.loadFromCodeHash(url.layout)
       return 'code'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
-    } else if (github) {
-      window.utils.loadGithub(github)
+    } else if (url.github) {
+      window.utils.loadGithub(url.github)
       return 'example'
-    } else if (code) {
-      window.utils.loadShortCode(code, layout)
+    } else if (url.code) {
+      window.utils.loadShortCode(url.code, url.layout)
       return 'code'
-    } else if (example) {
-      window.utils.loadExample(example, true)
+    } else if (url.example) {
+      window.utils.loadExample(url.example, true)
       return 'example'
     } else {
       window.utils.fadeOutLoader(false)
@@ -210,10 +206,10 @@ window.utils = {
     }, window.utils.getVal('--layout-transition-time'))
   },
 
-  loadTutorial: (tutorial) => {
+  loadTutorial: (tutorial, time) => {
     const tm = WIDGETS['tutorials-guide']
-    if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial))
-    else tm.load(tutorial)
+    if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial, time))
+    else tm.load(tutorial, time)
     window.utils.fadeOutLoader(false)
   },
 
