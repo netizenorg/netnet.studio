@@ -61,7 +61,7 @@ class TutorialsGuide extends Widget {
   }
 
   load (name) {
-    // this.$('.files-widget__overlay').style.display = 'block'
+    this.$('.files-widget__overlay').style.display = 'block'
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
@@ -72,7 +72,7 @@ class TutorialsGuide extends Widget {
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
         this._loadTutorial(name)
-        // this.$('.files-widget__overlay').style.display = 'none'
+        this.$('.files-widget__overlay').style.display = 'none'
       })
     })
   }
