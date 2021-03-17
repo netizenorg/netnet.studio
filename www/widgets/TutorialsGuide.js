@@ -61,7 +61,9 @@ class TutorialsGuide extends Widget {
   }
 
   load (name) {
-    this.$('.files-widget__overlay').style.display = 'block'
+    setTimeout(() => {
+      this.$('.files-widget__overlay').style.display = 'block'
+    }, 500)
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
