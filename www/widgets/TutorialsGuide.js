@@ -60,7 +60,7 @@ class TutorialsGuide extends Widget {
     })
   }
 
-  load (name) {
+  load (name, time) {
     setTimeout(() => {
       this.$('.files-widget__overlay--loading').style.display = 'block'
     }, 500)
@@ -73,7 +73,7 @@ class TutorialsGuide extends Widget {
       NNE.addCustomRoot(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
-        this._loadTutorial(name)
+        this._loadTutorial(name, time)
       })
     })
   }
@@ -168,14 +168,22 @@ class TutorialsGuide extends Widget {
       return div
     }
 
+    const tutorials = []
+
     utils.get('tutorials/list.json', (json) => {
       let count = 0
       json.listed.forEach(name => {
         utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          div.appendChild(tutHTML(tut))
+          // div.appendChild(tutHTML(tut))
+          tutorials.push({
+            index: json.listed.indexOf(name), html: tutHTML(tut)
+          })
           count++
           // ...
           if (count === json.listed.length) {
+            tutorials
+              .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
+              .forEach(obj => div.appendChild(obj.html))
             div.appendChild(endCap())
             div.querySelectorAll('[name^="tut"]').forEach(ele => {
               const tut = ele.getAttribute('name').split(':')[1]
@@ -191,19 +199,14 @@ class TutorialsGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
 
-  _loadTutorial (name) {
+  _loadTutorial (name, time) {
     WIDGETS.open('hyper-video-player', null, () => {
-      if (this.metadata.keylogs) {
-        utils.get(`tutorials/${this.loaded}/keylogs.json`, (json) => {
-          WIDGETS['hyper-video-player'].logger._loadData(json)
-        })
-      }
-
       WIDGETS['hyper-video-player'].video.onloadeddata = () => {
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
+        if (time) WIDGETS['hyper-video-player'].seek(time)
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title
