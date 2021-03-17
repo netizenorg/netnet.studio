@@ -23,13 +23,6 @@ class HyperVideoPlayer extends Widget {
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
 
-    if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
-      WIDGETS.load('NetitorLogger.js', (logger) => {
-        this.logger = logger
-        this._reRenderForLogger()
-      })
-    }
-
     opts = opts || {}
     this.title = opts.title || 'HyperVideo Player'
     this._createHTML(opts)
@@ -69,25 +62,15 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-toggle > span').classList.remove('play')
       this.$('.hvp-toggle > span').classList.add('pause')
       this.video.play()
-      if (this.logger.running) {
-        const delta = this._tempKL ? this._tempKL.delta : null
-        this.logger.play(this.logger.running, delta)
-        this._tempKL = null
-      }
       const kf = this._mostRecentKeyframe()
       const b = kf ? this.keyframes[kf.timecode].editable : false
       this._editable(b)
-      // HACK: b/c NetitorLogger uses timeouts, after a few seconds it gets
-      // outsof sync w/the video. at some point it might be worth rethinking
-      // how to keep the key logger playback && in sycn w/the video progress
-      if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
-      this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
     if (mid) { // if in the middle of a tutorial
       // const frame = this._mostRecentKeyframe().frame
-      if (this._tempCode !== NNE.code) {
+      if (typeof this._tempCode === 'string' && this._tempCode !== NNE.code) {
         window.convo = new Convo({
           id: 'careful-will-loose-code',
           content: 'It looks like you edited some of the code in my editor, which is great! I\'m glad you\'re experimenting, but don\'t forget that during tutorials your edits will be lost once you continue playing. I can download the current sketch for you if you want to save a copy.',
@@ -117,35 +100,14 @@ class HyperVideoPlayer extends Widget {
     this.$('.hvp-toggle > span').classList.remove('pause')
     this.$('.hvp-toggle > span').classList.add('play')
     this.video.pause()
-    if (this.logger.running) {
-      this.logger.pause()
-      this._tempKL = this._mostRecentKeylog()
-      NNE.code = this._tempKL.code
-      this._tempCode = NNE.code
-      this.logger.idx = this._tempKL.index
-      this._updateScrollBar()
-    } else this._tempKL = false
+
     this._tempCode = NNE.code
+    setTimeout(() => {
+      this._tempCode = NNE.code
+    }, NNE.updateDelay)
+
     this._editable(true)
     this._generatePauseScreen()
-    // HACK: see comment in the play() method
-    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
-  }
-
-  toggleLogger () {
-    if (this.logger.running) {
-      this.logger.pause()
-      this._tempKL = this._mostRecentKeylog()
-      NNE.code = this._tempKL.code
-      this.logger.idx = this._tempKL.index
-      this._updateScrollBar()
-      // ...
-      const delta = this._tempKL ? this._tempKL.delta : null
-      this.logger.play(this.logger.running, delta)
-      this._tempKL = null
-    }
-    if (this._toggleloggerTO) clearTimeout(this._toggleloggerTO)
-    this._toggleloggerTO = setTimeout(() => this.toggleLogger(), 1000 * 30)
   }
 
   toggle () {
@@ -154,14 +116,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   seek (time) {
-    if (time) this.video.currentTime = Number(time)
-    else { // assuming it was called by timeudpate event (ie. time already set)
-      this._updateProgressBar()
-      this.renderKeyframe()
-      const paused = this.video.paused
-      this.pause()
-      if (!paused) this.play()
-    }
+    this.video.currentTime = Number(time)
   }
 
   // .....  .....   .....   .....  .....  .....   .....   .....  .....
@@ -172,6 +127,13 @@ class HyperVideoPlayer extends Widget {
     this.keyframes = frames
     this.timecodes = Object.keys(frames).sort((a, b) => a - b)
     for (const tc in this.keyframes) this.keyframes[tc].ran = false
+    // load keylogger data && add them to keyframes
+    if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
+      WIDGETS.load('NetitorLogger.js', (logger) => {
+        this.logger = logger
+        this._loadKeyLoggerData()
+      })
+    } else this._loadKeyLoggerData()
   }
 
   renderKeyframe () {
@@ -179,10 +141,12 @@ class HyperVideoPlayer extends Widget {
     const kf = mrkf ? mrkf.frame : null
     if (kf && !kf.ran) { // render it if it hasn't yet
       // POSITOIN HYPER VIDEO PLAYER
-      const obj = JSON.parse(JSON.stringify(kf.video))
-      const t = obj.transition || 500
-      if (obj.transition) delete obj.transition
-      this.update(obj, t)
+      if (this._videoNeedsUpdate(kf.video)) {
+        const obj = JSON.parse(JSON.stringify(kf.video))
+        const t = obj.transition || 500
+        if (obj.transition) delete obj.transition
+        this.update(obj, t)
+      }
       // POSITION WIDGETS
       const opened = kf.widgets.map(obj => obj.key) // keep these opened
       opened.push('hyper-video-player')
@@ -207,34 +171,18 @@ class HyperVideoPlayer extends Widget {
         .filter(w => !opened.includes(w.key))
         .forEach(w => w.close())
 
-      // UPDATE NETNET'S CODE
-      if (kf.keylog && this.logger) {
-        // if a logger is still running when a keyframe w/a new logger is called
-        if (this.logger.running && this.logger.running !== kf.keylog) {
-          this.logger.stop() // stop the old logger
-        } else if (this.logger.running === kf.keylog) {
-          // if there's a new keyframe w/the same logger script
-          this._tempKL = this._mostRecentKeylog() // pick up where left off
-        }
-        // if we're puased or jumping around progress bar
-        if (this._tempKL) this.logger.idx = this._tempKL.index
-        const delta = this._tempKL ? this._tempKL.delta : null
-        const key = this.logger.running || kf.keylog
-        // play this keyframe's logger (include time offset if necessary)
-        this.logger.play(key, delta)
-        if (this.video.paused) this.logger.pause()
-      } else if (kf.code && kf.code !== NNE.code) {
-        // if (!this.logger.running) this.logger.stop()
+      if (kf.code && kf.code !== NNE.code) {
         NNE.code = kf.code
-        this._tempCode = NNE.code
-        this._updateScrollBar()
+        if (this._scrollNeedsUpdate(kf.scrollTo)) this._updateScrollBar()
       }
-      this._editable(kf.editable)
+
+      if (!this.video.paused) this._editable(kf.editable)
 
       // UPDATE NETNET'S LAYOUT
       const prevLayout = NNW.layout
       const posLayouts = ['welcome', 'separate-window']
       if (posLayouts.includes(kf.layout)) {
+        const t = kf.video.transition || 500
         if (kf.layout && kf.layout !== prevLayout) {
           NNW.layout = kf.layout
           utils.afterLayoutTransition(() => NNW.update(kf.netnet, t))
@@ -340,7 +288,8 @@ class HyperVideoPlayer extends Widget {
       this.pause()
     })
     this.video.addEventListener('timeupdate', () => {
-      this.seek()
+      this._updateProgressBar()
+      this.renderKeyframe()
     })
 
     this.video.addEventListener('loadedmetadata', () => {
@@ -367,7 +316,7 @@ class HyperVideoPlayer extends Widget {
   _updateProgressBar () {
     const ct = this.video.currentTime
     const percentage = Math.round((100 / this.duration) * ct)
-    if (!percentage || isNaN(percentage)) return
+    if (typeof percentage !== 'number' || isNaN(percentage)) return
     this.$('.progress').value = percentage
     this.$('.progress').innerHTML = percentage + '%'
   }
@@ -459,8 +408,29 @@ class HyperVideoPlayer extends Widget {
     if (tg && tg.metadata) NNE.cm.setOption('readOnly', !bool)
   }
 
-  _mostRecentKeyframe () {
-    const ct = this.video.currentTime
+  _videoNeedsUpdate (video) {
+    let update = false
+    if (video.width && video.width !== this.width) { update = true }
+    if (video.height && video.height !== this.height) { update = true }
+    if (video.top && video.top !== this.top) { update = true }
+    if (video.bottom && video.bottom !== this.bottom) { update = true }
+    if (video.left && video.left !== this.left) { update = true }
+    if (video.right && video.right !== this.right) { update = true }
+    if (video.zIndex && video.zIndex !== this.zIndex) { update = true }
+    return update
+  }
+
+  _scrollNeedsUpdate (obj) {
+    let update = false
+    if (!obj) return update
+    const s = NNE.cm.getScrollInfo()
+    if (obj.x && obj.x !== s.left) { update = true }
+    if (obj.y && obj.y !== s.top) { update = true }
+    return update
+  }
+
+  _mostRecentKeyframe (time) {
+    const ct = time || this.video.currentTime
     const tc = this.timecodes.filter(tc => ct >= tc)
       .sort((a, b) => a - b).reverse()[0]
     const kf = this.keyframes[tc]
@@ -475,7 +445,7 @@ class HyperVideoPlayer extends Widget {
       .map(tc => { return { timecode: tc, frame: this.keyframes[tc] } })
       .find(kf => kf.frame.keylog === this.logger.running)
 
-    const key = this.logger.running || keyframe.keylog
+    const key = this.logger.running || keyframe.frame.keylog
     const tc = this.logger.running ? priorKeyframe.timecode : keyframe.timecode
 
     const rec = this.logger.recordings[key]
@@ -499,19 +469,57 @@ class HyperVideoPlayer extends Widget {
     if (!skipRender) this.renderKeyframe()
   }
 
-  _reRenderForLogger () {
+  _mergeKeyLoggerDataWithKeyframes () {
+    if (Object.keys(this.logger.recordings).length === 0) {
+      console.log('again')
+      setTimeout(() => this._mergeKeyLoggerFrames(), 100)
+    } else {
+      const newKF = []
+      this.timecodes // keyframes with logs
+        .filter(tc => this.keyframes[tc].keylog)
+        .map(tc => { return { timecode: tc, frame: this.keyframes[tc] } })
+        .forEach(obj => {
+          const kl = obj.frame.keylog
+          const logs = this.logger.recordings[kl]
+          const start = logs[0].time
+          logs.forEach(log => {
+            const newTC = ((log.time - start) / 1000) + Number(obj.timecode)
+            if (this.keyframes[newTC]) {
+              this.keyframes[newTC].code = log.code
+            } else {
+              const kf = this._mostRecentKeyframe(newTC)
+              const st = kf.frame.scrollTo
+                ? JSON.parse(JSON.stringify(kf.frame.scrollTo)) : null
+              newKF.push({
+                tc: newTC,
+                netnet: JSON.parse(JSON.stringify(kf.frame.netnet)),
+                video: JSON.parse(JSON.stringify(kf.frame.video)),
+                widgets: JSON.parse(JSON.stringify(kf.frame.widgets)),
+                layout: kf.frame.layout,
+                scrollTo: st,
+                code: log.code,
+                ran: false
+              })
+            }
+          })
+        })
+      newKF.forEach(kf => { this.keyframes[kf.tc] = kf })
+      this.loadKeyframes(this.keyframes)
+      // ...
+      this._resetKeyframeStatus()
+      this.renderKeyframe()
+    }
+  }
+
+  _loadKeyLoggerData () {
     const tg = WIDGETS['tutorials-guide']
     if (!tg || !tg.metadata) return
-    // if we tried to render an initial frame on tutorial load with a keylog
-    // script before this.logger was loaded, let's rerun that initial render.
-    if (this.keyframes && this.keyframes[0].keylog) {
-      // if the keylog data hasn't been loaded, let's wait a bit
-      if (Object.keys(this.logger.recordings).length === 0) {
-        setTimeout(() => this._reRenderForLogger(), 100)
-      } else {
-        this._resetKeyframeStatus()
-        this.renderKeyframe()
-      }
+    // only run code below if we're in a tutorial (not when making them)
+    if (tg.metadata.keylogs) {
+      utils.get(`tutorials/${tg.metadata.id}/keylogs.json`, (json) => {
+        this.logger._loadData(json)
+        this._mergeKeyLoggerDataWithKeyframes()
+      })
     }
   }
 }

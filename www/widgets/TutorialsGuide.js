@@ -197,12 +197,6 @@ class TutorialsGuide extends Widget {
 
   _loadTutorial (name, time) {
     WIDGETS.open('hyper-video-player', null, () => {
-      if (this.metadata.keylogs) {
-        utils.get(`tutorials/${this.loaded}/keylogs.json`, (json) => {
-          WIDGETS['hyper-video-player'].logger._loadData(json)
-        })
-      }
-
       WIDGETS['hyper-video-player'].video.onloadeddata = () => {
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'introducing-tutorial')
