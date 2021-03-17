@@ -164,14 +164,22 @@ class TutorialsGuide extends Widget {
       return div
     }
 
+    const tutorials = []
+
     utils.get('tutorials/list.json', (json) => {
       let count = 0
       json.listed.forEach(name => {
         utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          div.appendChild(tutHTML(tut))
+          // div.appendChild(tutHTML(tut))
+          tutorials.push({
+            index: json.listed.indexOf(name), html: tutHTML(tut)
+          })
           count++
           // ...
           if (count === json.listed.length) {
+            tutorials
+              .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
+              .forEach(obj => div.appendChild(obj.html))
             div.appendChild(endCap())
             div.querySelectorAll('[name^="tut"]').forEach(ele => {
               const tut = ele.getAttribute('name').split(':')[1]
