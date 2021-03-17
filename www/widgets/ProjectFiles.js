@@ -17,7 +17,7 @@ class ProjectFiles extends Widget {
   _createHTML () {
     this.innerHTML = `
       <div class="files-widget">
-        <div class="files-widget__overlay">
+        <div class="files-widget__overlay files-widget__overlay--upload">
           <div><!-- message --></div>
         </div>
         <!-- if logged out of GitHub -->
@@ -142,10 +142,10 @@ class ProjectFiles extends Widget {
       const svgContainer = document.createElement('div')
       svgContainer.className = 'files-widget__overlay__svg'
       svgContainer.innerHTML = uploadSvg
-      this.$('.files-widget__overlay > div').textContent = ''
-      this.$('.files-widget__overlay > div').appendChild(svgContainer)
+      this.$('.files-widget__overlay--upload > div').textContent = ''
+      this.$('.files-widget__overlay--upload > div').appendChild(svgContainer)
 
-      this.$('.files-widget__overlay').style.display = 'flex'
+      this.$('.files-widget__overlay--upload').style.display = 'flex'
       const data = {
         owner: window.localStorage.getItem('owner'),
         repo: window.localStorage.getItem('opened-project'),
@@ -173,8 +173,8 @@ class ProjectFiles extends Widget {
 
   _postDeletion (file) {
     // runs if user confirms deletion of file
-    this.$('.files-widget__overlay > div').textContent = '...deleting...'
-    this.$('.files-widget__overlay').style.display = 'flex'
+    this.$('.files-widget__overlay--upload > div').textContent = '...deleting...'
+    this.$('.files-widget__overlay--upload').style.display = 'flex'
     const data = {
       owner: window.localStorage.getItem('owner'),
       repo: window.localStorage.getItem('opened-project'),
@@ -200,10 +200,10 @@ class ProjectFiles extends Widget {
     }
     utils.post('./api/github/open-project', data, (res) => {
       this.updateFiles(res.data)
-      if (this.$('.files-widget__overlay').contains(this.$('.files-widget__overlay').querySelector('.files-widget__overlay__svg'))) {
-        this.$('.files-widget__overlay').querySelector('.files-widget__overlay__svg').remove()
+      if (this.$('.files-widget__overlay--upload').contains(this.$('.files-widget__overlay--upload').querySelector('.files-widget__overlay__svg'))) {
+        this.$('.files-widget__overlay--upload').querySelector('.files-widget__overlay__svg').remove()
       }
-      this.$('.files-widget__overlay').style.display = 'none'
+      this.$('.files-widget__overlay--upload').style.display = 'none'
     })
   }
 

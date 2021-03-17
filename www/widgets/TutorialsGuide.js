@@ -62,7 +62,7 @@ class TutorialsGuide extends Widget {
 
   load (name) {
     setTimeout(() => {
-      this.$('.files-widget__overlay').style.display = 'block'
+      this.$('.files-widget__overlay--loading').style.display = 'block'
     }, 500)
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
@@ -74,7 +74,6 @@ class TutorialsGuide extends Widget {
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
         this._loadTutorial(name)
-        this.$('.files-widget__overlay').style.display = 'none'
       })
     })
   }
@@ -83,6 +82,7 @@ class TutorialsGuide extends Widget {
     WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
     this.metadata = null
     this.data = null
+    this.$('.files-widget__overlay--loading').style.display = 'none'
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -225,6 +225,8 @@ class TutorialsGuide extends Widget {
         utils.loadFile(file, () => window.TUTORIAL.init())
       }
     })
+
+    this.$('.files-widget__overlay--loading').style.display = 'none'
   }
 }
 
