@@ -63,7 +63,8 @@ class TutorialsGuide extends Widget {
   load (name, time) {
     setTimeout(() => {
       this.$('.files-widget__overlay--loading').style.display = 'block'
-    }, 500)
+    }, 350)
+
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
@@ -229,7 +230,9 @@ class TutorialsGuide extends Widget {
       }
     })
 
-    this.$('.files-widget__overlay--loading').style.display = 'none'
+    setTimeout(() => {
+      this.$('.files-widget__overlay--loading').style.display = 'none'
+    }, 500)
   }
 }
 
