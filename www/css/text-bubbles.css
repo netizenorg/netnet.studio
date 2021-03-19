@@ -250,6 +250,7 @@
   background: var(--fg-color);
 
   font-size: 15px;
+  line-height: 1.2em;
   font-weight: 700;
   text-shadow: none;
   white-space: nowrap;
