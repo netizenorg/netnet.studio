@@ -10,9 +10,6 @@ const NNE = new Netitor({
 
 window.NNW = new NetNet()
 
-// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-// •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* INITIAL LOAD
-
 const initWidgets = [
   'FunctionsMenu.js',
   'StudentSession.js',
@@ -23,17 +20,6 @@ const initWidgets = [
   'KeyboardShortcuts.js'
 ]
 initWidgets.forEach(file => WIDGETS.load(file))
-
-utils.get('/api/custom-elements', (elements) => {
-  elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
-
-  utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
-    WIDGETS['student-session'].clearProjectData()
-    // ...check URL for params, && fade out load screen when ready
-    const param = utils.checkURL()
-    if (param === 'none') WIDGETS['student-session'].greetStudent()
-  })
-})
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
@@ -66,7 +52,19 @@ window.addEventListener('resize', (e) => {
 })
 
 window.addEventListener('load', () => {
-  NNE.code = utils.starterCode()
+  utils.get('/api/custom-elements', (elements) => {
+    elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
+
+    utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
+      WIDGETS['student-session'].clearProjectData()
+      // ...check URL for params, && fade out load screen when ready
+      const param = utils.checkURL()
+      if (param === 'none') {
+        NNE.code = utils.starterCode()
+        WIDGETS['student-session'].greetStudent()
+      }
+    })
+  })
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners

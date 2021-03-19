@@ -123,10 +123,11 @@ class HyperVideoPlayer extends Widget {
   // ..... RENDER KEYFRAME  .....  ..... RENDER KEYFRAME  .....  .....
   // .....  .....   .....   .....  .....  .....   .....   .....  .....
 
-  loadKeyframes (frames) {
+  loadKeyframes (frames, postKeyLog) {
     this.keyframes = frames
     this.timecodes = Object.keys(frames).sort((a, b) => a - b)
     for (const tc in this.keyframes) this.keyframes[tc].ran = false
+    if (postKeyLog) return
     // load keylogger data && add them to keyframes
     if (!WIDGETS.loaded.includes('NetitorLogger.js')) {
       WIDGETS.load('NetitorLogger.js', (logger) => {
@@ -504,7 +505,7 @@ class HyperVideoPlayer extends Widget {
           })
         })
       newKF.forEach(kf => { this.keyframes[kf.tc] = kf })
-      this.loadKeyframes(this.keyframes)
+      this.loadKeyframes(this.keyframes, true)
       // ...
       this._resetKeyframeStatus()
       this.renderKeyframe()

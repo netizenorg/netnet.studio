@@ -115,7 +115,10 @@ window.utils = {
     })
   },
 
-  // page loading stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*• NETNET ON LOAD stuff
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   whenLoaded: (eles, wigs, callback) => {
@@ -182,8 +185,8 @@ window.utils = {
     } else if (url.github) {
       window.utils.loadGithub(url.github)
       return 'example'
-    } else if (url.code) {
-      window.utils.loadShortCode(url.code, url.layout)
+    } else if (url.shortCode) {
+      window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
     } else if (url.example) {
       window.utils.loadExample(url.example, true)
