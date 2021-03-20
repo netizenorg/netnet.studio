@@ -90,7 +90,7 @@ class TutorialsGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
   _createPage (type, page, b, cb) {
-    utils.get(`./data/${page}`, (html) => {
+    utils.get(`./data/learning-guide/${page}`, (html) => {
       const div = document.createElement('div')
       div.innerHTML = html
       const name = page.split('.')[0]
@@ -202,12 +202,16 @@ class TutorialsGuide extends Widget {
 
   _loadTutorial (name, time) {
     WIDGETS.open('hyper-video-player', null, () => {
-      WIDGETS['hyper-video-player'].video.onloadeddata = () => {
+      WIDGETS['hyper-video-player'].video.oncanplay = () => {
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
         if (time) WIDGETS['hyper-video-player'].seek(time)
+
+        setTimeout(() => {
+          this.$('.files-widget__overlay--loading').style.display = 'none'
+        }, 500)
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title
@@ -229,10 +233,6 @@ class TutorialsGuide extends Widget {
         utils.loadFile(file, () => window.TUTORIAL.init())
       }
     })
-
-    setTimeout(() => {
-      this.$('.files-widget__overlay--loading').style.display = 'none'
-    }, 500)
   }
 }
 

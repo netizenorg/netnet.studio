@@ -9,9 +9,9 @@ class HTMLReference extends Widget {
 
     this.title = 'HTML Reference'
 
-    utils.get('./data/html-reference.json', (json) => { this.data = json })
+    utils.get('./data/references/html-reference.json', (json) => { this.data = json })
 
-    utils.get('./data/html-reference-main.html', (html) => {
+    utils.get('./data/references/html-reference-main.html', (html) => {
       // options objects for <widget-slide> .updateSlide() method
       this.mainOpts = {
         name: 'html-reference-main',

@@ -108,6 +108,26 @@ window.utils = {
     return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   },
 
+  showCurtain: (filename, opts) => {
+    window.utils.get(`./data/curtains/${filename}`, (html) => {
+      const curtain = document.createElement('div')
+      curtain.setAttribute('id', 'curtain-loading-screen')
+      if (opts) {
+        for (const key in opts) {
+          console.log(key, `{{${key}}}`, opts[key]);
+          html = html.replace(`{{${key}}}`, opts[key])
+        }
+      }
+      curtain.innerHTML = html
+      document.body.appendChild(curtain)
+    }, true)
+  },
+
+  hideCurtain: () => {
+    const curtain = document.querySelector('#curtain-loading-screen')
+    if (curtain) curtain.remove()
+  },
+
   _Convo: (id) => {
     Convo.load('utils-misc', () => {
       const convos = window.CONVOS['utils-misc'](window.utils)

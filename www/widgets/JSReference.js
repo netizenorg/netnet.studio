@@ -6,7 +6,7 @@ class JSReference extends Widget {
     this.listed = false // TODO make true when cheatsheets are finished
     this.keywords = ['js', 'javascript'] // TODO add cheatsheets when finsihed
 
-    utils.get('./data/js-reference.json', (json) => { this.data = json })
+    utils.get('./data/references/js-reference.json', (json) => { this.data = json })
 
     // NNW.on('theme-change', () => { this._createHTML() })
 
