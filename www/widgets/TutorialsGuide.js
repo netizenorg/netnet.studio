@@ -62,8 +62,8 @@ class TutorialsGuide extends Widget {
 
   load (name, time) {
     setTimeout(() => {
-      this.$('.files-widget__overlay--loading').style.display = 'block'
-    }, 350)
+      utils.showCurtain('tutorial.html')
+    }, 100)
 
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
@@ -83,7 +83,7 @@ class TutorialsGuide extends Widget {
     WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
     this.metadata = null
     this.data = null
-    this.$('.files-widget__overlay--loading').style.display = 'none'
+    utils.hideCurtain('tutorial.html')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -210,8 +210,8 @@ class TutorialsGuide extends Widget {
         if (time) WIDGETS['hyper-video-player'].seek(time)
 
         setTimeout(() => {
-          this.$('.files-widget__overlay--loading').style.display = 'none'
-        }, 500)
+          utils.hideCurtain('tutorial.html')
+        }, 100)
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title
