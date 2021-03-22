@@ -242,3 +242,75 @@
 .hvp-pause-screen > span:nth-child(6) {
 	background: linear-gradient(93deg, rgba(255,255,255,0) 0%, rgba(0, 0, 0, 0.75) 66%);
 }
+
+
+/* buffer */
+.hvp-buffer {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+.hvp-buffer::before {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--bg-color);
+	opacity: 0.5;
+}
+.hvp-buffer svg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 70px;
+	height: 70px;
+}
+.hvp-buffer svg .loading-bar {
+	fill: transparent;
+	stroke: transparent;
+}
+.hvp-buffer svg .loading-bar:first-of-type {
+  animation: 1.35s bufferAnim linear infinite;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(2) {
+  animation: 1.35s bufferAnim linear infinite .15s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(3) {
+  animation: 1.35s bufferAnim linear infinite .3s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(4) {
+  animation: 1.35s bufferAnim linear infinite .45s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(5) {
+  animation: 1.35s bufferAnim linear infinite .6s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(6) {
+  animation: 1.35s bufferAnim linear infinite .75s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(7) {
+  animation: 1.35s bufferAnim linear infinite .9s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(8) {
+  animation: 1.35s bufferAnim linear infinite 1.05s;
+}
+.hvp-buffer svg .loading-bar:nth-of-type(9) {
+  animation: 1.35s bufferAnim linear infinite 1.2s;
+}
+@keyframes bufferAnim {
+  from {
+    fill: var(--fg-color);
+    stroke: var(--fg-color);
+  }
+  to{
+    fill:transparent;
+    stroke:transparent;
+  }
+}

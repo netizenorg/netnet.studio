@@ -243,9 +243,39 @@ class HyperVideoPlayer extends Widget {
         <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
       </div>`
 
+    const buffer = document.createElement('div')
+    buffer.className = 'hvp-buffer'
+    buffer.innerHTML = `
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   viewBox="0 0 58.7 58.7" style="enable-background:new 0 0 58.7 58.7;" xml:space="preserve">
+        <style type="text/css">
+          .st0{stroke-miterlimit:10;}
+        </style>
+        <path class="st0 loading-bar" d="M38.9,21.6l-3.6-3c-0.5-0.4-0.6-1.1-0.1-1.7l6.1-7.2c0.4-0.5,1.2-0.6,1.7-0.2l3.6,3c0.5,0.4,0.6,1.1,0.1,1.7
+  l-6.1,7.2C40.1,21.9,39.4,22,38.9,21.6z"/>
+        <path class="st0 loading-bar" d="M41.7,29.5L40.9,25c-0.1-0.6,0.3-1.2,1-1.3l9.3-1.6c0.6-0.1,1.3,0.3,1.4,0.9l0.8,4.6c0.1,0.6-0.3,1.2-1,1.3
+          L43,30.5C42.4,30.6,41.8,30.2,41.7,29.5z"/>
+        <path class="st0 loading-bar" d="M38.7,37.4l2.3-4c0.3-0.6,1-0.8,1.6-0.4l8.2,4.7c0.5,0.3,0.8,1,0.4,1.6l-2.3,4c-0.3,0.6-1,0.8-1.6,0.4L39.1,39
+          C38.5,38.7,38.3,38,38.7,37.4z"/>
+        <path class="st0 loading-bar" d="M31.3,41.5l4.4-1.6c0.6-0.2,1.3,0.1,1.5,0.7l3.2,8.9c0.2,0.6-0.1,1.3-0.7,1.5l-4.4,1.6
+          c-0.6,0.2-1.3-0.1-1.5-0.7L30.6,43C30.4,42.4,30.7,41.7,31.3,41.5z"/>
+        <path class="st0 loading-bar" d="M23,39.9l4.4,1.6c0.6,0.2,0.9,0.9,0.7,1.5l-3.2,8.9c-0.2,0.6-0.9,0.9-1.5,0.7L19,51c-0.6-0.2-0.9-0.9-0.7-1.5
+          l3.2-8.9C21.8,40,22.4,39.7,23,39.9z"/>
+        <path class="st0 loading-bar" d="M17.7,33.4l2.3,4c0.3,0.6,0.2,1.3-0.4,1.6l-8.2,4.7c-0.5,0.3-1.3,0.1-1.6-0.4l-2.3-4c-0.3-0.6-0.2-1.3,0.4-1.6
+          l8.2-4.7C16.7,32.6,17.4,32.8,17.7,33.4z"/>
+        <path class="st0 loading-bar" d="M17.8,25L17,29.5c-0.1,0.6-0.7,1.1-1.4,0.9l-9.3-1.6c-0.6-0.1-1.1-0.7-1-1.3l0.8-4.6c0.1-0.6,0.7-1.1,1.4-0.9
+          l9.3,1.6C17.5,23.7,17.9,24.3,17.8,25z"/>
+        <path class="st0 loading-bar" d="M23.3,18.6l-3.6,3c-0.5,0.4-1.2,0.4-1.7-0.2l-6.1-7.2c-0.4-0.5-0.4-1.2,0.1-1.7l3.6-3c0.5-0.4,1.2-0.4,1.7,0.2
+          l6.1,7.2C23.9,17.5,23.8,18.2,23.3,18.6z"/>
+        <path class="st0 loading-bar" d="M31.7,17.2H27c-0.6,0-1.2-0.5-1.2-1.2V6.6c0-0.6,0.5-1.2,1.2-1.2h4.6c0.6,0,1.2,0.5,1.2,1.2v9.4
+  C32.8,16.7,32.3,17.2,31.7,17.2z"/>
+      </svg>
+    `
+
     const wrap = document.createElement('div')
     wrap.className = 'hvp-wrap'
     wrap.appendChild(pauseScreen)
+    wrap.appendChild(buffer)
     this._generatePauseScreen()
     wrap.appendChild(this.video)
     wrap.appendChild(this.controls)
@@ -291,10 +321,15 @@ class HyperVideoPlayer extends Widget {
     this.video.addEventListener('timeupdate', () => {
       this._updateProgressBar()
       this.renderKeyframe()
+      this.$('.hvp-buffer').style.display = 'none'
     })
 
     this.video.addEventListener('loadedmetadata', () => {
       this.duration = this.video.duration
+    })
+
+    this.video.addEventListener('waiting', () => {
+      this.$('.hvp-buffer').style.display = 'block'
     })
 
     this.$('.progress').addEventListener('click', (e) => {
