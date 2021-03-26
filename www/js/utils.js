@@ -114,7 +114,6 @@ window.utils = {
       curtain.setAttribute('id', 'curtain-loading-screen')
       if (opts) {
         for (const key in opts) {
-          console.log(key, `{{${key}}}`, opts[key]);
           html = html.replace(`{{${key}}}`, opts[key])
         }
       }
