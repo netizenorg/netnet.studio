@@ -1,4 +1,4 @@
-/* global utils, WIDGETS, NNE */
+/* global utils, WIDGETS, NNE, NNW */
 window.CONVOS['utils-misc'] = (self) => {
   // ... TODO: convo for "forking" when a ?gh= is present/loaded
   const a = (() => {
@@ -47,6 +47,7 @@ window.CONVOS['utils-misc'] = (self) => {
       'can I create a new project?': (e) => e.goTo('gh-create-proj')
     }
   }, {
+    before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
     id: 'agree-to-fork',
     content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
     options: {
