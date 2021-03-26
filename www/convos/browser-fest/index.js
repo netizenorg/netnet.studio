@@ -33,7 +33,7 @@ window.CONVOS['browser-fest'] = (self) => {
       },
       'start a new project': (e) => {
         if (NNW.layout === 'welcome') {
-          if (window.btoa(NNE.code) === utils.starterCodeB64) { NNE.code = '' }
+          if (utils.btoa(NNE.code) === utils.starterCodeB64) { NNE.code = '' }
           NNW.layout = 'dock-left'
           window.utils.afterLayoutTransition(() => {
             setTimeout(() => NNE.cm.refresh(), 10)

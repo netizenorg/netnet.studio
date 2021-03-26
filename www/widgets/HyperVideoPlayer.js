@@ -551,6 +551,9 @@ class HyperVideoPlayer extends Widget {
     const tg = WIDGETS['tutorials-guide']
     if (!tg || !tg.metadata) return
     // only run code below if we're in a tutorial (not when making them)
+    // ...
+    // ...Why though?
+    // TODO: can't remember why ... might be a problem
     if (tg.metadata.keylogs) {
       utils.get(`tutorials/${tg.metadata.id}/keylogs.json`, (json) => {
         this.logger._loadData(json)

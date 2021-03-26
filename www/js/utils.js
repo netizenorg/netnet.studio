@@ -26,6 +26,14 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
+  btoa: (str) => {
+    return window.btoa(unescape(encodeURIComponent(str)))
+  },
+
+  atob: (str) => {
+    return decodeURIComponent(escape(window.atob(str)))
+  },
+
   loadFile: (path, callback) => {
     const s = document.createElement('script')
     s.setAttribute('src', path)
@@ -85,7 +93,7 @@ window.utils = {
   }
 </style>
     `
-    window.utils.starterCodeB64 = window.btoa(sc)
+    window.utils.starterCodeB64 = window.utils.btoa(sc)
     return sc
   },
 

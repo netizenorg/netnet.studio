@@ -168,7 +168,7 @@ class FunctionsMenu extends Widget {
   newProject () {
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
-    const currCode = window.btoa(NNE.code)
+    const currCode = utils.btoa(NNE.code)
     if (NNE._root && NNE._root.includes('raw.githubusercontent.com')) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
@@ -188,7 +188,7 @@ class FunctionsMenu extends Widget {
     if (WIDGETS['browser-fest']) WIDGETS['browser-fest'].close()
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
-    const currCode = window.btoa(NNE.code)
+    const currCode = utils.btoa(NNE.code)
     this.convos = window.CONVOS[this.key](this)
     if (op && lastCode !== currCode) {
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-open-proj')
@@ -251,7 +251,7 @@ class FunctionsMenu extends Widget {
   }
 
   downloadCode () {
-    const uri = `data:text/html;base64,${window.btoa(NNE.code)}`
+    const uri = `data:text/html;base64,${utils.btoa(NNE.code)}`
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')
     a.setAttribute('href', uri)
@@ -530,7 +530,7 @@ class FunctionsMenu extends Widget {
       ready: (file) => {
         this.close()
         const data = file.data.split('data:text/html;base64,')[1]
-        NNE.code = window.atob(data)
+        NNE.code = utils.atob(data)
       },
       error: (err) => {
         window.convo = new Convo(this.convos, 'temp-disclaimer')
@@ -574,7 +574,7 @@ class FunctionsMenu extends Widget {
   _createNewRepo (c, t, v) {
     WIDGETS['student-session'].clearSaveState()
     window.convo = new Convo(this.convos, 'pushing-updates')
-    const data = { name: v, data: window.btoa(NNE.code) }
+    const data = { name: v, data: utils.btoa(NNE.code) }
     window.utils.post('./api/github/new-repo', data, (res) => {
       NNW.menu.switchFace('default')
       window.convo.hide()
@@ -592,7 +592,7 @@ class FunctionsMenu extends Widget {
           sha: res.data.content.sha,
           url: res.url,
           branch: res.branch,
-          code: NNE._encode(NNE.code)
+          code: utils.btoa(NNE.code)
         })
         WIDGETS['student-session'].updateRoot()
         // update ProjectFiles
@@ -647,8 +647,8 @@ class FunctionsMenu extends Widget {
           // // for some reason GitHub adds a '\n' at the end of the base64 string?
           // const c = (data.code.indexOf('\n') === data.code.length - 1)
           //   ? data.code.substr(0, data.code.length - 1) : data.code
-          const c = window.atob(res.data.content)
-          WIDGETS['student-session'].setData('last-commit-code', window.btoa(c))
+          const c = utils.atob(res.data.content)
+          WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
           const m = res.data.html_url.includes('/blob/master') ? 'master' : 'main'
           WIDGETS['student-session'].updateRoot(m)
           NNE.code = c
@@ -679,7 +679,7 @@ class FunctionsMenu extends Widget {
       sha: window.localStorage.getItem('index-sha'),
       path: 'index.html',
       message: msg,
-      code: window.btoa(NNE.code)
+      code: utils.btoa(NNE.code)
     }
     utils.post('./api/github/save-project', data, (res) => {
       if (!res.success) {
@@ -699,7 +699,7 @@ class FunctionsMenu extends Widget {
           WIDGETS['student-session'].setProjectData({
             message: res.data.commit.message,
             sha: res.data.content.sha,
-            code: NNE._encode(NNE.code)
+            code: utils.btoa(NNE.code)
           })
           window.convo = new Convo(this.convos, 'project-saved')
         }
