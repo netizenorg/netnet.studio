@@ -1,0 +1,32 @@
+<style>
+
+  .learning-guide__demos {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .learning-guide--link {
+    position: relative;
+    color: var(--netizen-meta);
+    text-decoration: none;
+    transition: color .5s ease, border .5s ease;
+    /*underline*/
+    border-bottom: 1px solid var(--netizen-meta);
+    text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+  }
+
+  .learning-guide--link:active {
+    color: var(--netizen-attribute);
+  }
+
+  h2.learning-guide--link button {
+    margin-bottom: 7px;
+    vertical-align: middle;
+  }
+  h2.learning-guide--link:hover {
+    color: var(--netizen-meta);
+    border-bottom: 1px solid var(--netizen-meta);
+    cursor: initial;
+  }
+
+</style>

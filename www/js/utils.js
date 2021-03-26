@@ -26,6 +26,14 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
+  btoa: (str) => {
+    return window.btoa(unescape(encodeURIComponent(str)))
+  },
+
+  atob: (str) => {
+    return decodeURIComponent(escape(window.atob(str)))
+  },
+
   loadFile: (path, callback) => {
     const s = document.createElement('script')
     s.setAttribute('src', path)
@@ -85,7 +93,7 @@ window.utils = {
   }
 </style>
     `
-    window.utils.starterCodeB64 = window.btoa(sc)
+    window.utils.starterCodeB64 = window.utils.btoa(sc)
     return sc
   },
 
@@ -106,6 +114,25 @@ window.utils = {
 
   hotKey: () => {
     return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  },
+
+  showCurtain: (filename, opts) => {
+    window.utils.get(`./data/curtains/${filename}`, (html) => {
+      const curtain = document.createElement('div')
+      curtain.setAttribute('id', 'curtain-loading-screen')
+      if (opts) {
+        for (const key in opts) {
+          html = html.replace(`{{${key}}}`, opts[key])
+        }
+      }
+      curtain.innerHTML = html
+      document.body.appendChild(curtain)
+    }, true)
+  },
+
+  hideCurtain: () => {
+    const curtain = document.querySelector('#curtain-loading-screen')
+    if (curtain) curtain.remove()
   },
 
   _Convo: (id) => {

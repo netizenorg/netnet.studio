@@ -280,15 +280,17 @@ class TutorialMaker extends Widget {
       reader.onload = (e) => {
         if (file.name === 'metadata.json') {
           const b64 = e.target.result.split('base64,')[1]
-          this._loadMetadata(JSON.parse(window.atob(b64)))
+          this._loadMetadata(JSON.parse(utils.atob(b64)))
         } else if (file.name === 'data.json') {
           const b64 = e.target.result.split('base64,')[1]
-          this._loadData(JSON.parse(window.atob(b64)))
+          this._loadData(JSON.parse(utils.atob(b64)))
         } else if (file.name === 'keylogs.json') {
           const b64 = e.target.result.split('base64,')[1]
-          const data = JSON.parse(window.atob(b64))
+          const data = JSON.parse(utils.atob(b64))
           this._loadKeylog(data)
-          WIDGETS['netitor-logger']._loadData(data)
+          const nt = WIDGETS['netitor-logger']
+          if (nt) WIDGETS['netitor-logger']._loadData(data)
+          else WIDGETS.load('NetitorLogger.js', (w) => w._loadData(data))
         } else {
           console.error('TutorialMaker: seems you tried to open the wrong file')
         }

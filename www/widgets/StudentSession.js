@@ -113,12 +113,7 @@ class StudentSession extends Widget {
     if (data.url) ls.setItem('project-url', data.url)
     if (data.ghpages) ls.setItem('ghpages', data.ghpages)
     if (data.branch) ls.setItem('branch', data.branch)
-    if (data.code) {
-      // for some reason GitHub adds a '\n' at the end of the base64 string?
-      const c = (data.code.indexOf('\n') === data.code.length - 1)
-        ? data.code.substr(0, data.code.length - 1) : data.code
-      ls.setItem('last-commit-code', c)
-    }
+    if (data.code) ls.setItem('last-commit-code', data.code)
     this._createHTML()
   }
 
@@ -156,7 +151,7 @@ class StudentSession extends Widget {
 
   authGitHubSession () {
     const temp = `#code/${NNE._encode('<h1>Hello World Wide Web</h1>')}`
-    const code = (window.btoa(NNE.code) === utils.starterCodeB64)
+    const code = (utils.btoa(NNE.code) === utils.starterCodeB64)
       ? temp : NNE.generateHash()
     if (NNE._root && NNE._root.includes('.com')) {
       // if gitHub url in root

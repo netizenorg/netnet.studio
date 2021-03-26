@@ -20,7 +20,7 @@ class CSSReference extends Widget {
         ele: this._createMainSlide(html)
       }
 
-      utils.get('./data/css-reference-selectors.html', (sels) => {
+      utils.get('./data/references/css-reference-selectors.html', (sels) => {
         this.selectorListOpts = {
           name: 'css-reference-selectors',
           widget: this,
@@ -29,7 +29,7 @@ class CSSReference extends Widget {
         }
       }, true)
 
-      utils.get('./data/css-reference-cascade.html', (text) => {
+      utils.get('./data/references/css-reference-cascade.html', (text) => {
         this.cascadeOpts = {
           name: 'css-reference-cascade',
           widget: this,
@@ -50,8 +50,8 @@ class CSSReference extends Widget {
       NNW.on('theme-change', () => { this._createHTML() })
     }
 
-    utils.get('./data/css-reference.json', (json) => { this.data = json })
-    utils.get('./data/css-reference-main.html', (html) => init(html), true)
+    utils.get('./data/references/css-reference.json', (json) => { this.data = json })
+    utils.get('./data/references/css-reference-main.html', (html) => init(html), true)
   }
 
   textBubble (eve) {
@@ -323,7 +323,7 @@ a:hover {
         setTimeout(() => updateExamples(), 100)
         return
       }
-      utils.get('./data/css-reference-example-1.html', (text) => {
+      utils.get('./data/references/css-reference-example-1.html', (text) => {
         div.querySelector('[name="css-cascade-ex-1"]').updateExample(text, 'html')
       }, true)
 

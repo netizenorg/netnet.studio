@@ -1,4 +1,4 @@
-/* global Widget, NNE */
+/* global Widget, NNE, utils */
 class NetitorLogger extends Widget {
   constructor (opts) {
     super(opts)
@@ -190,7 +190,7 @@ class NetitorLogger extends Widget {
       reader.onload = (e) => {
         if (file.name.includes('.json')) {
           const b64 = e.target.result.split('base64,')[1]
-          this._loadData(JSON.parse(window.atob(b64)))
+          this._loadData(JSON.parse(utils.atob(b64)))
         } else {
           console.error('NetitorLogger: requires a json file')
         }
