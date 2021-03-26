@@ -210,7 +210,7 @@ window.utils = {
       window.utils.loadBlankSketch()
       return 'sketch'
     } else if (url.github) {
-      window.utils.loadGithub(url.github)
+      window.utils.loadGithub(url.github, url.layout)
       return 'example'
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
@@ -281,14 +281,14 @@ window.utils = {
     })
   },
 
-  loadGithub: (github) => {
+  loadGithub: (github, layout) => {
     const a = github.split('/')
     const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
     const rawHTML = `${path}index.html`
     window.utils.get(rawHTML, (html) => {
       NNE.addCustomRoot(path)
       NNE.code = ''
-      NNW.layout = 'dock-left'
+      if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
         NNE.code = html
         setTimeout(() => NNE.cm.refresh(), 10)
