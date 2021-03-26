@@ -211,6 +211,7 @@ class TutorialsGuide extends Widget {
 
         setTimeout(() => {
           utils.hideCurtain('tutorial.html')
+          WIDGETS['hyper-video-player'].video.oncanplay = null
         }, 100)
       }
 
