@@ -48,11 +48,11 @@ class FunctionsMenu extends Widget {
         click: 'shareProject',
         alts: ['share', 'github', 'project', 'link'],
         hrAfter: true
-      },
-      {
-        click: 'BrowserFest',
-        alts: []
       }
+      // {
+      //   click: 'BrowserFest',
+      //   alts: []
+      // }
     ]
 
     this.noAuthedMenu = [
@@ -122,13 +122,13 @@ class FunctionsMenu extends Widget {
   }
 
   // TEMPORARY
-  BrowserFest () {
-    if (WIDGETS['browser-fest']) {
-      WIDGETS['browser-fest'].submit()
-    } else {
-      WIDGETS.load('BrowserFest.js', (w) => w.submit())
-    }
-  }
+  // BrowserFest () {
+  //   if (WIDGETS['browser-fest']) {
+  //     WIDGETS['browser-fest'].submit()
+  //   } else {
+  //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
+  //   }
+  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
