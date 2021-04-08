@@ -167,7 +167,7 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
-    exampleCode: new URL(window.location).searchParams.get('ex'),
+    example: new URL(window.location).searchParams.get('ex'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
@@ -211,7 +211,7 @@ window.utils = {
       return 'sketch'
     } else if (url.github) {
       window.utils.loadGithub(url.github, url.layout)
-      return 'example'
+      return 'github'
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
@@ -301,6 +301,7 @@ window.utils = {
   },
 
   loadExample: (example) => {
+    console.log(example);
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
       NNE.code = ''

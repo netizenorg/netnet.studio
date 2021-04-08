@@ -25,9 +25,9 @@ class TutorialsGuide extends Widget {
         span.addEventListener('click', () => this.slide.updateSlide(this[page]))
       })
 
-      div.querySelector('#bf-submission').addEventListener('click', () => {
-        WIDGETS['functions-menu'].BrowserFest()
-      })
+      // div.querySelector('#bf-submission').addEventListener('click', () => {
+      //   WIDGETS['functions-menu'].BrowserFest()
+      // })
 
       // create sub pages
       this._createPage('aboutOpts', 'learning-guide-about.html', this.mainOpts)

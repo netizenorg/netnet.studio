@@ -234,14 +234,14 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'project-opened',
     content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
     options: {
-      ok: (e) => e.hide(),
-      'submit to BrowserFest': (e) => {
-        if (WIDGETS['browser-fest']) {
-          WIDGETS['browser-fest'].submit()
-        } else {
-          WIDGETS.load('BrowserFest.js', (w) => w.submit())
-        }
-      }
+      ok: (e) => e.hide()
+      // 'submit to BrowserFest': (e) => {
+      //   if (WIDGETS['browser-fest']) {
+      //     WIDGETS['browser-fest'].submit()
+      //   } else {
+      //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
+      //   }
+      // }
     },
     after: () => {
       document.querySelector('.text-bubble-options > button:nth-child(2)')

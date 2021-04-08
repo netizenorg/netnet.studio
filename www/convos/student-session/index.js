@@ -7,10 +7,10 @@ window.CONVOS['student-session'] = (self) => {
     content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
     options: {
       'hi netnet!': (e) => e.goTo('what-to-do'),
-      'that\'s not my name?': (e) => e.goTo('diff-user'),
-      'submit to BrowserFest': (e) => {
-        WIDGETS['functions-menu'].BrowserFest()
-      }
+      'that\'s not my name?': (e) => e.goTo('diff-user')
+      // 'submit to BrowserFest': (e) => {
+      //   WIDGETS['functions-menu'].BrowserFest()
+      // }
     },
     after: () => {
       document.querySelector('.text-bubble-options > button:nth-child(3)')
