@@ -232,7 +232,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'open-widget-info-3',
-    content: 'The data you see here is everything currently stored on this computer in this browser. If other folks use this computer besides yourself use this computer you might want to clear this data when you\'re done...',
+    content: 'The data you see here is everything currently stored on this computer in this browser. If other folks use this computer besides yourself you might want to clear this data when you\'re done...',
     options: {
       'should I?': (e) => e.goTo('open-widget-info-4')
     }
