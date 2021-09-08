@@ -11,11 +11,12 @@ window.CONVOS['student-session'] = (self) => {
       // 'submit to BrowserFest': (e) => {
       //   WIDGETS['functions-menu'].BrowserFest()
       // }
-    },
-    after: () => {
-      document.querySelector('.text-bubble-options > button:nth-child(3)')
-        .classList.add('opt-rainbow-bg')
     }
+    // ,
+    // after: () => {
+    //   document.querySelector('.text-bubble-options > button:nth-child(3)')
+    //     .classList.add('opt-rainbow-bg')
+    // }
   }, {
     id: 'what-to-do',
     before: () => NNW.menu.switchFace('happy'),
