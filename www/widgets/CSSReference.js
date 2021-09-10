@@ -8,6 +8,8 @@ class CSSReference extends Widget {
     this.resizable = false
     this.title = 'CSS Reference'
 
+    this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
+
     const init = (html) => {
       if (!utils.customElementReady('code-example')) {
         setTimeout(() => init(html), 100)
