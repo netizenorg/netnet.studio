@@ -301,7 +301,6 @@ window.utils = {
   },
 
   loadExample: (example) => {
-    console.log(example);
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
       NNE.code = ''
