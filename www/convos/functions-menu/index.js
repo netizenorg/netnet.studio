@@ -1,4 +1,4 @@
-/* global Averigua, WIDGETS, NNW, NNE */
+/* global Averigua, WIDGETS, NNW, NNE, utils */
 window.CONVOS['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareURL = (opts) => {
@@ -88,8 +88,15 @@ window.CONVOS['functions-menu'] = (self) => {
       'yea let\'s remix it!': (e) => e.goTo('agree-to-fork'),
       'no let\'s create a new project?': (e) => e.goTo('create-new-project')
     }
-  },
-  {
+  }, {
+    before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
+    id: 'agree-to-fork',
+    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
+    options: {
+      'let\'s do it!': (e) => utils.forkRepo(),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
     id: 'unsaved-changes-b4-new-proj',
     content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
     options: {
@@ -242,11 +249,12 @@ window.CONVOS['functions-menu'] = (self) => {
       //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
       //   }
       // }
-    },
-    after: () => {
-      document.querySelector('.text-bubble-options > button:nth-child(2)')
-        .classList.add('opt-rainbow-bg')
     }
+    // ,
+    // after: () => {
+    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
+    //     .classList.add('opt-rainbow-bg')
+    // }
   },
   // ... share gh project
   {

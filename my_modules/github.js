@@ -26,6 +26,15 @@ function decryptToken (req, res, cb) {
     }
   })
 }
+
+// ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ proxy for raw.githubusercontent.com
+
+router.get('/api/github/proxy', (req, res) => {
+  axios.get(req.query.url, { responseType: 'arraybuffer' })
+    .then(r => res.end(r.data))
+    .catch(err => console.log(err))
+})
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // [GET]
 
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ * Auth Token
@@ -121,34 +130,43 @@ router.post('/api/github/repo-data', (req, res) => {
 })
 
 router.post('/api/github/new-repo', (req, res) => {
-  const name = req.body.name
-  const data = req.body.data
+  const data = {
+    name: req.body.name,
+    content: req.body.data
+  }
   decryptToken(req, res, (octokit) => {
     // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
     octokit.request('POST /user/repos', {
-      name: name,
+      name: data.name,
       description: '◕ ◞ ◕ This project was made using https://netnet.studio',
       auto_init: true
     }).then(gitRes => {
-      // console.log('created repo >>', gitRes.data.name)
+      data.owner = gitRes.data.owner.login
+      data.branch = gitRes.data.default_branch
+      data.url = gitRes.data.html_url
       // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
       return octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-        owner: gitRes.data.owner.login,
-        repo: name,
+        owner: data.owner,
+        repo: data.name,
         path: 'index.html',
         message: 'netnet initialized repo',
-        content: data
+        content: data.content
       })
     }).then(gitRes => {
-      if (gitRes.data.content.html_url.includes('/blob/master')) {
-        const url = gitRes.data.content.html_url.split('/blob/master')[0]
-        const branch = 'master'
-        res.json({ success: true, name, url, branch, data: gitRes.data })
-      } else {
-        const url = gitRes.data.content.html_url.split('/blob/main')[0]
-        const branch = 'main'
-        res.json({ success: true, name, url, branch, data: gitRes.data })
-      }
+      data.sha = gitRes.data.content.sha
+      // https://docs.github.com/en/rest/reference/repos#create-a-github-pages-site
+      // automatically publish ghpages (TODO: maybe include later)
+      // return octokit.request('POST /repos/{owner}/{repo}/pages', {
+      //   owner: data.owner,
+      //   repo: data.name,
+      //   source: { branch: data.branch, path: '/' },
+      //   mediaType: { previews: ['switcheroo'] }
+      // })
+      return gitRes
+    }).then(gitRes => {
+      data.ghpages = gitRes.data.html_url
+      data.success = true
+      res.json(data)
     }).catch(err => {
       res.json({ success: false, message: 'error creating repo', error: err })
     })
@@ -272,7 +290,7 @@ router.post('/api/github/gh-pages', (req, res) => {
         return octokit.request('POST /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo,
-          source: { branch: req.body.branch },
+          source: { branch: req.body.branch, path: '/' },
           mediaType: { previews: ['switcheroo'] }
         })
       }

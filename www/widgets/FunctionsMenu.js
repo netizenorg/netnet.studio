@@ -148,7 +148,7 @@ class FunctionsMenu extends Widget {
 
   saveProject (redirect) {
     const op = WIDGETS['student-session'].data.github.openedProject
-    if (NNE._root && NNE._root.includes('raw.githubusercontent.com')) {
+    if (utils.url.github) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
     } if (op) {
@@ -169,7 +169,7 @@ class FunctionsMenu extends Widget {
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
     const currCode = utils.btoa(NNE.code)
-    if (NNE._root && NNE._root.includes('raw.githubusercontent.com')) {
+    if (utils.url.github) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
     } else if (op && lastCode !== currCode) {
@@ -589,12 +589,14 @@ class FunctionsMenu extends Widget {
         WIDGETS['student-session'].setProjectData({
           name: res.name,
           message: 'netnet initialized repo',
-          sha: res.data.content.sha,
+          sha: res.sha,
           url: res.url,
+          ghpages: res.ghpages,
           branch: res.branch,
           code: utils.btoa(NNE.code)
         })
         WIDGETS['student-session'].updateRoot()
+        NNW.title.textContent = res.name + '/index.html'
         // update ProjectFiles
         if (!WIDGETS['project-files']) {
           WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles([]))
@@ -615,7 +617,6 @@ class FunctionsMenu extends Widget {
   }
 
   _openProject (repo) {
-    // TODO: update ghpages if it's public?
     const ohNoErr = (res) => {
       console.log('FunctionsMenu:', res)
       window.convo = new Convo(this.convos, 'oh-no-error')
@@ -630,6 +631,7 @@ class FunctionsMenu extends Widget {
       const files = res.data.map(f => f.name)
       if (files.includes('index.html')) {
         WIDGETS['student-session'].setData('opened-project', repo)
+        NNW.title.textContent = repo + '/index.html'
         // update ProjectFiles
         if (!WIDGETS['project-files']) {
           WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles(res.data))

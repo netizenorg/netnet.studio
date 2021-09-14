@@ -187,7 +187,7 @@ window.utils = {
     if (typeof window.utils.url.github === 'string') {
       WIDGETS['student-session'].clearProjectData()
       const a = window.utils.url.github.split('/')
-      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
       NNE.addCustomRoot(path)
     }
   },
@@ -283,7 +283,7 @@ window.utils = {
 
   loadGithub: (github, layout) => {
     const a = github.split('/')
-    const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+    const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
     const rawHTML = `${path}index.html`
     window.utils.get(rawHTML, (html) => {
       NNE.addCustomRoot(path)
@@ -315,12 +315,14 @@ window.utils = {
   },
 
   loadGHRedirect: () => {
+    // code set by WIDGETS['student-session'].authGitHubSession()
     const code = window.localStorage.getItem('gh-auth-temp-code')
+    // code might be an encoded hash, or a gh root URL
     if (code.includes('raw.githubusercontent.com')) {
       // if they were looking at someone else's GitHub poroject
       // before they got redirected over to GitHub for auth...
       const a = code.split('.com/')[1].split('/')
-      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
       const rawHTML = `${path}index.html`
       window.utils.get(rawHTML, (html) => {
         NNE.addCustomRoot(path)
