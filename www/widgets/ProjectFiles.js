@@ -12,6 +12,8 @@ class ProjectFiles extends Widget {
     this._setupFileUploader()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
+    this.on('open', () => { window.convo = new Convo(this.convos, 'explain') })
   }
 
   _createHTML () {
