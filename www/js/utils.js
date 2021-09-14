@@ -283,6 +283,7 @@ window.utils = {
 
   loadGithub: (github, layout) => {
     const a = github.split('/')
+    if (a.length < 3) a[2] = 'main'
     const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
     const rawHTML = `${path}index.html`
     window.utils.get(rawHTML, (html) => {
