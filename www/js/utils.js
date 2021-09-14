@@ -294,7 +294,10 @@ window.utils = {
         NNE.code = html
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
-        if (WIDGETS['student-session'].getData('owner')) {
+        const o = WIDGETS['student-session'].getData('owner')
+        if (o && o === a[0]) {
+          window.utils._Convo('remix-github-project-logged-in-as-owner')
+        } else if (o) {
           window.utils._Convo('remix-github-project-logged-in')
         } else { window.utils._Convo('remix-github-project-logged-out') }
       })
@@ -418,7 +421,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }

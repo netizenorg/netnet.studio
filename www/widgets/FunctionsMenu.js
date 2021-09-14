@@ -596,7 +596,7 @@ class FunctionsMenu extends Widget {
           code: utils.btoa(NNE.code)
         })
         WIDGETS['student-session'].updateRoot()
-        NNW.title.textContent = res.name + '/index.html'
+        NNW.updateTitleBar(`${res.name}/index.html`)
         // update ProjectFiles
         if (!WIDGETS['project-files']) {
           WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles([]))
@@ -631,7 +631,7 @@ class FunctionsMenu extends Widget {
       const files = res.data.map(f => f.name)
       if (files.includes('index.html')) {
         WIDGETS['student-session'].setData('opened-project', repo)
-        NNW.title.textContent = repo + '/index.html'
+        NNW.updateTitleBar(`${repo}/index.html`)
         // update ProjectFiles
         if (!WIDGETS['project-files']) {
           WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles(res.data))

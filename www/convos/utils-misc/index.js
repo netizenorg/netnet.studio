@@ -1,6 +1,5 @@
 /* global utils, WIDGETS, NNE, NNW */
 window.CONVOS['utils-misc'] = (self) => {
-  // ... TODO: convo for "forking" when a ?gh= is present/loaded
   const a = (() => {
     const c = window.localStorage.getItem('gh-auth-temp-code')
     const gh = window.utils.url.github
@@ -10,6 +9,14 @@ window.CONVOS['utils-misc'] = (self) => {
     } else if (gh) return window.utils.url.github.split('/')
     else return []
   })()
+
+  const gh = (() => {
+    const u = window.localStorage.getItem('username')
+    const o = window.localStorage.getItem('owner')
+    const p = window.localStorage.getItem('opened-project')
+    return { u, o, p, url: `https://github.com/${o}/${p}` }
+  })()
+
   return [{
     id: 'num-helper',
     content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
@@ -39,6 +46,16 @@ window.CONVOS['utils-misc'] = (self) => {
       'let\'s remix it!': (e) => e.goTo('agree-to-fork')
     }
   }, {
+    id: 'remix-github-project-logged-in-as-owner',
+    content: `Welcome back ${gh.u}! Seems you followed your own share link for your <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> project. Are you just experimenting or did you want to open and keep working on this project?`,
+    options: {
+      'just experimenting': (e) => e.hide(),
+      'let\'s open it!': (e) => {
+        e.hide()
+        WIDGETS['functions-menu']._openProject(a[1])
+      }
+    }
+  }, {
     id: 'remix-github-project-auth-redirect',
     content: `Great, we're connected to GitHub now! Before we did that, you were checking out this project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a>. If you want to remix this project I can now create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you?`,
     options: {
@@ -66,6 +83,23 @@ window.CONVOS['utils-misc'] = (self) => {
     content: 'You can access all the project related functions in my <b>Functions Menu</b> which you can open by clicking on my face. There you\'ll be able to create, save and open projects as well as upload assets like images, video or audio files.',
     options: {
       'cool!': (e) => e.hide()
+    }
+  }, {
+    id: 'netnet-title-bar',
+    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>. The first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. I'm here to help you learn and create, but I don't store this data on my server, instead this file is being hosted on your personal <a href="${gh.url}" target="_blank">GitHub repo</a>`,
+    options: {
+      'cool!': (e) => e.hide(),
+      'can I work on another file?': (e) => e.goTo('netnet-title-bar-2')
+    }
+  }, {
+    id: 'netnet-title-bar-2',
+    before: () => {
+      WIDGETS['functions-menu'].open()
+      WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project', 'open')
+    },
+    content: 'Maybe eventually, the folks at <a href="https://netizen.org" target="_blank">netizen.org</a> are constantly working on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">my code</a>, but at the moment the <code>index.html</code> page is the only one you can work on. That said, if you\'d like to upload images or any other files to your project, click <code>uploadAssets()</code> in the <b>Fnctions Menu</b>',
+    options: {
+      'got it.': (e) => e.hide()
     }
   }]
 }

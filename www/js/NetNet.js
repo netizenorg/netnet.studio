@@ -1,4 +1,4 @@
-/* global NNE, Menu, Color, utils */
+/* global NNE, Menu, Color, utils, WIDGETS */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -573,19 +573,28 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
+  updateTitleBar (text) {
+    // const gh = WIDGETS['student-session'].data.github
+    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+    this.title.textContent = text
+    this.title.onclick = () => utils._Convo('netnet-title-bar')
+  }
+
   _createTitleBar () {
     const title = document.createElement('div')
     title.id = 'proj-title'
     // title.textContent = 'Title Of Project (index.html)'
+    title.style.display = 'block'
+    title.style.cursor = 'pointer'
     title.style.position = 'absolute'
     title.style.top = '0px'
     title.style.left = '0px'
-    title.style.width = '100%'
-    title.style.zIndex = '-1'
-    title.style.padding = '15px'
+    title.style.width = 'calc(100% - 110px)'
+    title.style.zIndex = '2'
+    title.style.padding = '15px 15px 15px 80px'
     title.style.color = 'var(--netizen-meta)'
+    title.style.textDecoration = 'underline'
     title.style.textAlign = 'center'
-    title.style.transform = 'translateX(-10px)'
     this.win.prepend(title)
     return title
   }
