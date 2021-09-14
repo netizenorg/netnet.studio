@@ -262,7 +262,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'github-data-info-2',
-    content: 'I want to help set you up for the major leagues, these days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
+    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
     options: {
       'what\'s GitHub?': (e) => e.goTo('what-is-github'),
       'got it': (e) => e.hide()
