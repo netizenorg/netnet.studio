@@ -30,7 +30,10 @@ function decryptToken (req, res, cb) {
 // ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ proxy for raw.githubusercontent.com
 
 router.get('/api/github/proxy', (req, res) => {
-  axios.get(req.query.url, { responseType: 'arraybuffer' })
+  // on the live version, the redbird proxy screws w/this proxy
+  // HACK: this fixes the redbird screw up
+  const url = req.query.url.replace('https:/raw', 'https://raw')
+  axios.get(url, { responseType: 'arraybuffer' })
     .then(r => res.end(r.data))
     .catch(err => console.log(err))
 })
