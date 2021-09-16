@@ -7,6 +7,19 @@ window.CONVOS['project-files'] = (self) => {
   }
   // ...
   return [{
+    id: 'explain',
+    content: 'The <b>Project Files</b> widget let\'s you upload assets like images or other files for you to use in your project. After uploading a file you can reference it in your code.',
+    options: {
+      cool: (e) => e.hide(),
+      'how?': (e) => e.goTo('explain2')
+    }
+  }, {
+    id: 'explain2',
+    content: 'Say you uploaded an image called <code>cat.jpg</code> for example, in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code>',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
     id: 'confirm-delete',
     content: `Are you sure you want to delete <code>${self._delete}</code> from your project?`,
     options: {

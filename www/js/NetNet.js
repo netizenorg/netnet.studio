@@ -1,4 +1,4 @@
-/* global NNE, Menu, Color, utils */
+/* global NNE, Menu, Color, utils, WIDGETS */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -22,6 +22,7 @@ class NetNet {
     this.edtr = document.querySelector('#nn-editor')
     this.menu = new Menu(this.win) // document.querySelector('#nn-menu')
     this.canv = this._createCanvas()
+    this.title = this._createTitleBar()
     // ...canvas background visible when theme { background: false }
 
     this.layout = 'welcome'
@@ -436,6 +437,7 @@ class NetNet {
     }
 
     if (v === 'welcome') {
+      this.title.style.display = 'none'
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
       this.rndr.style.left = '0px'
@@ -450,6 +452,7 @@ class NetNet {
       this._showEditor(false)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'dock-bottom') {
+      this.title.style.display = 'block'
       this.rndr.style.width = '100%'
       this.rndr.style.height = window.innerHeight / 2 + 'px'
       this.rndr.style.left = '0px'
@@ -464,6 +467,7 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'dock-left') {
+      this.title.style.display = 'block'
       this.rndr.style.width = window.innerWidth / 2 + 'px'
       this.rndr.style.height = '100%'
       this.rndr.style.left = window.innerWidth / 2 + 'px'
@@ -478,6 +482,7 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'full-screen') {
+      this.title.style.display = 'block'
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
       this.rndr.style.left = '0px'
@@ -492,6 +497,7 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'separate-window') {
+      this.title.style.display = 'block'
       this._showEditor(true)
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
@@ -563,6 +569,34 @@ class NetNet {
       const bg = window.getComputedStyle(iframeBody).backgroundColor
       document.body.style.backgroundColor = bg
     }
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
+
+  updateTitleBar (text) {
+    // const gh = WIDGETS['student-session'].data.github
+    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+    this.title.textContent = text
+    this.title.onclick = () => utils._Convo('netnet-title-bar')
+  }
+
+  _createTitleBar () {
+    const title = document.createElement('div')
+    title.id = 'proj-title'
+    // title.textContent = 'Title Of Project (index.html)'
+    title.style.display = 'block'
+    title.style.cursor = 'pointer'
+    title.style.position = 'absolute'
+    title.style.top = '0px'
+    title.style.left = '0px'
+    title.style.width = 'calc(100% - 110px)'
+    title.style.zIndex = '2'
+    title.style.padding = '15px 15px 15px 80px'
+    title.style.color = 'var(--netizen-meta)'
+    title.style.textDecoration = 'underline'
+    title.style.textAlign = 'center'
+    this.win.prepend(title)
+    return title
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow

@@ -11,11 +11,12 @@ window.CONVOS['student-session'] = (self) => {
       // 'submit to BrowserFest': (e) => {
       //   WIDGETS['functions-menu'].BrowserFest()
       // }
-    },
-    after: () => {
-      document.querySelector('.text-bubble-options > button:nth-child(3)')
-        .classList.add('opt-rainbow-bg')
     }
+    // ,
+    // after: () => {
+    //   document.querySelector('.text-bubble-options > button:nth-child(3)')
+    //     .classList.add('opt-rainbow-bg')
+    // }
   }, {
     id: 'what-to-do',
     before: () => NNW.menu.switchFace('happy'),
@@ -231,7 +232,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'open-widget-info-3',
-    content: 'The data you see here is everything currently stored on this computer in this browser. If other folks use this computer besides yourself use this computer you might want to clear this data when you\'re done...',
+    content: 'The data you see here is everything currently stored on this computer in this browser. If other folks use this computer besides yourself you might want to clear this data when you\'re done...',
     options: {
       'should I?': (e) => e.goTo('open-widget-info-4')
     }
@@ -261,7 +262,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'github-data-info-2',
-    content: 'I want to help set you up for the major leagues, these days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
+    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
     options: {
       'what\'s GitHub?': (e) => e.goTo('what-is-github'),
       'got it': (e) => e.hide()

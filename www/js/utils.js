@@ -187,7 +187,7 @@ window.utils = {
     if (typeof window.utils.url.github === 'string') {
       WIDGETS['student-session'].clearProjectData()
       const a = window.utils.url.github.split('/')
-      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
       NNE.addCustomRoot(path)
     }
   },
@@ -283,7 +283,8 @@ window.utils = {
 
   loadGithub: (github, layout) => {
     const a = github.split('/')
-    const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+    if (a.length < 3) a[2] = 'main'
+    const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
     const rawHTML = `${path}index.html`
     window.utils.get(rawHTML, (html) => {
       NNE.addCustomRoot(path)
@@ -293,7 +294,10 @@ window.utils = {
         NNE.code = html
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
-        if (WIDGETS['student-session'].getData('owner')) {
+        const o = WIDGETS['student-session'].getData('owner')
+        if (o && o === a[0]) {
+          window.utils._Convo('remix-github-project-logged-in-as-owner')
+        } else if (o) {
           window.utils._Convo('remix-github-project-logged-in')
         } else { window.utils._Convo('remix-github-project-logged-out') }
       })
@@ -301,7 +305,6 @@ window.utils = {
   },
 
   loadExample: (example) => {
-    console.log(example);
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
       NNE.code = ''
@@ -316,12 +319,14 @@ window.utils = {
   },
 
   loadGHRedirect: () => {
+    // code set by WIDGETS['student-session'].authGitHubSession()
     const code = window.localStorage.getItem('gh-auth-temp-code')
+    // code might be an encoded hash, or a gh root URL
     if (code.includes('raw.githubusercontent.com')) {
       // if they were looking at someone else's GitHub poroject
       // before they got redirected over to GitHub for auth...
       const a = code.split('.com/')[1].split('/')
-      const path = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
       const rawHTML = `${path}index.html`
       window.utils.get(rawHTML, (html) => {
         NNE.addCustomRoot(path)
@@ -416,7 +421,7 @@ window.utils = {
   },
 
   hideConvoIf: () => {
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
