@@ -41,7 +41,6 @@ router.get('/api/videos/:video', (req, res) => {
 })
 
 router.get('/api/proxy', (req, res) => {
-<<<<<<< HEAD
   let URL = Object.keys(req.query)[0]
   // accont for redbird proxy bug
   if (URL.includes('http:/')) {
@@ -51,9 +50,6 @@ router.get('/api/proxy', (req, res) => {
     URL = URL.replace('http:///', 'http://')
   }
   // proxy request
-=======
-  const URL = Object.keys(req.query)[0]
->>>>>>> 4bb100b689b29f887f38a7efa7d62c4400ae8eab
   axios.get(URL)
     .then(r => res.end(r.data))
     .catch(err => console.log(err))
