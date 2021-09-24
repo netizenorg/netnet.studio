@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 const fs = require('fs')
 const exec = require('child_process').exec
 const utils = require('./utils.js')
+const axios = require('axios')
 
 router.use(cookieParser())
 router.use(bodyParser.json({ limit: '10mb' }))
@@ -37,6 +38,21 @@ router.get('/api/videos/:video', (req, res) => {
   fs.stat(path.join(__dirname, `../data/videos/${v}`), (err, stat) => {
     if (err === null) res.sendFile(path.join(__dirname, `../data/videos/${v}`))
   })
+})
+
+router.get('/api/proxy', (req, res) => {
+  let URL = Object.keys(req.query)[0]
+  // accont for redbird proxy bug
+  if (URL.includes('http:/')) {
+    URL = URL.replace('http:/', 'http://')
+  }
+  if (URL.includes('http:///')) {
+    URL = URL.replace('http:///', 'http://')
+  }
+  // proxy request
+  axios.get(URL)
+    .then(r => res.end(r.data))
+    .catch(err => console.log(err))
 })
 
 router.get('/api/custom-elements', (req, res) => {
