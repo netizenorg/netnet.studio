@@ -220,6 +220,8 @@ class Widget {
   }
 
   close (func) {
+    if (this.ele.querySelector('video')) this.ele.querySelector('video').pause()
+    if (this.ele.querySelector('audio')) this.ele.querySelector('audio').pause()
     this._display('hidden')
     this.events.close.forEach(func => func())
     if (func) return func(this)

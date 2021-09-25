@@ -96,9 +96,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'skip ahead 5s in tutorial',
         condition: (e) => e.keyCode === 39,
         callback: (e) => {
-          if (utils.tutorialOpen()) {
-            WIDGETS['hyper-video-player'].video.currentTime += 5
-          }
+          if (utils.tutorialOpen()) WIDGETS['hyper-video-player'].skip(5)
         }
       },
       {
@@ -106,9 +104,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'jump back 5s in tutorial',
         condition: (e) => e.keyCode === 37,
         callback: (e) => {
-          if (utils.tutorialOpen()) {
-            WIDGETS['hyper-video-player'].video.currentTime -= 5
-          }
+          if (utils.tutorialOpen()) WIDGETS['hyper-video-player'].skip(-5)
         }
       },
       {
