@@ -5,31 +5,106 @@
   "comment": {
     "bubble": "Most coding languages allow you to leave comments in your code. In HTML you can create a comment by starting it with <code>&lt;!--</code> and ending with <code>--&gt;</code>. Code are instructions, it's how you tell the browser what you want it to display, but browsers ignore comments. Comments are for people, not machines.<br><br>Coders use them for all sorts of reasons, most often for leaving notes explaining how the code works (future you will thank you for that). It's also a great way to credit any code snippets you've copy+pasted from somewhere else. They can also be used to \"comment out\" code, so that the browser ignores it temporarily without having to remove it.<br><br>The shortcut key <b>CTRL+/</b> (control forward-slash), or <b>CMD+/</b> (command forward-slash) on Mac, can be used to comment out lines of code."
   },
-  "link": {
-    "bubble": "The <code>&lt;link&gt;</code> element is most commonly used to import a CSS file (most commonly referred to as a \"stylesheet\") into the HTML page, so that the rules defined in the stylesheet can be applied to any of the elements on this page. The <code>link</code> can also be used to preload resources (like fonts) and to set your projects icons (for mobile apps and browser tabs)."
+  "element": {
+    "a": {
+      "bubble": "The <code>&lt;a&gt;</code> tag (or \"anchor element\"), with its <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('attributes', 'href')\">href</a> attribute, can be used to create hyperlinks to other web pages, files, email addresses, another location in the same page or anything else a URL can point to.",
+      "example":"<!-- link to another location on the page -->\n<a href=\"#element-id\">further down</a>\n<a href=\"#\">back to top</a>\n<!-- link to another page -->\n<a href=\"https://netizen.org\">home page</a>\n<!-- open link in new tab -->\n<a href=\"https://netize.org\" target=\"_blank\">home page</a>\n<!-- call a phone number -->\n<a href=\"tel:18008675309\">call Tommy Tutone</a>\n<!-- send an email -->\n<a href=\"mailto:hi@netizen.org\">say hello!</a>\n<!-- https://www.w3docs.com/snippets/html/how-to-create-mailto-links.html -->\n\n<!-- to download a file, like an image -->\n<a href=\"\" download=\"images/cats/nyan-cat.jpg\">download</a>"
+    },
+    "audio": {
+      "example": "<!-- simple example -->\n<audio src=\"audios/katy.mp3\" controls></audio>\n\n<!-- specifying different types -->\n<!-- the browser will choose the version it can support -->\n<audio controls>\n  <source src=\"audios/katy.mp3\" type=\"audio/mpeg\">\n  <source src=\"audios/katy.ogg\" type=\"audio/ogg\">\n</audio>\n"
+    },
+    "br": {
+      "example": "CLOUD PIECE<br>\nby Yoko Ono<br>\n<br>\nImagine the clouds dripping.<br>\nDig a hole in your garden to<br>\nput them in.<br>\n<br>\n1963 spring\n"
+    },
+    "datalist": {
+      "bubble": "Used in combintion with the <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'input')\">&lt;input&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'option')\">&lt;option&gt;</a> elements, the <code>&lt;datalist&gt;</code> element is used to create a text field with auto-suggestions (based on it's <code>&lt;option&gt;</code> elements) that drop down as the user types into it.",
+      "example": "<!-- text field with auto-suggestions -->\n<input list=\"ice-cream-flavors\" placeholder=\"ice-cream flavor\">\n<datalist id=\"ice-cream-flavors\">\n  <option value=\"Chocolate\"></option>\n  <option value=\"Coconut\"></option>\n  <option value=\"Mint\"></option>\n  <option value=\"Strawberry\"></option>\n  <option value=\"Vanilla\"></option>\n</datalist>"
+    },
+    "h1": {
+      "bubble": "The <code>&lt;h1&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h1&gt;</code> heading is the largest",
+      "example": "<h1>Hello World Wide Web</h1>"
+    },
+    "h2": {
+      "bubble": "The <code>&lt;h2&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h2&gt;</code> heading is the second largest",
+      "example": "<h2>Hello World Wide Web</h2>"
+    },
+    "h3": {
+      "bubble": "The <code>&lt;h3&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h3&gt;</code> heading is the third largest",
+      "example": "<h3>Hello World Wide Web</h3>"
+    },
+    "h4": {
+      "bubble": "The <code>&lt;h4&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h4&gt;</code> heading is the fourth largest",
+      "example": "<h4>Hello World Wide Web</h4>"
+    },
+    "h5": {
+      "bubble": "The <code>&lt;h5&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h5&gt;</code> heading is the fifth largest",
+      "example": "<h5>Hello World Wide Web</h5>"
+    },
+    "h6": {
+      "bubble": "The <code>&lt;h6&gt;</code> element is used to create a heading, like the title of a section or the by-line of a article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h6&gt;</code> heading is the smallest",
+      "example": "<h6>Hello World Wide Web</h6>"
+    },
+    "img": {
+      "bubble": "The <code>&lt;img&gt;</code> element is used to embed an image. As a \"<a href=\"https://www.thoughtco.com/html-singleton-tags-3468620\" target=\"_blank\">singleton</a>\" or \"<a href=\"https://www.thoughtco.com/html-singleton-tags-3468620\" target=\"_blank\">void element</a>\" it does not have a closing tag. It does, however, require at least one <a href=\"https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics#anatomy_of_an_html_element\" target=\"_blank\">html attribute</a>, the <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('attributes', 'src')\">src</a> attribute: <code>&lt;img src=\"path/to/file.jpg\"&gt;</code>",
+      "example": "<!-- an image tag embedding the classic Chuck Poynter gif -->\n<!-- https://blog.geocities.institute/archives/2466 -->\n<img src=\"images/gifs/dancing-girl.gif\">\n\n<!-- don't forget the alt=\"\" attribute for accessibility  -->\n<!-- https://www.w3schools.com/html/html_accessibility.asp -->\n<img src=\"images/gifs/dancing-girl.gif\" alt=\"an 8bit dancing girl in a red dress\">"
+    },
+    "input": {
+      "bubble": "The HTML <code>&lt;input&gt;</code> element is used to create interactive controls and common GUI (graphical user interface) elements often used in forms. A wide variety of types are available.",
+      "example": "<!-- a text field -->\n<input type=\"text\" placeholder=\"your username\">\n<!-- a password field -->\n<input type=\"password\" placeholder=\"secret password\">\n<!-- color selector -->\n<input type=\"color\">\n<!-- slider -->\n<input type=\"range\">\n<!-- a radio button -->\n<input type=\"radio\">\n<!-- a check box -->\n<input type=\"checkbox\" checked=\"true\">\n<!-- click the link at the top or bottom of this reference for more examples -->"
+    },
+    "link": {
+      "bubble": "The <code>&lt;link&gt;</code> element is most commonly used to import a CSS file (most commonly referred to as a \"stylesheet\") into the HTML page, so that the rules defined in the stylesheet can be applied to any of the elements on this page. The <code>link</code> can also be used to preload resources (like fonts) and to set your projects icons (for mobile apps and browser tabs).",
+      "example": "<!-- importing a CSS stylesheet -->\n<link href=\"path/to/styles.css\" rel=\"stylesheet\">\n<!-- adding a favicon (appears in browser tab) to a page -->\n<link rel=\"icon\" href=\"favicon.ico\">\n<!-- adding icon for mobile apps -->\n<link rel=\"apple-touch-icon\" href=\"icon.png\">\n<!-- preloading fonts -->\n<link rel=\"preload\" href=\"myFont.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\">\n<!-- to learn more about \"preloading\" assets see: -->\n<!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload -->\n"
+    },
+    "option": {
+      "bubble": "As the name implies, the <code>&lt;option&gt;</code> element is used to define a selectable item in a <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'select')\">&lt;select&gt;</a> (dropdown menu) or <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'datalist')\">&lt;datalist&gt;</a> (auto-suggestion search field) element.",
+      "example": "<!-- text field with auto-suggestions -->\n<input list=\"ice-cream-flavors\" placeholder=\"ice-cream flavor\">\n<datalist id=\"ice-cream-flavors\">\n  <option value=\"Chocolate\"></option>\n  <option value=\"Coconut\"></option>\n  <option value=\"Mint\"></option>\n  <option value=\"Strawberry\"></option>\n  <option value=\"Vanilla\"></option>\n</datalist>\n\n<!-- a drop-down list -->\n<select id=\"pet-select\">\n  <option value=\"\">--Please choose a pet--</option>\n  <option value=\"dog\">Dog</option>\n  <option value=\"cat\">Cat</option>\n  <option value=\"hamster\">Hamster</option>\n  <option value=\"parrot\">Parrot</option>\n  <option value=\"spider\">Spider</option>\n  <option value=\"goldfish\">Goldfish</option>\n</select>"
+    },
+    "ol": {
+      "example": "Four basic kinds of straight lines:\n<ol>\n  <li>Vertical</li>\n  <li>Horizontal</li>\n  <li>Diagonal l. to r.</li>\n  <li>Diagonal r. to l.</li>\n</ol>\nand their combinations.\n"
+    },
+    "ul": {
+      "example": "Four basic kinds of straight lines:\n<ul>\n  <li>Vertical</li>\n  <li>Horizontal</li>\n  <li>Diagonal l. to r.</li>\n  <li>Diagonal r. to l.</li>\n</ul>\nand their combinations.\n"
+    },
+    "li": {
+      "example": "Four basic kinds of straight lines:\n<ol>\n  <li>Vertical</li>\n  <li>Horizontal</li>\n  <li>Diagonal l. to r.</li>\n  <li>Diagonal r. to l.</li>\n</ol>\nand their combinations.\n"
+    },
+    "pre": {
+      "bubble": "In HTML, line breaks and indentation in your code are not rendered in the browser. The <code>&lt;pre&gt;</code> tag, or \"preformatted text\" element, is an exception to this rule. Any content in between opening and closing <code>&lt;pre&gt;</code> tags will be rendered exactly as it appears in the HTML code (tabs, line breaks and all).",
+      "example": "<pre>\nASCII Art by Blazej Kozlowski\n       _                        \n       \\`*-.                    \n        )  _`-.                 \n       .  : `. .                \n       : _   '  \\               \n       ; *` _.   `*-._          \n       `-.-'          `-.       \n         ;       `       `.     \n         :.       .        \\    \n         . \\  .   :   .-'   .   \n         '  `+.;  ;  '      :   \n         :  '  |    ;       ;-. \n         ; '   : :`-:     _.`* ;\n[bug] .*' /  .*' ; .*`- +'  `*' \n      `*-*   `*-*  `*-*'\n</pre>"
+    },
+    "select": {
+      "bubble": "Used in combintion with the <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'option')\">&lt;option&gt;</a> element, the <code>&lt;select&gt;</code> element is used to create a dropdown menu.",
+      "example": "<!-- a drop-down list -->\n<select id=\"pet-select\">\n  <option value=\"\">--Please choose a pet--</option>\n  <option value=\"dog\">Dog</option>\n  <option value=\"cat\">Cat</option>\n  <option value=\"hamster\">Hamster</option>\n  <option value=\"parrot\">Parrot</option>\n  <option value=\"spider\">Spider</option>\n  <option value=\"goldfish\">Goldfish</option>\n</select>"
+    },
+    "source": {
+      "bubble": "The <code>&lt;source&gt;</code> element specifies multiple media resources for it's parent element, for example <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'picture')\">&lt;picture&gt;</a>, <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'video')\">&lt;video&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'audio')\">&lt;audio&gt;</a>. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
+      "example": "<video controls>\n  <source src=\"videos/screen-saver.mp4\" type=\"video/mp4\">\n  <source src=\"videos/screen-saver.webm\" type=\"video/webm\">\n  <source src=\"videos/screen-saver.ogv\" type=\"video/ogg\">\n</video>\n\n<audio controls>\n  <source src=\"audios/katy.mp3\" type=\"audio/mpeg\">\n  <source src=\"audios/katy.ogg\" type=\"audio/ogg\">\n</audio>"
+    },
+    "video": {
+      "example": "<!-- video with controls present -->\n<video src=\"videos/screen-saver.mp4\" controls>\n\n<!-- specifying different types -->\n<!-- the browser will choose the version it can support -->\n<video controls>\n  <source src=\"videos/screen-saver.mp4\" type=\"video/mp4\">\n  <source src=\"videos/screen-saver.webm\" type=\"video/webm\">\n  <source src=\"videos/screen-saver.ogv\" type=\"video/ogg\">\n</video>\n"
+    }
   },
-  "h1": {
-    "bubble": "The <code>&lt;h1&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h1&gt;</code> heading is the largest",
-    "example": "<h1>Hello World Wide Web</h1>"
-  },
-  "h2": {
-    "bubble": "The <code>&lt;h2&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h2&gt;</code> heading is the second largest",
-    "example": "<h2>Hello World Wide Web</h2>"
-  },
-  "h3": {
-    "bubble": "The <code>&lt;h3&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h3&gt;</code> heading is the third largest",
-    "example": "<h3>Hello World Wide Web</h3>"
-  },
-  "h4": {
-    "bubble": "The <code>&lt;h4&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h4&gt;</code> heading is the fourth largest",
-    "example": "<h4>Hello World Wide Web</h4>"
-  },
-  "h5": {
-    "bubble": "The <code>&lt;h5&gt;</code> element is used to create a heading, like the title of a section or the by-line of a news article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h5&gt;</code> heading is the fifth largest",
-    "example": "<h5>Hello World Wide Web</h5>"
-  },
-  "h6": {
-    "bubble": "The <code>&lt;h6&gt;</code> element is used to create a heading, like the title of a section or the by-line of a article. The content in headings appear larger than the content of most other elements. Of the 6 levels, this <code>&lt;h6&gt;</code> heading is the smallest",
-    "example": "<h6>Hello World Wide Web</h6>"
+  "attribute": {
+    "alt": {
+      "bubble": "The <code>alt</code> attribute provides alternative information for an image if a user for some reason cannot view it (because of slow connection or an error in the <code>src</code> attribute). If the user is using a screen reader (because they are visually impaired for example) the <code>alt</code> attribute is also used to provide a caption to read aloud. For these reasons it also helps improve your page's <a href=\"https://en.wikipedia.org/wiki/Search_engine_optimization\" target=\"_blank\">SEO</a>.",
+      "example": "<img src=\"images/gifs/cd.gif\" alt=\"an 8bit compact disk\">"
+    },
+    "href": {
+      "bubble": "The <code>href</code> attribute is used to create a <i>hyperlink</i> to another <i>reference</i> (resource, file, page, etc), by assigning a URL as it's value. This can be an <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#examples\" target=\"_blank\">absolute/relative URL</a> or any other URL scheme supported by browsers. Check out more examples in the <code>&lt;a&gt;</code> <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'a')\">reference page</a>.",
+      "example": "<!-- absolute URL to another web page -->\n<a href=\"https://netizen.org\">home page</a>\n<!-- relative URL to another page on the same site -->\n<a href=\"pages/about.html\">about us</a>\n<!-- link to another section on the same page -->\n<a href=\"#info\">more info below</a>\n\n<!-- adding a favicon (appears in browser tab) to a page -->\n<link rel=\"icon\" href=\"favicon.ico\">\n<!-- importing a CSS stylesheet  -->\n<link href=\"path/to/styles.css\" rel=\"stylesheet\">\n"
+    },
+    "src": {
+      "bubble": "The <code>src</code> attribute is used to embed content (other assets or even other web pages), by assigning a URL to another file's location as it's value.",
+      "example": "<!-- embedding an image -->\n<img src=\"images/gifs/cd.gif\" alt=\"an 8bit compact disk\">\n<!-- embedding sound -->\n<audio src=\"audios/electro-pop.mp3\" controls></audio>\n<!-- embedding video -->\n<video src=\"videos/screen-saver.mp4\" controls></video>\n<!-- embedding a web page -->\n<iframe src=\"tutorials/net-art-2/easylife.org/form/index1.html\"></iframe>\n<!-- importing a javascript file -->\n<script src=\"Maths.js\"></script>"
+    },
+    "target": {
+      "bubble": "Specifies where to open the linked document (in the case of an <code>&lt;a&gt;</code> element) or where to display the response received (in the case of a <code>&lt;form&gt;</code>element). Setting it's value to <code>target=\"_blank\"</code> for example will open the linked page on a new tab.",
+      "example": "<!-- open link in new tab -->\n<a href=\"https://netize.org\" target=\"_blank\">home page</a>"
+    },
+    "type": {
+      "bubble": "The <code>type</code> attribute is used to change the default <i>type</i> of elements like <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'input')\">&lt;input&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'source')\">&lt;source&gt;</a> which can have different control, media or other types.",
+      "exmaple": "<!-- different \"types\" of inputs -->\n<input type=\"text\" placeholder=\"your username\">\n<!-- slider -->\n<input type=\"range\">\n<!-- color selector -->\n<input type=\"color\">\n\n<!-- different \"types\" of videos -->\n<video controls>\n  <source src=\"videos/screen-saver.mp4\" type=\"video/mp4\">\n  <source src=\"videos/screen-saver.webm\" type=\"video/webm\">\n  <source src=\"videos/screen-saver.ogv\" type=\"video/ogg\">\n</video>\n"
+    }
   }
 }
