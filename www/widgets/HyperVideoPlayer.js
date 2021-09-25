@@ -116,7 +116,17 @@ class HyperVideoPlayer extends Widget {
   }
 
   seek (time) {
+    const p = this.video.paused
+    if (!p) this.pause()
     this.video.currentTime = Number(time)
+    this._updateProgressBar()
+    this._resetKeyframeStatus()
+    if (!p) this.play()
+  }
+
+  skip (time) {
+    const newTime = this.video.currentTime + Number(time)
+    this.seek(newTime)
   }
 
   // .....  .....   .....   .....  .....  .....   .....   .....  .....
