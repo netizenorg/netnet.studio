@@ -41,6 +41,21 @@ class HTMLReference extends Widget {
     }, true)
   }
 
+  goTo (type, name) {
+    if (!this.opened) this.open()
+    // ex: goTo('attributes', 'src')
+    if (!name) {
+      if (type === 'attributes') {
+        this.slide.updateSlide(this.attrListOpts)
+      } else if (type === 'elements') {
+        this.slide.updateSlide(this.eleListOpts)
+      }
+    } else {
+      const nfo = NNE.edu.html[type][name]
+      this._createInfoSlide(type, name, nfo)
+    }
+  }
+
   textBubble (eve) {
     if (!eve) return
     else if (eve.type === 'tag bracket') {
@@ -70,11 +85,11 @@ class HTMLReference extends Widget {
       ok: (e) => { NNE.spotlight(null); e.hide() }
     }
 
-    const extras = this.data[eve.data]
+    const extras = this.data[eve.type][eve.data]
     let content = (extras && extras.bubble)
-      ? `<p>${this.data[eve.data].bubble}</p>`
+      ? `<p>${extras.bubble}</p>`
       : `<p>${eve.nfo.description.html}</p>`
-    if (eve.type === 'comment') content = this.data[eve.type].bubble
+    if (eve.type === 'comment') content = this.data.comment.bubble
 
     this._createInfoSlide(eve.type + 's', eve.data, eve.nfo)
 
@@ -171,7 +186,15 @@ class HTMLReference extends Widget {
     }
 
     const description = document.createElement('p')
-    description.innerHTML = nfo.description.html
+    const hasEle = this.data.element[name] && this.data.element[name].bubble
+    const hasAtr = this.data.attribute[name] && this.data.attribute[name].bubble
+    if (type === 'elements' && hasEle) {
+      description.innerHTML = this.data.element[name].bubble
+    } else if (type === 'attributes' && hasAtr) {
+      description.innerHTML = this.data.attribute[name].bubble
+    } else {
+      description.innerHTML = nfo.description.html
+    }
     div.appendChild(description)
 
     if (type === 'elements') this._createElementDetails(div, name, nfo)
@@ -186,7 +209,7 @@ class HTMLReference extends Widget {
   }
 
   _createElementDetails (slide, name, nfo) {
-    const extras = this.data[name]
+    const extras = this.data.element[name]
     if (extras && extras.example) {
       const ce = document.createElement('code-example')
       slide.appendChild(ce)
@@ -205,7 +228,7 @@ class HTMLReference extends Widget {
         d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
       }
       if (nfo.singleton) {
-        d.innerHTML += `${nfo.flow ? ' ' : ''}The <b>${name}</b> element is${nfo.flow ? ' also' : ''} a "void element" (aka "singleton tag"), which means it consists ony of an opening tag, it does not require a closing tag.`
+        d.innerHTML += `${nfo.flow ? ' ' : ''}The <b>${name}</b> element is${nfo.flow ? ' also' : ''} a "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">void element</a>" (aka "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">singleton tag</a>"), which means it consists ony of an opening tag, it does not require a closing tag.`
       }
       slide.appendChild(d)
       slide.appendChild(document.createElement('br'))
@@ -231,7 +254,7 @@ class HTMLReference extends Widget {
   }
 
   _createAttributeDetails (slide, name, nfo) {
-    const extras = this.data[name]
+    const extras = this.data.attribute[name]
     if (extras && extras.example) {
       const ce = document.createElement('code-example')
       slide.appendChild(ce)
