@@ -68,7 +68,7 @@ class KeyboardShortcuts extends Widget {
       },
       {
         key: `${utils.hotKey()} + "`,
-        nfo: 'open search',
+        nfo: 'open universal search bar',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 222,
         callback: (e) => {
           e.preventDefault()
@@ -84,7 +84,7 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
-        key: 'spacebar',
+        key: 'Spacebar',
         nfo: 'play/pause tutorial',
         condition: (e) => !NNE.cm.hasFocus() && e.keyCode === 32,
         callback: (e) => {
@@ -92,7 +92,27 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
-        key: 'esc',
+        key: 'Right Arrow',
+        nfo: 'skip ahead 5s in tutorial',
+        condition: (e) => e.keyCode === 39,
+        callback: (e) => {
+          if (utils.tutorialOpen()) {
+            WIDGETS['hyper-video-player'].video.currentTime += 5
+          }
+        }
+      },
+      {
+        key: 'Left Arrow',
+        nfo: 'jump back 5s in tutorial',
+        condition: (e) => e.keyCode === 37,
+        callback: (e) => {
+          if (utils.tutorialOpen()) {
+            WIDGETS['hyper-video-player'].video.currentTime -= 5
+          }
+        }
+      },
+      {
+        key: 'Esc',
         nfo: 'close widget / close search',
         condition: (e) => e.keyCode === 27,
         callback: (e) => {

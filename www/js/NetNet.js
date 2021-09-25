@@ -452,7 +452,9 @@ class NetNet {
       this._showEditor(false)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'dock-bottom') {
-      this.title.style.display = 'block'
+      if (this.title.textContent.length > 0) {
+        this.title.style.display = 'block'
+      }
       this.rndr.style.width = '100%'
       this.rndr.style.height = window.innerHeight / 2 + 'px'
       this.rndr.style.left = '0px'
@@ -467,7 +469,9 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'dock-left') {
-      this.title.style.display = 'block'
+      if (this.title.textContent.length > 0) {
+        this.title.style.display = 'block'
+      }
       this.rndr.style.width = window.innerWidth / 2 + 'px'
       this.rndr.style.height = '100%'
       this.rndr.style.left = window.innerWidth / 2 + 'px'
@@ -482,7 +486,9 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'full-screen') {
-      this.title.style.display = 'block'
+      if (this.title.textContent.length > 0) {
+        this.title.style.display = 'block'
+      }
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
       this.rndr.style.left = '0px'
@@ -497,7 +503,9 @@ class NetNet {
       this._showEditor(true)
       utils.afterLayoutTransition(() => after())
     } else if (v === 'separate-window') {
-      this.title.style.display = 'block'
+      if (this.title.textContent.length > 0) {
+        this.title.style.display = 'block'
+      }
       this._showEditor(true)
       this.rndr.style.width = '100%'
       this.rndr.style.height = '100%'
@@ -577,6 +585,7 @@ class NetNet {
     // const gh = WIDGETS['student-session'].data.github
     // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
     this.title.textContent = text
+    this.title.style.display = 'block'
     this.title.onclick = () => utils._Convo('netnet-title-bar')
   }
 
@@ -584,7 +593,7 @@ class NetNet {
     const title = document.createElement('div')
     title.id = 'proj-title'
     // title.textContent = 'Title Of Project (index.html)'
-    title.style.display = 'block'
+    title.style.display = 'none'
     title.style.cursor = 'pointer'
     title.style.position = 'absolute'
     title.style.top = '0px'

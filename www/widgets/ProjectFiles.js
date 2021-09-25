@@ -1,4 +1,4 @@
-/* global Widget, Convo, utils, FileUploader */
+/* global NNE, Widget, Convo, utils, FileUploader */
 class ProjectFiles extends Widget {
   constructor (opts) {
     super(opts)
@@ -82,7 +82,7 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'duplicate-file')
     } else {
       utils.showCurtain('upload.html', {
-        'filename': file.name
+        filename: file.name
       })
 
       const data = {
@@ -139,6 +139,7 @@ class ProjectFiles extends Widget {
       this.updateFiles(res.data)
       utils.hideCurtain('delete.html')
       utils.hideCurtain('upload.html')
+      NNE.update()
     })
   }
 
