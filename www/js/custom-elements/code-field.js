@@ -33,10 +33,22 @@ class CodeField extends HTMLElement {
       this.change(e)
     })
 
+    this.querySelector('input').addEventListener('input', (e) => {
+      this.update(e)
+    })
+
+    if (this.readonly !== '250px') {
+      this.querySelector('input').setAttribute('readonly', true)
+    }
+
     this.ele = this.querySelector('div')
   }
 
   change () {
+    // this gets assigned in Widget.js createCodeField method
+  }
+
+  update () {
     // this gets assigned in Widget.js createCodeField method
   }
 

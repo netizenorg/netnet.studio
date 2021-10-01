@@ -286,7 +286,9 @@ class Widget {
   createCodeField (opts) {
     const el = document.createElement('code-field')
     el.value = opts.value
-    el.change = opts.change
+    el.readonly = opts.readonly
+    if (typeof opts.change === 'function') el.change = opts.change
+    if (typeof opts.update === 'function') el.update = opts.update
     return el
   }
 
