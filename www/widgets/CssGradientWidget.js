@@ -1,5 +1,5 @@
 /* global Widget, utils, Maths, Convo */
-class CSSGradientWidget extends Widget {
+class CssGradientWidget extends Widget {
   constructor (opts) {
     super(opts)
     this.key = 'css-gradient-widget'
@@ -546,4 +546,4 @@ class CSSGradientWidget extends Widget {
   }
 }
 
-window.CSSGradientWidget = CSSGradientWidget
+window.CssGradientWidget = CssGradientWidget
