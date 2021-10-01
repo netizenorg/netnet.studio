@@ -310,6 +310,7 @@ window.utils = {
       NNE.code = ''
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
+        WIDGETS['tutorials-guide'].lastClickedExample.code = json.hash.substr(6)
         NNE.code = NNE._decode(json.hash.substr(6))
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
