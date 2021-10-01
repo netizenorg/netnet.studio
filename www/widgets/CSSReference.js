@@ -72,6 +72,11 @@ class CSSReference extends Widget {
       return this._selectColor(eve, eve.data, c, k)
     }
 
+    // select entire CSS function
+    if (Object.keys(NNE.edu.css.functions).includes(eve.data)) {
+      this._selectCSSFunc()
+    }
+
     // textBubble content + options
 
     const more = () => {
@@ -98,6 +103,11 @@ class CSSReference extends Widget {
     } else if (eve.modified === 'color') {
       options['open Color Widget'] = () => WIDGETS.open('color-widget')
     }
+
+    if (eve.data.includes('-gradient')) {
+      options['open CSS Gradient Generator'] = () => WIDGETS.open('css-gradient-widget')
+    }
+
     options.ok = (e) => { NNE.spotlight(null); e.hide() }
 
     const extras = this.data[eve.data]
@@ -114,6 +124,15 @@ class CSSReference extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  _selectCSSFunc () {
+    setTimeout(() => {
+      const from = NNE.cm.getCursor('from')
+      const to = NNE.cm.getCursor('to')
+      const idx = NNE.cm.getLine(to.line).indexOf(';')
+      const end = { line: to.line, ch: idx }
+      NNE.cm.setSelection(from, end)
+    }, 100)
+  }
 
   _selectColor (e, type, c, k) {
     if (type === 'hex') {
