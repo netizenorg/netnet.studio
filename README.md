@@ -7,3 +7,5 @@ netnet.studio is a hypermedia edu cyberspace for fully realizing the Web’s cre
 netnet.studio is still VERY MUCH IN DEVELOPMENT, if you have questions/ideas/feedback please reach out! hi@netizen.org
 
 ![netnet](www/images/netnet.gif)
+
+There's more info about how to get started on [the Wiki!](https://github.com/netizenorg/netnet.studio/wiki)
