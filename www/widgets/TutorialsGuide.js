@@ -221,12 +221,12 @@ class TutorialsGuide extends Widget {
         window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
-        if (time) WIDGETS['hyper-video-player'].seek(time)
 
         setTimeout(() => {
           utils.hideCurtain('tutorial.html')
+          if (time) WIDGETS['hyper-video-player'].seek(time)
           WIDGETS['hyper-video-player'].video.oncanplay = null
-        }, 100)
+        }, utils.getVal('--layout-transition-time'))
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title
