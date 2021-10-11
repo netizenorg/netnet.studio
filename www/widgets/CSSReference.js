@@ -128,9 +128,17 @@ class CSSReference extends Widget {
     setTimeout(() => {
       const from = NNE.cm.getCursor('from')
       const to = NNE.cm.getCursor('to')
-      const idx = NNE.cm.getLine(to.line).indexOf(';')
-      const end = { line: to.line, ch: idx }
-      NNE.cm.setSelection(from, end)
+      let idx = NNE.cm.getLine(to.line).indexOf(';')
+      const max = NNE.cm.lastLine()
+      let line = to.line
+      while (idx === -1 && line <= max) {
+        line++
+        idx = NNE.cm.getLine(line).indexOf(';')
+      }
+      if (line < max + 1 && idx !== -1) {
+        const end = { line: line, ch: idx }
+        NNE.cm.setSelection(from, end)
+      }
     }, 100)
   }
 
