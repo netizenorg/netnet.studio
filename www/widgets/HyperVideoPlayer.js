@@ -184,7 +184,7 @@ class HyperVideoPlayer extends Widget {
 
       if (kf.code && kf.code !== NNE.code) {
         NNE.code = kf.code
-        if (this._scrollNeedsUpdate(kf.scrollTo)) this._updateScrollBar()
+        this._updateScrollBar(kf.scrollTo)
       }
 
       if (!this.video.paused) this._editable(kf.editable)
@@ -384,11 +384,13 @@ class HyperVideoPlayer extends Widget {
     return t
   }
 
-  _updateScrollBar () {
-    const kf = this._mostRecentKeyframe().frame
-    if (kf.scrollTo) {
-      const { x, y } = kf.scrollTo
-      if (x || y) NNE.cm.scrollTo(x, y)
+  _updateScrollBar (obj) {
+    const update = this._scrollNeedsUpdate(obj)
+    if (typeof update.y !== 'undefined') {
+      NNE.cm.scrollTo(update.x, update.y)
+    } else if (typeof update === 'number') {
+      const n = update + 1 > NNE.cm.lineCount() ? update : update + 1
+      NNE.cm.scrollIntoView({ line: n, ch: 0 })
     }
   }
 
@@ -468,10 +470,23 @@ class HyperVideoPlayer extends Widget {
 
   _scrollNeedsUpdate (obj) {
     let update = false
-    if (!obj) return update
-    const s = NNE.cm.getScrollInfo()
-    if (obj.x && obj.x !== s.left) { update = true }
-    if (obj.y && obj.y !== s.top) { update = true }
+    if (obj) {
+      const s = NNE.cm.getScrollInfo()
+      const n = (obj.x && obj.x !== s.left) || (obj.y && obj.y !== s.top)
+      if (n) { update = obj }
+    } else {
+      const mrf = this._mostRecentKeyframe()
+      if (mrf.index > 0) {
+        const pc = this.timecodes[mrf.index - 1]
+        const kf = mrf.frame // most recent keyframe
+        const pf = this.keyframes[pc] // previous keyframe
+        const codeArrA = pf.code.split('\n')
+        const codeArrB = kf.code.split('\n')
+        const diffs = codeArrA.filter(c => !codeArrB.includes(c))
+        const line = codeArrA.indexOf(diffs[0])
+        if (line >= 0) { update = line }
+      }
+    }
     return update
   }
 
@@ -481,7 +496,7 @@ class HyperVideoPlayer extends Widget {
       .sort((a, b) => a - b).reverse()[0]
     const kf = this.keyframes[tc]
     if (kf) {
-      return { frame: kf, timecode: tc, index: this.timecodes.indexOf(ct) }
+      return { frame: kf, timecode: tc, index: this.timecodes.indexOf(tc) }
     } else return null
   }
 
