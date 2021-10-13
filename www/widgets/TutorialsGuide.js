@@ -16,6 +16,8 @@ class TutorialsGuide extends Widget {
     this.data = null
     this.loaded = null
 
+    this.lastClickedExample = { key: null, code: null }
+
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this._createPage('mainOpts', 'learning-guide-main.html', null, (div) => {
@@ -134,7 +136,19 @@ class TutorialsGuide extends Widget {
           const span = document.createElement('span')
           span.className = 'learning-guide--link'
           span.textContent = o.name
-          span.addEventListener('click', () => utils.loadExample(o.key))
+          span.addEventListener('click', () => {
+            this.lastClickedExample.key = o.key
+            const curExCode = NNE._encode(NNE.code)
+            const curCode = window.utils.btoa(NNE.code)
+            const starter = window.utils.starterCodeB64
+            if (curCode === starter) {
+              utils.loadExample(o.key)
+            } else if (curExCode === this.lastClickedExample.code) {
+              utils.loadExample(o.key)
+            } else {
+              window.convo = new Convo(this.convos, 'before-loading-example')
+            }
+          })
           div.appendChild(span)
           div.appendChild(document.createElement('br'))
         })
@@ -207,12 +221,12 @@ class TutorialsGuide extends Widget {
         window.convo = new Convo(this.convos, 'introducing-tutorial')
         this.close() // close the tutorials guide && setup first keyframe
         WIDGETS['hyper-video-player'].renderKeyframe()
-        if (time) WIDGETS['hyper-video-player'].seek(time)
 
         setTimeout(() => {
           utils.hideCurtain('tutorial.html')
+          if (time) WIDGETS['hyper-video-player'].seek(time)
           WIDGETS['hyper-video-player'].video.oncanplay = null
-        }, 100)
+        }, utils.getVal('--layout-transition-time'))
       }
 
       WIDGETS['hyper-video-player'].title = this.metadata.title
