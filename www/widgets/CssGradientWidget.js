@@ -1,4 +1,4 @@
-/* global Widget, utils, Maths, Convo */
+/* global NNW, Widget, utils, Maths, Convo */
 class CssGradientWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -15,12 +15,18 @@ class CssGradientWidget extends Widget {
 
     Convo.load(this.key, () => {
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'intro')
+      window.convo = new Convo(this.convos, 'gradient-gen-intro')
     })
 
     this.on('open', () => {
       if (!this.convos) return
-      window.convo = new Convo(this.convos, 'intro')
+      window.convo = new Convo(this.convos, 'gradient-gen-intro')
+    })
+
+    this.on('close', () => {
+      const opened = NNW.menu.textBubble.opened
+      const intro = window.convo.id === 'gradient-gen-intro'
+      if (opened && intro) window.convo.hide()
     })
   }
 

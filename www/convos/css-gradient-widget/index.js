@@ -1,7 +1,7 @@
 /* global  */
 window.CONVOS['css-gradient-widget'] = (self) => {
   return [{
-    id: 'intro',
+    id: 'gradient-gen-intro',
     content: 'The CSS Gradient Generator helps you create <code>linear-gradient()</code>, <code>radial-gradient()</code> and <code>conic-gradient()</code> CSS functions which you can pass as the value to the <code>background</code> or <code>background-image</code> properties. Edit the "mad lib" style description and notice how the gradient, as well as the generated code snippet below it, changes.',
     options: {
       ok: (e) => e.hide()
