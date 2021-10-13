@@ -207,8 +207,7 @@ class HyperVideoPlayer extends Widget {
       const lines = NNE.code.split('\n')
       const hasCode = lines.length > 1 || lines[0] !== ''
       if (kf.layout !== 'welcome' && hasCode) {
-        NNE.highlight(null); NNE.highlight(kf.highlight)
-        NNE.spotlight(kf.spotlight)
+        this._updateSpotlight(kf)
       }
       // ... COMPLETED RENDER ...
       kf.ran = true
@@ -394,6 +393,22 @@ class HyperVideoPlayer extends Widget {
     }
   }
 
+  _updateSpotlight (kf) {
+    const l = kf.spotlight ? kf.spotlight[0] : null
+    if (l) {
+      NNE.cm.scrollIntoView({ line: l - 1 })
+      setTimeout(() => {
+        NNE.spotlight(kf.spotlight)
+        NNE.highlight(null)
+        NNE.highlight(kf.highlight)
+      }, 250)
+    } else {
+      NNE.spotlight(kf.spotlight)
+      NNE.highlight(null)
+      NNE.highlight(kf.highlight)
+    }
+  }
+
   _glitchIt (base64) {
     const jpg = 'data:image/jpeg;base64,'
     base64 = base64.substr(jpg.length)
@@ -480,11 +495,13 @@ class HyperVideoPlayer extends Widget {
         const pc = this.timecodes[mrf.index - 1]
         const kf = mrf.frame // most recent keyframe
         const pf = this.keyframes[pc] // previous keyframe
-        const codeArrA = pf.code.split('\n')
-        const codeArrB = kf.code.split('\n')
-        const diffs = codeArrA.filter(c => !codeArrB.includes(c))
-        const line = codeArrA.indexOf(diffs[0])
-        if (line >= 0) { update = line }
+        if (kf.code && pf.code) {
+          const codeArrA = pf.code.split('\n')
+          const codeArrB = kf.code.split('\n')
+          const diffs = codeArrA.filter(c => !codeArrB.includes(c))
+          const line = codeArrA.indexOf(diffs[0])
+          if (line >= 0) { update = line }
+        }
       }
     }
     return update
