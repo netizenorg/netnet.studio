@@ -137,7 +137,11 @@ class StudentSession extends Widget {
     this.greetStudent()
   }
 
-  deleteGitHubSession (msg) {
+  chatGitHubLogout () {
+    window.convo = new Convo(this.convos, 'github-logout')
+  }
+
+  deleteGitHubSession () {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
       if (this.getData('opened-project')) {
@@ -149,8 +153,12 @@ class StudentSession extends Widget {
       this.setData('repos', null)
       this._createHTML()
       WIDGETS['functions-menu'].gitHubUpdated(false)
-      if (msg) window.convo = new Convo(this.convos, 'logged-out-of-gh')
+      window.convo = new Convo(this.convos, 'logged-out-of-gh')
     })
+  }
+
+  chatGitHubAuth () {
+    window.convo = new Convo(this.convos, 'github-auth')
   }
 
   authGitHubSession () {
@@ -170,10 +178,6 @@ class StudentSession extends Widget {
       a.setAttribute('href', url)
       a.click()
     })
-  }
-
-  chatGitHubAuth () {
-    window.convo = new Convo(this.convos, 'github-auth')
   }
 
   initGitHubData (json) {
@@ -406,7 +410,7 @@ class StudentSession extends Widget {
     `
 
     this.$('button[name="github"]').addEventListener('click', () => {
-      if (this.authStatus) this.deleteGitHubSession()
+      if (this.authStatus) this.chatGitHubLogout()
       else this.chatGitHubAuth()
     })
 

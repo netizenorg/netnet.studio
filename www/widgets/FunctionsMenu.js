@@ -591,7 +591,7 @@ class FunctionsMenu extends Widget {
       WIDGETS['student-session'].chatGitHubAuth()
       if (this.events.login) this.emit('login', { data: null })
     } else {
-      WIDGETS['student-session'].deleteGitHubSession(true)
+      WIDGETS['student-session'].chatGitHubLogout()
       if (this.events.logout) this.emit('logout', { data: null })
     }
   }

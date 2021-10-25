@@ -298,6 +298,13 @@ window.CONVOS['student-session'] = (self) => {
       'no, never mind': (e) => e.hide()
     }
   }, {
+    id: 'github-logout',
+    content: 'Are you sure you want to disconnect me from your GitHub account?',
+    options: {
+      'yes I am': (e) => { self.deleteGitHubSession() },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
     id: 'logged-out-of-gh',
     content: 'Ok, I\'ve just disconnected from your GitHub and cleared all GitHub related data. You can keep sketching and following tutorials, but you won\'t be able to create new projects on your account until you log back in.',
     options: {
