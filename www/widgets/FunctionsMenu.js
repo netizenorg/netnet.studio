@@ -203,8 +203,6 @@ class FunctionsMenu extends Widget {
     } else {
       // if user chooses a project to open, convo will call _openProject()
       window.convo = new Convo(this.convos, 'open-project')
-      // ...
-      // WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
     }
   }
 
@@ -213,7 +211,6 @@ class FunctionsMenu extends Widget {
     if (projOpen) {
       WIDGETS['student-session'].clearProjectData()
       NNE.code = ''
-      // WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
       NNW.updateTitleBar(null)
       if (window.convo) window.convo.hide()
       this._hideIrrelevantOpts('closeProject')
@@ -333,7 +330,6 @@ class FunctionsMenu extends Widget {
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
     const subSecParent = this.$(`#${id}`)
-    // this._hideIrrelevantOpts(id, true)
     if (type === 'close') {
       subSec.style.display = 'none'
       subSecParent.classList.remove('open')
