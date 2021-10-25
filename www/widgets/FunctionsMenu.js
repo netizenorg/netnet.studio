@@ -206,6 +206,8 @@ class FunctionsMenu extends Widget {
       WIDGETS['student-session'].clearProjectData()
       NNE.code = ''
       WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
+      NNW.updateTitleBar(null)
+      if (window.convo) window.convo.hide()
     }
   }
 

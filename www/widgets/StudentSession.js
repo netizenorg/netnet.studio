@@ -140,6 +140,10 @@ class StudentSession extends Widget {
   deleteGitHubSession (msg) {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
+      if (this.getData('opened-project')) {
+        NNE.code = ''
+        NNW.updateTitleBar(null)
+      }
       this.clearProjectData()
       this.setData('owner', null)
       this.setData('repos', null)
