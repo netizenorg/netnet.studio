@@ -275,8 +275,8 @@ class StudentSession extends Widget {
     if (window.localStorage.getItem('auto-update') === null) {
       this.setData('auto-update', 'true')
     }
-    const bool = (this.getData('auto-update') === 'true')
-    WIDGETS['functions-menu'].autoUpdate(bool)
+
+    NNE.autoUpdate = (this.getData('auto-update') === 'true')
 
     if (window.localStorage.getItem('theme') === null) {
       this.setData('theme', 'dark')

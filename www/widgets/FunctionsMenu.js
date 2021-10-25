@@ -46,8 +46,16 @@ class FunctionsMenu extends Widget {
       },
       {
         click: 'shareProject',
-        alts: ['share', 'github', 'project', 'link'],
+        alts: ['share', 'github', 'project', 'link']
+      },
+      {
+        click: 'downloadProject',
+        alts: ['download', 'export', 'save'],
         hrAfter: true
+      },
+      {
+        click: 'downloadCode',
+        alts: ['download', 'export', 'save']
       }
       // {
       //   click: 'BrowserFest',
@@ -196,7 +204,7 @@ class FunctionsMenu extends Widget {
       // if user chooses a project to open, convo will call _openProject()
       window.convo = new Convo(this.convos, 'open-project')
       // ...
-      WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
+      // WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
     }
   }
 
@@ -205,9 +213,10 @@ class FunctionsMenu extends Widget {
     if (projOpen) {
       WIDGETS['student-session'].clearProjectData()
       NNE.code = ''
-      WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
+      // WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project')
       NNW.updateTitleBar(null)
       if (window.convo) window.convo.hide()
+      this._hideIrrelevantOpts('closeProject')
     }
   }
 
@@ -223,6 +232,18 @@ class FunctionsMenu extends Widget {
     const op = WIDGETS['student-session'].data.github.openedProject
     if (op) this._publishProject()
     else window.convo = new Convo(this.convos, 'cant-publish-project')
+  }
+
+  downloadProject () {
+    const p = WIDGETS['student-session'].getData('opened-project')
+    const o = WIDGETS['student-session'].getData('owner')
+    const b = WIDGETS['student-session'].getData('branch')
+    const url = `https://github.com/${o}/${p}/archive/refs/heads/${b}.zip`
+    const a = document.createElement('a')
+    a.setAttribute('download', 'index.html')
+    a.setAttribute('href', url)
+    a.click()
+    a.remove()
   }
 
   // -------------
@@ -277,7 +298,7 @@ class FunctionsMenu extends Widget {
     } else if (!gotVal && window.convo && window.convo.id === 'need-to-update') {
       window.convo.hide()
     }
-    this._hideIrrelevantOpts('func-menu-editor-settings')
+    this._hideIrrelevantOpts('autoUpdate')
   }
 
   runUpdate () {
@@ -303,7 +324,6 @@ class FunctionsMenu extends Widget {
     this._createHTML(gh)
     this._initValues()
     this._setupListeners()
-    NNW.menu.search._loadFunctionsMenuData()
   }
 
   gitHubProjectsUpdated () {
@@ -313,7 +333,7 @@ class FunctionsMenu extends Widget {
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
     const subSecParent = this.$(`#${id}`)
-    this._hideIrrelevantOpts(id, type)
+    // this._hideIrrelevantOpts(id, true)
     if (type === 'close') {
       subSec.style.display = 'none'
       subSecParent.classList.remove('open')
@@ -330,6 +350,12 @@ class FunctionsMenu extends Widget {
       }
     }
     this.keepInFrame()
+  }
+
+  checkIfHidden (func) { // check if this menu function has been hidden
+    const m = [...this.$('button')].filter(e => e.textContent.includes(func))
+    if (m.length > 0 && m[0].style.display === 'none') return true
+    else return false
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -461,33 +487,35 @@ class FunctionsMenu extends Widget {
     }
 
     if (this._recentered) this.update({ left: 20, top: 20 })
+
+    this._hideIrrelevantOpts('_createHTML')
   }
 
-  _hideIrrelevantOpts (id, type) {
-    function hideIf (b, condition) {
+  _hideIrrelevantOpts (from) {
+    // console.log('calling hide from:', from)
+    const btns = this.$('button')
+    const _is = (ele, func) => ele.textContent.includes(func)
+    const projOpen = WIDGETS['student-session']
+      ? WIDGETS['student-session'].getData('opened-project') : null
+    const hideIf = (b, condition) => {
       if (condition) b.style.display = 'none'
       else b.style.display = 'block'
     }
-
-    if (id === 'func-menu-editor-settings' && !type) {
-      const btns = this.$('button')
-      for (let i = 0; i < btns.length; i++) {
-        if (btns[i].textContent.includes('runUpdate')) {
-          hideIf(btns[i], NNE.autoUpdate)
-        }
-        // NOTE: ...should we hide (or not) welcome layout in drop down?
-        // else if (btns[i].textContent.includes('changeLayout')) {
-        //   hideIf(btns[i], NNW.layout === 'welcome')
-        // }
-      }
-    } else if (id === 'func-menu-my-project') {
-      const btns = this.$('button')
-      for (let i = 0; i < btns.length; i++) {
-        const closeBtn = btns[i].textContent.includes('closeProject')
-        const projOpen = WIDGETS['student-session'].getData('opened-project')
-        if (closeBtn) hideIf(btns[i], !projOpen)
-      }
+    // reset: display all buttons at first...
+    btns.forEach(b => { b.style.display = 'block' })
+    // ...then figure out which need to be hidden
+    for (let i = 0; i < btns.length; i++) {
+      // hide runUpdate if autoUpdate is enabled (default)
+      if (_is(btns[i], 'runUpdate')) hideIf(btns[i], NNE.autoUpdate)
+      // hide closeProject if project isn't open
+      if (_is(btns[i], 'closeProject')) hideIf(btns[i], !projOpen)
+      // hide downloadProject if project isn't open
+      if (_is(btns[i], 'downloadProject')) hideIf(btns[i], !projOpen)
+      // hide downloadCode if project is open
+      if (_is(btns[i], 'downloadCode')) hideIf(btns[i], projOpen)
     }
+    // update SearchBars dictionary
+    NNW.menu.search._loadFunctionsMenuData()
   }
 
   _creatOption (value, parent) {
@@ -555,7 +583,6 @@ class FunctionsMenu extends Widget {
     NNW.on('layout-change', () => {
       if (this.layoutsSel) {
         this.layoutsSel.value = NNW.layout
-        this._hideIrrelevantOpts('func-menu-editor-settings')
       }
     })
   }
@@ -614,6 +641,8 @@ class FunctionsMenu extends Widget {
           WIDGETS['student-session'].setData('repos', names.join(', '))
           this.gitHubProjectsUpdated()
         })
+        // update sub menu
+        this._hideIrrelevantOpts('_createNewRepo')
       }
     })
   }
@@ -668,6 +697,8 @@ class FunctionsMenu extends Widget {
           const msg = res.data[0].commit.message
           WIDGETS['student-session'].setData('last-commit-msg', msg)
         })
+        // update sub menu
+        this._hideIrrelevantOpts('_openProject')
       } else {
         window.convo = new Convo(this.convos, 'not-a-web-project')
       }
