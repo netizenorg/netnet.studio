@@ -68,4 +68,8 @@ window.addEventListener('load', () => {
   })
 })
 
+window.addEventListener('beforeunload', () => {
+  WIDGETS['student-session'].clearProjectData()
+})
+
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
