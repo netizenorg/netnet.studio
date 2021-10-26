@@ -24,7 +24,7 @@ class SearchBar {
     }
 
     this._loadMiscData()
-    this._loadFunctionsMenuData()
+    // this._loadFunctionsMenuData() // called when Functions Menu is created
     this._loadWidgetsData()
     this._loadTutorialsData()
 
@@ -154,18 +154,21 @@ class SearchBar {
         }
       })
       funcs.forEach(func => {
-        arr.push({
-          type: `Functions Menu.${submenu}`,
-          word: `${func.click}()`,
-          alts: func.alts,
-          clck: () => {
-            if (func.select) {
-              WIDGETS['functions-menu'].open()
-              const id = `func-menu-${submenu.replace(/ /g, '-')}`
-              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-            } else WIDGETS['functions-menu'][func.click]()
-          }
-        })
+        const hidden = WIDGETS['functions-menu'].checkIfHidden(func.click)
+        if (!hidden) { // only add to search if it's currently in the menu
+          arr.push({
+            type: `Functions Menu.${submenu}`,
+            word: `${func.click}()`,
+            alts: func.alts,
+            clck: () => {
+              if (func.select) {
+                WIDGETS['functions-menu'].open()
+                const id = `func-menu-${submenu.replace(/ /g, '-')}`
+                WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+              } else WIDGETS['functions-menu'][func.click]()
+            }
+          })
+        }
       })
     }
 

@@ -1,4 +1,4 @@
-/* global NNE, Menu, Color, utils, WIDGETS */
+/* global NNE, Menu, Color, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -584,9 +584,14 @@ class NetNet {
   updateTitleBar (text) {
     // const gh = WIDGETS['student-session'].data.github
     // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
-    this.title.textContent = text
-    this.title.style.display = 'block'
-    this.title.onclick = () => utils._Convo('netnet-title-bar')
+    if (typeof text === 'string') {
+      this.title.textContent = text
+      this.title.style.display = 'block'
+      this.title.onclick = () => utils._Convo('netnet-title-bar')
+    } else {
+      this.title.textContent = ''
+      this.title.style.display = 'none'
+    }
   }
 
   _createTitleBar () {

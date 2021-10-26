@@ -5,6 +5,7 @@ const NNE = new Netitor({
   render: '#nn-output',
   background: false,
   renderWithErrors: true,
+  displayTitle: true,
   code: ''
 })
 
