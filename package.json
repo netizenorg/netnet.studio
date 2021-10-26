@@ -8,7 +8,7 @@
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
     "update-netitor": "rm -rf node_modules/netitor/; npm install",
-    "tut": "node www/tutorials/create-tutorial-data.js"
+    "update-dev": "node my_modules/update-dev.js"
   },
   "repository": {
     "type": "git",
