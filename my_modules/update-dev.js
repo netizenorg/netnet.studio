@@ -23,8 +23,10 @@ fs.writeFile(ghfilepath, tempdata, (err) => {
   console.log('>>> pulling changes')
   exec('git pull', (err, stdout, stderr) => {
     if (err) return console.log(err)
-    if (stderr && stderr.length > 0) return console.log(stderr)
+    console.log('>>> stdout:')
     console.log(stdout)
+    console.log('>>> stderr:')
+    console.log(stderr)
     fs.writeFileSync(ghfilepath, ghfile)
     console.log('>>> update complete')
   })
