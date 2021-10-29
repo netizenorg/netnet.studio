@@ -398,6 +398,13 @@ class NetNet {
     if (s.includes(prop)) { // changing size
       if (!l) return
       this.win.style[prop] = (typeof val === 'number') ? `${val}px` : val
+      if (this.layout === 'dock-bottom') {
+        this.rndr.style.height = window.innerHeight - parseFloat(val) + 'px'
+      } else if (this.layout === 'dock-left') {
+        const w = window.innerWidth - parseFloat(val)
+        this.rndr.style.width = w + 'px'
+        this.rndr.style.left = parseFloat(val) + 'px'
+      }
     } else if (p.includes(prop)) { // chaning position
       if (!l) return
       if (prop === 'left' || prop === 'right') {
