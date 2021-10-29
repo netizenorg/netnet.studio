@@ -340,7 +340,7 @@ class StudentSession extends Widget {
         <button name="general-data">?</button>
         <div>
           name:
-          <input value="${this.data.username}">
+          <input id="name-input" value="${this.data.username}">
         </div>
         <div>
           editor theme:
@@ -414,6 +414,11 @@ class StudentSession extends Widget {
 
       <!-- TODO: add SIGNOUT of GitHub button -->
     `
+
+    this.$('#name-input').addEventListener('change', (e) => {
+      this.setData('username', e.target.value)
+      this.convos = window.CONVOS[this.key](this)
+    })
 
     this.$('button[name="github"]').addEventListener('click', () => {
       if (this.authStatus) this.chatGitHubLogout()
