@@ -23,6 +23,7 @@ class StudentSession extends Widget {
       username: ls.getItem('username'),
       editor: {
         autoUpdate: ls.getItem('auto-update'),
+        wrap: ls.getItem('wrap'),
         theme: ls.getItem('theme')
       },
       github: {
@@ -281,6 +282,7 @@ class StudentSession extends Widget {
     }
 
     NNE.autoUpdate = (this.getData('auto-update') === 'true')
+    NNE.wrap = (this.getData('wrap') === 'true')
 
     if (window.localStorage.getItem('theme') === null) {
       this.setData('theme', 'dark')
@@ -347,6 +349,10 @@ class StudentSession extends Widget {
         <div>
           editor auto-update:
           <input value="${this.data.editor.autoUpdate}" readonly="readonly">
+        </div>
+        <div>
+          editor line wrap:
+          <input value="${this.data.editor.wrap}" readonly="readonly">
         </div>
         <h2><span>Last Save Point</span> <button name="last-save">?</button></h2>
         <div>

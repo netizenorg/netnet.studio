@@ -117,6 +117,11 @@ class FunctionsMenu extends Widget {
         select: 'func-menu-themes-select'
       },
       {
+        click: 'wordWrap',
+        alts: ['word', 'line', 'wrap', 'warpping'],
+        select: 'func-menu-wrap-select'
+      },
+      {
         click: 'viewYourData',
         alts: []
       }
@@ -309,6 +314,11 @@ class FunctionsMenu extends Widget {
   changeTheme () {
     NNW.theme = this.themesSel.value
     this.sesh.setData('theme', NNW.theme)
+  }
+
+  wordWrap () {
+    NNE.wrap = this.lineWrapping.value === 'true'
+    this.sesh.setData('wrap', this.lineWrapping.value)
   }
 
   viewYourData () {
@@ -532,14 +542,20 @@ class FunctionsMenu extends Widget {
     this._creatOption('false', this.autoUpdateSel)
     this.autoUpdateSel.value = this.sesh.getData('auto-update')
     this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
+
     this.layoutsSel = this.$('#func-menu-layout-select')
-    NNW.layouts
-      // .filter(l => l !== 'welcome') // NOTE: see other note
-      .forEach(l => this._creatOption(l, this.layoutsSel))
+    NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
+    this.layoutsSel.value = NNW.layout
+
     this.themesSel = this.$('#func-menu-themes-select')
     Object.keys(NNE.themes).forEach(l => this._creatOption(l, this.themesSel))
-    this.layoutsSel.value = NNW.layout
     this.themesSel.value = NNW.theme
+
+    this.lineWrapping = this.$('#func-menu-wrap-select')
+    this._creatOption('true', this.lineWrapping)
+    this._creatOption('false', this.lineWrapping)
+    this.lineWrapping.value = this.sesh.getData('wrap') === 'true'
+    this.lineWrapping.addEventListener('change', () => this.wordWrap())
   }
 
   _setupListeners () {
