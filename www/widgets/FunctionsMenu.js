@@ -316,7 +316,10 @@ class FunctionsMenu extends Widget {
     this.sesh.setData('theme', NNW.theme)
   }
 
-  wordWrap () {
+  wordWrap (val) {
+    if (typeof val === 'boolean') {
+      this.lineWrapping.value = val
+    }
     NNE.wrap = this.lineWrapping.value === 'true'
     this.sesh.setData('wrap', this.lineWrapping.value)
   }
