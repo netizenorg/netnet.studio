@@ -197,11 +197,13 @@ class NetNet {
     time = time || 0
     const t = `${time}ms`
     this.win.style.transition = `all ${t} var(--sarah-ease)`
+    this.rndr.style.transition = `all ${t} var(--sarah-ease)`
     // trigger transition
     setTimeout(() => {
       for (const prop in opts) this._css(prop, opts[prop])
       setTimeout(() => {
         this.win.style.transition = 'none'
+        this.rndr.style.transition = 'none'
         this.keepInFrame()
       }, time)
     }, 25)
