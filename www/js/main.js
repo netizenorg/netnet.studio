@@ -36,7 +36,10 @@ NNE.on('lint-error', (e) => {
   WIDGETS['code-review'].updateIssues(e)
 })
 
-NNE.cm.on('keydown', (e) => utils.netitorInput(e))
+NNE.cm.on('keydown', (e) => {
+  utils.netitorInput(e)
+  utils.numChange(e)
+})
 
 NNE.on('edu-info', (e, eve) => {
   if (e.line && e.type) NNE.spotlight(e.line)
@@ -48,10 +51,6 @@ NNE.on('edu-info', (e, eve) => {
 window.addEventListener('resize', (e) => {
   utils.windowResize()
   utils.keepWidgetsInFrame()
-})
-
-NNE.cm.on('keydown', (cm, e) => {
-  utils.numChange(e)
 })
 
 window.addEventListener('load', () => {
