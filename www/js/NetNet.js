@@ -49,6 +49,10 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ properties
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  get speaking () {
+    return this.menu.textBubble.children[0].style.display === 'block'
+  }
+
   get layout () { return this._layout }
   set layout (v) {
     if (!this.layouts.includes(v)) {
