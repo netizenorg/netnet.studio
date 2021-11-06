@@ -8,6 +8,9 @@
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
     "update-netitor": "rm -rf node_modules/netitor/; npm install",
+    "update-color": "rm -rf node_modules/Color/; npm install",
+    "update-maths": "rm -rf node_modules/Maths/; npm install",
+    "update-averigua": "rm -rf node_modules/Averigua/; npm install",
     "update-dev": "node my_modules/update-dev.js"
   },
   "repository": {
@@ -19,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/netizenorg/netnet.studio/issues"
   },
-  "homepage": "https://github.com/netizenorg/netnet.studio#readme",
+  "homepage": "https://github.com/netizenorg/netnet.studio/wiki",
   "dependencies": {
     "@octokit/core": "^3.1.2",
     "Color": "git+https://github.com/nbriz/Color.git",
