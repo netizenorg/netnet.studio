@@ -1,4 +1,4 @@
-/* global NNW, Widget, utils, Maths, Convo */
+/* global NNW, Widget, utils, Maths, Convo, Color */
 class CssGradientWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -198,6 +198,7 @@ class CssGradientWidget extends Widget {
     stops.forEach(cs => {
       const css = JSON.parse(JSON.stringify(stopsCSS))
       css.backgroundColor = cs.dataset.color
+      css.color = Color.isLight(cs.dataset.color) ? '#000' : '#ff'
       div.appendChild(this._genSpan(`${cs.dataset.stop}%`, css))
     })
 
@@ -482,9 +483,8 @@ class CssGradientWidget extends Widget {
   }
 
   _addColorStop () {
-    const clr = '#' + Math.floor(Math.random() * 16777215).toString(16)
     const ran = Math.floor(Math.random() * 100)
-    const cs = this._genColorStop(ran, clr)
+    const cs = this._genColorStop(ran, Color.random())
     this.settings.colorStops.push(cs)
     this.colorStopsElement.appendChild(cs)
     const l = this.settings.colorStops.length
