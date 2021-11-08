@@ -36,7 +36,7 @@ NNE.on('lint-error', (e) => {
   WIDGETS['code-review'].updateIssues(e)
 })
 
-NNE.cm.on('keydown', (e) => {
+NNE.cm.on('keydown', (cm, e) => {
   utils.netitorInput(e)
   utils.numChange(e)
 })
