@@ -29,7 +29,6 @@ NNE.on('cursor-activity', (e) => {
   if (NNE._spotlighting) {
     NNE.spotlight(null)
     window.convo.hide()
-    utils.numHelper(false)
   } else utils.hideConvoIf()
 })
 
@@ -37,10 +36,12 @@ NNE.on('lint-error', (e) => {
   WIDGETS['code-review'].updateIssues(e)
 })
 
-NNE.cm.on('keydown', (e) => utils.netitorInput(e))
+NNE.cm.on('keydown', (e) => {
+  utils.netitorInput(e)
+  utils.numChange(e)
+})
 
 NNE.on('edu-info', (e, eve) => {
-  if (e.type === 'number') utils.numHelper(true, eve)
   if (e.line && e.type) NNE.spotlight(e.line)
   if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
   if (e.language === 'css') WIDGETS['css-reference'].textBubble(e)

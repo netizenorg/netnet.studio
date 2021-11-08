@@ -18,12 +18,6 @@ window.CONVOS['utils-misc'] = (self) => {
   })()
 
   return [{
-    id: 'num-helper',
-    content: 'Ok, I\'ll increase the value when you press the up arrow key and decrease it when you press the down arrow key. I\'ll adjust it by 10 if you hold the shift key. Press enter when you\'re finished adjusting the value.',
-    options: {
-      ok: (e) => { NNE.spotlight(null); utils.numHelper(false); e.hide() }
-    }
-  }, {
     id: 'demo-example',
     content: 'Check out this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
     options: { ok: (e) => e.hide() }

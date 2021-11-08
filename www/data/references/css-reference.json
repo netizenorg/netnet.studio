@@ -4,5 +4,44 @@
   },
   "clip-path": {
     "bubble": "The <code>clip-path</code> property can be used to \"clip\" or \"mask\" certain regions of an element. It's a great way of transforming elements into all sorts of different shapes. Learn more about it at <a href=\"https://css-tricks.com/almanac/properties/c/clip-path/\" target=\"_blank\">css-tricks.com</a>. We're working on widgets that make it easier to use properties like these, but in the meantime checkout this great <a href=\"https://bennettfeely.com/clippy/\" target=\"_blank\">clip-path generator</a>!"
+  },
+  "vw": {
+    "bubble": "<code>vw</code> stands for \"viewport width\", the viewport is the \"viewable portion\" of your document, meaning everything you currently see in your window. You can think of <code>vw</code> as a percentage of the window's width (as opposed to the <code>%</code> which is always relative to the parent element).<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "vh": {
+    "bubble": "<code>vh</code> stands for \"viewport height\", the viewport is the \"viewable portion\" of your document, meaning everything you currently see in your window. You can think of <code>vh</code> as a percentage of the window's height (as opposed to the <code>%</code> which is always relative to the parent element).<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "s": {
+    "bubble": "<code>s</code> is a unit of time represented in \"seconds\"<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "ms": {
+    "bubble": "<code>ms</code> is a unit of time represented in \"milliseconds\". <code>1000ms</code> is <code>1s</code> (second)<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "%": {
+    "bubble": "<code>%</code> is a \"percentage\" value, often used to define a size or position relative to an element's parent element.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "em": {
+    "bubble": "<code>em</code> is a unit of length which relates directly to font size. For example, if <code>font-size: 10px;</code> than <code>width: 2em;</code> would be a width of <code>20px</code>. When applied to <code>font-size: 1em;</code> then it's relative to the inherited font-size, usually it's parent element's. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">em and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "rem": {
+    "bubble": "<code>rem</code> is a unit of length which relates directly to font size of the \"root\" element (the <code>&lt;html&gt;</code>) which essentially means the browser's default font-size. For example, assuming the user has their browser's font-size set to 16px, a <code>width: 2em;</code> would equate to 32px. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">rem and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "ch": {
+    "bubble": "<code>ch</code> is a unit of length which equates to the width of teh character <code>0</code>, so <code>width: 2em;</code> would be the width of 2 zeroes. This can change depending on the font-family you're using. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">ch and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "px": {
+    "bubble": "<code>px</code> or \"pixel\" is a unit of length representing one device pixel (dot), the smallest discrete element of an image on your screen.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "deg": {
+    "bubble": "<code>deg</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"degrees\". One full circle is <code>360deg</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "grad": {
+    "bubble": "<code>grad</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"gradians\". One full circle is <code>400grad</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "rad": {
+    "bubble": "<code>rad</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"radians\". One full circle is  2π radians or roughly <code>6.2832rad</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "turn": {
+    "bubble": "<code>turn</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"turns\". One full circle is <code>1turn</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
   }
 }

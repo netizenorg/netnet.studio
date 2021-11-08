@@ -85,7 +85,7 @@ class HTMLReference extends Widget {
       ok: (e) => { NNE.spotlight(null); e.hide() }
     }
 
-    const extras = this.data[eve.type][eve.data]
+    const extras = this.data[eve.type] ? this.data[eve.type][eve.data] : null
     let content = (extras && extras.bubble)
       ? `<p>${extras.bubble}</p>`
       : `<p>${eve.nfo.description.html}</p>`

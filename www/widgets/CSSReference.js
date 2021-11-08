@@ -110,9 +110,13 @@ class CSSReference extends Widget {
 
     options.ok = (e) => { NNE.spotlight(null); e.hide() }
 
-    const extras = this.data[eve.data]
+    // for numbers
+    const nval = parseInt(eve.data)
+    const d = !isNaN(nval) ? eve.data.split(nval)[1] : eve.data
+
+    const extras = this.data[d]
     let content = (extras && extras.bubble)
-      ? `<p>${this.data[eve.data].bubble}</p>`
+      ? `<p>${this.data[d].bubble}</p>`
       : `<p>${eve.nfo.description.html}</p>`
     if (eve.type === 'comment') content = this.data[eve.type].bubble
 
