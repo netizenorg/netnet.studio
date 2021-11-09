@@ -471,7 +471,11 @@ class FunctionsMenu extends Widget {
       this.subs[sub].forEach(btn => {
         const b = document.createElement('button')
         b.textContent = btn.click + '('
-        b.addEventListener('click', (e) => this[btn.click]())
+        // HACK: to avoid having netnet's textBubble pull focus from drop down
+        // which causes autoUpdate to get stuck on false in some systems
+        if (btn.click !== 'autoUpdate') {
+          b.addEventListener('click', (e) => this[btn.click]())
+        }
         if (btn.select) {
           b.textContent = btn.click + '('
           const sel = document.createElement('select')
