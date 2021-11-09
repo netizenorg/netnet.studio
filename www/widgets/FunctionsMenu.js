@@ -725,8 +725,8 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'pushing-updates')
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project'),
-      sha: window.localStorage.getItem('index-sha'),
+      repo: window.sessionStorage.getItem('opened-project'),
+      sha: window.sessionStorage.getItem('index-sha'),
       path: 'index.html',
       message: msg,
       code: utils.btoa(NNE.code)
@@ -761,8 +761,8 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'pushing-updates')
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project'),
-      branch: window.localStorage.getItem('branch')
+      repo: window.sessionStorage.getItem('opened-project'),
+      branch: window.sessionStorage.getItem('branch')
     }
     utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {

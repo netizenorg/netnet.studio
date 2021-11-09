@@ -3,9 +3,9 @@ window.CONVOS['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareURL = (opts) => {
     opts = opts || {}
-    const repo = window.localStorage.getItem('opened-project')
+    const repo = window.sessionStorage.getItem('opened-project')
     const owner = window.localStorage.getItem('owner')
-    const branch = window.localStorage.getItem('branch')
+    const branch = window.sessionStorage.getItem('branch')
     const gh = (repo) ? `&gh=${owner}/${repo}/${branch}` : ''
     const hash = NNE.generateHash()
     const root = window.location.protocol + '//' + window.location.host
@@ -98,7 +98,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('new-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -173,7 +173,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${window.localStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
+    content: `The last time you saved your progress you said, "${window.sessionStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
     options: {
       'ok, commit and push this update': (c, t) => {
         const v = t.$('input').value
@@ -209,7 +209,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ... opening old projects
   {
     id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('open-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
@@ -295,7 +295,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${window.localStorage.getItem('ghpages')}" target="_blank">${window.localStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
+    content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
