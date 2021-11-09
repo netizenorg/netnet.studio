@@ -43,5 +43,8 @@
   },
   "turn": {
     "bubble": "<code>turn</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"turns\". One full circle is <code>1turn</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "image-rendering": {
+    "bubble": "This property defines how the browser should render an image if it is scaled up or down from its original dimensions. By default, each browser will attempt to apply <a href=\"https://en.wikipedia.org/wiki/Aliasing\" target=\"_blank\">aliasing</a> to this scaled image in order to prevent distortion, but this can sometimes be a problem if we want the image to preserve its original pixelated form."
   }
 }
