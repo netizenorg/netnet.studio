@@ -281,7 +281,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'share-gh-url',
-    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
     options: {
       'great thanks!': (e) => e.hide(),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
@@ -310,7 +310,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...
   {
     id: 'generate-sketch-url',
-    content: `Ok, here's a URL for your sketch! <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. If you'd like, I can also hide from view so that your masterpiece remains unobstructed?`,
+    content: `Ok, here's a URL for your sketch! <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. If you'd like, I can also hide from view so that your masterpiece remains unobstructed?`,
     options: {
       'great, thanks!': (e) => e.hide(),
       'why is it so long?': (e) => e.goTo('why-so-long'),
@@ -346,35 +346,35 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'shorten-url',
-    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
+    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
     options: {
       'got it, thanks!': (e) => e.hide(),
       'hide from view?': (e) => e.goTo('hide-from-view-short')
     }
   }, {
     id: 'hide-from-view-long',
-    content: `<input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
+    content: `<input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
     options: {
       'no thanks, this URL is fine': (e) => e.hide(),
       'yes please, I prefer you hide': (e) => self._shareLongCodeHideLayout()
     }
   }, {
     id: 'hide-long',
-    content: `Sure thing, here's a new URL that'll hide the code so that your work displays full screen <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
+    content: `Sure thing, here's a new URL that'll hide the code so that your work displays full screen <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide(),
       'why is the URL so long though?': (e) => e.goTo('why-so-long')
     }
   }, {
     id: 'hide-from-view-short',
-    content: `<input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
+    content: `<input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
     options: {
       'no thanks, I want the code present': (e) => e.hide(),
       'yes please, I prefer you hide': (e) => self._shortenURL(false)
     }
   }, {
     id: 'no-hide-short',
-    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
+    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide(),
       'display the code?': (e) => e.goTo('hide-from-view-short')
