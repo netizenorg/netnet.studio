@@ -87,7 +87,7 @@ class ProjectFiles extends Widget {
 
       const data = {
         owner: window.localStorage.getItem('owner'),
-        repo: window.localStorage.getItem('opened-project'),
+        repo: window.sessionStorage.getItem('opened-project'),
         name: file.name,
         code: file.data.split('base64,')[1]
       }
@@ -114,7 +114,7 @@ class ProjectFiles extends Widget {
     utils.showCurtain('delete.html')
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project'),
+      repo: window.sessionStorage.getItem('opened-project'),
       name: this._delete,
       sha: this.shaDict[this._delete]
     }
@@ -133,7 +133,7 @@ class ProjectFiles extends Widget {
   _postUpdate () {
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project')
+      repo: window.sessionStorage.getItem('opened-project')
     }
     utils.post('./api/github/open-project', data, (res) => {
       this.updateFiles(res.data)
@@ -144,7 +144,7 @@ class ProjectFiles extends Widget {
   }
 
   _showHideDivs () {
-    const op = window.localStorage.getItem('opened-project')
+    const op = window.sessionStorage.getItem('opened-project')
     if (!op) {
       this.$('.files-widget__disclaimer').style.display = 'block'
       this.$('.files-widget__header').style.display = 'none'

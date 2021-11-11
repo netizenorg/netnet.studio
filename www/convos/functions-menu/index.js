@@ -3,9 +3,9 @@ window.CONVOS['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareURL = (opts) => {
     opts = opts || {}
-    const repo = window.localStorage.getItem('opened-project')
+    const repo = window.sessionStorage.getItem('opened-project')
     const owner = window.localStorage.getItem('owner')
-    const branch = window.localStorage.getItem('branch')
+    const branch = window.sessionStorage.getItem('branch')
     const gh = (repo) ? `&gh=${owner}/${repo}/${branch}` : ''
     const hash = NNE.generateHash()
     const root = window.location.protocol + '//' + window.location.host
@@ -98,7 +98,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('new-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -173,7 +173,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${window.localStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
+    content: `The last time you saved your progress you said, "${window.sessionStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
     options: {
       'ok, commit and push this update': (c, t) => {
         const v = t.$('input').value
@@ -209,7 +209,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ... opening old projects
   {
     id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${window.localStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('open-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
@@ -281,7 +281,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'share-gh-url',
-    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
     options: {
       'great thanks!': (e) => e.hide(),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
@@ -295,7 +295,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${window.localStorage.getItem('ghpages')}" target="_blank">${window.localStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
+    content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
@@ -310,7 +310,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...
   {
     id: 'generate-sketch-url',
-    content: `Ok, here's a URL for your sketch! <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. If you'd like, I can also hide from view so that your masterpiece remains unobstructed?`,
+    content: `Ok, here's a URL for your sketch! <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. If you'd like, I can also hide from view so that your masterpiece remains unobstructed?`,
     options: {
       'great, thanks!': (e) => e.hide(),
       'why is it so long?': (e) => e.goTo('why-so-long'),
@@ -346,35 +346,35 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'shorten-url',
-    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
+    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
     options: {
       'got it, thanks!': (e) => e.hide(),
       'hide from view?': (e) => e.goTo('hide-from-view-short')
     }
   }, {
     id: 'hide-from-view-long',
-    content: `<input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
+    content: `<input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
     options: {
       'no thanks, this URL is fine': (e) => e.hide(),
       'yes please, I prefer you hide': (e) => self._shareLongCodeHideLayout()
     }
   }, {
     id: 'hide-long',
-    content: `Sure thing, here's a new URL that'll hide the code so that your work displays full screen <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
+    content: `Sure thing, here's a new URL that'll hide the code so that your work displays full screen <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide(),
       'why is the URL so long though?': (e) => e.goTo('why-so-long')
     }
   }, {
     id: 'hide-from-view-short',
-    content: `<input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
+    content: `<input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
     options: {
       'no thanks, I want the code present': (e) => e.hide(),
       'yes please, I prefer you hide': (e) => self._shortenURL(false)
     }
   }, {
     id: 'no-hide-short',
-    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="this.focus();this.select()" readonly="readonly">`,
+    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
     options: {
       'great thanks!': (e) => e.hide(),
       'display the code?': (e) => e.goTo('hide-from-view-short')

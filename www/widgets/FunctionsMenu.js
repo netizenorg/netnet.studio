@@ -471,7 +471,11 @@ class FunctionsMenu extends Widget {
       this.subs[sub].forEach(btn => {
         const b = document.createElement('button')
         b.textContent = btn.click + '('
-        b.addEventListener('click', (e) => this[btn.click]())
+        // HACK: to avoid having netnet's textBubble pull focus from drop down
+        // which causes autoUpdate to get stuck on false in some systems
+        if (btn.click !== 'autoUpdate') {
+          b.addEventListener('click', (e) => this[btn.click]())
+        }
         if (btn.select) {
           b.textContent = btn.click + '('
           const sel = document.createElement('select')
@@ -725,8 +729,8 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'pushing-updates')
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project'),
-      sha: window.localStorage.getItem('index-sha'),
+      repo: window.sessionStorage.getItem('opened-project'),
+      sha: window.sessionStorage.getItem('index-sha'),
       path: 'index.html',
       message: msg,
       code: utils.btoa(NNE.code)
@@ -761,8 +765,8 @@ class FunctionsMenu extends Widget {
     window.convo = new Convo(this.convos, 'pushing-updates')
     const data = {
       owner: window.localStorage.getItem('owner'),
-      repo: window.localStorage.getItem('opened-project'),
-      branch: window.localStorage.getItem('branch')
+      repo: window.sessionStorage.getItem('opened-project'),
+      branch: window.sessionStorage.getItem('branch')
     }
     utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {

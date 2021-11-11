@@ -142,6 +142,30 @@ window.utils = {
     })
   },
 
+  copyLink: (ele) => {
+    ele.focus()
+    ele.select()
+    navigator.clipboard.writeText(ele.value)
+    const pos = ele.getBoundingClientRect()
+    const note = document.createElement('div')
+    note.textContent = 'Copied URL!'
+    note.style.background = 'grey'
+    note.style.position = 'absolute'
+    note.style.left = `${pos.x}px`
+    note.style.top = `${pos.y}px`
+    note.style.width = `${pos.width}px`
+    note.style.backgroundColor = 'var(--bg-color)'
+    note.style.color = 'var(--fg-color)'
+    note.style.padding = '4px 20px'
+    note.style.opacity = '1'
+    note.style.transition = 'opacity 2s'
+    document.body.appendChild(note)
+    setTimeout(() => {
+      note.style.opacity = 0
+      setTimeout(() => note.remove(), 2200)
+    }, 500)
+  },
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*• NETNET ON LOAD stuff

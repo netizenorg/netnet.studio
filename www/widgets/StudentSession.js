@@ -19,6 +19,7 @@ class StudentSession extends Widget {
 
   get data () {
     const ls = window.localStorage
+    const ss = window.sessionStorage
     const data = {
       username: ls.getItem('username'),
       editor: {
@@ -29,13 +30,13 @@ class StudentSession extends Widget {
       github: {
         owner: ls.getItem('owner'),
         repos: ls.getItem('repos'),
-        openedProject: ls.getItem('opened-project'),
-        projectURL: ls.getItem('project-url'),
-        branch: ls.getItem('branch'),
-        indexSha: ls.getItem('index-sha'),
-        lastCommitMsg: ls.getItem('last-commit-msg'),
-        lastCommitCode: ls.getItem('last-commit-code'),
-        ghpages: ls.getItem('ghpages')
+        openedProject: ss.getItem('opened-project'),
+        projectURL: ss.getItem('project-url'),
+        branch: ss.getItem('branch'),
+        indexSha: ss.getItem('index-sha'),
+        lastCommitMsg: ss.getItem('last-commit-msg'),
+        lastCommitCode: ss.getItem('last-commit-code'),
+        ghpages: ss.getItem('ghpages')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -62,13 +63,19 @@ class StudentSession extends Widget {
       if (Object.keys(this.data).includes(type)) return this.data[type]
       else if (Object.keys(window.localStorage).includes(type)) {
         return window.localStorage.getItem(type)
+      } else if (Object.keys(window.sessionStorage).includes(type)) {
+        return window.sessionStorage.getItem(type)
       }
     } else return this.data
   }
 
   setData (type, value) {
-    if (!value) window.localStorage.removeItem(type)
-    else window.localStorage.setItem(type, value)
+    const sesh = [
+      'opened-project', 'project-url', 'branch', 'index-sha', 'last-commit-msg', 'last-commit-code', 'ghpages'
+    ]
+    const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
+    if (!value) window[store].removeItem(type)
+    else window[store].setItem(type, value)
     this._createHTML()
     return this.data
   }
@@ -106,26 +113,27 @@ class StudentSession extends Widget {
   }
 
   setProjectData (data) {
-    const ls = window.localStorage
+    const ss = window.sessionStorage
     // TODO: will need to update mutli-file-widget if/when we make that widget
-    if (data.name) ls.setItem('opened-project', data.name)
-    if (data.message) ls.setItem('last-commit-msg', data.message)
-    if (data.sha) ls.setItem('index-sha', data.sha)
-    if (data.url) ls.setItem('project-url', data.url)
-    if (data.ghpages) ls.setItem('ghpages', data.ghpages)
-    if (data.branch) ls.setItem('branch', data.branch)
-    if (data.code) ls.setItem('last-commit-code', data.code)
+    if (data.name) ss.setItem('opened-project', data.name)
+    if (data.message) ss.setItem('last-commit-msg', data.message)
+    if (data.sha) ss.setItem('index-sha', data.sha)
+    if (data.url) ss.setItem('project-url', data.url)
+    if (data.ghpages) ss.setItem('ghpages', data.ghpages)
+    if (data.branch) ss.setItem('branch', data.branch)
+    if (data.code) ss.setItem('last-commit-code', data.code)
     this._createHTML()
   }
 
   clearProjectData () {
-    window.localStorage.removeItem('opened-project')
-    window.localStorage.removeItem('last-commit-msg')
-    window.localStorage.removeItem('last-commit-code')
-    window.localStorage.removeItem('index-sha')
-    window.localStorage.removeItem('project-url')
-    window.localStorage.removeItem('ghpages')
-    window.localStorage.removeItem('branch')
+    const ss = window.sessionStorage
+    ss.removeItem('opened-project')
+    ss.removeItem('last-commit-msg')
+    ss.removeItem('last-commit-code')
+    ss.removeItem('index-sha')
+    ss.removeItem('project-url')
+    ss.removeItem('ghpages')
+    ss.removeItem('branch')
     NNE.addCustomRoot(null)
     if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
     this._createHTML()
@@ -133,6 +141,7 @@ class StudentSession extends Widget {
 
   clearAllData () {
     window.localStorage.clear()
+    window.sessionStorage.clear()
     this._init()
     this.deleteGitHubSession()
     this.greetStudent()
@@ -201,8 +210,8 @@ class StudentSession extends Widget {
 
   updateRoot () {
     const owner = window.localStorage.getItem('owner')
-    const repo = window.localStorage.getItem('opened-project')
-    const main = window.localStorage.getItem('branch')
+    const repo = window.sessionStorage.getItem('opened-project')
+    const main = window.sessionStorage.getItem('branch')
     if (owner && repo) {
       const path = `api/github/proxy?url=https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
       NNE.addCustomRoot(path)

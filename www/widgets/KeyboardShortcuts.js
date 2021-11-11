@@ -12,7 +12,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 83,
         callback: (e) => {
           e.preventDefault()
-          if (window.localStorage.getItem('opened-project')) {
+          if (window.sessionStorage.getItem('opened-project')) {
             WIDGETS['functions-menu'].saveProject()
           } else WIDGETS['functions-menu'].saveSketch()
         }

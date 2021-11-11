@@ -27,7 +27,7 @@
     "bubble": "<code>rem</code> is a unit of length which relates directly to font size of the \"root\" element (the <code>&lt;html&gt;</code>) which essentially means the browser's default font-size. For example, assuming the user has their browser's font-size set to 16px, a <code>width: 2em;</code> would equate to 32px. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">rem and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
   },
   "ch": {
-    "bubble": "<code>ch</code> is a unit of length which equates to the width of teh character <code>0</code>, so <code>width: 2em;</code> would be the width of 2 zeroes. This can change depending on the font-family you're using. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">ch and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+    "bubble": "<code>ch</code> is a unit of length which equates to the width of the character <code>0</code>, so <code>width: 2ch;</code> would be the width of 2 zeroes. This can change depending on the font-family you're using. Read more about <a href=\"http://clagnut.com/blog/2384/\" target=\"_blank\">ch and similar units</a>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
   },
   "px": {
     "bubble": "<code>px</code> or \"pixel\" is a unit of length representing one device pixel (dot), the smallest discrete element of an image on your screen.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
@@ -43,5 +43,8 @@
   },
   "turn": {
     "bubble": "<code>turn</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/angle\" target=\"_blank\">angle</a>, a unit of rotation measured in \"turns\". One full circle is <code>1turn</code>.<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "image-rendering": {
+    "bubble": "This property defines how the browser should render an image if it is scaled up or down from its original dimensions. By default, each browser will attempt to apply <a href=\"https://en.wikipedia.org/wiki/Aliasing\" target=\"_blank\">aliasing</a> to this scaled image in order to prevent distortion, but this can sometimes be a problem if we want the image to preserve its original pixelated form."
   }
 }
