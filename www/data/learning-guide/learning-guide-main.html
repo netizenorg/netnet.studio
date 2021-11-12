@@ -1,28 +1,100 @@
-
 <style>
   .learning-guide__header {
+    position: relative;
     margin: -10px 0px 30px 0px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .learning-guide__header > * {
     margin: 0px 2px;
+    text-align: center;
+    position: relative;
   }
 
   .learning-guide__header > h2 {
-    animation: color-shift 10s infinite;
+    font-size: 49px;
+    line-height: 49px;
+    font-family: "fira-sans-bold";
   }
 
-  @keyframes color-shift {
-    0% { color: var(--netizen-string); }
-    50% { color: var(--netizen-number); }
-    100% { color: var(--netizen-keyword); }
+  .learning-guide__header > .bg {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    filter: blur(50px);
+    background: linear-gradient(90deg, var(--netizen-tag) 30%, var(--netizen-attribute) 60%, var(--netizen-string) 100%);
+    background-size: 200% 100%;
+    animation: bg-shift 10s infinite;
   }
 
-  .learning-guide__sec {
+  @keyframes bg-shift {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+
+
+
+  .learning-guide__main h3 {
+    font-family: 'fira-mono-regular', monospace;
+    font-size: 31px;
+    text-align: center;
+    font-weight: lighter;
+    margin: 80px 0 20px 0;
+  }
+
+
+  .learning-guide__ex {
+    margin-bottom: 50px;
+  }
+
+  .learning-guide__ex-row {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--netizen-atom);
+    padding: 10px 0;
+  }
+
+
+
+  .learning-guide__tut {
+    margin-bottom: 48px;
+  }
+
+  .learning-guide__tut > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .learning-guide__tut > div > div:nth-child(1) {
+    margin: 10px 0;
+  }
+
+  .learning-guide__tut h2 {
+    margin: 4px 0;
+  }
+
+  .learning-guide__tut b {
+    font-weight: bold;
+  }
+
+  .learning-guide__tut > p {
+    /* display: none; */
+    /* height: auto; */
+    padding: 8px;
+    border-top: 1px solid var(--netizen-atom);
+    overflow: hidden;
+    transition: 1s all;
+  }
+
+
+  .learning-guide__apx-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   .learning-guide--link {
@@ -30,10 +102,10 @@
     color: var(--netizen-meta);
     text-decoration: none;
     transition: color .5s ease, border .5s ease;
+    line-height: 28px;
     /*underline*/
     border-bottom: 1px solid var(--netizen-meta);
     text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-    vertical-align: middle;
   }
 
   .learning-guide--link:hover {
@@ -61,21 +133,67 @@
 </style>
 
 <header class="learning-guide__header">
+  <div class="bg"></div>
   <div>the</div>
   <h2>Internet Artist's Guide</h2>
-  <div>to the</div>
-  <h2>World Wide Web</h2>
+  <div>to netizen histories, critical theory, && the craft of creative coding</div>
 </header>
 
-<p>
-  Here you'll find an evolving list of interactive tutorials, examples and references. These are a work in progress and are constantly changing as we continue to craft netnet. We hope to someday be beyond beta, but for the time being, best be prepared for bugs. <span class="learning-guide--link" name="page:aboutOpts">Learn more about us.</span>
-</p>
+<main class="learning-guide__main">
+  <div class="learning-guide__ex">
+    <h3>&lt;examples&gt;</h3>
+    <div class="learning-guide__ex-row">
+      <div>
+        <h2 style="margin: 4px 0;">HTML/CSS/JS Demos</h2>
+        <p>
+          code snippets of particular interest to internet artists
+        </p>
+      </div>
+      <div>
+        <button id="ex-open-btn">open</button>
+      </div>
+    </div>
+  </div>
 
-<div class="learning-guide__sec">
-  <h2 class="learning-guide--link" name="page:tutsOpts">Tutorials</h2>
-  <h2 class="learning-guide--link" name="page:exOpts">Examples</h2>
-  <h2 class="learning-guide--link" name="page:refsOpts">Appendix</h2>
-</div>
+  <div class="learning-guide__tuts">
+    <h3>&lt;tutorials&gt;</h3>
+    <div class="learning-guide__tut-list">
+      <!-- interactive lessons list goes here -->
+    </div>
+  </div>
+
+  <div class="learning-guide__apx">
+    <h3>&lt;appendix&gt;</h3>
+    <div class="learning-guide__apx-list">
+      <div>
+        <h2>HTML</h2>
+        <span class="learning-guide--link" name="ref:html:mainOpts">HTML Reference</span><br>
+        <span class="learning-guide--link" name="ref:html:eleListOpts">Elements List</span><br>
+        <span class="learning-guide--link" name="ref:html:attrListOpts">Attributes List</span><br>
+      </div>
+      <div>
+        <h2>CSS</h2>
+        <span class="learning-guide--link" name="ref:css:mainOpts">CSS Reference</span><br>
+        <span class="learning-guide--link" name="ref:css:propsListOpts">Properties List</span><br>
+        <span class="learning-guide--link" name="ref:css:selectorListOpts">Selectors List</span><br>
+        <span class="learning-guide--link" name="ref:css:cascadeOpts">The Cascade</span><br>
+      </div>
+      <div>
+        <h2>JavaScript</h2>
+        <i>working on it!</i>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <br>
+  <br>
+
+  <div style="text-align:center">
+    <span class="learning-guide--link" id="page-aboutOpts">Learn more about us.</span>
+  </div>
+
+</main>
 
 <!-- <br>
 
