@@ -1,4 +1,4 @@
-/* global utils, WIDGETS, NNE, NNW */
+/* global utils, WIDGETS, NNW */
 window.CONVOS['utils-misc'] = (self) => {
   const a = (() => {
     const c = window.localStorage.getItem('gh-auth-temp-code')
@@ -21,6 +21,10 @@ window.CONVOS['utils-misc'] = (self) => {
     id: 'demo-example',
     content: 'Check out this example I made! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
     options: { ok: (e) => e.hide() }
+  }, {
+    id: 'demo-ex-from-list',
+    content: 'I\'ve copied the example into my editor, remix it and make it your own!',
+    options: { thanks: (e) => e.hide() }
   }, {
     id: 'tutorial-pause-to-edit',
     content: 'Pause the video before you start editing and experimenting with the code.',
@@ -91,7 +95,7 @@ window.CONVOS['utils-misc'] = (self) => {
       WIDGETS['functions-menu'].open()
       WIDGETS['functions-menu'].toggleSubMenu('func-menu-my-project', 'open')
     },
-    content: 'Maybe eventually, the folks at <a href="https://netizen.org" target="_blank">netizen.org</a> are constantly working on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">my code</a>, but at the moment the <code>index.html</code> page is the only one you can work on. That said, if you\'d like to upload images or any other files to your project, click <code>uploadAssets()</code> in the <b>Fnctions Menu</b>',
+    content: 'Maybe eventually, the folks at <a href="https://netizen.org" target="_blank">netizen.org</a> are constantly working on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">my code</a>, but at the moment the <code>index.html</code> page is the only one you can work on. That said, if you\'d like to upload images or any other files to your project, click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
     options: {
       'got it.': (e) => e.hide()
     }
