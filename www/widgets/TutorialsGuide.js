@@ -8,25 +8,20 @@ class TutorialsGuide extends Widget {
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
 
-    this.on('open', () => { this.update({ left: 20, top: 20 }, 500) })
-    this.resizable = false
+    this.on('open', () => {
+      this.update({ left: 20, top: 20 }, 500)
+      this._openConvo()
+    })
 
+    this.resizable = false
     // currently loaded tutorial data
     this.metadata = null
     this.data = null
     this.loaded = null
 
-    this.lastClickedExample = { key: null, code: null }
-
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this._createPage('mainOpts', 'learning-guide-main.html', null, (div) => {
-      // setup all the click listeners for the main page
-      div.querySelectorAll('[name^="page"]').forEach(span => {
-        const page = span.getAttribute('name').split(':')[1]
-        span.addEventListener('click', () => this.slide.updateSlide(this[page]))
-      })
-
       // div.querySelector('#bf-submission').addEventListener('click', () => {
       //   WIDGETS['functions-menu'].BrowserFest()
       // })
@@ -34,31 +29,9 @@ class TutorialsGuide extends Widget {
       // create sub pages
       this._createPage('aboutOpts', 'learning-guide-about.html', this.mainOpts)
 
-      this._createPage('tutsOpts', 'learning-guide-tuts.html', this.mainOpts, (div) => {
-        this._listTutorials(div)
-      })
-
-      this._createPage('exOpts', 'learning-guide-exs.html', this.mainOpts, (div) => {
-        // div.querySelectorAll('[name^="ex"]').forEach(ele => {
-        //   const key = ele.getAttribute('name').split(':')[1]
-        //   ele.addEventListener('click', () => utils.loadExample(key))
-        // })
-        const ex = div.querySelector('.learning-guide__examples')
-        utils.get('api/examples', (res) => this._createExamplesList(ex, res))
-      })
-
-      this._createPage('refsOpts', 'learning-guide-refs.html', this.mainOpts, (div) => {
-        div.querySelectorAll('[name^="ref"]').forEach(ele => {
-          const arr = ele.getAttribute('name').split(':')
-          const widget = `${arr[1]}-reference`
-          ele.addEventListener('click', () => {
-            WIDGETS.open(widget, null, (w) => w.slide.updateSlide(w[arr[2]]))
-          })
-        })
-      })
-
       // initial HTML
       this._createHTML()
+      this.title = 'Learning Guide (BETA-2.0)'
     })
   }
 
@@ -91,6 +64,14 @@ class TutorialsGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
+  _openConvo () {
+    if (!this.convos) {
+      setTimeout(() => this._openConvo(), 100)
+      return
+    }
+    window.convo = new Convo(this.convos, 'guide-open')
+  }
+
   _createPage (type, page, b, cb) {
     utils.get(`./data/learning-guide/${page}`, (html) => {
       const div = document.createElement('div')
@@ -111,102 +92,115 @@ class TutorialsGuide extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '8px 5px 10px'
+    // this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
+    this.ele.querySelector('.w-innerHTML').style.padding = '0 0 10px 0'
 
     this.slide.updateSlide(this.mainOpts)
+
+    this._listTutorials()
   }
 
-  _createExamplesList (ele, res) {
-    if (res.success) {
-      const sections = {}
-      for (const key in res.data) {
-        const obj = res.data[key]
-        obj.key = key
-        if (!sections[obj.type]) { sections[obj.type] = [] }
-        sections[obj.type].push(obj)
-      }
-      for (const sec in sections) {
-        const div = document.createElement('div')
-        const h2 = document.createElement('h2')
-        h2.textContent = sec
-        div.appendChild(h2)
-        sections[sec].forEach(o => {
-          const span = document.createElement('span')
-          span.className = 'learning-guide--link'
-          span.textContent = o.name
-          span.addEventListener('click', () => {
-            this.lastClickedExample.key = o.key
-            const curExCode = NNE._encode(NNE.code)
-            const curCode = window.utils.btoa(NNE.code)
-            const starter = window.utils.starterCodeB64
-            if (curCode === starter) {
-              utils.loadExample(o.key)
-            } else if (curExCode === this.lastClickedExample.code) {
-              utils.loadExample(o.key)
-            } else {
-              window.convo = new Convo(this.convos, 'before-loading-example')
-            }
-          })
-          div.appendChild(span)
-          div.appendChild(document.createElement('br'))
-        })
-        ele.appendChild(div)
-      }
-    } else {
-      console.error('TutorialsGuide:', res)
-    }
-  }
-
-  _listTutorials (div) {
+  _listTutorials () {
     const tutHTML = (t) => {
       const div = document.createElement('div')
+      div.className = 'learning-guide__tut'
       div.innerHTML = `
-      <h2 class="learning-guide--link">
-        ${t.title} &nbsp;
-        <button name="tut:${t.id}">play</button>
-      </h2>
-      <p>${t.description}</p>
+        <div>
+          <div>
+            <h2>${t.title}</h2>
+            <b>${t.subtitle}</b>
+          </div>
+          <div>
+            <button name="tut:${t.id}">play</button>
+            <button name="i:${t.id}">i</button>
+          </div>
+        </div>
+        <p name="nfo:${t.id}">${t.description}</p>
       `
       return div
     }
 
-    const endCap = () => {
-      const div = document.createElement('div')
-      div.innerHTML = `<h2 class="learning-guide--link">MORE COMING SOON!!!</h2>
-      <p>
-        TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD ... TBD
-      </p>
-      <br>
-      <br>`
-      return div
-    }
-
     const tutorials = []
+    const div = this.ele.querySelector('.learning-guide__tut-list')
 
     utils.get('tutorials/list.json', (json) => {
       let count = 0
       json.listed.forEach(name => {
         utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          // div.appendChild(tutHTML(tut))
-          tutorials.push({
+          tutorials.push({ // create tutorial <div>
             index: json.listed.indexOf(name), html: tutHTML(tut)
           })
           count++
           // ...
           if (count === json.listed.length) {
-            tutorials
+            tutorials // when all are loaded, append tutorial <div> to guide
               .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
               .forEach(obj => div.appendChild(obj.html))
-            div.appendChild(endCap())
-            div.querySelectorAll('[name^="tut"]').forEach(ele => {
-              const tut = ele.getAttribute('name').split(':')[1]
-              ele.addEventListener('click', () => this.load(tut))
-            })
+
+            this._enableTutorialEventListeners(div)
           }
           // ...
         })
+      })
+    })
+  }
+
+  _enableTutorialEventListeners (div) {
+    // enable examples "open" button
+    this.slide.querySelector('#ex-open-btn')
+      .addEventListener('click', () => {
+        WIDGETS.open('code-examples')
+        window.convo.hide()
+      })
+
+    this.slide.querySelector('#page-aboutOpts')
+      .addEventListener('click', () => {
+        this.slide.updateSlide(this.aboutOpts)
+        window.convo.hide()
+      })
+
+    // enable "play" buttons
+    div.querySelectorAll('[name^="tut"]').forEach(ele => {
+      const tut = ele.getAttribute('name').split(':')[1]
+      ele.addEventListener('click', () => this.load(tut))
+    })
+
+    // calc <p> heights && hide them
+    div.querySelectorAll('[name^="nfo"]').forEach(p => {
+      p.dataset.height = p.offsetHeight
+      p.style.height = '0px'
+      p.style.display = 'none'
+    })
+
+    // enable "info" buttons
+    div.querySelectorAll('[name^="i"]').forEach(ele => {
+      const t = ele.getAttribute('name').split(':')[1]
+      ele.addEventListener('click', () => {
+        const p = div.querySelector(`[name="nfo:${t}"]`)
+        if (ele.textContent === 'i') {
+          p.style.display = 'block'
+          ele.textContent = 'x'
+          setTimeout(() => {
+            p.style.height = p.dataset.height + 'px'
+            p.style.paddingTop = '8px'
+          }, 10)
+        } else {
+          p.style.height = '0px'
+          p.style.paddingTop = '0px'
+          ele.textContent = 'i'
+          setTimeout(() => { p.style.display = 'none' }, 1000)
+        }
+      })
+    })
+
+    // enable appendix links
+    this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
+      const arr = ele.getAttribute('name').split(':')
+      const widget = `${arr[1]}-reference`
+      ele.addEventListener('click', () => {
+        window.convo.hide()
+        WIDGETS.open(widget, null, (w) => w.slide.updateSlide(w[arr[2]]))
       })
     })
   }

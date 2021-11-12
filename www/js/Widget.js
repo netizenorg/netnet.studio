@@ -91,7 +91,8 @@ class Widget {
 
     this.events = {
       open: [],
-      close: []
+      close: [],
+      resize: []
     }
 
     this._createWindow()
@@ -488,7 +489,10 @@ class Widget {
     } else if (this.mousedown === 'widget') {
       const w = e.clientX - this.ele.offsetLeft
       const h = e.clientY - this.ele.offsetTop
-      if (this._resizable) this.update({ width: w, height: h })
+      if (this._resizable) {
+        this.emit('resize', { width: w, height: h })
+        this.update({ width: w, height: h })
+      }
     }
   }
 }

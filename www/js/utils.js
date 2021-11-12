@@ -328,17 +328,18 @@ window.utils = {
     }, true)
   },
 
-  loadExample: (example) => {
+  loadExample: (example, fromExamplesWidget) => {
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
       NNE.code = ''
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
-        WIDGETS['tutorials-guide'].lastClickedExample.code = json.hash.substr(6)
+        WIDGETS['code-examples'].lastClickedExample.code = json.hash.substr(6)
         NNE.code = NNE._decode(json.hash.substr(6))
         setTimeout(() => NNE.cm.refresh(), 10)
         window.utils.fadeOutLoader(false)
-        window.utils._Convo('demo-example')
+        if (fromExamplesWidget) window.utils._Convo('demo-ex-from-list')
+        else window.utils._Convo('demo-example')
       })
     })
   },
