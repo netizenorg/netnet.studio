@@ -229,7 +229,7 @@ class SearchBar {
           type: 'Examples',
           word: ex.name,
           alts: keywords,
-          clck: () => { utils.loadExample(i) }
+          clck: () => { utils.loadExample(i, 'search') }
         })
         update()
       }

@@ -13,6 +13,7 @@ class CodeExamples extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.on('resize', (e) => this._resizeIt(e))
+    this.on('close', (e) => this._createHTML())
 
     utils.get('api/examples', (res) => {
       this.mainOpts = {
@@ -25,6 +26,10 @@ class CodeExamples extends Widget {
 
       NNW.on('theme-change', () => { this._createHTML() })
     })
+  }
+
+  beforeLoadingEx () {
+    window.convo = new Convo(this.convos, 'before-loading-example')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -232,9 +237,7 @@ class CodeExamples extends Widget {
       }
     })
 
-    copy.addEventListener('click', () => {
-      window.convo = new Convo(this.convos, 'before-loading-example')
-    })
+    copy.addEventListener('click', () => this.beforeLoadingEx())
 
     const render = this.ele.querySelector('.code-examples--render')
     const ctab = this.ele.querySelector('.code-examples--tabs > b:nth-child(1)')

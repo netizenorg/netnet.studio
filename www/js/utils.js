@@ -240,7 +240,7 @@ window.utils = {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
     } else if (url.example) {
-      window.utils.loadExample(url.example, true)
+      window.utils.loadExample(url.example, 'load')
       return 'example'
     } else {
       window.utils.fadeOutLoader(false)
@@ -328,19 +328,31 @@ window.utils = {
     }, true)
   },
 
-  loadExample: (example, fromExamplesWidget) => {
-    window.utils.post('./api/example-data', { key: example }, (json) => {
-      NNE.addCustomRoot(null)
-      NNE.code = ''
-      NNW.layout = 'dock-left'
+  loadExample: (example, calledBy) => {
+    const loadIt = (json, calledBy) => {
+      WIDGETS['code-examples'].lastClickedExample.key = example
       window.utils.afterLayoutTransition(() => {
         WIDGETS['code-examples'].lastClickedExample.code = json.hash.substr(6)
-        NNE.code = NNE._decode(json.hash.substr(6))
         setTimeout(() => NNE.cm.refresh(), 10)
-        window.utils.fadeOutLoader(false)
-        if (fromExamplesWidget) window.utils._Convo('demo-ex-from-list')
-        else window.utils._Convo('demo-example')
+        if (calledBy === 'load') {
+          window.utils.fadeOutLoader(false)
+          NNE.code = NNE._decode(json.hash.substr(6))
+          window.utils._Convo('demo-example')
+        } else if (calledBy === 'widget') {
+          NNE.code = NNE._decode(json.hash.substr(6))
+          window.utils._Convo('demo-ex-from-list')
+        } else if (calledBy === 'search') {
+          WIDGETS['code-examples'].beforeLoadingEx()
+        }
       })
+    }
+
+    window.utils.post('./api/example-data', { key: example }, (json) => {
+      NNE.addCustomRoot(null)
+      if (calledBy === 'load') { NNW.layout = 'dock-left' }
+      if (!WIDGETS['code-examples']) {
+        WIDGETS.load('CodeExamples.js', () => loadIt(json, calledBy))
+      } else { loadIt(json, calledBy) }
     })
   },
 

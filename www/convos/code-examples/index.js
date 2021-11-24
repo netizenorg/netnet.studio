@@ -23,7 +23,7 @@ window.CONVOS['code-examples'] = (self) => {
     content: 'Opening this example will get rid of all the code currently in my editor, is that alright with you?',
     options: {
       sure: (e) => {
-        utils.loadExample(self.lastClickedExample.key, true)
+        utils.loadExample(self.lastClickedExample.key, 'widget')
         e.hide()
       },
       'no, never mind': (e) => e.hide()
