@@ -332,7 +332,7 @@ window.utils = {
     const loadIt = (json, calledBy) => {
       WIDGETS['code-examples'].lastClickedExample.key = example
       window.utils.afterLayoutTransition(() => {
-        WIDGETS['code-examples'].lastClickedExample.code = json.hash.substr(6)
+        WIDGETS['code-examples'].lastClickedExample.code = json.hash
         setTimeout(() => NNE.cm.refresh(), 10)
         if (calledBy === 'load') {
           window.utils.fadeOutLoader(false)
