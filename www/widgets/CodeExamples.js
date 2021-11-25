@@ -274,8 +274,8 @@ class CodeExamples extends Widget {
     const frm = this.ele.querySelector('.code-examples--frame')
     const edi = this.ele.querySelector('.code-examples--editor')
     const rdr = this.ele.querySelector('.code-examples--render')
-    this.slide.style.maxHeight = `${e.height - wst}px`
-    this.slide.style.width = `${e.width - wsl}px`
+    if (this.slide) this.slide.style.maxHeight = `${e.height - wst}px`
+    if (this.slide) this.slide.style.width = `${e.width - wsl}px`
     if (rws) rws.style.height = `${e.height - wst}px`
     if (frm) frm.style.height = `${e.height - frt}px`
     if (edi) edi.style.height = `${e.height - top}px`
