@@ -122,6 +122,11 @@ class FunctionsMenu extends Widget {
         select: 'func-menu-wrap-select'
       },
       {
+        click: 'chattiness',
+        alts: ['chatty', 'dialogue', 'netnet', 'bubbles'],
+        select: 'func-menu-chat-select'
+      },
+      {
         click: 'viewShortcuts',
         alts: []
       },
@@ -328,6 +333,20 @@ class FunctionsMenu extends Widget {
     this.sesh.setData('wrap', this.lineWrapping.value)
   }
 
+  chattiness (val) {
+    const v = val || this.chatty.value
+    this.chatty.value = v
+    this.sesh.setData('chattiness', v)
+    WIDGETS['code-review'].updateIssues()
+    if (this.chatty.value === 'low') {
+      window.convo = new Convo(this.convos, 'chatty-level-low')
+    } else if (this.chatty.value === 'medium') {
+      window.convo = new Convo(this.convos, 'chatty-level-medium')
+    } else if (this.chatty.value === 'high') {
+      window.convo = new Convo(this.convos, 'chatty-level-high')
+    }
+  }
+
   viewYourData () {
     WIDGETS.open('student-session')
   }
@@ -481,7 +500,7 @@ class FunctionsMenu extends Widget {
         b.textContent = btn.click + '('
         // HACK: to avoid having netnet's textBubble pull focus from drop down
         // which causes autoUpdate to get stuck on false in some systems
-        if (btn.click !== 'autoUpdate') {
+        if (btn.click !== 'autoUpdate' && btn.click !== 'chattiness') {
           b.addEventListener('click', (e) => this[btn.click]())
         }
         if (btn.select) {
@@ -571,6 +590,13 @@ class FunctionsMenu extends Widget {
     this._creatOption('false', this.lineWrapping)
     this.lineWrapping.value = this.sesh.getData('wrap') === 'true'
     this.lineWrapping.addEventListener('change', () => this.wordWrap())
+
+    this.chatty = this.$('#func-menu-chat-select')
+    this._creatOption('high', this.chatty)
+    this._creatOption('medium', this.chatty)
+    this._creatOption('low', this.chatty)
+    this.chatty.value = this.sesh.getData('chattiness')
+    this.chatty.addEventListener('change', () => this.chattiness())
   }
 
   _setupListeners () {

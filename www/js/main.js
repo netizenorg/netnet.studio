@@ -42,10 +42,12 @@ NNE.cm.on('keydown', (cm, e) => {
 })
 
 NNE.on('edu-info', (e, eve) => {
-  if (e.line && e.type) NNE.spotlight(e.line)
-  if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
-  if (e.language === 'css') WIDGETS['css-reference'].textBubble(e)
-  else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
+  if (WIDGETS['student-session'].getData('chattiness') === 'high') {
+    if (e.line && e.type) NNE.spotlight(e.line)
+    if (e.language === 'html') WIDGETS['html-reference'].textBubble(e)
+    if (e.language === 'css') WIDGETS['css-reference'].textBubble(e)
+    else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
+  }
 })
 
 window.addEventListener('resize', (e) => {
