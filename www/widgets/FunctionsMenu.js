@@ -122,6 +122,10 @@ class FunctionsMenu extends Widget {
         select: 'func-menu-wrap-select'
       },
       {
+        click: 'viewShortcuts',
+        alts: []
+      },
+      {
         click: 'viewYourData',
         alts: []
       }
@@ -326,6 +330,10 @@ class FunctionsMenu extends Widget {
 
   viewYourData () {
     WIDGETS.open('student-session')
+  }
+
+  viewShortcuts () {
+    WIDGETS.open('keyboard-shortcuts')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
