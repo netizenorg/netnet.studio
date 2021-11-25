@@ -211,8 +211,11 @@ window.utils = {
     if (typeof window.utils.url.github === 'string') {
       WIDGETS['student-session'].clearProjectData()
       const a = window.utils.url.github.split('/')
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      NNE.addCustomRoot(path)
+      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      NNE.addCustomRoot({ base, proxy })
     }
   },
 
@@ -308,10 +311,13 @@ window.utils = {
   loadGithub: (github, layout) => {
     const a = github.split('/')
     if (a.length < 3 || a[2] === '') a[2] = 'main'
-    const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-    const rawHTML = `${path}index.html`
+    const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+    const proto = window.location.protocol
+    const host = window.location.host
+    const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+    const rawHTML = `${proxy}index.html`
     window.utils.get(rawHTML, (html) => {
-      NNE.addCustomRoot(path)
+      NNE.addCustomRoot({ base, proxy })
       NNE.code = ''
       if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
@@ -364,10 +370,13 @@ window.utils = {
       // if they were looking at someone else's GitHub poroject
       // before they got redirected over to GitHub for auth...
       const a = code.split('.com/')[1].split('/')
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const rawHTML = `${path}index.html`
+      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      const rawHTML = `${proxy}index.html`
       window.utils.get(rawHTML, (html) => {
-        NNE.addCustomRoot(path)
+        NNE.addCustomRoot({ base, proxy })
         NNE.code = ''
         NNW.layout = 'dock-left'
         window.utils.afterLayoutTransition(() => {

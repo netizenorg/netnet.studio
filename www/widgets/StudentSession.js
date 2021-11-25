@@ -214,8 +214,11 @@ class StudentSession extends Widget {
     const repo = window.sessionStorage.getItem('opened-project')
     const main = window.sessionStorage.getItem('branch')
     if (owner && repo) {
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
-      NNE.addCustomRoot(path)
+      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      NNE.addCustomRoot({ base, proxy })
     } else {
       NNE.addCustomRoot(null)
     }
