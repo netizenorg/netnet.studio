@@ -61,8 +61,9 @@ router.get('/api/github/proxy', (req, res) => {
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
   axios.get(url, { responseType: 'arraybuffer' })
     .then(r => {
-      if (req.query.url.includes('.css')) res.end(reWriteCSSPaths(req, r.data))
-      else res.end(r.data)
+      if (req.query.url.includes('.css')) {
+        res.end(reWriteCSSPaths(req, r.data))
+      } else res.end(r.data)
     })
     .catch(err => console.log(err))
 })
