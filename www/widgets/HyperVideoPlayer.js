@@ -19,7 +19,7 @@ class HyperVideoPlayer extends Widget {
         // tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
-      NNE.cm.setOption('readOnly', false)
+      NNE.readOnly = false
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
 
@@ -468,7 +468,7 @@ class HyperVideoPlayer extends Widget {
 
   _editable (bool) {
     const tg = WIDGETS['tutorials-guide']
-    if (tg && tg.metadata) NNE.cm.setOption('readOnly', !bool)
+    if (tg && tg.metadata) NNE.readOnly = !bool
   }
 
   _videoNeedsUpdate (video) {
