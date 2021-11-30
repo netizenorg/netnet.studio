@@ -1,4 +1,4 @@
-/* global Widget, NNE, NNW, Convo, utils, Color */
+/* global Widget, NNE, NNW, Convo, utils, Color, WIDGETS */
 class CodeReview extends Widget {
   constructor (opts) {
     opts = opts || {}
@@ -23,7 +23,12 @@ class CodeReview extends Widget {
   updateIssues (e) {
     const t = 'sketch' // TODO check if in GH project, change to "tab" or "file"
     if (e) this.issues = e
-    this._markErrors(this.issues)
+    // mark editor
+    const c = WIDGETS['student-session']
+      ? WIDGETS['student-session'].getData('chattiness') : null
+    if (c && c !== 'low') this._markErrors(this.issues)
+    else NNE.marker(null)
+    // update code review widget list
     const list = this.$('.code-review')
     if (this.issues.length > 0) list.innerHTML = ''
     else list.innerHTML = `<h3>No issues were found in this ${t}</h3>`

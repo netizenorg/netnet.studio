@@ -76,6 +76,18 @@ window.CONVOS['functions-menu'] = (self) => {
     options: {
       'will do, thanks!': (e) => e.hide()
     }
+  }, {
+    id: 'chatty-level-low',
+    content: 'Ok, I\'ll stop explaining everything you double click on and I won\'t <i>bug</i> you about issues anymore. I\'m still here if you need me for anything else though.',
+    options: { 'ok, thanks!': (e) => e.hide() }
+  }, {
+    id: 'chatty-level-medium',
+    content: 'Ok, I\'ll stop explaining everything you double click on, but I\'ll still mark any potential issues I spot in your code.',
+    options: { 'ok, thanks!': (e) => e.hide() }
+  }, {
+    id: 'chatty-level-high',
+    content: 'Great! I\'ll let you know when I notice any potential issues in your code by marking lines with a red or yellow dot. I\'ll also explain any piece of code in the editor you double click on.',
+    options: { 'ok, thanks!': (e) => e.hide() }
   },
   // ...
   // ...GitHub convos...

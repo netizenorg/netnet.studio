@@ -211,8 +211,11 @@ window.utils = {
     if (typeof window.utils.url.github === 'string') {
       WIDGETS['student-session'].clearProjectData()
       const a = window.utils.url.github.split('/')
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      NNE.addCustomRoot(path)
+      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      NNE.addCustomRoot({ base, proxy })
     }
   },
 
@@ -240,7 +243,7 @@ window.utils = {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
     } else if (url.example) {
-      window.utils.loadExample(url.example, true)
+      window.utils.loadExample(url.example, 'load')
       return 'example'
     } else {
       window.utils.fadeOutLoader(false)
@@ -307,11 +310,14 @@ window.utils = {
 
   loadGithub: (github, layout) => {
     const a = github.split('/')
-    if (a.length < 3) a[2] = 'main'
-    const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-    const rawHTML = `${path}index.html`
+    if (a.length < 3 || a[2] === '') a[2] = 'main'
+    const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+    const proto = window.location.protocol
+    const host = window.location.host
+    const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+    const rawHTML = `${proxy}index.html`
     window.utils.get(rawHTML, (html) => {
-      NNE.addCustomRoot(path)
+      NNE.addCustomRoot({ base, proxy })
       NNE.code = ''
       if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
@@ -328,19 +334,31 @@ window.utils = {
     }, true)
   },
 
-  loadExample: (example, fromExamplesWidget) => {
+  loadExample: (example, calledBy) => {
+    const loadIt = (json, calledBy) => {
+      WIDGETS['code-examples'].lastClickedExample.key = example
+      window.utils.afterLayoutTransition(() => {
+        WIDGETS['code-examples'].lastClickedExample.code = json.hash
+        setTimeout(() => NNE.cm.refresh(), 10)
+        if (calledBy === 'load') {
+          window.utils.fadeOutLoader(false)
+          NNE.code = NNE._decode(json.hash.substr(6))
+          window.utils._Convo('demo-example')
+        } else if (calledBy === 'widget') {
+          NNE.code = NNE._decode(json.hash.substr(6))
+          window.utils._Convo('demo-ex-from-list')
+        } else if (calledBy === 'search') {
+          WIDGETS['code-examples'].beforeLoadingEx()
+        }
+      })
+    }
+
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
-      NNE.code = ''
-      NNW.layout = 'dock-left'
-      window.utils.afterLayoutTransition(() => {
-        WIDGETS['code-examples'].lastClickedExample.code = json.hash.substr(6)
-        NNE.code = NNE._decode(json.hash.substr(6))
-        setTimeout(() => NNE.cm.refresh(), 10)
-        window.utils.fadeOutLoader(false)
-        if (fromExamplesWidget) window.utils._Convo('demo-ex-from-list')
-        else window.utils._Convo('demo-example')
-      })
+      if (calledBy === 'load') { NNW.layout = 'dock-left' }
+      if (!WIDGETS['code-examples']) {
+        WIDGETS.load('CodeExamples.js', () => loadIt(json, calledBy))
+      } else { loadIt(json, calledBy) }
     })
   },
 
@@ -352,10 +370,13 @@ window.utils = {
       // if they were looking at someone else's GitHub poroject
       // before they got redirected over to GitHub for auth...
       const a = code.split('.com/')[1].split('/')
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const rawHTML = `${path}index.html`
+      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      const rawHTML = `${proxy}index.html`
       window.utils.get(rawHTML, (html) => {
-        NNE.addCustomRoot(path)
+        NNE.addCustomRoot({ base, proxy })
         NNE.code = ''
         NNW.layout = 'dock-left'
         window.utils.afterLayoutTransition(() => {

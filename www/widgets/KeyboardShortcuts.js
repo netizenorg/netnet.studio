@@ -77,7 +77,7 @@ class KeyboardShortcuts extends Widget {
       },
       {
         key: `${utils.hotKey()} + Enter`,
-        nfo: 'update (if autoUpdate is off)',
+        nfo: 'update/refresh output',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 13,
         callback: (e) => {
           // SEE _preventCodeMirrorDefaults BELLOW
@@ -183,11 +183,11 @@ class KeyboardShortcuts extends Widget {
   _preventCodeMirrorDefaults () {
     // run update when autoUpdate(false) handler
     NNE.cm.on('keyHandled', (a, b, e) => {
-      if (!NNE.autoUpdate && (b === 'Ctrl-Enter' || b === 'Cmd-Enter')) {
+      if (b === 'Ctrl-Enter' || b === 'Cmd-Enter') {
         e.preventDefault()
         e.stopPropagation()
         NNE.cm.undo() // remove \n that Enter adds
-        NNE.update()
+        if (!NNE.autoUpdate) NNE.update()
       }
     })
   }

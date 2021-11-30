@@ -29,12 +29,42 @@ function decryptToken (req, res, cb) {
 
 // ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ proxy for raw.githubusercontent.com
 
+function reWriteCSSPaths (req, data) { // HACK!!!
+  // b/c all requests for JS files (via <script>) && CSS files (via <link>)
+  // are routed through the proxy below (in order to get around the issue
+  // linked below) any CSS url(...) w/realtive paths assume the root path is
+  // /api/github/ (ie. the proxy server's path) && so it won't find any of the
+  // linked assets. in order to get around this, here we reconstruct relative
+  // paths w/in a stylesheet so that they become absolute paths to the assett.
+  // ...this is a huge HACK, it works fine for now, but may cause issues
+  // if/when we decide to support multi-file editing in netnet.
+  let str = data.toString()
+  const a = req.query.url.split('//') // ['https:', '[root]', '[path]']
+  a[2] = a[2].split('/')
+  a[2] = a[2].slice(0, a[2].length - 1).join('/')
+  const urlMatches = str.match(/\burl\(([^()]*)\)/g) || []
+  urlMatches.forEach(m => { // all url(...) matches in stylesheet
+    const n = (m.includes('"') || m.includes("'")) ? 5 : 4
+    const s = m.substring(n, m.length)
+    const r = m.replace(s, `${a[0]}//${a[1]}/${a[2]}/${s}`)
+    if (s.indexOf('http') !== 0) str = str.replace(m, r)
+  })
+  return str
+}
+
 router.get('/api/github/proxy', (req, res) => {
-  // on the live version, the redbird proxy screws w/this proxy
-  // HACK: this fixes the redbird screw up
+  // HACK: on the live version, the redbird proxy screws w/this proxy
+  // && removes one of the slashes after the protocol https://
+  // ...this fixes the redbird screw up
   const url = req.query.url.replace('https:/raw', 'https://raw')
+  // HACK: the purpose of this proxy to get around this issue:
+  // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
   axios.get(url, { responseType: 'arraybuffer' })
-    .then(r => res.end(r.data))
+    .then(r => {
+      if (req.query.url.includes('.css')) {
+        res.end(reWriteCSSPaths(req, r.data))
+      } else res.end(r.data)
+    })
     .catch(err => console.log(err))
 })
 

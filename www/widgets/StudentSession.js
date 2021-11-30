@@ -25,6 +25,7 @@ class StudentSession extends Widget {
       editor: {
         autoUpdate: ls.getItem('auto-update'),
         wrap: ls.getItem('wrap'),
+        chattiness: ls.getItem('chattiness'),
         theme: ls.getItem('theme')
       },
       github: {
@@ -213,8 +214,11 @@ class StudentSession extends Widget {
     const repo = window.sessionStorage.getItem('opened-project')
     const main = window.sessionStorage.getItem('branch')
     if (owner && repo) {
-      const path = `api/github/proxy?url=https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
-      NNE.addCustomRoot(path)
+      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
+      const proto = window.location.protocol
+      const host = window.location.host
+      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+      NNE.addCustomRoot({ base, proxy })
     } else {
       NNE.addCustomRoot(null)
     }
@@ -293,6 +297,10 @@ class StudentSession extends Widget {
     NNE.autoUpdate = (this.getData('auto-update') === 'true')
     NNE.wrap = (this.getData('wrap') === 'true')
 
+    if (!window.localStorage.getItem('chattiness')) {
+      this.setData('chattiness', 'high')
+    }
+
     if (window.localStorage.getItem('theme') === null) {
       this.setData('theme', 'dark')
     }
@@ -362,6 +370,10 @@ class StudentSession extends Widget {
         <div>
           editor line wrap:
           <input value="${this.data.editor.wrap}" readonly="readonly">
+        </div>
+        <div>
+          netnet's chattiness:
+          <input value="${this.data.editor.chattiness}" readonly="readonly">
         </div>
         <h2><span>Last Save Point</span> <button name="last-save">?</button></h2>
         <div>

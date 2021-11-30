@@ -13,6 +13,10 @@ class CodeExamples extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.on('resize', (e) => this._resizeIt(e))
+    this.on('open', () => {
+      this._resizeIt({ width: this.width, height: this.height })
+    })
+    this.on('close', () => this._createHTML())
 
     utils.get('api/examples', (res) => {
       this.mainOpts = {
@@ -25,6 +29,10 @@ class CodeExamples extends Widget {
 
       NNW.on('theme-change', () => { this._createHTML() })
     })
+  }
+
+  beforeLoadingEx () {
+    window.convo = new Convo(this.convos, 'before-loading-example')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -102,6 +110,7 @@ class CodeExamples extends Widget {
             window.utils.afterLayoutTransition(() => {
               this._updateEditor(o)
               this._updateListeners()
+              this._resizeIt({ width: this.width, height: this.height })
             })
             window.convo = new Convo(this.convos, 'example-info')
           })
@@ -232,9 +241,7 @@ class CodeExamples extends Widget {
       }
     })
 
-    copy.addEventListener('click', () => {
-      window.convo = new Convo(this.convos, 'before-loading-example')
-    })
+    copy.addEventListener('click', () => this.beforeLoadingEx())
 
     const render = this.ele.querySelector('.code-examples--render')
     const ctab = this.ele.querySelector('.code-examples--tabs > b:nth-child(1)')
@@ -267,18 +274,18 @@ class CodeExamples extends Widget {
     const frm = this.ele.querySelector('.code-examples--frame')
     const edi = this.ele.querySelector('.code-examples--editor')
     const rdr = this.ele.querySelector('.code-examples--render')
-    this.slide.style.maxHeight = `${e.height - wst}px`
-    this.slide.style.width = `${e.width - wsl}px`
-    rws.style.height = `${e.height - wst}px`
-    frm.style.height = `${e.height - frt}px`
-    edi.style.height = `${e.height - top}px`
-    rdr.style.height = `${e.height - top}px`
-    rws.style.width = `${e.width - lef}px`
-    nav.style.width = `${e.width + 8}px`
-    frm.style.width = `${e.width - lef}px`
-    edi.style.width = `${e.width - lef}px`
-    rdr.style.width = `${e.width - lef}px`
-    rdr.style.top = `-${e.height - top}px`
+    if (this.slide) this.slide.style.maxHeight = `${e.height - wst}px`
+    if (this.slide) this.slide.style.width = `${e.width - wsl}px`
+    if (rws) rws.style.height = `${e.height - wst}px`
+    if (frm) frm.style.height = `${e.height - frt}px`
+    if (edi) edi.style.height = `${e.height - top}px`
+    if (rdr) rdr.style.height = `${e.height - top}px`
+    if (rws) rws.style.width = `${e.width - lef}px`
+    if (nav) nav.style.width = `${e.width + 8}px`
+    if (frm) frm.style.width = `${e.width - lef}px`
+    if (edi) edi.style.width = `${e.width - lef}px`
+    if (rdr) rdr.style.width = `${e.width - lef}px`
+    if (rdr) rdr.style.top = `-${e.height - top}px`
   }
 }
 

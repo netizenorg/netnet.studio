@@ -19,9 +19,15 @@ class HyperVideoPlayer extends Widget {
         // tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
-      NNE.cm.setOption('readOnly', false)
+      NNE.readOnly = false
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
+
+    const pause = () => { if (this.video && !this.video.paused) this.pause() }
+
+    WIDGETS['functions-menu'].on('open', () => pause())
+    WIDGETS['tutorials-guide'].on('open', () => pause())
+    NNW.menu.search.on('open', () => pause())
 
     opts = opts || {}
     this.title = opts.title || 'HyperVideo Player'
@@ -468,7 +474,7 @@ class HyperVideoPlayer extends Widget {
 
   _editable (bool) {
     const tg = WIDGETS['tutorials-guide']
-    if (tg && tg.metadata) NNE.cm.setOption('readOnly', !bool)
+    if (tg && tg.metadata) NNE.readOnly = !bool
   }
 
   _videoNeedsUpdate (video) {
