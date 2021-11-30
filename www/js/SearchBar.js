@@ -67,7 +67,7 @@ class SearchBar {
     setTimeout(() => {
       this.ele.querySelector('input').focus()
       this.ele.style.opacity = 1
-      this.emit('open')
+      this.emit('open', {})
     }, 100)
   }
 
@@ -76,7 +76,7 @@ class SearchBar {
     setTimeout(() => { this.ele.style.opacity = 0 }, 10)
     setTimeout(() => {
       this.ele.style.visibility = 'hidden'
-      this.emit('open')
+      this.emit('open', {})
     }, utils.getVal('--menu-fades-time'))
   }
 

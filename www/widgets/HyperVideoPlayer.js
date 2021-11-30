@@ -23,6 +23,12 @@ class HyperVideoPlayer extends Widget {
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
     })
 
+    const pause = () => { if (this.video && !this.video.paused) this.pause() }
+
+    WIDGETS['functions-menu'].on('open', () => pause())
+    WIDGETS['tutorials-guide'].on('open', () => pause())
+    NNW.menu.search.on('open', () => pause())
+
     opts = opts || {}
     this.title = opts.title || 'HyperVideo Player'
     this._createHTML(opts)
