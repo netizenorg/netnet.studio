@@ -39,7 +39,8 @@ function reWriteCSSPaths (req, data) { // HACK!!!
   // ...this is a huge HACK, it works fine for now, but may cause issues
   // if/when we decide to support multi-file editing in netnet.
   let str = data.toString()
-  const a = req.query.url.split('//') // ['https:', '[root]', '[path]']
+  const url = req.query.url.replace('https:/raw', 'https://raw')
+  const a = url.split('//') // ['https:', '[root]', '[path]']
   a[2] = a[2].split('/')
   a[2] = a[2].slice(0, a[2].length - 1).join('/')
   const urlMatches = str.match(/\burl\(([^()]*)\)/g) || []
