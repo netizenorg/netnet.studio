@@ -478,7 +478,8 @@ window.utils = {
     }
   },
 
-  scrollToLines: (arr, time) => {
+  scrollToLines: (arr, ch) => {
+    ch = ch || 0
     // center vertical scroll on an array of line numbers
     const c = NNE.cm.lineCount()
     const s = NNE.cm.getScrollInfo() // scroll object
@@ -489,8 +490,8 @@ window.utils = {
       ? (arr[0] - 1) + (t - 1) // make arr[0] first viewable line
       : Math.round(arr[arr.length - 1] + d) - 1 // otherwise center it
     const target = l >= c ? c - 1 : l
-    NNE.cm.scrollIntoView({ line: 0 })
-    NNE.cm.scrollIntoView({ line: target })
+    NNE.cm.scrollIntoView({ line: 0, ch })
+    NNE.cm.scrollIntoView({ line: target, ch })
   },
 
   numChange: (e) => {
