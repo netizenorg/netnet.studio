@@ -154,8 +154,14 @@ router.post('/api/expand-url', (req, res) => {
 })
 
 router.get('/api/examples', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/examples-urls.json')
-  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  const urlsDict = {}
+  const exPath = path.join(__dirname, '../data/examples')
+  const files = fs.readdirSync(exPath)
+  files.forEach(file => {
+    const str = fs.readFileSync(`${exPath}/${file}`)
+    const obj = JSON.parse(str)
+    urlsDict[obj.key] = obj
+  })
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET'
@@ -168,12 +174,16 @@ router.get('/api/examples', (req, res) => {
 })
 
 router.post('/api/example-data', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/examples-urls.json')
-  // const urlsDict = require(dbPath)
-  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  const hash = urlsDict[req.body.key].code
+  const exPath = path.join(__dirname, '../data/examples')
+  const files = fs.readdirSync(exPath)
+  const file = files.filter(f => f.indexOf(`${req.body.key}--`) === 0)[0]
+  const str = fs.readFileSync(`${exPath}/${file}`)
+  const obj = JSON.parse(str)
+  const name = obj.name
+  const hash = obj.code
+  const info = obj.info
   if (typeof hash === 'string') {
-    res.json({ success: 'success', hash })
+    res.json({ success: 'success', name, hash, info })
   } else {
     res.json({ error: `${req.body.key} is not in the database.` })
   }

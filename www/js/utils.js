@@ -336,17 +336,19 @@ window.utils = {
 
   loadExample: (example, calledBy) => {
     const loadIt = (json, calledBy) => {
+      WIDGETS['code-examples'].lastClickedExample = json
       WIDGETS['code-examples'].lastClickedExample.key = example
       window.utils.afterLayoutTransition(() => {
-        WIDGETS['code-examples'].lastClickedExample.code = json.hash
         setTimeout(() => NNE.cm.refresh(), 10)
         if (calledBy === 'load') {
           window.utils.fadeOutLoader(false)
           NNE.code = NNE._decode(json.hash.substr(6))
-          window.utils._Convo('demo-example')
+          if (!json.info) window.utils._Convo('demo-example')
+          else window.utils._Convo('demo-explainer')
         } else if (calledBy === 'widget') {
           NNE.code = NNE._decode(json.hash.substr(6))
-          window.utils._Convo('demo-ex-from-list')
+          if (!json.info) window.utils._Convo('demo-ex-from-list')
+          WIDGETS['code-examples'].explainExample()
         } else if (calledBy === 'search') {
           WIDGETS['code-examples'].beforeLoadingEx()
         }
@@ -355,7 +357,9 @@ window.utils = {
 
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
-      if (calledBy === 'load') { NNW.layout = 'dock-left' }
+      if (calledBy === 'load' || NNW.layout === 'welcome') {
+        NNW.layout = 'dock-left'
+      }
       if (!WIDGETS['code-examples']) {
         WIDGETS.load('CodeExamples.js', () => loadIt(json, calledBy))
       } else { loadIt(json, calledBy) }
@@ -472,6 +476,21 @@ window.utils = {
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
+  },
+
+  scrollToLines: (arr, time) => {
+    // center vertical scroll on an array of line numbers
+    const c = NNE.cm.lineCount()
+    const s = NNE.cm.getScrollInfo() // scroll object
+    const h = s.height / c // line height
+    const t = Math.round(s.clientHeight / h) // total viewable lines
+    const d = (t / 2) - (arr.length / 2) // diff offset
+    const l = (arr.length >= t) // if space is too tight
+      ? (arr[0] - 1) + (t - 1) // make arr[0] first viewable line
+      : Math.round(arr[arr.length - 1] + d) - 1 // otherwise center it
+    const target = l >= c ? c - 1 : l
+    NNE.cm.scrollIntoView({ line: 0 })
+    NNE.cm.scrollIntoView({ line: target })
   },
 
   numChange: (e) => {

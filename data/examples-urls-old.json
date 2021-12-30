@@ -32,7 +32,24 @@
   "6": {
     "type": "CSS Art tricks",
     "name": "pixel art (box-shadow hack)",
-    "code": "#code/eJyFl91uwjAMhe/3FLnZ3TpaBihhiHcpakYrdaTqDz+a9u5rHbYRNzmRKCL97PjEhWOx6/pbrfdPQhxMcRNf4wchPvP2WJ22In2nZamrY9lvRZam53K69T1e46uozveExnRVX5kxJT90ph56bTN701Bac7XrWn+M+6zTZ7u8VEVfzsrclwdzTboyL8xlvNVc/y45Xs3QNrV+oTgh1AbibMLZJshlivl0922JtwecEOAriflmhbmM6FMRfQkdgFSEzw8wbQ04IcDpfICriLwsiwhISCGVQR0AASnGsfRYfdIOOCHAZUSfiuizHUQBy4hC22IZ/g2mGFMHAY9tTx0EnKQDLiP6VESfbRAIsA1S2GQAJgS4FYACyASziE2hAOohCrA+6gmwfm4HQpuffkfFv8GL9HXdCZ13OqlOiRl6O2TuQ2lbmrNuH6ZNaDJMAg/14J8LHLpTgVN3JnDqOO4EW134xwGD7ixg0B0EvKY7BliqRIoUUsTc33dSB/LDhKDr+t7DhFLVTNFje7NZ1ceNmdfPsGvVvtM6kD/XEJxX5a0I1nTN3fdcQ1AhRczTZ9/+JRTF/NzXpyB0vZxTvLHr495WBamEqhRUxfzb3w6F7CAIXef2Fw5j17W9zQxj5th+j5th6727xf2PwdNuNN79bjG9/wC0oVBS"
+    "code": "#code/eJyFl91uwjAMhe/3FLnZ3TpaBihhiHcpakYrdaTqDz+a9u5rHbYRNzmRKCL97PjEhWOx6/pbrfdPQhxMcRNf4wchPvP2WJ22In2nZamrY9lvRZam53K69T1e46uozveExnRVX5kxJT90ph56bTN701Bac7XrWn+M+6zTZ7u8VEVfzsrclwdzTboyL8xlvNVc/y45Xs3QNrV+oTgh1AbibMLZJshlivl0922JtwecEOAriflmhbmM6FMRfQkdgFSEzw8wbQ04IcDpfICriLwsiwhISCGVQR0AASnGsfRYfdIOOCHAZUSfiuizHUQBy4hC22IZ/g2mGFMHAY9tTx0EnKQDLiP6VESfbRAIsA1S2GQAJgS4FYACyASziE2hAOohCrA+6gmwfm4HQpuffkfFv8GL9HXdCZ13OqlOiRl6O2TuQ2lbmrNuH6ZNaDJMAg/14J8LHLpTgVN3JnDqOO4EW134xwGD7ixg0B0EvKY7BliqRIoUUsTc33dSB/LDhKDr+t7DhFLVTNFje7NZ1ceNmdfPsGvVvtM6kD/XEJxX5a0I1nTN3fdcQ1AhRczTZ9/+JRTF/NzXpyB0vZxTvLHr495WBamEqhRUxfzb3w6F7CAIXef2Fw5j17W9zQxj5th+j5th6727xf2PwdNuNN79bjG9/wC0oVBS",
+    "info": [
+      {
+        "title": "first step",
+        "focus": null,
+        "text": "this is an example of CSS Art"
+      },
+      {
+        "title": "next step",
+        "focus": [10,11,12,13,14,15,16],
+        "text": "this is the body's CSS rule set"
+      },
+      {
+        "title": "final step",
+        "focus": [63,64,65,66],
+        "text": "this rule set if for the sphere"
+      }
+    ]
   },
   "7": {
     "type": "CSS Art tricks",
@@ -151,7 +168,7 @@
   },
   "30": {
     "type": "randomness",
-    "name": "normal/gaussian (js)",
+    "name": "normal or gaussian (js)",
     "code": "#code/eJyFlFFvmzAQx9/zKU7dIiCjBJjWSWsSadpW7WF7aR/6Whe7wZpjt7YpoDbffWfj0DC1moSCufv973znc1bG9oJtZgC3ivbwhAuAHdFbLr9Afo6f+9lqGaDZqiLykRjw3+uTe2W45QpJcmuUaCw7P9mslgPkcFNpfm9d9EpJYyHI10BV1eyYtNlDw3R/xQSrrNJxNABR4hR+mbWc2hoVLZdUtRmXkulrZ3tBasa3tf2H+emNL5lth0AQbJn9pqRlnY2jkmI2xO4aWblaYEsaYziRlwSD7SBOQlMEs9AVKXRlCppQb6MqOAFdGL+EBfwmts60F6P2FIoDUP4HwKBIYJyF+/ngBLgqvXcPbc0Fg9hBmzUU8Pw8CNZryBPPhEIxhs9gHrSNT8eEQm2dOIGl0w0KzWyj5ZCy8kd93Agi+Y5YNjZAMzwsY796MwIXmuxYHKjjLdQNw018R2smVYv6BeRZ/gnm8PEs99xyOUGnHVk4zCGDBUmh9BDedtkdF+LKjR/qbmoj4vdPGGSfQpHn8xQ+5/PkZoSN1erPgY7elWUZjT7BJbsOw1Ue7d6NZ3F2ZGjfmL6x3LcmL8wMuqcz5Wts8SAMnrJ7lyPcvw7XAa5HuBvbphpJ484BjjTe20+9/dR7aOMlXrq4S6FPweCTTNvGXnH7AQm1Ekp/POIV/sWNZVh2HAlFaJTCOBH4vzHc/78RCEwp"
   },
   "31": {

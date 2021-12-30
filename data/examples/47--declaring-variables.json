@@ -1,0 +1,68 @@
+{
+  "type": "JS basics",
+  "name": "declaring variables",
+  "code": "#code/eJxVUDsSgyAQreUUW+rkg5IWaVKlzwUUd5QJIw4So4dJDpeTBDGJCQXsvrf73ht4aapJkIhLbB1aQcAf3mSiQqkLq9oaBv8UpcaeU4+TKOKdiAeFN5jM1YI0bW80Jpx2721PW1U3bie1khfYwKntO5QOno87HJdxOBflZ4XT1Xxue2lV5wQJat4dRsghS9PQh2v2dDCh53JgKWMrpdFBUeO8sYILwH7qw7+YT7TXpo7HbVDdzlNJiPYNw+nyVeQFje5T7Q==",
+  "key": "47",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": [8, 20],
+      "text": "  Because our JavaScript code is often times used to manipulate our HTML/CSS code, we typically place our JavaScript inside our <code>&lt;body&gt;</code> after all other HTML elements within a <code>&lt;script&gt;</code> element."
+    },
+    {
+      "title": "declaring a variable",
+      "focus": null,
+      "text": "When we run our program, our data is stored in our computer's memory (aka RAM). When we create a variable we not only store that data in memory but we also name it so that we can use or change it's data elsewhere in our code."
+    },
+    {
+      "title": "\"var\" keyword",
+      "focus": [10],
+      "text": "We've named this one \"x\". To create, or \"declare\", a new variable we first specify a declaration keyword, here we're using the <i>var</i> keyword."
+    },
+    {
+      "title": "old variable keyword",
+      "focus": null,
+      "text": "I've marked this line with an error message because we should try not to use this old keyword anymore. You might come across old example code online that uses <i>var</i>, it still works, but it can lead to buggy code so it's best to avoid it."
+    },
+    {
+      "title": "new variable keywords",
+      "focus": [12,13,14],
+      "text": "These days it's typically better to use either <i>const</i> or <i>let</i>"
+    },
+    {
+      "title": "\"const\" keyword",
+      "focus": [12],
+      "text": "The <i>const</i> keyword is used when the variable's value isn't going to change. We've named this one \"year\", if we reference it later, it will always return the value <code>2021</code>"
+    },
+    {
+      "title": "\"let\" keyword",
+      "focus": [14],
+      "text": "The <i>let</i> keyword is used instead if we plan on changing this variable's value elsewhere in our code"
+    },
+    {
+      "title": "reassigning variables",
+      "focus": [16],
+      "text": "Here we change, or \"reassign\", our <code>age</code> variable's value from <code>1</code> to <code>2</code> using the <code>=</code> syntax"
+    },
+    {
+      "title": "reassigning variables",
+      "focus": [17],
+      "text": "Now we reassign it to the value <code>3</code>"
+    },
+    {
+      "title": "console.log()",
+      "focus": [19],
+      "text": "Lastly, we'll \"return\" or \"print\" these values to our conosle"
+    },
+    {
+      "title": "seeing our data",
+      "focus": null,
+      "text": "If you open up your browser's developer tools (right-click > Inspect) and navigate to the \"Console\" tab you should see the values of these variable logged in your console"
+    },
+    {
+      "title": "console notes",
+      "focus": null,
+      "text": "You can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well."
+    }
+  ]
+}

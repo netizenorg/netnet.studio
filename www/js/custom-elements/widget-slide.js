@@ -7,6 +7,7 @@ class WidgetSlide extends HTMLElement {
         widget: wigInstance,  // the instance of the parent Widget
         back: prevOptsObject, // the options object of the slide to "return" to
         ele: htmlElement,     // an html element w/the slide's content
+        cb: function,         // optinal callback
         // ...or, a list of objects to create an index page from
         list: [
           { name: 'string', click: func, html: 'optional-html-string' },
@@ -40,6 +41,8 @@ class WidgetSlide extends HTMLElement {
         this._fadeInSlide(this._currentSlide)
       }
     }
+
+    if (opts.cb) opts.cb()
 
     this.scrollTop = 0
   }
