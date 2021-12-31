@@ -485,8 +485,9 @@ window.utils = {
     const s = NNE.cm.getScrollInfo() // scroll object
     const h = s.height / c // line height
     const t = Math.round(s.clientHeight / h) // total viewable lines
-    const d = (t / 2) - (arr.length / 2) // diff offset
-    const l = (arr.length >= t) // if space is too tight
+    const a = arr[arr.length - 1] - arr[0] + 1 // span of lines in array
+    const d = (t / 2) - (a / 2) // diff offset
+    const l = (a >= t) // if space is too tight
       ? (arr[0] - 1) + (t - 1) // make arr[0] first viewable line
       : Math.round(arr[arr.length - 1] + d) - 1 // otherwise center it
     const target = l >= c ? c - 1 : l

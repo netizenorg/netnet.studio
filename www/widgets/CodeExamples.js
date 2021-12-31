@@ -109,12 +109,12 @@ class CodeExamples extends Widget {
       `
 
       const sections = {}
-      for (const key in res.data) {
-        const obj = res.data[key]
-        obj.key = key
-        if (!sections[obj.type]) { sections[obj.type] = [] }
-        sections[obj.type].push(obj)
-      }
+      res.sections.forEach(sec => {
+        sections[sec.name] = []
+        sec.listed.forEach(id => {
+          sections[sec.name].push(res.data[id])
+        })
+      })
 
       for (const sec in sections) {
         const div = document.createElement('div')
@@ -290,6 +290,7 @@ class CodeExamples extends Widget {
       } else {
         options = { next, previous }
       }
+      if (!options.done) { options.done = e => e.hide() }
 
       window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
 

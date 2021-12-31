@@ -1,0 +1,113 @@
+{
+  "type": "HTML/CSS basics",
+  "name": "HTML intro",
+  "code": "#code/eJx9VF2L2zAQfL77FXt6aQuxzb2V4gRCzjSF3qVcfJQ+FcVeWyKyZCTlcumv70pOHNOWBhH5Y3dmZ3bl/O5hsyp/fCtA+E4tbvOwgeK6nTPUycuWLW5vcoG8pv0mv0sSKNdftkDr+7p4LmDz8gyPRblMHpblEj5vii0kSYzt0HOoBLcO/ZwdfJN8ZPGFl17honjjXa8QttJjng3PboF+Q6LmHc5Zja6ysvfSaAaV0R41YXUnwHP2EXeOANjfqfzghbGTLI2eVtSTnQXlO1Of/iMsanq/eYbV5qksnsoPUeBdVBj5HFahtgBBLt0vlrAmZKlborgfYiiqv1wBlEI6oMWh55a3lvcihdVQInjBPSmCXvGKpEkvpB4zJxmosAvxggegWjYN2nBfY8MPygPve6RYXeFsTDcWmPMnhWwWeDT94cWbPzkJVAwyxvQz5QyOQlaCOB0lnEiKf+fA45u/YhEEAShuW7Rj/qU01lBY4uQvZOnFnqyfOkVO3hSvaE8wlRl5zFGPQFHLDBrSdZ6FkSsoy0mCxWbOhPe9+5Rl1HpufWpNtXdsQd6IkDkw5Bm/dugolQJe10AesYOu0SqpkYE39OQEphlqucil2o6o1LVNLsy8bpHCQpQyNh27XhuNAUihj1UeHFrYa3OESfE8vJNnV+OoMKpgz87WV1TXjlqnZLXHmtDGVM1fZct9ZJiOxbp8/ErD02JK02kxYmpD/PZK+y+/qEk6NbYl7aGZdIR+7ujLsGeLUM/EtGkHZdeCs9WcZbIjSpe1snFZVae0M+CKUDiEm+Akh9XD5ehm41kKt+GQDoeTTlL8Mv0GVSto/A==",
+  "key": "48",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This is a pretty standard HTML (hypertext markup language) page. While it's technically not necessary to have this much code (you could delete it all and simply write \"hello world\" and that would work just as well), what we have here is a properly structured page. HTML code is all about \"structuring\" content after all."
+    },
+    {
+      "title": "elements",
+      "focus": [13],
+      "text": "HTML structures content using \"<b>elements</b>\". Take a look at this heading or \"h1\" element for example. Like most elements, it consists of some content, in this case the text \"<i>A Heading</i>\", surrounded by an opening \"<b>tag</b>\" and a closing \"<b>tag</b>\"."
+    },
+    {
+      "title": "opening tags",
+      "focus": [13],
+      "text": "The <code>&lt;h1&gt;</code> element, like every other HTML element, starts with its opening tag. Every element's opening tag begins with an opening <code>&lt;</code> bracket, followed by the element's name and then a closing <code>&gt;</code> bracket. "
+    },
+    {
+      "title": "closing tags",
+      "focus": [13],
+      "text": "Following it's content, we end this line with the <code>&lt;/h1&gt;</code> element's closing tag. It looks almost identical to the opening tag, with one tiny difference, the <code>/</code> symbol just before the element's name. When talking about code, we refer to symbols like <code>/</code> and <code>&gt;</code> as the language's \"syntax\". Every language has it's own syntax."
+    },
+    {
+      "title": "comments",
+      "focus": [4, 11],
+      "text": "For example <code>&lt;!--</code> is used to denote the start of a \"comment\", while the <code>--&gt;</code> symbols mark the end of one. Comments are used to leave notes for yourself (or other coders) which won't actually effect your code. You can include comments in any coding language, but the syntax each language uses to denote these is usually different."
+    },
+    {
+      "title": "attributes",
+      "focus": [23],
+      "text": "An element can optionally include any number of \"<b>attributes</b>\", which are used to change specific details about that particular element. Take a look at this \"anchor\" or <code>&lt;a&gt;</code> element, it contains a single attribute, the <code>href</code> attribute."
+    },
+    {
+      "title": "attribute example",
+      "focus": [23],
+      "text": "<code>&lt;a&gt;</code> elements are used to create different types of links, the most common of which is a hyperlink which takes you to another page. By default an <code>&lt;a&gt;</code> links nowhere, you have to specify where you want the link to go by setting it's <code>href</code> attribute."
+    },
+    {
+      "title": "attribute syntax",
+      "focus": [23],
+      "text": "Every HTML attribute has a name, which is usually assigned some value. In this case the URL (uniform resource locator) you want to link to. Like elements, attributes also have specific syntax: before specifying the value we must include a <code>=</code> symbol after the attributes name, and the value is always surrounded by quote marks. The full attribute statement looks like <code>href=\"https://netart.rocks\"</code>"
+    },
+    {
+      "title": "attribute placement",
+      "focus": [23],
+      "text": "Attributes always go inside the element's opening tag, after the element's name (separated by a space) and before it's closing <code>&gt;</code> bracket. Assuming the value we assigned the <code>href</code> attribute is a properly constructed URL pointing to a real online resource, clicking on the link should take us there."
+    },
+    {
+      "title": "HTTP requests",
+      "focus": null,
+      "text": "Well... technically it doesn't \"take you\" anywhere. It actually creates an HTTP (hypertext transfer protocol) request for a particular file (or resource) and sends it out onto the Internet where it eventually reaches a \"server\", a program running on another computer with a copy of the file requested. That file gets sent back to your computer and replaces the page you're currently looking at with that new one."
+    },
+    {
+      "title": "multiple attributes",
+      "focus": [28],
+      "text": "We can continue to modify our <code>&lt;a&gt;</code>'s details by adding additional attributes, there's no limit to how many attributes you can apply to a single HTML element. This <code>&lt;a&gt;</code> element includes both an <code>href</code> attribute as well as a <code>target</code> attribute. When set to the value \"_blank\", this attribute tells the browser to open the new page on a separate tab rather than replacing the one we're currently on."
+    },
+    {
+      "title": "singleton/void elements",
+      "focus": [30],
+      "text": "There are some elements, like this <code>&lt;img&gt;</code>, which only consist of an opening tag (no closing tag), these are known as \"singleton\" or \"void elements\". This element is used to embed images into a web page, it does this by creating an HTTP request for that resource (the image file) which we specify as the value to it's <code>src</code> attribute."
+    },
+    {
+      "title": "element content",
+      "focus": null,
+      "text": "While most of the elements in this example have text as their \"content\", different elements can be used to embeded other forms of media onto a web page, like audio files, videos, 3D objects or even other web pages. The <code>&lt;img&gt;</code> element's \"content\" is always some type of image file."
+    },
+    {
+      "title": "parent/child elements",
+      "focus": [21,22,23,24,25,26,27,28,29],
+      "text": "Elements can also include other elements as their \"content\", when this is the case we refer to it as a \"parent\" element and it's internal elements as their \"children\". For example this <code>&lt;p&gt;</code> element contains text as well as two \"child\" elements as it's \"content\"."
+    },
+    {
+      "title": "clean code",
+      "focus": [12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+      "text": "That <code>&lt;p&gt;</code> is not only a parent, but also a child, because it's  placed within a parent <code>&lt;section&gt;</code>. Along side it's \"sibling\" elements, an <code>&lt;h1&gt;</code>, another <code>&lt;p&gt;</code> and the <code>&lt;img&gt;</code> we discussed earlier. In order to keep our code clean and tidy, when an element has lots of content it's considered best practice to indent it. This makes our HTML file's structure visually clear."
+    },
+    {
+      "title": "<body>",
+      "focus": [10, 33],
+      "text": "All the elements we've discussed so far are within our HTML file's <code>&lt;body&gt;</code> element, this is where we put all the content we want visually rendered on our page. The <code>&lt;body&gt;</code> element should always be a child of our \"root\" (or main) element: <code>&lt;html&gt;</code>"
+    },
+    {
+      "title": "<html>",
+      "focus": [2,3,9,10,33,34],
+      "text": "Our root <code>&lt;html&gt;</code> element usually consists of two children, preceding the <code>&lt;body&gt;</code> is usually a <code>&lt;head&gt;</code> element (it's only sibling)."
+    },
+    {
+      "title": "<head>",
+      "focus": [3,9],
+      "text": "The <code>&lt;head&gt;</code> is where our page's meta-data goes. Metadata is data about other data, in this case it's data about the content inside our <code>&lt;body&gt;</code>. This metadata doesn't actually appear on our page, but is used by other programs (like browsers or search engines). For example, the browser uses the content of the <code>&lt;title&gt;</code> element as the text it places within this particular browser tab. Search engines will use it as the linked title in the search results."
+    },
+    {
+      "title": "review the basics",
+      "focus": null,
+      "text": "That's pretty much it! Let's review: HTML structure's content using \"<b>elements</b>\", these elements usually contain some \"<b>content</b>\" within their opening and closing \"<b>tags</b>\". This content can be text or other elements. Some elements can be used to embed other media files, in these cases we use specific \"<b>attributes</b>\" to request these files or assets. Attributes can be used to specify all sorts of details for that particular element and are always declared within the elements opening tag."
+    },
+    {
+      "title": "even more",
+      "focus": null,
+      "text": "There are many more elements and attributes we didn't discuss, including some in this example. If you'd like to learn more you can double click on any element or attribute in my editor and I'll explain it to you. You can also ask me to \"tell you more\" about it and I'll open my HTML reference widget with even more info on that particular piece of code. There you'll find a list of every HTML element and attribute as well as links to learn even more! ...the basics are pretty straight forward, but the rabbit whole goes real deep."
+    },
+    {
+      "title": "next steps",
+      "focus": null,
+      "text": "We've got an interactive <a href=\"/?tutorial=html-crash-course\">HTML Crash Course</a> tutorial you can dive into next if you'd like to keep learning about it, but it wouldn't be a bad idea to experiment a little with the code in my editor for a bit first to really get a feel for all the basics we just covered."
+    }
+  ]
+}

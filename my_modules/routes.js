@@ -153,23 +153,34 @@ router.post('/api/expand-url', (req, res) => {
   }
 })
 
-router.get('/api/examples', (req, res) => {
-  const urlsDict = {}
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
+
+function createExamplesDict () {
+  const dict = {
+    examples: {}, // examples by key
+    map: [] // sections in order
+  }
   const exPath = path.join(__dirname, '../data/examples')
   const files = fs.readdirSync(exPath)
   files.forEach(file => {
-    const str = fs.readFileSync(`${exPath}/${file}`)
-    const obj = JSON.parse(str)
-    urlsDict[obj.key] = obj
+    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    dict.examples[obj.key] = obj
   })
+  const mapPath = path.join(__dirname, '../data/examples-map.json')
+  dict.map = JSON.parse(fs.readFileSync(mapPath))
+  return dict
+}
+
+router.get('/api/examples', (req, res) => {
+  const dict = createExamplesDict()
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET'
   })
-  if (typeof urlsDict[0] === 'object') {
-    res.json({ success: 'success', data: urlsDict })
+  if (typeof dict === 'object' && typeof dict.examples === 'object') {
+    res.json({ success: 'success', data: dict.examples, sections: dict.map })
   } else {
-    res.json({ error: 'there was an issue loading the database', data: urlsDict })
+    res.json({ error: 'there was an issue loading the database', data: dict })
   }
 })
 
