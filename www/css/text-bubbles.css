@@ -63,7 +63,8 @@
   outline: 1px solid var(--fg-color);
   outline-offset: 2px;
 }
-.text-bubble > section a {
+.text-bubble > section a,
+.text-bubble > section .link {
   position: relative;
   color: var(--fg-color);
   text-decoration: none;
@@ -77,13 +78,16 @@
 .text-bubble > section code a  {
   color: var(--bg-color);
 }
-.text-bubble > section a:hover {
+.text-bubble > section a:hover,
+.text-bubble > section .link:hover {
   color: var(--netizen-match-color);
 }
-.text-bubble > section a:active {
+.text-bubble > section a:active,
+.text-bubble > section .link:active {
   color: var(--netizen-attribute);
 }
-.text-bubble > section a:active:after {
+.text-bubble > section a:active:after,
+.text-bubble > section .link:active:after {
   background-color: var(--netizen-attribute);
 }
 .text-bubble > section a code {
