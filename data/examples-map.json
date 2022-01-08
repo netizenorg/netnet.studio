@@ -12,8 +12,12 @@
     "listed": [6, 7, 8]
   },
   {
-    "name": "JS basics",
-    "listed": [47]
+    "name": "JS variables",
+    "listed": [47, 50, 51, 52, 53]
+  },
+  {
+    "name": "JS control flow",
+    "listed": [55, 56, 57]
   },
   {
     "name": "custom cursors",

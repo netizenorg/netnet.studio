@@ -62,7 +62,7 @@
     {
       "title": "console notes",
       "focus": null,
-      "text": "You can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well."
+      "text": "You can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well (apologies for the potentially messy/noisey console)."
     }
   ]
 }

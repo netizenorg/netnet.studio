@@ -1,0 +1,48 @@
+{
+  "type": "JS variables",
+  "name": "data structures: Objects",
+  "code": "#code/eJx1U7GO1DAQrS9fMZ2zAhJRUBDltuAQEgVLQ4MQxdg72ZjN2pHt3GlB+ynwcXwJ4zgJFhJp4rx582bmedJKe7zui7tWkQnk+HTX9i/3H+U3UsFDiWeEt1oFbQ06TX7X1hyOrHFfPmp6gqudHChrvB2Io+O+AH5i2OlTH16oQaszPIP3xo+sCb9//YSHRIdPKNeUtl47AIifXjk9hiQW1QMg3MMPMHihBoRhUfEcBqsw9sbIQ68VniyDPcXCDbyqXsOtmBWwinlQ1xB67cFRmJzxi0zOuAchrRSRKacAxj6BDsIndCZmHUmmG7YguVXuspCKzS7F1SaN7AWJhB5poEBcd52hyNJHct6aqDGDAJ12PhzS7Id59iUw4Ia/cfr7hmcmbNBkTu7aQIeDpxVUOjC0lgGQ2oWexT5ovOhNjXmTc3xBmdFL6LZyOnx8Z+3RN/BFXNDMVyG6AU18ywF5CySh8eLrnHD762aatkr98dDBTZQHVuVqnHxfCtUTeRK7nBLHqJYeo9MHvpbP1p3/uTNeOvb7VIqU1nBr6bT7HwV4XTDywnUk22X0tl53tGjr+Tf6A7/t9dE=",
+  "key": "53",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": [9],
+      "text": "Another way to store multiple values in a single variable is to create an \"object\", which is similar to an array except rather than storing only value, it stores name/value pairs known as \"properties\". The property names are followed by a <code>:</code> (colon) and then their value. Each name/value pair are separated by <code>,</code> (commas) just like the values in an array."
+    },
+    {
+      "title": "properties",
+      "focus": [9,10,11,12],
+      "text": "We can then reference a particular value by calling that particular name or \"property\" of that object. We can also reassign these properties like we would any other variable."
+    },
+    {
+      "title": "new Object()",
+      "focus": [14],
+      "text": "You can create an empty object using the Object constructor, <code>new Object()</code> just like we can with array <code>new Array()</code>."
+    },
+    {
+      "title": "{}",
+      "focus": [14,15],
+      "text": "Although it's much more common to create an empty object using the <code>{</code> and <code>}</code> bracket syntax."
+    },
+    {
+      "title": "creating/removing properties",
+      "focus": [15,16,17,18,19],
+      "text": "We can add new properties to an object at any point like we've done here on line 17. And we can remove any property from an object like we've done on line 19. Our \"c\" object now looks like <code>{ name: 'alice' }</code> and our \"a\" object now looks like <code>{ name: 'bob', height: 5.9 }</code>"
+    },
+    {
+      "title": "any data types",
+      "focus": [21,22,23,24,25,26,27,28,29,30,31],
+      "text": "Like arrays, objects can contain any combination of data types, including other objects, and so we can create fairly complex data structures."
+    },
+    {
+      "title": "typeof \"object\"",
+      "focus": [21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],
+      "text": "If you also explored the last example on <a href=\"/ex=52\" target=\"_blank\">Arrays</a> you'll likely notice some similarities between arrays and objects, they both have properties and methods which are accessed using the <code>.</code> syntax and you can create <code>new</code> ones using their \"constructor\" functions. This is because arrays are really just special objects, which is why <code>typeof person</code> returns <code>\"object\"</code>... in some sense, everything in JavaScript is an <a href=\"/ex=54\" target=\"_blank\">object</a>"
+    },
+    {
+      "title": "console notes",
+      "focus": null,
+      "text": "Dont' forget that you can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well (apologies for the potentially messy/noisey console)."
+    }
+  ]
+}

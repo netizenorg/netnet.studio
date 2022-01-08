@@ -1,0 +1,133 @@
+{
+  "name": "loops (for/while)",
+  "type": "JS control flow",
+  "key": 57,
+  "code": "#code/eJx1kl1vgjAYha/przgXJkg0grswTpl/xJjIsNpmXctKjRjif18/8GNMuSgtPef0eembf6rdeUUiAuRsujoxLiiEUlWNQu6wVzqs8tTuWpHT1aXmlXErQFADjg9kxC+Df8iRY5olaP1HoFSyVoJOhDoMYw5eg/4cCwGj4jF40qn4aORnFz+Sf0bDAprz75SkcXIXOo7Gckyz7BGkweo1SNMDaa4gLqhBircbjp+4nzG8FbyEq3K2dNj3A9IUhtlYz3niQkAfJWYw/JvWz6ozkIXdsonrWPLyy3LEhsvCve0NnOMNeXm4d04ElQfDehxdtNV60ZpvSBRFf8pnVAhXtkyec9Wl0h6shQNbYD4bw6Et8D4fu/Y421n2aPSQwV1RXSsJLrucPpqmldLGpm8HbdBewArbdUEPtcegDdZ12N9ctk9uMeQk6J5bKXl6bVOSp77JfwHkFsvM",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "A \"loop\", as the name implies, runs a block of code over and over again, until some condition is met. The most basic type of loop is a \"while\" loop."
+    },
+    {
+      "title": "while loop",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "We first create a variable. Then similar to our <code>if</code> statements, we'll ask a question by writing the <code>while</code> keyword followed by <code>()</code> (parenthesis) with a boolean expression within it (which will return either true or false). "
+    },
+    {
+      "title": "boolean expression",
+      "focus": [
+        8
+      ],
+      "text": "In this case we're asking the question: \"is <i>i</i> less than 10?\", so long as the answer is \"true\" we'll run it's block of code, everything we've between the opening <code>{</code> and closing <code>}</code> brackets, over and over again."
+    },
+    {
+      "title": "first iteration",
+      "focus": [
+        9
+      ],
+      "text": "The first time our while loop runs the value of <code>i</code> is <i>0</i> (what we initially set it to) which is less than 10, and so we'll log the value <i>0</i> to the console."
+    },
+    {
+      "title": "reassigning our iterator",
+      "focus": [
+        10
+      ],
+      "text": "We have to reassign the value of <code>i</code> inside of our loop, because if we don't, then <code>i</code> will always be less than 10 and our loop will never end... it'll keep calling that <code>console.log</code> over and over as fast as it can eventually crashing our browser."
+    },
+    {
+      "title": "breaking out of the loop",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "You might recall from the <a href=\"?ex=50\" target=\"_blank\">reassigning variables</a> example that <code>i++</code> is a shorthand for <code>i = i + 1</code> which means on the second iteration of our loop <code>i</code> will be equal to 1, the next time it will be 2, then 3, and so on until it runs 10 times and <code>i</code> is no longer less than 10."
+    },
+    {
+      "title": "console.log",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "If you open your browser's console you'll notice that we logged the value of \"i\" 10 times, changing each iteration through our loop, before eventually breaking out of our loop and running this next log on line 13."
+    },
+    {
+      "title": "another example",
+      "focus": [
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "text": "Although the loop above is a very common example, you can write while loops a number of different ways. This loop, for example, will run 4 times. The first time <code>x</code> is 100, the second time it's 50, then 25, then 12.5. After the fourth time the loop runs <code>x</code> will be 6.125, and because that would be less than 10, the loop will stop there."
+    },
+    {
+      "title": "for loop",
+      "focus": [
+        21,
+        22,
+        23
+      ],
+      "text": "A \"for\" loop does the same thing that a \"while\" loop does but it's written differently. The variable declaration, the boolean expression (the question) and the reassignment of that variable are all written within the loops parenthesis. This allows us to express the same instructions in less lines of code. And because programmers love \"efficiency\" we tend to see lots more for loops than while loops."
+    },
+    {
+      "title": "looping over data structures",
+      "focus": [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "text": "One of the most common use cases for loops is to iterate through the values of data stored in arrays or objects. As we discussed in the <a href=\"?ex=52\" target=\"_blank\">data structures: arrays</a> example, array's contain a property called \"length\" which returns a number equal to the amount of values in that array. We can use this property to iterate through every value in an array using a for loop like this."
+    },
+    {
+      "title": "looping over arrays",
+      "focus": [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "text": "If you open your browser's console you'll notice that this first loop logged \"hello nick\", then \"hello tina\" and lastly \"hello andy\", this is because at first <code>i</code> is <i>0</i>, and as we learned before, <code>names[0]</code> returns the first value in the array, which is \"nick\", then when <code>i</code> is incremented to <i>1</i> the second iteration through the loop, <code>names[1]</code> returns the value \"tina\", and so on."
+    },
+    {
+      "title": "looping over objects",
+      "focus": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "text": "We can also use a for loop to iterate over an object using the <code>in</code> operator. In each iteration of this loop the variable <code>person</code> contains the property name, while <code>scores[person]</code> returns the value of that particular property."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "So the first time through our loop <code>person</code> is \"nick\" which means <code>scores[\"nick\"]</code> returns <i>86</i> and so the console will log \"nick has a score of 86\". The second time it loops it will log \"tina has a score of 98\", and then \"andy has a score of 90\", before finally breaking out of the loop."
+    }
+  ]
+}

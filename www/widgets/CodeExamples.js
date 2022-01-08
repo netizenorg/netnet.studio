@@ -43,7 +43,8 @@ class CodeExamples extends Widget {
     }
   }
 
-  explainExample () {
+  explainExample (data) {
+    if (data) this.lastClickedExample = data
     const info = this.lastClickedExample.info
     if (info) {
       const opts = this._createExplainerOpts()

@@ -1,0 +1,83 @@
+{
+  "name": "Objects All The Way Down",
+  "type": "",
+  "key": 54,
+  "code": "#code/eJx9U01TgzAQPbe/Ym/AjAPt1UFm/Dx40EP14KiHAFu+0oRJgsg4/nc3lFpqqbfse/v2vYQljGXaRfNZmKAwqOg0C/NldM8+2CpRRW3CgEqL1pEr4xITo4FxDiZHaFkHqWyFFwZ1NAcIg90UW+heb7WJFNoAgwv4+iYGYAvEBAhs4bEf63o9NeIT4l/fR0A6CC6VYt1xPxK9XCxGyHoQPDSbGJVL5B+R5OhzmbkOAtOAn7UUdIOCcecM0Dfydo+4nndCpo0qRDYoVn2xax5lySiLUQ2OoHyIdyVpIBOupb35sUt+4JL/51LQSCdHziW0UvHUGXHlYDeID9qmbMs3RwNHkZmcbEt/e5x4hRKMhKauUUHCNPbNRj5b4JrqiZjVEOWGGXQnJlbWukOmoNDnNK/yMzR3DecvhE1+iV5hig3+Kox8ovLES+111E+raboa5doKtyeojj2olbIzkVjeJvf6nd/teRj0/9IPWrH8kA==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In the <a href=\"?ex=47\" target=\"_blank\">declaring variables</a> example I explained that there are different types of data we can store in our variables, these basic data types are: \"number\", \"string\", \"boolean\", \"undefined\", \"function\" and \"object\". But in the <a href=\"?ex=53\" target=\"_blank\">data structures: Objects</a> example I alluded to the strange fact that in JavaScript everything is technically some type of an object."
+    },
+    {
+      "title": "Object",
+      "focus": [
+        8,
+        9
+      ],
+      "text": "To review what I covered in previous examples, we can create an object using the <code>{}</code> syntax, but we can also create one using the Object constructor like I've done on line 9. Similarly, we can create Array's using the <code>[]</code> syntax, or using the Array constructor as I've done in line 12."
+    },
+    {
+      "title": "Array",
+      "focus": [
+        11,
+        12
+      ],
+      "text": "This is because arrays are really just special types of objects, which is why (as I explained in the <a href=\"?ex=52\" target=\"_blank\">data structures: Array</a> example) arrays have \"properties\" and \"methods\" which, like any other object, can be accessed using the <code>.</code> syntax. In the case of our <code>c</code> array, we could add items to it using this method: <code>c.push('hello')</code>, and we can check to see how many items it has using this property <code>c.length</code>."
+    },
+    {
+      "title": "everything's an object",
+      "focus": null,
+      "text": "What I hadn't mentioned before is that numbers, strings and booleans are all also objects with their own properties and methods."
+    },
+    {
+      "title": "Number",
+      "focus": [
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "Just like arrays and objects, we can create numbers by either declaring a variable with a number as it's value, but we can also use the <code>new Number()</code> constructor. In either case, we have access to special number methods like <code>e.toExponential()</code> which will return the value in exponential notation, or <code>e.toString()</code> which will return the number value as a string (ie. surrounded by quotes)."
+    },
+    {
+      "title": "Boolean and String",
+      "focus": [
+        20,
+        21,
+        6,
+        23,
+        10,
+        25,
+        26,
+        6,
+        28,
+        29
+      ],
+      "text": "The same is also true for booleans and strings, which actually have a whole bunch of <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#constructor\" target=\"_blank\">methods</a> that can change string values in useful ways like <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim\" target=\"_blank\">trim</a> it or <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace\" target=\"_blank\">replace</a> parts of it."
+    },
+    {
+      "title": "Date",
+      "focus": [
+        31,
+        32,
+        33
+      ],
+      "text": "JavaScript comes with other sorts of special objects too like the <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date\" target=\"_blank\">Date</a> object, which gives you access to the current date and time. "
+    },
+    {
+      "title": "instanceof",
+      "focus": [
+        35,
+        36
+      ],
+      "text": "This variable is a <code>typeof</code> \"object\", but we can also check to see if any variable is an \"instance of\" any specific type of object using the <code>instanceof</code> operator."
+    },
+    {
+      "title": "classes",
+      "focus": null,
+      "text": "You can even create your own types of special objects by defining your own JavaScript <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes\" target=\"_blank\">class</a>... but we'll save that for another example."
+    }
+  ]
+}

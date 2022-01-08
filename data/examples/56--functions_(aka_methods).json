@@ -1,0 +1,104 @@
+{
+  "name": "functions (aka methods)",
+  "type": "JS control flow",
+  "key": 56,
+  "code": "#code/eJx9UtFugzAMfB5fcW+k2zSgUt8o/xKCV1DTpCPJqmrav88EWgqq9oCF7TvfRXZZ2+ZaJS8JULZF9RmM8p01DkIeJU7kW9u4TZlxjyEDyqm+O/sq4X/ghoe/WIgNfmIVUDzCQ2KPYlGpuSLxxl+WcdI50FeQGt5iOwF78qE3qGP6G2MMrMACTPMt00aU44TwLXUg5idL5TtBPtFZunfc7AnChNP8hskI1/A6xLWhkSR2UePmZ7t77BV5vuhynufJPGI0q0JN7Pfu5n8bz80MM1ZWisnLg9KhJ/IsJYw80Qb7arEwq+lD24NIW9Lapu+IqLVSnCFS06ljOu/j0mkNJmMkI7YjnhH2TAZXG/qbzLAH1ZI6QpoGjmg4rOx+WWUWr/IPkHe3lQ==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "We can group a specific set of instructions into a reusable package called a \"function\" or \"method\". These are like mini-programs inside our program."
+    },
+    {
+      "title": "function",
+      "focus": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "We use the \"function\" keyword to create a new function, we give it a name (just like we do with variables) followed by <code>()</code> (parenthesis) and then opening <code>{</code> and closing <code>}</code> brackets within which we'll write the instructions we want to execute when we \"call\" (or \"run\") this function."
+    },
+    {
+      "title": "return",
+      "focus": [
+        10
+      ],
+      "text": "We use the <code>return</code> keyword to pass this value out of our function when we call it."
+    },
+    {
+      "title": "call a function",
+      "focus": [
+        13
+      ],
+      "text": "We can call this function to run (or execute) it like this. In this case our <code>two()</code> will return the value <i>2</i>, but we haven't done anything with this value."
+    },
+    {
+      "title": "handling return value",
+      "focus": [
+        15
+      ],
+      "text": "One thing we could do with the value the function returns is store it in a variable like this."
+    },
+    {
+      "title": "scope",
+      "focus": null,
+      "text": "It's worth taking note of something here. We already created a variable called \"a\" (line 8) inside of our function, and in a <a href=\"?ex=47\" target=\"_blank\">previous example</a> we learned that when we declare a variable with the <code>const</code> keyword it can not be reassigned. But because the first \"a\" variable was created inside of a function it exists in a separate context from this new variable \"a\" (line 15) which we've written into our program. In JavaScript we refer to these different contexts as the variable's <a href=\"https://developer.mozilla.org/en-US/docs/Glossary/Scope\" target=\"_blank\">scope</a>."
+    },
+    {
+      "title": "global scope",
+      "focus": null,
+      "text": "The first \"a\" is part of our global \"scope\". The global scope does not have access to variable scoped inside of our functions, the only way to access data declared inside of a function is for that function to \"return\" that data."
+    },
+    {
+      "title": "arguments",
+      "focus": [
+        17,
+        18,
+        19
+      ],
+      "text": "We can pass data into functions by declaring \"arguments\", within the function's parenthesis. These are special variables that are part of the function's scope, but don't get assigned a value until we call that function and pass some value into it."
+    },
+    {
+      "title": "passing arguments",
+      "focus": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "text": "On line 21 we're passing the value <i>5</i> as the first (and only) argument to our \"square\" function and so the \"num\" variable within our function's scope is now equal to <i>5</i>. On the following line we're passing the value <i>100</i> and so the \"num\" variable within our function's scope this second time we run it would now be <i>100</i>."
+    },
+    {
+      "title": "variable declaration",
+      "focus": [
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "text": "Technically speaking, a function is also a variable. Except rather than storing simple data types or data structures (like objects or arrays), it stores instructions. For this reason we could also declare a function similar to how we would any other variable. If we were to check the <code>tyepof square</code> or <code>tyepof cube</code> we'd get the data type \"function\"."
+    },
+    {
+      "title": "arrow syntax",
+      "focus": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "text": "Instead of using the \"function\" keyword we can also use the alternative <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions\" target=\"_blank\">arrow function</a> syntax."
+    },
+    {
+      "title": "pure vs inpure functions",
+      "focus": null,
+      "text": "It's also worth noting here that our \"greet\" function does not return any value. Instead it does something that effects something outside of itself in our program, in this case it logs data to our console. For this reason we say that our \"greet\" function produces a \"side effect\". When a function returns a value and has no side effects we call it a \"pure function\". But as we can see from this last example, not all functions are \"pure\"."
+    }
+  ]
+}

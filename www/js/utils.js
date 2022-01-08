@@ -153,6 +153,7 @@ window.utils = {
     note.style.position = 'absolute'
     note.style.left = `${pos.x}px`
     note.style.top = `${pos.y}px`
+    note.style.zIndex = 100
     note.style.width = `${pos.width}px`
     note.style.backgroundColor = 'var(--bg-color)'
     note.style.color = 'var(--fg-color)'
@@ -233,6 +234,9 @@ window.utils = {
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
+    } else if (window.location.hash.includes('#example')) {
+      window.utils.loadCustomExample()
+      return 'sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
@@ -290,6 +294,30 @@ window.utils = {
       NNW.layout = layout
       window.utils.fadeOutLoader(false)
     } else window.utils.fadeOutLoader(true)
+  },
+
+  loadCustomExample: () => {
+    const hash = window.location.hash.split('#example/')[1]
+    const data = JSON.parse(NNE._decode(hash))
+    const show = (data) => {
+      if (!WIDGETS['code-examples'].slide) {
+        return setTimeout(() => show(data), 100)
+      }
+      WIDGETS['code-examples'].explainExample({
+        name: data.name,
+        hash: data.code,
+        code: data.code,
+        info: data.info,
+        key: data.key
+      })
+    }
+    WIDGETS.open('code-examples', null, (w) => {
+      if (data && data.code) {
+        show(data)
+        NNW.layout = 'dock-left'
+        window.utils.fadeOutLoader(false)
+      }
+    })
   },
 
   loadShortCode: (code, layout) => {
