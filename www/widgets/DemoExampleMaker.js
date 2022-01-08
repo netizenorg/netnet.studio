@@ -37,6 +37,7 @@ class DemoExampleMaker extends Widget {
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
+        data.steps = data.info
         this._data = data
       }
 
