@@ -299,6 +299,11 @@ window.utils = {
   loadCustomExample: () => {
     const hash = window.location.hash.split('#example/')[1]
     const data = JSON.parse(NNE._decode(hash))
+    const firstClick = () => {
+      const l = document.querySelector('.code-examples--ex-parts > li > span')
+      if (!l) return setTimeout(() => firstClick(), 100)
+      l.click()
+    }
     const show = (data) => {
       if (!WIDGETS['code-examples'].slide) {
         return setTimeout(() => show(data), 100)
@@ -310,6 +315,7 @@ window.utils = {
         info: data.info,
         key: data.key
       })
+      firstClick()
     }
     WIDGETS.open('code-examples', null, (w) => {
       if (data && data.code) {
