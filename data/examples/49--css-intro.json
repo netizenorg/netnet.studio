@@ -1,0 +1,73 @@
+{
+  "type": "HTML/CSS basics",
+  "name": "CSS intro",
+  "code": "#code/eJx1VE2P0zAQPbe/YvCFS5uwCCTUTSuh3ZX2AAJpy4ETmjqT2KprR7az3YL474yTNOmyUFV148zHm/dmpnh1++Vm+/3rHah4MJt5kQ4waOu1ILv89iA281mhCEs+Z8WBIoJU6APFtWhjtfwguhdRR0Obuyc8NIbgQUcq8v5uDvwpjLZ78GTWIsSToaCIogDlqVqLXIaQ99cZ/xWDS3fT/wcIJKN2Fn4NzwAH9LW2K3j/pnm6Hm5/D+dw4IW5dMb5FXvVZCNej/eRnuIyerShcv6wgrZpyEsMNJlUzsZlh2YFO2fK6Y1sfUhRpXchKNT+P0AyicYsXRtfAtqZ9kUq/ZMzvX031fUcg45otHyeqsgHumZFPqhV7Fx52swHMnv+klYs5xV01msxgPBUXovNR7hnT21rDnF1Jr5oQBoMgW2HGsRmRLVVOgB/ERr0WHtsVAY3DJU5hqgwwpGgMSgJjjoqbUfPCw8ydEj2ClOgUlcV+fRcUoWtiYCsCNtaSYvR3XnoG0ksUh7LP8SM9on/yslBVV/X6D6kXMBRaak4Z2CHE5cSX4euI6ZYHIIDGG428qP/GZoY9RLZma+8majr6J7dPZI/wWWZXR53tGOgrpYFq+yB+hmaGpQrK3AYFRVjE1Z5bnkOfcy8k3ueF+ZGJc8+Q5HjpNBRGwNYlsAcidaW5HkSSUB0fHMCV/VYzuUytiMZM8kU0rTbmtgs9C2bjaqXzlIKZCh2KNtAHvbWHeECPKZ3emC1axWRdoEYqJeMa8fScUPvqeRoo6vFR11j7DJctsX99vMnbp6aMm5XT11M6zi/n9L+iy8WyWbO11x7EpPX148d77m92CQ8F6RdKqgPNQQveUfptDlCXusq5LLM+BSAhqMgpIfEJMLN7Xl55ePAdWuAp7KfRh6tbs/+AYN4n8U=",
+  "key": "49",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm building on the HTML code from the <a href=\"/?ex=48\" target=\"_blank\">last example</a> and adding some CSS (cascading style sheet) code to it. If the purpose of HTML is to structure our content, the purpose of CSS is to give that structure some \"style\", by which I mean changing the look, layout and general feel of our site."
+    },{
+      "title": "inline styling",
+      "focus": [29],
+      "text": "CSS is an entirely separate coding language from HTML, but because HTML files are \"polyglot\" we can actually write other languages directly into the same file. There are a few ways to add CSS code to our HTML file, starting with \"inline styling\", which is when we write our CSS code directly into the same line as the HTML we want to style using that element's <code>style</code> attribute. "
+    },{
+      "title": "properties and values",
+      "focus": [29],
+      "text": "The <code>style</code> attribute takes some CSS code as it's value. In this case we have a single CSS statement or \"declaration\". A declaration always consists of two parts: the CSS property you want to change, in this case our element's text <code>color</code>, followed by the value you want to assign it, in this case the color <code>red</code>."
+    },{
+      "title": "the syntax",
+      "focus": [29],
+      "text": "Like HTML, CSS has it's own syntax. When writing a CSS declaration we separate the property name from it's value with a <code>:</code> (colon) symbol and we end each declaration with a <code>;</code> (semicolon) symbol."
+    },{
+      "title": "a modular approach",
+      "focus": null,
+      "text": "We could add other CSS declarations to this <code>style</code> attribute, but \"inline styling\" is generally discouraged, it's better to use a more modular approach like creating CSS \"rules\" which can be applied to numerous elements at once. In order to do this we need a different method for adding CSS to our page."
+    },{
+      "title": "<style>",
+      "focus": [7,24],
+      "text": "The second way to add CSS to our page is using the <code>&lt;style&gt;</code> <i>element</i> (rather than the <code>style</code> <i>attribute</i>). We typically place this element within our page's <code>&lt;head&gt;</code>. The code we write within the opening and closing <code>&lt;style&gt;</code> tags is CSS (not HTML)."
+    },{
+      "title": "rules",
+      "focus": [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+      "text": "Here we can construct CSS \"rules\" which are blocks of code which contain one or more CSS declarations between opening <code>{</code> and closing <code>}</code> symbols. Before the opening <code>{</code> we specify this particular CSS rule's \"selector\" which is code that specifies which elements on our page to \"select\" and apply these CSS declarations to."
+    },{
+      "title": "selectors",
+      "focus": [8, 9, 10],
+      "text": "CSS selectors can get fairly complex, but the simplest example is a \"type selector\" like this one, where you specify the type of element you want to apply this CSS rule to. In this case we're adding <code>50px</code> of <code>margin</code> around our <code>&lt;section&gt;</code> element."
+    },{
+      "title": "type selector",
+      "focus": [12,13,14,15,16,17],
+      "text": "This CSS rule has a \"type selector\" as well, this time for our <code>&lt;a&gt;</code> elements, which is why the CSS declarations written here have been applied to both of the <code>&lt;a&gt;</code> elements on our page. And if we were to add more <code>&lt;a&gt;</code> elements later on they will also have this rule applied."
+    },{
+      "title": "class selector",
+      "focus": [19],
+      "text": "If we wanted to create a CSS rule that we can selectively apply to specific elements (rather than every element of a specified type) we can create a \"class selector\" by using the <code>.</code> symbol followed by any name we come up with."
+    },{
+      "title": "class attribute",
+      "focus": [19, 20, 21, 22, 23, 30],
+      "text": "We can then specify which elements we want to apply this rule to by passing that particular name to any element's <code>class</code> attribute, as I've done here to this <code>&lt;p&gt;</code> element."
+    },{
+      "title": "external CSS files",
+      "focus": null,
+      "text": "There's some additional styling being applied to this page by CSS code we can't actually see here. For example, did you notice that the \"font-face\" of all the text is different from the default font in the last example? This is due to some CSS code we've written in a separate CSS file."
+    },{
+      "title": "<link>",
+      "focus": [6],
+      "text": "The third, and final, way to apply some CSS code to our page is to link to an external stylesheet. This is a <code>.css</code>, which is a text file containing nothing but CSS code, essentially a collection of CSS rules like the ones we've written within our <code>&lt;style&gt;</code> tags. We can import these external stylesheets (ie. CSS files) using the HTML <code>&lt;link&gt;</code> element. If you're curious, you can check out the code we wrote in that stylesheet by opening that <a href=\"/css/styles.css\" target=\"_blank\">CSS file</a> in a new tab."
+    },{
+      "title": "a more modular approach",
+      "focus":[6],
+      "text": "Similar to how creating CSS rules within a <code>&lt;style&gt;</code> element enables us to write more \"modular\" code (a single rule applied to many elements, rather than writing repetitive code within each element's <code>style</code> attribute), when we create a web site or web app which consists of more than one HTML file, separating our rules out into their own CSS file means we've \"modularized\" our code even further. Because now any change we make to a CSS rule in that file can be applied to every element that rule applies to on every page with the corresponding <code>&lt;link&gt;</code> element."
+    },{
+      "title": "to review",
+      "focus": null,
+      "text": "And that's the basics! To review: CSS is a coding language we use to change the default look and feel of our HTML elements. We can include CSS code in our page three different ways: inline styling, defining rules within <code>&lt;style&gt;</code> tags or within a separate CSS file and importing it using the <code>&lt;link&gt;</code> element. These \"rules\" contain two parts, the \"selector\", which specifies which element(s) to apply the rule to, and the \"declaration(s)\". Each declaration also contains two parts, the CSS \"property\" we want to change and the value we want to change it to."
+    },{
+      "title": "next steps",
+      "focus": null,
+      "text": "While the basics are simple, modern CSS is incredibly expressive and can get increasingly complex. There are loads more CSS properties to explore and there are lots of different ways to write our rule's selectors. We can import custom fonts and backgrounds, create animations and transitions, as well as construct all manner of responsive layouts. To start diving deeper check out our interactive <a href=\"/?tutorial=css-crash-course\">CSS Crash Course</a> tutorial!"
+    }
+  ]
+}

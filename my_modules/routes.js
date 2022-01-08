@@ -153,27 +153,48 @@ router.post('/api/expand-url', (req, res) => {
   }
 })
 
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
+
+function createExamplesDict () {
+  const dict = {
+    examples: {}, // examples by key
+    map: [] // sections in order
+  }
+  const exPath = path.join(__dirname, '../data/examples')
+  const files = fs.readdirSync(exPath)
+  files.forEach(file => {
+    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    dict.examples[obj.key] = obj
+  })
+  const mapPath = path.join(__dirname, '../data/examples-map.json')
+  dict.map = JSON.parse(fs.readFileSync(mapPath))
+  return dict
+}
+
 router.get('/api/examples', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/examples-urls.json')
-  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  const dict = createExamplesDict()
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET'
   })
-  if (typeof urlsDict[0] === 'object') {
-    res.json({ success: 'success', data: urlsDict })
+  if (typeof dict === 'object' && typeof dict.examples === 'object') {
+    res.json({ success: 'success', data: dict.examples, sections: dict.map })
   } else {
-    res.json({ error: 'there was an issue loading the database', data: urlsDict })
+    res.json({ error: 'there was an issue loading the database', data: dict })
   }
 })
 
 router.post('/api/example-data', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/examples-urls.json')
-  // const urlsDict = require(dbPath)
-  const urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  const hash = urlsDict[req.body.key].code
+  const exPath = path.join(__dirname, '../data/examples')
+  const files = fs.readdirSync(exPath)
+  const file = files.filter(f => f.indexOf(`${req.body.key}--`) === 0)[0]
+  const str = fs.readFileSync(`${exPath}/${file}`)
+  const obj = JSON.parse(str)
+  const name = obj.name
+  const hash = obj.code
+  const info = obj.info
   if (typeof hash === 'string') {
-    res.json({ success: 'success', hash })
+    res.json({ success: 'success', name, hash, info })
   } else {
     res.json({ error: `${req.body.key} is not in the database.` })
   }

@@ -265,8 +265,11 @@ class Widget {
     else if (this.ele.offsetTop > window.innerHeight) {
       this.bottom = 2
     }
+
+    const edge = this.ele.offsetLeft + this.ele.offsetWidth
     if (this.ele.offsetLeft < 2) this.update({ left: 10 }, 500)
-    else if (this.ele.offsetLeft > window.innerWidth) {
+    else if (edge > window.innerWidth &&
+      this.ele.offsetWidth + 10 < window.innerWidth) {
       const l = window.innerWidth - this.ele.offsetWidth - 10
       this.update({ left: l }, 500)
     }

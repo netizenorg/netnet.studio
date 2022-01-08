@@ -1,0 +1,67 @@
+{
+  "name": "conditional statements",
+  "type": "JS control flow",
+  "key": 55,
+  "code": "#code/eJylk01OwzAQhdfNKd6qAQk1Lasu0khs2SIO4NZTYuHawXYaqqp3Z+z0J7SIBUiRLI/fzPdmNCmXVu6qbJQBZT2rVtZIFZQ1QsMHEWhDJviy4CdWRJFfOdWECkhXQFOAeCMs8DjLUkStcRcjVQzdY5+CQFFgMpnUYksQkE6Z9/RwyL6VWtnWBLfjcvmrUYEkXqINnydFD5rNLzkRds5Z3GRhPMafvBxbmqbLwNSzaITJT7rRf/ChVh78rYX29ABv0RE2lj1ZEyxCTTD0GXpnIBbddtvbGWKmVxicMMG1Z4prDYTZcWOSLuIlhY7IRDKz9odfyU+tD05oJYb02fy6Sc6LjTSOtsq2nqm+I4daSBgbGBl57OySxHLDHnMJ4d9792urte3QNvhoycf1HFobAJkmtP6J6Lmko37WV6yojoOAMl7xkZD7AzrbahlHdd6Nsjhuf5aVRfpxvgDFnOl7",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "Conditional statements allow you to specify alternative lines of code to run depending on some \"condition\". These are \"boolean statements\", which are questions that return \"true\" or \"false\" and can be written in a lot of different ways."
+    },
+    {
+      "title": "if",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "text": "Here we're asking the question: \"is the age greater than or equal to 21?\", because the answer is \"true\" then any code we write between the <code>{</code> and <code>}</code> will run, if the answer were \"false\" then our program would skip all the code between the brackets."
+    },
+    {
+      "title": "boolean operators",
+      "focus": null,
+      "text": "We can use the following \"boolean operators\" to ask questions like <code>&gt;</code> (greater than), <code>&lt;</code> (less than), <code>===</code> (equal to), <code>!==</code> (not equal to), <code>&gt;=</code> (greater than or equal to) and <code>&lt;=</code> (less than or equal to)"
+    },
+    {
+      "title": "logical operators",
+      "focus": null,
+      "text": "We can also combine more than one question using \"logical operators\" like <code>&&</code> which means \"and\", as well as <code>||</code> which means \"or\""
+    },
+    {
+      "title": "&&",
+      "focus": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "text": "Here we're asking the question: \"is country equal to 'United States' <i>and</i> is age greater than or equal to 21\". This will return \"false\" because although the country is equal to 'United States', age is not greater than or equal to 21."
+    },
+    {
+      "title": "else if",
+      "focus": [
+        19,
+        20,
+        11,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        10
+      ],
+      "text": "We can use the \"else\" and \"else if\" keywords to add follow up questions when the answer to a previous \"if\" or \"else if\" question is false."
+    }
+  ]
+}

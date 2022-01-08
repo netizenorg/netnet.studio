@@ -1,8 +1,8 @@
-/* global utils */
+/* global utils, NNW */
 window.CONVOS['code-examples'] = (self) => {
   return [{
     id: 'example-info',
-    content: 'You can edit this example in the <b style="font-weight:bold;text-decoration:underline;">code</b> tab, switch to the <b style="font-weight:bold;text-decoration:underline;">result</b> tab to see your changes. Click <b style="font-weight:bold;text-decoration:underline;">reset code</b> to reset the example, or click <b style="font-weight:bold;text-decoration:underline;">copy+paste</b> if you\'d like me to copy the example into my editor',
+    content: 'You can edit this example in the <b style="font-weight:bold;text-decoration:underline;">code</b> tab, switch to the <b style="font-weight:bold;text-decoration:underline;">result</b> tab to see your changes. Click <b style="font-weight:bold;text-decoration:underline;">explain</b> if you\'d like me to copy the example into my editor and walk you through it.',
     options: {
       cool: (e) => e.hide()
     }
@@ -19,12 +19,36 @@ window.CONVOS['code-examples'] = (self) => {
       thanks: (e) => e.hide()
     }
   }, {
-    id: 'before-loading-example',
+    id: 'before-loading-example', // OLD WARNING; NO-LONGER IN USE
     content: 'Opening this example will get rid of all the code currently in my editor, is that alright with you?',
     options: {
       sure: (e) => {
         utils.loadExample(self.lastClickedExample.key, 'widget')
         e.hide()
+      },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'before-loading-example-no-info',
+    content: 'I\'m not trained on this particular example yet, so I won\'t be able to explain it to you, but I can copy+paste the code for you into my editor so you can experiment with it. Just keep in mind that I\'ll get rid of all the code currently in my editor, is that alright with you?',
+    options: {
+      sure: (e) => {
+        utils.loadExample(self.lastClickedExample.key, 'widget')
+        e.hide()
+      },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'before-loading-example-info',
+    content: 'I\'ll be happy to take you through this example step by step, but in order to do this I\'ll need to copy+paste the code into my editor which will get rid of all the code currently in my editor, is that alright with you?',
+    options: {
+      sure: (e) => {
+        utils.loadExample(self.lastClickedExample.key, 'widget')
+        if (NNW.layout === 'welcome') {
+          utils.afterLayoutTransition(() => {
+            setTimeout(() => e.hide(), 100)
+          })
+        } else e.hide()
       },
       'no, never mind': (e) => e.hide()
     }

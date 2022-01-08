@@ -153,6 +153,7 @@ window.utils = {
     note.style.position = 'absolute'
     note.style.left = `${pos.x}px`
     note.style.top = `${pos.y}px`
+    note.style.zIndex = 100
     note.style.width = `${pos.width}px`
     note.style.backgroundColor = 'var(--bg-color)'
     note.style.color = 'var(--fg-color)'
@@ -233,6 +234,9 @@ window.utils = {
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
+    } else if (window.location.hash.includes('#example')) {
+      window.utils.loadCustomExample()
+      return 'sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
@@ -292,6 +296,30 @@ window.utils = {
     } else window.utils.fadeOutLoader(true)
   },
 
+  loadCustomExample: () => {
+    const hash = window.location.hash.split('#example/')[1]
+    const data = JSON.parse(NNE._decode(hash))
+    const show = (data) => {
+      if (!WIDGETS['code-examples'].slide) {
+        return setTimeout(() => show(data), 100)
+      }
+      WIDGETS['code-examples'].explainExample({
+        name: data.name,
+        hash: data.code,
+        code: data.code,
+        info: data.info,
+        key: data.key
+      })
+    }
+    WIDGETS.open('code-examples', null, (w) => {
+      if (data && data.code) {
+        show(data)
+        NNW.layout = 'dock-left'
+        window.utils.fadeOutLoader(false)
+      }
+    })
+  },
+
   loadShortCode: (code, layout) => {
     window.utils.post('./api/expand-url', { key: code }, (json) => {
       window.utils.checkForDiffRoot()
@@ -336,17 +364,19 @@ window.utils = {
 
   loadExample: (example, calledBy) => {
     const loadIt = (json, calledBy) => {
+      WIDGETS['code-examples'].lastClickedExample = json
       WIDGETS['code-examples'].lastClickedExample.key = example
       window.utils.afterLayoutTransition(() => {
-        WIDGETS['code-examples'].lastClickedExample.code = json.hash
         setTimeout(() => NNE.cm.refresh(), 10)
         if (calledBy === 'load') {
           window.utils.fadeOutLoader(false)
           NNE.code = NNE._decode(json.hash.substr(6))
-          window.utils._Convo('demo-example')
+          if (!json.info) window.utils._Convo('demo-example')
+          else window.utils._Convo('demo-explainer')
         } else if (calledBy === 'widget') {
           NNE.code = NNE._decode(json.hash.substr(6))
-          window.utils._Convo('demo-ex-from-list')
+          if (!json.info) window.utils._Convo('demo-ex-from-list')
+          WIDGETS['code-examples'].explainExample()
         } else if (calledBy === 'search') {
           WIDGETS['code-examples'].beforeLoadingEx()
         }
@@ -355,7 +385,9 @@ window.utils = {
 
     window.utils.post('./api/example-data', { key: example }, (json) => {
       NNE.addCustomRoot(null)
-      if (calledBy === 'load') { NNW.layout = 'dock-left' }
+      if (calledBy === 'load' || NNW.layout === 'welcome') {
+        NNW.layout = 'dock-left'
+      }
       if (!WIDGETS['code-examples']) {
         WIDGETS.load('CodeExamples.js', () => loadIt(json, calledBy))
       } else { loadIt(json, calledBy) }
@@ -472,6 +504,23 @@ window.utils = {
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
+  },
+
+  scrollToLines: (arr, ch) => {
+    ch = ch || 0
+    // center vertical scroll on an array of line numbers
+    const c = NNE.cm.lineCount()
+    const s = NNE.cm.getScrollInfo() // scroll object
+    const h = s.height / c // line height
+    const t = Math.round(s.clientHeight / h) // total viewable lines
+    const a = arr[arr.length - 1] - arr[0] + 1 // span of lines in array
+    const d = (t / 2) - (a / 2) // diff offset
+    const l = (a >= t) // if space is too tight
+      ? (arr[0] - 1) + (t - 1) // make arr[0] first viewable line
+      : Math.round(arr[arr.length - 1] + d) - 1 // otherwise center it
+    const target = l >= c ? c - 1 : l
+    NNE.cm.scrollIntoView({ line: 0, ch })
+    NNE.cm.scrollIntoView({ line: target, ch })
   },
 
   numChange: (e) => {

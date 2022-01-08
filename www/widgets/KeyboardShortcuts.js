@@ -155,6 +155,15 @@ class KeyboardShortcuts extends Widget {
         callback: (e) => {
           WIDGETS.open('netitor-logger')
         }
+      },
+      {
+        hidden: true,
+        key: `${utils.hotKey()} + 4`,
+        nfo: 'launch netitor key logger',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 52,
+        callback: (e) => {
+          WIDGETS.open('demo-example-maker')
+        }
       }
     ]
 

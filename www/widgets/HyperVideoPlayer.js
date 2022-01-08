@@ -82,13 +82,13 @@ class HyperVideoPlayer extends Widget {
           content: 'It looks like you edited some of the code in my editor, which is great! I\'m glad you\'re experimenting, but don\'t forget that during tutorials your edits will be lost once you continue playing. I can download the current sketch for you if you want to save a copy.',
           options: {
             'that\'s ok, let\'s continue': (e) => {
-              if (this._tempCode !== NNE.code) NNE.code = this._tempCode
+              if (this._tempCode !== NNE.code) this._updateCode(this._tempCode)
               play(e)
             },
             'yes, please download': (e) => {
               e.hide()
               WIDGETS['functions-menu'].downloadCode()
-              if (this._tempCode !== NNE.code) NNE.code = this._tempCode
+              if (this._tempCode !== NNE.code) this._updateCode(this._tempCode)
             }
           }
         })
@@ -127,7 +127,9 @@ class HyperVideoPlayer extends Widget {
     this.video.currentTime = Number(time)
     this._updateProgressBar()
     this._resetKeyframeStatus()
-    if (!p) this.play()
+    this._tempCode = NNE.code
+    this.play()
+    if (p) this.pause()
   }
 
   skip (time) {
@@ -189,7 +191,7 @@ class HyperVideoPlayer extends Widget {
         .forEach(w => w.close())
 
       if (kf.code && kf.code !== NNE.code) {
-        NNE.code = kf.code
+        this._updateCode(kf.code)
         this._updateScrollBar(kf.scrollTo)
       }
 
@@ -389,20 +391,27 @@ class HyperVideoPlayer extends Widget {
     return t
   }
 
+  _updateCode (code) {
+    const top = NNE.cm.getScrollInfo().top
+    NNE.code = code
+    const s = NNE.cm.getScrollInfo()
+    if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+  }
+
   _updateScrollBar (obj) {
     const update = this._scrollNeedsUpdate(obj)
     if (typeof update.y !== 'undefined') {
       NNE.cm.scrollTo(update.x, update.y)
     } else if (typeof update === 'number') {
       const n = update + 1 > NNE.cm.lineCount() ? update : update + 1
-      NNE.cm.scrollIntoView({ line: n, ch: 0 })
+      utils.scrollToLines([n])
     }
   }
 
   _updateSpotlight (kf) {
     const l = kf.spotlight ? kf.spotlight[0] : null
     if (l) {
-      NNE.cm.scrollIntoView({ line: l - 1 })
+      utils.scrollToLines([l])
       setTimeout(() => {
         NNE.spotlight(kf.spotlight)
         NNE.highlight(null)
@@ -555,7 +564,7 @@ class HyperVideoPlayer extends Widget {
 
   _mergeKeyLoggerDataWithKeyframes () {
     if (Object.keys(this.logger.recordings).length === 0) {
-      console.log('again')
+      // console.log('again')
       setTimeout(() => this._mergeKeyLoggerFrames(), 100)
     } else {
       const newKF = []

@@ -1,0 +1,63 @@
+{
+  "type": "JS variables",
+  "name": "simple data types",
+  "code": "#code/eJxt09FOgzAUBuBreYoTYsIWdWzRK4PceOWdFz7A2nKAzq5FWrYQ46Pow/kkHtimzDaBhPZ85z+E0Iybos8jgEygdtjm0cVFVq9yK7eNQiiYY+D6Bm2W0u5QbPLZTuIeetO1IIy2RuE8S5shhGKo3MqqdjdCSfEKV/CkbYPCwffXJzweOLwwfmrJ0tNggGFpRSsblw9ZY+AwwQGDB1gtl5Cm9Ki7Lcd2UuVUvV2s7saysubcTKAgmNSolIG9aVWRHAKta6WuJq4gF/MeYbi12ceTZA8j4fWzBGkB3zqmwBm4fOcf63DTpLOkTtd2OEBXUz9dDLihT8Q07JjqcKIr0iXlnfND/rHnb4BCBzU1dLrAUmosfncl/H+NDTndKQXRZJvyFspUsyRm8TjoPrke/wRTApsHGPcYDzHhMRFihceKEEOPYYiVHitDrPJYFWK1x+oQkx6TIbbx2GY+novjSYiydDyjP3uGEUE=",
+  "key": "51",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "We can store different \"data types\" in our variables. All programming languages have more or less the same data types (though the details will vary), in this example we'll discuss all of JavaScript's basic data types."
+    },
+    {
+      "title": "numbers",
+      "focus": [9,10],
+      "text": "As we learned in the first couple of JS examples the most obvious sort of value we might store in a variable is a \"number\". Some programming languages specify two (or more) different data types for numbers like \"integer\" for whole numbers and \"float\" for decimal numbers, but in JavaScript all numbers have the same data type: \"number\"."
+    },
+    {
+      "title": "strings",
+      "focus": [12,13,14],
+      "text": "Another very common data type is a \"string\", which is how we store text in our variables. This can be a single letter or an entire essay, so long as we surround this text with quote marks. You can use single quote mark <code>'</code> or the double quote mark <code>\"</code>, so long as you use the same quote mark on either side of your string."
+    },
+    {
+      "title": "template literals",
+      "focus": [14],
+      "text": "You can also use the tick mark <code>`</code> to create special types of strings known as <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals\" target=\"_blank\">template literals</a>. These are different from regular strings in a few ways, most notably by the fact that we can pass the values of other variables into them using the following syntax <code>${variable}</code>. So in the case of our <code>e</code> variable, the value of it's string is \"Pi is equal to 3.14\", because the variable <code>b</code> being passed into it has the value <i>3.14</i>"
+    },
+    {
+      "title": "booleans",
+      "focus": [16,17],
+      "text": "This next data type is a \"boolean\", named after <a href=\"https://en.wikipedia.org/wiki/George_Boole\" target=\"_blank\">George Boole</a>. Boolean's can only ever be one of two values, either <code>true</code> or <code>false</code>. In some sense all of our data can be understood as a series of boolean values, ture/false, 1/0, on/off. Even the most complex algorithms are really just abstractions of boolean logic, because at the end of the day that's all computer's really understand."
+    },
+    {
+      "title": "undefined",
+      "focus": [19,20],
+      "text": "This next data type, \"undefined\", which is being assigned to our <code>h</code> variable might seem strange at first, but consider the next variable declaration for <code>i</code>. We've explicitly declared the variable <code>i</code> but never gave it any value. Because all variables need to have some data type, when we haven't explicitly given it any data, it gets assigned the special placeholder value of \"undefined\" (which in JavaScript is it's own data type)."
+    },
+    {
+      "title": "null",
+      "focus": [22],
+      "text": "If that last one seemed odd, this one's even stranger. We've assigned the value <code>null</code> to our variable <code>j</code>. <i>null</i> essentially means \"nothing\", which is different from \"undefined\" because it has been defined, specifically as \"nothing\". This is also different from the value <code>0</code> which is a data type of \"number\" (specifically the value 1 less than 1), which our \"null\" is not... because our \"null\" is the specific declaration of nothingness."
+    },
+    {
+      "title": "object?",
+      "focus": [22],
+      "text": "If that wasn't strange enough, consider this: there is no data type for \"null\", when we set a variable to \"null\" its data type is \"object\". What's an \"object\"? ...we'll get to that in another example."
+    },
+    {
+      "title": "to review",
+      "focus": null,
+      "text": "Let's review: we can store many different types of data in our variables. JavaScript has 6 basic data types which are \"number\", \"string\", \"boolean\", \"undefined\", \"object\" and one more I haven't mentioned, which is \"function\", but this type also deserves it's own <a href=\"?ex=56\" target=\"_blank\">example</a>. Of course there's loads more I can say about each of these data types, we've only just covered the basics, so as usual, feel free to double-click any of those values and I'll be happy to tell you more about them."
+    },
+    {
+      "title": "typeof",
+      "focus": [24,25,26,27,28,29,30,31,32,33],
+      "text": "If ever you want to check what type of data is stored in a variable you can use the <code>typeof</code> operator like I'm using in these console logs. Just like the previous examples, if you open up your browser's developer tools (right-click > Inspect) and navigate to the \"Console\" tab you should see the values of these log statements in your console."
+    },
+    {
+      "title": "console notes",
+      "focus": null,
+      "text": "You can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well (apologies for the potentially messy/noisey console)."
+    }
+  ]
+}

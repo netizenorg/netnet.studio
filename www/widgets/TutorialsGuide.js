@@ -151,6 +151,7 @@ class TutorialsGuide extends Widget {
     this.slide.querySelector('#ex-open-btn')
       .addEventListener('click', () => {
         WIDGETS.open('code-examples')
+        this.close()
         window.convo.hide()
       })
 

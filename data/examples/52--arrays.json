@@ -1,0 +1,68 @@
+{
+  "type": "JS variables",
+  "name": "data structures: Arrays",
+  "code": "#code/eJyFk81SwyAUhdfNU1y7IRm1aVx2YhzHlTMu3dUsgNDCNAUGiB0eRh/OJxGSdvpja7NIAnz3nMNNKIlqfJWMSsqkYya8jUpeVM/GYG8hxSs8gzdhnc3KPMzHZV2ln4JtwKvOAFXSqpaFVV0lEK64bMSSu3vaCrqCW3iVVjPq4Of7C14GHN4x2ZWU+c46Diw1QrvoE5UdYHiEOZJBCd0BckLi+MSy8aju/QaMBkyGTH3u9Dyf9Xx/w/NpHSoQUQRBnsNQABxbIIxJMEy3mLIGiB+gwWpeHFf18lerhi1PWrVMEf5AFhbChMjCsTUIOwv5YpzsAmxZmGuO6eIi7bgwJ/BDfbDxoVskNrUIfeEiIM50rN4jZKI7y9Nimh0OEfEMnQjtrRfh+8E4guMgLixItQnK5ExMrjawxtL3IS0ICeQpopOWyaXj2VEQpdMsueyn9Dm7bbHlYuHSK5F76B+RTg4ySHHgzN9ca8GW/6tY5rs/Oynz/sz9Ajnh/y0=",
+  "key": "52",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "It's possible to store more than one value in the same variable. These variables become \"data structures\" that come with \"functions\" or \"methods\" for efficiently accessing and manipulating the data."
+    },
+    {
+      "title": "new Array()",
+      "focus": [10],
+      "text": "One example of this is an \"Array\", which are lists of values created by \"constructing\" a new Array \"instance\" like the line I have highlighted here."
+    },
+    {
+      "title": "[]",
+      "focus": [9],
+      "text": "Although, it's much more common to create them using this syntax where we simply list out each item separated by <code>,</code> (commas) and surrounded by <code>[</code> and <code>]</code> brackets."
+    },
+    {
+      "title": "declaring arrays",
+      "focus": [9, 10],
+      "text": "We declare arrays just like we would any other variable. Because we declared these with <code>const</code> it means we can't reassign, or change, these variables overall value."
+    },
+    {
+      "title": "reassigning values",
+      "focus": [10,11,12],
+      "text": "But we can change the values of the individual items within our array by using the <code>[index]</code> syntax, where we pass the number of the item we want. In code, it's pretty common to start counting from <code>0</code> and so this line will change the value of the first item in array from <i>'nick'</i> to <i>'bob'</i>."
+    },
+    {
+      "title": "bracket syntax",
+      "focus": [12, 13, 14, 15, 16],
+      "text": "We can also pass these values along to other functions using this syntax. Here awe're passing eaach of the three values in our array individually to our <code>console.log</code> one at a time."
+    },
+    {
+      "title": "any data types",
+      "focus": [18],
+      "text": "In most programming languages arrays (sometimes called \"lists\" or \"vectors\") can only contain items of the same data type, but JavaScript code can be written pretty \"loosely\". I find this to be ideal for experimental creative coding... but some folks find this sorta code sloppy and dangerous. In any case, it's important to be intentional about how you write your code."
+    },
+    {
+      "title": "methods",
+      "focus": [18, 19, 20, 21, 23],
+      "text": "When you want to add a new item to the list you can use your array's <code>.push()</code> \"method\" to do so. If we log our array now we'll see <code>[1, 'hi', true, 10, 'bye']</code>."
+    },
+    {
+      "title": "properties",
+      "focus": [24],
+      "text": "Array's also have \"properties\". Properties are variables internal to that array in the same way that methods are functions attached to that array. Properteis have values stored in them, in this case the <code>.length</code> property will return a number equal to the number of items in that array (which would be <code>5</code>)"
+    },
+    {
+      "title": "more methods",
+      "focus": [26, 27, 28, 29, 30, 31, 32],
+      "text": "To remove an item from the end of the list we can use the <code>.pop()</code> method, and to remove an item from the front of the list we use the <code>.shift()</code>. At this point in our code our array looks like this: <code>['hi', true, 10]</code>"
+    },
+    {
+      "title": "more methods",
+      "focus": [34, 35, 36],
+      "text": "And while it's by no means an intuitive name, to <i>add</i> items to the <i>front</i> of our array we can use the <code>.unshift()</code> method. Our array now looks like this: <code>['oh hey', 'hi', true, 10]</code>"
+    },
+    {
+      "title": "console notes",
+      "focus": null,
+      "text": "Dont' forget that you can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well (apologies for the potentially messy/noisey console)."
+    }
+  ]
+}

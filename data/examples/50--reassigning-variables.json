@@ -1,0 +1,53 @@
+{
+  "type": "JS variables",
+  "name": "reassigning variables",
+  "code": "#code/eJxlksFOwzAMhs/rU/iCtBFG1k4IDqEXTtx5gTS1OossqZK00x4GHo4nIW0oKOViyf4/2/KfiMa217oAEApNQFcXm404lbVD6T11hkwHo3QkG41e8KhMQF9vR8ILXO3gQFnjrcad4P00KI6KsqPuFPZKk3oHBq/G96gCfH1+wEvC4U02S4vgy3KAKfXKUR/SMI0BZIfwDOWczyEVqnWhPMRdFXAOsm0pkDV3s0IejL1AWeXsPrF+aIKTKlBOP+XwbYLPgw7Ux7Pkv/HVIe/gqaOlkfyafcjRG3icUIdnSaZFl7HH9ZlTZNGO3xJbm8PYX/rzPPfadtso7Wa/F4cLwecP8A0q0IyM",
+  "key": "50",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": [9],
+      "text": "As mentioned in the <a href=\"/?ex=47\" target=\"_blank\">last example</a>, if you plan to change the value of a variable (aka \"reassign\" it) you must use the <code>let</code> keyword when declaring it rather than the <code>const</code> keyword."
+    },
+    {
+      "title": "reassigning",
+      "focus": [11],
+      "text": "You can then reassign it by using the <code>=</code> \"operator\""
+    },
+    {
+      "title": "arithmetic operators",
+      "focus": [13,14,15,16,17],
+      "text": "You can also use \"arithmetic operators\" like <code>+</code> to add variables containing number values, or <code>-</code> to subtract them, or <code>*</code> to multiply and <code>/</code> to divide. The <code>%</code> operator (aka modulus or modulo) is similar to the division operator except that it only returns the remainder."
+    },
+    {
+      "title": "incrementing",
+      "focus": [19],
+      "text": "You can increment the current value like this. Because age had been previously reassigned to <i>3</i> a couple of lines before this, adding <i>1</i> to that now reassigns our variable o the value <i>4</i>"
+    },
+    {
+      "title": "alternative syntax",
+      "focus": [21],
+      "text": "You can also write the same statement as the previous expression using slightly different syntax. The line I've highlighted here is just another way of expressing that we want to increment the current value by <i>1</i>. Because our variable's value was previously set to <i>4</i>, by incrementing it by <i>1</i> we've now reassigned it's value to <i>5</i>."
+    },
+    {
+      "title": "decrementing, scaling, etc",
+      "focus": null,
+      "text": "We can increment by any value we want, for example <code>age += 8</code>, we can also scale it, by doing this for example: <code>age *= 2 </code>, essentially the equivalent of writing <code>age = age * 2</code>, which would double it's current value. Likewise we can do things like <code>age /= 2</code> to divide it in half or <code>age -= 1</code> to decrease it's curren value by one."
+    },
+    {
+      "title": "even shorter syntax",
+      "focus": [23],
+      "text": "When specifically incrementing or decrementing by <i>1</i> there is an event shorter way to write this: <code>age++</code> and <code>age--</code>. Take a look at the line I've highlighted, because our variable was previously assigned the value <i>5</i>, this line of code has now reassigned it's value to <i>6</i>."
+    },
+    {
+      "title": "seeing our data",
+      "focus": [25],
+      "text": "If you open up your browser's developer tools (right-click > Inspect) and navigate to the \"Console\" tab you should see the value of this variable logged in your console. Try adding a few lines of your own before the <code>console.log()</code> statement to see for yourself."
+    },
+    {
+      "title": "console notes",
+      "focus": null,
+      "text": "You can open up this Console to interact with the JavaScript of any website you visit in your browser (not just me). In addition to your <code>console.log()</code> statements, whenever you make mistakes in your JavaScript code error messages will also appear in this Console. <br><br>Also, I'll be sharing this particular console with you... so if there are any bugs in my internal code, my errors will appear here as well (apologies for the potentially messy/noisey console)."
+    }
+  ]
+}

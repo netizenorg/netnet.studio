@@ -22,7 +22,11 @@ class CodeExamples extends Widget {
       this.mainOpts = {
         name: 'code-examples-main',
         widget: this,
-        ele: this._createMainSlide(res)
+        ele: this._createMainSlide(res),
+        cb: () => {
+          this._resizeWidget(612, 471)
+          NNE.remove('code-update', this._editorChange)
+        }
       }
 
       this._createHTML()
@@ -32,7 +36,26 @@ class CodeExamples extends Widget {
   }
 
   beforeLoadingEx () {
-    window.convo = new Convo(this.convos, 'before-loading-example')
+    if (this.lastClickedExample.info) {
+      window.convo = new Convo(this.convos, 'before-loading-example-info')
+    } else {
+      window.convo = new Convo(this.convos, 'before-loading-example-no-info')
+    }
+  }
+
+  explainExample (data) {
+    if (data) this.lastClickedExample = data
+    const info = this.lastClickedExample.info
+    if (info) {
+      const opts = this._createExplainerOpts()
+      opts.cb = () => {
+        this._resizeWidget(455, 330, 22, 22)
+        NNE.code = NNE._decode(this.lastClickedExample.code.substr(6))
+        NNE.update()
+      }
+      this.slide.updateSlide(opts)
+      if (!this.opened) this.open()
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -87,12 +110,12 @@ class CodeExamples extends Widget {
       `
 
       const sections = {}
-      for (const key in res.data) {
-        const obj = res.data[key]
-        obj.key = key
-        if (!sections[obj.type]) { sections[obj.type] = [] }
-        sections[obj.type].push(obj)
-      }
+      res.sections.forEach(sec => {
+        sections[sec.name] = []
+        sec.listed.forEach(id => {
+          sections[sec.name].push(res.data[id])
+        })
+      })
 
       for (const sec in sections) {
         const div = document.createElement('div')
@@ -178,24 +201,139 @@ class CodeExamples extends Widget {
           background: white;
           position: relative;
           top: -299px;
-          z-index: -1;
-          visibility: hidden;
+          z-index: 10;
+          /* z-index: -1; */
+          /* visibility: hidden; */
         }
 
       </style>
       <div class="code-examples--nav">
         <b class="code-examples--name">${o.name}</b>
-        <b class="code-examples--reset">reset code</b>
-        <b class="code-examples--copy">copy+paste</b>
+        <!-- <b class="code-examples--reset">reset code</b> -->
+        <b class="code-examples--explain">explain</b>
       </div>
       <div class="code-examples--tabs">
-        <b class="ce--sel">code</b>
-        <b>result</b>
+        <b>code</b>
+        <b class="ce--sel">result</b>
       </div>
       <div class="code-examples--editor"></div>
       <div class="code-examples--render"></div>
     `
     return { name, widget, back, ele }
+  }
+
+  _createExplainerOpts () {
+    const data = this.lastClickedExample
+    const name = 'explainer'
+    const widget = this
+    const back = this.mainOpts
+    const ele = document.createElement('div')
+    ele.className = 'code-explainer--frame'
+    // ele.style.height = '376px'
+    // ele.style.overflow = 'hidden'
+    ele.innerHTML = `
+      <style>
+        .code-examples--ex-intro,
+        .code-examples--ex-edit1,
+        .code-examples--ex-edit2 {
+          padding-bottom: 10px;
+        }
+        .code-examples--ex-parts {
+          display: flex;
+          flex-direction: column;
+        }
+        .code-examples--ex-parts > li {
+          padding: 2px 0px;
+        }
+        .code-examples--ex-edit1,
+        .code-examples--ex-edit2 {
+          display: none;
+        }
+      </style>
+      <p>
+
+      </p>
+      <h2>${data.name}</h2>
+      <div>
+        <!-- <p class="code-examples--ex-intro">Click on the parts below for it's explanation, or let netnet know if/when you want to hear the next or previous part.</p> -->
+        <p class="code-examples--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's explanations might be off for the parts you've changed.</p>
+        <p class="code-examples--ex-edit2">⚠️ It looks like you've either added or removed a line of code, this disorients netnet and so it won't be able to explain the rest of the parts to you. But that's ok, it's important to experiment! When you're done you can <span class="link code-exampes--ex-reset">reset the code</span> back to the orignal example (if you want to keep your edits make sure to <span class="link code-exampes--ex-dl">download this sketch</span> before resetting it)</p>
+      </div>
+      <ol class="code-examples--ex-parts"></ol>
+    `
+
+    NNE.on('code-update', this._editorChange)
+    this.lastClickedExample.info = data.info
+    this.lastClickedExample.code = data.hash
+    this.lastClickedExample.length = NNE.cm.lineCount()
+
+    ele.querySelector('.link.code-exampes--ex-reset')
+      .addEventListener('click', () => {
+        NNE.code = NNE._decode(this.lastClickedExample.code.substr(6))
+        NNE.update()
+        window.convo = new Convo(this.convos, 'reset-code')
+      })
+
+    ele.querySelector('.link.code-exampes--ex-dl')
+      .addEventListener('click', () => {
+        WIDGETS['functions-menu'].downloadCode()
+      })
+
+    function clickStep (o) {
+      const idx = data.info.indexOf(o)
+      let options = {}
+      const next = () => clickStep(data.info[idx + 1])
+      const previous = () => clickStep(data.info[idx - 1])
+      if (idx === 0) {
+        options = { next }
+      } else if (idx === data.info.length - 1) {
+        options = { done: e => e.hide(), previous }
+      } else {
+        options = { next, previous }
+      }
+      if (!options.done) { options.done = e => e.hide() }
+
+      window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
+
+      if (o.focus instanceof Array) {
+        utils.scrollToLines(o.focus)
+        setTimeout(() => NNE.spotlight(o.focus), 500)
+      } else NNE.spotlight(null)
+    }
+
+    data.info.forEach(part => {
+      const link = document.createElement('span')
+      link.className = 'link'
+      link.textContent = part.title
+      link.addEventListener('click', () => clickStep(part))
+      const li = document.createElement('li')
+      li.appendChild(link)
+      ele.querySelector('.code-examples--ex-parts').appendChild(li)
+    })
+
+    return { name, widget, back, ele }
+  }
+
+  // ---------------------------------------------------
+  // ---------------------------------------------------
+  // ---------------------------------------------------
+
+  _editorChange () {
+    const code = WIDGETS['code-examples'].lastClickedExample.code.substr(6)
+    const diffC = NNE.code !== NNE._decode(code)
+    const len = NNE.cm.lineCount()
+    const diffL = len !== WIDGETS['code-examples'].lastClickedExample.length
+    // const A = diffL || diffC ? 'none' : 'block'
+    const B = diffC && !diffL ? 'block' : 'none'
+    const C = diffL ? 'block' : 'none'
+    const D = diffL ? 'none' : 'block'
+    const s = WIDGETS['code-examples'].slide
+    if (!s.querySelector('.code-examples--ex-parts')) return
+    // s.querySelector('.code-examples--ex-intro').style.display = A
+    s.querySelector('.code-examples--ex-edit1').style.display = B
+    s.querySelector('.code-examples--ex-edit2').style.display = C
+    s.querySelector('.code-examples--ex-parts').style.display = D
+    if (diffL) window.convo.hide()
   }
 
   _updateEditor (o) {
@@ -222,26 +360,26 @@ class CodeExamples extends Widget {
 
   _updateListeners () {
     const name = this.ele.querySelector('.code-examples--name')
-    const reset = this.ele.querySelector('.code-examples--reset')
-    const copy = this.ele.querySelector('.code-examples--copy')
+    // const reset = this.ele.querySelector('.code-examples--reset')
+    const explain = this.ele.querySelector('.code-examples--explain')
 
     name.addEventListener('click', () => {
       window.convo = new Convo(this.convos, 'example-info')
     })
 
-    reset.addEventListener('click', () => {
-      const code = this.lastClickedExample.code.substr(6)
-      const curExCode = NNE._encode(this.editor.code)
-      if (code === curExCode) {
-        window.convo = new Convo(this.convos, 'nothing-to-reset')
-      } else {
-        this.editor.code = NNE._decode(code)
-        this.editor.update()
-        window.convo = new Convo(this.convos, 'reset-code')
-      }
-    })
+    // reset.addEventListener('click', () => {
+    //   const code = this.lastClickedExample.code.substr(6)
+    //   const curExCode = NNE._encode(this.editor.code)
+    //   if (code === curExCode) {
+    //     window.convo = new Convo(this.convos, 'nothing-to-reset')
+    //   } else {
+    //     this.editor.code = NNE._decode(code)
+    //     this.editor.update()
+    //     window.convo = new Convo(this.convos, 'reset-code')
+    //   }
+    // })
 
-    copy.addEventListener('click', () => this.beforeLoadingEx())
+    explain.addEventListener('click', () => this.beforeLoadingEx())
 
     const render = this.ele.querySelector('.code-examples--render')
     const ctab = this.ele.querySelector('.code-examples--tabs > b:nth-child(1)')
@@ -261,6 +399,16 @@ class CodeExamples extends Widget {
       render.style.zIndex = '10'
       render.style.visibility = 'visible'
     })
+  }
+
+  _resizeWidget (w, h, r, b) {
+    setTimeout(() => {
+      const obj = { width: w, height: h }
+      if (r) obj.right = r
+      if (b) obj.bottom = b
+      this.update(obj, 500)
+      this.emit('resize', obj)
+    }, utils.getVal('--menu-fades-time') + 600)
   }
 
   _resizeIt (e) {
