@@ -333,7 +333,7 @@ class CodeExamples extends Widget {
     s.querySelector('.code-examples--ex-edit1').style.display = B
     s.querySelector('.code-examples--ex-edit2').style.display = C
     s.querySelector('.code-examples--ex-parts').style.display = D
-    if (diffL) window.convo.hide()
+    if (window.convo && diffL) window.convo.hide()
   }
 
   _updateEditor (o) {
