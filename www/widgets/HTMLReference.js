@@ -211,7 +211,7 @@ class HTMLReference extends Widget {
   _createElementDetails (slide, name, nfo) {
     const extras = this.data.element[name]
     if (extras && extras.example) {
-      const ce = document.createElement('code-example')
+      const ce = document.createElement('code-sample')
       slide.appendChild(ce)
       setTimeout(() => {
         ce.updateExample(extras.example, 'html')
@@ -256,7 +256,7 @@ class HTMLReference extends Widget {
   _createAttributeDetails (slide, name, nfo) {
     const extras = this.data.attribute[name]
     if (extras && extras.example) {
-      const ce = document.createElement('code-example')
+      const ce = document.createElement('code-sample')
       slide.appendChild(ce)
       setTimeout(() => {
         ce.updateExample(extras.example, 'html')

@@ -11,7 +11,7 @@ class CSSReference extends Widget {
     this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 
     const init = (html) => {
-      if (!utils.customElementReady('code-example')) {
+      if (!utils.customElementReady('code-sample')) {
         setTimeout(() => init(html), 100)
         return
       }
@@ -430,7 +430,7 @@ a:hover {
 
     const extras = this.data[name]
     if (extras && extras.example) {
-      const ce = document.createElement('code-example')
+      const ce = document.createElement('code-sample')
       div.appendChild(ce)
       setTimeout(() => {
         ce.updateExample(extras.example, 'css')
