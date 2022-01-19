@@ -61,6 +61,14 @@
   40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
+@keyframes bgshift {
+  0% { background: var(--netizen-tag); }
+  25% { background: var(--netizen-attribute); }
+  50% { background: var(--netizen-text); }
+  75% { background: var(--netizen-meta); }
+  100% { background: var(--netizen-tag); }
+}
+
 * { box-sizing: border-box; }
 
 *::-moz-selection {

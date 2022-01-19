@@ -5,10 +5,10 @@ class CodeExamples extends Widget {
     this.key = 'code-examples'
     this.keywords = ['ex', 'code', 'examples', 'snippets', 'demos']
     this.title = 'Code Examples'
+    this.height = 471
 
     this.editor = null // netitor instance
-    this.lastClickedExample = { key: null, code: null }
-    this.height = 471
+    this.exData = { key: null, code: null, name: null }
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -16,7 +16,7 @@ class CodeExamples extends Widget {
     this.on('open', () => {
       this._resizeIt({ width: this.width, height: this.height })
     })
-    this.on('close', () => this._createHTML())
+    // this.on('close', () => this._createHTML())
 
     utils.get('api/examples', (res) => {
       this.mainOpts = {
@@ -25,36 +25,87 @@ class CodeExamples extends Widget {
         ele: this._createMainSlide(res),
         cb: () => {
           this._resizeWidget(612, 471)
+          if (window.convo) window.convo.hide()
           NNE.remove('code-update', this._editorChange)
+          NNE.marker(null)
         }
       }
 
       this._createHTML()
 
-      NNW.on('theme-change', () => { this._createHTML() })
+      // NNW.on('theme-change', () => { this._createHTML() })
     })
   }
 
+  back () {
+    this.slide.updateSlide(this.mainOpts)
+  }
+
+  newExData (data) {
+    this.exData = { key: null, code: null, name: null }
+    for (const p in this.exData) { if (data[p]) this.exData[p] = data[p] }
+    if (data.hash) this.exData.hash = data.hash
+    if (data.hash && !this.exData.code) this.exData.code = data.hash
+    if (data.info) this.exData.info = data.info
+    // this.exData.length
+    // this.exData.explaining
+  }
+
+  displayEx (o) {
+    // display selected example in the Widget's editor
+    const opts = this._createExOpts(o)
+    this.slide.updateSlide(opts)
+    this.newExData(o)
+    window.utils.afterLayoutTransition(() => {
+      this._updateEditor(o)
+      this._updateListeners()
+      this._resizeIt({ width: this.width, height: this.height })
+    })
+    window.convo = new Convo(this.convos, 'example-info')
+  }
+
   beforeLoadingEx () {
-    if (this.lastClickedExample.info) {
+    if (this.exData.info) {
       window.convo = new Convo(this.convos, 'before-loading-example-info')
     } else {
       window.convo = new Convo(this.convos, 'before-loading-example-no-info')
     }
+    // if user agrees to load example, fires >> utils.loadExample()
   }
 
-  explainExample (data) {
-    if (data) this.lastClickedExample = data
-    const info = this.lastClickedExample.info
-    if (info) {
+  explainExample (data) { // happens after user agrees to load example
+    if (data) this.newExData(data)
+    else data = this.exData
+    const info = this.exData.info
+    if (!info) {
+      this.back()
+    } else {
+      this.exData.explaining = true
+      // display table-of-contents slide
       const opts = this._createExplainerOpts()
       opts.cb = () => {
         this._resizeWidget(455, 330, 22, 22)
-        NNE.code = NNE._decode(this.lastClickedExample.code.substr(6))
+        NNE.code = NNE._decode(this.exData.code.substr(6))
+        this.exData.length = NNE.cm.lineCount()
         NNE.update()
       }
       this.slide.updateSlide(opts)
-      if (!this.opened) this.open()
+      // add netitor markers
+      const occupiedLines = []
+      const addMarker = (o, i) => {
+        const l = (i === 0 && !o.focus) ? 1 : o.focus ? o.focus[0] : null
+        if (l && !occupiedLines.includes(l)) {
+          const m = NNE.marker(l, 'green', () => this._explainerClick(data, o))
+          m.setAttribute('title', o.title)
+          occupiedLines.push(l)
+        }
+      }
+      utils.afterLayoutTransition(() => {
+        info.forEach((obj, i) => addMarker(obj, i))
+        if (!this.opened) {
+          window.convo = new Convo(this.convos, 'after-loading-example-info')
+        }
+      })
     }
   }
 
@@ -126,17 +177,7 @@ class CodeExamples extends Widget {
           const span = document.createElement('span')
           span.className = 'code-examples--link'
           span.textContent = o.name
-          span.addEventListener('click', () => {
-            const opts = this._createExOpts(o)
-            this.slide.updateSlide(opts)
-            this.lastClickedExample = o
-            window.utils.afterLayoutTransition(() => {
-              this._updateEditor(o)
-              this._updateListeners()
-              this._resizeIt({ width: this.width, height: this.height })
-            })
-            window.convo = new Convo(this.convos, 'example-info')
-          })
+          span.addEventListener('click', () => this.displayEx(o))
           div.appendChild(span)
           div.appendChild(document.createElement('br'))
         })
@@ -223,7 +264,7 @@ class CodeExamples extends Widget {
   }
 
   _createExplainerOpts () {
-    const data = this.lastClickedExample
+    const data = this.exData
     const name = 'explainer'
     const widget = this
     const back = this.mainOpts
@@ -263,13 +304,10 @@ class CodeExamples extends Widget {
     `
 
     NNE.on('code-update', this._editorChange)
-    this.lastClickedExample.info = data.info
-    this.lastClickedExample.code = data.hash
-    this.lastClickedExample.length = NNE.cm.lineCount()
 
     ele.querySelector('.link.code-exampes--ex-reset')
       .addEventListener('click', () => {
-        NNE.code = NNE._decode(this.lastClickedExample.code.substr(6))
+        NNE.code = NNE._decode(this.exData.code.substr(6))
         NNE.update()
         window.convo = new Convo(this.convos, 'reset-code')
       })
@@ -279,33 +317,11 @@ class CodeExamples extends Widget {
         WIDGETS['functions-menu'].downloadCode()
       })
 
-    function clickStep (o) {
-      const idx = data.info.indexOf(o)
-      let options = {}
-      const next = () => clickStep(data.info[idx + 1])
-      const previous = () => clickStep(data.info[idx - 1])
-      if (idx === 0) {
-        options = { next }
-      } else if (idx === data.info.length - 1) {
-        options = { done: e => e.hide(), previous }
-      } else {
-        options = { next, previous }
-      }
-      if (!options.done) { options.done = e => e.hide() }
-
-      window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
-
-      if (o.focus instanceof Array) {
-        utils.scrollToLines(o.focus)
-        setTimeout(() => NNE.spotlight(o.focus), 500)
-      } else NNE.spotlight(null)
-    }
-
     data.info.forEach(part => {
       const link = document.createElement('span')
       link.className = 'link'
       link.textContent = part.title
-      link.addEventListener('click', () => clickStep(part))
+      link.addEventListener('click', () => this._explainerClick(data, part))
       const li = document.createElement('li')
       li.appendChild(link)
       ele.querySelector('.code-examples--ex-parts').appendChild(li)
@@ -314,15 +330,42 @@ class CodeExamples extends Widget {
     return { name, widget, back, ele }
   }
 
+  _explainerClick (data, o) {
+    const idx = data.info.indexOf(o)
+    if (idx === 0) {
+      const m = document.querySelector('.netitor-gutter-marker')
+      if (m.style.animation) m.style.animation = null
+    }
+
+    let options = {}
+    const next = () => this._explainerClick(data, data.info[idx + 1])
+    const previous = () => this._explainerClick(data, data.info[idx - 1])
+    if (idx === 0) {
+      options = { next }
+    } else if (idx === data.info.length - 1) {
+      options = { done: e => e.hide(), previous }
+    } else {
+      options = { next, previous }
+    }
+    if (!options.done) { options.done = e => e.hide() }
+
+    window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
+
+    if (o.focus instanceof Array) {
+      utils.scrollToLines(o.focus)
+      setTimeout(() => NNE.spotlight(o.focus), 500)
+    } else NNE.spotlight(null)
+  }
+
   // ---------------------------------------------------
   // ---------------------------------------------------
   // ---------------------------------------------------
 
   _editorChange () {
-    const code = WIDGETS['code-examples'].lastClickedExample.code.substr(6)
+    const code = WIDGETS['code-examples'].exData.code.substr(6)
     const diffC = NNE.code !== NNE._decode(code)
     const len = NNE.cm.lineCount()
-    const diffL = len !== WIDGETS['code-examples'].lastClickedExample.length
+    const diffL = len !== WIDGETS['code-examples'].exData.length
     // const A = diffL || diffC ? 'none' : 'block'
     const B = diffC && !diffL ? 'block' : 'none'
     const C = diffL ? 'block' : 'none'
@@ -368,7 +411,7 @@ class CodeExamples extends Widget {
     })
 
     // reset.addEventListener('click', () => {
-    //   const code = this.lastClickedExample.code.substr(6)
+    //   const code = this.exData.code.substr(6)
     //   const curExCode = NNE._encode(this.editor.code)
     //   if (code === curExCode) {
     //     window.convo = new Convo(this.convos, 'nothing-to-reset')
