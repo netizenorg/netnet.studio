@@ -1,4 +1,4 @@
-/* global WIDGETS, Maths, Convo, NNW, NNE, Averigua  */
+/* global WIDGETS, Maths, Convo, NNW, NNE, Averigua, SNT  */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -238,31 +238,40 @@ window.utils = {
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
+    const hash = window.location.hash
     if (url.widget) WIDGETS.open(url.widget)
     if (Averigua.isMobile()) return window.utils.mobile()
     if (typeof ghAuth === 'string') {
       window.utils.loadGHRedirect()
+      SNT.post(SNT.dataObj('REQ-gh-redirect'))
       return 'gh-redirect'
     } else if (url.tutorial) {
       window.utils.loadTutorial(url.tutorial, url.time)
+      SNT.post(SNT.dataObj('REQ-tutorial', url))
       return 'tutorial'
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
+      SNT.post(SNT.dataObj('REQ-#code', { hash, url }))
       return 'code'
     } else if (window.location.hash.includes('#example')) {
       window.utils.loadCustomExample()
+      SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
       return 'sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
+      SNT.post(SNT.dataObj('REQ-#sketch', { hash, url }))
       return 'sketch'
     } else if (url.github) {
       window.utils.loadGithub(url.github, url.layout)
+      SNT.post(SNT.dataObj('REQ-gh-project', url))
       return 'github'
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
+      SNT.post(SNT.dataObj('REQ-shortcode', url))
       return 'code'
     } else if (url.example) {
       window.utils.loadExample(url.example, 'load')
+      SNT.post(SNT.dataObj('REQ-example', url))
       return 'example'
     } else {
       window.utils.fadeOutLoader(false)

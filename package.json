@@ -37,7 +37,6 @@
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "netitor": "git+https://github.com/netizenorg/netitor.git",
-    "redbird": "^0.10.0",
     "socket.io": "^4.4.0",
     "standard": "^14.3.3",
     "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git",

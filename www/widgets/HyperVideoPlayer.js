@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, NNE, NNW, Convo, utils */
+/* global Widget, WIDGETS, NNE, NNW, Convo, utils, SNT */
 class HyperVideoPlayer extends Widget {
   constructor (opts) {
     super(opts)
@@ -8,6 +8,11 @@ class HyperVideoPlayer extends Widget {
 
     this.keyframes = {}
     this.timecodes = []
+    this.sid = null // play session id
+
+    this.on('open', () => {
+      this.sid = Date.now().toString(36) + Math.random().toString(36).substr(2)
+    })
 
     this.on('close', () => {
       if (!this.video.paused) this.pause()
@@ -21,6 +26,12 @@ class HyperVideoPlayer extends Widget {
       }
       NNE.readOnly = false
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
+      SNT.post(SNT.dataObj('hvp-close', this.actObj()))
+      this.sid = null
+    })
+
+    window.addEventListener('beforeunload', () => {
+      if (this.sid) SNT.post(SNT.dataObj('hvp-quit', this.actObj()))
     })
 
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
@@ -41,6 +52,16 @@ class HyperVideoPlayer extends Widget {
 
   get src () { return this.video.src }
   set src (v) { this.video.src = v }
+
+  actObj () {
+    const md = WIDGETS['tutorials-guide'].metadata
+    return {
+      sid: this.sid,
+      tutorial: md ? md.id : null,
+      time: this.video.currentTime,
+      duration: this.video.duration
+    }
+  }
 
   updateVideo (name, folder) {
     const path = folder ? `tutorials/${folder}` : 'videos'
@@ -71,6 +92,7 @@ class HyperVideoPlayer extends Widget {
       const kf = this._mostRecentKeyframe()
       const b = kf ? this.keyframes[kf.timecode].editable : false
       this._editable(b)
+      SNT.post(SNT.dataObj('hvp-play', this.actObj()))
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
@@ -114,6 +136,7 @@ class HyperVideoPlayer extends Widget {
 
     this._editable(true)
     this._generatePauseScreen()
+    SNT.post(SNT.dataObj('hvp-pause', this.actObj()))
   }
 
   toggle () {

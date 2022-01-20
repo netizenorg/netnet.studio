@@ -1,4 +1,4 @@
-/* global WIDGETS, NNW, utils, Averigua, Convo */
+/* global WIDGETS, NNW, utils, Averigua, Convo, SNT */
 window.CONVOS['student-session'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
@@ -26,8 +26,12 @@ window.CONVOS['student-session'] = (self) => {
         e.hide()
         NNW.menu.switchFace('default')
         WIDGETS.open('tutorials-guide')
+        SNT.post(SNT.dataObj('i-want-to-learn'))
       },
-      'I want to sketch': (e) => self.checkForSavePoint()
+      'I want to sketch': (e) => {
+        self.checkForSavePoint()
+        SNT.post(SNT.dataObj('i-want-to-sketch'))
+      }
     }
   }, {
     id: 'prior-opened-project',
@@ -101,10 +105,12 @@ window.CONVOS['student-session'] = (self) => {
         e.hide()
         NNW.menu.switchFace('default')
         WIDGETS.open('tutorials-guide')
+        SNT.post(SNT.dataObj('i-want-to-learn'))
       },
       'I want to sketch': (e) => {
         NNW.menu.switchFace('default')
         WIDGETS['functions-menu'].newSketch()
+        SNT.post(SNT.dataObj('i-want-to-sketch'))
       }
     }
   }, {
@@ -147,8 +153,15 @@ window.CONVOS['student-session'] = (self) => {
     id: 'made-up-name-entered',
     content: 'Like i said, I\'m netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?',
     options: {
-      'I want to learn': (e) => { e.hide(); WIDGETS.open('tutorials-guide') },
-      'I want to sketch': (e) => WIDGETS['functions-menu'].newSketch()
+      'I want to learn': (e) => {
+        e.hide()
+        WIDGETS.open('tutorials-guide')
+        SNT.post(SNT.dataObj('i-want-to-learn'))
+      },
+      'I want to sketch': (e) => {
+        WIDGETS['functions-menu'].newSketch()
+        SNT.post(SNT.dataObj('i-want-to-sketch'))
+      }
     }
   }, {
     id: 'explain-made-up-name',
