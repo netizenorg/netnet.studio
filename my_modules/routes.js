@@ -28,9 +28,18 @@ frontEndDependencies.forEach(dep => {
   router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
 })
 
-router.get('/sketch', (req, res) => {
-  res.redirect('?layout=dock-left/#code/eJyzUXTxdw6JDHBVyCjJzbEDACErBIk=')
+router.get('/sketch', (req, res) => res.redirect('/#sketch'))
+
+router.get('/tutorials/*', (req, res, next) => {
+  if (req.headers.host.includes(':1337')) { // for dev server
+    const file = `../../netnet.studio/www/${req.originalUrl}`
+    res.sendFile(path.join(__dirname, file))
+  } else next()
 })
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+// // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   REST API
 
 router.get('/api/videos/:video', (req, res) => {
   const v = req.params.video

@@ -1,0 +1,79 @@
+/* CSS for Analytics dashboard */
+/* not used on the actual netnet.studio app */
+:root {
+  --netizen-text: #e7e5c9;
+  --netizen-background: #1c1c3600;
+  --netizen-meta: #c3c3db;
+  --netizen-tag: #c76ebc;
+  --netizen-tag-bracket: #c3c3db;
+  --netizen-attribute: #81c994;
+  --netizen-qualifier: #81c994;
+  --netizen-comment: #515199;
+  --netizen-variable: #d5805e;
+  --netizen-variable-2: #82ccd7;
+  --netizen-variable-3: #c3c3db;
+  --netizen-variable-callee: #82ccd7;
+  --netizen-def: #c3c3db;
+  --netizen-builtin: #81c994;
+  --netizen-property: #c3c3db;
+  --netizen-keyword: #81c994;
+  --netizen-string: #82ccd7;
+  --netizen-string-2: #82ccd7;
+  --netizen-number: #E6DB6F;
+  --netizen-atom: #c3c3db;
+  --netizen-operator: #c76ebc;
+  --netizen-line-numbers: #9885a6;
+  --netizen-active-line-bg: #c3c3db;
+  --netizen-selected: #c8c8fa19;
+  --netizen-match-color: #e7e5c9;
+  --netizen-match-border: #515199;
+  --netizen-hint-color: #1c1c36;
+  --netizen-hint-bg: #dacb8e;
+  --netizen-hint-shadow: #515199BF;
+  --fg-color: #c76ebc;
+  --bg-color: #1c1c36;
+  --black: var(--netizen-hint-color);
+}
+
+body {
+  background-color: var(--netizen-hint-color);
+}
+
+input {
+  background-color: var(--netizen-meta);
+  font-family: monospace;
+  color: var(--netizen-hint-color);
+  padding: 6px;
+  border: none;
+  margin: 6px;
+  width: 250px;
+  border-radius: 5px;
+}
+
+button {
+  position: relative;
+  border: none;
+  border-radius: 25px;
+  padding: 5px 15px;
+  margin-right: 0 5px 0 0;
+  color: var(--bg-color);
+  background: var(--fg-color);
+  font-size: 15px;
+  line-height: 1.2em;
+  font-weight: 700;
+  text-shadow: none;
+  white-space: nowrap;
+  box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
+  cursor: pointer;
+}
+
+button:hover {
+  border: none;
+  background-color: var(--netizen-number);
+}
+
+.center-text { text-align: center; }
+
+#analytics {
+  grid-template-columns: 1fr 1fr 1fr;
+}

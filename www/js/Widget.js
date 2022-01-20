@@ -1,4 +1,4 @@
-/* global HTMLElement, WIDGETS, utils */
+/* global HTMLElement, WIDGETS, utils, SNT */
 window.WIDGETS = { // GLOBAL WIDGETS OBJECT
   // all named/keyed instantiated widgets are properties of this global object
   loaded: ['Widget.js'], // list of filenames of all currently loaded widgets
@@ -48,6 +48,7 @@ window.WIDGETS = { // GLOBAL WIDGETS OBJECT
       const name = arr.map(w => cap(w)).join('') + '.js'
       WIDGETS.load(name, w => w.open(cb))
     }
+    SNT.post(SNT.dataObj('widget', key))
   },
   close: (key) => {
     if (WIDGETS.instantiated.includes(key)) WIDGETS[key].close()

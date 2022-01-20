@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, Convo, NNW, NNE, Netitor, utils */
+/* global WIDGETS, Widget, Convo, SNT, NNE, Netitor, utils */
 class CodeExamples extends Widget {
   constructor (opts) {
     super(opts)
@@ -62,6 +62,7 @@ class CodeExamples extends Widget {
       this._resizeIt({ width: this.width, height: this.height })
     })
     window.convo = new Convo(this.convos, 'example-info')
+    SNT.post(SNT.dataObj('EX-select', { name: o.name, key: o.key }))
   }
 
   beforeLoadingEx () {
@@ -107,6 +108,7 @@ class CodeExamples extends Widget {
         }
       })
     }
+    SNT.post(SNT.dataObj('EX-explain', { name: data.name, key: data.key }))
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods

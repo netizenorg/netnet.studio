@@ -1,4 +1,4 @@
-/* global utils, Fuse, WIDGETS, NNE */
+/* global utils, Fuse, WIDGETS, NNE, SNT */
 class SearchBar {
   constructor () {
     this.fuse = null
@@ -69,6 +69,7 @@ class SearchBar {
       this.ele.style.opacity = 1
       this.emit('open', {})
     }, 100)
+    SNT.post(SNT.dataObj('search-open'))
   }
 
   close () {
@@ -117,6 +118,11 @@ class SearchBar {
     const resultsDiv = this.ele.querySelector('#search-results')
     resultsDiv.innerHTML = ''
     results.forEach(res => this._createSearchResult(res))
+
+    if (this._termDebounce) clearTimeout(this._termDebounce)
+    this._termDebounce = setTimeout(() => {
+      if (term !== '') SNT.post(SNT.dataObj('search-term', { search: term }))
+    }, 1000)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

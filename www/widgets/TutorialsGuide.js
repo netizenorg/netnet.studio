@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE */
+/* global Widget, WIDGETS, utils, Convo, NNE, SNT */
 class TutorialsGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -52,6 +52,7 @@ class TutorialsGuide extends Widget {
         this._loadTutorial(name, time)
       })
     })
+    SNT.post(SNT.dataObj('TUT-select', { name }))
   }
 
   quit () {

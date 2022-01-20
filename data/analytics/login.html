@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Analytics Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/snt-styles.css">
+    <link rel="stylesheet" href="/css/snt-css.css">
+  </head>
+  <body>
+
+    <section class="wrap center-flex">
+      <div>
+        <div class="center-text">( ◕ ◞ ◕ ) netnet analytics login</div>
+        <br>
+        <input id="pw" type="password" placeholder="password">
+        <button id="login">login</button>
+      </div>
+    </section>
+
+    <script src="/snt-libs/utils.js"></script>
+    <script>
+      function logIn (e) {
+        if (e.keyCode && e.keyCode !== 13) return
+        const pw = document.querySelector('#pw').value
+        window.SNT.login(pw, (err, data) => {
+          if (!err) window.location.reload()
+          document.querySelector('.center-text').style.color = 'red'
+          document.querySelector('.center-text').textContent = err
+        })
+      }
+
+      document.querySelector('#login').addEventListener('click', logIn)
+      document.querySelector('#pw').addEventListener('keypress', logIn)
+    </script>
+
+  </body>
+</html>
