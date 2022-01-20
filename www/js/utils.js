@@ -201,11 +201,26 @@ window.utils = {
   },
 
   mobile: () => {
-    const ld = document.querySelector('#loader > div:nth-child(1)')
-    ld.style.maxWidth = '1200px'
-    ld.style.padding = '10px'
-    ld.style.lineHeight = '32px'
-    ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
+    const url = window.utils.url
+    if (window.location.hash.includes('#code/')) {
+      window.utils.loadFromCodeHash()
+    } else if (url.github) {
+      window.utils.loadGithub(url.github, null, () => {
+        NNW.win.style.display = 'none'
+        NNW.rndr.style.width = '100%'
+        NNW.rndr.style.height = '100%'
+        NNW.rndr.style.left = '0px'
+        NNW.rndr.style.top = '0px'
+      })
+    } else if (url.shortCode) {
+      window.utils.loadShortCode(url.shortCode, url.layout)
+    } else {
+      const ld = document.querySelector('#loader > div:nth-child(1)')
+      ld.style.maxWidth = '1200px'
+      ld.style.padding = '10px'
+      ld.style.lineHeight = '32px'
+      ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
+    }
   },
 
   checkForDiffRoot: () => {
@@ -342,7 +357,7 @@ window.utils = {
     })
   },
 
-  loadGithub: (github, layout) => {
+  loadGithub: (github, layout, callback) => {
     const a = github.split('/')
     if (a.length < 3 || a[2] === '') a[2] = 'main'
     const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
@@ -364,33 +379,35 @@ window.utils = {
         } else if (o) {
           window.utils._Convo('remix-github-project-logged-in')
         } else { window.utils._Convo('remix-github-project-logged-out') }
+        if (callback) callback()
       })
     }, true)
   },
 
   loadExample: (example, calledBy) => {
+    // load example from json data...
     const loadIt = (json, calledBy) => {
-      WIDGETS['code-examples'].lastClickedExample = json
-      WIDGETS['code-examples'].lastClickedExample.key = example
+      if (!json.key) json.key = example
+      WIDGETS['code-examples'].newExData(json)
+      NNE.addCustomRoot(null)
       window.utils.afterLayoutTransition(() => {
         setTimeout(() => NNE.cm.refresh(), 10)
-        if (calledBy === 'load') {
+        if (calledBy === 'load') { // url?ex=NUM || url?example=code
           window.utils.fadeOutLoader(false)
           NNE.code = NNE._decode(json.hash.substr(6))
-          if (!json.info) window.utils._Convo('demo-example')
-          else window.utils._Convo('demo-explainer')
-        } else if (calledBy === 'widget') {
+          if (!json.info) window.utils._Convo('demo-example') // ?example=...
+          else window.utils._Convo('demo-explainer') // ?ex=...
+        } else if (calledBy === 'widget') { // Code-Example widget convo
           NNE.code = NNE._decode(json.hash.substr(6))
           if (!json.info) window.utils._Convo('demo-ex-from-list')
           WIDGETS['code-examples'].explainExample()
-        } else if (calledBy === 'search') {
+        } else if (calledBy === 'search') { // search bar result
           WIDGETS['code-examples'].beforeLoadingEx()
         }
       })
     }
-
+    // request example json data...
     window.utils.post('./api/example-data', { key: example }, (json) => {
-      NNE.addCustomRoot(null)
       if (calledBy === 'load' || NNW.layout === 'welcome') {
         NNW.layout = 'dock-left'
       }
@@ -459,7 +476,8 @@ window.utils = {
     const unit = t.includes('ms') ? 'ms' : 's'
     t = Number(t.substr(0, t.indexOf(unit)))
     if (unit === 's') t *= 1000
-    setTimeout(() => { callback() }, t + 100) // little extra to avoid bugs
+    t += 200 // little extra to avoid bugs
+    setTimeout(() => { callback() }, t)
   },
 
   getVal: (prop) => { // get value of a CSS variable
@@ -602,7 +620,7 @@ window.utils = {
           <p>Nothing you do in the studio gets sent back to the server, with a couple of exceptions: if you opt-in to our URL shortener for shareable sketches, I'll send your code to the server to store in a data base of shortened URLs... as far as my creators know, there's no other way to shorten a URL. But feel free to disagree and update my code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a>.</p>
           <p>The second exception happens if and when you connect your GitHub to allow me to save any work you make here in the studio as repositories in your GitHub account. In order to communicate with GitHub's servers I'll act as an intermediary, passing data along, but I don't store any of it on my server (again, refer to my open source code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a> for proof).</p>
           <p>Lastly, we do store some server analytics, in order to make sure things run smoothly and to gain some high level insight on our traffic. This includes how many requests we're getting, when we're getting them, what sort of devices their coming from (operating system and browser) and where in the world they're coming from.</p>
-          <p>In order to be 100% sure we're not unintentionally sharing any data with third parties (which has happened to even the <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites" target="_blank">best intentioned</a> web developers) my creators wrote their own minimal <a href="https://github.com/netizenorg/netnet.studio/blob/master/my_modules/analytics.js" target="_blank">analytics code</a> from scratch (no google analytics here!).</p>
+          <p>In order to be 100% sure we're not unintentionally sharing any data with third parties (which has happened to even the <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites" target="_blank">best intentioned</a> web developers) my creators wrote their own custom <a href="https://github.com/nbriz/StatsNotTracks" target="_blank">analytics code</a> from scratch (no google analytics here!).</p>
           <p>Down with surveillance capitalist platforms! long live the World Wide Web! the people's platform!</p>
           <p><3 netnet ◕ ◞ ◕</p>
           </div>`

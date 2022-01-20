@@ -49,8 +49,9 @@ class CodeReview extends Widget {
       if (lines.includes(e.line)) return
       lines.push(e.line)
       const clk = () => this._explainError(e)
-      if (e.type === 'warning') NNE.marker(e.line, 'orange', clk)
-      else NNE.marker(e.line, 'red', clk)
+      const clr = (e.type === 'warning') ? 'orange' : 'red'
+      const m = NNE.marker(e.line, clr, clk)
+      m.setAttribute('title', e.message)
     })
   }
 

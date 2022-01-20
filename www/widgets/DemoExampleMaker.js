@@ -20,7 +20,7 @@ class DemoExampleMaker extends Widget {
       }
 
       if (utils.url.example) {
-        const obj = WIDGETS['code-examples'].lastClickedExample
+        const obj = WIDGETS['code-examples'].exData
         this._data = {
           name: obj.name,
           key: Number(obj.key),

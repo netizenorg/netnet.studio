@@ -51,7 +51,7 @@
 
 <p>
   An element can have more than one CSS class, for example:
-  <code-example name="css-sel-ex-1"></code-example>
+  <code-sample name="css-sel-ex-1"></code-sample>
   This <i>div</i> has two classes applied to it, each might do something specific. Rather than creating a custom class for each type of element in your page, you could create classes that are meant to be used more modularly and then add all that apply to any given element.
 </p>
 
@@ -59,9 +59,9 @@
   <li>
     <b>AND Selector</b>: <code>.big.red { }</code><br>
     this rule will apply to any element that contains both the “big” and “red” class, for example:
-    <code-example name="css-sel-ex-2"></code-example>
+    <code-sample name="css-sel-ex-2"></code-sample>
     <b>NOTE</b>: If you leave a space between <i>.big .red {}</i> then it will become a Descendant Selector and apply to all elements with a class of ‘red’ which are also children of elements with a class of ‘big’, ex:
-    <code-example name="css-sel-ex-3"></code-example>
+    <code-sample name="css-sel-ex-3"></code-sample>
   </li>
 </ul>
 
@@ -107,9 +107,9 @@
   Selector’s can also be followed by <b>pseudo-classes</b>, which specify a particular “state” the element can be in. The example below shows a very common use of the <i>:hover</i> pseudo-class.
 </p>
 
-<code-example name="css-sel-ex-4"></code-example>
+<code-sample name="css-sel-ex-4"></code-sample>
 <p>
   Similarly, selector’s can also be followed by <b>pseudo-elements</b> ( <i>::</i> instead of <i>:</i> ), rather then specify a special state, pseudo-elements target a specific part of the targeted element, for example:
-  <code-example name="css-sel-ex-5"></code-example>
+  <code-sample name="css-sel-ex-5"></code-sample>
   This will make the first letter of every <i>&lt;p&gt;</i> element <i>32px</i>. A full list of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes" target="_blank">pseudo-classes</a> is available on the mozilla developer network as well as a full list of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements" target="_blank">pseudo-elements</a>. You can also find a list of every <a href="https://css-tricks.com/almanac/" target="_blank">CSS selector and property</a> in CSS-Tricks.com's almanac.
 </p>

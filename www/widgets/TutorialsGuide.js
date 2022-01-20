@@ -102,7 +102,7 @@ class TutorialsGuide extends Widget {
   }
 
   _listTutorials () {
-    const tutHTML = (t) => {
+    const tutHTML = (t, i) => {
       const div = document.createElement('div')
       div.className = 'learning-guide__tut'
       div.innerHTML = `
@@ -118,6 +118,15 @@ class TutorialsGuide extends Widget {
         </div>
         <p name="nfo:${t.id}">${t.description}</p>
       `
+      const p = div.querySelector('p')
+      const W = 554
+      const w = 340
+      const f = W / 2 - w / 2
+      const l = f - (Math.sin(i) * f)
+      div.style.width = w + 'px'
+      div.style.marginLeft = l + 'px'
+      p.style.width = W + 'px'
+      p.style.transform = `translateX(-${l}px)`
       return div
     }
 
@@ -126,10 +135,10 @@ class TutorialsGuide extends Widget {
 
     utils.get('tutorials/list.json', (json) => {
       let count = 0
-      json.listed.forEach(name => {
+      json.listed.forEach((name, i) => {
         utils.get(`tutorials/${name}/metadata.json`, (tut) => {
           tutorials.push({ // create tutorial <div>
-            index: json.listed.indexOf(name), html: tutHTML(tut)
+            index: json.listed.indexOf(name), html: tutHTML(tut, i)
           })
           count++
           // ...
