@@ -223,7 +223,7 @@ window.utils = {
     }
   },
 
-  checkForDiffRoot: (returnObj) => {
+  checkForDiffRoot: () => {
     if (typeof window.utils.url.github === 'string') {
       WIDGETS['student-session'].clearProjectData()
       const a = window.utils.url.github.split('/')
@@ -231,9 +231,8 @@ window.utils = {
       const proto = window.location.protocol
       const host = window.location.host
       const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      if (returnObj) return { base, proxy }
-      else NNE.addCustomRoot({ base, proxy })
-    } else if (returnObj) return { base: null, proxy: null }
+      NNE.addCustomRoot({ base, proxy })
+    }
   },
 
   checkURL: () => {
@@ -621,7 +620,7 @@ window.utils = {
           <p>Nothing you do in the studio gets sent back to the server, with a couple of exceptions: if you opt-in to our URL shortener for shareable sketches, I'll send your code to the server to store in a data base of shortened URLs... as far as my creators know, there's no other way to shorten a URL. But feel free to disagree and update my code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a>.</p>
           <p>The second exception happens if and when you connect your GitHub to allow me to save any work you make here in the studio as repositories in your GitHub account. In order to communicate with GitHub's servers I'll act as an intermediary, passing data along, but I don't store any of it on my server (again, refer to my open source code on <a href="https://github.com/netizenorg/netnet.studio" target="_blank">GitHub</a> for proof).</p>
           <p>Lastly, we do store some server analytics, in order to make sure things run smoothly and to gain some high level insight on our traffic. This includes how many requests we're getting, when we're getting them, what sort of devices their coming from (operating system and browser) and where in the world they're coming from.</p>
-          <p>In order to be 100% sure we're not unintentionally sharing any data with third parties (which has happened to even the <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites" target="_blank">best intentioned</a> web developers) my creators wrote their own minimal <a href="https://github.com/netizenorg/netnet.studio/blob/master/my_modules/analytics.js" target="_blank">analytics code</a> from scratch (no google analytics here!).</p>
+          <p>In order to be 100% sure we're not unintentionally sharing any data with third parties (which has happened to even the <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites" target="_blank">best intentioned</a> web developers) my creators wrote their own custom <a href="https://github.com/nbriz/StatsNotTracks" target="_blank">analytics code</a> from scratch (no google analytics here!).</p>
           <p>Down with surveillance capitalist platforms! long live the World Wide Web! the people's platform!</p>
           <p><3 netnet ◕ ◞ ◕</p>
           </div>`
