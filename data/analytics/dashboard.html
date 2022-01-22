@@ -12,7 +12,7 @@
     <section id="wrap">
       <header>
         <span>
-          ( ◕ ◞ ◕ ) Analytics
+          netnet ( ◕ ◞ ◕ ) analytics
           <span id="info">(i)</span>
           <span id="hidden-info" style="display:none">
             <p>
@@ -22,7 +22,7 @@
               a <i>visit</i> is a unique visitor (anonymized IP address + user agent string); a <i>page.view</i> is anytime a visitor fires a page-load action or a page-visible action (switched back to the tab); <i>live</i> is number of current users on the site.
             </p>
             <p>
-              numbers next to <b>pages</b> && <b>referrals</b> are in <i>page.views</i>; numbers next to <b>devices</b>, <b>systems</b>, <b>clients</b> && <b>locations</b> are in <i>visits</i>
+              numbers next to <b>referrals</b> are in <i>page.views</i>; numbers next to <b>devices</b>, <b>systems</b>, <b>clients</b> && <b>locations</b> are in <i>visits</i>
             </p>
           </span>
         </span>
@@ -41,6 +41,7 @@
           to <input type="date" id="time-range-to">
           <div style="height: 8px;"></div>
           gui.depth <input type="range" id="parallax-slider" value="0">
+          <button id="act-stats">view actions stats</button>
           <div style="height: 15px;"></div>
         </span>
         <span>
@@ -75,6 +76,46 @@
 
     <snt-modal zIndex="1000"></snt-modal>
 
+    <section style="display: none">
+      <div name="http">
+        These actions reprsent an HTTP requet (the initial page load) to https://netnet.studio:
+        <br><br>
+        <b>REQ-#sketch</b>: refers to <i>netnet.studio/#sketch</i>
+        <br>
+        <b>REQ-#code</b>: refers to <i>netnet.studio/#code/[...]</i>
+        <br>
+        <b>REQ-#example</b>: refers to <i>netnet.studio/#example/[...]</i>
+        <br>
+        <b>REQ-gh-redirect</b>: is when a user is redirected to netnet.studio from GitHub.com (after connecting their account)
+        <br>
+        <b>REQ-tutorial</b>: refers to <i>netnet.studio/?tutorial=[...]</i>
+        <br>
+        <b>REQ-gh-project</b>: refers to <i>netnet.studio/?gh=[...]</i>
+        <br>
+        <b>REQ-shortcode</b>: refers to <i>netnet.studio/?c=[...]</i>
+        <br>
+        <b>REQ-example</b>: refers to <i>netnet.studio/?ex=[..]</i>
+        <br>
+        <br>
+        for more info refer to the <a href="https://github.com/netizenorg/netnet.studio/wiki/Anatomy-of-a-netnet-URL" target="_blank">Anatomy of a netnet URL</a> on the netnet.studio <a href="https://github.com/netizenorg/netnet.studio/wiki" target="_blank">Wiki</a>.
+      </div>
+      <div name="widgets">
+        <p>
+          These actions represent everytime a user opens a widget, refer to the netnet source code for a <a href="https://github.com/netizenorg/netnet.studio/tree/master/www/widgets" target="_blank">full list of netnet widgets</a>.
+        </p>
+      </div>
+      <div name="examples">
+        <p>
+          These actions represent everytime a user opens a particular example, refer to the netnet source code for a <a href="https://github.com/netizenorg/netnet.studio/tree/master/data/examples" target="_blank">full list of netnet examples</a>.
+        </p>
+      </div>
+      <div name="vid">
+        <p>
+          View Console Data (still working on data viz for this)
+        </p>
+      </div>
+    </section>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/snt-libs/utils.js"></script>
     <script>SNT.loading(true, { background: '#1c1c36ee' })</script>
@@ -85,20 +126,37 @@
       const queryCache = { query: null, data: null }
       $('snt-modal').setAttribute('bgColor', '#1c1c36ee')
 
-      function createRows (data, parent) {
-        if (parent) $(parent).innerHTML = ''
+      function genQuery () {
+        const start = SNT.str2timestamp($('#time-range-from').value)
+        const end = SNT.str2timestamp($('#time-range-to').value)
+        const query = `/snt-api/data/hits?start=${start}&end=${end}`
+        return query
+      }
+
+      function strip (t) {
+        const l = t[t.length - 1]
+        if (l === '"' || l === 's') t = t.substring(0, t.length - 1)
+        if (t[0] === '"') t = t.substring(1, t.length)
+        return t
+      }
+
+      // ........... ............... ................. ...................
+
+      function createRows (data, parent, act) {
+        if (parent instanceof HTMLElement) parent.innerHTML = ''
+        else if (parent) { parent = $(parent); parent.innerHTML = '' }
         const max = SNT.sumStat(data)
         const arr = []
         SNT.order(data).forEach(item => {
-          const row = createRow(item.key, item.val, max)
-          if (parent) $(parent).appendChild(row)
+          const row = createRow(item.key, item.val, max, act)
+          if (parent) parent.appendChild(row)
           else arr.push(row)
         })
-        if (parent) return $(parent).children
+        if (parent) return parent.children
         else return arr
       }
 
-      function createRow (txt, val, max) {
+      function createRow (txt, val, max, act) {
         const range = {
           start: SNT.str2timestamp($('#time-range-from').value),
           end: SNT.str2timestamp($('#time-range-to').value)
@@ -135,6 +193,10 @@
         update(query, id, text)
       }
 
+      // ........... ...............
+      // ........... ............... .................  Live Stats
+      // ........... ............... ................. ...................
+
       function setupLiveStats () {
         let socket
         const modal = $('snt-modal')
@@ -162,6 +224,135 @@
         })
       }
 
+      // ........... ...............
+      // ........... ............... ................. Actions Stuff
+      // ........... ............... ................. ...................
+
+      function actClick (row, dict) {
+        let html = ''
+        const k = row.getAttribute('txt')
+        const t = row.parentNode.previousSibling.textContent
+
+        if (t === 'http requests') html = $('[name="http"]').innerHTML
+        else if (t === 'widgets' || t === 'examples') {
+          html = $(`[name="${t}"]`).innerHTML
+        } else if (t === 'search bar') {
+          const div = document.createElement('div')
+          const arr = dict.search['search-term'].map(o => {
+            return {
+              time: new Date(o.timestamp).toDateString(),
+              term: JSON.parse(o.payload).search
+            }
+          }).forEach(o => {
+            const d = document.createElement('div')
+            d.textContent = `${o.time} -- ${o.term}`
+            div.appendChild(d)
+          })
+          html = div.outerHTML
+        } else if (t === 'tutorials') {
+          const map = {}
+          const arr = dict.vid
+            .filter(o => o.tutorial === k)
+            .map(o => {
+              const at = Math.round((o.time/o.duration) * 100) + '%'
+              return { sid: o.sid, action: o.action, at }
+            })
+            .forEach(o => {
+              if (!map[o.sid]) map[o.sid] = []
+              map[o.sid].push(o)
+            })
+          console.log(map);
+          html = $('[name="vid"]').innerHTML
+        }
+
+        $('snt-modal').update({ title: 'Action Stats', html })
+      }
+
+      function setupActionStats () {
+        let dict
+        // action stats - modal creation logic
+        const getActData = async () => {
+          const filterOut = ['load', 'hidden', 'visible', 'unload']
+          const data = await SNT.getData(genQuery())
+          dict = {
+            http: {}, search: {}, widget: {}, tutorial: {}, example: {}, vid: []
+          }
+          // helpers...
+          const addHit = (h, p, a) => {
+            if (!dict[p][a]) dict[p][a] = []; dict[p][a].push(h)
+          }
+          const toStat = (d) => {
+            const s = {}
+            Object.keys(d).forEach(k => { s[k] = d[k].length })
+            return s
+          }
+          const makeCol = (txt, parent) => {
+            const title = document.createElement('div')
+            title.className = 'stat-title'
+            title.textContent = txt
+            parent.appendChild(title)
+            const rowContainer = document.createElement('div')
+            parent.appendChild(rowContainer)
+            return rowContainer
+          }
+          // create dict...
+          const acts = data.hits.forEach(h => {
+            if (!filterOut.includes(h.action)) {
+              const a = h.action
+              if (a.includes('REQ')) addHit(h, 'http', a)
+              else if (a.includes('search')) addHit(h, 'search', a)
+              else if (a === 'widget') addHit(h, 'widget', strip(h.payload))
+              else if (a === 'TUT-select') {
+                addHit(h, 'tutorial', JSON.parse(h.payload).name)
+              } else if (a.includes('EX')) {
+                addHit(h, 'example', JSON.parse(h.payload).name)
+              } else if (a.includes('hvp')) {
+                const obj = JSON.parse(h.payload)
+                obj.action = h.action
+                dict.vid.push(obj)
+              }
+            }
+          })
+          // ...
+          const html = document.createElement('div')
+          html.className = 'action-stats'
+          // http requests
+          const col1 = document.createElement('div')
+          const httpRows = makeCol('http requests', col1)
+          createRows(toStat(dict.http), httpRows, true)
+          const searchRows = makeCol('search bar', col1)
+          createRows(toStat(dict.search), searchRows, true)
+          html.appendChild(col1)
+          // search bar && widgets
+          const col2 = document.createElement('div')
+          const widgetRows = makeCol('widgets', col2)
+          createRows(toStat(dict.widget), widgetRows, true)
+          html.appendChild(col2)
+          // code examples && tutorials
+          const col3 = document.createElement('div')
+          const tutorialRows = makeCol('tutorials', col3)
+          createRows(toStat(dict.tutorial), tutorialRows, true)
+          const exampleRows = makeCol('examples', col3)
+          createRows(toStat(dict.example), exampleRows, true)
+          html.appendChild(col3)
+          //...
+          return html.outerHTML
+        }
+        // click - view action stats
+        $('#act-stats').on('click', async () => {
+          SNT.loading(true)
+          setTimeout(async () => {
+            const html = await getActData()
+            $('snt-modal').update({ title: 'Action Stats', html })
+            $('snt-modal').querySelectorAll('snt-row').forEach(r => {
+              r.update()
+              r.addEventListener('click', (e) => actClick(r, dict, html))
+            })
+            SNT.loading(false)
+          }, 100)
+        })
+      }
+
       // -----------------------------------------------------------------------
       // --------------------------------------------- SETUP + UPDATE ----------
       // -----------------------------------------------------------------------
@@ -174,18 +365,13 @@
         $('#time-range-to').value = SNT.date2str(t)
 
         setupLiveStats()
+        setupActionStats()
 
         const height = $('header').offsetHeight + $('nav').offsetHeight
         $('#chart').style.height = `calc(35% - ${height / 2}px)`
         $('#analytics').style.height = `calc(65% - ${height / 2}px)`
 
         // run initial update
-        function genQuery () {
-          const start = SNT.str2timestamp($('#time-range-from').value)
-          const end = SNT.str2timestamp($('#time-range-to').value)
-          const query = `/snt-api/data/hits?start=${start}&end=${end}`
-          return query
-        }
         update(genQuery())
 
         // clear filter
@@ -236,8 +422,8 @@
         // UPDATE MODAL DETAILS
         if (id && text) {
           $('nav > span:nth-child(2)').style.display = 'flex'
-          console.log(text);
-          $('.filter').textContent = `[${id.toUpperCase()}] ${text}`
+          const ftext = strip(id).toUpperCase()
+          $('.filter').textContent = `FILTERING BY ${ftext}: ${text}`
         }
         if (id === 'locations') {
           $('.filter+button').style.display = 'block'
