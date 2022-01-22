@@ -77,3 +77,26 @@ button:hover {
 #analytics {
   grid-template-columns: 1fr 1fr 1fr;
 }
+
+.snt-modal-info a {
+  color: var(--netizen-tag);
+}
+
+#live:hover {
+  color: var(--netizen-tag);
+}
+
+.action-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.row > .front > .bar {
+  background: linear-gradient(70deg, var(--netizen-string) 0%, var(--netizen-tag) 100%);
+  border-radius: 0px 25px 25px 0px;
+}
+
+.row:hover .bar {
+  background: none;
+}
