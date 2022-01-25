@@ -213,7 +213,7 @@ window.utils = {
         NNW.rndr.style.top = '0px'
       })
     } else if (url.shortCode) {
-      window.utils.loadShortCode(url.shortCode, url.layout)
+      window.utils.loadShortCode(url.shortCode)
     } else {
       const ld = document.querySelector('#loader > div:nth-child(1)')
       ld.style.maxWidth = '1200px'
