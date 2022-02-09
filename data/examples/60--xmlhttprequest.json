@@ -1,0 +1,103 @@
+{
+  "name": "XMLHttpRequest",
+  "type": "JS REST APIs",
+  "key": 60,
+  "code": "#code/eJxFUMtOxDAMvPcrrHJIVkLJHVoOSBUPLSDBHriGxFuC2qTE6QJC/DtOt9Le7PF47JnGjz1419Yu9jVQsm19VoMZclsnE1wcwY+mR4h7MFA4V1XVkE1+ylwBHEyC+Iyf0ELAL3h92N7mPDEwI2W5uWRKGSvjXHfAkLeeMgZMUgzROHEO+znY7GMAuYFfZh8lP4iRFu5fnh7VZBKhXFQS0hQD4Q6/86INYLmPA6oh9rJsrXARKdZaftrOI19WPeZuwFJe/9w5KdiNWNnMVOyd2UVCjUjEpsvs72QhThikuOl2/LV4Z5d0oTWLKItRm8nrt4ToSC+B6WN64rROGJxc71WNXjP8B5mWePE=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to show you the old way of making <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP\" target=\"_blank\">HTTP</a> requests to <a href=\"https://www.ibm.com/cloud/learn/rest-apis\" target=\"_blank\">REST APIs</a> in order to access resources on other servers. I don't recommend you write your code this way (there are newer ways to do this), but it's helpful to understand the old ways first, because it's still very common to find answers to coding questions online written this way."
+    },
+    {
+      "title": "XMLHttpRequest",
+      "focus": [
+        5
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest\" target=\"_blank\">XMLHttpRequest</a> constructor is one way to create an HTTP request in our JavaScript code. I'm storing the instance of this request object in a variable called <code>oReq</code> which I declared using the <code>var</code> keyword. This keyword is somewhat outdated, but so are <code>XMLHttpRequest</code> objects, so I thought we should keep this example \"historically accurate\"."
+    },
+    {
+      "title": "the \"load\" EventListener",
+      "focus": [
+        6
+      ],
+      "text": "Next we create an <a href=\"https://developer.mozilla.org/en-US/docs/web/api/eventlistener\" target=\"_blank\">EventListener</a>, the same way we would when listening for other window events like key presses or mouse clicks: by calling the object's <code>addEventListener()</code> method and passing the <i>event type</i> as it's first argument, and a <i>callback function</i> as it's second argument."
+    },
+    {
+      "title": "asynchronous code",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "This callback function is an example of \"<a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous\" target=\"_blank\">asynchronous code</a>\". In JavaScript, our code normally runs \"synchronously\", meaning one line at a time, each line waiting for the line before it to finish executing before the next line runs. The code inside this callback function, however, isn't going to run until the data we request in our HTTP request has been returned to us and <i>loaded</i> into our object. This is also referred to as \"non-blocking\" code, meaning that the rest of our code will continue to run even as we wait for the data to come back (rather than blocking the next line from running)."
+    },
+    {
+      "title": "open the HTTP request",
+      "focus": [
+        12
+      ],
+      "text": "This next line defines our HTTP request's parameters, there are different <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods\" target=\"_blank\">types of HTTP requests</a> (a \"GET\" request being the most common), so we first specify the type we want and then pass the URL of the REST API endpoint we are requesting data from."
+    },
+    {
+      "title": "API documentation",
+      "focus": null,
+      "text": "In this example we're requesting a random dog image from the <a href=\"https://dog.ceo/\" target=\"_blank\">dog.ceo</a> API, you can check out their <a href=\"https://dog.ceo/dog-api/\" target=\"_blank\">documentation</a> to see what other endpoints are available to us as well as what type of JSON data we should expect in return. There are loads of REST APIs on the Web for us to experiment with, the vast majority of them will have documentation explaining it's URL endpoints, the type of data it returns and any other details we may need to know about in order to effectively use the API."
+    },
+    {
+      "title": "API Keys",
+      "focus": null,
+      "text": "Some APIs will require you register for an API Key before you can actually send requests. This allows the folks running the API to monitor how many requests you send. Most APIs are free to use until you start sending too many requests (after which point they usually start charging you). How many free requests do you get? You'll need to read each API's documentation to find out."
+    },
+    {
+      "title": "send the HTTP request",
+      "focus": [
+        13
+      ],
+      "text": "Once we've setup the parameters of our HTTP request we can call the object's <code>send()</code> method to send our newly created packet out onto the Internet and wait for the REST API's server to send us a response."
+    },
+    {
+      "title": "the HTTP response",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "Once our browser receives the HTTP response from the dog.ceo API it will load the data into our object's <code>responseText</code> property triggering the \"load\" event and \"calling back\" the function we passed to our EventListener."
+    },
+    {
+      "title": "handeling the response",
+      "focus": [
+        7
+      ],
+      "text": "This <code>responseText</code> is returned to us as a long string of data, but we can use JavaScript's built-in <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON\" target=\"_blank\">JSON</a> object to <code>parse</code> the text, converting it from a <i>string</i> to an <i>object</i>, which i've stored in a variable called <code>json</code>."
+    },
+    {
+      "title": "inspecting the response",
+      "focus": [
+        8
+      ],
+      "text": "Even though the API's documentation explained what sort of data we should expect to get back, it's always a good idea to log the data to your console so you can inspect it yourself and make sure it's got all the properties and data you were expecting."
+    },
+    {
+      "title": "making use of the data",
+      "focus": [
+        1,
+        9,
+        10
+      ],
+      "text": "Assuming the data came back like you expected, it's time to do something with it! In this case, our json object has a <code>message</code> property which contains a URL string to a random dog image which we can use to update the <code>&lt;img&gt;</code> element's <code>src</code> attribute and display our random dog on our HTML page."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Don't forget what I said before, this approach is considered outdated, to learn a more modern approach check out my <a href=\"https://netnet.studio/?ex=61\" target=\"_blank\">Fetch API</a> example as well as my <a href=\"https://netnet.studio/?ex=62\" target=\"_blank\">async/await</a> example."
+    }
+  ]
+}

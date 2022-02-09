@@ -1,0 +1,68 @@
+{
+  "name": "async / await",
+  "type": "JS REST APIs",
+  "key": 62,
+  "code": "#code/eJxNkEFuxCAMRdflFBazCLOBfRXmEj0BQ5wMVYAUO6pGVe9ek07V2drf7//vMeUF0uT1VBcN1KLXJw1hZa9bKFPNkHJYEOoMAbrmotRIsaWNLwpAwUuge4kw7yVyqgVySAXMGb5kCxBrIYaGBB7CZ0gMM3K8meHGvNGrc4K0EasLW3LXhjiROwzdr/twfsK8k/D/OMK0fWD+FXVFu9bF9PHzXa/oJXzcMxa2Hzu2+xuuGLk2M5wkwsNGhFZeIOKOsBmJJIqsvo+qRzfxU6N7fOAHtZFkFQ==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to show you how to make <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP\" target=\"_blank\">HTTP</a> requests to <a href=\"https://www.ibm.com/cloud/learn/rest-apis\" target=\"_blank\">REST APIs</a> in order to access resources on other servers. There are older (and even older) ways of writing code that makes HTTP requests, but this is the most modern."
+    },
+    {
+      "title": "asynchronous code",
+      "focus": null,
+      "text": "As explained in the previous examples on <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">XMLHttpRequest</a> and <a href=\"https://netnet.studio/?ex=61\" target=\"_blank\">Fetch</a>, JavaScript code typically runs \"synchronously\", meaning one line at a time, each line waiting for the line before it to finish executing before the next line runs. But there are often situations where we need to write \"<a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous\" target=\"_blank\">asynchronous code</a>\", where parts of our code wait for something to happen before getting called. This sort of code can get messy and often leads to \"<a href=\"https://stackoverflow.com/questions/25098066/what-is-callback-hell-and-how-and-why-does-rx-solve-it\" target=\"_blank\">callback hell</a>\""
+    },
+    {
+      "title": "async / await",
+      "focus": null,
+      "text": "In this example we're using newer JavaScript syntax known as <a href=\"/\" target=\"_blank\">async functions</a> which allows us to <a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await\" target=\"_blank\">write asynchronous code in a synchronous fashion</a>, this generally makes our code both easier to write and easier to read."
+    },
+    {
+      "title": "async function",
+      "focus": [
+        5,
+        11
+      ],
+      "text": "In order to create an \"async function\", we need to include the <code>async</code> keyword before our function definition. Async functions allows us to write Promises (a form of asynchronous code explained in a prior <a href=\"https://netnet.studio/?ex=61\" target=\"_blank\">Fetch example</a>) as though they were synchronous by including the <code>await</code> keyword before we call the promise function."
+    },
+    {
+      "title": "Fetch request",
+      "focus": [
+        6
+      ],
+      "text": "Here I'm using the same <a href=\"https://dog.ceo/\" target=\"_blank\">dog.ceo</a> REST API I used in that last example to request a random dog image. You can check out their <a href=\"https://dog.ceo/dog-api/\" target=\"_blank\">documentation</a> to see what other URL endpoints we can send requests to as well as what type of JSON data we should expect in return. There are loads of REST APIs on the Web for us to experiment with, the vast majority of them will have documentation explaining it's URL endpoints, the type of data it returns and any other details we may need to know about in order to effectively use the API (including whether or not you need to create an API key and if there are any limits to the number of free requests you can make to it)."
+    },
+    {
+      "title": "await Promise",
+      "focus": [
+        6
+      ],
+      "text": "Because I'm using the <code>await</code> keyword (which can only be used inside of <a href=\"/\" target=\"_blank\">async functions</a>) the <a href=\\\"https://developer.mozilla.org/en-US/docs/Web/API/Response\\\" target=\\\"_blank\\\">Response</a> object gets returned by the Fetch API and stored in the <code>res</code> variable which I declare the same way I would any other variable. The <code>await</code> keyword also guarantees that the next line (which makes use of the <code>res</code> object) won't fire until the REST API has sent us its response."
+    },
+    {
+      "title": "handling the response",
+      "focus": [
+        6,
+        7
+      ],
+      "text": "The <a href=\\\"https://developer.mozilla.org/en-US/docs/Web/API/Response\\\" target=\\\"_blank\\\">Response</a> object's <code>json()</code> method (which is used to parse the response data as a JSON object) is another instance of a JavaScript Promise (ie. another instance of asynchronous code), which means we can use the <code>await</code> keyword again to wait for it to return the parsed object before storing it into our <code>json</code> variable."
+    },
+    {
+      "title": "making use of the data",
+      "focus": [
+        1,
+        8,
+        9,
+        10
+      ],
+      "text": "Once the data from our response has been parsed into a json object it's always a good idea to log that object to the console to make sure the data we got back is what we were expecting. Assuming that's the case, it's time to do something with it! In this example, our json object has a <code>message</code> property which contains a URL string to a random dog image which we can use to update the <code>&lt;img&gt;</code> element's <code>src</code> attribute and display our random dog on our HTML page."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "This is bar far the <a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await\" target=\"_blank\">easiest way to read and write asynchronous code</a> in JavaScript, but it's worth checking out the previous example on <a href=\"https://netnet.studio/?ex=61\" target=\"_blank\">Fetch</a> as well as the <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">XMLHttpRequest</a> example to get familiar with the different variations of asynchronous HTTP requests you might come across in tutorials and example code online."
+    }
+  ]
+}
