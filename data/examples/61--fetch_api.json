@@ -1,0 +1,76 @@
+{
+  "name": "Fetch API",
+  "type": "JS REST APIs",
+  "key": 61,
+  "code": "#code/eJxNj7FuwzAMROf6KwhlsLJIe2H5J/oFiszYKizRFemhKPrvpRMDDaDp9O54N+QyQ56CmWg2wC0FczEQVwmmxTpRgVzijEB3iHAwY9cNnFreZOwA9N1R0mL7RWTjd++VcQnJxy37W0Oc2D8S/DOuv6rlzcmC1dqGfIUwwo9qqjaUvVVQ1X0yVftAf18Nh/zqSFSZVnQrzc+/f1ngWBa0c9oLVnFfO7bvD1wxCTXbX7Rof/JKOp2u9BHiCjJr4/N6N/hz7x94a1p8",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to show you how to make <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP\" target=\"_blank\">HTTP</a> requests to <a href=\"https://www.ibm.com/cloud/learn/rest-apis\" target=\"_blank\">REST APIs</a> in order to access resources on other servers. There are <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">older</a> and <a href=\"https://netnet.studio/?ex=62\" target=\"_blank\">newer</a> ways of writing code that makes HTTP requests, but this is one of the most common approaches."
+    },
+    {
+      "title": "the Fetch API",
+      "focus": [
+        5
+      ],
+      "text": "Here we're using the Web browser's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API\" target=\"_blank\">Fetch API</a> to create a new HTTP request for a random dog image from the <a href=\"https://dog.ceo/\" target=\"_blank\">dog.ceo</a> API. You can check out their <a href=\"https://dog.ceo/dog-api/\" target=\"_blank\">documentation</a> to see what other URL endpoints we can send requests to as well as what type of JSON data we should expect in return. There are loads of REST APIs on the Web for us to experiment with, the vast majority of them will have documentation explaining it's URL endpoints, the type of data it returns and any other details we may need to know about in order to effectively use the API."
+    },
+    {
+      "title": "API Keys",
+      "focus": null,
+      "text": "Some APIs will require you register for an API Key before you can actually send requests. This allows the folks running the API to monitor how many requests you send. Most APIs are free to use until you start sending too many requests (after which point they usually start charging you). How many free requests do you get? You'll need to read each API's documentation to find out."
+    },
+    {
+      "title": "a Promise",
+      "focus": null,
+      "text": "The Fetch API is one example of a JavaScript <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise\" target=\"_blank\">Promise</a> object. Promises are one way of writing \"<a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous\" target=\"_blank\">asynchronous code</a>\" in JavaScript."
+    },
+    {
+      "title": "asynchronous code",
+      "focus": null,
+      "text": "As explained in the previous example on <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">XMLHttpRequest</a>, JavaScript code typically runs \"synchronously\", meaning one line at a time, each line waiting for the line before it to finish executing before the next line runs. In that example I demonstrated how we can use \"callback\" functions to write asynchronous code, but when you've got lots of callback functions your code can get pretty messy, a problem referred to as \"<a href=\"https://stackoverflow.com/questions/25098066/what-is-callback-hell-and-how-and-why-does-rx-solve-it\" target=\"_blank\">callback hell</a>\", which is something developers have <a href=\"http://callbackhell.com/\" target=\"_blank\">written about</a> at length."
+    },
+    {
+      "title": "avoiding \"callback hell\"",
+      "focus": [
+        6,
+        9
+      ],
+      "text": "Promises help us avoid \"<a href=\"https://stackoverflow.com/questions/25098066/what-is-callback-hell-and-how-and-why-does-rx-solve-it\" target=\"_blank\">callback hell</a>\" by allowing us to pass our callback functions into a <a href=\"https://blog.segunolalive.com/posts/understanding-method-chaining-in-javascript/\" target=\"_blank\">chainable method</a> called <code>then()</code>. It's also worth noting here that we're passing our callback function using the <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions\" target=\"_blank\">arrow syntax</a> rather than using the traditional <code>function</code> keyword (as I did in the <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">XMLHttpRequest</a> example), as it's much more common to see Promises written this way."
+    },
+    {
+      "title": "handling the response",
+      "focus": [
+        6,
+        7,
+        8
+      ],
+      "text": "Our first <code>then()</code> callback doesn't fire until we've received the response from the API, which gets passed to our callback function as an HTTP <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Response\" target=\"_blank\">Response</a> object which I've called <code>res</code> in this example. This object contains a collection of properties and methods we can use to access the data from our response in different ways. Because we're expecting JSON data back, I'm using the response object's <code>json()</code> method to parse the response data as a JSON object."
+    },
+    {
+      "title": "res.json()",
+      "focus": [
+        7
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Response\" target=\"_blank\">Response</a> object's <code>json()</code> method is another instance of a JavaScript Promise, which means we can pass it along to the next callback in our <i>then</i> <a href=\"https://blog.segunolalive.com/posts/understanding-method-chaining-in-javascript/\" target=\"_blank\">chain</a> by returning it in this one."
+    },
+    {
+      "title": "making use of the data",
+      "focus": [
+        1,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "Once the data from our response has been parsed into a json object it's always a good idea to log that object to the console to make sure the data we got back is what we were expecting. Assuming that's the case, it's time to do something with it! In this example, our json object has a <code>message</code> property which contains a URL string to a random dog image which we can use to update the <code>&lt;img&gt;</code> element's <code>src</code> attribute and display our random dog on our HTML page."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Don't forget what I said before, this approach is just one way to create HTTP requests in JavaScript, it's also worth checking out this <a href=\"https://netnet.studio/?ex=60\" target=\"_blank\">older</a> way as well as this <a href=\"https://netnet.studio/?ex=62\" target=\"_blank\">more modern approach</a> so that when you come across examples and other code online you'll be able to recognize and understand it."
+    }
+  ]
+}
