@@ -1,0 +1,92 @@
+{
+  "name": "the DOM basics",
+  "type": "the DOM API",
+  "key": 58,
+  "code": "#code/eJyFU01P4zAQPZNfMcoeUrRs0vSI0kgrLixXDhxWCDnxEFt1bTOZLJRfv7abohYESFYke9578/XSdE7u2uwsA2hU3V6jMQ7uHBnZVOEenz1ouc59nccbACs9QjisEB41jQxekBhIeHUBz5oViIRrBCjCx3WumMfLqrLI+hVt6WjIgQUNyOv8oTPCbvLWaLtpKtECOxDwjN2oGWPyyofiDiWsvi+hnEkAWTrN2JP23EZa4krXT1u0XMbGy5F3BksvpNR2gDUU9XLpX4pPkZ3oNwO5ycorZxxFxkC42xPSp3d2dAFp3LA4VeiVNpLQnmefFHMA/F3ez+n6QxI/kTf4Lg0DazYY4m86TxPS7hYN9uxoUai62GdLwJLxha+c5YCMondoercNqkeKfvWF3A+/mvX86kTsZ1CDPxDGiHK/nbAQBm3hRvwTt2kFxYH4rjVHwg4fW4uO+LKUGloQl5bVrzS3RX0+1xaZZXDXb2bS3cQY5hCMeBwdP0YvoAhG9dGpYQdiWx75NVGbarZSljVV+mv+A0QwAts=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "We can use the <a href=\" https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction\" target=\"_blank\">DOM</a> to manipulate any of the HTML elements on our page, dynamically changing any aspect of any element, like it's content, it's attributes and it's styles."
+    },
+    {
+      "title": "style property",
+      "focus": [
+        13,
+        14
+      ],
+      "text": "The document object contains a property called 'body' this represents our <code>&lt;body&gt;</code> element, we can manipulate any aspect of this (or any other) element via JavaScript. For example, if we want to change an element's CSS, we can do this by accessing it's <code>style</code> property, which in turn gives us access to all it's CSS properties."
+    },
+    {
+      "title": "style.padding",
+      "focus": [
+        13
+      ],
+      "text": "This line of code has added 100px worth of padding to our body element. "
+    },
+    {
+      "title": "camel case",
+      "focus": [
+        14
+      ],
+      "text": "When we want to change a CSS property whose name contains more than one word, like <code>font-size</code> or <code>background-color</code> we write it in \"camel-case\", which means we capitalize the first letter of every word (except the first)"
+    },
+    {
+      "title": "children",
+      "focus": [
+        16,
+        18
+      ],
+      "text": "The body element contains a property called <code>children</code> a Array-like object known as an <b>HTMLCollection</b>. If we log this to our console we'll notice that it contains our \"h1\", both our \"p\" elements, as well as the \"script\" element containing our JavaScript.\n<br><br>\nWe can use this to manipulate our other elements. For example, because our <code>&lt;h1&gt;</code> is the first item in this Array-like <code>children</code> object, we can manipulate it like this."
+    },
+    {
+      "title": "querySelector()",
+      "focus": null,
+      "text": "This is great! ...but when we have a more complex page with elements nested inside of numerous other elements, this can become a tedious way to target the elements we want. For this reason, there are numerous other ways to target specific elements, most notably the <code>quearySelector()</code> method. This method takes a CSS query selector as it's argument and can be used to assign specific elements to variable."
+    },
+    {
+      "title": "querySelector(type)",
+      "focus": [
+        3,
+        20,
+        21
+      ],
+      "text": "Because we only have a single <code>&lt;h1&gt;</code> element we can target our <b>h1</b> by passing a CSS 'type selector' to the <code>.querySelector()</code> method. I can then use the element's <code>.textContent</code> property to change it's content."
+    },
+    {
+      "title": "querySelector(id)",
+      "focus": [
+        8,
+        9,
+        10,
+        23,
+        24,
+        25
+      ],
+      "text": "However, it's more common to pass 'class', 'id' and other more specific CSS selectors to the <code>.querySelector()</code> method, like this id selector I'm using to target our second paragraph element. I can use the <code>+=</code> operator (which we explored in an earlier example) to append (add to) the content already in my element."
+    },
+    {
+      "title": "querySelector(complex)",
+      "focus": [
+        6,
+        27
+      ],
+      "text": "Here's another example with a more complex CSS selector. This CSS selector translate to: <i>the first \"a\" element that is a child of the element with an 'id' of 'p1'</i>."
+    },
+    {
+      "title": "getAttribute()",
+      "focus": [
+        6,
+        27,
+        28,
+        29
+      ],
+      "text": "We can access any of the element's attribute values with <code>.getAttribute()</code> and we can change any of their values with <code>.setAttribute()</code>. That link will no longer jump to <i>https://netizen.org</i> (as originally set in the HTML code above), instead it will link to <i>https://dream.netizen.org</i>\n"
+    },
+    {
+      "title": "learn more",
+      "focus": null,
+      "text": "To learn more about the DOM check out the Mozilla developer docs on <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction\" target=\"_blank\">Introduction to the DOM</a>"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "name": "creating/adding elements",
+  "type": "the DOM API",
+  "key": 64,
+  "code": "#code/eJyNkk1vozAQhs/wK+ZQCdi0Jq2UC6W5RCvtoT3vtXxMgyXHRvaQj0b8944JZDdK1N0LjO1n3nc8ntzRQeEyBBBuIxUe4MgxQGucJGl0BkXpjOoIn4f9D6PpwclPzOBxPm/3p12yhZ74MwFzsXD+vA//yGeN2aIdTarOOmMzqKxxrimkvfJ4mjz6ME/HUvPS1IdlGOTN43IQzVOOwoCp3FVWtrQcZE5ana58XcAVrowyFuJkdGd/ox2BhRd4K6gRjNRmw+c/4GmxuGDW/8GU3zIWqbMa3u26jO+Otr+Hu+N6+JZ98j5A/YhOpftiFRJIFp4/8y/3PedgNvN3CILgZIwKmahN1W1Qk6gsFoQ/FfpVHNVyGyWjMpOiUoVzr9KRKOo6jk7PckEMfRbV0K2Xc+Pia0ThB924NBcJM4i2u+gqg0z7TUIzJaTpv112ksOdkFqj/S1rarxEu78pcdv2b4VfKNcNXUr4fMI9rXgeuZWsEGXJdHhut59GUbQt6nrVSFXHnJaM7+lHMp1mMk+Hwf0CiDr/gw==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to build on some of the <a href=\"https://netnet.studio/?ex=58\" target=\"_blank\">basics concepts</a> from the last example, and use the DOM API to create new HTML elements and add them to our page."
+    },
+    {
+      "title": "random color function",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "text": "First I've created a <a href=\"https://netnet.studio/?ex=56\" target=\"_blank\">function</a> called <code>ranColor</code> which returns an rgb color string of a random color (we'll use this in a little later)."
+    },
+    {
+      "title": "for loop",
+      "focus": [
+        25,
+        35
+      ],
+      "text": "Here I've created a <a href=\"https://netnet.studio/?ex=57\" target=\"_blank\">for loop</a> which will execute the code inside it's block 100 times."
+    },
+    {
+      "title": "createElement",
+      "focus": [
+        25,
+        26,
+        35
+      ],
+      "text": "Inside the for loop I first create a new HTML element using the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement\" target=\"_blank\">createElement</a> method and assign it to a variable I named <code>ele</code>."
+    },
+    {
+      "title": "classList",
+      "focus": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        25,
+        27,
+        35
+      ],
+      "text": "We can use the elements <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Element/classList\" target=\"_blank\">classList</a> property to <code>add()</code>, <code>remove()</code> and even <code>toggle()</code> different classes we've previously defined in our CSS code."
+    },
+    {
+      "title": "style property",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        25,
+        28,
+        35
+      ],
+      "text": "We can't really create random values in CSS code, but we can in JavaScript using the <a href=\\\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random\\\" target=\\\"_blank\\\">Math.random()</a> method as we've done inside our <code>ranColor</code> function. Here I'm using the elements <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style\" target=\"_blank\">style</a> property to assign specific CSS properties dynamically, in this case assigning it a random color."
+    },
+    {
+      "title": "random position (responsive)",
+      "focus": [
+        25,
+        29,
+        30,
+        35
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random\" target=\"_blank\">Math.random()</a> method can be used to generate a new random value between 0 and 1. By multiplying that number by 100 we convert these random numbers to values between 0 and 100. In CSS we need to specify values in particular units, here I'm using \"vw\" (viewport width) and \"vh\" (viewport height) to specify that these should be interpreted as a percentage of the entire window. "
+    },
+    {
+      "title": "random position (exact px)",
+      "focus": [
+        25,
+        31,
+        32,
+        35
+      ],
+      "text": "I could have also created random values in \"px\" instead of \"vw\" and \"vh\", but this approach would be less \"responsive\". Try changing the size of the rendered window before and after uncommenting these lines to see the difference."
+    },
+    {
+      "title": "textContent",
+      "focus": [
+        25,
+        33,
+        35
+      ],
+      "text": "Up to this point we've created a new <code>&lt;div&gt;</code> element with randomized CSS values, but this element has no content inside it. So we'll use the element's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent\" target=\"_blank\">textContent</a> property to give it some content. If we wanted to place some additional HTML inside our <code>&lt;div&gt;</code> we could have alternatively used the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML\" target=\"_blank\">innerHTML</a> property."
+    },
+    {
+      "title": "appendChild",
+      "focus": [
+        25,
+        34,
+        35
+      ],
+      "text": "Lastly, we use the body element's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild\" target=\"_blank\">appendChild</a> method to insert each of our 100 <code>&lt;div&gt;</code> elements into the body (after its last child element) each of our dynamically created <code>&lt;div&gt;</code> elements."
+    }
+  ]
+}

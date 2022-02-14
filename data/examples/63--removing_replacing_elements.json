@@ -1,0 +1,108 @@
+{
+  "name": "removing/replacing elements",
+  "type": "the DOM API",
+  "key": 63,
+  "code": "#code/eJyVVMtu20AMvPcrCPcgGQgk5NBLYRsI0Nx6K9ocC3pFS0T2lV1u6rTov5e7soEUaA+56LEaDjnDgXbHML0c3gHsllvgab8RFkubwwNZExzBN84sIe3G5bahYr0CfA6JHHDMxcEUbEigMEBHcgMm+ExGSEoCnDgqg2E/A1nWr5kmrWgkxCW7MIGQi8rA3vDEU/ECRcDiUXsAycpP4HD2CGj5qeAAXwVWDs9Ou8AOYUl02m8WkZg/jqMn4Z/kh5DmDQimmWS/+X606B83B8dathvxsJI8Kwu6G3gqnMGHLKlMQGdKhgWFg4diLToT1qkqSEXVKds4HNdRzkCo6p1qCqsLOqoM8KnSYhECTkWVrIaxh0Qx0UJ+osQXPXr6HGyJ2pd0LrXsjdIoZ6rKGptha68bUi8LnMrMKOCrHoiY9KWkAe7PhqJQqWtU+4MxSEZxpkSeUGdpbG8bxBQbsXns1cCYAk/kNQCNKtctq1Y1D8LppAFBmChTqucu2Kob62pZF5EvaShuqBEcNYP1nk3iKBeh6rZAyy7sVa8pTpsNT4XSyxeyGseQ+u59A3TbVtKeB41xeKZ+++4VjWX/mP9Lc2dt3+GFpEGHU0j3aJb+VLxpcelxC78a4MrJbn7NaBLpgu8t1be+068XQqjIISejaD3GmfI48ymPZhr03l1A47jiSO5EEh81XH2nVd3NP6v+4pYX1f2DJ1lqj9sP8XxlRbUjWjT0wLL0Cl7rfm+b7Ve/d2P7Z/wBz45lpg==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to build on some of the <a href=\"https://netnet.studio/?ex=58\" target=\"_blank\">basics concepts</a> from the last example, and use the DOM API to remove and replace HTML elements defined on our page."
+    },
+    {
+      "title": "the HTML",
+      "focus": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "Inside our body element we have an <code>&lt;h1&gt;</code> and a <code>&lt;p&gt;</code> element, but in the rendered page we only see the <code>&lt;p&gt;</code> element and not the <code>&lt;h1&gt;</code>. This is because we've manipulated the DOM (document object model) in our JavaScript."
+    },
+    {
+      "title": "querySelector()",
+      "focus": [
+        2,
+        16
+      ],
+      "text": "Here we define a variable which will become an object representing our <code>&lt;h1&gt;</code> element, we do this using the DOM's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector\" target=\"_blank\">querySelector</a> method, passing a CSS query selector for the elements id."
+    },
+    {
+      "title": "remove()",
+      "focus": [
+        2,
+        17
+      ],
+      "text": "We can get rid of that element by calling the object's <code>remove()</code> method. If you comment this line out, you'll notice that the <code>&lt;h1&gt;</code> gets rendered on our page as expected."
+    },
+    {
+      "title": "querySelectorAll()",
+      "focus": [
+        19
+      ],
+      "text": "The DOM's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector\" target=\"_blank\">querySelector</a> only returns a single element, the first element it finds in the document which matches the CSS query string we passed it. But when we want to select multiple elements we can use the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll\" target=\"_blank\">querySelectorAll</a> method which will return an array-like object called a <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/NodeList\" target=\"_blank\">NodeList</a>"
+    },
+    {
+      "title": "forEach()",
+      "focus": [
+        19,
+        20,
+        26
+      ],
+      "text": "We can iterate over that list by creating a for loop (using <code>links.length</code> to get the number of items in the list) but we could also use the <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach\" target=\"_blank\">forEach</a> method which takes a callback function as it's argument. "
+    },
+    {
+      "title": "callback function",
+      "focus": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "The function we pass into a <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach\" target=\"_blank\">forEach</a> method will run as many times as there are items in our <code>links</code> NodeList, each time passing the next <code>&lt;a&gt;</code> element in our list as the first argument in our function."
+    },
+    {
+      "title": "createElement()",
+      "focus": [
+        21
+      ],
+      "text": "Inside this function I'm first creating a new <code>&lt;img&gt;</code> element using the DOM's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement\" target=\"_blank\">createElement</a> method."
+    },
+    {
+      "title": "src property/attribute",
+      "focus": [
+        22,
+        23
+      ],
+      "text": "Here I'm setting the element's <code>src</code> property to the image path I want. Updating this <code>src</code> property will update the HTML element's <code>src</code> <i>attribute</i>, which is why we could also have done this using the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute\" target=\"_blank\">setAttribute</a> method (which I have commented out below). We can change any attribute of any element using this method (but not all attributes are mapped to object properties this way)"
+    },
+    {
+      "title": "style property",
+      "focus": [24],
+      "text": "Here I'm using the element's <code>style</code> property to change it's CSS, specifically it's <code>width</code> property to <b>15px</b>, in order to shrink the image from it's default size."
+    },
+    {
+      "title": "replaceWith()",
+      "focus": [
+        25
+      ],
+      "text": "lastly I'm calling the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceWith\" target=\"_blank\">replaceWith</a> method on the <code>&lt;a&gt;</code> element to replace it with my new <code>&lt;img&gt;</code> element."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "I've now replaced all the links (ie. <code>&lt;a&gt;</code> elements) on my page with newly created <code>&lt;img&gt;</code> elements."
+    }
+  ]
+}

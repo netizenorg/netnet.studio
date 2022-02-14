@@ -20,6 +20,14 @@
     "listed": [55, 56, 57]
   },
   {
+    "name": "the DOM API",
+    "listed": [58, 63, 64]
+  },
+  {
+    "name": "JS Animations",
+    "listed": [59, 66]
+  },
+  {
     "name": "JS REST APIs",
     "listed": [60, 61, 62]
   },
