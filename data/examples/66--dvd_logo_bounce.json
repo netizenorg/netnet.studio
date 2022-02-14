@@ -1,0 +1,168 @@
+{
+  "name": "DVD logo bounce",
+  "type": "JS Animations",
+  "key": 66,
+  "code": "#code/eJylVEuPmzAQPpdfMUojBbokZBttDwnQQ7dSD9tTq/YawA5YJZgak+Bm+e8dE4dkw3ZbqRKPeXzzHtuvpMppaAHEnCg4IIFklPxIBa8LMk14zsUS4hxFK1S2+OLz+v7bvQHvGZHZEhbzedmsOklGWZrJJdwuelHJKyYZL5YQxRXPa0lXf4gkKBmo2DZK6RJqkdujjq68nKe88siOzMoiHTkDk4r9ohdJtZbvmUotX1caWq9Q7BO2A0aCEZYzCn0P2fBYoF8lgpUy7PzmVELjgnJh70J2FjEI4BY8D3ZRXlOQHFiRCLqlBSohVj1SvYRUJ2T3SXhRSdDtDYDwpNaQ2c+aCvWF5jSRXNgT3f2Jc7bZ1EWiuwsiKj7oNoLtmOmcHAp09zmS2QwhhG9R/wbe3t09waT/gIlfxAgqa1HAWqSxPT6I1oXxIe2+ceusO1BrPU25QpPyMt89RsC5GS7TjVucuOaZ6HuG5H7GioKK73oXL7B2A+EQAFPYO/AeEUjAEhpjof7i/VO31xdgW125PyLQbab9K02gf2UKH84rKnCdJR2Oa1NWuvD5fA4evDuVj736yraU19I2lq5GOlZf8k2AW9lniJxi57AAbKNbcoNVh8EzfXl8RBc+zM/ZwHHJp71T0Ks5647S7HzcjksX9PtnOwbeWheRMSHsx1Vk0zIMra5Dd6dmqv439NkqpxuJ0PX40LRlsx7oJS+PatWrL6Zmso4I+bjDQ/nAKkmxAHuS84hMXD3EIOzT7/a6T8aMy/Ct/uGFZK4Y3+tupN9HTYsE",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to build on the JavaScript <a href=\"https://netnet.studio/?ex=58\" target=\"_blank\">animation (recursive function)</a> example, and use the DOM API to animate an HTML <code>&lt;div&gt;</code> in ways we wouldn't be able to using <a href=\\\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations\\\" target=\\\"_blank\\\">CSS animations</a>"
+    },
+    {
+      "title": "CSS variation",
+      "focus": null,
+      "text": "In this <a href=\"https://netnet.studio/?ex=58\" target=\"_blank\">CSS animation </a> example, our DVD logo bounces of the same spots (center of each side) and cycles through the same colors (red, blue, green, yellow). But with JavaScript we can have it start at a random spot, so that the sides it bounces off of feel less predictable, as well as change to a random color on each collision."
+    },
+    {
+      "title": "body CSS rule",
+      "focus": [
+        2,
+        3,
+        4,
+        16
+      ],
+      "text": "In the CSS code, I'm creating a rule for the body element to change it's background color to black."
+    },
+    {
+      "title": "DVD CSS rule",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        18
+      ],
+      "text": "And another CSS rule for our div element with an <i>id</i> of \"DVD\". We give our div a width, height, background image (the <a href=\"images/logos/dvd.png\" target=\"_blank\">dvd.png</a>) as well as an initial background-color of \"red\"."
+    },
+    {
+      "title": "global variables",
+      "focus": [
+        18,
+        21,
+        22,
+        23,
+        25
+      ],
+      "text": "In the JavaScript code I'm declaring a few global variables for the DVD logo's x and y positions as well as it's width and height. I've also declared the xi and yi variables, which I'll use to determine by how many pixels, and in which direction, should we adjust the x and y positions each frame of our animation. I've also declared a variable for the DVD logo which is an object (representing our HTML div element) "
+    },
+    {
+      "title": "random color function",
+      "focus": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "text": "Here I've defined a function called <code>ranColor()</code> which returns a random color string in the form of a CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/rgb()\" target=\"_blank\">rgb()</a> function."
+    },
+    {
+      "title": "setup / animate",
+      "focus": [
+        34,
+        43
+      ],
+      "text": "Bellow that we have a very common pairing of functions when writing animation code, a <code>setup()</code> function (sometimes called \"init\") which fires first, and only fires once, and an <code>animate()</code> function (sometimes called \"draw\" or \"render\") which runs our animation loop."
+    },
+    {
+      "title": "setup() function",
+      "focus": [
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "text": "Inside the <code>setup()</code> function i'm initiating values for the logo's width (<code>w</code>) and height (<code>h</code>) variables as well setting random values (within the boundaries of the window) for <code>x</code> and <code>y</code>"
+    },
+    {
+      "title": "draw() function",
+      "focus": [
+        43,
+        44,
+        45,
+        62
+      ],
+      "text": "As explained in the <a href=\"https://netnet.studio/?ex=58\" target=\"_blank\">animation (recursive function)</a> example, the first thing we do in our <code>animate()</code> function is set our frames per second (<code>fps</code> variable) for the <code>setTimeout()</code> function used to call itself recursively."
+    },
+    {
+      "title": "update x,y variables",
+      "focus": [
+        43,
+        47,
+        48,
+        62
+      ],
+      "text": "Then I want to increment x and y by the values stored in xi and yi until the logo either touches the right, left, top or bottom sides of the screen."
+    },
+    {
+      "title": "left/right collision",
+      "focus": [
+        43,
+        50,
+        51,
+        53,
+        62
+      ],
+      "text": "I need to check \"<i>if</i>\" the right edge of the logo (the logo's current <code>x</code> position plus its width <code>w</code>) has gone passed (is <code>>=</code>) the right side of the screen (<code>window.innerWidth</code>), or (<code>||</code>) if it's left position has gone passed the left side of the screen (<code>x < 0</code>). In either case I want to invert the direction I'm incrementing it by (<code>xi = -xi</code>)."
+    },
+    {
+      "title": "set random color",
+      "focus": [
+        43,
+        50,
+        51,
+        52,
+        53,
+        62
+      ],
+      "text": "I also want to change the DVD logo's background to a random color every time it touches either the left or right edge of the screen."
+    },
+    {
+      "title": "top/bottom collision",
+      "focus": [
+        43,
+        55,
+        56,
+        57,
+        58,
+        62
+      ],
+      "text": "I'll reproduce that same logic for the DVD logo's vertical movement (on the \"y axis\"), changing the logo's background color each time it touches the top or bottom of the window."
+    },
+    {
+      "title": "update DVD object's position",
+      "focus": [
+        43,
+        60,
+        61,
+        62
+      ],
+      "text": "The last logical step in my animation loop is to adjust the DVD element's \"left\" and \"top\" CSS styles to match the new <code>x</code> and <code>y</code> values (set in \"px\")."
+    },
+    {
+      "title": "run on load",
+      "focus": [
+        64,
+        65,
+        66,
+        67
+      ],
+      "text": "This last part of my JavaScript code creates an event listener for the window's \"load\" event. When the window is fully loaded it runs the callback function passed as its second argument, which in turn calls the initial <code>setup()</code> function and then calls the recursive <code>animate()</code> function triggering the \"draw\" loop."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "It's always worth taking some time to change the values in my editor to see how specific pieces of this classic algorithm effect the overall aesthetic and functionality."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "animation loop (recursive function)",
+  "type": "JS Animations",
+  "key": 59,
+  "code": "#code/eJyNkLsOgzAMRXe+wgMDVIhHJbaUpXO3fgB58VAhRkkYEOLfS1I6sFRdriz7XMvXhKFYqgCAdEVFVT9S26OCAXEyJNt7bmS47idbBXsN0MyKe+ZDS4hiWP0EgKMyFprJwA2KPM+PtpH22Y8SZxsdpsRBcXCy6d30oLZLNVUCx33tBa5leWLaPxj2kxHI51Eqm7rgqbHLIFNG+avVOCtxxwHdHbVuWRSueksgXFuvbItrv2Pz6uVIE/kkJPv+iWT+q2+4B2QL",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In a <a href=\"https://netnet.studio/?ex=57\" target=\"_blank\">previous example</a> we discussed <code>for</code> and <code>while</code> loops, and demonstrated how they can be used to loop through Arrays. But there are other reasons to create loops, other than iterating over data in an Array or Object. For example, artists will often times create \"animation\" loops."
+    },
+    {
+      "title": "the animation function",
+      "focus": [
+        5,
+        6,
+        7,
+        13
+      ],
+      "text": "The first step to creating an animation loop is creating a function to contain the logic of our animation. The trick to creating an animation, is to have that function run/call itself. When a function calls itself we call it a \"recursive function\". Like a <code>while</code> loop that never ends, a recursive function will (by default) run so many times (and so quickly) that it will crash our browser. For this reason we need to delay each subsequent function call. One way we can do this using JavaScript's <code>setTimeout()</code> function. This function takes 2 arguments, first the name of the function you want to run, and second how many milliseconds to wait before calling it."
+    },
+    {
+      "title": "frames per second",
+      "focus": [
+        6
+      ],
+      "text": "Here I'm defining our \"frames per second\", in JavaScript time is generally measured in milliseconds, so by setting our <code>fps</code> variable to 1000 milliseconds (or 1 second) we're saying we want our animation to run at 1 frame per second. We could speed this up if we wanted to, for example we could set <code>fps = 1000 / 30</code> to run our animation at 30 frames per second."
+    },
+    {
+      "title": "random color",
+      "focus": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "text": "Here we assign a random number between 0 and 255 to our <code>r</code>, <code>g</code>, <code>b</code> variables, before passing them into a <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals\" target=\"_blank\">template literal</a> string as a value to our <b>body</b>'s <code>backgroundColor</code> property. This way, every time a new animation frame runs we change our background to a new random color."
+    },
+    {
+      "title": "call it",
+      "focus": [
+        15
+      ],
+      "text": "Because functions don't run unless we explicitly <b>call</b> them, the last thing we need to do is call the \"animate\" function to begin our animation loop. Which again, because it calls itself, is considered a \"recursive\" function."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "While this is a very common pattern for creating animations, the browser's window object also provide another method for recursively calling a funtion for the specific purpose of animations called <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame\" target=\"_blank\">requestAnimationFrame()</a>. It's also worth keeping in mind that there are other ways to create animations beyond JavaScript, like <a href=\"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate\" target=\"_blank\">SVG animations</a> and <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations\" target=\"_blank\">CSS animations</a>, check out this <a href=\"https://netnet.studio/?ex=3\" target=\"_blank\">CSS animation demo</a> for example."
+    }
+  ]
+}

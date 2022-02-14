@@ -5,7 +5,7 @@
   },
   {
     "name": "CSS animations",
-    "listed": [3, 4, 5]
+    "listed": [3, 4, 5, 65]
   },
   {
     "name": "CSS Art tricks",
@@ -18,6 +18,14 @@
   {
     "name": "JS control flow",
     "listed": [55, 56, 57]
+  },
+  {
+    "name": "the DOM API",
+    "listed": [58, 63, 64]
+  },
+  {
+    "name": "JS Animations",
+    "listed": [59, 66]
   },
   {
     "name": "JS REST APIs",

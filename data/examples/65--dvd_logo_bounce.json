@@ -1,0 +1,216 @@
+{
+  "name": "DVD logo bounce",
+  "type": "CSS animations",
+  "key": 65,
+  "code": "#code/eJx1U9uO2yAQfa6/YpSqUrKya2cvaoXTqL+C7Yk9WgIW4KTe1f57Cdixd508AMNw5swMB3bG9gL3ABEA00pZeHcWQJLQmcFTlrX/ckgfgI68RjhTZRt4SEdIw2D79BnSINWNDZiPyPMWquoH2oKXr7VWnaySUgmlGRTCuXIP/ubmv6/YHzQ/ooFGaXob4rIf8A4CD5aBT/fhvdts5i+5KNfek8CJ6/Wlg80mQIdCZuQn1HbObVV7i9q7bzA395mLOrQ2Z1+2rbEaUz2+3IYUosMR83KHptaIcgT9ukPUoxDq/Kne79WpGgr0mrLpynLvDTKyqd88uiPgpZOvR/4pMOi0WK+8bVKhamVSl/ZnK+vVZhFi6A0XVfipVYYsKcmAF0aJzmI4nJ6D314VnCK5dMkvoYl00rDwomKvfXzVKf8CrTrNQ7pnE/vx2ywwpLEcahIWteQW47kplT5ysQhDwXtXpON8dCNb8JIjCFbpLsV1R/JAksaOJ6ClI8k6OXRyKEOQRK7j62ostma93YSftUvDN4+iXUUnoOrPyimx2u9St93/B6rEMgI=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'm going to create the classic DVD bouncing logo screen using CSS animations. We can also accomplish this using <a href=\"https://netnet.studio/?ex=66\" target=\"_blank\">JavaScript animations</a> (which is a more conventional approach to an animation like this), but attempting to create it in CSS instead is a great demonstration of how dynamic <a href=\\\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations\\\" target=\\\"_blank\\\">CSS animations</a> can actually get."
+    },
+    {
+      "title": "CSS variables",
+      "focus": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "text": "We'll start by creating a couple of <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties\" target=\"_blank\">CSS variables</a> for our image's width and height, we'll be using these values throughout our CSS code. By defining them as variables we've made it easier to udpate our logo's size later because there's only this one set of values we need to change and the rest of our code will update accordingly."
+    },
+    {
+      "title": "body rule",
+      "focus": [
+        7,
+        8,
+        9
+      ],
+      "text": "Here I've created a CSS rule for our body element which simply changes the background to black."
+    },
+    {
+      "title": "animation at-rules",
+      "focus": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "Then we have our CSS animations. In order to recreate the classic DVD bounce we'll need to define 3 separate <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes\" target=\"_blank\">keyframes</a> \"at rules\"."
+    },
+    {
+      "title": "vertical movement",
+      "focus": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "text": "I've called the first animation <code>vert</code> because it handles the vertical movement of our image. At the first keyframe <code>0%</code> we set the <code>left</code> value to <code>0px</code>, at the end of our animation <code>100%</code> we set the <code>left</code> value to right edge of the screen."
+    },
+    {
+      "title": "calc() position",
+      "focus": [
+        13
+      ],
+      "text": "We can't set this value in pixels, because we can't be sure how wide the viewer's screen will be. We could set it to <code>left: 100%;</code> but then our logo would move just off screen because its position value is relative to the top/left of the element. Instead, we'll use the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/calc()\" target=\"_blank\">calc()</a> function to subtract our image's width (stored in our \"--iw\" variable which we can access using the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/var()\" target=\"_blank\">var()</a> function like <code>var(--iw)</code>) from the full width of the screen (ie. 100%)."
+    },
+    {
+      "title": "horizontal movement",
+      "focus": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "text": "I've reproduced that same logic in this second animation called <code>horiz</code> which handles the horizontal movement by animating the <code>top</code> property from <code>0px</code> down to the full height of the page minus the height of the image (again, to prevent it from animating off screen)."
+    },
+    {
+      "title": "color change",
+      "focus": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "The third animation handles our color changes. Our logo starts off \"red\". The next keyframe is set for <code>25%</code> into our animation where the color changes to \"green\". The third keyframe set for <code>50%</code>, or halfway, into our animation the color changes to \"blue\". The last keyframe set at <code>75%</code> into our animation our logo changes to \"yellow\" until returning back to \"red\" when our animation loops back to the beginning."
+    },
+    {
+      "title": "dvd rule",
+      "focus": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        49
+      ],
+      "text": "The <code>#dvd</code> CSS rule is applied to the only <code>div</code> element on our page which has an <code>id=\"dvd\"</code>. "
+    },
+    {
+      "title": "dvd width/height",
+      "focus": [
+        29,
+        30
+      ],
+      "text": "First I use the CSS variables I created for our image's width and height to set the  <code>width</code> and <code>height</code> property of our div using the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/var()\" target=\"_blank\">var()</a> function to reference those values."
+    },
+    {
+      "title": "dvd background",
+      "focus": [
+        32,
+        33
+      ],
+      "text": "Then I'll set the initial background color of our div to \"red\" (this will later be changed by the \"bg-color\" animation). We can give elements background images in addition to background colors, here I'm using the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/url()\" target=\"_blank\">url()</a> function to insert the DVD logo image into the div's background. This image is a black mask with a transparent \"DVD video\" logo, which is why we can see the background color behind it. You can check out the <a href=\"images/logos/dvd.png\" target=\"_blank\">png file</a> itself to see what I mean."
+    },
+    {
+      "title": "background image size",
+      "focus": [
+        32,
+        33,
+        34
+      ],
+      "text": "The <a href=\"images/logos/dvd.png\" target=\"_blank\">dvd.png</a> file is larger than the image size we specified before, but we can resize it using the <code>background-size</code> property so that it matches the size of our div's width using the same CSS variable."
+    },
+    {
+      "title": "dvd position",
+      "focus": [
+        36,
+        37,
+        38
+      ],
+      "text": "These next properties we'll use to set our div's position to \"absolute\" so that we can place it in an exact location by specifying \"left\" and \"top\" values. We initially set this to the top/left corner of our screen, but these <code>left</code> and <code>top</code> values will be updated by our \"horiz\" and \"vert\" animations the same way that the <code>background-color</code> is by the \"bg-color\" animation."
+    },
+    {
+      "title": "animation-name",
+      "focus": [
+        40
+      ],
+      "text": "We apply our three animations to this element by passing all three of our animation names as a comma separated list to the <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name\" target=\"_blank\">animation-name</a> property."
+    },
+    {
+      "title": "animation-duration",
+      "focus": [
+        40,
+        41
+      ],
+      "text": "We can set each animation's duration individually by passing a comma separated list to the <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-duration\" target=\"_blank\">animation-duration</a> property. These durations (specified in \"s\" or seconds) apply to the animation name specified above them in the same order."
+    },
+    {
+      "title": "animation-direction",
+      "focus": [
+        40,
+        41,
+        42
+      ],
+      "text": "At first it might seem like the \"bg-color\" animation is going to be twice as long as the \"vert\" and \"horiz\" because we've set it for \"8s\" while we've set the other two to \"4s\". But we've given the \"horiz\" and \"vert\" animations an <code>animation-direction</code> of \"alternate\", which means that when it reaches the end of the animation we want to play it back again backwards. This has the effect of doubling it's full length."
+    },
+    {
+      "title": "animation-delay",
+      "focus": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay\" target=\"_blank\">animation-delay</a> property can be used to delay the start of an animation. I'm delaying the start of the \"vert\" animation by 2 seconds so that the logo doesn't begin animating downwards until it's already moved halfway across the screen horizontally. Without this, both the \"vert\" and \"horiz\" would start at the same time creating an animation where the logo bounces back and fourth between the top/left corner (the starting position) and the bottom/right corner, which is not the effect we want."
+    },
+    {
+      "title": "animation-iteration-count",
+      "focus": [
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-iteration-count\" target=\"_blank\">animation-iteration-count</a> property can be used to specify a specific number of times you want the animation to repeat. If we set it to \"infinite\" then it will loop forever. By passing only a single value (rather than a comma separated list like the others) we're applying this same value to all three animations."
+    },
+    {
+      "title": "animation-timing-function",
+      "focus": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "text": "Lastly I've set a custom <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function\" target=\"_blank\">animation-timing-function</a> for each of the animations to over-ride the default value of \"ease\" which would cause the animation to increase it's velocity towards the middle and slow down at the beginning and end. By setting it to \"linear\" the velocity remains consistent from beginning to end, and by setting the \"bg-color\" animation to <code>step(1)</code> we're saying that there should only be a single \"step\" or change in value between the keyframes, in effect giving it a hard switch from color to color rather than fading between colors (as \"ease\" would trigger by default).\n"
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Take a moment to experiment with the code in this example, change some of the values and comment out different lines of code to get a better sense of what effect each has on the over all sketch. Don't forget that you can double click any piece of code in my editor if you want me to explain it to you."
+    }
+  ]
+}
