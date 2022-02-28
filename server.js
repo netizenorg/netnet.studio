@@ -31,9 +31,9 @@ io.on('connection', (socket) => SOCKETS(socket, io))
 if (process.env.PROD) {
   const fs = require('fs')
   const credentials = {
-    key: fs.readFileSync(`${__dirname}/certs/netnet.studio/privkey.pem`, 'utf8'),
-    cert: fs.readFileSync(`${__dirname}/certs/netnet.studio/cert.pem`, 'utf8'),
-    ca: fs.readFileSync(`${__dirname}/certs/netnet.studio/chain.pem`, 'utf8')
+    key: fs.readFileSync('/etc/letsencrypt/live/netnet.studio/privkey.pem', 'utf8'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/netnet.studio/cert.pem', 'utf8'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/netnet.studio/chain.pem', 'utf8')
   }
 
   const httpsServer = https.createServer(credentials, app)
