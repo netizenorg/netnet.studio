@@ -196,6 +196,15 @@ window.utils = {
     const h = window.location.host
     // window.location = `${p}//${h}/${path}`
     window.history.pushState(null, null, `${p}//${h}/${path}`)
+    window.utils.url = {
+      shortCode: new URL(window.location).searchParams.get('c'),
+      example: new URL(window.location).searchParams.get('ex'),
+      tutorial: new URL(window.location).searchParams.get('tutorial'),
+      time: new URL(window.location).searchParams.get('t'),
+      layout: new URL(window.location).searchParams.get('layout'),
+      github: new URL(window.location).searchParams.get('gh'),
+      widget: new URL(window.location).searchParams.get('w')
+    }
   },
 
   url: {
@@ -455,6 +464,7 @@ window.utils = {
           NNE.code = html
           setTimeout(() => NNE.cm.refresh(), 10)
           window.utils.fadeOutLoader(false)
+          window.utils.updateURL(`?gh=${a[0]}/${a[1]}/${a[2]}`)
           window.utils._Convo('remix-github-project-auth-redirect')
           // removeItem('gh-auth-temp-code') called in Convo data
         })
