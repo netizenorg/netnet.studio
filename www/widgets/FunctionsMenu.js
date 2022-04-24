@@ -716,6 +716,7 @@ class FunctionsMenu extends Widget {
       if (files.includes('index.html')) {
         WIDGETS['student-session'].setData('opened-project', repo)
         NNW.updateTitleBar(`${repo}/index.html`)
+        utils.updateURL(`?gh=${owner}/${repo}`)
         // update ProjectFiles
         if (!WIDGETS['project-files']) {
           WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles(res.data))
