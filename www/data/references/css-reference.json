@@ -5,6 +5,10 @@
   "clip-path": {
     "bubble": "The <code>clip-path</code> property can be used to \"clip\" or \"mask\" certain regions of an element. It's a great way of transforming elements into all sorts of different shapes. Learn more about it at <a href=\"https://css-tricks.com/almanac/properties/c/clip-path/\" target=\"_blank\">css-tricks.com</a>. We're working on widgets that make it easier to use properties like these, but in the meantime checkout this great <a href=\"https://bennettfeely.com/clippy/\" target=\"_blank\">clip-path generator</a>!"
   },
+  "margin": {
+    "bubble": "All HTML elements are shaped like a <a href=\"https://www.w3schools.com/Css/css_boxmodel.asp\" target=\"_blank\">box</a> by default. The <code>margin</code> property is used to add space around this box. It's values can be written in a variety of ways.",
+    "example": "{\n\t/* amount of margin to add around the box\n\tclockwise starting from the top */\n\tmargin: 10px 20px 30px 40px;\n\t/* above is a short-hand for the code below */\n\tmargin-top: 10px;\n\tmargin-right: 20px;\n\tmargin-bottom: 30px;\n\tmargin-left: 40px;\n\t\n\t/* apply 10px of margin all around */\n\tmargin: 10px;\n\t/* apply 10px to the top and bottom */\n\t/* and 20px to the left and right  */\n\tmargin: 10px 20px;\n\t/* using \"auto\" on the left/right will */\n\t/* automatically fill the space with as */\n\t/* much margin as possible, this has the */\n\t/* effect of \"centering\" the element. */\n\tmargin: 0px auto;\n}"
+  },
   "vw": {
     "bubble": "<code>vw</code> stands for \"viewport width\", the viewport is the \"viewable portion\" of your document, meaning everything you currently see in your window. You can think of <code>vw</code> as a percentage of the window's width (as opposed to the <code>%</code> which is always relative to the parent element).<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
   },

@@ -411,12 +411,18 @@ a:hover {
     h1.querySelector('a').style.color = 'var(--netizen-property)'
     div.appendChild(h1)
 
+    const extras = this.data[name]
+
     const description = document.createElement('p')
     description.innerHTML = ''
     if (typeof nfo.status !== 'undefined' && nfo.status !== 'standard') {
       description.innerHTML += `Be warned! this property is <b>${nfo.status}</b> so it may not work on all browsers. `
     }
-    description.innerHTML += nfo.description.html
+    if (extras && extras.bubble) {
+      description.innerHTML = extras.bubble
+    } else {
+      description.innerHTML += nfo.description.html
+    }
     if (description.innerHTML[description.innerHTML.length - 1] !== '.') {
       description.innerHTML += '.'
     }
@@ -428,7 +434,6 @@ a:hover {
     div.appendChild(description)
     div.appendChild(document.createElement('br'))
 
-    const extras = this.data[name]
     if (extras && extras.example) {
       const ce = document.createElement('code-sample')
       div.appendChild(ce)
