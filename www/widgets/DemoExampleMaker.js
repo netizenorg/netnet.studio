@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, NNE, utils */
+/* global Widget, WIDGETS, NNE, NNW, utils */
 class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -7,7 +7,9 @@ class DemoExampleMaker extends Widget {
     this.title = 'Demo/Example Maker'
     this._curStep = 0
     this._sections = null
-    this._data = { name: null, type: null, key: null, code: null, steps: [] }
+    this._data = {
+      name: null, type: null, toc: true, layout: 'dock-left', key: null, code: null, steps: []
+    }
     utils.get('api/examples', (res) => {
       this._data.key = Math.max(...Object.keys(res.data)) + 1
       this._sections = res.sections
@@ -23,6 +25,8 @@ class DemoExampleMaker extends Widget {
         const obj = WIDGETS['code-examples'].exData
         this._data = {
           name: obj.name,
+          toc: obj.toc,
+          layout: obj.layout,
           key: Number(obj.key),
           code: obj.code,
           steps: obj.info
@@ -44,6 +48,8 @@ class DemoExampleMaker extends Widget {
       this._selectStep(this._data.steps[0])
       this.$('[name="dem-demo-name"]').value = this._data.name
       this.$('[name="dem-demo-type"]').value = this._data.type
+      this.$('[name="dem-demo-layout"]').value = this._data.layout
+      this.$('[name="dem-demo-toc"]').checked = this._data.toc
     }
 
     this.on('open', () => {
@@ -90,6 +96,11 @@ class DemoExampleMaker extends Widget {
         <br>
         <input name="dem-demo-name" placeholder="demo name" type="text">
         <select name="dem-demo-type"></select>
+        <br>
+        <div style="margin: 10px 15px;">
+          layout <select name="dem-demo-layout"></select> |
+          display toc <input type="checkbox" name="dem-demo-toc"> (table of contents)
+        </div>
         <textarea name="dem-url"></textarea>
         <br>
         <div style="float: right">
@@ -168,6 +179,21 @@ class DemoExampleMaker extends Widget {
       e.target.select()
       navigator.clipboard.writeText(e.target.value)
     })
+
+    NNW.layouts.filter(l => l !== 'welcome').forEach(layout => {
+      const o = document.createElement('option')
+      o.textContent = layout
+      o.value = layout
+      this.$('[name="dem-demo-layout"]').appendChild(o)
+    })
+    this.$('[name="dem-demo-layout"]').value = 'dock-left'
+    this.$('[name="dem-demo-layout"]').addEventListener('input', (e) => {
+      this._data.layout = e.target.value
+    })
+
+    this.$('[name="dem-demo-toc"]').addEventListener('input', (e) => {
+      this._data.toc = e.target.checked
+    })
   }
 
   // ------------------------------
@@ -220,6 +246,8 @@ class DemoExampleMaker extends Widget {
     const name = this._data.name || 'demo'
     const type = this.$('[name="dem-demo-type"]').value
     const key = this._data.key
+    const toc = this._data.toc
+    const layout = this._data.layout
     const info = this._data.steps.map(s => {
       if (s.focus && typeof s.focus === 'string') {
         s.focus = s.focus.split(',').map(n => Number(n))
@@ -227,14 +255,15 @@ class DemoExampleMaker extends Widget {
       return s
     })
     const code = `#code/${NNE._encode(NNE.code)}`
-    return { name, type, key, code, info }
+    return { name, type, toc, layout, key, code, info }
   }
 
   _generateURL () {
     const data = this._getData()
     const str = JSON.stringify(data)
     const loc = window.location
-    const url = `${loc.protocol}//${loc.host}/#example/${NNE._encode(str)}`
+    const l = this._data.layout !== 'dock-left' ? `?layout=${this._data.layout}` : ''
+    const url = `${loc.protocol}//${loc.host}/${l}#example/${NNE._encode(str)}`
     this.$('[name="dem-url"]').value = url
     this.$('[name="dem-url"]').style.display = 'block'
   }
