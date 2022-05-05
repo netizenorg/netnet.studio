@@ -191,6 +191,7 @@ class DemoExampleMaker extends Widget {
       this._data.layout = e.target.value
     })
 
+    this.$('[name="dem-demo-toc"]').checked = true
     this.$('[name="dem-demo-toc"]').addEventListener('input', (e) => {
       this._data.toc = e.target.checked
     })
