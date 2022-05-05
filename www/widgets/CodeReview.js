@@ -50,6 +50,11 @@ class CodeReview extends Widget {
       lines.push(e.line)
       const clk = () => this._explainError(e)
       const clr = (e.type === 'warning') ? 'orange' : 'red'
+      /*
+        HACK: not sure why, but some errors return e.line: 0 ???
+        ex: localhost:8001/?tutorial=html-crash-course&t=1157
+      */
+      if (e.line === 0) e.line = 1
       const m = NNE.marker(e.line, clr, clk)
       m.setAttribute('title', e.message)
     })
