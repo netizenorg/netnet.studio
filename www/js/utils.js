@@ -271,7 +271,7 @@ window.utils = {
       SNT.post(SNT.dataObj('REQ-#code', { hash, url }))
       return 'code'
     } else if (window.location.hash.includes('#example')) {
-      window.utils.loadCustomExample()
+      window.utils.loadCustomExample(url.layout)
       SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
       return 'sketch'
     } else if (window.location.hash.includes('#sketch')) {
@@ -337,13 +337,17 @@ window.utils = {
     } else window.utils.fadeOutLoader(true)
   },
 
-  loadCustomExample: () => {
+  loadCustomExample: (layout) => {
     const hash = window.location.hash.split('#example/')[1]
     const data = JSON.parse(NNE._decode(hash))
-    const firstClick = () => {
+    const firstClick = (cb) => {
       const l = document.querySelector('.code-examples--ex-parts > li > span')
-      if (!l) return setTimeout(() => firstClick(), 100)
+      if (!l) return setTimeout(() => firstClick(cb), 100)
       l.click()
+      setTimeout(() => {
+        if (cb) cb()
+        window.utils.fadeOutLoader(false)
+      }, window.utils.getVal('--layout-transition-time'))
     }
     const show = (data) => {
       if (!WIDGETS['code-examples'].slide) {
@@ -356,13 +360,14 @@ window.utils = {
         info: data.info,
         key: data.key
       })
-      firstClick()
+      firstClick(() => {
+        if (data.toc === false) WIDGETS['code-examples'].close()
+      })
     }
     WIDGETS.open('code-examples', null, (w) => {
       if (data && data.code) {
         show(data)
-        NNW.layout = 'dock-left'
-        window.utils.fadeOutLoader(false)
+        NNW.layout = layout || 'dock-left'
       }
     })
   },
