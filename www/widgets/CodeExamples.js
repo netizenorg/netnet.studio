@@ -336,7 +336,7 @@ class CodeExamples extends Widget {
     const idx = data.info.indexOf(o)
     if (idx === 0) {
       const m = document.querySelector('.netitor-gutter-marker')
-      if (m.style.animation) m.style.animation = null
+      if (m && m.style.animation) m.style.animation = null
     }
 
     let options = {}
