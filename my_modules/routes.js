@@ -34,6 +34,14 @@ router.get('/tutorials/*', (req, res, next) => {
   if (req.headers.host.includes(':1337')) { // for dev server
     const file = `../../netnet.studio/www/${req.originalUrl}`
     res.sendFile(path.join(__dirname, file))
+  } else if (req.originalUrl.includes('/list.json')) {
+    // if asking for tutorials that don't exist (ex: in local dev)
+    const list = path.join(__dirname, '../www/tutorials/list.json')
+    const file = fs.readFileSync(list)
+    const json = JSON.parse(file)
+    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
+    json.listed = json.listed.filter(t => dirs.includes(t))
+    res.json(json)
   } else next()
 })
 
