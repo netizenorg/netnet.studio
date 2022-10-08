@@ -11,6 +11,10 @@ const GITHUB = require('./my_modules/github.js')
 const SOCKETS = require('./my_modules/sockets.js')
 const PORT = process.env.PORT || 8001
 
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
+app.use(express.json({ limit: '50mb' })) // GitHub's limit is 100mb
+
 ANALYTICS.setup(app, {
   path: `${__dirname}/data/analytics`,
   admin: {
