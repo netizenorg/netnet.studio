@@ -1,15 +1,10 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const router = express.Router()
 const path = require('path')
-const cookieParser = require('cookie-parser')
 const fs = require('fs')
 const exec = require('child_process').exec
 const utils = require('./utils.js')
 const axios = require('axios')
-
-router.use(cookieParser())
-router.use(bodyParser.json({ limit: '10mb' }))
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
