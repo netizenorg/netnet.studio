@@ -42,7 +42,17 @@ if (process.env.PROD) {
   ANALYTICS.live(httpsServer, io)
 } else {
   const httpServer = http.createServer(app)
-  httpServer.listen(PORT, () => console.log('listening on 8001'))
+  const msg = `
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/                                    '.
+| hi there! the local server is up and |
+| running, open a browser and visit:   |
+| http://localhost:${PORT}                |
+\` _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  ,/
+                                  .'\`
+                           ( ◕ ◞ ◕ )つ
+`
+  httpServer.listen(PORT, () => console.log(msg))
   io.attach(httpServer)
   ANALYTICS.live(httpServer, io)
 }
