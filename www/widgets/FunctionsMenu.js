@@ -260,8 +260,7 @@ class FunctionsMenu extends Widget {
   // -------------
 
   shareSketch () {
-    this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'generate-sketch-url')
+    WIDGETS.open('share-widget')
   }
 
   saveSketch () {
@@ -397,45 +396,6 @@ class FunctionsMenu extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-
-  _demonstrateCreditComment () {
-    const name = this.sesh.getData('username') || 'me'
-    const credit = `<!-- this code was hand crafted by ${name} -->\n`
-    NNE.cm.setSelection({ line: 0, ch: 0 })
-    NNE.cm.replaceSelection(credit)
-    setTimeout(() => {
-      NNE.spotlight(1)
-      window.convo = new Convo(this.convos, 'show-me-how-to-comment')
-    }, utils.getVal('--menu-fades-time'))
-  }
-
-  _shortenURL (layout) {
-    NNE.spotlight(null)
-    NNW.menu.switchFace('processing')
-    window.convo = new Convo(this.convos, 'ok-processing')
-    const time = utils.getVal('--layout-transition-time')
-    setTimeout(() => {
-      const data = { hash: NNE.generateHash() }
-      utils.post('./api/shorten-url', data, (res) => {
-        if (!res.success) {
-          NNW.menu.switchFace('upset')
-          console.error(res.error)
-          window.convo = new Convo(this.convos, 'oh-no-error')
-        } else {
-          NNW.menu.switchFace('default')
-          this._tempCode = res.key
-          this.convos = window.CONVOS['functions-menu'](this)
-          if (layout) window.convo = new Convo(this.convos, 'no-hide-short')
-          else window.convo = new Convo(this.convos, 'shorten-url')
-        }
-      })
-    }, time)
-  }
-
-  _shareLongCodeHideLayout () {
-    this.convos = window.CONVOS['functions-menu'](this)
-    window.convo = new Convo(this.convos, 'hide-long')
-  }
 
   _createHTML (gh) {
     this.subs = {}

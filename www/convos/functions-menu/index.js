@@ -1,23 +1,13 @@
 /* global Averigua, WIDGETS, NNW, NNE, utils */
 window.CONVOS['functions-menu'] = (self) => {
   const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
-  const shareURL = (opts) => {
+  const shareGhURL = (opts) => {
     opts = opts || {}
     const repo = window.sessionStorage.getItem('opened-project')
     const owner = window.localStorage.getItem('owner')
     const branch = window.sessionStorage.getItem('branch')
-    const gh = (repo) ? `&gh=${owner}/${repo}/${branch}` : ''
-    const hash = NNE.generateHash()
     const root = window.location.protocol + '//' + window.location.host
-    if (opts.layout && opts.short) {
-      return `${root}/?c=${opts.short}&layout=${opts.layout}${gh}`
-    } else if (opts.layout) {
-      return `${root}/?layout=${opts.layout}${gh}${hash}`
-    } else if (opts.short) {
-      return `${root}/?c=${opts.short}${gh}`
-    } else if (gh) {
-      return `${root}/?gh=${owner}/${repo}/${branch}`
-    } else return `${root}/${hash}`
+    return `${root}/?gh=${owner}/${repo}/${branch}`
   }
 
   const a = (() => {
@@ -67,7 +57,7 @@ window.CONVOS['functions-menu'] = (self) => {
         e.hide()
         self.downloadCode()
       },
-      'Can I share it': (e) => self.shareSketch(),
+      'Can I share it?': (e) => self.shareSketch(),
       'session data?': () => WIDGETS.open('student-session')
     }
   }, {
@@ -293,7 +283,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'share-gh-url',
-    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareGhURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
     options: {
       'great thanks!': (e) => e.hide(),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
@@ -316,81 +306,6 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'custom-url',
     content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
     options: { 'ok, thanks!': (e) => e.hide() }
-  },
-  // ...
-  // ...share sketch URL convos...
-  // ...
-  {
-    id: 'generate-sketch-url',
-    content: `Ok, here's a URL for your sketch! <input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> Your sketch isn't <i>saved</i> anywhere, in the traditional sense; the data itself is encoded in this URL. Copy+paste the URL to share your sketch with anyone on the Internet. If you'd like, I can also hide from view so that your masterpiece remains unobstructed?`,
-    options: {
-      'great, thanks!': (e) => e.hide(),
-      'why is it so long?': (e) => e.goTo('why-so-long'),
-      'hide from view?': (e) => e.goTo('hide-from-view-long')
-    }
-  }, {
-    id: 'why-so-long',
-    content: 'Because it contains a compressed version of all the code you\'ve typed into my editor, that way I can decode and inject it back into my editor when you share it with someone else. But I can shorten it for you if you\'d like?',
-    options: {
-      'let\'s shorten it!': (e) => e.goTo('confirm-shorten-url'),
-      'no thanks': (e) => e.hide()
-    }
-  }, {
-    id: 'confirm-shorten-url',
-    content: 'Sure thing! But first, you should know that in order for me to shorten the URL I need to store your code on my server\'s database which means the folks at <a href="http://netizen.org" target="_blank">netizen.org</a> will be able to see it and share it with others. But it\'ll be saved anonymously, the only thing I technically need to store in order for the shortener to work is the code itself.',
-    options: {
-      'fine with me, let\'s shorten it!': (e) => self._shortenURL(true),
-      'what if i want to be credited?': (e) => e.goTo('what-if-i-want-credit'),
-      'oh, never mind then': (e) => e.hide()
-    }
-  }, {
-    id: 'what-if-i-want-credit',
-    content: 'Just leave a comment in your source code with your attribution!',
-    options: {
-      'oh yea! just did, let\'s shorten that URL': (e) => self._shortenURL(true),
-      'can you show me how?': (e) => self._demonstrateCreditComment()
-    }
-  }, {
-    id: 'show-me-how-to-comment',
-    content: 'Sure thing! I\'ve just added a comment at the to of your sketch, feel free to change it to whatever you\'d like.',
-    options: {
-      'thanks! let\'s shorten that URL now!': (e) => self._shortenURL(true)
-    }
-  }, {
-    id: 'shorten-url',
-    content: `Great! here's your shortened URL: <input value="${shareURL({ short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> Copy+paste that URL to share it with others. I'll hide from view so that your masterpiece remains unobstructed.`,
-    options: {
-      'got it, thanks!': (e) => e.hide(),
-      'hide from view?': (e) => e.goTo('hide-from-view-short')
-    }
-  }, {
-    id: 'hide-from-view-long',
-    content: `<input value="${shareURL({ layout: NNW.layout })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
-    options: {
-      'no thanks, this URL is fine': (e) => e.hide(),
-      'yes please, I prefer you hide': (e) => self._shareLongCodeHideLayout()
-    }
-  }, {
-    id: 'hide-long',
-    content: `Sure thing, here's a new URL that'll hide the code so that your work displays full screen <input value="${shareURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
-    options: {
-      'great thanks!': (e) => e.hide(),
-      'why is the URL so long though?': (e) => e.goTo('why-so-long')
-    }
-  }, {
-    id: 'hide-from-view-short',
-    content: `<input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> If you share the URL above with someone, they'll see your code alongside your sketch, but if you'd prefer I can also hide myself and the code so that your sketch is shown full screen?`,
-    options: {
-      'no thanks, I want the code present': (e) => e.hide(),
-      'yes please, I prefer you hide': (e) => self._shortenURL(false)
-    }
-  }, {
-    id: 'no-hide-short',
-    content: `Sure thing, here's a new URL that'll display the code alongside your work <input value="${shareURL({ layout: NNW.layout, short: self._tempCode || null })}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
-    options: {
-      'great thanks!': (e) => e.hide(),
-      'display the code?': (e) => e.goTo('hide-from-view-short')
-    }
   }, {
     id: 'ok-processing',
     content: 'Ok ...processing...',
