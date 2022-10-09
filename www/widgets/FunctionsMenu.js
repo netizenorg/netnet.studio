@@ -264,6 +264,7 @@ class FunctionsMenu extends Widget {
   }
 
   saveSketch () {
+    this.convos = window.CONVOS[this.key](this)
     window.convo = new Convo(this.convos, 'session-saved')
     this.sesh.setSavePoint()
   }
