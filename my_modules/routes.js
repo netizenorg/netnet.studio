@@ -92,15 +92,15 @@ router.get('/api/widgets', (req, res) => {
       if (!code.includes('listed = false')) {
         const data = { filename, title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
-          if (line.includes('this.title =')) {
+          if (line.includes('this.title =') && !data.title) {
             data.title = line.split('=')[1].trim()
             data.title = data.title.substr(1, data.title.length - 2)
           }
-          if (line.includes('this.key =')) {
+          if (line.includes('this.key =') && !data.key) {
             data.key = line.split('=')[1].trim()
             data.key = data.key.substr(1, data.key.length - 2)
           }
-          if (line.includes('this.keywords =')) {
+          if (line.includes('this.keywords =') && !data.keywords) {
             let kw = line.split('=')[1].trim()
             kw = kw.replace(/\[/g, '').replace(/\]/g, '')
             data.keywords = kw.split(',')
