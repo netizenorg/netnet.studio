@@ -40,6 +40,22 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   })()
 
+  const sessionSaveOpts = () => {
+    const opts = {
+      'ok thanks!': (e) => e.hide(),
+      'Can I download this sketch?': (e) => {
+        e.hide()
+        self.downloadCode()
+      },
+      'Can I share this sketch?': (e) => self.shareSketch()
+    }
+    if (window.localStorage.getItem('owner')) {
+      opts['can I create a new project?'] = () => self.saveProject()
+    }
+    opts['session data?'] = () => WIDGETS.open('student-session')
+    return opts
+  }
+
   return [{
     id: 'need-to-update',
     content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press <b>${hotkey}+Enter</b>`,
@@ -51,15 +67,7 @@ window.CONVOS['functions-menu'] = (self) => {
   }, {
     id: 'session-saved',
     content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later I\'ll give you the option to pick back up where you left off.',
-    options: {
-      'ok thanks!': (e) => e.hide(),
-      'Can I download it?': (e) => {
-        e.hide()
-        self.downloadCode()
-      },
-      'Can I share it?': (e) => self.shareSketch(),
-      'session data?': () => WIDGETS.open('student-session')
-    }
+    options: sessionSaveOpts()
   }, {
     id: 'blank-canvas-ready',
     content: 'Great! Here\'s a relatively blank canvas. Click on my face if you need me, or double click on any piece of code if you want me to explain it to you.',
