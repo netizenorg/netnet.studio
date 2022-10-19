@@ -228,7 +228,7 @@ class SearchBar {
 
       for (const i in json.data) {
         const ex = json.data[i]
-        const tags = ex.tags.split(' ') // .filter(s => !s.includes('element'))
+        const tags = ex.tags ? ex.tags.split(' ') : []
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({
