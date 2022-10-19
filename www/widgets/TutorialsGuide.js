@@ -99,7 +99,29 @@ class TutorialsGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
+    this._enableExamplesButton()
     this._listTutorials()
+    this._enableAppendixLinks()
+  }
+
+  _enableExamplesButton () {
+    this.slide.querySelector('#ex-open-btn')
+      .addEventListener('click', () => {
+        WIDGETS.open('code-examples')
+        this.close()
+        window.convo.hide()
+      })
+  }
+
+  _enableAppendixLinks () {
+    this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
+      const arr = ele.getAttribute('name').split(':')
+      const widget = `${arr[1]}-reference`
+      ele.addEventListener('click', () => {
+        window.convo.hide()
+        WIDGETS.open(widget, null, (w) => w.slide.updateSlide(w[arr[2]]))
+      })
+    })
   }
 
   _listTutorials () {
@@ -157,14 +179,6 @@ class TutorialsGuide extends Widget {
   }
 
   _enableTutorialEventListeners (div) {
-    // enable examples "open" button
-    this.slide.querySelector('#ex-open-btn')
-      .addEventListener('click', () => {
-        WIDGETS.open('code-examples')
-        this.close()
-        window.convo.hide()
-      })
-
     this.slide.querySelector('#page-aboutOpts')
       .addEventListener('click', () => {
         this.slide.updateSlide(this.aboutOpts)
@@ -202,16 +216,6 @@ class TutorialsGuide extends Widget {
           ele.textContent = 'i'
           setTimeout(() => { p.style.display = 'none' }, 1000)
         }
-      })
-    })
-
-    // enable appendix links
-    this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
-      const arr = ele.getAttribute('name').split(':')
-      const widget = `${arr[1]}-reference`
-      ele.addEventListener('click', () => {
-        window.convo.hide()
-        WIDGETS.open(widget, null, (w) => w.slide.updateSlide(w[arr[2]]))
       })
     })
   }
