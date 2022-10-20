@@ -142,8 +142,6 @@ router.get('/api/github/saved-projects', (req, res) => {
   })
 })
 
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\  [POST]
-
 router.post('/api/github/repo-data', (req, res) => {
   // https://docs.github.com/en/rest/reference/repos#get-a-repository
   const octokit = new Octokit()
@@ -157,65 +155,17 @@ router.post('/api/github/repo-data', (req, res) => {
   })
 })
 
-router.post('/api/github/new-repo', (req, res) => {
-  const data = {
-    name: req.body.name,
-    content: req.body.data
-  }
+router.post('/api/github/get-commits', (req, res) => {
+  const owner = req.body.owner
+  const repo = req.body.repo
   decryptToken(req, res, (octokit) => {
-    // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
-    octokit.request('POST /user/repos', {
-      name: data.name,
-      description: '◕ ◞ ◕ This project was made using https://netnet.studio',
-      auto_init: true
-    }).then(gitRes => {
-      data.owner = gitRes.data.owner.login
-      data.branch = gitRes.data.default_branch
-      data.url = gitRes.data.html_url
-      // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
-      return octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-        owner: data.owner,
-        repo: data.name,
-        path: 'index.html',
-        message: 'netnet initialized repo',
-        content: data.content
-      })
-    }).then(gitRes => {
-      data.sha = gitRes.data.content.sha
-      // https://docs.github.com/en/rest/reference/repos#create-a-github-pages-site
-      // automatically publish ghpages (TODO: maybe include later)
-      // return octokit.request('POST /repos/{owner}/{repo}/pages', {
-      //   owner: data.owner,
-      //   repo: data.name,
-      //   source: { branch: data.branch, path: '/' },
-      //   mediaType: { previews: ['switcheroo'] }
-      // })
-      return gitRes
-    }).then(gitRes => {
-      data.ghpages = gitRes.data.html_url
-      data.success = true
-      res.json(data)
-    }).catch(err => {
-      res.json({ success: false, message: 'error creating repo', error: err })
-    })
-  })
-})
-
-router.post('/api/github/save-project', (req, res) => {
-  // TODO: will need to update for multi-file projets f/when we get there...
-  decryptToken(req, res, (octokit) => {
-    // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
-    octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-      owner: req.body.owner,
-      repo: req.body.repo,
-      path: 'index.html',
-      sha: req.body.sha,
-      message: req.body.message,
-      content: req.body.code
+    // https://docs.github.com/en/rest/reference/repos#list-commits
+    octokit.request('GET /repos/{owner}/{repo}/commits', {
+      owner, repo
     }).then(gitRes => {
       res.json({ success: true, message: 'success', data: gitRes.data })
     }).catch(err => {
-      res.json({ success: false, message: 'error saving index.html', error: err })
+      res.json({ success: false, message: 'error getting files', error: err })
     })
   })
 })
@@ -223,12 +173,22 @@ router.post('/api/github/save-project', (req, res) => {
 router.post('/api/github/open-project', (req, res) => {
   const owner = req.body.owner
   const repo = req.body.repo
+  const obj = { owner, repo }
+  let branch = 'main'
   decryptToken(req, res, (octokit) => {
-    // https://docs.github.com/en/rest/reference/repos#get-repository-content
-    octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner, repo
+    octokit.request('GET /repos/{owner}/{repo}/branches', obj).then(gitRes => {
+      branch = gitRes.data[0].name
+      return octokit.request(`GET /repos/:owner/:repo/branches/${branch}`, obj)
     }).then(gitRes => {
-      res.json({ success: true, message: 'success', data: gitRes.data })
+      // // https://docs.github.com/en/rest/reference/repos#get-repository-content
+      // return octokit.request('GET /repos/{owner}/{repo}/contents/{path}', obj)
+      // ^ this one only returns root directory... using "trees" below instead
+      // https://docs.github.com/en/rest/git/trees#get-a-tree
+      obj.tree_sha = gitRes.data.commit.sha
+      obj.recursive = 'true'
+      return octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', obj)
+    }).then(gitRes => {
+      res.json({ success: true, message: 'success', branch, data: gitRes.data })
     }).catch(err => {
       res.json({ success: false, message: 'error opening project', error: err })
     })
@@ -251,32 +211,76 @@ router.post('/api/github/open-file', (req, res) => {
   })
 })
 
-router.post('/api/github/get-commits', (req, res) => {
-  const owner = req.body.owner
-  const repo = req.body.repo
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\  [POST]
+
+router.post('/api/github/new-repo', (req, res) => {
+  const data = {
+    name: req.body.name,
+    content: req.body.data,
+    message: 'netnet initialized repo'
+  }
   decryptToken(req, res, (octokit) => {
-    // https://docs.github.com/en/rest/reference/repos#list-commits
-    octokit.request('GET /repos/{owner}/{repo}/commits', {
-      owner, repo
+    // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
+    octokit.request('POST /user/repos', {
+      name: data.name,
+      description: '◕ ◞ ◕ This project was made using https://netnet.studio',
+      auto_init: true
+    }).then(gitRes => {
+      data.owner = gitRes.data.owner.login
+      data.branch = gitRes.data.default_branch
+      data.url = gitRes.data.html_url
+      // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
+      return octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: data.owner,
+        repo: data.name,
+        path: 'index.html',
+        message: data.message,
+        content: data.content
+      })
+    }).then(gitRes => {
+      data.ghpages = gitRes.data.html_url
+      data.success = true
+      res.json(data)
+    }).catch(err => {
+      res.json({ success: false, message: 'error creating repo', error: err })
+    })
+  })
+})
+
+/*
+  // TODO: TODO TODO
+*/
+router.post('/api/github/save-project', (req, res) => {
+  // TODO: will need to update for multi-file projets f/when we get there...
+  decryptToken(req, res, (octokit) => {
+    // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
+    octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      owner: req.body.owner,
+      repo: req.body.repo,
+      path: req.body.path,
+      sha: req.body.sha,
+      message: req.body.message,
+      content: req.body.code
     }).then(gitRes => {
       res.json({ success: true, message: 'success', data: gitRes.data })
     }).catch(err => {
-      res.json({ success: false, message: 'error getting files', error: err })
+      res.json({ success: false, message: 'error saving ' + req.data.path, error: err })
     })
   })
 })
 
 router.post('/api/github/upload-file', (req, res) => {
+  const message = `created ${req.body.name}`
   decryptToken(req, res, (octokit) => {
     // https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
     octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
       owner: req.body.owner,
       repo: req.body.repo,
       path: req.body.name,
-      message: `created ${req.body.name}`,
+      message: message,
       content: req.body.code
     }).then(gitRes => {
-      res.json({ success: true, message: 'success', data: gitRes.data })
+      res.json({ success: true, message, data: gitRes.data })
     }).catch(err => {
       res.json({ success: false, message: 'error uploading file', error: err })
     })
@@ -284,21 +288,126 @@ router.post('/api/github/upload-file', (req, res) => {
 })
 
 router.post('/api/github/delete-file', (req, res) => {
+  const message = `removed ${req.body.path}`
   decryptToken(req, res, (octokit) => {
     // https://docs.github.com/en/rest/reference/repos#delete-a-file
     octokit.request('DELETE /repos/{owner}/{repo}/contents/{path}', {
       owner: req.body.owner,
       repo: req.body.repo,
-      path: req.body.name,
+      path: req.body.path,
       sha: req.body.sha,
-      message: `removed ${req.body.name}`
+      message
     }).then(gitRes => {
-      res.json({ success: true, message: 'success', data: gitRes.data })
+      res.json({ success: true, message, data: gitRes.data })
     }).catch(err => {
       res.json({ success: false, message: 'error deleting file', error: err })
     })
   })
 })
+
+router.post('/api/github/delete-folder', (req, res) => {
+  const owner = req.body.owner
+  const repo = req.body.repo
+  const branch = req.body.branch
+  const path = req.body.path
+  const message = `removed directory ${path}`
+  const obj = { owner, repo, branch }
+  let baseTreeSha
+  /*
+    Dang was this hard to figure out!!!
+    see notes in /rename-file below
+  */
+  decryptToken(req, res, (octokit) => {
+    // console.log('1. Get the current branch')
+    obj.recursive = 1
+    octokit.request('GET /repos/{owner}/{repo}/branches/{branch}', obj).then(gitRes => {
+      // console.log('2. Get the current tree')
+      obj.base_tree = baseTreeSha = gitRes.data.commit.sha
+      return octokit.request('GET /repos/{owner}/{repo}/git/trees/{base_tree}', obj)
+    }).then(gitRes => {
+      // console.log('3. Create a new tree')
+      delete obj.base_tree
+      obj.tree = gitRes.data.tree.filter(f => {
+        return f.path !== 0 && f.path.indexOf(`${path}/`) !== 0 && f.type !== 'tree'
+      })
+      return octokit.request('POST /repos/{owner}/{repo}/git/trees?recursive=1', obj)
+    }).then(gitRes => {
+      // console.log('4. Create a commit for the new tree')
+      const commit = {
+        owner,
+        repo,
+        message,
+        tree: gitRes.data.sha,
+        parents: [baseTreeSha]
+      }
+      return octokit.request('POST /repos/{owner}/{repo}/git/commits', commit)
+    }).then(gitRes => {
+      // console.log('5. Point your branch at the new commit')
+      const nc = { owner, repo, branch, sha: gitRes.data.sha }
+      return octokit.request('POST /repos/{owner}/{repo}/git/refs/heads/{branch}', nc)
+    }).then(gitRes => {
+      res.json({ success: true, message, branch, data: gitRes.data })
+    }).catch(err => {
+      res.json({ success: false, message: 'error renaming file', error: err })
+    })
+  })
+})
+
+router.post('/api/github/rename-file', (req, res) => {
+  const owner = req.body.owner
+  const repo = req.body.repo
+  const branch = req.body.branch
+  const path = req.body.file.path
+  const newpath = req.body.newpath
+  const message = `renamed ${path} to ${newpath}`
+  const obj = { owner, repo, branch }
+  let baseTreeSha
+  /*
+    Dang was this hard to figure out!!!
+    started here...
+    https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
+    turns out this was most helpful...
+    https://www.levibotelho.com/development/commit-a-file-with-the-github-api/
+    (specifically the "hard war")
+  */
+  decryptToken(req, res, (octokit) => {
+    // console.log('1. Get the current branch')
+    obj.recursive = 1
+    octokit.request('GET /repos/{owner}/{repo}/branches/{branch}', obj).then(gitRes => {
+      // console.log('2. Get the current tree')
+      obj.base_tree = baseTreeSha = gitRes.data.commit.sha
+      return octokit.request('GET /repos/{owner}/{repo}/git/trees/{base_tree}', obj)
+    }).then(gitRes => {
+      // console.log('3. Create a new tree')
+      delete obj.base_tree /* "harder way" is not supposed to have "base_tree"... */
+      obj.tree = gitRes.data.tree.map((f) => {
+        if (f.path.indexOf(path) === 0) f.path = f.path.replace(path, newpath)
+        if (f.type !== 'tree') return f /* ...nor should it have "sub trees" */
+      }).filter(f => f !== undefined)
+      return octokit.request('POST /repos/{owner}/{repo}/git/trees?recursive=1', obj)
+    }).then(gitRes => {
+      // console.log('4. Create a commit for the new tree')
+      const commit = {
+        owner,
+        repo,
+        message,
+        tree: gitRes.data.sha,
+        parents: [baseTreeSha]
+      }
+      return octokit.request('POST /repos/{owner}/{repo}/git/commits', commit)
+    }).then(gitRes => {
+      // console.log('5. Point your branch at the new commit')
+      const nc = { owner, repo, branch, sha: gitRes.data.sha }
+      return octokit.request('POST /repos/{owner}/{repo}/git/refs/heads/{branch}', nc)
+    }).then(gitRes => {
+      res.json({ success: true, message, branch, data: gitRes.data })
+    }).catch(err => {
+      res.json({ success: false, message: 'error renaming file', error: err })
+    })
+  })
+})
+
+// ...................... || ....................... || ........................
 
 router.post('/api/github/gh-pages', (req, res) => {
   decryptToken(req, res, (octokit) => {

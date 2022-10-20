@@ -1,4 +1,4 @@
-/* global NNE, Menu, Color, utils */
+/* global NNE, Menu, Color, utils, WIDGETS */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -600,7 +600,16 @@ class NetNet {
     if (typeof text === 'string') {
       this.title.textContent = text
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        const path = this.title.textContent
+        if (path.includes('index.html') && path.match(/\//g).length === 1) {
+          utils._Convo('netnet-title-bar-index')
+        } else if (path.includes('README.md') && path.match(/\//g).length === 1) {
+          utils._Convo('netnet-title-bar-readme')
+        } else {
+          WIDGETS.open('files-and-folders')
+        }
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'

@@ -108,7 +108,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "<i>${window.sessionStorage.getItem('opened-project')}</i>". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('new-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -149,7 +149,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'new-project-created',
-    content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>`,
+    content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to your GitHub account. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Files And Folders</b> widget, or click <code>FilesAndFolders()</code> in the <b>Functions Menu</b>`,
     options: {
       'cool!': (e) => e.hide()
     }
@@ -157,7 +157,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ... save open project
   {
     id: 'save-newish-project',
-    content: 'The last time you saved this project was when you first created it, from now on everytime I "push" updates to your GitHub you\'ll need to leave a short message (one sentence) explainig what changed: <input placeholder="what\'s new?">',
+    content: 'The last time you saved this project was when you first created it, from now on everytime I "<b>push</b>" updates to your GitHub you\'ll need to leave a short "<b>commit</b>" message (one sentence) explainig what changed: <input placeholder="what\'s new?">',
     options: {
       ok: (c, t) => {
         const v = t.$('input').value
@@ -183,7 +183,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${window.sessionStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
+    content: `The last time you saved your progress you said, "<i>${window.sessionStorage.getItem('last-commit-msg')}</i>", what has changed since then? <input placeholder="what's new?">`,
     options: {
       'ok, commit and push this update': (c, t) => {
         const v = t.$('input').value
@@ -219,7 +219,7 @@ window.CONVOS['functions-menu'] = (self) => {
   // ... opening old projects
   {
     id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "<i>${window.sessionStorage.getItem('opened-project')}</i>". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('open-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
@@ -247,25 +247,26 @@ window.CONVOS['functions-menu'] = (self) => {
       ok: (e) => e.goTo('open-project'),
       'no, never mind': (e) => e.hide()
     }
-  }, {
-    id: 'project-opened',
-    content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
-    options: {
-      ok: (e) => e.hide()
-      // 'submit to BrowserFest': (e) => {
-      //   if (WIDGETS['browser-fest']) {
-      //     WIDGETS['browser-fest'].submit()
-      //   } else {
-      //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
-      //   }
-      // }
-    }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
   },
+  // {
+  //   id: 'project-opened',
+  //   content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
+  //   options: {
+  //     ok: (e) => e.hide()
+  //     // 'submit to BrowserFest': (e) => {
+  //     //   if (WIDGETS['browser-fest']) {
+  //     //     WIDGETS['browser-fest'].submit()
+  //     //   } else {
+  //     //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
+  //     //   }
+  //     // }
+  //   }
+  //   // ,
+  //   // after: () => {
+  //   //   document.querySelector('.text-bubble-options > button:nth-child(2)')
+  //   //     .classList.add('opt-rainbow-bg')
+  //   // }
+  // },
   // ... share gh project
   {
     id: 'cant-share-project',
@@ -305,7 +306,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
+    content: `Your project is live at <a href="<i>${window.sessionStorage.getItem('ghpages')}</i>" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
