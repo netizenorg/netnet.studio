@@ -54,8 +54,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--netizen-atom);
     padding: 10px 0;
+  }
+
+  .learning-guide__ex-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--netizen-number) 0%, var(--netizen-string) 50%, var(--netizen-comment) 100%);
   }
 
 
@@ -132,14 +137,16 @@
   }
 </style>
 
-<header class="learning-guide__header">
+<canvas></canvas>
+
+<header class="learning-guide__header" style="position:relative;z-index:2">
   <div class="bg"></div>
   <div>the</div>
   <h2>Internet Artist's Guide</h2>
   <div>to netizen histories, critical theory, && the craft of creative coding</div>
 </header>
 
-<main class="learning-guide__main">
+<main class="learning-guide__main" style="position:relative;z-index:2">
   <div class="learning-guide__ex">
     <h3>&lt;examples&gt;</h3>
     <div class="learning-guide__ex-row">
@@ -153,6 +160,7 @@
         <button id="ex-open-btn">open</button>
       </div>
     </div>
+    <div class="learning-guide__ex-divider"></div>
   </div>
 
   <div class="learning-guide__tuts">

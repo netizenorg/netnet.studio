@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, SNT */
+/* global Widget, WIDGETS, utils, Convo, NNE, SNT, Color */
 class TutorialsGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -102,6 +102,10 @@ class TutorialsGuide extends Widget {
     this._enableExamplesButton()
     this._listTutorials()
     this._enableAppendixLinks()
+
+    const canvas = this.ele.querySelector('canvas')
+    this._createStarField(canvas)
+    this._highlightTitles()
   }
 
   _enableExamplesButton () {
@@ -256,6 +260,100 @@ class TutorialsGuide extends Widget {
         const file = `tutorials/${name}/${this.metadata.jsfile}`
         utils.loadFile(file, () => window.TUTORIAL.init())
       }
+    })
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
+
+  _createStarField (ele) {
+    const self = this
+    this.starField = {
+      setup: function () {
+        this.canvas = ele
+        this.canvas.style.position = 'absolute'
+        this.canvas.style.top = 0
+        this.canvas.style.left = 0
+        this.canvas.style.zIndex = 0
+        this.canvas.width = self.ele.offsetWidth
+        this.canvas.height = self.ele.offsetHeight
+        this.ctx = this.canvas.getContext('2d')
+        this.ctx.clearRect(0, 0, this.w(), this.h())
+
+        this.stars = []
+        this.acceleration = 1
+        for (let i = 0; i < 100; i++) this.stars.push(this.star())
+      },
+
+      star: function (star = {}) {
+        star.x = this.w() / 2
+        star.y = this.h() / 2
+        star.dx = Math.random() * 10 - 5
+        star.dy = Math.random() * 10 - 5
+        star.w = 1
+        star.h = 1
+        star.a = 0
+        star.z = 500
+        const s = (this.w() > this.h()) ? this.w() : this.h()
+        star.x += star.dx * s / 10
+        star.y += star.dy * s / 10
+        return star
+      },
+
+      w: function () {
+        return this.canvas.width
+      },
+
+      h: function () {
+        return this.canvas.height
+      },
+
+      update: function () {
+        setTimeout(() => this.update(), 1000 / 60)
+        this.ctx.clearRect(0, 0, this.w(), this.h())
+
+        this.stars.forEach(star => {
+          this.ctx.fillStyle = utils.getVal('--netizen-text')
+
+          star.x += star.dx
+          star.y += star.dy
+          star.a++
+
+          const outdX = star.x < 0 || star.x > this.w()
+          const outdY = star.y < 0 || star.y > this.h()
+          if (outdX && outdY) {
+            star.x = this.w() / 2 + this.dx * 2
+            star.y = this.h() / 2 + this.dy * 2
+            star.dx += star.dx / (50 / this.acceleration)
+            star.dy += star.dy / (50 / this.acceleration)
+          }
+
+          if (star.a === Math.floor(50 / this.acceleration) |
+              star.a === Math.floor(150 / this.acceleration) |
+              star.a === Math.floor(300 / this.acceleration)) {
+            star.w++
+            star.h++
+          }
+
+          if (star.x + star.w < 0 | star.x > this.w() |
+          star.y + star.h < 0 | star.y > this.h()) {
+            star = this.star(star)
+          }
+
+          this.ctx.fillRect(star.x, star.y, 1, 1)
+        })
+      }
+    }
+
+    this.starField.setup()
+    this.starField.update()
+  }
+
+  _highlightTitles () {
+    const c = Color.hex2rgb(utils.getVal('--netizen-number'))
+    const m = Color.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
     })
   }
 }
