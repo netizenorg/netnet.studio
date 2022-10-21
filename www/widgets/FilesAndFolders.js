@@ -39,7 +39,7 @@ class FilesAndFolders extends Widget {
     const repo = WIDGETS['student-session'].getData('opened-project')
     if (!repo) return
 
-    this.title = `Files + Folders -- /${repo}`
+    this.title = `Files + Folders in ➔ /${repo}`
     window.convo = new Convo(this.convos, 'opened')
 
     if (Object.keys(this.dict).length <= 0) {
@@ -342,6 +342,16 @@ class FilesAndFolders extends Widget {
     this.$('.fnf__tree-view').innerHTML = ''
     if (!files) return
 
+    const tmp = {} // store local save states temporarily
+    for (const path in this.dict) {
+      const file = this.dict[path]
+      if (file.lastCommitCode || file.code) {
+        tmp[path] = {
+          lastCommitCode: file.lastCommitCode, code: file.code
+        }
+      }
+    }
+
     this.dict = {}
     this.tree = []
     const agg = { temp: [] }
@@ -363,8 +373,18 @@ class FilesAndFolders extends Widget {
       this.dict[file.path] = file // { mode, path, sha, size, type, url }
     })
 
+    // restore local save states
+    for (const path in tmp) {
+      this.dict[path].lastCommitCode = tmp[path].lastCommitCode
+      this.dict[path].code = tmp[path].code
+    }
+
     // update view
     this._setupTreeView()
+  }
+
+  _renderToIframe (file) {
+    // TODO >> update netitor w/a NNE.render(code) method
   }
 
   // EVENTS ....................................................................
@@ -387,29 +407,76 @@ class FilesAndFolders extends Widget {
     sub.pop() // remove file
     sub = sub.join('/')
     if (sub !== '') sub += '/'
-    NNW.menu.switchFace('processing')
     const filename = file.path
+    const ext = filename.split('.')[1]
     const owner = WIDGETS['student-session'].data.github.owner
     const repo = WIDGETS['student-session'].data.github.openedProject
+    const branch = WIDGETS['student-session'].data.github.branch
     const data = { filename, repo, owner }
-    utils.post('./api/github/open-file', data, (res) => {
-      if (!res.success) {
-        window.convo = new Convo(this.convos, 'oh-no-error')
-        return console.log('FilesAndFolders:', res)
+
+    // save previous changes
+    const prevPath = WIDGETS['student-session'].getData('opened-file')
+    this.dict[prevPath].code = utils.btoa(NNE.code)
+
+    // check that it can be opened
+    const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico']
+    const txts = ['html', 'svg', 'css', 'js', 'md', 'txt']
+    if (imgs.includes(ext) || imgs.includes(ext.toLowerCase())) {
+      // if it's an image, open an image viewer widget
+      let root = 'https://raw.githubusercontent.com/'
+      root += `${owner}/${repo}/${branch}/`
+      const img = `<img src="${root}${file.path}">`
+      if (WIDGETS.instantiated.includes(`VIEW-${filename}`)) {
+        WIDGETS[`VIEW-${filename}`].innerHTML = img
+        return WIDGETS[`VIEW-${filename}`].open()
+      } else {
+        return WIDGETS.create({
+          key: `VIEW-${filename}`, title: 'Image Viewer', innerHTML: img
+        }).open()
       }
+    } else if (!file.path.includes('.gitkeep') && !txts.includes(ext) && !txts.includes(ext.toLowerCase())) {
+      window.convo = new Convo(this.convos, 'unknown-format')
+      return
+    }
+
+    NNW.menu.switchFace('processing')
+
+    const postOpen = (path, code) => {
       window.convo.hide()
-      NNW.updateTitleBar(`${repo}/${res.data.path}`)
-      const c = utils.atob(res.data.content)
-      WIDGETS['student-session'].setData('opened-file', res.data.path)
-      WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
+      NNW.updateTitleBar(`${repo}/${path}`)
       WIDGETS['student-session'].updateRoot(sub)
+      const c = utils.atob(code)
+      WIDGETS['student-session'].setData('opened-file', path)
+      WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
+      if (!this.dict[path].lastCommitCode) {
+        this.dict[path].lastCommitCode = utils.btoa(c)
+      }
       NNE.code = c
       NNW.menu.switchFace('default')
-    })
+      if (ext === 'html' || ext === 'js' || ext === 'css') {
+        NNE.language = ext
+      } else {
+        NNE.language = 'html'
+      }
+    }
+
+    if (this.dict[file.path].code) {
+      // open from local
+      postOpen(file.path, this.dict[file.path].code)
+    } else {
+      // open from remote
+      utils.post('./api/github/open-file', data, (res) => {
+        if (!res.success) {
+          window.convo = new Convo(this.convos, 'oh-no-error')
+          return console.log('FilesAndFolders:', res)
+        }
+        this.dict[file.path].code = res.data.content
+        postOpen(res.data.path, res.data.content)
+      })
+    }
   }
 
   uploadFile (file, fu, cb) {
-    if (fu) console.log(file);
     if (fu) { // via file uploader
       file.name = file.path = this._name2path(file.name, 'file')
     }

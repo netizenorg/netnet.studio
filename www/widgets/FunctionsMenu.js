@@ -169,11 +169,27 @@ class FunctionsMenu extends Widget {
   }
 
   saveProject (redirect) {
+    const urlOwner = utils.url.github.split('/')[0]
     const op = WIDGETS['student-session'].data.github.openedProject
-    if (utils.url.github) {
+    const owner = WIDGETS['student-session'].data.github.owner
+
+    const stage = {}
+    const dict = WIDGETS['files-and-folders'].dict
+    for (const path in dict) {
+      if (dict[path].code && dict[path].lastCommitCode !== dict[path].code) {
+        stage[path] = JSON.parse(JSON.stringify(dict[path]))
+      }
+    }
+    const opf = WIDGETS['student-session'].getData('opened-file')
+    if (utils.btoa(NNE.code) !== dict[opf].lastCommitCode) {
+      stage[opf] = JSON.parse(JSON.stringify(dict[opf]))
+    }
+    // TODO: display the stage
+
+    if (utils.url.github && urlOwner !== owner) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
-    } if (op) {
+    } else if (op) {
       this.convos = window.CONVOS[this.key](this)
       this._redirect = redirect // if trying to create 'new-project' or 'open-project'
       const msg = WIDGETS['student-session'].getData('last-commit-msg')

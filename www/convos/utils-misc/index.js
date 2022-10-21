@@ -55,13 +55,13 @@ window.CONVOS['utils-misc'] = (self) => {
     }
   }, {
     id: 'remix-github-project-logged-in-as-owner',
-    content: `Welcome back ${gh.u}! Seems you followed your own share link for your <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> project. Are you just experimenting or did you want to open and keep working on this project?`,
+    content: `Welcome back ${gh.u}! Seems you followed your own share link for your <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> project. Would you like me to open it so you can keep working on this project, or are you just experimenting?`,
     options: {
-      'just experimenting': (e) => e.hide(),
       'let\'s open it!': (e) => {
         e.hide()
         WIDGETS['functions-menu']._openProject(a[1])
-      }
+      },
+      'just experimenting': (e) => e.hide()
     }
   }, {
     id: 'remix-github-project-auth-redirect',
