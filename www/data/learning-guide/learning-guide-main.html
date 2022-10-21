@@ -43,6 +43,31 @@
     text-align: center;
     font-weight: lighter;
     margin: 80px 0 20px 0;
+    cursor: pointer;
+  }
+
+  .learning-guide__main h3::before {
+    content: "";
+    position: relative;
+    left: 2.3rem;
+    transition: left 0.5s;
+  }
+
+  .learning-guide__main h3:hover::before {
+    content: "<<";
+    left: 0rem;
+  }
+
+  .learning-guide__main h3::after {
+    content: "";
+    position: relative;
+    left: -2.3rem;
+    transition: left 0.5s;
+  }
+
+  .learning-guide__main h3:hover::after {
+    content: ">>";
+    left: 0rem;
   }
 
 
@@ -108,20 +133,55 @@
     text-decoration: none;
     transition: color .5s ease, border .5s ease;
     line-height: 28px;
-    /*underline*/
-    border-bottom: 1px solid var(--netizen-meta);
-    text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+    font-size: 20px;
   }
 
   .learning-guide--link:hover {
     color: var(--netizen-match-color);
-    border-bottom: 1px solid var(--netizen-match-color);
     cursor: pointer;
   }
 
   .learning-guide--link:active {
     color: var(--netizen-attribute);
   }
+
+  .learning-guide--link::before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 1px;
+    left: -2px;
+    width: 100%;
+    height: 95%;
+    padding: 0px 2px;
+    background-color: var(--netizen-hint-shadow);
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .learning-guide--link:hover::before {
+    transform: scaleX(1);
+  }
+
+  .learning-guide--link::after {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 1px;
+    right: -4px;
+    width: 2px;
+    background-color: var(--netizen-meta);
+    transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .learning-guide--link:hover::after {
+    right: calc(100% + 2px);
+    height: 95%;
+    animation: hdrCursorBlink 1.5s infinite linear;
+  }
+
 
   /* BROWSERFEST BUTTON */
   .rainbow-bg {
@@ -136,8 +196,6 @@
     100% { background-position-x: 182px; }
   }
 </style>
-
-<canvas></canvas>
 
 <header class="learning-guide__header" style="position:relative;z-index:2">
   <div class="bg"></div>
@@ -163,15 +221,9 @@
     <div class="learning-guide__ex-divider"></div>
   </div>
 
-  <div class="learning-guide__tuts">
-    <h3>&lt;tutorials&gt;</h3>
-    <div class="learning-guide__tut-list">
-      <!-- interactive lessons list goes here -->
-    </div>
-  </div>
-
   <div class="learning-guide__apx">
-    <h3>&lt;appendix&gt;</h3>
+    <h3>&lt;docs&gt;</h3>
+    <br>
     <div class="learning-guide__apx-list">
       <div>
         <h2>HTML</h2>
@@ -191,6 +243,17 @@
         <i>working on it!</i>
       </div>
     </div>
+    <br>
+    <div class="learning-guide__ex-divider"></div>
+  </div>
+
+  <div class="learning-guide__tuts">
+    <h3>&lt;tutorials&gt;</h3>
+    <br>
+    <div class="learning-guide__tut-list">
+      <!-- interactive lessons list goes here -->
+    </div>
+    <div class="learning-guide__ex-divider"></div>
   </div>
 
   <br>
@@ -211,3 +274,5 @@
 
 <br>
 <br>
+
+<canvas></canvas>
