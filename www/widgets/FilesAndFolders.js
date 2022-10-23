@@ -165,6 +165,8 @@ class FilesAndFolders extends Widget {
         .fnf__tree-view {
           margin: 0;
           padding: 0;
+          max-height: 400px;
+          overflow-y: auto;
         }
 
         /* The list style < modified from: https://codepen.io/asraven/pen/qbrgje
@@ -330,10 +332,22 @@ class FilesAndFolders extends Widget {
 
     // obj = { id: [filepath], level: [number], children: [array] }
     this.tree.forEach(obj => iterate(obj))
+
+    if (this.$('.fnf__tree-view > .folder')) { // close folders by default
+      this.$('.fnf__tree-view > .folder').forEach(f => f.click())
+    }
   }
 
   // MAIN UPDATE DATA LOGIC ----------------------------------------------------
   // ---------------------------------------------------------------------------
+
+  updateDict (staged) {
+    // runs after a new commit has been made
+    staged.forEach(file => {
+      const p = file.path
+      this.dict[p].lastCommitCode = this.dict[p].code
+    })
+  }
 
   updateFiles (files) {
     // runs everytime a new repo (github project) is created or opened (StudentSession.js + FunctionsMenu.js)
@@ -375,8 +389,10 @@ class FilesAndFolders extends Widget {
 
     // restore local save states
     for (const path in tmp) {
-      this.dict[path].lastCommitCode = tmp[path].lastCommitCode
-      this.dict[path].code = tmp[path].code
+      if (this.dict[path]) {
+        this.dict[path].lastCommitCode = tmp[path].lastCommitCode
+        this.dict[path].code = tmp[path].code
+      }
     }
 
     // update view
@@ -404,15 +420,15 @@ class FilesAndFolders extends Widget {
 
   openFile (file) {
     let sub = file.path.split('/')
-    sub.pop() // remove file
+    const filename = sub.pop()
     sub = sub.join('/')
     if (sub !== '') sub += '/'
-    const filename = file.path
+    // const filename = file.path
     const ext = filename.split('.')[1]
     const owner = WIDGETS['student-session'].data.github.owner
     const repo = WIDGETS['student-session'].data.github.openedProject
     const branch = WIDGETS['student-session'].data.github.branch
-    const data = { filename, repo, owner }
+    const data = { filename: file.path, repo, owner }
 
     // save previous changes
     const prevPath = WIDGETS['student-session'].getData('opened-file')

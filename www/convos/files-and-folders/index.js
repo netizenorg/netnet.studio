@@ -214,7 +214,7 @@ window.CONVOS['files-and-folders'] = (self) => {
     id: 'unknown-format',
     content: 'Unfortunately that\'s not a file I know how to open, if you think this is a mistake you should let my creators know by filing an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a>.',
     options: {
-      'I see.': (e) => e.hide()
+      'ok': (e) => e.hide()
     }
   }]
 }

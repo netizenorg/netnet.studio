@@ -95,18 +95,16 @@ window.CONVOS['utils-misc'] = (self) => {
   }, {
     id: 'netnet-title-bar-index',
     before: () => WIDGETS.open('files-and-folders'),
-    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>, the first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. The other files in your project's "root directory" (the <code>${gh.p}</code> folder) can be accessed in the <b>Files And Folders</b> widget. But remember, I'm not saving these files on my server, instead they're being saved on your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
+    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>, the first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. The other files in your project's "root directory" (the <code>${gh.p}</code> folder) can be accessed in the <b>Files And Folders</b> widget. But remember, I won't be saving these files on my server, instead they're being saved on your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
     options: {
-      'cool!': (e) => e.hide(),
-      'can I work on another file?': (e) => e.goTo('netnet-title-bar-2'),
-      ok: (e) => e.hide()
+      'got it': (e) => e.hide()
     }
   }, {
     id: 'netnet-title-bar-readme',
     before: () => WIDGETS.open('files-and-folders'),
     content: `When you create a versioned code project on GitHub (aka a "repository" or "repo" for short) it's customary to include a file called <code>README.md</code> in your project's "root directory" (your project's main folder <code>${gh.p}</code>), this file is "metadata", meaning it's information <i>about</i> your project. You can write whatever you want here using a simple markup language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown</a>, this is the first thing someone will see when they checkout your code on <a href="${gh.url}" target="_blank">GitHub</a>.`,
     options: {
-      'I see.': (e) => e.hide()
+      'I see': (e) => e.hide()
     }
   }]
 }

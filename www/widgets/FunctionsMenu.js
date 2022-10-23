@@ -173,30 +173,31 @@ class FunctionsMenu extends Widget {
     const op = WIDGETS['student-session'].data.github.openedProject
     const owner = WIDGETS['student-session'].data.github.owner
 
-    const stage = {}
-    const dict = WIDGETS['files-and-folders'].dict
-    for (const path in dict) {
-      if (dict[path].code && dict[path].lastCommitCode !== dict[path].code) {
-        stage[path] = JSON.parse(JSON.stringify(dict[path]))
-      }
-    }
-    const opf = WIDGETS['student-session'].getData('opened-file')
-    if (utils.btoa(NNE.code) !== dict[opf].lastCommitCode) {
-      stage[opf] = JSON.parse(JSON.stringify(dict[opf]))
-    }
-    // TODO: display the stage
-
-    if (utils.url.github && urlOwner !== owner) {
+    if (utils.url.github && urlOwner !== owner) { // forking someone else's project
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
     } else if (op) {
-      this.convos = window.CONVOS[this.key](this)
-      this._redirect = redirect // if trying to create 'new-project' or 'open-project'
-      const msg = WIDGETS['student-session'].getData('last-commit-msg')
-      if (msg === 'netnet initialized repo' || msg === 'Initial commit') {
-        window.convo = new Convo(this.convos, 'save-newish-project')
+      // saving our project
+      const stage = {}
+      const dict = WIDGETS['files-and-folders'].dict
+      // check if currently opened file has changed
+      const opf = WIDGETS['student-session'].getData('opened-file')
+      if (dict[opf] && utils.btoa(NNE.code) !== dict[opf].lastCommitCode) {
+        dict[opf].code = utils.btoa(NNE.code)
+      }
+      // check if other previously opened files have changed
+      for (const path in dict) {
+        if (dict[path].code && dict[path].lastCommitCode !== dict[path].code) {
+          stage[path] = JSON.parse(JSON.stringify(dict[path]))
+        }
+      }
+      // ...
+      if (Object.keys(stage).length === 0) {
+        window.convo = new Convo(this.convos, 'nothing-to-save')
       } else {
-        window.convo = new Convo(this.convos, 'save-open-project')
+        // "redirect" is a string if trying to create 'new-project' or 'open-project'
+        WIDGETS.open('git-stage', null, w => w.loadData(stage, redirect))
+        window.convo = new Convo(this.convos, 'save-project')
       }
     } else {
       this.newProject()
@@ -697,12 +698,18 @@ class FunctionsMenu extends Widget {
         NNW.updateTitleBar(`${repo}/index.html`)
         utils.updateURL(`?gh=${owner}/${repo}`)
         // update FilesAndFolders
+        const updateDict = () => {
+          const c = utils.btoa(NNE.code)
+          WIDGETS['files-and-folders'].dict['index.html'].code = c
+          WIDGETS['files-and-folders'].dict['index.html'].lastCommitCode = c
+        }
         if (!WIDGETS['files-and-folders']) {
           WIDGETS.load('FilesAndFolders.js', (w) => {
-            w.updateFiles(res.data.tree); w.open()
+            w.updateFiles(res.data.tree); updateDict(); w.open()
           })
         } else {
           WIDGETS['files-and-folders'].updateFiles(res.data.tree)
+          updateDict()
           WIDGETS['files-and-folders'].open()
         }
         // get index.html data
@@ -734,7 +741,7 @@ class FunctionsMenu extends Widget {
       }
     })
   }
-
+  /*
   _updateProject (msg) {
     WIDGETS['student-session'].clearSaveState()
     window.convo = new Convo(this.convos, 'pushing-updates')
@@ -772,6 +779,7 @@ class FunctionsMenu extends Widget {
       }
     })
   }
+  */
 
   _publishProject () {
     window.convo = new Convo(this.convos, 'pushing-updates')

@@ -156,64 +156,16 @@ window.CONVOS['functions-menu'] = (self) => {
   },
   // ... save open project
   {
-    id: 'save-newish-project',
-    content: 'The last time you saved this project was when you first created it, from now on everytime I "<b>push</b>" updates to your GitHub you\'ll need to leave a short "<b>commit</b>" message (one sentence) explainig what changed: <input placeholder="what\'s new?">',
+    id: 'save-project',
+    content: 'Make sure only the files you want to save are selected in the <b>Git Stage</b> widget, and then click "add files" to stage them.',
     options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'why?': (e) => e.goTo('explain-versions')
+      'got it': (e) => e.hide()
     }
   }, {
-    id: 'explain-versions',
-    content: 'Instead of overwritting your previous HTML file, GitHub keeps track of all previous "versions" each time you save your project and so it needs some message to associate with each version as your project evolves',
-    options: { 'I see.': (e) => e.goTo('save-version') }
-  }, {
-    id: 'save-version',
-    content: 'So, what\'s changed since you first created this project? <input placeholder="what\'s new?">',
+    id: 'nothing-to-save',
+    content: 'There\'s nothing new to save, you have to make a change to one of your files first.',
     options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'save-open-project',
-    content: `The last time you saved your progress you said, "<i>${window.sessionStorage.getItem('last-commit-msg')}</i>", what has changed since then? <input placeholder="what's new?">`,
-    options: {
-      'ok, commit and push this update': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'again-too-long',
-    content: 'That message is too long, I need you to keep it below 72 characters <input placeholder="what\'s new?">',
-    options: {
-      'ok, try now': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'pushing-updates',
-    before: () => NNW.menu.switchFace('processing'),
-    content: '...sending data to GitHub...',
-    options: {}
-  }, {
-    id: 'project-saved',
-    content: 'Your project has been saved!',
-    options: {
-      'great, thanks!': (e) => e.hide(),
-      'can I share it?': (e) => e.goTo('share-project')
+      'good point!': (e) => e.hide()
     }
   },
   // ... opening old projects
