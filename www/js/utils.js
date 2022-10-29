@@ -195,11 +195,11 @@ window.utils = {
   },
 
   updateURL: (path) => {
-    if (!path) return
+    if (!path) return window.history.replaceState(null, null, '.')
     const p = window.location.protocol
     const h = window.location.host
     // window.location = `${p}//${h}/${path}`
-    window.history.pushState(null, null, `${p}//${h}/${path}`)
+    window.history.replaceState(null, null, `${p}//${h}/${path}`)
     window.utils.url = {
       shortCode: new URL(window.location).searchParams.get('c'),
       example: new URL(window.location).searchParams.get('ex'),

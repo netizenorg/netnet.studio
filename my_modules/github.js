@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const axios = require('axios')
 const triplesec = require('triplesec')
 const { Octokit } = require('@octokit/core')
@@ -47,20 +49,85 @@ function reWriteCSSPaths (req, data) { // HACK!!!
   return str
 }
 
+function saveTempGHFiles (obj) {
+  console.log(obj);
+  let sub = obj.data.path.split('/'); sub.pop(); sub = sub.join('/')
+  const str = `../data/temp-gh-user-data/${obj.owner}/${sub}`
+  const dir = path.join(__dirname, str)
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  const fpath = `${dir}/${obj.data.name}`
+  const fdata = Buffer.from(obj.data.content, 'base64').toString('binary')
+  fs.writeFileSync(fpath, fdata)
+}
+
+function checkTempGHFile (url) {
+  const upath = url.split('raw.githubusercontent.com/')[1]
+  const owner = upath.split('/')[0]
+  const dir = path.join(__dirname, `../data/temp-gh-user-data/${owner}/`)
+  const branch = upath.includes('/master/') ? 'master' : 'main'
+  const fpath = upath.split(`/${branch}/`)[1]
+  const exists = fs.existsSync(`${dir}/${fpath}`)
+  if (exists) return fs.readFileSync(`${dir}/${fpath}`)
+  else return null
+}
+
+router.post('/api/github/delete-cache', (req, res) => {
+  const resErr = (error, message) => ({ success: false, message, error })
+  const owner = req.body.owner
+  const dir = path.join(__dirname, `../data/temp-gh-user-data/${owner}/`)
+
+  if (!fs.existsSync(dir)) {
+    return res.json({ success: true, message: 'nothing to delete' })
+  }
+
+  try {
+    if (fs.existsSync(dir)) {
+      fs.rm(dir, { recursive: true }, (err) => {
+        if (err) return res.json(resErr(err, 'error deleting cache'))
+        return res.json({ success: true, message: 'removed user gh-cache' })
+      })
+    }
+  } catch (err) {
+    return res.json(resErr(err, 'error deleting cache'))
+  }
+})
+
+router.post('/api/github/update-cache', (req, res) => {
+  const resErr = (error, message) => ({ success: false, message, error })
+  try {
+    saveTempGHFiles({
+      owner: req.body.owner,
+      data: { name: req.body.name, path: req.body.path, content: req.body.code }
+    })
+    return res.json({ success: true, message: 'updated github cache' })
+  } catch (err) {
+    return res.json(resErr(err, 'error updating github cache'))
+  }
+})
+
 router.get('/api/github/proxy', (req, res) => {
-  // HACK: on the live version, the redbird proxy screws w/this proxy
-  // && removes one of the slashes after the protocol https://
-  // ...this fixes the redbird screw up
-  const url = req.query.url.replace('https:/raw', 'https://raw')
   // HACK: the purpose of this proxy to get around this issue:
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
-  axios.get(url, { responseType: 'arraybuffer' })
-    .then(r => {
-      if (req.query.url.includes('.css')) {
-        res.end(reWriteCSSPaths(req, r.data))
-      } else res.end(r.data)
-    })
-    .catch(err => console.log(err))
+
+  // HACK: on the live version, the redbird proxy screws w/this proxy
+  const url = req.query.url.replace('https:/raw', 'https://raw')
+  // && removes one of the slashes after the protocol https://
+  // ...this fixes the redbird screw up
+
+  // see reWriteCSSPaths above
+  const checkForCSSB4Res = (data) => {
+    if (req.query.url.includes('.css')) {
+      res.end(reWriteCSSPaths(req, data))
+    } else res.end(data)
+  }
+
+  const file = checkTempGHFile(url)
+  if (file) checkForCSSB4Res(file)
+  else {
+    axios.get(url, { responseType: 'arraybuffer' })
+      .then(r => checkForCSSB4Res(r.data))
+      .catch(err => console.log(err))
+  }
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // [GET]
@@ -204,10 +271,11 @@ router.post('/api/github/open-file', (req, res) => {
     octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner, repo, path
     }).then(gitRes => {
+      saveTempGHFiles({ owner, repo, data: gitRes.data })
       res.json({ success: true, message: 'success', data: gitRes.data })
     }).catch(err => {
-      console.log("OPEN FILE -------------", req.body);
-      res.json({ success: false, message: 'error opening project', error: err })
+      console.log("TRIED OPEN FILE -------------", req.body);
+      res.json({ success: false, message: 'error opening file', error: err })
     })
   })
 })

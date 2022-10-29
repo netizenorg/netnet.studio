@@ -24,9 +24,7 @@ class FilesAndFolders extends Widget {
     NNE.on('code-update', () => {
       const repo = WIDGETS['student-session'].getData('opened-project')
       if (!repo) return
-      const of = WIDGETS['student-session'].getData('opened-file')
-      const b64 = utils.btoa(NNE.code)
-      WIDGETS['student-session'].setChanges(of, b64)
+      this._updateOpenFile()
     })
   }
 
@@ -76,7 +74,7 @@ class FilesAndFolders extends Widget {
       <!-- the right-click context menu -->
       <div class="fnf__ctx-rename">rename</div>
       <div class="fnf__ctx-delete">delete</div>
-      <div>copy relative path</div>
+      <div class="fnf__ctx-copy">copy relative path</div>
       <hr>
       <div>upload file</div>
       <div>new file</div>
@@ -110,13 +108,14 @@ class FilesAndFolders extends Widget {
     this._rightClicked = e.target
     const rn = this.ctxmenu.querySelector('.fnf__ctx-rename')
     const dl = this.ctxmenu.querySelector('.fnf__ctx-delete')
+    const cp = this.ctxmenu.querySelector('.fnf__ctx-copy')
     const hr = this.ctxmenu.querySelector('hr')
     const name = e.target.childNodes[0].nodeValue.trim()
 
     if (!name || name === '') {
-      hr.style.display = rn.style.display = dl.style.display = 'none'
+      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'none'
     } else {
-      hr.style.display = rn.style.display = dl.style.display = 'block'
+      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'block'
       rn.textContent = `rename "${name}"`
       dl.textContent = `delete "${name}"`
     }
@@ -215,6 +214,16 @@ class FilesAndFolders extends Widget {
           background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='${fileClr}' d='M85.714,42.857V87.5c0,1.487-0.521,2.752-1.562,3.794c-1.042,1.041-2.308,1.562-3.795,1.562H19.643 c-1.488,0-2.753-0.521-3.794-1.562c-1.042-1.042-1.562-2.307-1.562-3.794v-75c0-1.487,0.521-2.752,1.562-3.794 c1.041-1.041,2.306-1.562,3.794-1.562H50V37.5c0,1.488,0.521,2.753,1.562,3.795s2.307,1.562,3.795,1.562H85.714z M85.546,35.714 H57.143V7.311c3.05,0.558,5.505,1.767,7.366,3.627l17.41,17.411C83.78,30.209,84.989,32.665,85.546,35.714z' /></svg>");
           background-position: center 2px;
           background-size: 60% auto;
+        }
+
+        .fnf__tree-view [data-unsaved]:after {
+          content: "";
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: var(--netizen-number);
+          transform: translateX(5px);
         }
 
         .fnf__tree-view li.folder:before {
@@ -333,20 +342,102 @@ class FilesAndFolders extends Widget {
     // obj = { id: [filepath], level: [number], children: [array] }
     this.tree.forEach(obj => iterate(obj))
 
-    if (this.$('.fnf__tree-view > .folder')) { // close folders by default
+    if (this.$('.fnf__tree-view > .folder')) {
+      // close folders by default
       this.$('.fnf__tree-view > .folder').forEach(f => f.click())
+      // label file currently (rendering)
+      if (this._rendering) {
+        this._updateOpenFile()
+        this._renderToIframe()
+      }
     }
   }
 
   // MAIN UPDATE DATA LOGIC ----------------------------------------------------
   // ---------------------------------------------------------------------------
 
+  _parsePath (path) {
+    let sub = path.split('/')
+    const filename = sub.pop()
+    sub = sub.join('/')
+    if (sub !== '') sub += '/'
+    const ext = filename.split('.')[1]
+    return { sub, filename, ext }
+  }
+
+  _renderToIframe (path) {
+    if (path === 'ctx-menu') {
+      path = this._rightClicked.dataset.path
+    } else {
+      path = path || WIDGETS['student-session'].getData('opened-file')
+    }
+
+    if (this._rendering && this._rendering !== path) {
+      const ele = this.$(`li[data-path="${this._rendering}"]`)
+      const { filename } = this._parsePath(this._rendering)
+      ele.innerHTML = filename
+    }
+
+    this._rendering = path
+    const code = utils.atob(this.dict[path].lastSavedCode)
+    const { ext, filename } = this._parsePath(path)
+
+    if (ext === 'json' || ext === 'csv' || ext === 'txt' || ext === 'md') {
+      if (ext !== 'md') NNE.update(`\`\`\`.${ext}{{code}}\`\`\``)
+      else NNE.update(code)
+    } else NNE.update(code)
+
+    const ele = this.$(`li[data-path="${path}"]`)
+    ele.innerHTML = `${filename} <i style="color: var(--netizen-tag);">(rendering)</i>`
+  }
+
+  updateStage () {
+    const stage = {}
+    // check if currently opened file has changed
+    const of = WIDGETS['student-session'].getData('opened-file')
+    if (this.dict[of] && utils.btoa(NNE.code) !== this.dict[of].lastCommitCode) {
+      this.dict[of].code = utils.btoa(NNE.code)
+    }
+    // check if other previously opened files have changed
+    for (const path in this.dict) {
+      if (this.dict[path].code && this.dict[path].lastCommitCode !== this.dict[path].code) {
+        stage[path] = JSON.parse(JSON.stringify(this.dict[path]))
+      }
+    }
+    return stage
+  }
+
+  _updateOpenFile (saved) {
+    // TODO:
+    // --- need to add .lastSavedCode
+    // --- need to kill autoUpdate (update on save)
+
+    // runs on each netitor update
+    const of = WIDGETS['student-session'].getData('opened-file')
+    this.dict[of].code = utils.btoa(NNE.code)
+    if (saved) {
+      this.dict[of].lastSavedCode = this.dict[of].code
+      this._renderToIframe(this._rendering)
+    }
+    const ele = this.$(`li[data-path="${of}"]`)
+    const title = NNW.title.textContent
+    if (this.dict[of].lastSavedCode !== this.dict[of].code) {
+      NNW.updateTitleBar(title, true)
+      ele.dataset.unsaved = true
+    } else {
+      NNW.updateTitleBar(title, false)
+      delete ele.dataset.unsaved
+    }
+  }
+
   updateDict (staged) {
     // runs after a new commit has been made
     staged.forEach(file => {
       const p = file.path
       this.dict[p].lastCommitCode = this.dict[p].code
+      this.dict[p].lastSavedCode = this.dict[p].code
     })
+    this._updateOpenFile()
   }
 
   updateFiles (files) {
@@ -361,7 +452,9 @@ class FilesAndFolders extends Widget {
       const file = this.dict[path]
       if (file.lastCommitCode || file.code) {
         tmp[path] = {
-          lastCommitCode: file.lastCommitCode, code: file.code
+          lastCommitCode: file.lastCommitCode,
+          lastSavedCode: file.lastSavedCode,
+          code: file.code
         }
       }
     }
@@ -391,16 +484,13 @@ class FilesAndFolders extends Widget {
     for (const path in tmp) {
       if (this.dict[path]) {
         this.dict[path].lastCommitCode = tmp[path].lastCommitCode
+        this.dict[path].lastSavedCode = tmp[path].lastSavedCode
         this.dict[path].code = tmp[path].code
       }
     }
 
     // update view
     this._setupTreeView()
-  }
-
-  _renderToIframe (file) {
-    // TODO >> update netitor w/a NNE.render(code) method
   }
 
   // EVENTS ....................................................................
@@ -419,24 +509,19 @@ class FilesAndFolders extends Widget {
   }
 
   openFile (file) {
-    let sub = file.path.split('/')
-    const filename = sub.pop()
-    sub = sub.join('/')
-    if (sub !== '') sub += '/'
-    // const filename = file.path
-    const ext = filename.split('.')[1]
+    const { filename, sub, ext } = this._parsePath(file.path)
     const owner = WIDGETS['student-session'].data.github.owner
     const repo = WIDGETS['student-session'].data.github.openedProject
     const branch = WIDGETS['student-session'].data.github.branch
     const data = { filename: file.path, repo, owner }
 
-    // save previous changes
-    const prevPath = WIDGETS['student-session'].getData('opened-file')
-    this.dict[prevPath].code = utils.btoa(NNE.code)
+    // // save previous changes
+    // const prevPath = WIDGETS['student-session'].getData('opened-file')
+    // this.dict[prevPath].code = utils.btoa(NNE.code)
 
     // check that it can be opened
     const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico']
-    const txts = ['html', 'svg', 'css', 'js', 'md', 'txt']
+    const txts = ['html', 'svg', 'css', 'js', 'md', 'txt', 'json', 'csv']
     if (imgs.includes(ext) || imgs.includes(ext.toLowerCase())) {
       // if it's an image, open an image viewer widget
       let root = 'https://raw.githubusercontent.com/'
@@ -467,10 +552,16 @@ class FilesAndFolders extends Widget {
       if (!this.dict[path].lastCommitCode) {
         this.dict[path].lastCommitCode = utils.btoa(c)
       }
+      if (!this.dict[path].lastSavedCode) {
+        this.dict[path].lastSavedCode = utils.btoa(c)
+      }
       NNE.code = c
       NNW.menu.switchFace('default')
       if (ext === 'html' || ext === 'js' || ext === 'css') {
         NNE.language = ext
+        if (ext === 'html') this._renderToIframe(path)
+      } else if (ext === 'json' || ext === 'csv' || ext === 'txt' || ext === 'md') {
+        NNE.language = 'markdown'
       } else {
         NNE.language = 'html'
       }
@@ -538,7 +629,7 @@ class FilesAndFolders extends Widget {
         this.updateFiles(res.data.tree)
         utils.hideCurtain('delete.html')
         utils.hideCurtain('upload.html')
-        NNE.update()
+        // NNE.update()
         if (cb) cb()
       })
     }

@@ -9,6 +9,9 @@ data/analytics/*.json
 data/bug-reports
 data/feedback-reports
 
+data/temp-gh-user-data/*
+!data/temp-gh-user-data/README.md
+
 # ignoring large media files
 data/videos/*
 

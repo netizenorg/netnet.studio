@@ -23,7 +23,7 @@ class StudentSession extends Widget {
     const data = {
       username: ls.getItem('username'),
       editor: {
-        autoUpdate: ls.getItem('auto-update'),
+        // autoUpdate: ls.getItem('auto-update'),
         wrap: ls.getItem('wrap'),
         chattiness: ls.getItem('chattiness'),
         theme: ls.getItem('theme')
@@ -71,9 +71,9 @@ class StudentSession extends Widget {
   }
 
   setData (type, value) {
-    if (type === 'changes') {
-      return console.error('StudentSession: use setChanges() to update "changes" data')
-    }
+    // if (type === 'changes') {
+    //   return console.error('StudentSession: use setChanges() to update "changes" data')
+    // }
     const sesh = [
       'opened-project', 'project-url', 'branch', 'opened-file', 'last-commit-msg', 'last-commit-code', 'ghpages'
     ]
@@ -84,15 +84,15 @@ class StudentSession extends Widget {
     return this.data
   }
 
-  setChanges (path, data) {
-    if (!path) return window.sessionStorage.removeItem('changes')
-    const c = window.sessionStorage.getItem('changes')
-    const changes = (typeof c === 'string') ? JSON.parse(c) : {}
-    if (!changes[path]) changes[path] = { start: data }
-    else if (data !== changes[path].start) changes[path].edit = data
-    else changes[path].edit = null
-    window.sessionStorage.setItem('changes', JSON.stringify(changes))
-  }
+  // setChanges (path, data) {
+  //   if (!path) return window.sessionStorage.removeItem('changes')
+  //   const c = window.sessionStorage.getItem('changes')
+  //   const changes = (typeof c === 'string') ? JSON.parse(c) : {}
+  //   if (!changes[path]) changes[path] = { start: data }
+  //   else if (data !== changes[path].start) changes[path].edit = data
+  //   else changes[path].edit = null
+  //   window.sessionStorage.setItem('changes', JSON.stringify(changes))
+  // }
 
   setSavePoint () {
     const wigs = WIDGETS.list()
@@ -151,6 +151,10 @@ class StudentSession extends Widget {
     ss.removeItem('changes')
     NNE.addCustomRoot(null)
     if (WIDGETS['files-and-folders']) WIDGETS['files-and-folders'].updateFiles([])
+    const data = { owner: this.data.github.owner }
+    // utils.post('./api/github/delete-cache', data, (res) => console.log(res))
+    utils.post('./api/github/delete-cache', data)
+    NNE.autoUpdate = true
     this._createHTML()
   }
 
@@ -304,11 +308,11 @@ class StudentSession extends Widget {
       setTimeout(() => this._init(), 100); return
     }
 
-    if (window.localStorage.getItem('auto-update') === null) {
-      this.setData('auto-update', 'true')
-    }
+    // if (window.localStorage.getItem('auto-update') === null) {
+    //   this.setData('auto-update', 'true')
+    // }
 
-    NNE.autoUpdate = (this.getData('auto-update') === 'true')
+    // NNE.autoUpdate = (this.getData('auto-update') === 'true')
     NNE.wrap = (this.getData('wrap') === 'true')
 
     if (!window.localStorage.getItem('chattiness')) {
@@ -377,10 +381,11 @@ class StudentSession extends Widget {
           editor theme:
           <input value="${this.data.editor.theme}" readonly="readonly">
         </div>
-        <div>
+        <!-- temporarily removing this (if i bring it back, remember to add "$" to "{}") -->
+        <!-- <div>
           editor auto-update:
-          <input value="${this.data.editor.autoUpdate}" readonly="readonly">
-        </div>
+          <input value="{this.data.editor.autoUpdate}" readonly="readonly">
+        </div> -->
         <div>
           editor line wrap:
           <input value="${this.data.editor.wrap}" readonly="readonly">

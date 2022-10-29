@@ -594,11 +594,13 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
+  updateTitleBar (text, unsaved) {
     // const gh = WIDGETS['student-session'].data.github
     // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
       this.title.onclick = () => {
         const path = this.title.textContent

@@ -157,7 +157,15 @@ window.CONVOS['functions-menu'] = (self) => {
   // ... save open project
   {
     id: 'save-project',
-    content: 'Make sure only the files you want to save are selected in the <b>Git Stage</b> widget, and then click "add files" to stage them.',
+    content: '  I\'ve temporarily saved your progress to this session. When you\'re ready to update your project you can make these temporary changes permanent by pushing them to your GitHub repository.',
+    options: {
+      'got it': (e) => e.hide(),
+      'push to GitHub': (e) => e.goTo('push-project')
+    }
+  }, {
+    id: 'push-project',
+    before: () => self.stageChanges(),
+    content: 'First, you need to make sure only the files you want to save to GitHub are selected in the <b>Git Stage</b> widget, and then click "add files" to stage them.',
     options: {
       'got it': (e) => e.hide()
     }

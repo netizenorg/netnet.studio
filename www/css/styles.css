@@ -186,6 +186,16 @@ button {
   padding: 0px 2px 0px 5px;
 }
 
+#nn-window [data-unsaved]::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--netizen-number);
+  transform: translateX(5px);
+}
+
 #nn-window > #nn-editor {
   overflow-y: scroll;
   height: calc(100% - 60px);
