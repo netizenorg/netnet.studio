@@ -50,7 +50,7 @@ function reWriteCSSPaths (req, data) { // HACK!!!
 }
 
 function saveTempGHFiles (obj) {
-  console.log(obj);
+  // console.log(obj);
   let sub = obj.data.path.split('/'); sub.pop(); sub = sub.join('/')
   const str = `../data/temp-gh-user-data/${obj.owner}/${sub}`
   const dir = path.join(__dirname, str)

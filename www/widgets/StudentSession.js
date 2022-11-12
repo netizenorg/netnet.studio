@@ -29,8 +29,8 @@ class StudentSession extends Widget {
         theme: ls.getItem('theme')
       },
       github: {
-        owner: ls.getItem('owner'),
-        repos: ls.getItem('repos'),
+        owner: ls.getItem('owner'), // NOTE: should this be ss ???
+        repos: ls.getItem('repos'), // NOTE: should this be ss ???
         openedProject: ss.getItem('opened-project'),
         projectURL: ss.getItem('project-url'),
         branch: ss.getItem('branch'),
@@ -44,6 +44,7 @@ class StudentSession extends Widget {
         layout: ls.getItem('last-saved-layout'),
         widgets: ls.getItem('last-saved-widgets')
       },
+      lastSaveProject: JSON.parse(ls.getItem('last-saved-session')),
       tutorial: {
         // TODO: bookmark feature?
         // saves tut-video-timeline timecode + widget placements + netitor code && layout
@@ -105,10 +106,22 @@ class StudentSession extends Widget {
     this._createHTML()
   }
 
+  setSessionState (dict) {
+    dict = dict || WIDGETS['files-and-folders'].dict
+    const str = JSON.stringify(dict)
+    window.localStorage.setItem('last-saved-session', str)
+  }
+
+  getSessionState () {
+    const str = window.localStorage.getItem('last-saved-session')
+    return JSON.parse(str)
+  }
+
   clearSaveState () {
     window.localStorage.removeItem('last-saved-sketch')
     window.localStorage.removeItem('last-saved-layout')
     window.localStorage.removeItem('last-saved-widgets')
+    window.localStorage.removeItem('last-saved-session')
   }
 
   restoreSavePoint () {
@@ -175,6 +188,7 @@ class StudentSession extends Widget {
       this.authStatus = false
       if (this.getData('opened-project')) {
         NNE.code = ''
+        NNE.autoUpdate = true
         NNW.updateTitleBar(null)
       }
       this.clearProjectData()

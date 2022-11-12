@@ -409,8 +409,8 @@ class FilesAndFolders extends Widget {
 
   _updateOpenFile (saved) {
     // TODO:
-    // --- need to add .lastSavedCode
-    // --- need to kill autoUpdate (update on save)
+
+    WIDGETS['student-session'].setSessionState()
 
     // runs on each netitor update
     const of = WIDGETS['student-session'].getData('opened-file')
@@ -419,6 +419,9 @@ class FilesAndFolders extends Widget {
       this.dict[of].lastSavedCode = this.dict[of].code
       this._renderToIframe(this._rendering)
     }
+
+    if (window.convo.id === 'save-project') window.convo.hide()
+
     const ele = this.$(`li[data-path="${of}"]`)
     const title = NNW.title.textContent
     if (this.dict[of].lastSavedCode !== this.dict[of].code) {
@@ -438,6 +441,12 @@ class FilesAndFolders extends Widget {
       this.dict[p].lastSavedCode = this.dict[p].code
     })
     this._updateOpenFile()
+  }
+
+  updateIndex (code) {
+    this.dict['index.html'].code = code
+    this.dict['index.html'].lastSavedCode = code
+    this.dict['index.html'].lastCommitCode = code
   }
 
   updateFiles (files) {

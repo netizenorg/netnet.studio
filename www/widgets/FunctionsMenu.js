@@ -695,7 +695,7 @@ class FunctionsMenu extends Widget {
       window.convo = new Convo(this.convos, 'oh-no-error')
     }
     WIDGETS['student-session'].clearSaveState()
-    window.convo = new Convo(this.convos, 'opening-project')
+    window.convo = new Convo(this.convos, 'opening-project') // processing
     const owner = WIDGETS['student-session'].data.github.owner
     const data = { repo, owner }
     utils.post('./api/github/open-project', data, (res) => {
@@ -709,46 +709,46 @@ class FunctionsMenu extends Widget {
         NNW.updateTitleBar(`${repo}/index.html`)
         utils.updateURL(`?gh=${owner}/${repo}`)
         // update FilesAndFolders
-        const updateDict = () => {
-          const c = utils.btoa(NNE.code)
-          WIDGETS['files-and-folders'].dict['index.html'].code = c
-          WIDGETS['files-and-folders'].dict['index.html'].lastSavedCode = c
-          WIDGETS['files-and-folders'].dict['index.html'].lastCommitCode = c
+        const updateCallback = () => {
+          // get index.html data
+          data.filename = 'index.html'
+          utils.post('./api/github/open-file', data, (res) => {
+            if (!res.success) return ohNoErr(res)
+            WIDGETS['student-session'].setData('opened-file', res.data.path)
+            // // for some reason GitHub adds a '\n' at the end of the base64 string?
+            // const c = (data.code.indexOf('\n') === data.code.length - 1)
+            //   ? data.code.substr(0, data.code.length - 1) : data.code
+            const c = utils.atob(res.data.content)
+            WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
+            WIDGETS['files-and-folders'].updateIndex(utils.btoa(c))
+            WIDGETS['student-session'].updateRoot()
+            NNE.code = c
+            NNE.language = 'html'
+            NNE.autoUpdate = false
+            WIDGETS['student-session'].setSessionState()
+            WIDGETS['files-and-folders']._renderToIframe('index.html')
+            if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+            const d = utils.getVal('--layout-transition-time')
+            setTimeout(() => NNW.menu.switchFace('default'), d)
+          })
+          // update last commit data
+          utils.post('./api/github/get-commits', data, (res) => {
+            if (!res.success) return ohNoErr(res)
+            const msg = res.data[0].commit.message
+            WIDGETS['student-session'].setData('last-commit-msg', msg)
+          })
         }
+
         if (!WIDGETS['files-and-folders']) {
           WIDGETS.load('FilesAndFolders.js', (w) => {
-            w.updateFiles(res.data.tree); updateDict(); w.open()
+            w.updateFiles(res.data.tree); updateCallback(); w.open()
           })
         } else {
           WIDGETS['files-and-folders'].updateFiles(res.data.tree)
-          updateDict()
+          updateCallback()
           WIDGETS['files-and-folders'].open()
         }
-        // get index.html data
-        data.filename = 'index.html'
-        utils.post('./api/github/open-file', data, (res) => {
-          if (!res.success) return ohNoErr(res)
-          WIDGETS['student-session'].setData('opened-file', res.data.path)
-          // // for some reason GitHub adds a '\n' at the end of the base64 string?
-          // const c = (data.code.indexOf('\n') === data.code.length - 1)
-          //   ? data.code.substr(0, data.code.length - 1) : data.code
-          const c = utils.atob(res.data.content)
-          WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
-          WIDGETS['student-session'].updateRoot()
-          NNE.code = c
-          NNE.language = 'html'
-          NNE.autoUpdate = false
-          WIDGETS['files-and-folders']._renderToIframe('index.html')
-          if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
-          const d = utils.getVal('--layout-transition-time')
-          setTimeout(() => NNW.menu.switchFace('default'), d)
-        })
-        // update last commit data
-        utils.post('./api/github/get-commits', data, (res) => {
-          if (!res.success) return ohNoErr(res)
-          const msg = res.data[0].commit.message
-          WIDGETS['student-session'].setData('last-commit-msg', msg)
-        })
+
         // update sub menu
         this._hideIrrelevantOpts('_openProject')
       } else {
