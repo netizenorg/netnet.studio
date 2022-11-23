@@ -126,7 +126,7 @@ router.get('/api/github/proxy', (req, res) => {
   else {
     axios.get(url, { responseType: 'arraybuffer' })
       .then(r => checkForCSSB4Res(r.data))
-      .catch(err => console.log(err))
+      .catch(err => console.log('ERR: /api/github/proxy', err.config.url))
   }
 })
 
