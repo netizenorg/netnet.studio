@@ -313,6 +313,7 @@ class FunctionsMenu extends Widget {
   }
 
   runUpdate () {
+    console.clear()
     NNE.update()
   }
 
