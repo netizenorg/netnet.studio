@@ -1,6 +1,6 @@
-/* global WIDGETS, NNW, utils, Averigua, Convo, SNT */
+/* global WIDGETS, NNW, utils, nn, Convo, SNT */
 window.CONVOS['student-session'] = (self) => {
-  const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
   const coreConvo = [{
     id: 'returning-student',
