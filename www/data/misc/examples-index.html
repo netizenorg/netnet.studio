@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>netnet examples index</title>
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+
+    <script src="./js/utils.js"></script>
+    <script>
+      utils.get('api/examples', (res) => {
+        console.log(res);
+      })
+    </script>
+  </body>
+</html>
