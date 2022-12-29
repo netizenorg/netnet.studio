@@ -24,3 +24,7 @@ data/browserfest-thumbnails/*
 # ignoring tutorial data for now, to avoid bloating things up
 www/tutorials/*
 !www/tutorials/list.json
+
+# ignoring submodules
+www/js/netitor
+www/js/netnet-standard-library
