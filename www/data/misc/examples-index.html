@@ -3,14 +3,102 @@
   <head>
     <meta charset="utf-8">
     <title>netnet examples index</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <style media="screen">
+      :root {
+        --netizen-text: #e7e5c9;
+        --netizen-background: #1c1c3600;
+        --netizen-meta: #c3c3db;
+        --netizen-tag: #c76ebc;
+        --netizen-tag-bracket: #c3c3db;
+        --netizen-attribute: #81c994;
+        --netizen-qualifier: #81c994;
+        --netizen-comment: #515199;
+      }
+      body {
+        overflow: scroll;
+        background: var(--netizen-comment);
+        color: var(--netizen-text);
+        padding: 20px;
+        font-size: 24px;
+      }
+      a {
+        color: var(--netizen-tag);
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+      }
+       nav > * {
+         margin-right: 20px;
+       }
+
+       .hide {
+         display: none;
+       }
+    </style>
   </head>
   <body>
 
+    <nav>
+      <h1>examples index</h1>
+      <select>
+        <option value="all">[ALL]</option>
+      </select>
+    </nav>
+
+    <ul>
+      <!-- list examlpes -->
+    </ul>
+
     <script src="./js/utils.js"></script>
     <script>
+
+      let tags = []
+      const sel = document.querySelector('select')
+
+      function createItem (obj) {
+        const a = document.createElement('a')
+        a.setAttribute('href', `${location.protocol}//${location.host}/?layout=dock-left&ex=${obj.key}`)
+        a.setAttribute('target', '_blank')
+        a.textContent = `${obj.key}. ${obj.name}`
+        const li = document.createElement('li')
+        li.appendChild(a)
+        li.setAttribute('name', obj.tags)
+        obj.tags.split(' ').forEach(tag => {
+          if (!tags.includes(tag)) tags.push(tag)
+        })
+        document.querySelector('ul').appendChild(li)
+      }
+
+      function createOption (t) {
+        const o = document.createElement('option')
+        o.setAttribute('value', t)
+        o.textContent = t
+        sel.appendChild(o)
+      }
+
+      function onChange (e) {
+        const v = e.target.value
+        const ul = document.querySelector('ul')
+        if (!ul) return
+        [...ul.children].forEach(ele => {
+          if (v === 'all') {
+            ele.classList.remove('hide')
+          } else {
+            if (ele.getAttribute('name').split(' ').includes(v)) {
+              ele.classList.remove('hide')
+            } else ele.classList.add('hide')
+          }
+        })
+      }
+
       utils.get('api/examples', (res) => {
         console.log(res);
+        for (const k in res.data) createItem(res.data[k])
+        tags.forEach(t => createOption(t))
+        sel.addEventListener('input', onChange)
       })
     </script>
   </body>

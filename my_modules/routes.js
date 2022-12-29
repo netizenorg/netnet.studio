@@ -16,7 +16,8 @@ const frontEndDependencies = [
   { url: '/Maths.js', loc: '../node_modules/Maths/Maths.js' },
   { url: '/Color.js', loc: '../node_modules/Color/Color.js' },
   { url: '/Averigua.js', loc: '../node_modules/averigua/Averigua.js' },
-  { url: '/FileUploader.js', loc: '../node_modules/FileUploader/FileUploader.js' }
+  { url: '/FileUploader.js', loc: '../node_modules/FileUploader/FileUploader.js' },
+  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' }
 ]
 
 frontEndDependencies.forEach(dep => {
