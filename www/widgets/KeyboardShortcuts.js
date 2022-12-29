@@ -54,7 +54,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 76,
         callback: (e) => {
           e.preventDefault()
-          WIDGETS.open('tutorials-guide')
+          WIDGETS.open('learning-guide')
         }
       },
       {

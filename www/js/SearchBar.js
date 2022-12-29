@@ -213,7 +213,7 @@ class SearchBar {
             word: tut.title,
             alts: tut.keywords,
             clck: () => {
-              WIDGETS.open('tutorials-guide', null, (w) => w.load(name))
+              WIDGETS.open('learning-guide', null, (w) => w.load(name))
             }
           })
           update()

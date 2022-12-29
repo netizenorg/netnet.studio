@@ -1,9 +1,9 @@
 /* global Widget, WIDGETS, utils, Convo, NNE, SNT, Color */
-class TutorialsGuide extends Widget {
+class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
     this.title = 'Learning Guide (BETA-2.0)'
-    this.key = 'tutorials-guide'
+    this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
@@ -369,4 +369,4 @@ class TutorialsGuide extends Widget {
   }
 }
 
-window.TutorialsGuide = TutorialsGuide
+window.LearningGuide = LearningGuide

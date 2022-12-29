@@ -1,5 +1,5 @@
 /* global */
-window.CONVOS['tutorials-guide'] = (self) => {
+window.CONVOS['learning-guide'] = (self) => {
   const name = self.metadata ? self.metadata.author.name : ''
   const title = self.metadata ? self.metadata.title : ''
   return [{

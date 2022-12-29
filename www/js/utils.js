@@ -99,7 +99,7 @@ window.utils = {
 
   tutorialOpen: () => {
     const hvp = WIDGETS['hyper-video-player']
-    const tg = WIDGETS['tutorials-guide']
+    const tg = WIDGETS['learning-guide']
     return (hvp && tg && tg.metadata !== null)
   },
 
@@ -313,8 +313,8 @@ window.utils = {
   },
 
   loadTutorial: (tutorial, time) => {
-    const tm = WIDGETS['tutorials-guide']
-    if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial, time))
+    const tm = WIDGETS['learning-guide']
+    if (!tm) WIDGETS.load('LearningGuide.js', (w) => w.load(tutorial, time))
     else tm.load(tutorial, time)
     window.utils.fadeOutLoader(false)
   },

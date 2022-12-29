@@ -34,7 +34,7 @@ class Menu {
         path: 'images/menu/tutorials.png',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('tutorials-guide')
+          WIDGETS.open('learning-guide')
         }
       }
     }
