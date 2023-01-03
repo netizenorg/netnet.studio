@@ -78,7 +78,7 @@ function printDialogue (key) {
 
 // -----------------------------------------------------------------------------
 
-const isYes = (s) => s === 'y' || s === 'Y' || s === 'yes' || s === 'Yes' || s === '"yes"'
+// const isYes = (s) => s === 'y' || s === 'Y' || s === 'yes' || s === 'Yes' || s === '"yes"'
 const isNo = (s) => s === 'n' || s === 'N' || s === 'no' || s === 'No' || s === '"no"'
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 
@@ -88,6 +88,7 @@ function exitSetup () {
 }
 
 function addToken (code) {
+  code = code.trim()
   let config = fs.readFileSync('./.git/config', 'utf8')
   const spot = 'url = https://github.com/'
   const ns = `url = https://${code}@github.com/`
