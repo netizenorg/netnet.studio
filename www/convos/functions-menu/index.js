@@ -1,6 +1,6 @@
-/* global Averigua, WIDGETS, NNW, NNE, utils */
+/* global nn, WIDGETS, NNW, NNE, utils */
 window.CONVOS['functions-menu'] = (self) => {
-  const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareGhURL = (opts) => {
     opts = opts || {}
     const repo = window.sessionStorage.getItem('opened-project')

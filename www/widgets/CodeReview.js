@@ -1,4 +1,4 @@
-/* global Widget, NNE, NNW, Convo, utils, Color, WIDGETS */
+/* global Widget, NNE, NNW, Convo, utils, nn, WIDGETS */
 class CodeReview extends Widget {
   constructor (opts) {
     opts = opts || {}
@@ -151,7 +151,7 @@ class CodeReview extends Widget {
     const filename = 'index.html'
     const div = document.createElement('div')
     div.className = 'code-review__issue'
-    div.style.background = utils.getVal('--netizen-meta') + Color.alpha2hex(0.7)
+    div.style.background = utils.getVal('--netizen-meta') + nn.alpha2hex(0.7)
     const msg = e.message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`/g, '')
     const loc = `${filename}:${e.line}:${e.col}`
     const clr = e.language === 'html'

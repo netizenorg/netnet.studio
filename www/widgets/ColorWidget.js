@@ -1,4 +1,4 @@
-/* global Widget, NNW, NNE, Convo, Maths, Color, utils */
+/* global Widget, NNW, NNE, Convo, nn, utils */
 class ColorWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -10,11 +10,11 @@ class ColorWidget extends Widget {
 
     this._SubWin = 'hsl'
     const clr = utils.getVal('--netizen-tag')
-    const hsl = Color.hex2hsl(clr)
+    const hsl = nn.hex2hsl(clr)
     this.hue = hsl.h
     this.sat = hsl.s
     this.lit = hsl.l
-    const rgb = Color.hex2rgb(clr)
+    const rgb = nn.hex2rgb(clr)
     this.red = rgb.r
     this.green = rgb.g
     this.blue = rgb.b
@@ -28,13 +28,13 @@ class ColorWidget extends Widget {
       })
 
       const color = NNE.cm.getSelection().toLowerCase()
-      const c = Color.match(color)
+      const c = nn.match(color)
       const k = NNE.edu.css.colors[color]
       if (c) {
         this.updateColor(c)
         this._changeSubWin(c[0])
       } else if (k) {
-        const o = Color.match(k.rgb)
+        const o = nn.match(k.rgb)
         this.updateColor(o)
         this._changeSubWin('rgb')
       }
@@ -46,7 +46,7 @@ class ColorWidget extends Widget {
       if (e.type === 'keyword' && NNE.edu.css.colors[e.data]) {
         s = NNE.edu.css.colors[e.data].rgb
       }
-      const c = Color.match(s)
+      const c = nn.match(s)
       if (c) {
         this._changeSubWin(c[0])
         this.updateColor(c)
@@ -55,7 +55,7 @@ class ColorWidget extends Widget {
           // give CSSReference time to re-select entire color string
           // && then check again...
           const sel = NNE.cm.getSelection().toLowerCase()
-          const c = Color.match(sel)
+          const c = nn.match(sel)
           if (c) {
             this._changeSubWin(c[0])
             this.updateColor(c)
@@ -66,20 +66,20 @@ class ColorWidget extends Widget {
   }
 
   updateColor (c) {
-    if (typeof c === 'string') c = Color.match(c.toLowerCase())
+    if (typeof c === 'string') c = nn.match(c.toLowerCase())
     if (c && c !== null) {
       if (c[2]) c[2] = Number(c[2]) || parseInt(c[2])
       if (c[3]) c[3] = Number(c[3]) || parseInt(c[3])
       if (c[4]) c[4] = Number(c[4]) || parseInt(c[4])
       if (c[0] === 'hex') {
-        const rgb = Color.hex2rgb(c[1])
+        const rgb = nn.hex2rgb(c[1])
         this.red = rgb.r
         this.green = rgb.g
         this.blue = rgb.b
         if (c[1].length === 9) this.alpha = c[1].substring(7, 9)
         else if (c[1].length === 5) this.alpha = c[1].substring(4, 5)
         else this.alpha = 1
-        this.alpha = this.alpha === 1 ? 1 : Color.hex2alpha(this.alpha)
+        this.alpha = this.alpha === 1 ? 1 : nn.hex2alpha(this.alpha)
         this._SubWin = 'hex'
         this._updateRGB()
       } else if (c[0] === 'rgb') {
@@ -116,11 +116,11 @@ class ColorWidget extends Widget {
 
     const satbg = `linear-gradient(to left, hsl(${this.hue}, 100%, 50%), white)`
     this.satSlider.background = satbg
-    const satlit = Maths.map(this.sat, 0, 100, 100, 50)
+    const satlit = nn.map(this.sat, 0, 100, 100, 50)
     this.satSlider.bubble = `hsl(${this.hue}, ${this.sat}%, ${satlit}%)`
     this.satSlider.updateThumb(this.sat)
 
-    const byte = Maths.map(this.lit, 0, 100, 0, 255)
+    const byte = nn.map(this.lit, 0, 100, 0, 255)
     this.litSlider.bubble = `rgb(${byte}, ${byte}, ${byte})`
     this.litSlider.updateThumb(this.lit)
 
@@ -160,8 +160,8 @@ class ColorWidget extends Widget {
     this.rgbField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
 
     this.hexField.value = this.alpha < 1
-      ? Color.rgb2hex(this.red, this.green, this.blue) + Color.alpha2hex(this.alpha)
-      : Color.rgb2hex(this.red, this.green, this.blue)
+      ? nn.rgb2hex(this.red, this.green, this.blue) + nn.alpha2hex(this.alpha)
+      : nn.rgb2hex(this.red, this.green, this.blue)
     this.hexField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
   }
 
@@ -183,12 +183,12 @@ class ColorWidget extends Widget {
 
     // syncronize colors
     if (type === 'hsl' && this._SubWin !== type) {
-      const hsl = Color.rgb2hsl(this.red, this.green, this.blue)
+      const hsl = nn.rgb2hsl(this.red, this.green, this.blue)
       this.hue = hsl.h
       this.sat = hsl.s
       this.lit = hsl.l
     } else if (type !== 'hsl' && this._SubWin === 'hsl') {
-      const rgb = Color.hsl2rgb(this.hue, this.sat, this.lit)
+      const rgb = nn.hsl2rgb(this.hue, this.sat, this.lit)
       this.red = rgb.r
       this.green = rgb.g
       this.blue = rgb.b
@@ -301,7 +301,7 @@ class ColorWidget extends Widget {
     // code fields -------------------------------------------------------------
 
     const fieldUpdate = (e) => {
-      const c = Color.match(e.target.value.toLowerCase())
+      const c = nn.match(e.target.value.toLowerCase())
       if (c) {
         this.updateColor(c)
         e.target.style.background = 'var(--netizen-meta)'
@@ -309,11 +309,11 @@ class ColorWidget extends Widget {
     }
 
     this.hexField = this.createCodeField({
-      value: Color.hsl2hex(this.hue, this.sat, this.lit),
+      value: nn.hsl2hex(this.hue, this.sat, this.lit),
       change: (e) => fieldUpdate(e)
     })
 
-    const rgb = Color.hsl2rgb(this.hue, this.sat, this.lit)
+    const rgb = nn.hsl2rgb(this.hue, this.sat, this.lit)
     this.rgbField = this.createCodeField({
       value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
       change: (e) => fieldUpdate(e)

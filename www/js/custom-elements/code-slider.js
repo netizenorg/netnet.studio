@@ -1,4 +1,4 @@
-/* global HTMLElement Maths */
+/* global HTMLElement nn */
 class CodeSlider extends HTMLElement {
   constructor () {
     super()
@@ -114,12 +114,12 @@ class CodeSlider extends HTMLElement {
     const w = parseInt(this.querySelector('.__code-slider-range').style.width) || 255
     const min = parseFloat(this.min)
     const max = parseFloat(this.max)
-    const p = Maths.map(parseFloat(this.value), min, max, 3, w - 3)
+    const p = nn.map(parseFloat(this.value), min, max, 3, w - 3)
     this.querySelector('.__code-slider-bubble').style.left = `${p}px`
     this.querySelector('.__code-slider-num').style.left = `${p}px`
     if (t === 'hex' || t === 'HEX') {
       let val = (min === 0 && max === 1)
-        ? Math.round(Maths.map(parseFloat(v), 0, 1, 0, 255)).toString(16)
+        ? Math.round(nn.map(parseFloat(v), 0, 1, 0, 255)).toString(16)
         : parseInt(v).toString(16)
       if (t === 'HEX') val = val.toUpperCase()
       this.querySelector('.__code-slider-num').textContent = val
