@@ -13,6 +13,7 @@ const say = {
   github: 'If you plan on working on or using any of netnet\'s GitHub integration functions you\'ll need to create a new GitHub OAuth ID/Secret https://github.com/settings/developers, and enter them below.',
   github2: 'Ok, you\'ll need to set this up yourself later if/when you want to test any of netnet\'s GitHub integration functionality locally (review the "contributor\'s guide" on our GitHub repo\'s wiki page to learn more).',
   install: 'Ok, give me a minute while I download all the server dependencies...',
+  submodules: 'Nearly finished, downloading the netizen sub-modules...',
   finished: 'Great! you\'re all setup to start contributing! You\'re currently on the "main" branch, don\'t forget to create/checkout a new branch named after the feature or bug you plan to work on before you add, edit or commit any code (review the "contributor\'s guide" on our GitHub repo\'s wiki page to learn more).'
 }
 
@@ -172,6 +173,8 @@ function warnAboutGitHub () {
 function downloadDeps () {
   printDialogue('install')
   execSync('npm install')
+  printDialogue('submodules')
+  execSync('npm run pull-modules')
   printDialogue('finished')
   rl.question('sounds good? [ok] ', (s) => rl.close())
 }
