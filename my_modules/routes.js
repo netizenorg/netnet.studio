@@ -11,12 +11,10 @@ const axios = require('axios')
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   ROUTES
 
 const frontEndDependencies = [
-  { url: '/netitor.min.js', loc: '../node_modules/netitor/build/netitor.min.js' },
-  { url: '/netitor.js', loc: '../node_modules/netitor/build/netitor.js' },
-  { url: '/Maths.js', loc: '../node_modules/Maths/Maths.js' },
-  { url: '/Color.js', loc: '../node_modules/Color/Color.js' },
-  { url: '/Averigua.js', loc: '../node_modules/averigua/Averigua.js' },
-  { url: '/FileUploader.js', loc: '../node_modules/FileUploader/FileUploader.js' }
+  { url: '/netitor.min.js', loc: '../www/js/netitor/build/netitor.min.js' },
+  { url: '/netitor.js', loc: '../www/js/netitor/build/netitor.js' },
+  { url: '/netnet-standard-library.js', loc: '../www/js/netnet-standard-library/build/netnet-standard-library.js' },
+  { url: '/nn.min.js', loc: '../www/js/netnet-standard-library/build/nn.min.js' }
 ]
 
 frontEndDependencies.forEach(dep => {
@@ -50,6 +48,15 @@ router.get('/api/videos/:video', (req, res) => {
   fs.stat(path.join(__dirname, `../data/videos/${v}`), (err, stat) => {
     if (err === null) res.sendFile(path.join(__dirname, `../data/videos/${v}`))
   })
+})
+
+router.get('/api/nn-proxy', async (req, res) => {
+  let URL = req.query.url
+  for (const key in req.query) {
+    if (key !== 'url') URL += `&${key}=${req.query[key]}`
+  }
+  const request = await axios.get(URL)
+  res.send(request.data)
 })
 
 router.get('/api/proxy', (req, res) => {

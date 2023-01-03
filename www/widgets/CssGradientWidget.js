@@ -1,4 +1,4 @@
-/* global NNW, Widget, utils, Maths, Convo, Color */
+/* global NNW, Widget, utils, nn, Convo */
 class CssGradientWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -60,14 +60,14 @@ class CssGradientWidget extends Widget {
       let y = Math.round(e.clientY - b.y)
       const type = isRadial ? this.settings.position : '%'
       if (type === '%') {
-        x = Math.round(Maths.map(x, 0, b.width, 0, 100))
-        y = Math.round(Maths.map(y, 0, b.height, 0, 100))
+        x = Math.round(nn.map(x, 0, b.width, 0, 100))
+        y = Math.round(nn.map(y, 0, b.height, 0, 100))
       }
       if (isRadial &&
         (this.settings.position !== '%' && this.settings.position !== 'px')) {
         this.settings.posArr = [50, 50]
-        x = Math.round(Maths.map(x, 0, b.width, 0, 100))
-        y = Math.round(Maths.map(y, 0, b.height, 0, 100))
+        x = Math.round(nn.map(x, 0, b.width, 0, 100))
+        y = Math.round(nn.map(y, 0, b.height, 0, 100))
         this.updateSettings({
           position: '%',
           posArr: [x, y]
@@ -198,7 +198,7 @@ class CssGradientWidget extends Widget {
     stops.forEach(cs => {
       const css = JSON.parse(JSON.stringify(stopsCSS))
       css.backgroundColor = cs.dataset.color
-      css.color = Color.isLight(cs.dataset.color) ? '#000' : '#ff'
+      css.color = nn.isLight(cs.dataset.color) ? '#000' : '#ff'
       div.appendChild(this._genSpan(`${cs.dataset.stop}%`, css))
     })
 
@@ -484,12 +484,12 @@ class CssGradientWidget extends Widget {
 
   _addColorStop () {
     const ran = Math.floor(Math.random() * 100)
-    const cs = this._genColorStop(ran, Color.random())
+    const cs = this._genColorStop(ran, nn.randomColor())
     this.settings.colorStops.push(cs)
     this.colorStopsElement.appendChild(cs)
     const l = this.settings.colorStops.length
     this.settings.colorStops.forEach((s, i) => {
-      const val = Math.round(Maths.map(i, 0, l - 1, 0, 100))
+      const val = Math.round(nn.map(i, 0, l - 1, 0, 100))
       s.querySelector('code-slider').value = val
       s.dataset.stop = val
     })
@@ -505,7 +505,7 @@ class CssGradientWidget extends Widget {
     const lastStop = this.settings.colorStops.pop()
     this.colorStopsElement.removeChild(lastStop)
     this.settings.colorStops.forEach((s, i) => {
-      const val = Math.round(Maths.map(i, 0, total - 2, 0, 100))
+      const val = Math.round(nn.map(i, 0, total - 2, 0, 100))
       s.querySelector('code-slider').value = val
       s.dataset.stop = val
     })

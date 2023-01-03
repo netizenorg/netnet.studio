@@ -1,4 +1,4 @@
-/* global WIDGETS, Maths, Convo, NNW, NNE, Averigua, SNT  */
+/* global WIDGETS, nn, Convo, NNW, NNE, SNT  */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -113,7 +113,7 @@ window.utils = {
   },
 
   hotKey: () => {
-    return Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+    return nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   },
 
   showCurtain: (filename, opts) => {
@@ -261,7 +261,7 @@ window.utils = {
     const url = window.utils.url
     const hash = window.location.hash
     if (url.widget) WIDGETS.open(url.widget)
-    if (Averigua.isMobile()) return window.utils.mobile()
+    if (nn.isMobile()) return window.utils.mobile()
     if (typeof ghAuth === 'string') {
       window.utils.loadGHRedirect()
       SNT.post(SNT.dataObj('REQ-gh-redirect'))
@@ -534,11 +534,11 @@ window.utils = {
       y: ele.getBoundingClientRect().top
     }
     const x = e.clientX < center.x
-      ? Maths.map(e.clientX, 0, center.x, 33, 0)
-      : Maths.map(e.clientX, center.x, window.innerWidth, 0, -33)
+      ? nn.map(e.clientX, 0, center.x, 33, 0)
+      : nn.map(e.clientX, center.x, window.innerWidth, 0, -33)
     const y = e.clientY < center.y
-      ? Maths.map(e.clientY, 0, center.y, 33, 0)
-      : Maths.map(e.clientY, center.y, window.innerHeight, 0, -33)
+      ? nn.map(e.clientY, 0, center.y, 33, 0)
+      : nn.map(e.clientY, center.y, window.innerHeight, 0, -33)
     ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, ${opac})`
   },
 

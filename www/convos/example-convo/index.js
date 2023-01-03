@@ -1,7 +1,7 @@
-/* global Averigua, NNW */
+/* global nn, NNW */
 window.CONVOS['example-convo'] = (self) => {
   // setup some locally scoped variables for use in this conversation
-  const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const newTheme = NNW.theme === 'dark' ? 'light' : 'dark'
   const oldTheme = NNW.theme
 

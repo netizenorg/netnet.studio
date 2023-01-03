@@ -1,6 +1,6 @@
-/* global Averigua, WIDGETS, NNE */
+/* global nn, WIDGETS, NNE */
 window.CONVOS['code-review'] = (self) => {
-  const hotkey = Averigua.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const type = 'sketch' // TODO check if in GH project, change to "tab" or "file"
   const codeReview = WIDGETS['code-review']
   const done = (e) => { codeReview.close(); e.hide() }

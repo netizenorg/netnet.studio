@@ -1,0 +1,6 @@
+[submodule "www/js/netnet-standard-library"]
+	path = www/js/netnet-standard-library
+	url = https://github.com/netizenorg/netnet-standard-library
+[submodule "www/js/netitor"]
+	path = www/js/netitor
+	url = https://github.com/netizenorg/netitor.git

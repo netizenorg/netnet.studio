@@ -1,4 +1,4 @@
-/* global Widget, Convo, NNE, NNW, FileUploader, WIDGETS, Maths, utils */
+/* global Widget, Convo, NNE, NNW, WIDGETS, nn, utils */
 class FunctionsMenu extends Widget {
   constructor (opts) {
     super(opts)
@@ -277,7 +277,7 @@ class FunctionsMenu extends Widget {
     ]
     NNW.layout = 'dock-left'
     NNE.code = typeof name === 'string'
-      ? `<h1>${Maths.random(adj)} Net Art</h1>\n<h2>by ${name}</h2>`
+      ? `<h1>${nn.random(adj)} Net Art</h1>\n<h2>by ${name}</h2>`
       : '<h1>Hello World Wide Web!</h1>'
     setTimeout(() => {
       window.convo = new Convo(this.convos, 'blank-canvas-ready')
@@ -563,7 +563,7 @@ class FunctionsMenu extends Widget {
 
   _setupListeners () {
     // setup FileUploader
-    this.fu = new FileUploader({
+    this.fu = new nn.FileUploader({
       click: '#func-menu-upload',
       drop: '#nn-window',
       filter: (type) => {
