@@ -64,7 +64,7 @@ class CSSReference extends Widget {
     // create color info (if color)
     // return b/c textBubble called again in _selectColor
     const k = NNE.edu.css.colors[eve.data]
-    const c = nn.match(eve.data.toLowerCase())
+    const c = nn.colorMatch(eve.data.toLowerCase())
     if (k && !eve.modified) return this._selectColor(eve, 'keyword', c, k)
     else if (c && c[0] === 'hex' && !eve.modified) {
       return this._selectColor(eve, 'hex', c, k)
@@ -148,7 +148,7 @@ class CSSReference extends Widget {
 
   _selectColor (e, type, c, k) {
     if (type === 'hex') {
-      const c = nn.match(e.data.toLowerCase())
+      const c = nn.colorMatch(e.data.toLowerCase())
       setTimeout(() => {
         if (c && c[0] === 'hex') {
           const from = NNE.cm.getCursor('from')
@@ -176,7 +176,7 @@ class CSSReference extends Widget {
         NNE.cm.setSelection(f, to)
         const sel = NNE.cm.getSelection()
         e.data = sel
-        c = nn.match(sel.toLowerCase())
+        c = nn.colorMatch(sel.toLowerCase())
         e.nfo = { description: { html: this._colorEduInfo(e, c, k) } }
         e.modified = 'color'
         this.textBubble(e)
