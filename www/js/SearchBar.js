@@ -228,9 +228,9 @@ class SearchBar {
 
       for (const i in json.data) {
         const ex = json.data[i]
-        const type = ex.type.split(' ').filter(s => !s.includes('element'))
+        const tags = ex.tags ? ex.tags.split(' ') : []
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
-        const keywords = [...type, ...name]
+        const keywords = [...tags, ...name]
         arr.push({
           type: 'Examples',
           word: ex.name,

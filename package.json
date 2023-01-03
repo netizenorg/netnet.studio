@@ -4,13 +4,11 @@
   "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web’s creative potential.",
   "main": "server.js",
   "scripts": {
-    "setup": "echo \"PORT = 8001\" > .env; npm install",
+    "setup": "node my_modules/setup-script.js",
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
-    "update-netitor": "rm -rf node_modules/netitor/; npm install",
-    "update-color": "rm -rf node_modules/Color/; npm install",
-    "update-maths": "rm -rf node_modules/Maths/; npm install",
-    "update-averigua": "rm -rf node_modules/Averigua/; npm install",
+    "pull-modules": "git submodule update --init --recursive",
+    "update-modules": "git submodule update --remote --merge",
     "update-dev": "node my_modules/update-dev.js"
   },
   "repository": {
@@ -25,10 +23,6 @@
   "homepage": "https://github.com/netizenorg/netnet.studio/wiki",
   "dependencies": {
     "@octokit/core": "^3.1.2",
-    "Color": "git+https://github.com/nbriz/Color.git",
-    "FileUploader": "git+https://github.com/nbriz/FileUploader.git",
-    "Maths": "git+https://github.com/nbriz/Maths.git",
-    "averigua": "git+https://github.com/nbriz/Averigua.git",
     "axios": "^0.20.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -36,7 +30,6 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "multer": "^1.4.2",
-    "netitor": "git+https://github.com/netizenorg/netitor.git",
     "socket.io": "^4.4.0",
     "standard": "^14.3.3",
     "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git",

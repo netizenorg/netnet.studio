@@ -1,4 +1,4 @@
-/* global NNE, Widget, Convo, utils, FileUploader */
+/* global NNE, Widget, Convo, utils, nn */
 class ProjectFiles extends Widget {
   constructor (opts) {
     super(opts)
@@ -157,7 +157,7 @@ class ProjectFiles extends Widget {
   }
 
   _setupFileUploader () {
-    this.fu = new FileUploader({
+    this.fu = new nn.FileUploader({
       maxSize: 5000, // 5 MB (see convos/project-files)
       ready: (file) => this.uploadFile(file),
       drop: '.files-widget',

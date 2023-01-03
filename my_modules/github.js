@@ -2,13 +2,7 @@ const axios = require('axios')
 const triplesec = require('triplesec')
 const { Octokit } = require('@octokit/core')
 const express = require('express')
-const bodyParser = require('body-parser')
 const router = express.Router()
-const cookieParser = require('cookie-parser')
-// const multer = require('multer')
-
-router.use(cookieParser())
-router.use(bodyParser.json({ limit: '10mb' }))
 
 function decryptToken (req, res, cb) {
   const token = req.cookies.AuthTok

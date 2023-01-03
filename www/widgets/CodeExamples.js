@@ -296,7 +296,7 @@ class CodeExamples extends Widget {
       <p>
 
       </p>
-      <h2>${data.name}</h2>
+      <h2>${data.name || ''}</h2>
       <div>
         <!-- <p class="code-examples--ex-intro">Click on the parts below for it's explanation, or let netnet know if/when you want to hear the next or previous part.</p> -->
         <p class="code-examples--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's explanations might be off for the parts you've changed.</p>

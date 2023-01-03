@@ -11,6 +11,10 @@ const GITHUB = require('./my_modules/github.js')
 const SOCKETS = require('./my_modules/sockets.js')
 const PORT = process.env.PORT || 8001
 
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
+app.use(express.json({ limit: '50mb' })) // GitHub's limit is 100mb
+
 ANALYTICS.setup(app, {
   path: `${__dirname}/data/analytics`,
   admin: {
@@ -42,7 +46,17 @@ if (process.env.PROD) {
   ANALYTICS.live(httpsServer, io)
 } else {
   const httpServer = http.createServer(app)
-  httpServer.listen(PORT, () => console.log('listening on 8001'))
+  const msg = `
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/                                    '.
+| hi there! the local server is up and |
+| running, open a browser and visit:   |
+| http://localhost:${PORT}                |
+\` _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  ,/
+                                  .'\`
+                           ( ◕ ◞ ◕ )つ
+`
+  httpServer.listen(PORT, () => console.log(msg))
   io.attach(httpServer)
   ANALYTICS.live(httpServer, io)
 }

@@ -1,4 +1,4 @@
-/* global Convo, Widget, WIDGETS, NNE, NNW, Averigua, utils */
+/* global Convo, Widget, WIDGETS, NNE, NNW, nn, utils */
 class StudentSession extends Widget {
   constructor (opts) {
     super(opts)
@@ -266,7 +266,7 @@ class StudentSession extends Widget {
     }
 
     NNW.menu.switchFace('processing')
-    const p = Averigua.platformInfo()
+    const p = nn.platformInfo()
     const a = p.platform.substr(0, 3)
     const b = p.browser.name.toLowerCase().substr(0, 4)
     this._temp = { a, b, os: p.platform, browser: p.browser }

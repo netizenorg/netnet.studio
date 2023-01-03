@@ -8,7 +8,7 @@ class DemoExampleMaker extends Widget {
     this._curStep = 0
     this._sections = null
     this._data = {
-      name: null, type: null, toc: true, layout: 'dock-left', key: null, code: null, steps: []
+      name: null, toc: true, layout: 'dock-left', key: null, code: null, steps: []
     }
     utils.get('api/examples', (res) => {
       this._data.key = Math.max(...Object.keys(res.data)) + 1
@@ -31,13 +31,6 @@ class DemoExampleMaker extends Widget {
           code: obj.code,
           steps: obj.info
         }
-        for (let i = 0; i < this._sections.length; i++) {
-          const sec = this._sections[i]
-          if (sec.listed.includes(this._data.key)) {
-            this._data.type = sec.name
-            break
-          }
-        }
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
@@ -47,7 +40,6 @@ class DemoExampleMaker extends Widget {
 
       this._selectStep(this._data.steps[0])
       this.$('[name="dem-demo-name"]').value = this._data.name
-      this.$('[name="dem-demo-type"]').value = this._data.type
       this.$('[name="dem-demo-layout"]').value = this._data.layout
       this.$('[name="dem-demo-toc"]').checked = this._data.toc
     }
@@ -81,7 +73,7 @@ class DemoExampleMaker extends Widget {
       </style>
       <div class="demo-example-maker">
         editing step <select name="dem-current-step"></select>
-        <button name="dem-add-step" style="float: right">add step</button>
+        <button name="dem-add-step" style="float: right">add new step</button>
         <br>
         <br>
         <hr>
@@ -90,23 +82,25 @@ class DemoExampleMaker extends Widget {
         <br>
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
-        <button name="dem-update-step">update step</button>
-        <button name="dem-remove-step">remove step</button>
+        <button name="dem-update-step">update this step</button>
+        <button name="dem-remove-step">remove this step</button>
+        <br>
+        <br>
         <hr>
-        <br>
-        <input name="dem-demo-name" placeholder="demo name" type="text">
-        <select name="dem-demo-type"></select>
-        <br>
         <div style="margin: 10px 15px;">
           layout <select name="dem-demo-layout"></select> |
           display toc <input type="checkbox" name="dem-demo-toc"> (table of contents)
         </div>
-        <textarea name="dem-url"></textarea>
         <br>
+        <hr>
         <div style="float: right">
           <button name="dem-gen-url">generate link</button>
           <button name="dem-dl-json">download json</button>
+          <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
         </div>
+        <br>
+        <br>
+        <textarea name="dem-url"></textarea>
       </div>
     `
     this._addStep({
@@ -137,7 +131,8 @@ class DemoExampleMaker extends Widget {
     })
 
     this.$('[name="dem-dl-json"]').addEventListener('click', () => {
-      this._downloadJSON()
+      if (!this._data.name) window.alert('you must enter a name for this file')
+      else this._downloadJSON()
     })
 
     this.$('[name="dem-s-focus"]').addEventListener('click', () => {
@@ -154,30 +149,20 @@ class DemoExampleMaker extends Widget {
     })
 
     // ...
-
-    this.$('[name="dem-demo-name"]').addEventListener('input', (e) => {
-      this._data.name = e.target.value
+    const urlReset = (e, key) => {
+      this._data[key] = e.target.value
       this.$('[name="dem-url"]').value = null
       this.$('[name="dem-url"]').style.display = 'none'
-    })
+    }
 
-    types.forEach(type => {
-      const o = document.createElement('option')
-      o.textContent = type
-      o.value = type
-      this.$('[name="dem-demo-type"]').appendChild(o)
-    })
-
-    this.$('[name="dem-demo-type"]').addEventListener('change', (e) => {
-      this._data.type = e.target.value
-      this.$('[name="dem-url"]').value = null
-      this.$('[name="dem-url"]').style.display = 'none'
-    })
+    this.$('[name="dem-demo-name"]')
+      .addEventListener('input', e => urlReset(e, 'name'))
 
     this.$('[name="dem-url"]').addEventListener('click', (e) => {
-      e.target.focus()
-      e.target.select()
-      navigator.clipboard.writeText(e.target.value)
+      // e.target.focus()
+      // e.target.select()
+      // navigator.clipboard.writeText(e.target.value)
+      utils.copyLink(e.target)
     })
 
     NNW.layouts.filter(l => l !== 'welcome').forEach(layout => {
@@ -187,14 +172,12 @@ class DemoExampleMaker extends Widget {
       this.$('[name="dem-demo-layout"]').appendChild(o)
     })
     this.$('[name="dem-demo-layout"]').value = 'dock-left'
-    this.$('[name="dem-demo-layout"]').addEventListener('input', (e) => {
-      this._data.layout = e.target.value
-    })
+    this.$('[name="dem-demo-layout"]')
+      .addEventListener('input', e => urlReset(e, 'layout'))
 
     this.$('[name="dem-demo-toc"]').checked = true
-    this.$('[name="dem-demo-toc"]').addEventListener('input', (e) => {
-      this._data.toc = e.target.checked
-    })
+    this.$('[name="dem-demo-toc"]')
+      .addEventListener('input', e => urlReset(e, 'toc'))
   }
 
   // ------------------------------
@@ -244,8 +227,7 @@ class DemoExampleMaker extends Widget {
   // ------------------------------
 
   _getData () {
-    const name = this._data.name || 'demo'
-    const type = this.$('[name="dem-demo-type"]').value
+    const name = this._data.name
     const key = this._data.key
     const toc = this._data.toc
     const layout = this._data.layout
@@ -256,7 +238,7 @@ class DemoExampleMaker extends Widget {
       return s
     })
     const code = `#code/${NNE._encode(NNE.code)}`
-    return { name, type, toc, layout, key, code, info }
+    return { name, toc, layout, key, code, info }
   }
 
   _generateURL () {

@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, FileUploader, Convo, utils */
+/* global WIDGETS, Widget, nn, Convo, utils */
 class BrowserFest extends Widget {
   constructor (opts) {
     super(opts)
@@ -106,7 +106,7 @@ class BrowserFest extends Widget {
   // ----------------------------------------------------------- innerHTML -----
 
   _createFileUploader () {
-    this.fu = new FileUploader({
+    this.fu = new nn.FileUploader({
       maxSize: 5000,
       types: ['image/jpeg', 'image/png', 'image/gif'],
       ready: (file) => {

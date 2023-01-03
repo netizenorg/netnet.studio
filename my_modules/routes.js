@@ -1,27 +1,20 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const router = express.Router()
 const path = require('path')
-const cookieParser = require('cookie-parser')
 const fs = require('fs')
 const exec = require('child_process').exec
 const utils = require('./utils.js')
 const axios = require('axios')
-
-router.use(cookieParser())
-router.use(bodyParser.json({ limit: '10mb' }))
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   ROUTES
 
 const frontEndDependencies = [
-  { url: '/netitor.min.js', loc: '../node_modules/netitor/build/netitor.min.js' },
-  { url: '/netitor.js', loc: '../node_modules/netitor/build/netitor.js' },
-  { url: '/Maths.js', loc: '../node_modules/Maths/Maths.js' },
-  { url: '/Color.js', loc: '../node_modules/Color/Color.js' },
-  { url: '/Averigua.js', loc: '../node_modules/averigua/Averigua.js' },
-  { url: '/FileUploader.js', loc: '../node_modules/FileUploader/FileUploader.js' }
+  { url: '/netitor.min.js', loc: '../www/js/netitor/build/netitor.min.js' },
+  { url: '/netitor.js', loc: '../www/js/netitor/build/netitor.js' },
+  { url: '/netnet-standard-library.js', loc: '../www/js/netnet-standard-library/build/netnet-standard-library.js' },
+  { url: '/nn.min.js', loc: '../www/js/netnet-standard-library/build/nn.min.js' }
 ]
 
 frontEndDependencies.forEach(dep => {
@@ -34,6 +27,14 @@ router.get('/tutorials/*', (req, res, next) => {
   if (req.headers.host.includes(':1337')) { // for dev server
     const file = `../../netnet.studio/www/${req.originalUrl}`
     res.sendFile(path.join(__dirname, file))
+  } else if (req.originalUrl.includes('/list.json')) {
+    // if asking for tutorials that don't exist (ex: in local dev)
+    const list = path.join(__dirname, '../www/tutorials/list.json')
+    const file = fs.readFileSync(list)
+    const json = JSON.parse(file)
+    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
+    json.listed = json.listed.filter(t => dirs.includes(t))
+    res.json(json)
   } else next()
 })
 
@@ -47,6 +48,15 @@ router.get('/api/videos/:video', (req, res) => {
   fs.stat(path.join(__dirname, `../data/videos/${v}`), (err, stat) => {
     if (err === null) res.sendFile(path.join(__dirname, `../data/videos/${v}`))
   })
+})
+
+router.get('/api/nn-proxy', async (req, res) => {
+  let URL = req.query.url
+  for (const key in req.query) {
+    if (key !== 'url') URL += `&${key}=${req.query[key]}`
+  }
+  const request = await axios.get(URL)
+  res.send(request.data)
 })
 
 router.get('/api/proxy', (req, res) => {
@@ -89,15 +99,15 @@ router.get('/api/widgets', (req, res) => {
       if (!code.includes('listed = false')) {
         const data = { filename, title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
-          if (line.includes('this.title =')) {
+          if (line.includes('this.title =') && !data.title) {
             data.title = line.split('=')[1].trim()
             data.title = data.title.substr(1, data.title.length - 2)
           }
-          if (line.includes('this.key =')) {
+          if (line.includes('this.key =') && !data.key) {
             data.key = line.split('=')[1].trim()
             data.key = data.key.substr(1, data.key.length - 2)
           }
-          if (line.includes('this.keywords =')) {
+          if (line.includes('this.keywords =') && !data.keywords) {
             let kw = line.split('=')[1].trim()
             kw = kw.replace(/\[/g, '').replace(/\]/g, '')
             data.keywords = kw.split(',')
