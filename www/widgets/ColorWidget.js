@@ -28,13 +28,13 @@ class ColorWidget extends Widget {
       })
 
       const color = NNE.cm.getSelection().toLowerCase()
-      const c = nn.match(color)
+      const c = nn.colorMatch(color)
       const k = NNE.edu.css.colors[color]
       if (c) {
         this.updateColor(c)
         this._changeSubWin(c[0])
       } else if (k) {
-        const o = nn.match(k.rgb)
+        const o = nn.colorMatch(k.rgb)
         this.updateColor(o)
         this._changeSubWin('rgb')
       }
@@ -46,7 +46,7 @@ class ColorWidget extends Widget {
       if (e.type === 'keyword' && NNE.edu.css.colors[e.data]) {
         s = NNE.edu.css.colors[e.data].rgb
       }
-      const c = nn.match(s)
+      const c = nn.colorMatch(s)
       if (c) {
         this._changeSubWin(c[0])
         this.updateColor(c)
@@ -55,7 +55,7 @@ class ColorWidget extends Widget {
           // give CSSReference time to re-select entire color string
           // && then check again...
           const sel = NNE.cm.getSelection().toLowerCase()
-          const c = nn.match(sel)
+          const c = nn.colorMatch(sel)
           if (c) {
             this._changeSubWin(c[0])
             this.updateColor(c)
@@ -66,7 +66,7 @@ class ColorWidget extends Widget {
   }
 
   updateColor (c) {
-    if (typeof c === 'string') c = nn.match(c.toLowerCase())
+    if (typeof c === 'string') c = nn.colorMatch(c.toLowerCase())
     if (c && c !== null) {
       if (c[2]) c[2] = Number(c[2]) || parseInt(c[2])
       if (c[3]) c[3] = Number(c[3]) || parseInt(c[3])
@@ -301,7 +301,7 @@ class ColorWidget extends Widget {
     // code fields -------------------------------------------------------------
 
     const fieldUpdate = (e) => {
-      const c = nn.match(e.target.value.toLowerCase())
+      const c = nn.colorMatch(e.target.value.toLowerCase())
       if (c) {
         this.updateColor(c)
         e.target.style.background = 'var(--netizen-meta)'
