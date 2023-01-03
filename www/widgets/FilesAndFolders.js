@@ -1,4 +1,4 @@
-/* global Widget, FileUploader, Convo, utils, NNE, NNW, Color, WIDGETS */
+/* global Widget, nn, Convo, utils, NNE, NNW, WIDGETS */
 class FilesAndFolders extends Widget {
   constructor (opts) {
     super(opts)
@@ -135,9 +135,9 @@ class FilesAndFolders extends Widget {
   // ---------------------------------------------------------------------------
 
   _createHTML () {
-    const c1 = Color.hex2rgb(utils.getVal('--netizen-meta'))
+    const c1 = nn.hex2rgb(utils.getVal('--netizen-meta'))
     const fileClr = `rgb(${c1.r},${c1.g},${c1.b})`
-    const c2 = Color.hex2rgb(utils.getVal('--fg-color'))
+    const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
     const fldrClr = `rgb(${c2.r},${c2.g},${c2.b})`
     this.innerHTML = `
       <style>
@@ -259,7 +259,7 @@ class FilesAndFolders extends Widget {
   }
 
   _setupFileUploader () {
-    this.fu = new FileUploader({
+    this.fu = new nn.FileUploader({
       maxSize: 5000, // 5 MB (see convos/files-and-folders)
       ready: (file) => this.uploadFile(file, true),
       drop: '.fnf',
@@ -276,7 +276,7 @@ class FilesAndFolders extends Widget {
     const hover = (e, type) => {
       if (type === 'over') {
         e.stopPropagation()
-        const c2 = Color.hex2rgb(utils.getVal('--fg-color'))
+        const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
         e.target.style.background = `rgba(${c2.r},${c2.g},${c2.b}, 0.25)`
       } else if (type === 'out') {
         e.stopPropagation()
