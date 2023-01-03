@@ -14,7 +14,9 @@ class NetNet {
     this.themeConfig = {
       dark: { background: false, shadow: true },
       light: { background: true, shadow: false },
-      monokai: { background: true, shadow: false }
+      monokai: { background: true, shadow: false },
+      'moz-dark': { background: true, shadow: false },
+      'moz-light': { background: true, shadow: false }
     }
 
     this.rndr = document.querySelector('#nn-output')
