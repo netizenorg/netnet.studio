@@ -1,0 +1,50 @@
+{
+  "name": "Full Page Background Image",
+  "type": "HTML/CSS basics",
+  "toc": true,
+  "layout": "dock-left",
+  "key": 67,
+  "code": "#code/eJxdjzsOwjAQRPucYumgSCzaJEKi5Bgbs4kN/sle8xV3x0gpSLqRZt7uTJ/4aehQASi2Bt5Q1IDyOkWf3bmFHM1WMYfUChHx3kyaVR5yoii9Y3LcSG/FxTup0A4Uk+C7dnSyOFESFhNTFI6GbLC5hGnXLe7XSb+oBelvFFcOMqNUtnxoYdQPOq/84JNm7V2hS6bgsKxeRwqEBXZ+ll31qXox7616tT8cYczGQChd/0jQv/KbXpTEF13vZFs=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This sketch uses CSS to display a full screen background image for your webpage. "
+    },
+    {
+      "title": "Background Property ",
+      "focus": [
+        3
+      ],
+      "text": "The CSS <code>background</code> property can be used for a bunch of different background styles. In this line, the url() value links to an image that will be set as our background. You can also link to a local image file. "
+    },
+    {
+      "title": "Background Size",
+      "focus": [
+        4
+      ],
+      "text": "The <code>background-size</code> property tells our webpage how to size the background image. In this example it is set to \"cover\" so the image will be stretched to cover the entire page."
+    },
+    {
+      "title": "Background Attachment",
+      "focus": [
+        5
+      ],
+      "text": "The <code>background-attachment</code> property controls whether or not the image will scroll with the page. Here, it is set to \"fixed\" which will keep the image in the same spot as the user scrolls on the page. "
+    },
+    {
+      "title": "Background Position",
+      "focus": [
+        6
+      ],
+      "text": "The <code>background-position</code> property sets the position of the background image. In this example it is set to \"center\", which will keep the image centered on the screen.  "
+    },
+    {
+      "title": "Background Repeat",
+      "focus": [
+        7
+      ],
+      "text": "The <code>background-repeat</code> property will tell the page whether or not to repeat the image. By default, the image will repeat along the x and y axis. In this example it is set to \"no-repeat\" which will keep the image from repeating."
+    }
+  ]
+}
