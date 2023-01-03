@@ -99,7 +99,7 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._enableExamplesButton()
+    // this._enableExamplesButton()
     this._listTutorials()
     this._enableAppendixLinks()
 
@@ -107,21 +107,21 @@ class LearningGuide extends Widget {
     this._createStarField(canvas)
     this._highlightTitles()
 
-    this.ele.querySelectorAll('h3').forEach(e => {
-      e.addEventListener('click', () => {
-        window.convo = new Convo(this.convos, e.textContent)
-      })
-    })
+    // this.ele.querySelectorAll('h3').forEach(e => {
+    //   e.addEventListener('click', () => {
+    //     window.convo = new Convo(this.convos, e.textContent)
+    //   })
+    // })
   }
 
-  _enableExamplesButton () {
-    this.slide.querySelector('#ex-open-btn')
-      .addEventListener('click', () => {
-        WIDGETS.open('code-examples')
-        this.close()
-        window.convo.hide()
-      })
-  }
+  // _enableExamplesButton () {
+  //   this.slide.querySelector('#ex-open-btn')
+  //     .addEventListener('click', () => {
+  //       WIDGETS.open('code-examples')
+  //       this.close()
+  //       window.convo.hide()
+  //     })
+  // }
 
   _enableAppendixLinks () {
     this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
@@ -144,6 +144,7 @@ class LearningGuide extends Widget {
             <h2>${t.title}</h2>
             <b>${t.subtitle}</b>
           </div>
+          <div class="learning-guide__dotted-line"></div>
           <div>
             <button name="tut:${t.id}">play</button>
             <button name="i:${t.id}">i</button>
@@ -151,44 +152,42 @@ class LearningGuide extends Widget {
         </div>
         <p name="nfo:${t.id}">${t.description}</p>
       `
-      const p = div.querySelector('p')
-      const W = 554
-      const w = 340
-      const f = W / 2 - w / 2
-      const l = f - (Math.sin(i) * f)
-      div.style.width = w + 'px'
-      div.style.marginLeft = l + 'px'
-      p.style.width = W + 'px'
-      p.style.transform = `translateX(-${l}px)`
       return div
     }
 
-    const tutorials = []
-    const div = this.ele.querySelector('.learning-guide__tut-list')
+    const tutorials = {}
+    const tutzReady = () => {
+      for (const sec in tutorials) {
+        tutorials[sec] // when all are loaded, append tutorial <div> to guide
+          .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
+          .forEach(obj => {
+            const div = document.querySelector(`.learning-guide__tut-${sec}`)
+            if (div) div.appendChild(obj.html)
+          })
+      }
+      this._enableLearningGuideEventListeners()
+    }
 
     utils.get('tutorials/list.json', (json) => {
       let count = 0
-      json.listed.forEach((name, i) => {
-        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          tutorials.push({ // create tutorial <div>
-            index: json.listed.indexOf(name), html: tutHTML(tut, i)
+      let total = 0
+      for (const sec in json) { total += json[sec].length }
+      for (const sec in json) {
+        tutorials[sec] = []
+        json[sec].forEach((name, i) => {
+          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+            tutorials[sec].push({
+              index: json[sec].indexOf(name), html: tutHTML(tut, i)
+            })
+            count++
+            if (count === total) tutzReady()
           })
-          count++
-          // ...
-          if (count === json.listed.length) {
-            tutorials // when all are loaded, append tutorial <div> to guide
-              .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
-              .forEach(obj => div.appendChild(obj.html))
-
-            this._enableTutorialEventListeners(div)
-          }
-          // ...
         })
-      })
+      }
     })
   }
 
-  _enableTutorialEventListeners (div) {
+  _enableLearningGuideEventListeners () {
     this.slide.querySelector('#page-aboutOpts')
       .addEventListener('click', () => {
         this.slide.updateSlide(this.aboutOpts)
@@ -196,23 +195,23 @@ class LearningGuide extends Widget {
       })
 
     // enable "play" buttons
-    div.querySelectorAll('[name^="tut"]').forEach(ele => {
+    this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
       const tut = ele.getAttribute('name').split(':')[1]
       ele.addEventListener('click', () => this.load(tut))
     })
 
     // calc <p> heights && hide them
-    div.querySelectorAll('[name^="nfo"]').forEach(p => {
+    this.ele.querySelectorAll('[name^="nfo"]').forEach(p => {
       p.dataset.height = p.offsetHeight
       p.style.height = '0px'
       p.style.display = 'none'
     })
 
     // enable "info" buttons
-    div.querySelectorAll('[name^="i"]').forEach(ele => {
+    this.ele.querySelectorAll('[name^="i"]').forEach(ele => {
       const t = ele.getAttribute('name').split(':')[1]
       ele.addEventListener('click', () => {
-        const p = div.querySelector(`[name="nfo:${t}"]`)
+        const p = this.ele.querySelector(`[name="nfo:${t}"]`)
         if (ele.textContent === 'i') {
           p.style.display = 'block'
           ele.textContent = 'x'

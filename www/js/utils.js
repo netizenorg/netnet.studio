@@ -342,6 +342,7 @@ window.utils = {
   },
 
   loadCustomExample: (layout) => {
+    // an example created by anyone saved in the URL hash
     const hash = window.location.hash.split('#example/')[1]
     const data = JSON.parse(NNE._decode(hash))
     const firstClick = (cb) => {
@@ -427,11 +428,11 @@ window.utils = {
       NNE.addCustomRoot(null)
       window.utils.afterLayoutTransition(() => {
         setTimeout(() => NNE.cm.refresh(), 10)
-        if (calledBy === 'load') { // url?ex=NUM || url?example=code
+        if (calledBy === 'load') { // url?ex=NUM
           window.utils.fadeOutLoader(false)
           NNE.code = NNE._decode(json.hash.substr(6))
-          if (!json.info) window.utils._Convo('demo-example') // ?example=...
-          else window.utils._Convo('demo-explainer') // ?ex=...
+          if (json.info) window.utils._Convo('demo-explainer') // annotated
+          else window.utils._Convo('demo-example')
         } else if (calledBy === 'widget') { // Code-Example widget convo
           NNE.code = NNE._decode(json.hash.substr(6))
           if (!json.info) window.utils._Convo('demo-ex-from-list')

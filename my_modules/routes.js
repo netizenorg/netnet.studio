@@ -36,7 +36,9 @@ router.get('/tutorials/*', (req, res, next) => {
     const file = fs.readFileSync(list)
     const json = JSON.parse(file)
     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    json.listed = json.listed.filter(t => dirs.includes(t))
+    for (const sec in json) {
+      json[sec] = json[sec].filter(t => dirs.includes(t))
+    }
     res.json(json)
   } else next()
 })

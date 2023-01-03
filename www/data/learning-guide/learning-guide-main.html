@@ -82,6 +82,20 @@
     padding: 10px 0;
   }
 
+  .learning-guide__ex-start {
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--netizen-meta);
+    padding-bottom: 15px;
+  }
+
+  .learning-guide__ex-start b {
+    text-transform: uppercase;
+  }
+
+  .learning-guide__ex-start button {
+    float: right;
+  }
+
   .learning-guide__ex-divider {
     height: 1px;
     width: 100%;
@@ -91,13 +105,37 @@
 
 
   .learning-guide__tut {
-    margin-bottom: 48px;
+    margin-bottom: 18px;
   }
 
   .learning-guide__tut > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .learning-guide__tut > div:hover .learning-guide__dotted-line {
+    width: 170px;
+  }
+
+  .learning-guide__tut > div:hover .learning-guide__dotted-line::after {
+    opacity: 1;
+  }
+
+  .learning-guide__dotted-line {
+    width: 0px;
+    border-top: 3px dotted var(--netizen-atom);
+    position: relative;
+    transition: width 0.5s;
+  }
+
+  .learning-guide__dotted-line::after {
+    opacity: 0;
+    content: "➤";
+    position: absolute;
+    right: -13px;
+    top: -12.7px;
+    transition: opacity 0.25s;
   }
 
   .learning-guide__tut > div > div:nth-child(1) {
@@ -204,20 +242,59 @@
   <div>to netizen histories, critical theory, && the craft of creative coding</div>
 </header>
 
+
+<!--                      <<<  -   >>>                              -->
+<!--                      <<< HTML >>>                              -->
+<!--                      <<<  -   >>>                              -->
 <main class="learning-guide__main" style="position:relative;z-index:2">
-  <div class="learning-guide__ex">
-    <h3>&lt;examples&gt;</h3>
-    <div class="learning-guide__ex-row">
-      <div>
-        <h2 style="margin: 4px 0;">HTML + CSS + JS</h2>
-        <p>
-          code demos which may be of particular interest to artists
-        </p>
+  <div>
+    <h3 onclick="WIDGETS['html-reference'].open()">&lt;HTML&gt;</h3>
+
+    <div>
+      <div class="learning-guide__ex-start">
+        <b>Hypertext Markup Language</b>
+        <span class="link" onclick="utils.loadExample(48, 'search')">
+          <button>review core coding concepts</button>
+        </span>
       </div>
-      <div>
-        <button id="ex-open-btn">open</button>
+      <p>
+        As a creative medium, the Web has three core coding languages at the center of its craft: HTML, CSS and JavaScript. The most fundamental of these is HTML, or Hypertext Markup Language. HTML is used to create the structure of a Web project.
+      </p>
+    </div>
+
+    <div class="learning-guide__ex-row">
+      <div style="width: 100%">
+        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
+        <div class="learning-guide__tut-html">
+          <!-- HTML tutorials here -->
+        </div>
       </div>
     </div>
+
+    <div class="learning-guide__apx">
+      <div class="learning-guide__apx-list">
+        <div>
+          <h2>Docs</h2>
+          <span class="learning-guide--link" name="ref:html:mainOpts">HTML Reference</span><br>
+          <span class="learning-guide--link" name="ref:html:eleListOpts">Elements List</span><br>
+          <span class="learning-guide--link" name="ref:html:attrListOpts">Attributes List</span><br>
+        </div>
+        <div>
+          <h2>Templates</h2>
+          <span class="learning-guide--link" name="ref:css:mainOpts">CSS Reference</span><br>
+          <span class="learning-guide--link" name="ref:css:propsListOpts">Properties List</span><br>
+          <span class="learning-guide--link" name="ref:css:selectorListOpts">Selectors List</span><br>
+          <span class="learning-guide--link" name="ref:css:cascadeOpts">The Cascade</span><br>
+        </div>
+        <div>
+          <h2>Examples</h2>
+          <i>working on it!</i>
+        </div>
+      </div>
+      <br>
+      <div class="learning-guide__ex-divider"></div>
+    </div>
+
     <div class="learning-guide__ex-divider"></div>
   </div>
 

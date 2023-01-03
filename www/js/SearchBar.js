@@ -203,22 +203,25 @@ class SearchBar {
     this.loaded.tutorials = true
     utils.get('tutorials/list.json', (json) => {
       const arr = []
-      const len = json.listed.length
+      let len = 0
+      for (const sec in json) { len += json[sec].length }
       const update = () => { if (arr.length === len) this.addToDict(arr) }
 
-      json.listed.forEach(name => {
-        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          arr.push({
-            type: 'Tutorials',
-            word: tut.title,
-            alts: tut.keywords,
-            clck: () => {
-              WIDGETS.open('learning-guide', null, (w) => w.load(name))
-            }
+      for (const sec in json) {
+        json[sec].forEach(name => {
+          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+            arr.push({
+              type: 'Tutorials',
+              word: tut.title,
+              alts: tut.keywords,
+              clck: () => {
+                WIDGETS.open('learning-guide', null, (w) => w.load(name))
+              }
+            })
+            update()
           })
-          update()
         })
-      })
+      }
     })
 
     utils.get('api/examples', (json) => {

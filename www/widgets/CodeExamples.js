@@ -265,7 +265,7 @@ class CodeExamples extends Widget {
     return { name, widget, back, ele }
   }
 
-  _createExplainerOpts () {
+  _createExplainerOpts () { // TOC
     const data = this.exData
     const name = 'explainer'
     const widget = this
