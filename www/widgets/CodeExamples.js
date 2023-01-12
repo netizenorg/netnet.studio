@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, Convo, SNT, NNE, Netitor, utils */
+/* global WIDGETS, Widget, Convo, SNT, NNE, NNW, Netitor, utils */
 class CodeExamples extends Widget {
   constructor (opts) {
     super(opts)
@@ -28,6 +28,7 @@ class CodeExamples extends Widget {
           if (window.convo) window.convo.hide()
           NNE.remove('code-update', this._editorChange)
           NNE.marker(null)
+          this.title = 'Code Examples'
         }
       }
 
@@ -65,49 +66,71 @@ class CodeExamples extends Widget {
     SNT.post(SNT.dataObj('EX-select', { name: o.name, key: o.key }))
   }
 
-  beforeLoadingEx () {
-    if (this.exData.info) {
-      window.convo = new Convo(this.convos, 'before-loading-example-info')
-    } else {
-      window.convo = new Convo(this.convos, 'before-loading-example-no-info')
+  loadExample (example, calledBy) {
+    if (!this.slide) {
+      setTimeout(() => this.loadExample(example, calledBy), 100)
+      return
     }
-    // if user agrees to load example, fires >> utils.loadExample()
+
+    if ((calledBy === 'search' || calledBy === 'guide') && NNW.layout !== 'welcome') {
+      window.convo = new Convo(this.convos, 'before-loading-example')
+      return
+    }
+
+    if (WIDGETS['learning-guide'].opened) WIDGETS['learning-guide'].close()
+    // request example json data...
+    window.utils.post('./api/example-data', { key: example }, (json) => {
+      if (calledBy === 'url' || NNW.layout === 'welcome') {
+        NNW.layout = 'dock-left'
+      }
+      if (!json.key) json.key = example
+      this.newExData(json)
+      NNE.addCustomRoot(null)
+      setTimeout(() => NNE.cm.refresh(), 10)
+      NNE.code = NNE._decode(json.hash.substr(6))
+      if (json.info) { // annotated
+        this.explainExample()
+        window.convo = new Convo(this.convos, 'loaded-explainer')
+      } else window.convo = new Convo(this.convos, 'loaded-example')
+      if (calledBy === 'url') {
+        window.utils.afterLayoutTransition(() => utils.fadeOutLoader(false))
+      }
+    })
   }
 
-  explainExample (data) { // happens after user agrees to load example
-    if (data) this.newExData(data)
-    else data = this.exData
-    const info = this.exData.info
-    if (!info) {
-      this.back()
-    } else {
-      this.exData.explaining = true
-      // display table-of-contents slide
-      const opts = this._createExplainerOpts()
-      opts.cb = () => {
-        this._resizeWidget(455, 330, 22, 22)
-        NNE.code = NNE._decode(this.exData.code.substr(6))
-        this.exData.length = NNE.cm.lineCount()
-        NNE.update()
-      }
-      this.slide.updateSlide(opts)
-      // add netitor markers
-      const occupiedLines = []
-      const addMarker = (o, i) => {
-        const l = (i === 0 && !o.focus) ? 1 : o.focus ? o.focus[0] : null
-        if (l && !occupiedLines.includes(l)) {
-          const m = NNE.marker(l, 'green', () => this._explainerClick(data, o))
-          m.setAttribute('title', o.title)
-          occupiedLines.push(l)
-        }
-      }
-      utils.afterLayoutTransition(() => {
-        info.forEach((obj, i) => addMarker(obj, i))
-        if (!this.opened) {
-          window.convo = new Convo(this.convos, 'after-loading-example-info')
-        }
-      })
+  explainExample () {
+    this.exData.explaining = true
+    const data = this.exData
+    this.title = data.name
+    if (!this.opened) this.open()
+    // display table-of-contents slide in the widget
+    const opts = this._createExplainerOpts()
+    opts.cb = () => {
+      this._resizeWidget(455, 330, 22, 22)
+      NNE.code = NNE._decode(data.code.substr(6))
+      data.length = NNE.cm.lineCount()
+      NNE.update()
     }
+    this.slide.updateSlide(opts)
+    // add netitor markers
+    const occupiedLines = []
+    const addMarker = (o, i) => {
+      const l = (i === 0 && !o.focus) ? 1 : o.focus ? o.focus[0] : null
+      if (l && !occupiedLines.includes(l)) {
+        const m = NNE.marker(l, 'green', () => this._explainerClick(data, o))
+        m.setAttribute('title', o.title)
+        occupiedLines.push(l)
+      }
+    }
+    utils.afterLayoutTransition(() => data.info.forEach((o, i) => addMarker(o, i)))
+    // ....TODO (fix this?)
+    // utils.afterLayoutTransition(() => {
+    //   data.info.forEach((obj, i) => addMarker(obj, i))
+    //   if (!this.opened) {
+    //     window.convo = new Convo(this.convos, 'after-loading-example-info')
+    //   }
+    // })
+    //
     SNT.post(SNT.dataObj('EX-explain', { name: data.name, key: data.key }))
   }
 
@@ -253,7 +276,7 @@ class CodeExamples extends Widget {
       <div class="code-examples--nav">
         <b class="code-examples--name">${o.name}</b>
         <!-- <b class="code-examples--reset">reset code</b> -->
-        <b class="code-examples--explain">explain</b>
+        <b class="code-examples--explain">${o.info ? 'explain' : 'experiment'}</b>
       </div>
       <div class="code-examples--tabs">
         <b>code</b>
@@ -293,10 +316,6 @@ class CodeExamples extends Widget {
           display: none;
         }
       </style>
-      <p>
-
-      </p>
-      <h2>${data.name || ''}</h2>
       <div>
         <!-- <p class="code-examples--ex-intro">Click on the parts below for it's explanation, or let netnet know if/when you want to hear the next or previous part.</p> -->
         <p class="code-examples--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's explanations might be off for the parts you've changed.</p>
@@ -405,26 +424,15 @@ class CodeExamples extends Widget {
 
   _updateListeners () {
     const name = this.ele.querySelector('.code-examples--name')
-    // const reset = this.ele.querySelector('.code-examples--reset')
-    const explain = this.ele.querySelector('.code-examples--explain')
-
     name.addEventListener('click', () => {
       window.convo = new Convo(this.convos, 'example-info')
     })
 
-    // reset.addEventListener('click', () => {
-    //   const code = this.exData.code.substr(6)
-    //   const curExCode = NNE._encode(this.editor.code)
-    //   if (code === curExCode) {
-    //     window.convo = new Convo(this.convos, 'nothing-to-reset')
-    //   } else {
-    //     this.editor.code = NNE._decode(code)
-    //     this.editor.update()
-    //     window.convo = new Convo(this.convos, 'reset-code')
-    //   }
-    // })
-
-    explain.addEventListener('click', () => this.beforeLoadingEx())
+    const explain = this.ele.querySelector('.code-examples--explain')
+    explain.addEventListener('click', () => {
+      if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
+      else window.convo = new Convo(this.convos, 'before-loading-example')
+    })
 
     const render = this.ele.querySelector('.code-examples--render')
     const ctab = this.ele.querySelector('.code-examples--tabs > b:nth-child(1)')

@@ -18,24 +18,6 @@ window.CONVOS['utils-misc'] = (self) => {
   })()
 
   return [{
-    id: 'demo-example',
-    content: 'Check out this example! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
-    options: { ok: (e) => e.hide() }
-  }, {
-    id: 'demo-explainer',
-    content: 'Check out this example! I can walk you through it if you\'d like me to explain the different parts? Otherwise feel free to edit and experiment with the code yourself. You can also double click any piece of code you don\'t understand and I\'ll do my best to explain that bit to you.',
-    options: {
-      'yes, please walk me through it!': (e) => {
-        WIDGETS['code-examples'].explainExample()
-        e.hide()
-      },
-      'no thanks, I\'m just experimenting': (e) => e.hide()
-    }
-  }, {
-    id: 'demo-ex-from-list',
-    content: 'I\'ve copied the example into my editor, remix it and make it your own!',
-    options: { thanks: (e) => e.hide() }
-  }, {
     id: 'tutorial-pause-to-edit',
     content: 'Pause the video before you start editing and experimenting with the code.',
     options: { ok: (e) => e.hide() }

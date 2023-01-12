@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, SNT, Color */
+/* global Widget, WIDGETS, utils, Convo, NNE, SNT, nn */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -18,6 +18,10 @@ class LearningGuide extends Widget {
     this.metadata = null
     this.data = null
     this.loaded = null
+
+    if (!WIDGETS.loaded.includes('CodeExamples.js')) {
+      WIDGETS.load('CodeExamples.js')
+    }
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -360,9 +364,10 @@ class LearningGuide extends Widget {
   }
 
   _highlightTitles () {
-    const c = Color.hex2rgb(utils.getVal('--netizen-number'))
-    const m = Color.hex2rgb(utils.getVal('--netizen-meta'))
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
     this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      console.log(ele);
       ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
     })
   }

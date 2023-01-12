@@ -238,7 +238,11 @@ class SearchBar {
           type: 'Examples',
           word: ex.name,
           alts: keywords,
-          clck: () => { utils.loadExample(i, 'search') }
+          clck: () => {
+            if (!WIDGETS['code-examples']) {
+              WIDGETS.load('CodeExamples.js', w => w.loadExample(i, 'search'))
+            } else { WIDGETS['code-examples'].loadExample(i, 'search') }
+          }
         })
         update()
       }
