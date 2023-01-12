@@ -1,4 +1,4 @@
-/* global NNE, Menu, Color, utils */
+/* global NNE, Menu, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -14,7 +14,9 @@ class NetNet {
     this.themeConfig = {
       dark: { background: false, shadow: true },
       light: { background: true, shadow: false },
-      monokai: { background: true, shadow: false }
+      monokai: { background: true, shadow: false },
+      'moz-dark': { background: true, shadow: false },
+      'moz-light': { background: true, shadow: false }
     }
 
     this.rndr = document.querySelector('#nn-output')
@@ -647,11 +649,11 @@ class NetNet {
   _calcCanvasColors () {
     const bg = window.getComputedStyle(document.documentElement)
       .getPropertyValue('--netizen-background').substr(0, 7)
-    const c = Color.hex2hsv(bg)
+    const c = nn.hex2hsv(bg)
     const v0 = c.v + 10 <= 100 ? c.v + 10 : 100
     const v1 = c.v - 10 >= 0 ? c.v - 10 : 0
-    this.grad0 = Color.hsv2hex(c.h, c.s, v0)
-    this.grad1 = Color.hsv2hex(c.h, c.s, v1)
+    this.grad0 = nn.hsv2hex(c.h, c.s, v0)
+    this.grad1 = nn.hsv2hex(c.h, c.s, v1)
   }
 
   _canvasUpdate (x, y) {

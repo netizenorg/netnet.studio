@@ -42,7 +42,7 @@ window.CONVOS['code-examples'] = (self) => {
     }
   }, {
     id: 'before-loading-example-info',
-    content: 'I\'ll be happy to take you through this example step by step, but in order to do this I\'ll need to copy+paste the code into my editor which will get rid of all the code currently in my editor, is that alright with you?',
+    content: 'I\'ll be happy to take you through this example step by step, but in order to do this I\'ll need to copy+paste the code into my editor which will get rid of all the code currently in my editor. Is that alright with you?',
     options: {
       sure: (e) => {
         utils.loadExample(self.exData.key, 'widget')

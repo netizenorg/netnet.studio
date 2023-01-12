@@ -1,4 +1,4 @@
-/* global Widget, Convo, NNE, NNW, utils, Color, WIDGETS */
+/* global Widget, Convo, NNE, NNW, utils, nn, WIDGETS */
 class CSSReference extends Widget {
   constructor (opts) {
     super(opts)
@@ -64,7 +64,7 @@ class CSSReference extends Widget {
     // create color info (if color)
     // return b/c textBubble called again in _selectColor
     const k = NNE.edu.css.colors[eve.data]
-    const c = Color.match(eve.data.toLowerCase())
+    const c = nn.colorMatch(eve.data.toLowerCase())
     if (k && !eve.modified) return this._selectColor(eve, 'keyword', c, k)
     else if (c && c[0] === 'hex' && !eve.modified) {
       return this._selectColor(eve, 'hex', c, k)
@@ -148,7 +148,7 @@ class CSSReference extends Widget {
 
   _selectColor (e, type, c, k) {
     if (type === 'hex') {
-      const c = Color.match(e.data.toLowerCase())
+      const c = nn.colorMatch(e.data.toLowerCase())
       setTimeout(() => {
         if (c && c[0] === 'hex') {
           const from = NNE.cm.getCursor('from')
@@ -176,7 +176,7 @@ class CSSReference extends Widget {
         NNE.cm.setSelection(f, to)
         const sel = NNE.cm.getSelection()
         e.data = sel
-        c = Color.match(sel.toLowerCase())
+        c = nn.colorMatch(sel.toLowerCase())
         e.nfo = { description: { html: this._colorEduInfo(e, c, k) } }
         e.modified = 'color'
         this.textBubble(e)
@@ -207,7 +207,7 @@ class CSSReference extends Widget {
       type = 'keyword'
       val = k.name
       r.keyword = k.name; r.hex = k.hex; r.rgb = k.rgb
-      const hsl = Color.hex2hsl(k.hex)
+      const hsl = nn.hex2hsl(k.hex)
       r.hsl = `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`
     } else {
       type = c[0]
@@ -219,17 +219,17 @@ class CSSReference extends Widget {
             : val
       } else if (type === 'rgb' || type === 'hsl') {
         r.hex = type === 'rgb'
-          ? Color.rgb2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
-          : Color.hsl2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
-        if (alpha) r.hex += Color.alpha2hex(alpha)
+          ? nn.rgb2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
+          : nn.hsl2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
+        if (alpha) r.hex += nn.alpha2hex(alpha)
       }
 
-      const rgb = Color.hex2rgb(r.hex)
+      const rgb = nn.hex2rgb(r.hex)
       r.rgb = type === 'rgb' ? val
         : alpha ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
           : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 
-      const hsl = Color.hex2hsl(r.hex)
+      const hsl = nn.hex2hsl(r.hex)
       r.hsl = type === 'hsl' ? val
         : alpha ? `hsla(${hsl.h}, ${hsl.s}, ${hsl.l}, ${alpha})`
           : `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`

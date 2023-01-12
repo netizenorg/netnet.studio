@@ -96,7 +96,7 @@
     },
     "src": {
       "bubble": "The <code>src</code> attribute is used to embed content (other assets or even other web pages), by assigning a URL to another file's location as it's value.",
-      "example": "<!-- embedding an image -->\n<img src=\"images/gifs/cd.gif\" alt=\"an 8bit compact disk\">\n<!-- embedding sound -->\n<audio src=\"audios/electro-pop.mp3\" controls></audio>\n<!-- embedding video -->\n<video src=\"videos/screen-saver.mp4\" controls></video>\n<!-- embedding a web page -->\n<iframe src=\"tutorials/net-art-2/easylife.org/form/index1.html\"></iframe>\n<!-- importing a javascript file -->\n<script src=\"Maths.js\"></script>"
+      "example": "<!-- embedding an image -->\n<img src=\"images/gifs/cd.gif\" alt=\"an 8bit compact disk\">\n<!-- embedding sound -->\n<audio src=\"audios/electro-pop.mp3\" controls></audio>\n<!-- embedding video -->\n<video src=\"videos/screen-saver.mp4\" controls></video>\n<!-- embedding a web page -->\n<iframe src=\"tutorials/net-art-2/easylife.org/form/index1.html\"></iframe>\n<!-- importing a javascript file -->\n<script src=\"nn.min.js\"></script>"
     },
     "target": {
       "bubble": "Specifies where to open the linked document (in the case of an <code>&lt;a&gt;</code> element) or where to display the response received (in the case of a <code>&lt;form&gt;</code>element). Setting it's value to <code>target=\"_blank\"</code> for example will open the linked page on a new tab.",

@@ -196,7 +196,7 @@ class KeyboardShortcuts extends Widget {
         e.preventDefault()
         e.stopPropagation()
         NNE.cm.undo() // remove \n that Enter adds
-        if (!NNE.autoUpdate) NNE.update()
+        if (!NNE.autoUpdate) WIDGETS['functions-menu'].runUpdate()
       }
     })
   }
