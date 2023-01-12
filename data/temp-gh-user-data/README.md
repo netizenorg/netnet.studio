@@ -11,6 +11,8 @@ This is just 1 of a set of changes we needed to make when adding multiple file e
 
 # the save flow
 
+<!-- TOOD: add table of contents... -->
+
 ## when working on a "sketch"
 
 the user presses the `Cmd/Ctrl+S` or runs the `saveSketch()` function from the menu/search bar to trigger:
@@ -41,7 +43,7 @@ if the user runs `newProject()` from the project's menu, it will trigger:
 WIDGETS['functions-menu'].newProject()
 ```
 
-1. we first check to see if this someone else's project, if so they'll be given the option to "fork" it, if they choose to do so then we run `utils.forkRepo()` which hits our `./api/github/fork` and then runs `WIDGETS['functions-menu']._openProject()` (see below for more on `_openProject`), they might instead choose to create a new project which will `WIDGETS['student-session'].clearProjectData() ` as well as `WIDGETS['functions-menu']._createNewRepo()`
+1. we first check to see if this someone else's project, if so they'll be given the option to "fork" it, if they choose to do so then we run `utils.forkRepo()` which hits our `./api/github/fork` and then runs `WIDGETS['functions-menu']._openProject()` to load in their newly forked project from their GitHub (see below for more on `_openProject`), they might instead choose to create a new project which will `WIDGETS['student-session'].clearProjectData() ` as well as `WIDGETS['functions-menu']._createNewRepo()`
 
 2. if they have a project opened with unsaved changes they will be prompted to optionally save that first
 
@@ -86,7 +88,7 @@ before calling the `WIDGETS['files-and-folders']._renderToIframe('index.html')`
 
 ### saving a project
 
-if the user ran `Cmd/Ctrl+S` or `saveSketch()` and chose to save their project, or if they run `Cmd/Ctrl+S` while there was a project open, that will trigger:
+if the user ran `Cmd/Ctrl+S` or `saveProject()` while working on a sketch and chose to save their project, or if they run `Cmd/Ctrl+S` while there was an unsaved project open, that will trigger:
 
 ```js
 WIDGETS['functions-menu'].saveProject()
@@ -94,21 +96,22 @@ WIDGETS['functions-menu'].saveProject()
 
 1. we first check to see if this someone else's project, if so they'll be given the option to "fork" it, if they choose to do so then we run `utils.forkRepo()` which hits our `./api/github/fork` and then runs `WIDGETS['functions-menu']._openProject()` (see `_openProject` above for more), they might instead choose to create a new project which will `WIDGETS['student-session'].clearProjectData() ` as well as `WIDGETS['functions-menu']._createNewRepo()` (see above for more on `_createNewRepo`)
 
-2. if there's no project opened, they'll be prompted to save a new one (see `newProject` below).
+2. if there's no project opened, they'll be prompted to save a new one (see `newProject` above).
 
 3. if they have a project opened but there's nothing new to save, we'll let them know
 
 4. *otherwise* if they have a project opened && there are unsaved changes to the current file, then we'll post the `{ owner, path, name, code }` to `./api/github/update-cache` to store those changes in the server session temporarily for the reasons explained at the top of this README file. This will also trigger a call to `WIDGETS['files-and-folders']_updateOpenFile(true)`
+
+What `_updateOpenFile()` essentially does is:
+  1. when triggered on save, it'll first update that file's `lastSavedCode` in the dictionary && then re-render the netitor
+  2. update the title bar (to reflect it's save state)
+  3. update the 'files-and-folders' view to label the html page currently being rendered
 
 `_updateOpenFile()` not only runs after the user saves their project, but also:
 - on `NNE.on('code-update')` (assuming Files-And-Folders has been instantiated)
 - every time we run `WIDGETS['files-and-folders']._setupTreeView()` (assuming a `this._rendering` file has been set) this happens every call to `updateFiles()`
 - every time we run `WIDGETS['files-and-folders'].updateDict()` (which happens every time a new commit is made)
 
-What `_updateOpenFile()` essentially does is:
-  1. when triggered on save, it'll first update that file's `lastSavedCode` in the dictionary && then re-render the netitor
-  2. update the title bar (to reflect it's save state)
-  3. update the 'files-and-folders' view to label the html page currently being rendered
 
 
 TODO: ....staging + pushing....

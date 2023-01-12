@@ -170,7 +170,7 @@ class FunctionsMenu extends Widget {
 
   saveProject (redirect) {
     this._redirect = redirect
-    const urlOwner = utils.url.github.split('/')[0]
+    const urlOwner = utils.url.github ? utils.url.github.split('/')[0] : null
     const op = WIDGETS['student-session'].data.github.openedProject
     const owner = WIDGETS['student-session'].data.github.owner
 
@@ -645,7 +645,7 @@ class FunctionsMenu extends Widget {
 
   _createNewRepo (c, t, v) {
     WIDGETS['student-session'].clearSaveState()
-    window.convo = new Convo(this.convos, 'pushing-updates')
+    window.convo = new Convo(this.convos, 'pushing-updates') // TODO << https://github.com/netizenorg/netnet.studio/blob/main/www/convos/functions-menu/index.js#L207
     const data = { name: v, data: utils.btoa(NNE.code) }
     window.utils.post('./api/github/new-repo', data, (res) => {
       NNW.menu.switchFace('default')
@@ -661,7 +661,7 @@ class FunctionsMenu extends Widget {
         WIDGETS['student-session'].setProjectData({
           name: res.name,
           message: res.message,
-          file: res.path,
+          file: res.path || 'index.html',
           url: res.url,
           ghpages: res.ghpages,
           branch: res.branch,
@@ -669,15 +669,26 @@ class FunctionsMenu extends Widget {
         })
         WIDGETS['student-session'].updateRoot()
         NNW.updateTitleBar(`${res.name}/index.html`)
-        // ...convo
+        NNE.autoUpdate = false
         if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'new-project-created')
+        WIDGETS.open('files-and-folders')
+        // if (!WIDGETS['files-and-folders']) {
+        //
+        // } else {
+        //   WIDGETS['files-and-folders'].updateFiles(res.data.tree)
+        //   WIDGETS['student-session'].setSessionState()
+        //   WIDGETS['files-and-folders'].open()
+        // }
+
+        // ...convo
+        // this.convos = window.CONVOS[this.key](this)
+        // window.convo = new Convo(this.convos, 'new-project-created')
+
         // update URL
         const owner = WIDGETS['student-session'].getData('owner')
         const repo = WIDGETS['student-session'].getData('opened-project')
         utils.updateURL(`?gh=${owner}/${repo}`)
-        // ... upldate list of repos...
+        // ... update list of repos...
         utils.get('/api/github/saved-projects', (json) => {
           if (!json.data) return
           const names = json.data.map(o => o.name)

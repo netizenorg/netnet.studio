@@ -17,9 +17,13 @@ window.CONVOS['functions-menu'] = (self) => {
   })()
 
   const createNewRepo = (c, t) => {
-    const v = t.$('input').value.replace(/\s/g, '-')
-    const p = /^(\w|\.|-)+$/
-    if (!p.test(v)) c.goTo('explain-proj-name')
+    // const v = t.$('input').value.replace(/\s/g, '-')
+    const v = t.$('input').value
+    const u = /[A-Z]/ // checking for uppercase chars
+    const p = /^(\w|\.|-)+$/ // checking for special characters
+    if (/\s/.test(v)) c.goTo('explain-proj-name-spaces')
+    else if (u.test(v)) c.goTo('explain-proj-name-uppercase')
+    else if (!p.test(v)) c.goTo('explain-proj-name-special-chars')
     else { c.hide(); self._createNewRepo(c, t, v) }
   }
 
@@ -133,8 +137,38 @@ window.CONVOS['functions-menu'] = (self) => {
       'never mind': (e) => e.hide()
     }
   }, {
-    id: 'explain-proj-name', // if createNewRepo receives a bad name value
+    id: 'explain-proj-name-special-chars', // if createNewRepo receives a bad name value
     content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-spaces', // if createNewRepo receives a bad name value
+    content: 'It\'s considered bad practice to include spaces in your file or folder names. Try a different name or maybe place <code>-</code> between words instead of spaces? <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'why is it bad practice?': (e) => e.goTo('explain-proj-name-spaces-why'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-spaces-why', // if createNewRepo receives a bad name value
+    content: 'Because a "space" isn\'t always a "space" in code, sometimes spaces can be written normally <code>project name</code>, but other times they need to be written with a <code>\\s</code> like <code>project\\sname</code> or with a <code>%20</code> like <code>project%20name</code>.\nTo avoid having to keep track of all this, it\'s best to simply avoid spaces. Try a different name or maybe place <code>-</code> between words instead of spaces? <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-uppercase', // if createNewRepo receives a bad name value
+    content: 'It\'s considered bad practice to include upper case characters in your file or folder names. Try a name that\'s all lowercase <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'why is it bad practice?': (e) => e.goTo('explain-proj-name-uppercase-why'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-uppercase-why', // if createNewRepo receives a bad name value
+    content: 'Because we often need to reference our file and folder names in our code, and it\'s all to easy to forget to write it with an uppercase, this is one of the most common mistakes I\'ve spotted in student and professional projects alike, so it\'s best to simply keep things lowercase. Try a name that\'s all lowercase <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),
       'never mind': (e) => e.hide()
@@ -147,6 +181,11 @@ window.CONVOS['functions-menu'] = (self) => {
       ok: (e) => e.goTo('create-new-project'),
       'never mind': (e) => e.hide()
     }
+  }, {
+    id: 'pushing-updates',
+    before: () => NNW.menu.switchFace('processing'),
+    content: '...sending data to GitHub...',
+    options: {}
   }, {
     id: 'new-project-created',
     content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to your GitHub account. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Files And Folders</b> widget, or click <code>FilesAndFolders()</code> in the <b>Functions Menu</b>`,

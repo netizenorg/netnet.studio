@@ -344,12 +344,17 @@ class FilesAndFolders extends Widget {
 
     if (this.$('.fnf__tree-view > .folder')) {
       // close folders by default
-      this.$('.fnf__tree-view > .folder').forEach(f => f.click())
-      // label file currently (rendering)
-      if (this._rendering) {
-        this._updateOpenFile()
-        this._renderToIframe()
+      if (this.$('.fnf__tree-view > .folder') instanceof window.NodeList) {
+        this.$('.fnf__tree-view > .folder').forEach(f => f.click())
+      } else {
+        this.$('.fnf__tree-view > .folder').click()
       }
+    }
+
+    // label file currently (rendering)
+    if (this._rendering) {
+      this._updateOpenFile()
+      this._renderToIframe()
     }
   }
 
@@ -554,7 +559,7 @@ class FilesAndFolders extends Widget {
     const postOpen = (path, code) => {
       window.convo.hide()
       NNW.updateTitleBar(`${repo}/${path}`)
-      WIDGETS['student-session'].updateRoot(sub)
+      // WIDGETS['student-session'].updateRoot(sub)
       const c = utils.atob(code)
       WIDGETS['student-session'].setData('opened-file', path)
       WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
@@ -568,7 +573,10 @@ class FilesAndFolders extends Widget {
       NNW.menu.switchFace('default')
       if (ext === 'html' || ext === 'js' || ext === 'css') {
         NNE.language = ext
-        if (ext === 'html') this._renderToIframe(path)
+        if (ext === 'html') {
+          WIDGETS['student-session'].updateRoot(sub)
+          this._renderToIframe(path)
+        }
       } else if (ext === 'json' || ext === 'csv' || ext === 'txt' || ext === 'md') {
         NNE.language = 'markdown'
       } else {

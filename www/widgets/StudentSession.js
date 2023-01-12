@@ -44,7 +44,7 @@ class StudentSession extends Widget {
         layout: ls.getItem('last-saved-layout'),
         widgets: ls.getItem('last-saved-widgets')
       },
-      lastSaveProject: JSON.parse(ls.getItem('last-saved-session')),
+      lastSaveProject: JSON.parse(ss.getItem('last-saved-session')),
       tutorial: {
         // TODO: bookmark feature?
         // saves tut-video-timeline timecode + widget placements + netitor code && layout
@@ -109,11 +109,11 @@ class StudentSession extends Widget {
   setSessionState (dict) {
     dict = dict || WIDGETS['files-and-folders'].dict
     const str = JSON.stringify(dict)
-    window.localStorage.setItem('last-saved-session', str)
+    window.sessionStorage.setItem('last-saved-session', str)
   }
 
   getSessionState () {
-    const str = window.localStorage.getItem('last-saved-session')
+    const str = window.sessionStorage.getItem('last-saved-session')
     return JSON.parse(str)
   }
 
@@ -121,7 +121,7 @@ class StudentSession extends Widget {
     window.localStorage.removeItem('last-saved-sketch')
     window.localStorage.removeItem('last-saved-layout')
     window.localStorage.removeItem('last-saved-widgets')
-    window.localStorage.removeItem('last-saved-session')
+    window.sessionStorage.removeItem('last-saved-session')
   }
 
   restoreSavePoint () {
@@ -144,7 +144,7 @@ class StudentSession extends Widget {
     // TODO: will need to update mutli-file-widget if/when we make that widget
     if (data.name) ss.setItem('opened-project', data.name)
     if (data.message) ss.setItem('last-commit-msg', data.message)
-    if (data.file) ss.setItem('opened-file', data.openedFile)
+    if (data.file) ss.setItem('opened-file', data.file)
     if (data.url) ss.setItem('project-url', data.url)
     if (data.ghpages) ss.setItem('ghpages', data.ghpages)
     if (data.branch) ss.setItem('branch', data.branch)
