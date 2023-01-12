@@ -122,15 +122,10 @@ class CodeExamples extends Widget {
         occupiedLines.push(l)
       }
     }
-    utils.afterLayoutTransition(() => data.info.forEach((o, i) => addMarker(o, i)))
-    // ....TODO (fix this?)
-    // utils.afterLayoutTransition(() => {
-    //   data.info.forEach((obj, i) => addMarker(obj, i))
-    //   if (!this.opened) {
-    //     window.convo = new Convo(this.convos, 'after-loading-example-info')
-    //   }
-    // })
-    //
+    utils.afterLayoutTransition(() => {
+      data.info.forEach((o, i) => addMarker(o, i))
+      WIDGETS['code-review'].addIssueMarkers()
+    })
     SNT.post(SNT.dataObj('EX-explain', { name: data.name, key: data.key }))
   }
 
