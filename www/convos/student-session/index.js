@@ -57,7 +57,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'prior-save-state',
-    content: `Looks like you saved the state of the studio session last time you were here, I can inject that code back into my editor for you now if you'd like. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to undo anything I inject.`,
+    content: `Looks like you saved your previous studio session last time you were here. I can inject that code back into my editor for you now if you'd like. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to undo anything I inject.`,
     options: {
       'yes please': (e) => {
         e.hide()
