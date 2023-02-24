@@ -1,8 +1,14 @@
 {
   "name": "Date()",
   "toc": true,
+  "tags": [
+    "javascript",
+    "date",
+    "time",
+    "clock"
+  ],
   "layout": "dock-left",
-  "key": 67,
+  "key": 69,
   "code": "#code/eJxdUbFOwzAQnduvOLw0GdowIuFkoI0EElAE7YAQg+temoDjWM5FNEL8OzZOqoos7+z3fPfuhV+s1svN61MOJdUqm3IPoIQ+pAz1fPvCsumElyj2Die8RhIgS2FbpJR1VMyv2B9BFSnMVoIwimG9+0BJkB9FbRTyJJBTcB9vqXc1TwK63snQnO+afT+IJGpC6xtPuAGpRNumzLDsTmu0sMEj8cQEetcRNRoaLVUlP1NmsbDYllHMsudQgnfFkyAcBiTjBH8ajElbGQo3AAoJZGetk/nnkILGLwj7XZ9pjGP2jexqJ1wckHKFvmxv+qV3/ShqjGZmFr9dvo/PBjgZ/XdfdFpS5VY6CeB7oADMovIR3G4e7t3gM4Njkx+HLtPzZXzGIVuXtf/Jv8J4kEc=",
   "info": [
     {
