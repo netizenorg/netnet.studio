@@ -1,0 +1,108 @@
+{
+  "name": "HTML5 Template",
+  "toc": true,
+  "tags": [
+    "html",
+    "html5",
+    "template"
+  ],
+  "layout": "dock-left",
+  "key": 67,
+  "code": "#code/eJx1Uk1PwzAMPW+/wsuFC121G0JtOQA3BEiAECfkJaaxaJMocZn496TtgIkPqVLqPL9n+znV6uLm/P7p9hKs9F2zrMYDOnRtrcgVD3eqWQJUltCMP/nL0aoo4MkPEVRPggYFFbSeEliKBOwSG4L3MWEmQlE0M3PMB20xJpJaDfJSnKhDyGFPtXpj2gUfRYH2Tsjl1B0bsbWhN9ZUTMFxLsTC2BVJY0f1JgvNSsLSUfPgptNU5Rz/qoKDWB8PakwjXWfsj5YMJR05CHt3wHi0KEcJxHKCgC0Bbv0gZ2pvVVV++lZtvXlvlosf/u2F/jNvIn2bZzfNI3Xa97TKypv9bciyi0WFYCO91MqKhHRaluTWO37lQIZx7WNbjlF55SP1zxzS0CsQjO24hudt3veraiYQJrAqcZYHML7zERILZCPkeOw5kRaS3CEaDpxYs2uBOs5oIpMZQDyk3hsQ6vMi81SaDZvByXpuugxfFs3O5IHG9/cByyrN5w==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This is an HTML5 template. Although none of these elements are <i>technically</i> necessary to create an HTML page, this sort of structure is considered \"best practice\" when publishing your work on the Web. I'll walk you through each piece and explain why."
+    },
+    {
+      "title": "<!DOCTYPE html>",
+      "focus": [
+        1
+      ],
+      "text": "Assuming you want your work to stand the test of time, this line of code will help make your code a bit more \"future proof\". This tag is not an HTML element in the traditional sense. It is a \"declaration\" to the browser about what document type to expect. This helps the browser determine the best way to <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML/Quirks_Mode_and_Standards_Mode\" target=\"_blank\">render</a> the page. There are different doctypes for code written at different points in history of HTML, this one is for HTML5, the era of HTML we're currently in."
+    },
+    {
+      "title": "<html>",
+      "focus": [
+        2,
+        24
+      ],
+      "text": "The first official HTML element is this <code>&lt;html&gt;</code> tag, ours has the optional <code>lang</code> attribute which is used to let the browser know what language the content of our page will be written in. I've set it to the US version of English. While this too is not \"technically\" necessary, it will help your page's accessibility. You can read more about the <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang\" target=\"_blank\">lang attribute</a> if you're curious."
+    },
+    {
+      "title": "two \"children\"",
+      "focus": [
+        2,
+        3,
+        13,
+        14,
+        23,
+        24
+      ],
+      "text": "Our <code>&lt;html&gt;</code> element should contain only two elements directly inside of it (aka two \"children\" elements), the <code>&lt;head&gt;</code> and the <code>&lt;body&gt;</code>."
+    },
+    {
+      "title": "<head>",
+      "focus": [
+        3,
+        5,
+        9,
+        13
+      ],
+      "text": "The <code>&lt;head&gt;</code> is where our \"metadata\" goes. This is information <i>about</i> your page, rather than the page's content itself. For example, your page's <code>&lt;title&gt;</code>, this won't appear on your page but it will appear elsewhere, like in the browser tab or browser's history. This is also the title that will show up in web search results and social media cards when folks share a link to your page on other platforms."
+    },
+    {
+      "title": "utf-8 <meta> tag",
+      "focus": [
+        6
+      ],
+      "text": "In this template I've included a few other <code>&lt;meta&gt;</code> tags. This first one lets browsers know that the code you've written has been encoded using the <a href=\"https://blog.hubspot.com/website/what-is-utf-8\" target=\"_blank\">utf-8</a> standard, which is the default in most code editors including myself."
+    },
+    {
+      "title": "viewport <meta> tag",
+      "focus": [
+        7
+      ],
+      "text": "This next meta tag is for mobile devices, without it your page would look teeny-tiny on smaller devices. Check out this <a href=\"https://stackoverflow.com/questions/10892463/how-is-the-meta-viewport-tag-used-and-what-does-it-do\" target=\"_blank\">stackoverflow conversation</a> to learn more about it."
+    },
+    {
+      "title": "name/description <meta> tags",
+      "focus": [
+        10,
+        11
+      ],
+      "text": "These last couple meta tags are used for attribution and a short description of the page. Again, none of this shows up on the page itself, this is \"metadata\" that shows up elsewhere like web search results."
+    },
+    {
+      "title": "<body>",
+      "focus": [
+        14,
+        16,
+        23
+      ],
+      "text": "Here we have the <code>&lt;body&gt;</code> element, this is where all your content goes, all the elements you define here will get rendered on your page."
+    },
+    {
+      "title": "page content",
+      "focus": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "text": "I've gone ahead and put a couple of elements for you to get started with, an <code>&lt;h1&gt;</code> or header element, as well as a <code>&lt;p&gt;</code> tag or paragraph element. Feel free to delete these and/or add your other elements here."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Don't forget to change the title, author and descirption in the <code>&lt;head&gt;</code> metadata as well!"
+    }
+  ]
+}

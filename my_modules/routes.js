@@ -14,7 +14,8 @@ const frontEndDependencies = [
   { url: '/netitor.min.js', loc: '../www/js/netitor/build/netitor.min.js' },
   { url: '/netitor.js', loc: '../www/js/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/js/netnet-standard-library/build/netnet-standard-library.js' },
-  { url: '/nn.min.js', loc: '../www/js/netnet-standard-library/build/nn.min.js' }
+  { url: '/nn.min.js', loc: '../www/js/netnet-standard-library/build/nn.min.js' },
+  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' }
 ]
 
 frontEndDependencies.forEach(dep => {
@@ -33,7 +34,9 @@ router.get('/tutorials/*', (req, res, next) => {
     const file = fs.readFileSync(list)
     const json = JSON.parse(file)
     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    json.listed = json.listed.filter(t => dirs.includes(t))
+    for (const sec in json) {
+      json[sec] = json[sec].filter(t => dirs.includes(t))
+    }
     res.json(json)
   } else next()
 })

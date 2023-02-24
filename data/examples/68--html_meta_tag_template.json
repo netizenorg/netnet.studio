@@ -1,0 +1,117 @@
+{
+  "name": "html meta tag template",
+  "toc": true,
+  "tags": [
+    "html",
+    "template",
+    "social media",
+    "meta",
+    "og",
+    "open graph",
+    "facebook",
+    "twitter"
+  ],
+  "layout": "dock-left",
+  "key": 68,
+  "code": "#code/eJyVVMFu2zAMPS9fweiyy1xjtyGIswLdjtsKrEXRU0BbtCVMlgyJruG/nyQnqLEmBQYYkGnyPZJPpPfbb7/uHp7vv4Pi3hw2+3SAQdtVgmzx+FscNgB7RSjTS3yi1RMjNAp9IK7EyG3xJYedXRZ7qsSLpmlwngU0zjLZGDppyaqS9KIbKrLxCbTVrNEUoUFD1edItDCxZkOHR5tPuS8X+00WHFk5v8rx7EYPP6PvQkmSQuP1wNrZFeJJIX8MwEoHGLAjwNqN/PWEX0i2RQEtxrqdhdZ5qL2bAnlgrAOglUAm0KTIExTFKbHR9g94MpVIMAE8D7EG3ccU5WA7AcpTWwnjOneT7H/zBddEYaAnqRECj237yp2bGrwbyPNcCdftsj6rrn7M8EQ13Mds4iooaKZj0uZ/gaM3K4hiHsKuLCeqE+NN4/rr0CzA++Ayx4QyDAaDWolzge7ynT6ky4xPP8dvzkAkX+520qwAjYnqeg7g2sWf5d1eGBmOACa/a9DLFX8Y+x79fDToOzouLV0HZ/8OzXoXzpUtPUKagncYkjIr8O0Yh88uQ572szwv6L52cj5sPrxOUd6H3PoJDZ2jAHlUtQ1aEswpZEHmCcuMC1FkTv+Fv3CxWIc=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This example is very similar to the basic <a href=\"https://netnet.studio?ex=67\" target=\"_blank\">HTML5 template example</a> except that it includes a few extra meta tags\nin the <code>&lt;head&gt;</code> of our HTML file."
+    },
+    {
+      "title": "<link> element",
+      "focus": [
+        13
+      ],
+      "text": "The first is this <code>&lt;link&gt;</code> element, <span class=\"link\" onclick=\"WIDGETS['html-reference'].open();WIDGETS['html-reference'].goTo('elements', 'link') \">the link tag</span> can be used to include fonts, icons and CSS files. In this example, we're using it to import a special icon known as a \"favicon\", this is the tiny image that shows up in browser tabs, bookmarks and history lists. "
+    },
+    {
+      "title": "<link> attributes",
+      "focus": [
+        13
+      ],
+      "text": "The <code>type</code> attribute specifies what kind of image file I'm using for my icon while the <code>href</code> attribute provides a relative path to the image file. In this hypothetical case, the image is in the same folder (or directory) as this HTML page, so we only need to write the file's name."
+    },
+    {
+      "title": "social meta tags",
+      "focus": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "text": "This next set of meta tags are used by social media websites to create those social \"cards\" or boxes which appear on social media posts when someone shares a link to this site. These usually include a title a description and some sort of image."
+    },
+    {
+      "title": "meta tag attributes",
+      "focus": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "text": "You might have noticed that all the tags have a <code>content</code> attribute (that's the part you'll want to edit), but only the first few have a <code>property</code> attribute while the last few have a <code>name</code> attribute instead. These ultimately serve the same purpose, they tell the browser what type of meta tag this is. While those last few are exclusively used by Twitter, the first few are part of the <a href=\"https://ogp.me/\" target=\"_blank\">open graph</a> standard, which was started by Facebook but is now used by most social media platforms."
+    },
+    {
+      "title": "og:title",
+      "focus": [
+        16
+      ],
+      "text": "This first meta tag, as the name implies, is the title of this page, this will appear above the description in the social card that gets generated when the link to this page is shared on social media. "
+    },
+    {
+      "title": "og:site_name",
+      "focus": [
+        17
+      ],
+      "text": "The second meta tag is used to display the name of the website itself. In this case, an example \"home page\", the site name is also the title, but if we were on a sub-page, the title might be something different from the general website's name."
+    },
+    {
+      "title": "url, image, description",
+      "focus": [
+        18,
+        19,
+        20
+      ],
+      "text": "These next three meta tags fill out the rest of the info which will show up in the generated social card, the URL for this page, a URL to an image which you want displayed in the card as well as the description (if you want one) which will appear beneath it."
+    },
+    {
+      "title": "published sites",
+      "focus": [
+        18,
+        19,
+        20
+      ],
+      "text": "Keep in mind, these social cards only work for websites that are published on the World Wide Web and thus have functioning URLs. The URLs used in this example don't actually work, they're for demonstration purposes only."
+    },
+    {
+      "title": "twitter tags",
+      "focus": [
+        21,
+        22,
+        23
+      ],
+      "text": "These last three are used exclusively by Twitter, and are used to create the \"alt text\" which will be used by screen readers as well as optionally include your Twitter username (if you have one)."
+    },
+    {
+      "title": "validation",
+      "focus": null,
+      "text": "Once you've published your page on the Web, it's hard to know what these social cards are going to look like until you actually share a link to this page on social media. But you might want to test that you wrote your code correctly before sharing, for this reason both <a href=\"https://cards-dev.twitter.com/validator\" target=\"_blank\">Twitter</a> and <a href=\"https://developers.facebook.com/tools/debug/\" target=\"_blank\">Facebook</a> have created \"validators\" which let you test your published site's social cards without having to actually post a link to social media yourself."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "To learn even more about these meta tags check out this post on css-tricks called <a href=\"https://css-tricks.com/essential-meta-tags-social-media/\" target=\"_blank\">The Essential Meta Tags for Social Media</a>."
+    }
+  ]
+}

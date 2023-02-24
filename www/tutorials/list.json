@@ -1,11 +1,16 @@
 {
-  "listed": [
-    "what-is-code",
+  "code": [
+    "what-is-code"
+  ],
+  "html": [
     "html-crash-course",
     "net-art-1",
-    "net-art-2",
+    "net-art-2"
+  ],
+  "css": [
     "css-crash-course",
     "css-art-1",
     "css-art-2"
-  ]
+  ],
+  "js": []
 }

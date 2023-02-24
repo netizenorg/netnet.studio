@@ -1,15 +1,15 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, SNT */
-class TutorialsGuide extends Widget {
+/* global Widget, WIDGETS, utils, Convo, NNE, SNT, nn */
+class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
     this.title = 'Learning Guide (BETA-2.0)'
-    this.key = 'tutorials-guide'
+    this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
 
     this.on('open', () => {
-      this.update({ left: 20, top: 20 }, 500)
+      this.update({ right: 20, top: 20 }, 500)
       this._openConvo()
     })
 
@@ -18,6 +18,10 @@ class TutorialsGuide extends Widget {
     this.metadata = null
     this.data = null
     this.loaded = null
+
+    if (!WIDGETS.loaded.includes('CodeExamples.js')) {
+      WIDGETS.load('CodeExamples.js')
+    }
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -31,7 +35,13 @@ class TutorialsGuide extends Widget {
 
       // initial HTML
       this._createHTML()
-      this.title = 'Learning Guide (BETA-2.0)'
+      const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
+      this.title = `${icon} Learning Guide (BETA-2.0)`
+    })
+
+    WIDGETS['functions-menu'].on('theme-change', () => {
+      const src = this.ele.querySelector('iframe').src
+      this.ele.querySelector('iframe').src = src
     })
   }
 
@@ -99,19 +109,34 @@ class TutorialsGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._enableExamplesButton()
+    // this._enableExamplesButton()
     this._listTutorials()
     this._enableAppendixLinks()
+
+    // const canvas = this.ele.querySelector('canvas')
+    const canvas = document.createElement('canvas')
+    this._createStarField(canvas)
+    this.slide.appendChild(canvas)
+
+    this._highlightTitles()
+
+    this.slide.style.overflowX = 'hidden'
+
+    // this.ele.querySelectorAll('h3').forEach(e => {
+    //   e.addEventListener('click', () => {
+    //     window.convo = new Convo(this.convos, e.textContent)
+    //   })
+    // })
   }
 
-  _enableExamplesButton () {
-    this.slide.querySelector('#ex-open-btn')
-      .addEventListener('click', () => {
-        WIDGETS.open('code-examples')
-        this.close()
-        window.convo.hide()
-      })
-  }
+  // _enableExamplesButton () {
+  //   this.slide.querySelector('#ex-open-btn')
+  //     .addEventListener('click', () => {
+  //       WIDGETS.open('code-examples')
+  //       this.close()
+  //       window.convo.hide()
+  //     })
+  // }
 
   _enableAppendixLinks () {
     this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
@@ -128,12 +153,14 @@ class TutorialsGuide extends Widget {
     const tutHTML = (t, i) => {
       const div = document.createElement('div')
       div.className = 'learning-guide__tut'
+      div.dataset.id = t.id
       div.innerHTML = `
         <div>
           <div>
             <h2>${t.title}</h2>
             <b>${t.subtitle}</b>
           </div>
+          <div class="learning-guide__dotted-line"></div>
           <div>
             <button name="tut:${t.id}">play</button>
             <button name="i:${t.id}">i</button>
@@ -141,44 +168,42 @@ class TutorialsGuide extends Widget {
         </div>
         <p name="nfo:${t.id}">${t.description}</p>
       `
-      const p = div.querySelector('p')
-      const W = 554
-      const w = 340
-      const f = W / 2 - w / 2
-      const l = f - (Math.sin(i) * f)
-      div.style.width = w + 'px'
-      div.style.marginLeft = l + 'px'
-      p.style.width = W + 'px'
-      p.style.transform = `translateX(-${l}px)`
       return div
     }
 
-    const tutorials = []
-    const div = this.ele.querySelector('.learning-guide__tut-list')
+    const tutorials = {}
+    const tutzReady = () => {
+      for (const sec in tutorials) {
+        tutorials[sec] // when all are loaded, append tutorial <div> to guide
+          .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
+          .forEach(obj => {
+            const div = document.querySelector(`.learning-guide__tut-${sec}`)
+            if (div) div.appendChild(obj.html)
+          })
+      }
+      this._enableLearningGuideEventListeners()
+    }
 
     utils.get('tutorials/list.json', (json) => {
       let count = 0
-      json.listed.forEach((name, i) => {
-        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          tutorials.push({ // create tutorial <div>
-            index: json.listed.indexOf(name), html: tutHTML(tut, i)
+      let total = 0
+      for (const sec in json) { total += json[sec].length }
+      for (const sec in json) {
+        tutorials[sec] = []
+        json[sec].forEach((name, i) => {
+          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+            tutorials[sec].push({
+              index: json[sec].indexOf(name), html: tutHTML(tut, i)
+            })
+            count++
+            if (count === total) tutzReady()
           })
-          count++
-          // ...
-          if (count === json.listed.length) {
-            tutorials // when all are loaded, append tutorial <div> to guide
-              .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
-              .forEach(obj => div.appendChild(obj.html))
-
-            this._enableTutorialEventListeners(div)
-          }
-          // ...
         })
-      })
+      }
     })
   }
 
-  _enableTutorialEventListeners (div) {
+  _enableLearningGuideEventListeners () {
     this.slide.querySelector('#page-aboutOpts')
       .addEventListener('click', () => {
         this.slide.updateSlide(this.aboutOpts)
@@ -186,23 +211,48 @@ class TutorialsGuide extends Widget {
       })
 
     // enable "play" buttons
-    div.querySelectorAll('[name^="tut"]').forEach(ele => {
+    this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
       const tut = ele.getAttribute('name').split(':')[1]
       ele.addEventListener('click', () => this.load(tut))
     })
 
+    // hover over tutorials
+    this.ele.querySelectorAll('.learning-guide__tut')
+      .forEach(div => {
+        div.addEventListener('mouseover', () => {
+          const vid = document.createElement('video')
+          vid.id = 'tut-preview-video'
+          vid.src = `/tutorials/${div.dataset.id}/preview.mp4`
+          vid.style.position = 'absolute'
+          vid.style.left = 0
+          vid.style.top = 0
+          vid.style.zIndex = 1
+          vid.style.border = 'none'
+          vid.style.width = '600px'
+          vid.style.height = '440px'
+          vid.style.opacity = 0.15
+          this.slide.appendChild(vid)
+          vid.muted = true
+          vid.play()
+        })
+
+        div.addEventListener('mouseout', () => {
+          this.slide.querySelector('#tut-preview-video').remove()
+        })
+      })
+
     // calc <p> heights && hide them
-    div.querySelectorAll('[name^="nfo"]').forEach(p => {
+    this.ele.querySelectorAll('[name^="nfo"]').forEach(p => {
       p.dataset.height = p.offsetHeight
       p.style.height = '0px'
       p.style.display = 'none'
     })
 
     // enable "info" buttons
-    div.querySelectorAll('[name^="i"]').forEach(ele => {
+    this.ele.querySelectorAll('[name^="i"]').forEach(ele => {
       const t = ele.getAttribute('name').split(':')[1]
       ele.addEventListener('click', () => {
-        const p = div.querySelector(`[name="nfo:${t}"]`)
+        const p = this.ele.querySelector(`[name="nfo:${t}"]`)
         if (ele.textContent === 'i') {
           p.style.display = 'block'
           ele.textContent = 'x'
@@ -258,6 +308,105 @@ class TutorialsGuide extends Widget {
       }
     })
   }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
+
+  _createStarField (ele) {
+    const self = this
+
+    const canvas = ele
+    canvas.style.position = 'absolute'
+    canvas.style.top = 0
+    canvas.style.left = 0
+    canvas.style.zIndex = 0
+    canvas.width = self.ele.offsetWidth
+    canvas.height = self.ele.offsetHeight
+    const ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    const mkStar = (star = {}) => {
+      const w = canvas.width
+      const h = canvas.height
+      star.x = w / 2
+      star.y = h / 2
+      star.dx = Math.random() * 10 - 5
+      star.dy = Math.random() * 10 - 5
+      star.w = 1
+      star.h = 1
+      star.a = 0
+      star.z = 500
+      const s = (w > h) ? w : h
+      star.x += star.dx * s / 10
+      star.y += star.dy * s / 10
+      return star
+    }
+
+    // SETUP
+    const stars = []
+    const acc = 1 // acceleration
+    for (let i = 0; i < 100; i++) stars.push(mkStar())
+
+    // DRAW
+    const animate = () => {
+      setTimeout(() => animate(), 1000 / 60)
+      const w = canvas.width
+      const h = canvas.height
+      ctx.clearRect(0, 0, w, h)
+
+      let newStars = 0
+      stars.forEach((star, i) => {
+        ctx.fillStyle = utils.getVal('--netizen-text')
+
+        star.x += star.dx
+        star.y += star.dy
+        star.a++
+
+        const outdX = star.x < 0 || star.x > w
+        const outdY = star.y < 0 || star.y > h
+        if (outdX && outdY) {
+          star.x = w / 2 + star.dx * 2
+          star.y = h / 2 + star.dy * 2
+          star.dx += star.dx / (50 / acc)
+          star.dy += star.dy / (50 / acc)
+          const max = 4
+          if (star.dx < -max) star.dx = -max
+          if (star.dx > max) star.dx = max
+          if (star.dy < -max) star.dy = -max
+          if (star.dy > max) star.dy = max
+        }
+
+        if (star.a === Math.floor(50 / acc) |
+            star.a === Math.floor(150 / acc) |
+            star.a === Math.floor(300 / acc)) {
+          star.w++
+          star.h++
+        }
+
+        if (star.x + star.w < 0 || star.x > w ||
+        star.y + star.h < 0 | star.y > h) {
+          const idx = stars.indexOf(star)
+          stars.splice(idx, 1)
+          newStars++
+        }
+
+        if (isNaN(star.x)) console.log('nan', stars.indexOf(star))
+        ctx.fillRect(star.x, star.y, 1, 1)
+      })
+
+      for (let i = 0; i < newStars; i++) stars.push(mkStar())
+    }
+
+    animate()
+  }
+
+  _highlightTitles () {
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+    })
+  }
 }
 
-window.TutorialsGuide = TutorialsGuide
+window.LearningGuide = LearningGuide
