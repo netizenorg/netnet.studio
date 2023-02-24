@@ -25,7 +25,7 @@ window.CONVOS['student-session'] = (self) => {
       'I want to learn': (e) => {
         e.hide()
         NNW.menu.switchFace('default')
-        WIDGETS.open('tutorials-guide')
+        WIDGETS.open('learning-guide')
         SNT.post(SNT.dataObj('i-want-to-learn'))
       },
       'I want to sketch': (e) => {
@@ -104,7 +104,7 @@ window.CONVOS['student-session'] = (self) => {
       'I want to learn': (e) => {
         e.hide()
         NNW.menu.switchFace('default')
-        WIDGETS.open('tutorials-guide')
+        WIDGETS.open('learning-guide')
         SNT.post(SNT.dataObj('i-want-to-learn'))
       },
       'I want to sketch': (e) => {
@@ -155,7 +155,7 @@ window.CONVOS['student-session'] = (self) => {
     options: {
       'I want to learn': (e) => {
         e.hide()
-        WIDGETS.open('tutorials-guide')
+        WIDGETS.open('learning-guide')
         SNT.post(SNT.dataObj('i-want-to-learn'))
       },
       'I want to sketch': (e) => {

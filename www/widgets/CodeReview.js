@@ -26,7 +26,7 @@ class CodeReview extends Widget {
     // mark editor
     const c = WIDGETS['student-session']
       ? WIDGETS['student-session'].getData('chattiness') : null
-    if (c && c !== 'low') this._markErrors(this.issues)
+    if (c && c !== 'low') this._markErrors(this.issues, true)
     else NNE.marker(null)
     // update code review widget list
     const list = this.$('.code-review')
@@ -39,11 +39,15 @@ class CodeReview extends Widget {
     if (this.tempCode) NNE.code = this.tempCode
   }
 
+  addIssueMarkers () { // used after explainer markers are added
+    this._markErrors(this.issues, false)
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _markErrors (arr) {
-    NNE.marker(null)
+  _markErrors (arr, clearFirst) {
+    if (clearFirst) NNE.marker(null)
     const lines = []
     arr.forEach(e => {
       if (lines.includes(e.line)) return

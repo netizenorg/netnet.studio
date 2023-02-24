@@ -16,7 +16,7 @@ class HyperVideoPlayer extends Widget {
 
     this.on('close', () => {
       if (!this.video.paused) this.pause()
-      const tg = WIDGETS['tutorials-guide']
+      const tg = WIDGETS['learning-guide']
       const tm = WIDGETS['tutorial-maker']
       if (tm && tm.opened) tm.close()
       else if (tg && tg.metadata) {
@@ -37,7 +37,7 @@ class HyperVideoPlayer extends Widget {
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
 
     WIDGETS['functions-menu'].on('open', () => pause())
-    WIDGETS['tutorials-guide'].on('open', () => pause())
+    WIDGETS['learning-guide'].on('open', () => pause())
     NNW.menu.search.on('open', () => pause())
 
     opts = opts || {}
@@ -54,7 +54,7 @@ class HyperVideoPlayer extends Widget {
   set src (v) { this.video.src = v }
 
   actObj () {
-    const md = WIDGETS['tutorials-guide'].metadata
+    const md = WIDGETS['learning-guide'].metadata
     return {
       sid: this.sid,
       tutorial: md ? md.id : null,
@@ -82,7 +82,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   play () {
-    const tg = WIDGETS['tutorials-guide']
+    const tg = WIDGETS['learning-guide']
     const play = (e) => {
       if (e) e.hide()
       this.$('.hvp-pause-screen').style.display = 'none'
@@ -505,7 +505,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   _editable (bool) {
-    const tg = WIDGETS['tutorials-guide']
+    const tg = WIDGETS['learning-guide']
     if (tg && tg.metadata) NNE.readOnly = !bool
   }
 
@@ -628,7 +628,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   _loadKeyLoggerData () {
-    const tg = WIDGETS['tutorials-guide']
+    const tg = WIDGETS['learning-guide']
     if (!tg || !tg.metadata) return
     // only run code below if we're in a tutorial (not when making them)
     // ...

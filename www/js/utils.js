@@ -77,6 +77,7 @@ window.utils = {
     const clr3 = window.utils.getVal('--netizen-keyword')
     const sc = `<!DOCTYPE html>
 <style>
+  /* netnet default bg */
   @keyframes animBG {
     0% { background-position: 0% 50% }
     50% { background-position: 100% 50% }
@@ -99,7 +100,7 @@ window.utils = {
 
   tutorialOpen: () => {
     const hvp = WIDGETS['hyper-video-player']
-    const tg = WIDGETS['tutorials-guide']
+    const tg = WIDGETS['learning-guide']
     return (hvp && tg && tg.metadata !== null)
   },
 
@@ -291,7 +292,9 @@ window.utils = {
       SNT.post(SNT.dataObj('REQ-shortcode', url))
       return 'code'
     } else if (url.example) {
-      window.utils.loadExample(url.example, 'load')
+      if (!WIDGETS['code-examples']) {
+        WIDGETS.load('CodeExamples.js', w => w.loadExample(url.example, 'url'))
+      } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
       SNT.post(SNT.dataObj('REQ-example', url))
       return 'example'
     } else {
@@ -313,8 +316,8 @@ window.utils = {
   },
 
   loadTutorial: (tutorial, time) => {
-    const tm = WIDGETS['tutorials-guide']
-    if (!tm) WIDGETS.load('TutorialsGuide.js', (w) => w.load(tutorial, time))
+    const tm = WIDGETS['learning-guide']
+    if (!tm) WIDGETS.load('LearningGuide.js', (w) => w.load(tutorial, time))
     else tm.load(tutorial, time)
     window.utils.fadeOutLoader(false)
   },
@@ -342,38 +345,17 @@ window.utils = {
   },
 
   loadCustomExample: (layout) => {
+    // an example created by anyone saved in the URL hash
     const hash = window.location.hash.split('#example/')[1]
-    const data = JSON.parse(NNE._decode(hash))
-    const firstClick = (cb) => {
-      const l = document.querySelector('.code-examples--ex-parts > li > span')
-      if (!l) return setTimeout(() => firstClick(cb), 100)
-      l.click()
-      setTimeout(() => {
-        if (cb) cb()
-        window.utils.fadeOutLoader(false)
-      }, window.utils.getVal('--layout-transition-time'))
+    const json = JSON.parse(NNE._decode(hash))
+    const data = {
+      name: json.name,
+      hash: json.code,
+      code: json.code,
+      info: json.info,
+      key: json.key
     }
-    const show = (data) => {
-      if (!WIDGETS['code-examples'].slide) {
-        return setTimeout(() => show(data), 100)
-      }
-      WIDGETS['code-examples'].explainExample({
-        name: data.name,
-        hash: data.code,
-        code: data.code,
-        info: data.info,
-        key: data.key
-      })
-      firstClick(() => {
-        if (data.toc === false) WIDGETS['code-examples'].close()
-      })
-    }
-    WIDGETS.open('code-examples', null, (w) => {
-      if (data && data.code) {
-        show(data)
-        NNW.layout = layout || 'dock-left'
-      }
-    })
+    WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url'))
   },
 
   loadShortCode: (code, layout) => {
@@ -417,39 +399,6 @@ window.utils = {
         if (callback) callback()
       })
     }, true)
-  },
-
-  loadExample: (example, calledBy) => {
-    // load example from json data...
-    const loadIt = (json, calledBy) => {
-      if (!json.key) json.key = example
-      WIDGETS['code-examples'].newExData(json)
-      NNE.addCustomRoot(null)
-      window.utils.afterLayoutTransition(() => {
-        setTimeout(() => NNE.cm.refresh(), 10)
-        if (calledBy === 'load') { // url?ex=NUM || url?example=code
-          window.utils.fadeOutLoader(false)
-          NNE.code = NNE._decode(json.hash.substr(6))
-          if (!json.info) window.utils._Convo('demo-example') // ?example=...
-          else window.utils._Convo('demo-explainer') // ?ex=...
-        } else if (calledBy === 'widget') { // Code-Example widget convo
-          NNE.code = NNE._decode(json.hash.substr(6))
-          if (!json.info) window.utils._Convo('demo-ex-from-list')
-          WIDGETS['code-examples'].explainExample()
-        } else if (calledBy === 'search') { // search bar result
-          WIDGETS['code-examples'].beforeLoadingEx()
-        }
-      })
-    }
-    // request example json data...
-    window.utils.post('./api/example-data', { key: example }, (json) => {
-      if (calledBy === 'load' || NNW.layout === 'welcome') {
-        NNW.layout = 'dock-left'
-      }
-      if (!WIDGETS['code-examples']) {
-        WIDGETS.load('CodeExamples.js', () => loadIt(json, calledBy))
-      } else { loadIt(json, calledBy) }
-    })
   },
 
   loadGHRedirect: () => {

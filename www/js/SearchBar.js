@@ -203,22 +203,25 @@ class SearchBar {
     this.loaded.tutorials = true
     utils.get('tutorials/list.json', (json) => {
       const arr = []
-      const len = json.listed.length
+      let len = 0
+      for (const sec in json) { len += json[sec].length }
       const update = () => { if (arr.length === len) this.addToDict(arr) }
 
-      json.listed.forEach(name => {
-        utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-          arr.push({
-            type: 'Tutorials',
-            word: tut.title,
-            alts: tut.keywords,
-            clck: () => {
-              WIDGETS.open('tutorials-guide', null, (w) => w.load(name))
-            }
+      for (const sec in json) {
+        json[sec].forEach(name => {
+          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+            arr.push({
+              type: 'Tutorials',
+              word: tut.title,
+              alts: tut.keywords,
+              clck: () => {
+                WIDGETS.open('learning-guide', null, (w) => w.load(name))
+              }
+            })
+            update()
           })
-          update()
         })
-      })
+      }
     })
 
     utils.get('api/examples', (json) => {
@@ -226,16 +229,26 @@ class SearchBar {
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
 
+      const split = (tags) => {
+        // legacy examples are space separated, but new ones are comma separated
+        if (typeof tags === 'string') return tags.split(' ')
+        else return tags
+      }
+
       for (const i in json.data) {
         const ex = json.data[i]
-        const tags = ex.tags ? ex.tags.split(' ') : []
+        const tags = ex.tags ? split(ex.tags) : []
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({
           type: 'Examples',
           word: ex.name,
           alts: keywords,
-          clck: () => { utils.loadExample(i, 'search') }
+          clck: () => {
+            if (!WIDGETS['code-examples']) {
+              WIDGETS.load('CodeExamples.js', w => w.loadExample(i, 'search'))
+            } else { WIDGETS['code-examples'].loadExample(i, 'search') }
+          }
         })
         update()
       }
