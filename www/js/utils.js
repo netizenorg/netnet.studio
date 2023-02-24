@@ -77,6 +77,7 @@ window.utils = {
     const clr3 = window.utils.getVal('--netizen-keyword')
     const sc = `<!DOCTYPE html>
 <style>
+  /* netnet default bg */
   @keyframes animBG {
     0% { background-position: 0% 50% }
     50% { background-position: 100% 50% }
@@ -346,37 +347,15 @@ window.utils = {
   loadCustomExample: (layout) => {
     // an example created by anyone saved in the URL hash
     const hash = window.location.hash.split('#example/')[1]
-    const data = JSON.parse(NNE._decode(hash))
-    const firstClick = (cb) => {
-      const l = document.querySelector('.code-examples--ex-parts > li > span')
-      if (!l) return setTimeout(() => firstClick(cb), 100)
-      l.click()
-      setTimeout(() => {
-        if (cb) cb()
-        window.utils.fadeOutLoader(false)
-      }, window.utils.getVal('--layout-transition-time'))
+    const json = JSON.parse(NNE._decode(hash))
+    const data = {
+      name: json.name,
+      hash: json.code,
+      code: json.code,
+      info: json.info,
+      key: json.key
     }
-    const show = (data) => {
-      if (!WIDGETS['code-examples'].slide) {
-        return setTimeout(() => show(data), 100)
-      }
-      WIDGETS['code-examples'].explainExample({
-        name: data.name,
-        hash: data.code,
-        code: data.code,
-        info: data.info,
-        key: data.key
-      })
-      firstClick(() => {
-        if (data.toc === false) WIDGETS['code-examples'].close()
-      })
-    }
-    WIDGETS.open('code-examples', null, (w) => {
-      if (data && data.code) {
-        show(data)
-        NNW.layout = layout || 'dock-left'
-      }
-    })
+    WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url'))
   },
 
   loadShortCode: (code, layout) => {

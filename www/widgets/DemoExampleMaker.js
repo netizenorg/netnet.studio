@@ -8,7 +8,7 @@ class DemoExampleMaker extends Widget {
     this._curStep = 0
     this._sections = null
     this._data = {
-      name: null, toc: true, layout: 'dock-left', key: null, code: null, steps: []
+      name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
     utils.get('api/examples', (res) => {
       this._data.key = Math.max(...Object.keys(res.data)) + 1
@@ -23,8 +23,12 @@ class DemoExampleMaker extends Widget {
 
       if (utils.url.example) {
         const obj = WIDGETS['code-examples'].exData
+        console.log('loadData', obj);
+        const data = JSON.parse(NNE._decode(obj.hash))
+        console.log('loadData', data);
         this._data = {
           name: obj.name,
+          tags: obj.tags,
           toc: obj.toc,
           layout: obj.layout,
           key: Number(obj.key),
@@ -34,14 +38,23 @@ class DemoExampleMaker extends Widget {
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
+        console.log(NNE._decode(hash));
+        console.log(data);
         data.steps = data.info
         this._data = data
       }
 
-      this._selectStep(this._data.steps[0])
+      console.log(this._data);
+      if (this._data.steps) this._selectStep(this._data.steps[0])
       this.$('[name="dem-demo-name"]').value = this._data.name
       this.$('[name="dem-demo-layout"]').value = this._data.layout
       this.$('[name="dem-demo-toc"]').checked = this._data.toc
+      if (this._data.tags && this._data.tags instanceof Array) {
+        this.$('[name="dem-demo-tags"]').value = this._data.tags.join(',')
+      } else if (this._data.tags && typeof this._data.tags === 'string') {
+        this.$('[name="dem-demo-tags"]').value = this._data.tags.join(',')
+      }
+
     }
 
     this.on('open', () => {
@@ -70,6 +83,10 @@ class DemoExampleMaker extends Widget {
           color: var(--netizen-meta);
           background-color: var(--netizen-hint-shadow);
         }
+        .demo-example-maker-row {
+          display: flex;
+          justify-content: space-between;
+        }
       </style>
       <div class="demo-example-maker">
         editing step <select name="dem-current-step"></select>
@@ -88,10 +105,16 @@ class DemoExampleMaker extends Widget {
         <br>
         <hr>
         <div style="margin: 10px 15px;">
-          layout <select name="dem-demo-layout"></select> |
-          display toc <input type="checkbox" name="dem-demo-toc"> (table of contents)
+          <div class="demo-example-maker-row">
+            <span>layout <select name="dem-demo-layout"></select></span>
+            <span>
+              display toc <input type="checkbox" name="dem-demo-toc">
+              (table of contents)
+            </span>
+          </div>
+          tags (for json) <input type="text" placeholder="(comma separated)"
+            name="dem-demo-tags" style="width: 370px">
         </div>
-        <br>
         <hr>
         <div style="float: right">
           <button name="dem-gen-url">generate link</button>
@@ -150,7 +173,8 @@ class DemoExampleMaker extends Widget {
 
     // ...
     const urlReset = (e, key) => {
-      this._data[key] = e.target.value
+      this._data[key] = key === 'tags'
+        ? e.target.value.split(',').map(s => s.trim()) : e.target.value
       this.$('[name="dem-url"]').value = null
       this.$('[name="dem-url"]').style.display = 'none'
     }
@@ -178,6 +202,9 @@ class DemoExampleMaker extends Widget {
     this.$('[name="dem-demo-toc"]').checked = true
     this.$('[name="dem-demo-toc"]')
       .addEventListener('input', e => urlReset(e, 'toc'))
+
+    this.$('[name="dem-demo-tags"]')
+      .addEventListener('input', e => urlReset(e, 'tags'))
   }
 
   // ------------------------------
@@ -230,6 +257,7 @@ class DemoExampleMaker extends Widget {
     const name = this._data.name
     const key = this._data.key
     const toc = this._data.toc
+    const tags = this._data.tags
     const layout = this._data.layout
     const info = this._data.steps.map(s => {
       if (s.focus && typeof s.focus === 'string') {
@@ -238,7 +266,7 @@ class DemoExampleMaker extends Widget {
       return s
     })
     const code = `#code/${NNE._encode(NNE.code)}`
-    return { name, toc, layout, key, code, info }
+    return { name, toc, tags, layout, key, code, info }
   }
 
   _generateURL () {

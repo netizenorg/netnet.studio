@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, Convo, SNT, NNE, NNW, Netitor, utils */
+/* global WIDGETS, Widget, Convo, SNT, NNE, NNW, Netitor, utils, Fuse */
 class CodeExamples extends Widget {
   constructor (opts) {
     super(opts)
@@ -16,7 +16,10 @@ class CodeExamples extends Widget {
     this.on('open', () => {
       this._resizeIt({ width: this.width, height: this.height })
     })
-    // this.on('close', () => this._createHTML())
+    this.on('close', () => {
+      const render = this.$('.code-examples--render')
+      if (render && render.style.visibility !== 'hidden') this.back()
+    })
 
     utils.get('api/examples', (res) => {
       this.mainOpts = {
@@ -72,14 +75,14 @@ class CodeExamples extends Widget {
       return
     }
 
-    if ((calledBy === 'search' || calledBy === 'guide') && NNW.layout !== 'welcome') {
+    const checkB4Load = ['search', 'guide', 'guide-template']
+    if (checkB4Load.includes(calledBy) && NNW.layout !== 'welcome') {
+      if (typeof example === 'number') this.exData.key = example
       window.convo = new Convo(this.convos, 'before-loading-example')
       return
     }
 
-    if (WIDGETS['learning-guide'].opened) WIDGETS['learning-guide'].close()
-    // request example json data...
-    window.utils.post('./api/example-data', { key: example }, (json) => {
+    const loadIt = (json) => {
       if (calledBy === 'url' || NNW.layout === 'welcome') {
         NNW.layout = 'dock-left'
       }
@@ -95,13 +98,25 @@ class CodeExamples extends Widget {
       if (calledBy === 'url') {
         window.utils.afterLayoutTransition(() => utils.fadeOutLoader(false))
       }
-    })
+    }
+
+    if (typeof example === 'object') {
+      // if loaded via utils.loadCustomExample
+      loadIt(example)
+      return
+    }
+
+    if (WIDGETS['learning-guide'] && WIDGETS['learning-guide'].opened) {
+      WIDGETS['learning-guide'].close()
+    }
+    // request example json data...
+    window.utils.post('./api/example-data', { key: example }, json => loadIt(json))
   }
 
   explainExample () {
     this.exData.explaining = true
     const data = this.exData
-    this.title = data.name
+    if (data.name) this.title = data.name
     if (!this.opened) this.open()
     // display table-of-contents slide in the widget
     const opts = this._createExplainerOpts()
@@ -151,13 +166,79 @@ class CodeExamples extends Widget {
   _createMainSlide (res) {
     if (res.success) {
       const ele = document.createElement('div')
-      ele.style.display = 'grid'
-      ele.style.gridTemplateColumns = '1fr 1fr'
-      ele.style.gridGap = '10px'
-      ele.style.marginTop = '-24px'
       ele.innerHTML = `
         <style>
-          .code-examples--link {
+          .code-examples-index--tabs {
+            display: flex;
+            border-bottom: 1px solid var(--netizen-tag);
+            margin-bottom: 30px;
+          }
+
+          .code-examples-index--tabs > b {
+            border: 1px solid var(--fg-color);
+            border-radius: 8px 8px 0 0;
+            border-bottom: none;
+            padding: 4px 20px;
+            background: var(--bg-color);
+            color: var(--fg-color);
+            cursor: pointer;
+          }
+
+          .code-examples-index--tabs > b.ce--sel {
+            background: var(--fg-color);
+            color: var(--bg-color);
+          }
+
+          /* ---- */
+
+          .code-examples-search nav {
+            display: flex;
+            align-items: center;
+          }
+
+          .code-examples-search nav > * {
+           margin-right: 20px;
+          }
+
+          .code-examples-search ul {
+            max-height: 254px;
+            overflow: scroll;
+          }
+
+          .code-examples-search  .ce--hide {
+           display: none;
+          }
+
+          .code-examples-search .ce--tags {
+           margin-bottom: 4px;
+          }
+
+          .code-examples-search .ce--tags > span {
+           font-size: 10px;
+           font-weight: bold;
+           padding: 4px 8px;
+           border-radius: 4px;
+           background: var(--netizen-meta);
+           color: var(--netizen-comment);
+           margin: 0 2px;
+           cursor: pointer;
+          }
+
+          /* ---- */
+
+          .code-examples-curated {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+            margin-top: -24px;
+          }
+
+          .ce--link {
+            border-bottom: 1px solid var(--netizen-meta);
+            text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+          }
+
+          .ce--edit, .ce--prev {
             position: relative;
             color: var(--netizen-meta);
             text-decoration: none;
@@ -166,19 +247,194 @@ class CodeExamples extends Widget {
             /*underline*/
             border-bottom: 1px solid var(--netizen-meta);
             text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+            display: inline-block;
+            margin-right: 4px;
           }
 
-          .code-examples--link:hover {
+          .ce--link:hover, .ce--edit:hover, .ce--prev:hover {
             color: var(--netizen-match-color);
-            border-bottom: 1px solid var(--netizen-match-color);
+            border-bottom: none;
             cursor: pointer;
           }
 
-          .code-examples--link:active {
+          .ce--link:active, .ce--edit:active, .ce--prev:active {
             color: var(--netizen-attribute);
           }
         </style>
+        <div class="code-examples-index--tabs">
+          <b data-tab="search">search all</b>
+          <b data-tab="curated" class="ce--sel">curated collections</b>
+        </div>
+        <div class="code-examples-search" style="display: none">
+          <nav>
+            <input type="search" placeholder="search..."> filter by: &nbsp;
+            <select><option value="all">[ALL TAGS]</option></select>
+          </nav>
+          <ul><!-- list searchable examlpes --></ul>
+        </div>
+        <div class="code-examples-curated"></div>
       `
+
+      const tabSelect = (e) => {
+        ele.querySelectorAll('.code-examples-index--tabs b').forEach(tab => {
+          const selected = [...tab.classList].includes('ce--sel')
+          if (selected) {
+            tab.classList.remove('ce--sel')
+            const div = ele.querySelector(`.code-examples-${tab.dataset.tab}`)
+            div.style.display = 'none'
+          } else {
+            tab.classList.add('ce--sel')
+            const div = ele.querySelector(`.code-examples-${tab.dataset.tab}`)
+            div.style.display = 'grid'
+          }
+        })
+      }
+
+      ele.querySelectorAll('.code-examples-index--tabs b').forEach(tab => {
+        tab.addEventListener('click', tabSelect)
+      })
+
+      const clk = (eve, o) => {
+        const p = eve.target.parentNode
+        const update = (pnt, s) => { // update styles
+          pnt.querySelector('.ce--edit').style.display = s === 'a' ? 'none' : 'inline-block'
+          pnt.querySelector('.ce--prev').style.display = s === 'a' ? 'none' : 'inline-block'
+          pnt.querySelector('.ce--link').style.display = s === 'a' ? 'inline-block' : 'none'
+        }
+        if (p.querySelector('.ce--edit').style.display === 'none') {
+          this.$('.ce--lnx').forEach(span => update(span, 'a')); update(p, 'b')
+        } else {
+          if (eve.target.className === 'ce--prev') this.displayEx(o)
+          else {
+            this.exData.key = o.key
+            if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
+            else window.convo = new Convo(this.convos, 'before-loading-example')
+          }
+          update(p, 'a')
+        }
+      }
+
+      const itemSetupHTML = (ele, o, tags) => {
+        ele.className = 'ce--lnx'
+        ele.innerHTML = `
+          <span class="ce--link">${o.name}</span>
+          <span class="ce--edit" style="display: none;">📝 edit</span>
+          <span class="ce--prev" style="display: none;">👀 preview</span>
+          ${tags ? '<span class="ce--tags"></span>' : ''}
+        `
+        ele.querySelector('.ce--link').addEventListener('click', e => clk(e, o))
+        ele.querySelector('.ce--edit').addEventListener('click', e => clk(e, o))
+        ele.querySelector('.ce--prev').addEventListener('click', e => clk(e, o))
+        return ele
+      }
+
+      // ----------------------------------------------------------------
+      // search examples sections
+      // ----------------------------------------------------------------
+
+      const sel = ele.querySelector('.code-examples-search select')
+      const TAGS = []
+      const DATA = res.data
+      let SEARCH
+
+      const onSelectChange = e => {
+        const v = e.target.value
+        const ul = ele.querySelector('.code-examples-search ul')
+        if (!ul) return
+        [...ul.children].forEach(ele => {
+          if (v === 'all') ele.classList.remove('ce--hide')
+          else {
+            if (ele.getAttribute('name').split(' ').includes(v)) {
+              ele.classList.remove('ce--hide')
+            } else ele.classList.add('ce--hide')
+          }
+        })
+      }
+
+      const createItem = o => {
+        let tags = []
+        if (typeof o.tags === 'string') {
+          o.tags.split(' ').forEach(t => { if (!tags.includes(t)) tags.push(t) })
+        } else tags = o.tags
+        tags = tags.filter(t => t !== '').map(t => t.toLowerCase())
+
+        let li = document.createElement('li')
+        li.setAttribute('name', tags.join(' '))
+        li = itemSetupHTML(li, o, true)
+
+        tags.forEach(t => {
+          const s = document.createElement('span')
+          s.textContent = s.value = t
+          s.addEventListener('click', (e) => {
+            sel.value = e.target.value; onSelectChange(e)
+          })
+          li.querySelector('.ce--tags').appendChild(s)
+          if (TAGS.indexOf(t) < 0) TAGS.push(t)
+        })
+
+        ele.querySelector('.code-examples-search ul').appendChild(li)
+      }
+
+      const createSearch = json => {
+        const arr = []
+
+        const split = (tags) => {
+          // legacy examples are space separated, but new ones are comma separated
+          if (typeof tags === 'string') return tags.split(' ')
+          else return tags
+        }
+
+        for (const i in json.data) {
+          const ex = json.data[i]
+          const tags = ex.tags ? split(ex.tags) : []
+          const name = ex.name.split(' ').filter(s => !s.includes('element'))
+          const keywords = [...tags, ...name]
+          arr.push({
+            word: ex.name,
+            tags: keywords,
+            example: ex
+          })
+        }
+
+        SEARCH = new Fuse(arr, {
+          ignoreLocation: true,
+          includeScore: true,
+          includeMatches: true,
+          keys: [
+            { name: 'word', weight: 1 },
+            { name: 'tags', weight: 0.5 }
+          ]
+        })
+      }
+
+      const runSearch = e => {
+        const res = SEARCH.search(e.target.value).filter(o => o.score < 0.5)
+        ele.querySelector('.code-examples-search ul').innerHTML = ''
+        if (e.target.value !== '') {
+          res.forEach(obj => createItem(obj.item.example))
+        } else {
+          for (const k in DATA) createItem(DATA[k])
+        }
+      }
+
+      //
+      // .... setup ...
+      //
+      for (const k in res.data) createItem(res.data[k])
+      TAGS.forEach(t => { // create select options
+        const o = document.createElement('option')
+        o.setAttribute('value', t)
+        o.textContent = t
+        sel.appendChild(o)
+      })
+      sel.addEventListener('input', onSelectChange)
+      createSearch(res)
+      ele.querySelector('.code-examples-search [type="search"]')
+        .addEventListener('input', runSearch)
+
+      // ----------------------------------------------------------------
+      // cureated list sections
+      // ----------------------------------------------------------------
 
       const sections = {}
       res.sections.forEach(sec => {
@@ -194,14 +450,12 @@ class CodeExamples extends Widget {
         h2.textContent = sec
         div.appendChild(h2)
         sections[sec].forEach(o => {
-          const span = document.createElement('span')
-          span.className = 'code-examples--link'
-          span.textContent = o.name
-          span.addEventListener('click', () => this.displayEx(o))
+          let span = document.createElement('span')
+          span = itemSetupHTML(span, o)
           div.appendChild(span)
           div.appendChild(document.createElement('br'))
         })
-        ele.appendChild(div)
+        ele.querySelector('.code-examples-curated').appendChild(div)
       }
       return ele
     } else {
@@ -270,7 +524,6 @@ class CodeExamples extends Widget {
       </style>
       <div class="code-examples--nav">
         <b class="code-examples--name">${o.name}</b>
-        <!-- <b class="code-examples--reset">reset code</b> -->
         <b class="code-examples--explain">${o.info ? 'explain' : 'experiment'}</b>
       </div>
       <div class="code-examples--tabs">
@@ -314,24 +567,12 @@ class CodeExamples extends Widget {
       <div>
         <!-- <p class="code-examples--ex-intro">Click on the parts below for it's explanation, or let netnet know if/when you want to hear the next or previous part.</p> -->
         <p class="code-examples--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's explanations might be off for the parts you've changed.</p>
-        <p class="code-examples--ex-edit2">⚠️ It looks like you've either added or removed a line of code, this disorients netnet and so it won't be able to explain the rest of the parts to you. But that's ok, it's important to experiment! When you're done you can <span class="link code-exampes--ex-reset">reset the code</span> back to the orignal example (if you want to keep your edits make sure to <span class="link code-exampes--ex-dl">download this sketch</span> before resetting it)</p>
+        <p class="code-examples--ex-edit2">⚠️ It looks like you've either added or removed a line of code. That's great, it's important to experiment!<br><br>Feel free to close this widget by pressing the "✖", or press <code>${utils.hotKey()}+Z</code> if you didn't mean to do that and want to undo your change. You could also press "back" if you want to reload this or any other code example.</p>
       </div>
       <ol class="code-examples--ex-parts"></ol>
     `
 
     NNE.on('code-update', this._editorChange)
-
-    ele.querySelector('.link.code-exampes--ex-reset')
-      .addEventListener('click', () => {
-        NNE.code = NNE._decode(this.exData.code.substr(6))
-        NNE.update()
-        window.convo = new Convo(this.convos, 'reset-code')
-      })
-
-    ele.querySelector('.link.code-exampes--ex-dl')
-      .addEventListener('click', () => {
-        WIDGETS['functions-menu'].downloadCode()
-      })
 
     data.info.forEach(part => {
       const link = document.createElement('span')

@@ -229,9 +229,15 @@ class SearchBar {
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
 
+      const split = (tags) => {
+        // legacy examples are space separated, but new ones are comma separated
+        if (typeof tags === 'string') return tags.split(' ')
+        else return tags
+      }
+
       for (const i in json.data) {
         const ex = json.data[i]
-        const tags = ex.tags ? ex.tags.split(' ') : []
+        const tags = ex.tags ? split(ex.tags) : []
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({

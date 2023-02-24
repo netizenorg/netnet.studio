@@ -9,7 +9,7 @@ class LearningGuide extends Widget {
     ]
 
     this.on('open', () => {
-      this.update({ left: 20, top: 20 }, 500)
+      this.update({ right: 20, top: 20 }, 500)
       this._openConvo()
     })
 
@@ -35,7 +35,13 @@ class LearningGuide extends Widget {
 
       // initial HTML
       this._createHTML()
-      this.title = 'Learning Guide (BETA-2.0)'
+      const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
+      this.title = `${icon} Learning Guide (BETA-2.0)`
+    })
+
+    WIDGETS['functions-menu'].on('theme-change', () => {
+      const src = this.ele.querySelector('iframe').src
+      this.ele.querySelector('iframe').src = src
     })
   }
 
@@ -107,9 +113,14 @@ class LearningGuide extends Widget {
     this._listTutorials()
     this._enableAppendixLinks()
 
-    const canvas = this.ele.querySelector('canvas')
+    // const canvas = this.ele.querySelector('canvas')
+    const canvas = document.createElement('canvas')
     this._createStarField(canvas)
+    this.slide.appendChild(canvas)
+
     this._highlightTitles()
+
+    this.slide.style.overflowX = 'hidden'
 
     // this.ele.querySelectorAll('h3').forEach(e => {
     //   e.addEventListener('click', () => {
@@ -142,6 +153,7 @@ class LearningGuide extends Widget {
     const tutHTML = (t, i) => {
       const div = document.createElement('div')
       div.className = 'learning-guide__tut'
+      div.dataset.id = t.id
       div.innerHTML = `
         <div>
           <div>
@@ -203,6 +215,31 @@ class LearningGuide extends Widget {
       const tut = ele.getAttribute('name').split(':')[1]
       ele.addEventListener('click', () => this.load(tut))
     })
+
+    // hover over tutorials
+    this.ele.querySelectorAll('.learning-guide__tut')
+      .forEach(div => {
+        div.addEventListener('mouseover', () => {
+          const vid = document.createElement('video')
+          vid.id = 'tut-preview-video'
+          vid.src = `/tutorials/${div.dataset.id}/preview.mp4`
+          vid.style.position = 'absolute'
+          vid.style.left = 0
+          vid.style.top = 0
+          vid.style.zIndex = 1
+          vid.style.border = 'none'
+          vid.style.width = '600px'
+          vid.style.height = '440px'
+          vid.style.opacity = 0.15
+          this.slide.appendChild(vid)
+          vid.muted = true
+          vid.play()
+        })
+
+        div.addEventListener('mouseout', () => {
+          this.slide.querySelector('#tut-preview-video').remove()
+        })
+      })
 
     // calc <p> heights && hide them
     this.ele.querySelectorAll('[name^="nfo"]').forEach(p => {
@@ -367,7 +404,6 @@ class LearningGuide extends Widget {
     const c = nn.hex2rgb(utils.getVal('--netizen-number'))
     const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
     this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      console.log(ele);
       ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
     })
   }
