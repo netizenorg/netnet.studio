@@ -4,16 +4,30 @@ class JSReference extends Widget {
     super(opts)
     this.key = 'js-reference'
     this.listed = false // TODO make true when cheatsheets are finished
-    this.keywords = ['js', 'javascript'] // TODO add cheatsheets when finsihed
+    this.keywords = ['js', 'javascript', 'reference'] // TODO add cheatsheets when finsihed
+    this.resizable = false
+
+    this.title = 'JavaScript Reference'
+
 
     // this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 
     utils.get('./data/references/js-reference.json', (json) => { this.data = json })
 
-    // NNW.on('theme-change', () => { this._createHTML() })
+    utils.get('./data/references/js-reference-main.html', (html) => {
+      // options objects for <widget-slide> .updateSlide() method
+      this.mainOpts = {
+        name: 'js-reference-main',
+        widget: this,
+        ele: this._createMainSlide(html)
+      }
 
-    this.title = 'JavaScript Reference'
-    this._createHTML()
+      this._createHTML()
+
+      NNW.on('theme-change', () => { this._createHTML() })
+    }, true)
+
+    // NNW.on('theme-change', () => { this._createHTML() })
   }
 
   textBubble (eve) {
@@ -48,10 +62,25 @@ class JSReference extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createHTML () {
-    // TODO: create "cheatsheets" for diff core js objects, ex: canvas, Math, Date, etc
-    // see NNE.edu.js
-    // this.innerHTML = ''
-    // utils.loadStyleSheet(this.key)
+    if (!utils.customElementReady('widget-slide')) {
+      setTimeout(() => this._createHTML(), 100)
+      return
+    }
+
+    this.slide = document.createElement('widget-slide')
+    this.innerHTML = this.slide
+
+    this.ele.style.padding = '8px 5px 10px'
+    this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
+    this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
+
+    this.slide.updateSlide(this.mainOpts)
+  }
+
+  _createMainSlide (html) {
+    const div = document.createElement('div')
+    div.innerHTML = html
+    return div
   }
 }
 

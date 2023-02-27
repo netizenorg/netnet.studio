@@ -9,7 +9,7 @@ class LearningGuide extends Widget {
     ]
 
     this.on('open', () => {
-      this.update({ right: 20, top: 20 }, 500)
+      this.update({ left: 392, top: 20 }, 500)
       this._openConvo()
     })
 

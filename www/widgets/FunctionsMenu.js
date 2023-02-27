@@ -137,8 +137,6 @@ class FunctionsMenu extends Widget {
     ]
 
     this._createHTML()
-    this._initValues()
-    this._setupListeners()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
@@ -368,8 +366,6 @@ class FunctionsMenu extends Widget {
 
   gitHubUpdated (gh) {
     this._createHTML(gh)
-    this._initValues()
-    this._setupListeners()
   }
 
   gitHubProjectsUpdated () {
@@ -498,6 +494,8 @@ class FunctionsMenu extends Widget {
 
     if (this._recentered) this.update({ left: 20, top: 20 })
 
+    this._initValues()
+    this._setupListeners()
     this._hideIrrelevantOpts('_createHTML')
   }
 
@@ -548,23 +546,31 @@ class FunctionsMenu extends Widget {
     this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
 
     this.layoutsSel = this.$('#func-menu-layout-select')
-    NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
+    if (this.layoutsSel.children.length < NNW.layouts.length) {
+      NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
+    }
     this.layoutsSel.value = NNW.layout
 
     this.themesSel = this.$('#func-menu-themes-select')
-    Object.keys(NNE.themes).forEach(l => this._creatOption(l, this.themesSel))
+    if (this.themesSel.children.length < Object.keys(NNE.themes).length) {
+      Object.keys(NNE.themes).forEach(l => this._creatOption(l, this.themesSel))
+    }
     this.themesSel.value = NNW.theme
 
     this.lineWrapping = this.$('#func-menu-wrap-select')
-    this._creatOption('true', this.lineWrapping)
-    this._creatOption('false', this.lineWrapping)
+    if (this.lineWrapping.children.length < 2) {
+      this._creatOption('true', this.lineWrapping)
+      this._creatOption('false', this.lineWrapping)
+    }
     this.lineWrapping.value = this.sesh.getData('wrap') === 'true'
     this.lineWrapping.addEventListener('change', () => this.wordWrap())
 
     this.chatty = this.$('#func-menu-chat-select')
-    this._creatOption('high', this.chatty)
-    this._creatOption('medium', this.chatty)
-    this._creatOption('low', this.chatty)
+    if (this.chatty.children.length < 3) {
+      this._creatOption('high', this.chatty)
+      this._creatOption('medium', this.chatty)
+      this._creatOption('low', this.chatty)
+    }
     this.chatty.value = this.sesh.getData('chattiness')
     this.chatty.addEventListener('change', () => this.chattiness())
   }
