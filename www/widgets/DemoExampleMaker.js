@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, NNE, NNW, utils */
+/* global Widget, WIDGETS, Convo, NNE, NNW, utils */
 class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -23,9 +23,9 @@ class DemoExampleMaker extends Widget {
 
       if (utils.url.example) {
         const obj = WIDGETS['code-examples'].exData
-        console.log('loadData', obj);
+        console.log('loadData', obj)
         const data = JSON.parse(NNE._decode(obj.hash))
-        console.log('loadData', data);
+        console.log('loadData', data)
         this._data = {
           name: obj.name,
           tags: obj.tags,
@@ -38,13 +38,13 @@ class DemoExampleMaker extends Widget {
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
-        console.log(NNE._decode(hash));
-        console.log(data);
+        console.log(NNE._decode(hash))
+        console.log(data)
         data.steps = data.info
         this._data = data
       }
 
-      console.log(this._data);
+      console.log(this._data)
       if (this._data.steps) this._selectStep(this._data.steps[0])
       this.$('[name="dem-demo-name"]').value = this._data.name
       this.$('[name="dem-demo-layout"]').value = this._data.layout
@@ -54,7 +54,6 @@ class DemoExampleMaker extends Widget {
       } else if (this._data.tags && typeof this._data.tags === 'string') {
         this.$('[name="dem-demo-tags"]').value = this._data.tags.join(',')
       }
-
     }
 
     this.on('open', () => {
@@ -214,10 +213,8 @@ class DemoExampleMaker extends Widget {
 
   // ------------------------------
 
-  _previewStep(step) {
-    new Convo({
-      content: this.$('[name="dem-s-text"]').value
-    })
+  _previewStep (step) {
+    window.convo = new Convo({ content: this.$('[name="dem-s-text"]').value })
   }
 
   _addStep (step) {
