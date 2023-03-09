@@ -99,6 +99,7 @@ class DemoExampleMaker extends Widget {
         <br>
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
+        <button name="dem-preview-step">preview</button>
         <button name="dem-update-step">update this step</button>
         <button name="dem-remove-step">remove this step</button>
         <br>
@@ -135,6 +136,10 @@ class DemoExampleMaker extends Widget {
     this.$('[name="dem-current-step"]').addEventListener('change', (e) => {
       const s = Number(e.target.value)
       this._selectStep(this._data.steps[s])
+    })
+
+    this.$('[name="dem-preview-step"]').addEventListener('click', () => {
+      this._previewStep(this._curStep)
     })
 
     this.$('[name="dem-add-step"]').addEventListener('click', () => {
@@ -208,6 +213,12 @@ class DemoExampleMaker extends Widget {
   }
 
   // ------------------------------
+
+  _previewStep(step) {
+    new Convo({
+      content: this.$('[name="dem-s-text"]').value
+    })
+  }
 
   _addStep (step) {
     step = step || { title: null, focus: null, text: null }
