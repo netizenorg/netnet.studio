@@ -1,11 +1,6 @@
 /* global HTMLElement NNE */
 
-class SvgJSObject extends HTMLElement {
-  connectedCallback (opts) {
-    if (!this.c) this.c = []
-    this.updateHTML()
-  }
-
+class SvgJSObject extends SvgDiagramBase {
   updateHTML () {
     this.innerHTML = `
   <svg xmlns="http://www.w3.org/2000/svg"
@@ -127,25 +122,6 @@ class SvgJSObject extends HTMLElement {
       style="isolation:isolate;font-size:23.2268009185791px;fill:${this.c[5]};font-family:'fira-sans-regular', sans-serif">object</text>
   </svg>
     `
-  }
-
-  get colors () {
-    return this.c
-  }
-
-  set colors (val) {
-    if (val instanceof Array) val = val.join(',')
-    this.setAttribute('colors', val)
-    this.c = val.split(',')
-    this.updateHTML()
-  }
-
-  static get observedAttributes () {
-    return ['colors']
-  }
-
-  attributeChangedCallback (attrName, oldVal, newVal) {
-    if (newVal !== oldVal) this[attrName] = newVal
   }
 }
 
