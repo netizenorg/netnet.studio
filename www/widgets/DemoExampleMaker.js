@@ -216,8 +216,8 @@ class DemoExampleMaker extends Widget {
   _previewStep (step) {
     window.convo = new Convo({ content: this.$('[name="dem-s-text"]').value })
     if (this.$('[name="dem-s-focus"]').value.length > 0) {
-        const lines = this.$('[name="dem-s-focus"]').value.match(/\d+/g).map(Number)
-        NNE.spotlight([...lines])
+      const lines = this.$('[name="dem-s-focus"]').value.match(/\d+/g).map(Number)
+      NNE.spotlight([...lines])
     }
   }
 
