@@ -1,48 +1,53 @@
 {
-  "name": "Full Page Background Image",
-  "tags": ["image", "background", "full screen", "CSS"],
+  "name": "CSS Full Page Background Image",
   "toc": true,
+  "tags": [
+    "image",
+    "background",
+    "full-screen",
+    "CSS"
+  ],
   "layout": "dock-left",
-  "key": 70,
-  "code": "#code/eJxdjzsOwjAQRPucYumgSCzaJEKi5Bgbs4kN/sle8xV3x0gpSLqRZt7uTJ/4aehQASi2Bt5Q1IDyOkWf3bmFHM1WMYfUChHx3kyaVR5yoii9Y3LcSG/FxTup0A4Uk+C7dnSyOFESFhNTFI6GbLC5hGnXLe7XSb+oBelvFFcOMqNUtnxoYdQPOq/84JNm7V2hS6bgsKxeRwqEBXZ+ll31qXox7616tT8cYczGQChd/0jQv/KbXpTEF13vZFs=",
+  "key": 70, 
+  "code": "#code/eJxlj8kOwjAMRO/5CnODA0RcS1SJT0laNw1kUxbEIv4d0/aAqOTDWB4/zYhcHhZbBkAzFmfhBfMCoGR31SlU3++NkxobqMluJ5m50tyjqlYeLlHvTv8P2TzJ34UbptVNliK70aEvDQzmjv3KEUM2xQRPBHIRYp0oYURJAB8WOUPY+5te8KUWE+OxPcNQrYVIuX8IMBXZCE6OD83iU5I=",
   "info": [
     {
-      "title": "getting started",
+      "title": "CSS Full Page Background Image",
       "focus": null,
-      "text": "This sketch uses CSS to display a full screen background image for your webpage. "
+      "text": "This sketch uses CSS to display a full page background image for your webpage. "
     },
     {
-      "title": "Background Property ",
+      "title": "Background Image ",
       "focus": [
-        3
+        5
       ],
-      "text": "The CSS <code>background</code> property can be used for a bunch of different background styles. In this line, the url() value links to an image that will be set as our background. You can also link to a local image file. "
+      "text": "The CSS <code>background-image</code> property sets a background image for an element, in this case the <code>html</code> element. In this line, the CSS <code>url()</code> function's value should be a path to an image file that will be set as our background."
     },
     {
       "title": "Background Size",
       "focus": [
-        4
+        6
       ],
       "text": "The <code>background-size</code> property tells our webpage how to size the background image. In this example it is set to \"cover\" so the image will be stretched to cover the entire page."
     },
     {
       "title": "Background Attachment",
       "focus": [
-        5
+        7
       ],
       "text": "The <code>background-attachment</code> property controls whether or not the image will scroll with the page. Here, it is set to \"fixed\" which will keep the image in the same spot as the user scrolls on the page. "
     },
     {
       "title": "Background Position",
       "focus": [
-        6
+        8
       ],
       "text": "The <code>background-position</code> property sets the position of the background image. In this example it is set to \"center\", which will keep the image centered on the screen.  "
     },
     {
       "title": "Background Repeat",
       "focus": [
-        7
+        9
       ],
       "text": "The <code>background-repeat</code> property will tell the page whether or not to repeat the image. By default, the image will repeat along the x and y axis. In this example it is set to \"no-repeat\" which will keep the image from repeating."
     }
