@@ -1,4 +1,4 @@
-/* global NNE, Menu, nn, utils */
+/* global NNE, Menu, nn, utils, WIDGETS */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -596,13 +596,24 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
+  updateTitleBar (text, unsaved) {
     // const gh = WIDGETS['student-session'].data.github
     // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        const path = this.title.textContent
+        if (path.includes('index.html') && path.match(/\//g).length === 1) {
+          utils._Convo('netnet-title-bar-index')
+        } else if (path.includes('README.md') && path.match(/\//g).length === 1) {
+          utils._Convo('netnet-title-bar-readme')
+        } else {
+          WIDGETS.open('files-and-folders')
+        }
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'

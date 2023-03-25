@@ -19,7 +19,7 @@ class FunctionsMenu extends Widget {
         hrAfter: true
       },
       {
-        click: 'uploadAssets',
+        click: 'FilesAndFolders',
         alts: ['files', 'upload', 'assets'],
         hrAfter: true
       },
@@ -164,27 +164,49 @@ class FunctionsMenu extends Widget {
     NNE.tidy()
   }
 
-  uploadAssets () {
-    WIDGETS.open('project-files')
+  FilesAndFolders () {
+    WIDGETS.open('files-and-folders')
   }
 
   saveProject (redirect) {
+    this._redirect = redirect
+    const urlOwner = utils.url.github ? utils.url.github.split('/')[0] : null
     const op = WIDGETS['student-session'].data.github.openedProject
-    if (utils.url.github) {
+    const owner = WIDGETS['student-session'].data.github.owner
+
+    if (utils.url.github && urlOwner !== owner) { // forking someone else's project
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
-    } if (op) {
-      this.convos = window.CONVOS[this.key](this)
-      this._redirect = redirect // if trying to create 'new-project' or 'open-project'
-      const msg = WIDGETS['student-session'].getData('last-commit-msg')
-      if (msg === 'netnet initialized repo' || msg === 'Initial commit') {
-        window.convo = new Convo(this.convos, 'save-newish-project')
+    } else if (op) {
+      // saving our project
+      const stage = WIDGETS['files-and-folders'].updateStage()
+      if (Object.keys(stage).length === 0) {
+        window.convo = new Convo(this.convos, 'nothing-to-save')
       } else {
-        window.convo = new Convo(this.convos, 'save-open-project')
+        NNW.menu.switchFace('processing')
+        const path = WIDGETS['student-session'].getData('opened-file')
+        let name = path.split('/'); name = name[name.length - 1]
+        const data = { owner, path, name, code: utils.btoa(NNE.code) }
+        window.utils.post('./api/github/update-cache', data, (res) => {
+          if (!res.success) {
+            window.convo = new Convo(this.convos, 'oh-no-error')
+            return console.log('FilesAndFolders:', res)
+          } else {
+            NNW.menu.switchFace('default')
+            WIDGETS['files-and-folders']._updateOpenFile(true)
+            window.convo = new Convo(this.convos, 'save-project')
+          }
+        })
       }
     } else {
       this.newProject()
     }
+  }
+
+  stageChanges () {
+    // this._redirect is a string if trying to create 'new-project' or 'open-project'
+    const stage = WIDGETS['files-and-folders'].updateStage()
+    WIDGETS.open('git-stage', null, w => w.loadData(stage, this._redirect))
   }
 
   newProject () {
@@ -225,7 +247,10 @@ class FunctionsMenu extends Widget {
     if (projOpen) {
       WIDGETS['student-session'].clearProjectData()
       NNE.code = ''
+      NNE.language = 'html'
+      NNE.update(NNE.code)
       NNW.updateTitleBar(null)
+      window.utils.updateURL()
       if (window.convo) window.convo.hide()
       this._hideIrrelevantOpts('closeProject')
     }
@@ -302,7 +327,7 @@ class FunctionsMenu extends Widget {
     const gotVal = typeof val === 'boolean'
     NNE.autoUpdate = gotVal ? val : this.autoUpdateSel.value === 'true'
 
-    if (this.sesh) this.sesh.setData('auto-update', NNE.autoUpdate.toString())
+    // if (this.sesh) this.sesh.setData('auto-update', NNE.autoUpdate.toString())
 
     if (!NNE.autoUpdate && !gotVal) {
       window.convo = new Convo(this.convos, 'need-to-update')
@@ -515,6 +540,9 @@ class FunctionsMenu extends Widget {
       if (_is(btns[i], 'downloadProject')) hideIf(btns[i], !projOpen)
       // hide downloadCode if project is open
       if (_is(btns[i], 'downloadCode')) hideIf(btns[i], projOpen)
+      // hide autoUpdate && runUpdate if projet is open
+      if (_is(btns[i], 'autoUpdate')) hideIf(btns[i], projOpen)
+      if (_is(btns[i], 'runUpdate')) hideIf(btns[i], projOpen)
     }
     // update SearchBars dictionary
     NNW.menu.search._loadFunctionsMenuData()
@@ -617,7 +645,7 @@ class FunctionsMenu extends Widget {
 
   _createNewRepo (c, t, v) {
     WIDGETS['student-session'].clearSaveState()
-    window.convo = new Convo(this.convos, 'pushing-updates')
+    window.convo = new Convo(this.convos, 'pushing-updates') // TODO << https://github.com/netizenorg/netnet.studio/blob/main/www/convos/functions-menu/index.js#L207
     const data = { name: v, data: utils.btoa(NNE.code) }
     window.utils.post('./api/github/new-repo', data, (res) => {
       NNW.menu.switchFace('default')
@@ -632,8 +660,8 @@ class FunctionsMenu extends Widget {
       } else { // otherwise let the user know it's all good!
         WIDGETS['student-session'].setProjectData({
           name: res.name,
-          message: 'netnet initialized repo',
-          sha: res.sha,
+          message: res.message,
+          file: res.path || 'index.html',
           url: res.url,
           ghpages: res.ghpages,
           branch: res.branch,
@@ -641,15 +669,26 @@ class FunctionsMenu extends Widget {
         })
         WIDGETS['student-session'].updateRoot()
         NNW.updateTitleBar(`${res.name}/index.html`)
-        // update ProjectFiles
-        if (!WIDGETS['project-files']) {
-          WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles([]))
-        } else WIDGETS['project-files'].updateFiles([])
-        // ...convo
+        NNE.autoUpdate = false
         if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'new-project-created')
-        // ... upldate list of repos...
+        WIDGETS.open('files-and-folders')
+        // if (!WIDGETS['files-and-folders']) {
+        //
+        // } else {
+        //   WIDGETS['files-and-folders'].updateFiles(res.data.tree)
+        //   WIDGETS['student-session'].setSessionState()
+        //   WIDGETS['files-and-folders'].open()
+        // }
+
+        // ...convo
+        // this.convos = window.CONVOS[this.key](this)
+        // window.convo = new Convo(this.convos, 'new-project-created')
+
+        // update URL
+        const owner = WIDGETS['student-session'].getData('owner')
+        const repo = WIDGETS['student-session'].getData('opened-project')
+        utils.updateURL(`?gh=${owner}/${repo}`)
+        // ... update list of repos...
         utils.get('/api/github/saved-projects', (json) => {
           if (!json.data) return
           const names = json.data.map(o => o.name)
@@ -668,92 +707,64 @@ class FunctionsMenu extends Widget {
       window.convo = new Convo(this.convos, 'oh-no-error')
     }
     WIDGETS['student-session'].clearSaveState()
-    window.convo = new Convo(this.convos, 'opening-project')
+    window.convo = new Convo(this.convos, 'opening-project') // processing
     const owner = WIDGETS['student-session'].data.github.owner
-    const filename = 'index.html'
-    const data = { filename, repo, owner }
+    const data = { repo, owner }
     utils.post('./api/github/open-project', data, (res) => {
       if (!res.success) return ohNoErr(res)
-      const files = res.data.map(f => f.name)
-      if (files.includes('index.html')) {
+      const files = res.data.tree.map(f => f.path)
+      if (files.includes('index.html')) { // make sure it's a web project
+        // if so, setup session data + title bar + update url
         WIDGETS['student-session'].setData('opened-project', repo)
+        WIDGETS['student-session'].setData('branch', res.branch)
+        WIDGETS['student-session'].setData('project-url', data.url)
         NNW.updateTitleBar(`${repo}/index.html`)
         utils.updateURL(`?gh=${owner}/${repo}`)
-        // update ProjectFiles
-        if (!WIDGETS['project-files']) {
-          WIDGETS.load('ProjectFiles.js', (w) => w.updateFiles(res.data))
-        } else WIDGETS['project-files'].updateFiles(res.data)
-        // get index.html data
-        utils.post('./api/github/open-file', data, (res) => {
-          if (!res.success) return ohNoErr(res)
-          const url = (res.data.html_url.includes('/blob/master'))
-            ? res.data.html_url.split('/blob/master')[0]
-            : res.data.html_url.split('/blob/main')[0]
-          const branch = (res.data.html_url.includes('/blob/master')) ? 'master' : 'main'
-          WIDGETS['student-session'].setData('project-url', url)
-          WIDGETS['student-session'].setData('branch', branch)
-          WIDGETS['student-session'].setData('index-sha', res.data.sha)
-          // // for some reason GitHub adds a '\n' at the end of the base64 string?
-          // const c = (data.code.indexOf('\n') === data.code.length - 1)
-          //   ? data.code.substr(0, data.code.length - 1) : data.code
-          const c = utils.atob(res.data.content)
-          WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
-          const m = res.data.html_url.includes('/blob/master') ? 'master' : 'main'
-          WIDGETS['student-session'].updateRoot(m)
-          NNE.code = c
-          if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
-          setTimeout(() => {
-            NNW.menu.switchFace('default')
-            window.convo = new Convo(this.convos, 'project-opened')
-          }, utils.getVal('--layout-transition-time'))
-        })
-        // update last commit data
-        utils.post('./api/github/get-commits', data, (res) => {
-          if (!res.success) return ohNoErr(res)
-          const msg = res.data[0].commit.message
-          WIDGETS['student-session'].setData('last-commit-msg', msg)
-        })
+        // update FilesAndFolders
+        const updateCallback = () => {
+          // get index.html data
+          data.filename = 'index.html'
+          utils.post('./api/github/open-file', data, (res) => {
+            if (!res.success) return ohNoErr(res)
+            WIDGETS['student-session'].setData('opened-file', res.data.path)
+            // // for some reason GitHub adds a '\n' at the end of the base64 string?
+            // const c = (data.code.indexOf('\n') === data.code.length - 1)
+            //   ? data.code.substr(0, data.code.length - 1) : data.code
+            const c = utils.atob(res.data.content)
+            WIDGETS['student-session'].setData('last-commit-code', utils.btoa(c))
+            WIDGETS['files-and-folders'].updateIndex(utils.btoa(c))
+            WIDGETS['student-session'].updateRoot()
+            NNE.code = c
+            NNE.language = 'html'
+            NNE.autoUpdate = false
+            WIDGETS['student-session'].setSessionState()
+            WIDGETS['files-and-folders']._renderToIframe('index.html')
+            if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+            const d = utils.getVal('--layout-transition-time')
+            setTimeout(() => NNW.menu.switchFace('default'), d)
+          })
+          // update last commit data
+          utils.post('./api/github/get-commits', data, (res) => {
+            if (!res.success) return ohNoErr(res)
+            const msg = res.data[0].commit.message
+            WIDGETS['student-session'].setData('last-commit-msg', msg)
+          })
+        }
+
+        if (!WIDGETS['files-and-folders']) {
+          WIDGETS.load('FilesAndFolders.js', (w) => {
+            w.updateFiles(res.data.tree); updateCallback(); w.open()
+          })
+        } else {
+          WIDGETS['files-and-folders'].updateFiles(res.data.tree)
+          updateCallback()
+          WIDGETS['files-and-folders'].open()
+        }
+
         // update sub menu
         this._hideIrrelevantOpts('_openProject')
       } else {
         window.convo = new Convo(this.convos, 'not-a-web-project')
-      }
-    })
-  }
-
-  _updateProject (msg) {
-    WIDGETS['student-session'].clearSaveState()
-    window.convo = new Convo(this.convos, 'pushing-updates')
-    const data = {
-      owner: window.localStorage.getItem('owner'),
-      repo: window.sessionStorage.getItem('opened-project'),
-      sha: window.sessionStorage.getItem('index-sha'),
-      path: 'index.html',
-      message: msg,
-      code: utils.btoa(NNE.code)
-    }
-    utils.post('./api/github/save-project', data, (res) => {
-      if (!res.success) {
-        console.log('FunctionsMenu:', res)
-        window.convo = new Convo(this.convos, 'oh-no-error')
-      } else {
-        NNW.menu.switchFace('default')
-        // if user was redirected to save te project while trying
-        // to create 'new-project' or 'open-project' && decided to
-        // save the currently open project before doing so
-        if (this._redirect) {
-          WIDGETS['student-session'].clearProjectData()
-          this.convos = window.CONVOS[this.key](this)
-          window.convo = new Convo(this.convos, this._redirect)
-          this._redirect = false
-        } else { // if user clicked saveProject()
-          WIDGETS['student-session'].setProjectData({
-            message: res.data.commit.message,
-            sha: res.data.content.sha,
-            code: utils.btoa(NNE.code)
-          })
-          window.convo = new Convo(this.convos, 'project-saved')
-        }
       }
     })
   }

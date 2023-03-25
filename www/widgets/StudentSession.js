@@ -23,18 +23,18 @@ class StudentSession extends Widget {
     const data = {
       username: ls.getItem('username'),
       editor: {
-        autoUpdate: ls.getItem('auto-update'),
+        // autoUpdate: ls.getItem('auto-update'),
         wrap: ls.getItem('wrap'),
         chattiness: ls.getItem('chattiness'),
         theme: ls.getItem('theme')
       },
       github: {
-        owner: ls.getItem('owner'),
-        repos: ls.getItem('repos'),
+        owner: ls.getItem('owner'), // NOTE: should this be ss ???
+        repos: ls.getItem('repos'), // NOTE: should this be ss ???
         openedProject: ss.getItem('opened-project'),
         projectURL: ss.getItem('project-url'),
         branch: ss.getItem('branch'),
-        indexSha: ss.getItem('index-sha'),
+        openedFile: ss.getItem('opened-file'),
         lastCommitMsg: ss.getItem('last-commit-msg'),
         lastCommitCode: ss.getItem('last-commit-code'),
         ghpages: ss.getItem('ghpages')
@@ -44,6 +44,7 @@ class StudentSession extends Widget {
         layout: ls.getItem('last-saved-layout'),
         widgets: ls.getItem('last-saved-widgets')
       },
+      lastSaveProject: JSON.parse(ss.getItem('last-saved-session')),
       tutorial: {
         // TODO: bookmark feature?
         // saves tut-video-timeline timecode + widget placements + netitor code && layout
@@ -71,8 +72,11 @@ class StudentSession extends Widget {
   }
 
   setData (type, value) {
+    // if (type === 'changes') {
+    //   return console.error('StudentSession: use setChanges() to update "changes" data')
+    // }
     const sesh = [
-      'opened-project', 'project-url', 'branch', 'index-sha', 'last-commit-msg', 'last-commit-code', 'ghpages'
+      'opened-project', 'project-url', 'branch', 'opened-file', 'last-commit-msg', 'last-commit-code', 'ghpages'
     ]
     const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
     if (!value) window[store].removeItem(type)
@@ -80,6 +84,16 @@ class StudentSession extends Widget {
     this._createHTML()
     return this.data
   }
+
+  // setChanges (path, data) {
+  //   if (!path) return window.sessionStorage.removeItem('changes')
+  //   const c = window.sessionStorage.getItem('changes')
+  //   const changes = (typeof c === 'string') ? JSON.parse(c) : {}
+  //   if (!changes[path]) changes[path] = { start: data }
+  //   else if (data !== changes[path].start) changes[path].edit = data
+  //   else changes[path].edit = null
+  //   window.sessionStorage.setItem('changes', JSON.stringify(changes))
+  // }
 
   setSavePoint () {
     const wigs = WIDGETS.list()
@@ -92,10 +106,22 @@ class StudentSession extends Widget {
     this._createHTML()
   }
 
+  setSessionState (dict) {
+    dict = dict || WIDGETS['files-and-folders'].dict
+    const str = JSON.stringify(dict)
+    window.sessionStorage.setItem('last-saved-session', str)
+  }
+
+  getSessionState () {
+    const str = window.sessionStorage.getItem('last-saved-session')
+    return JSON.parse(str)
+  }
+
   clearSaveState () {
     window.localStorage.removeItem('last-saved-sketch')
     window.localStorage.removeItem('last-saved-layout')
     window.localStorage.removeItem('last-saved-widgets')
+    window.sessionStorage.removeItem('last-saved-session')
   }
 
   restoreSavePoint () {
@@ -118,7 +144,7 @@ class StudentSession extends Widget {
     // TODO: will need to update mutli-file-widget if/when we make that widget
     if (data.name) ss.setItem('opened-project', data.name)
     if (data.message) ss.setItem('last-commit-msg', data.message)
-    if (data.sha) ss.setItem('index-sha', data.sha)
+    if (data.file) ss.setItem('opened-file', data.file)
     if (data.url) ss.setItem('project-url', data.url)
     if (data.ghpages) ss.setItem('ghpages', data.ghpages)
     if (data.branch) ss.setItem('branch', data.branch)
@@ -131,12 +157,17 @@ class StudentSession extends Widget {
     ss.removeItem('opened-project')
     ss.removeItem('last-commit-msg')
     ss.removeItem('last-commit-code')
-    ss.removeItem('index-sha')
+    ss.removeItem('opened-file')
     ss.removeItem('project-url')
     ss.removeItem('ghpages')
     ss.removeItem('branch')
+    ss.removeItem('changes')
     NNE.addCustomRoot(null)
-    if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
+    if (WIDGETS['files-and-folders']) WIDGETS['files-and-folders'].updateFiles([])
+    const data = { owner: this.data.github.owner }
+    // utils.post('./api/github/delete-cache', data, (res) => console.log(res))
+    utils.post('./api/github/delete-cache', data)
+    NNE.autoUpdate = true
     this._createHTML()
   }
 
@@ -157,6 +188,7 @@ class StudentSession extends Widget {
       this.authStatus = false
       if (this.getData('opened-project')) {
         NNE.code = ''
+        NNE.autoUpdate = true
         NNW.updateTitleBar(null)
       }
       this.clearProjectData()
@@ -209,12 +241,12 @@ class StudentSession extends Widget {
     }
   }
 
-  updateRoot () {
+  updateRoot (subpath = '') {
     const owner = window.localStorage.getItem('owner')
     const repo = window.sessionStorage.getItem('opened-project')
     const main = window.sessionStorage.getItem('branch')
     if (owner && repo) {
-      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
+      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/${subpath}`
       const proto = window.location.protocol
       const host = window.location.host
       const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
@@ -290,11 +322,11 @@ class StudentSession extends Widget {
       setTimeout(() => this._init(), 100); return
     }
 
-    if (window.localStorage.getItem('auto-update') === null) {
-      this.setData('auto-update', 'true')
-    }
+    // if (window.localStorage.getItem('auto-update') === null) {
+    //   this.setData('auto-update', 'true')
+    // }
 
-    NNE.autoUpdate = (this.getData('auto-update') === 'true')
+    // NNE.autoUpdate = (this.getData('auto-update') === 'true')
     NNE.wrap = (this.getData('wrap') === 'true')
 
     if (!window.localStorage.getItem('chattiness')) {
@@ -363,10 +395,11 @@ class StudentSession extends Widget {
           editor theme:
           <input value="${this.data.editor.theme}" readonly="readonly">
         </div>
-        <div>
+        <!-- temporarily removing this (if i bring it back, remember to add "$" to "{}") -->
+        <!-- <div>
           editor auto-update:
-          <input value="${this.data.editor.autoUpdate}" readonly="readonly">
-        </div>
+          <input value="{this.data.editor.autoUpdate}" readonly="readonly">
+        </div> -->
         <div>
           editor line wrap:
           <input value="${this.data.editor.wrap}" readonly="readonly">
@@ -425,8 +458,8 @@ class StudentSession extends Widget {
           <input  value="${this.data.github.lastCommitMsg}" readonly="readonly">
         </div>
         <div>
-          index sha:
-          <input  value="${this.data.github.indexSha}" readonly="readonly">
+          opened file:
+          <input  value="${this.data.github.openedFile}" readonly="readonly">
         </div>
         <button name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
         <hr>

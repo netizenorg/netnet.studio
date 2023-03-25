@@ -17,9 +17,13 @@ window.CONVOS['functions-menu'] = (self) => {
   })()
 
   const createNewRepo = (c, t) => {
-    const v = t.$('input').value.replace(/\s/g, '-')
-    const p = /^(\w|\.|-)+$/
-    if (!p.test(v)) c.goTo('explain-proj-name')
+    // const v = t.$('input').value.replace(/\s/g, '-')
+    const v = t.$('input').value
+    const u = /[A-Z]/ // checking for uppercase chars
+    const p = /^(\w|\.|-)+$/ // checking for special characters
+    if (/\s/.test(v)) c.goTo('explain-proj-name-spaces')
+    else if (u.test(v)) c.goTo('explain-proj-name-uppercase')
+    else if (!p.test(v)) c.goTo('explain-proj-name-special-chars')
     else { c.hide(); self._createNewRepo(c, t, v) }
   }
 
@@ -108,7 +112,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "<i>${window.sessionStorage.getItem('opened-project')}</i>". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('new-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -133,8 +137,38 @@ window.CONVOS['functions-menu'] = (self) => {
       'never mind': (e) => e.hide()
     }
   }, {
-    id: 'explain-proj-name', // if createNewRepo receives a bad name value
+    id: 'explain-proj-name-special-chars', // if createNewRepo receives a bad name value
     content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-spaces', // if createNewRepo receives a bad name value
+    content: 'It\'s considered bad practice to include spaces in your file or folder names. Try a different name or maybe place <code>-</code> between words instead of spaces? <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'why is it bad practice?': (e) => e.goTo('explain-proj-name-spaces-why'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-spaces-why', // if createNewRepo receives a bad name value
+    content: 'Because a "space" isn\'t always a "space" in code, sometimes spaces can be written normally <code>project name</code>, but other times they need to be written with a <code>\\s</code> like <code>project\\sname</code> or with a <code>%20</code> like <code>project%20name</code>.\nTo avoid having to keep track of all this, it\'s best to simply avoid spaces. Try a different name or maybe place <code>-</code> between words instead of spaces? <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-uppercase', // if createNewRepo receives a bad name value
+    content: 'It\'s considered bad practice to include upper case characters in your file or folder names. Try a name that\'s all lowercase <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'why is it bad practice?': (e) => e.goTo('explain-proj-name-uppercase-why'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name-uppercase-why', // if createNewRepo receives a bad name value
+    content: 'Because we often need to reference our file and folder names in our code, and it\'s all to easy to forget to write it with an uppercase, this is one of the most common mistakes I\'ve spotted in student and professional projects alike, so it\'s best to simply keep things lowercase. Try a name that\'s all lowercase <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),
       'never mind': (e) => e.hide()
@@ -148,78 +182,43 @@ window.CONVOS['functions-menu'] = (self) => {
       'never mind': (e) => e.hide()
     }
   }, {
+    id: 'pushing-updates',
+    before: () => NNW.menu.switchFace('processing'),
+    content: '...sending data to GitHub...',
+    options: {}
+  }, {
     id: 'new-project-created',
-    content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>`,
+    content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to your GitHub account. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Files And Folders</b> widget, or click <code>FilesAndFolders()</code> in the <b>Functions Menu</b>`,
     options: {
       'cool!': (e) => e.hide()
     }
   },
   // ... save open project
   {
-    id: 'save-newish-project',
-    content: 'The last time you saved this project was when you first created it, from now on everytime I "push" updates to your GitHub you\'ll need to leave a short message (one sentence) explainig what changed: <input placeholder="what\'s new?">',
+    id: 'save-project',
+    content: '  I\'ve temporarily saved your progress to this session. When you\'re ready to update your project you can make these temporary changes permanent by pushing them to your GitHub repository.',
     options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'why?': (e) => e.goTo('explain-versions')
+      'got it': (e) => e.hide(),
+      'push to GitHub': (e) => e.goTo('push-project')
     }
   }, {
-    id: 'explain-versions',
-    content: 'Instead of overwritting your previous HTML file, GitHub keeps track of all previous "versions" each time you save your project and so it needs some message to associate with each version as your project evolves',
-    options: { 'I see.': (e) => e.goTo('save-version') }
-  }, {
-    id: 'save-version',
-    content: 'So, what\'s changed since you first created this project? <input placeholder="what\'s new?">',
+    id: 'push-project',
+    before: () => self.stageChanges(),
+    content: 'First, you need to make sure only the files you want to save to GitHub are selected in the <b>Git Stage</b> widget, and then click "add files" to stage them.',
     options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
+      'got it': (e) => e.hide()
     }
   }, {
-    id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${window.sessionStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
+    id: 'nothing-to-save',
+    content: 'There\'s nothing new to save, you have to make a change to one of your files first.',
     options: {
-      'ok, commit and push this update': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'again-too-long',
-    content: 'That message is too long, I need you to keep it below 72 characters <input placeholder="what\'s new?">',
-    options: {
-      'ok, try now': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'pushing-updates',
-    before: () => NNW.menu.switchFace('processing'),
-    content: '...sending data to GitHub...',
-    options: {}
-  }, {
-    id: 'project-saved',
-    content: 'Your project has been saved!',
-    options: {
-      'great, thanks!': (e) => e.hide(),
-      'can I share it?': (e) => e.goTo('share-project')
+      'good point!': (e) => e.hide()
     }
   },
   // ... opening old projects
   {
     id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "<i>${window.sessionStorage.getItem('opened-project')}</i>". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('open-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
@@ -247,25 +246,26 @@ window.CONVOS['functions-menu'] = (self) => {
       ok: (e) => e.goTo('open-project'),
       'no, never mind': (e) => e.hide()
     }
-  }, {
-    id: 'project-opened',
-    content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
-    options: {
-      ok: (e) => e.hide()
-      // 'submit to BrowserFest': (e) => {
-      //   if (WIDGETS['browser-fest']) {
-      //     WIDGETS['browser-fest'].submit()
-      //   } else {
-      //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
-      //   }
-      // }
-    }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
   },
+  // {
+  //   id: 'project-opened',
+  //   content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
+  //   options: {
+  //     ok: (e) => e.hide()
+  //     // 'submit to BrowserFest': (e) => {
+  //     //   if (WIDGETS['browser-fest']) {
+  //     //     WIDGETS['browser-fest'].submit()
+  //     //   } else {
+  //     //     WIDGETS.load('BrowserFest.js', (w) => w.submit())
+  //     //   }
+  //     // }
+  //   }
+  //   // ,
+  //   // after: () => {
+  //   //   document.querySelector('.text-bubble-options > button:nth-child(2)')
+  //   //     .classList.add('opt-rainbow-bg')
+  //   // }
+  // },
   // ... share gh project
   {
     id: 'cant-share-project',
@@ -305,7 +305,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
+    content: `Your project is live at <a href="<i>${window.sessionStorage.getItem('ghpages')}</i>" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
