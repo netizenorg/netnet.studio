@@ -218,7 +218,7 @@ class DemoExampleMaker extends Widget {
     if (this.$('[name="dem-s-focus"]').value.length > 0) {
       const lines = this.$('[name="dem-s-focus"]').value.match(/\d+/g).map(Number)
       NNE.spotlight([...lines])
-    }
+    } else NNE.spotlight(null)
   }
 
   _addStep (step) {
