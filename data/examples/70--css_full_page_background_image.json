@@ -1,15 +1,15 @@
 {
   "name": "CSS Full Page Background Image",
-  "toc": true, 
+  "toc": "on",
   "tags": [
-    "image",
-    "background",
-    "full-screen",
-    "CSS"
+    "CSS",
+    "Full Page",
+    "Background",
+    "Image"
   ],
   "layout": "dock-left",
   "key": 70,
-  "code": "#code/eJxlj8kOwjAMRO/5CnODA0RcS1SJT0laNw1kUxbEIv4d0/aAqOTDWB4/zYhcHhZbBkAzFmfhBfMCoGR31SlU3++NkxobqMluJ5m50tyjqlYeLlHvTv8P2TzJ34UbptVNliK70aEvDQzmjv3KEUM2xQRPBHIRYp0oYURJAB8WOUPY+5te8KUWE+OxPcNQrYVIuX8IMBXZCE6OD83iU5I=",
+  "code": "#code/eJxtjzkOwjAQRXufYuigAIs2WJE4ip1MHIM3eYlYxN0ZohSI0H1p3vuaL3K5W2wZwFichScFACW7q06h+n5vnNTYQE12O8fMleYeVbXycIl6d/oVsnkQ34UJ0+omS5Hd6NCXBgZzw35FxJBNMcFTA1F/KhJGlKT7sMQP8WKCLzuYGI/tGYZqLUT698uFecBGcCLe08BSCg==",
   "info": [
     {
       "title": "CSS Full Page Background Image",
@@ -19,35 +19,35 @@
     {
       "title": "Background Image ",
       "focus": [
-        5
+        3
       ],
       "text": "The CSS <code>background-image</code> property sets a background image for an element, in this case the <code>html</code> element. In this line, the CSS <code>url()</code> function's value should be a path to an image file that will be set as our background."
     },
     {
       "title": "Background Size",
       "focus": [
-        6
+        4
       ],
       "text": "The <code>background-size</code> property tells our webpage how to size the background image. In this example it is set to \"cover\" so the image will be stretched to cover the entire page."
     },
     {
       "title": "Background Attachment",
       "focus": [
-        7
+        5
       ],
       "text": "The <code>background-attachment</code> property controls whether or not the image will scroll with the page. Here, it is set to \"fixed\" which will keep the image in the same spot as the user scrolls on the page. "
     },
     {
       "title": "Background Position",
       "focus": [
-        8
+        6
       ],
       "text": "The <code>background-position</code> property sets the position of the background image. In this example it is set to \"center\", which will keep the image centered on the screen.  "
     },
     {
       "title": "Background Repeat",
       "focus": [
-        9
+        7
       ],
       "text": "The <code>background-repeat</code> property will tell the page whether or not to repeat the image. By default, the image will repeat along the x and y axis. In this example it is set to \"no-repeat\" which will keep the image from repeating."
     }
