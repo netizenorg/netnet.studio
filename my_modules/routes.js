@@ -183,7 +183,7 @@ function createExamplesDict () {
     map: [] // sections in order
   }
   const exPath = path.join(__dirname, '../data/examples')
-  const files = fs.readdirSync(exPath)
+  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
     const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
     dict.examples[obj.key] = obj
