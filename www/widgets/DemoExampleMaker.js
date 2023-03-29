@@ -183,7 +183,8 @@ class DemoExampleMaker extends Widget {
     // ...
     const urlReset = (e, key) => {
       this._data[key] = key === 'tags'
-        ? e.target.value.split(',').map(s => s.trim()) : e.target.value
+        ? e.target.value.split(',').map(s => s.trim())
+        : e.target.value
       this.$('[name="dem-url"]').value = null
       this.$('[name="dem-url"]').style.display = 'none'
     }
@@ -250,7 +251,8 @@ class DemoExampleMaker extends Widget {
 
   _selectStep (step) {
     this._curStep = (typeof step === 'number')
-      ? step : this._data.steps.indexOf(step)
+      ? step
+      : this._data.steps.indexOf(step)
     step = (typeof step === 'number') ? this._data.steps[step] : step
 
     const stepSelect = this.$('[name="dem-current-step"]')
