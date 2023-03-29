@@ -118,6 +118,7 @@ class DemoExampleMaker extends Widget {
         <hr>
         <div style="float: right">
           <button name="dem-gen-url">generate link</button>
+          <button name="dem-up-json">upload json</button>
           <button name="dem-dl-json">download json</button>
           <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
         </div>
@@ -155,6 +156,10 @@ class DemoExampleMaker extends Widget {
 
     this.$('[name="dem-gen-url"]').addEventListener('click', () => {
       this._generateURL()
+    })
+
+    this.$('[name="dem-up-json"]').addEventListener('click', () => {
+      this._uploadJSON(this)
     })
 
     this.$('[name="dem-dl-json"]').addEventListener('click', () => {
@@ -289,6 +294,60 @@ class DemoExampleMaker extends Widget {
     const url = `${loc.protocol}//${loc.host}/${l}#example/${NNE._encode(str)}`
     this.$('[name="dem-url"]').value = url
     this.$('[name="dem-url"]').style.display = 'block'
+  }
+
+  _uploadJSON (dem) {
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.addEventListener('change', function () {
+      const file = fileInput.files[0]
+      if (file.type !== 'application/json') {
+        throw new Error('File uploaded was not a JSON file')
+      } else {
+        const reader = new window.FileReader()
+        reader.onload = function () {
+          const e = JSON.parse(reader.result)
+          NNE.code = NNE._decode(e.code.split('#code/').pop())
+          if (e.info) {
+            if (dem._data.steps.length > e.info.length) {
+              const extra = dem._data.steps.length - e.info.length
+              for (let step = 0; step < extra; step++) {
+                dem._updateStep(dem._data.steps.length - step, 'remove')
+              }
+              dem._data.steps.forEach((step, i) => {
+                if (i > 0) {
+                  dem._updateStep(step, 'remove')
+                }
+              })
+            }
+            e.info.forEach((step, i) => {
+              if (i === 0 || i < dem._data.steps.length) {
+                dem._data.steps[i] = {
+                  title: step.title,
+                  focus: step.focus || null,
+                  text: step.text
+                }
+              } else { dem._addStep(step) }
+              dem._selectStep(0)
+            })
+          } else {
+            for (let step = dem._data.steps.length; step >= 1; step--) { dem._updateStep(step, 'remove') }
+            dem._data.steps[0] = {
+              title: 'getting started',
+              focus: null,
+              text: 'in this step...'
+            }
+            dem._selectStep(dem._data.steps[0])
+          }
+          dem.$('[name="dem-demo-name"]').value = e.name
+          if (e.tags) { dem.$('[name="dem-demo-tags"]').value = e.tags }
+          dem.$('[name="dem-demo-layout"]').value = e.layout
+          dem.$('[name="dem-demo-toc"]').checked = e.toc
+        }
+        reader.readAsText(file)
+      }
+    })
+    fileInput.click()
   }
 
   _downloadJSON () {
