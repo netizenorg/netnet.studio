@@ -86,6 +86,10 @@ class DemoExampleMaker extends Widget {
           display: flex;
           justify-content: space-between;
         }
+        #dem-remove-step:hover {
+          background-color: rgb(252, 97, 86);
+          border-color: rgb(252, 97, 86);
+        }
       </style>
       <div class="demo-example-maker">
         editing step <select name="dem-current-step"></select>
@@ -99,8 +103,7 @@ class DemoExampleMaker extends Widget {
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
         <button name="dem-preview-step">preview</button>
-        <button name="dem-update-step">update this step</button>
-        <button name="dem-remove-step">remove this step</button>
+        <button id="dem-remove-step" name="dem-remove-step" style="float: right">remove this step</button>
         <br>
         <br>
         <hr>
@@ -145,10 +148,6 @@ class DemoExampleMaker extends Widget {
       this._addStep()
     })
 
-    this.$('[name="dem-update-step"]').addEventListener('click', () => {
-      this._updateStep(this._curStep)
-    })
-
     this.$('[name="dem-remove-step"]').addEventListener('click', () => {
       this._updateStep(this._curStep, 'remove')
     })
@@ -173,6 +172,16 @@ class DemoExampleMaker extends Widget {
         })
         this.$('[name="dem-s-focus"]').value = arr.join(',')
       }
+    })
+
+    this.$('input').forEach(input => {
+      input.addEventListener('change', () => {
+        this._updateStep(this._curStep)
+      })
+    });
+
+    this.$('[name="dem-s-text"]').addEventListener('change', () => {
+      this._updateStep(this._curStep)
     })
 
     // ...
