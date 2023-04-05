@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, Convo, NNE, NNW, utils */
+/* global Widget, WIDGETS, Convo, NNE, nn, NNW, utils */
 class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -118,7 +118,7 @@ class DemoExampleMaker extends Widget {
         <hr>
         <div style="float: right">
           <button name="dem-gen-url">generate link</button>
-          <button name="dem-up-json">upload json</button>
+          <button name="dem-up-json" id="json-btn">upload json</button>
           <button name="dem-dl-json">download json</button>
           <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
         </div>
@@ -158,10 +158,6 @@ class DemoExampleMaker extends Widget {
       this._generateURL()
     })
 
-    this.$('[name="dem-up-json"]').addEventListener('click', () => {
-      this._uploadJSON(this)
-    })
-
     this.$('[name="dem-dl-json"]').addEventListener('click', () => {
       if (!this._data.name) window.alert('you must enter a name for this file')
       else this._downloadJSON()
@@ -180,10 +176,27 @@ class DemoExampleMaker extends Widget {
       }
     })
 
+    const fileUploader = new nn.FileUploader({
+      maxsize: 500,
+      types: 'application/json',
+      click: '#json-btn',
+      ready: (file) => {
+        const d = file.data.split('data:application/json;base64,').pop()
+        const data = JSON.parse(window.atob(d))
+        this._uploadJSON(data)
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+
+    Object.create(fileUploader)
+
     // ...
     const urlReset = (e, key) => {
       this._data[key] = key === 'tags'
-        ? e.target.value.split(',').map(s => s.trim()) : e.target.value
+        ? e.target.value.split(',').map(s => s.trim())
+        : e.target.value
       this.$('[name="dem-url"]').value = null
       this.$('[name="dem-url"]').style.display = 'none'
     }
@@ -250,7 +263,8 @@ class DemoExampleMaker extends Widget {
 
   _selectStep (step) {
     this._curStep = (typeof step === 'number')
-      ? step : this._data.steps.indexOf(step)
+      ? step
+      : this._data.steps.indexOf(step)
     step = (typeof step === 'number') ? this._data.steps[step] : step
 
     const stepSelect = this.$('[name="dem-current-step"]')
@@ -296,58 +310,45 @@ class DemoExampleMaker extends Widget {
     this.$('[name="dem-url"]').style.display = 'block'
   }
 
-  _uploadJSON (dem) {
-    const fileInput = document.createElement('input')
-    fileInput.type = 'file'
-    fileInput.addEventListener('change', function () {
-      const file = fileInput.files[0]
-      if (file.type !== 'application/json') {
-        throw new Error('File uploaded was not a JSON file')
-      } else {
-        const reader = new window.FileReader()
-        reader.onload = function () {
-          const e = JSON.parse(reader.result)
-          NNE.code = NNE._decode(e.code.split('#code/').pop())
-          if (e.info) {
-            if (dem._data.steps.length > e.info.length) {
-              const extra = dem._data.steps.length - e.info.length
-              for (let step = 0; step < extra; step++) {
-                dem._updateStep(dem._data.steps.length - step, 'remove')
-              }
-              dem._data.steps.forEach((step, i) => {
-                if (i > 0) {
-                  dem._updateStep(step, 'remove')
-                }
-              })
-            }
-            e.info.forEach((step, i) => {
-              if (i === 0 || i < dem._data.steps.length) {
-                dem._data.steps[i] = {
-                  title: step.title,
-                  focus: step.focus || null,
-                  text: step.text
-                }
-              } else { dem._addStep(step) }
-              dem._selectStep(0)
-            })
-          } else {
-            for (let step = dem._data.steps.length; step >= 1; step--) { dem._updateStep(step, 'remove') }
-            dem._data.steps[0] = {
-              title: 'getting started',
-              focus: null,
-              text: 'in this step...'
-            }
-            dem._selectStep(dem._data.steps[0])
+  _uploadJSON (ex) {
+    for (let step = this._data.steps.length; step >= 1; step--) {
+      this._updateStep(step, 'remove')
+    }
+    this._data = {
+      name: ex.name,
+      tags: ex.tags || null,
+      toc: ex.toc || true,
+      layout: ex.layout || 'dock-left',
+      key: Number(ex.key),
+      code: ex.code,
+      steps: ex.info ||
+      [{ title: 'getting started', focus: null, text: 'in this step...' }]
+    }
+    console.log(ex.toc)
+    this.$('[name="dem-demo-name"]').value = ex.name
+    this.$('[name="dem-demo-layout"]').value = ex.layout || 'dock-left'
+    this.$('[name="dem-demo-toc"]').checked = ex.toc || true
+    this.$('[name="dem-demo-tags"]').value = ex.tags || null
+    NNE.code = NNE._decode(ex.code.split('#code/').pop())
+    if (ex.info) {
+      this._data.steps.forEach((step, i) => {
+        if (i === 0 || i < this._data.steps.length) {
+          this._data.steps[i] = {
+            title: step.title,
+            focus: step.focus || null,
+            text: step.text
           }
-          dem.$('[name="dem-demo-name"]').value = e.name
-          if (e.tags) { dem.$('[name="dem-demo-tags"]').value = e.tags }
-          dem.$('[name="dem-demo-layout"]').value = e.layout
-          dem.$('[name="dem-demo-toc"]').checked = e.toc
-        }
-        reader.readAsText(file)
+        } else { this._addStep(step) }
+        this._selectStep(0)
+      })
+    } else {
+      this._data.steps[0] = {
+        title: 'getting started',
+        focus: null,
+        text: 'in this step...'
       }
-    })
-    fileInput.click()
+    }
+    this._selectStep(this._data.steps[0])
   }
 
   _downloadJSON () {
