@@ -240,7 +240,7 @@ window.utils = {
       ld.style.maxWidth = '1200px'
       ld.style.padding = '10px'
       ld.style.lineHeight = '32px'
-      ld.innerHTML = 'Oh dear, it appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly (it\'s not easy to write code on a smart phone). <br><br>If you think this is a mistake, let us know h<span></span>i@net<span></span>izen.org'
+      ld.innerHTML = 'It appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly.<br><br>Learn more about <a href="http://netizen.org/netnet/" style="color: #fff;">netnet here</a>, or email us at h<span></span>i@net<span></span>izen.org'
     }
   },
 
