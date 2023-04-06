@@ -1,10 +1,14 @@
 /* global HTMLElement NNE */
 
-class SvgJSInvokeAndAssign extends SvgDiagramBase {
+class SvgJSInvokeAndAssign extends HTMLElement {
+  connectedCallback (opts) {
+    if (!this.c) this.c = []
+    this.updateHTML()
+  }
+
   updateHTML () {
     this.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 864 133.7">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 864 133.7">
     <text transform="translate(356.77 116.95)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[7]};font-family:'fira-sans-regular', sans-serif">squa
       <tspan x="124.05" y="0" style="letter-spacing:-0.019988130979032664em">r</tspan>
@@ -13,7 +17,7 @@ class SvgJSInvokeAndAssign extends SvgDiagramBase {
     <text transform="translate(820.27 159.65)"
       style="isolation:isolate;font-size:68.0999984741211px;font-family:'fira-sans-regular', sans-serif">
     </text>
-    <text transform="translate(43.78 24.44)"
+    <text transform="translate(53.78 23.44)"
       style="isolation:isolate;font-size:23.2268009185791px;fill:${this.c[5]};font-family:'fira-sans-regular', sans-serif">new
       <tspan x="48.89" y="0" style="letter-spacing:-0.005003312247234312em">v</tspan>
       <tspan x="60.2" y="0">ariab</tspan>
@@ -29,10 +33,6 @@ class SvgJSInvokeAndAssign extends SvgDiagramBase {
       <tspan x="497.07" y="0" style="letter-spacing:-0.01997120434820419em">r</tspan>
       <tspan x="505.5" y="0">eturns</tspan>
     </text>
-    <polyline points="182.09 63.7 182.09 49.8 242.66 49.8 302.94 49.8 302.94 63.7"
-      style="fill:none;stroke:${this.c[5]};stroke-width:2px" />
-    <line x1="242.66" y1="32.7" x2="242.66" y2="48.7"
-      style="fill:none;stroke:${this.c[5]};stroke-width:2px" />
     <text transform="translate(532.7 116.95)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[0]};font-family:'fira-sans-regular', sans-serif">(</text>
     <text transform="translate(551.24 116.95)"
@@ -54,8 +54,31 @@ class SvgJSInvokeAndAssign extends SvgDiagramBase {
     </text>
     <text transform="translate(313.14 116.95)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[3]};font-family:'fira-sans-regular', sans-serif">=</text>
+    <polyline points="177.62 74.35 177.62 52.34 240.44 52.34 303 52.34 303 74.35"
+      style="fill:none;stroke:${this.c[5]}" />
+    <line x1="240.43" y1="32.19" x2="240.43" y2="52.34"
+      style="fill:none;stroke:${this.c[5]}" />
   </svg>
     `
+  }
+
+  get colors () {
+    return this.c
+  }
+
+  set colors (val) {
+    if (val instanceof Array) val = val.join(',')
+    this.setAttribute('colors', val)
+    this.c = val.split(',')
+    this.updateHTML()
+  }
+
+  static get observedAttributes () {
+    return ['colors']
+  }
+
+  attributeChangedCallback (attrName, oldVal, newVal) {
+    if (newVal !== oldVal) this[attrName] = newVal
   }
 }
 
