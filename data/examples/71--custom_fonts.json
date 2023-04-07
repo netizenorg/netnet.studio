@@ -12,14 +12,14 @@
     {
       "title": "Custom Fonts in CSS",
       "focus": null,
-      "text": "This example show show to use the <code>@import</code> and <code>@font-face</code> CSS rules to use custom fonts on your website from both a remote file and local file."
+      "text": "This example shows how to use the <code>@import</code> and <code>@font-face</code> CSS rules to use custom fonts on your website from both a remote file and local file."
     },
     {
       "title": "@import Rule",
       "focus": [
         2
       ],
-      "text": "Here we are using the <code>@import</code> rule to load an external font from Google fonts. <a href=\"https://fonts.google.com/\" target=\"_blank\">Google Fonts</a> will give you code snippets that you can copy and paste into your CSS. In this example, we are importing the <href=\"https://fonts.google.com/specimen/Bungee+Shade?query=bungee\" target=\"_blank\">Bungee Shade</a> font by adding the link to the font to the <code>url</code> property. "
+      "text": "Here we are using the <code>@import</code> rule to load an external font from Google Fonts. <a href=\"https://fonts.google.com/\" target=\"_blank\">Google Fonts</a> will give you code snippets that you can copy and paste into your CSS. In this example, we are importing the <href=\"https://fonts.google.com/specimen/Bungee+Shade?query=bungee\" target=\"_blank\">Bungee Shade</a> font by passing the Google Font link to the CSS <code>url</code> function. "
     },
     {
       "title": "@font-face Rule",
