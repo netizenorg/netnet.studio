@@ -86,7 +86,10 @@ class DemoExampleMaker extends Widget {
           display: flex;
           justify-content: space-between;
         }
-        #dem-remove-step:hover {
+        .demo-example-maker  button[name="dem-remove-step"] {
+          float: right;
+        }
+        .demo-example-maker  button[name="dem-remove-step"]:hover {
           background-color: rgb(252, 97, 86);
           border-color: rgb(252, 97, 86);
         }
@@ -103,7 +106,7 @@ class DemoExampleMaker extends Widget {
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
         <button name="dem-preview-step">preview</button>
-        <button id="dem-remove-step" name="dem-remove-step" style="float: right">remove this step</button>
+        <button name="dem-remove-step">remove this step</button>
         <br>
         <br>
         <hr>
