@@ -126,6 +126,15 @@ class DemoExampleMaker extends Widget {
         <textarea name="dem-url"></textarea>
       </div>
     `
+
+    const n = new Netitor ({
+      ele: '#dem-text',
+      wrap: true,
+      language: 'html'
+    })
+
+    Object.create(n)
+
     this._addStep({
       title: 'getting started',
       focus: null,
