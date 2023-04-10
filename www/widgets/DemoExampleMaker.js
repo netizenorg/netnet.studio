@@ -317,37 +317,18 @@ class DemoExampleMaker extends Widget {
     this._data = {
       name: ex.name,
       tags: ex.tags || null,
-      toc: ex.toc || true,
+      toc: ex.toc || false,
       layout: ex.layout || 'dock-left',
       key: Number(ex.key),
       code: ex.code,
-      steps: ex.info ||
-      [{ title: 'getting started', focus: null, text: 'in this step...' }]
+      steps: ex.info || [{}]
     }
-    console.log(ex.toc)
     this.$('[name="dem-demo-name"]').value = ex.name
     this.$('[name="dem-demo-layout"]').value = ex.layout || 'dock-left'
     this.$('[name="dem-demo-toc"]').checked = ex.toc || true
     this.$('[name="dem-demo-tags"]').value = ex.tags || null
+    if (NNW.layout !== this._data.layout) NNW.layout = this._data.layout
     NNE.code = NNE._decode(ex.code.split('#code/').pop())
-    if (ex.info) {
-      this._data.steps.forEach((step, i) => {
-        if (i === 0 || i < this._data.steps.length) {
-          this._data.steps[i] = {
-            title: step.title,
-            focus: step.focus || null,
-            text: step.text
-          }
-        } else { this._addStep(step) }
-        this._selectStep(0)
-      })
-    } else {
-      this._data.steps[0] = {
-        title: 'getting started',
-        focus: null,
-        text: 'in this step...'
-      }
-    }
     this._selectStep(this._data.steps[0])
   }
 
