@@ -3,7 +3,7 @@ class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
     this.key = 'demo-example-maker'
-    this.listed = false
+    this.listed = true
     this.title = 'Demo/Example Maker'
     this._curStep = 0
     this._sections = null
@@ -11,7 +11,8 @@ class DemoExampleMaker extends Widget {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
     utils.get('api/examples', (res) => {
-      this._data.key = Math.max(...Object.keys(res.data)) + 1
+      // this._data.key = Math.max(...Object.keys(res.data)) + 1
+      this._data.key = Date.now()
       this._sections = res.sections
       this._createHTML(res.sections.map(o => o.name))
     })
@@ -345,7 +346,14 @@ class DemoExampleMaker extends Widget {
     this.$('[name="dem-demo-tags"]').value = ex.tags || null
     if (NNW.layout !== this._data.layout) NNW.layout = this._data.layout
     NNE.code = NNE._decode(ex.code.split('#code/').pop())
-    this._selectStep(this._data.steps[0])
+    if (this._data.steps.length > 0) {
+      this._selectStep(this._data.steps[0])
+    } else {
+      this.$('[name="dem-s-title"]').value = null
+      this.$('[name="dem-s-focus"]').value = null
+      this.$('[name="dem-s-text"]').value = null
+      this._selectStep(null)
+    }
   }
 
   _downloadJSON () {
