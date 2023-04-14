@@ -69,18 +69,26 @@
   opacity: 0.6;
 }
 
-#search-bar > section > span:after {
-  content: '◕ ◞ ◕ ';
+#search-bar > section > span > label {
   display: block;
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
+  width: 87px;
+  padding-top: 18px;
+  padding-left: 13px;
+}
 
-  color: var(--netizen-meta);
-  font-size: 25px;
-
+#search-bar > section > span > label .face {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
   opacity: 0.9;
+  background-color: var(--netizen-meta);
+  -webkit-mask: url(./../images/faces/◕.svg) no-repeat center;
+  mask: url(./../images/faces/◕.svg) no-repeat center;
+}
+
+#search-bar > section > span > label .face--mouth {
+  -webkit-mask: url(./../images/faces/◞.svg) no-repeat center;
+  mask: url(./../images/faces/◞.svg) no-repeat center;
 }
 
 #search-bar > section > span > input {
