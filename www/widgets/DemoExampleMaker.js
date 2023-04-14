@@ -96,6 +96,7 @@ class DemoExampleMaker extends Widget {
         <input placeholder="step title" type="text" name="dem-s-title">
         <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
         <br>
+        <div name="dem-t-text"></div>
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
         <button name="dem-preview-step">preview</button>
@@ -127,13 +128,11 @@ class DemoExampleMaker extends Widget {
       </div>
     `
 
-    const n = new Netitor ({
-      ele: '#dem-text',
+    this.textarea = new Netitor ({
+      ele: '[name="dem-t-text"]',
       wrap: true,
       language: 'html'
     })
-
-    Object.create(n)
 
     this._addStep({
       title: 'getting started',
