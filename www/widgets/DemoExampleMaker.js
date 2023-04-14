@@ -156,6 +156,12 @@ class DemoExampleMaker extends Widget {
       this._updateStep(this._curStep, 'remove')
     })
 
+    this.$('[name="dem-demo-toc"]').addEventListener('change', () => {
+      if (this.$('[name="dem-demo-toc"]').checked) {
+        this._data.toc = true
+      } else { this._data.toc = false }
+    })
+
     this.$('[name="dem-gen-url"]').addEventListener('click', () => {
       this._generateURL()
     })
