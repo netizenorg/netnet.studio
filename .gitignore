@@ -25,6 +25,10 @@ data/browserfest-thumbnails/*
 www/tutorials/*
 !www/tutorials/list.json
 
+# ignoring local temp gh user data
+data/temp-gh-user-data/*
+!data/temp-gh-user-data/.git-keep
+
 # ignoring submodules
 www/js/netitor
 www/js/netnet-standard-library

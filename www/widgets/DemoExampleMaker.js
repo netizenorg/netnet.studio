@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, Convo, NNE, NNW, utils */
+/* global Widget, WIDGETS, Convo, NNE, nn, NNW, utils */
 class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -86,6 +86,13 @@ class DemoExampleMaker extends Widget {
           display: flex;
           justify-content: space-between;
         }
+        .demo-example-maker  button[name="dem-remove-step"] {
+          float: right;
+        }
+        .demo-example-maker  button[name="dem-remove-step"]:hover {
+          background-color: rgb(252, 97, 86);
+          border-color: rgb(252, 97, 86);
+        }
       </style>
       <div class="demo-example-maker">
         editing step <select name="dem-current-step"></select>
@@ -99,7 +106,6 @@ class DemoExampleMaker extends Widget {
         <textarea name="dem-s-text" placeholder="explain step"></textarea>
         <br>
         <button name="dem-preview-step">preview</button>
-        <button name="dem-update-step">update this step</button>
         <button name="dem-remove-step">remove this step</button>
         <br>
         <br>
@@ -118,6 +124,7 @@ class DemoExampleMaker extends Widget {
         <hr>
         <div style="float: right">
           <button name="dem-gen-url">generate link</button>
+          <button name="dem-up-json" id="json-btn">upload json</button>
           <button name="dem-dl-json">download json</button>
           <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
         </div>
@@ -145,12 +152,14 @@ class DemoExampleMaker extends Widget {
       this._addStep()
     })
 
-    this.$('[name="dem-update-step"]').addEventListener('click', () => {
-      this._updateStep(this._curStep)
-    })
-
     this.$('[name="dem-remove-step"]').addEventListener('click', () => {
       this._updateStep(this._curStep, 'remove')
+    })
+
+    this.$('[name="dem-demo-toc"]').addEventListener('change', () => {
+      if (this.$('[name="dem-demo-toc"]').checked) {
+        this._data.toc = true
+      } else { this._data.toc = false }
     })
 
     this.$('[name="dem-gen-url"]').addEventListener('click', () => {
@@ -175,10 +184,35 @@ class DemoExampleMaker extends Widget {
       }
     })
 
+    this.$('input').forEach(input => {
+      input.addEventListener('change', () => {
+        this._updateStep(this._curStep)
+      })
+    });
+
+    this.$('[name="dem-s-text"]').addEventListener('change', () => {
+      this._updateStep(this._curStep)
+     })
+
+    this.fu = new nn.FileUploader({
+      maxsize: 500,
+      types: 'application/json',
+      click: '#json-btn',
+      ready: (file) => {
+        const d = file.data.split('data:application/json;base64,').pop()
+        const data = JSON.parse(window.atob(d))
+        this._uploadJSON(data)
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+
     // ...
     const urlReset = (e, key) => {
       this._data[key] = key === 'tags'
-        ? e.target.value.split(',').map(s => s.trim()) : e.target.value
+        ? e.target.value.split(',').map(s => s.trim())
+        : e.target.value
       this.$('[name="dem-url"]').value = null
       this.$('[name="dem-url"]').style.display = 'none'
     }
@@ -245,7 +279,8 @@ class DemoExampleMaker extends Widget {
 
   _selectStep (step) {
     this._curStep = (typeof step === 'number')
-      ? step : this._data.steps.indexOf(step)
+      ? step
+      : this._data.steps.indexOf(step)
     step = (typeof step === 'number') ? this._data.steps[step] : step
 
     const stepSelect = this.$('[name="dem-current-step"]')
@@ -289,6 +324,28 @@ class DemoExampleMaker extends Widget {
     const url = `${loc.protocol}//${loc.host}/${l}#example/${NNE._encode(str)}`
     this.$('[name="dem-url"]').value = url
     this.$('[name="dem-url"]').style.display = 'block'
+  }
+
+  _uploadJSON (ex) {
+    for (let step = this._data.steps.length; step >= 1; step--) {
+      this._updateStep(step, 'remove')
+    }
+    this._data = {
+      name: ex.name,
+      tags: ex.tags || null,
+      toc: ex.toc || false,
+      layout: ex.layout || 'dock-left',
+      key: Number(ex.key),
+      code: ex.code,
+      steps: ex.info || []
+    }
+    this.$('[name="dem-demo-name"]').value = ex.name
+    this.$('[name="dem-demo-layout"]').value = ex.layout || 'dock-left'
+    this.$('[name="dem-demo-toc"]').checked = ex.toc || true
+    this.$('[name="dem-demo-tags"]').value = ex.tags || null
+    if (NNW.layout !== this._data.layout) NNW.layout = this._data.layout
+    NNE.code = NNE._decode(ex.code.split('#code/').pop())
+    this._selectStep(this._data.steps[0])
   }
 
   _downloadJSON () {
