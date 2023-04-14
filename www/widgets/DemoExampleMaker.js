@@ -176,7 +176,7 @@ class DemoExampleMaker extends Widget {
       }
     })
 
-    const fileUploader = new nn.FileUploader({
+    this.fu = new nn.FileUploader({
       maxsize: 500,
       types: 'application/json',
       click: '#json-btn',
@@ -189,8 +189,6 @@ class DemoExampleMaker extends Widget {
         console.error(err)
       }
     })
-
-    Object.create(fileUploader)
 
     // ...
     const urlReset = (e, key) => {
@@ -321,7 +319,7 @@ class DemoExampleMaker extends Widget {
       layout: ex.layout || 'dock-left',
       key: Number(ex.key),
       code: ex.code,
-      steps: ex.info || [{}]
+      steps: ex.info || []
     }
     this.$('[name="dem-demo-name"]').value = ex.name
     this.$('[name="dem-demo-layout"]').value = ex.layout || 'dock-left'
