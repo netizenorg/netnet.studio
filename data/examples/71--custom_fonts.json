@@ -1,0 +1,62 @@
+{
+  "name": "Custom Fonts",
+  "toc": "on",
+  "tags": [
+    "CSS",
+    "Custom Fonts"
+  ],
+  "layout": "dock-left",
+  "key": 71,
+  "code": "#code/eJyNkE1qwzAQRvc+xaBFaCixSJeO7ZYU2gO0F1DksSWQLeFRKKLk7pWUPxe6KGgzaL73PaYmHwy2BcCLHp2dPRxn88CU944qzns7eSoHaweDwmkqpR25JHp67sWoTWj2x2lAfPxQosNVp8kZERr6Eo6td0WiJsKmFxLhO44AlzmFK2AyHHDuwoRsl39pllU2iB3ncn5bKb3v12ntlMDlITdvKDX/yT6rQVZj99yN9w+hU1Hzy4GKWm1BGkHUsGU1az+VJojPK4T3fCl4i0yQwhjsYKlRc7Vtl6R73S+MsTGcza6U1+tiRvwAmrCP3A==",
+  "info": [
+    {
+      "title": "Custom Fonts in CSS",
+      "focus": null,
+      "text": "This example shows how to use the <code>@import</code> and <code>@font-face</code> CSS rules to use custom fonts on your website from both a remote file and local file."
+    },
+    {
+      "title": "@import Rule",
+      "focus": [
+        2
+      ],
+      "text": "Here we are using the <code>@import</code> rule to load an external font from Google Fonts. <a href=\"https://fonts.google.com/\" target=\"_blank\">Google Fonts</a> will give you code snippets that you can copy and paste into your CSS. In this example, we are importing the <href=\"https://fonts.google.com/specimen/Bungee+Shade?query=bungee\" target=\"_blank\">Bungee Shade</a> font by passing the Google Font link to the CSS <code>url</code> function. "
+    },
+    {
+      "title": "@font-face Rule",
+      "focus": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "text": "Here we are using the <code>@font-face</code> rule to load a font that is stored locally. First we name our font using the <code>font-family</code> property, in this case it's called cyberdyne because that's the name of the font. This can be any name you like though. Then we need to use the <code>src</code> property to point to the cyberdyne.ttf font file stored in the css/fonts directory of our website. \n<br><br>\nYou can find a ton of free to use fonts from sites like <a href=\"https://www.dafont.com/\" target=\"_blank\">Dafont</a> or <a href=\"https://www.fontsquirrel.com/\" target=\"_blank\">Font Squirrel</a> and ttf or woff font file types will both work.\n<br><br>\nIf you copy and paste the Google Font url from the previous step in a new browser window, you'll see that it will import similar <code>@font-face</code> rules into our CSS.\n"
+    },
+    {
+      "title": "Font Classes",
+      "focus": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "text": "Next we need to make classes that we can use with elements in our HTML code that will load the font on our page. \n<br><br>\nThe first class called .bungee-shade  uses the <code>font-family</code> property, but this CSS came from Google Fonts. As stated in step 1, Google Fonts will give you code snippets that you can copy and paste into your CSS.\n<br><br>\nThe second class called .cyberdyne also uses the <code>font-family</code> property in order to use the Cyberdyne font. This <code>font-family</code> name needs to exactly match the <code>font-family</code> name you gave your font in step 3. \n\n\n"
+    },
+    {
+      "title": "Displaying Google Font",
+      "focus": [
+        18
+      ],
+      "text": "In this step we are adding the bungee-shade class to our <code>h1</code> element to display the Bungee Shade Google Font. "
+    },
+    {
+      "title": "Displaying Local Font",
+      "focus": [
+        19
+      ],
+      "text": "In this step we are adding the cyberdyne class to our <code>h1</code> element to display the Cyberdyne font stored locally."
+    }
+  ]
+}

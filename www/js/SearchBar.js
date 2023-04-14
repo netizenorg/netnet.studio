@@ -336,7 +336,15 @@ class SearchBar {
     this.ele.innerHTML = `
       <div id="search-overlay"></div>
       <section>
-        <span><input placeholder="what are you looking for?"></span>
+        <span>
+          <input placeholder="what are you looking for?">
+          <label>
+            <span class="screen-reader-only">netnet: what are you looking for?</span>
+            <span class="face"></span>
+            <span class="face face--mouth"></span>
+            <span class="face"></span>
+          </label>
+        </span>
         <div id="search-results" tabindex="-1"></div>
       </section>
     `
