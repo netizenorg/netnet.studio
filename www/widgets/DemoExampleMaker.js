@@ -68,6 +68,20 @@ class DemoExampleMaker extends Widget {
   _createHTML (types) {
     this.innerHTML = `
       <style>
+        .demo-example-maker div[name="dem-s-text"] {
+          width: 100%;
+          margin: 10px 5px;
+          border-radius: 5px;
+          border: 2px solid var(--netizen-meta);
+        }
+        div[name="dem-s-text"] .CodeMirror-gutter-wrapper {
+          display: none;
+          width: 0px;
+          opacity: 0;
+        }
+        div[name="dem-s-text"] .CodeMirror-line {
+          font-size: .9rem;
+        }
         .demo-example-maker > textarea {
           width: 100%;
           margin: 10px 5px;
@@ -104,8 +118,7 @@ class DemoExampleMaker extends Widget {
         <input placeholder="step title" type="text" name="dem-s-title">
         <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
         <br>
-        <div name="dem-t-text"></div>
-        <textarea name="dem-s-text" placeholder="explain step"></textarea>
+        <div name="dem-s-text" placeholder="explain step"></div>
         <br>
         <button name="dem-preview-step">preview</button>
         <button name="dem-remove-step">remove this step</button>
@@ -136,11 +149,16 @@ class DemoExampleMaker extends Widget {
       </div>
     `
 
-    this.textarea = new Netitor ({
-      ele: '[name="dem-t-text"]',
+    this._text = new Netitor ({
+      ele: 'div[name="dem-s-text"]',
+      code: 'in this step...',
       wrap: true,
       language: 'html'
     })
+
+    // this.textarea.addEventListener('change', () => {
+    //   this._updateStep(this._curStep)
+    // })
 
     this._addStep({
       title: 'getting started',
@@ -199,10 +217,6 @@ class DemoExampleMaker extends Widget {
       })
     });
 
-    this.$('[name="dem-s-text"]').addEventListener('change', () => {
-      this._updateStep(this._curStep)
-     })
-
     this.fu = new nn.FileUploader({
       maxsize: 500,
       types: 'application/json',
@@ -257,7 +271,7 @@ class DemoExampleMaker extends Widget {
   // ------------------------------
 
   _previewStep (step) {
-    window.convo = new Convo({ content: this.$('[name="dem-s-text"]').value })
+    window.convo = new Convo({ content: this._text.code })
     if (this.$('[name="dem-s-focus"]').value.length > 0) {
       const lines = this.$('[name="dem-s-focus"]').value.match(/\d+/g).map(Number)
       NNE.spotlight([...lines])
@@ -280,7 +294,7 @@ class DemoExampleMaker extends Widget {
       this._data.steps[step] = {
         title: this.$('[name="dem-s-title"]').value,
         focus: this.$('[name="dem-s-focus"]').value || null,
-        text: this.$('[name="dem-s-text"]').value
+        text: this._text.code
       }
       this._selectStep(step)
     }
@@ -304,7 +318,7 @@ class DemoExampleMaker extends Widget {
 
     this.$('[name="dem-s-title"]').value = step.title
     this.$('[name="dem-s-focus"]').value = step.focus
-    this.$('[name="dem-s-text"]').value = step.text
+    this._text.code = step.text
   }
 
   // ------------------------------
@@ -359,7 +373,7 @@ class DemoExampleMaker extends Widget {
     } else {
       this.$('[name="dem-s-title"]').value = null
       this.$('[name="dem-s-focus"]').value = null
-      this.$('[name="dem-s-text"]').value = null
+      this._text.code = null
       this._selectStep(null)
     }
   }
