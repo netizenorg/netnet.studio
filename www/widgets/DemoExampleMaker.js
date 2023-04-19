@@ -68,16 +68,20 @@ class DemoExampleMaker extends Widget {
   _createHTML (types) {
     this.innerHTML = `
       <style>
+        div[name="dem-s-text"] .CodeMirror {
+          height: 6rem;
+        }
         .demo-example-maker div[name="dem-s-text"] {
           width: 100%;
           margin: 10px 5px;
           border-radius: 5px;
           border: 2px solid var(--netizen-meta);
         }
+        div[name="dem-s-text"] .CodeMirror-gutter {
+          display: none;
+        }
         div[name="dem-s-text"] .CodeMirror-gutter-wrapper {
           display: none;
-          width: 0px;
-          opacity: 0;
         }
         div[name="dem-s-text"] .CodeMirror-line {
           font-size: .9rem;
@@ -88,9 +92,6 @@ class DemoExampleMaker extends Widget {
           border-radius: 5px;
           padding: 5px;
           border: none;
-        }
-        textarea[name="dem-s-text"] {
-          background: var(--netizen-meta);
         }
         textarea[name="dem-url"] {
           display: none;
@@ -119,10 +120,8 @@ class DemoExampleMaker extends Widget {
         <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
         <br>
         <div name="dem-s-text" placeholder="explain step"></div>
-        <br>
         <button name="dem-preview-step">preview</button>
         <button name="dem-remove-step">remove this step</button>
-        <br>
         <br>
         <hr>
         <div style="margin: 10px 15px;">
@@ -155,10 +154,10 @@ class DemoExampleMaker extends Widget {
       wrap: true,
       language: 'html'
     })
-
-    // this.textarea.addEventListener('change', () => {
-    //   this._updateStep(this._curStep)
-    // })
+    
+    this.$('div[name="dem-s-text"]').addEventListener('change', () => {
+      this._updateStep(this._curStep)
+    })
 
     this._addStep({
       title: 'getting started',
