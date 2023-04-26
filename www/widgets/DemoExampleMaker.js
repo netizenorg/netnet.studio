@@ -10,6 +10,9 @@ class DemoExampleMaker extends Widget {
     this._data = {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
+    this.loaded = null
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this)})
+    
     utils.get('api/examples', (res) => {
       // this._data.key = Math.max(...Object.keys(res.data)) + 1
       this._data.key = Date.now()
@@ -201,8 +204,9 @@ class DemoExampleMaker extends Widget {
       click: '#json-btn',
       ready: (file) => {
         const d = file.data.split('data:application/json;base64,').pop()
-        const data = JSON.parse(window.atob(d))
-        this._uploadJSON(data)
+        this.loaded = JSON.parse(window.atob(d))
+        if (NNW.layout === 'welcome') this._uploadJSON(this.loaded) 
+        else  window.convo = new Convo(this.convos, 'before-loading-json')
       },
       error: (err) => {
         console.error(err)
