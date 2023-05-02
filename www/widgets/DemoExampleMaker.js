@@ -205,7 +205,9 @@ class DemoExampleMaker extends Widget {
       ready: (file) => {
         const d = file.data.split('data:application/json;base64,').pop()
         this.loaded = JSON.parse(window.atob(d))
-        if (NNW.layout === 'welcome') this._uploadJSON(this.loaded) 
+        if (NNW.layout === 'welcome') 
+          this._uploadJSON(this.loaded, 'demo-example-maker')
+           
         else  window.convo = new Convo(this.convos, 'before-loading-json')
       },
       error: (err) => {
@@ -331,7 +333,9 @@ class DemoExampleMaker extends Widget {
     this.$('[name="dem-url"]').style.display = 'block'
   }
 
-  _uploadJSON (ex) {
+  _uploadJSON (ex, calledBy) {
+    //if (calledBy == 'url') ex = JSON.parse(window.atob(ex))
+    if (calledBy == 'url') console.log(ex)
     for (let step = this._data.steps.length; step >= 1; step--) {
       this._updateStep(step, 'remove')
     }

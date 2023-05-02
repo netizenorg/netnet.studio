@@ -279,6 +279,11 @@ window.utils = {
       window.utils.loadCustomExample(url.layout)
       SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
       return 'sketch'
+    } else if (window.location.hash.includes('#example-maker')) {
+      WIDGETS.load('DemoExampleMaker.js', w => w._uplaodJSON(url, 'url'))
+      //window.utils.loadCustomExample(url.layout)
+      //SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
+      return 'example-maker'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       SNT.post(SNT.dataObj('REQ-#sketch', { hash, url }))
