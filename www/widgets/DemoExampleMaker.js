@@ -152,6 +152,9 @@ class DemoExampleMaker extends Widget {
       ele: 'div[name="dem-s-text"]',
       code: 'in this step...',
       wrap: true,
+      hint: false,
+      lint: false,
+      theme: NNE.theme,
       language: 'html'
     })
     
@@ -317,7 +320,7 @@ class DemoExampleMaker extends Widget {
 
     this.$('[name="dem-s-title"]').value = step.title
     this.$('[name="dem-s-focus"]').value = step.focus
-    this._text.code = step.text
+    this._text.code = step.text || 'in this step...'
   }
 
   // ------------------------------
