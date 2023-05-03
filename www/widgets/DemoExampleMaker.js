@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, Convo, NNE, nn, NNW, utils */
+/* global Widget, WIDGETS, Convo, NNE, Netitor, nn, NNW, utils */
 class DemoExampleMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -148,7 +148,7 @@ class DemoExampleMaker extends Widget {
       </div>
     `
 
-    this._text = new Netitor ({
+    this._text = new Netitor({
       ele: 'div[name="dem-s-text"]',
       code: 'in this step...',
       wrap: true,
@@ -157,7 +157,7 @@ class DemoExampleMaker extends Widget {
       theme: NNE.theme,
       language: 'html'
     })
-    
+
     this.$('div[name="dem-s-text"]').addEventListener('change', () => {
       this._updateStep(this._curStep)
     })
@@ -217,7 +217,7 @@ class DemoExampleMaker extends Widget {
       input.addEventListener('change', () => {
         this._updateStep(this._curStep)
       })
-    });
+    })
 
     this.fu = new nn.FileUploader({
       maxsize: 500,
