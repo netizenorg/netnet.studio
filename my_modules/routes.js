@@ -18,11 +18,22 @@ const frontEndDependencies = [
   { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
   { url: '/nn.min.js', loc: '../www/core/netnet-standard-library/build/nn.min.js' },
-  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' }
+  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' },
+  { url: '/images/*', loc: '../www/assets/images/' },
+  { url: '/audios/*', loc: '../www/assets/audios/' },
+  { url: '/fonts/*', loc: '../www/assets/fonts/' },
+  { url: '/videos/*', loc: '../www/assets/videos/' }
 ]
 
 frontEndDependencies.forEach(dep => {
-  router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+  if (dep.url.includes('*')) { // for routes with wildcards
+    router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
+      const filePath = path.join(__dirname, dep.loc, req.params[0])
+      res.sendFile(filePath)
+    })
+  } else { // for exact routes
+    router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+  }
 })
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
@@ -121,7 +132,7 @@ router.get('/api/custom-elements', async (req, res) => {
 })
 
 router.get('/api/face-assets', (req, res) => {
-  fs.readdir(path.join(__dirname, '../www/images/faces'), (err, list) => {
+  fs.readdir(path.join(__dirname, '../www/assets/images/faces'), (err, list) => {
     if (err) return console.log(err)
     else res.json(list)
   })
