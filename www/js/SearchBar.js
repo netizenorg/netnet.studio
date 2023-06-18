@@ -191,7 +191,7 @@ class SearchBar {
           type: 'Widgets',
           word: file.title,
           alts: file.keywords,
-          clck: () => WIDGETS.open(file.key, file.filename)
+          clck: () => WIDGETS.open(file.key)
         })
       })
       this.addToDict(arr)
@@ -215,7 +215,7 @@ class SearchBar {
               word: tut.title,
               alts: tut.keywords,
               clck: () => {
-                WIDGETS.open('learning-guide', null, (w) => w.load(name))
+                WIDGETS.open('learning-guide', w => w.load(name))
               }
             })
             update()
@@ -246,7 +246,7 @@ class SearchBar {
           alts: keywords,
           clck: () => {
             if (!WIDGETS['code-examples']) {
-              WIDGETS.load('CodeExamples.js', w => w.loadExample(i, 'search'))
+              WIDGETS.load('code-examples', w => w.loadExample(i, 'search'))
             } else { WIDGETS['code-examples'].loadExample(i, 'search') }
           }
         })

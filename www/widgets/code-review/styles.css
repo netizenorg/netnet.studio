@@ -1,0 +1,28 @@
+.code-review {
+  max-height: 66vh;
+  overflow-y: scroll;
+}
+.code-review__issue {
+  border: 1px solid var(--bg-color);
+  border-radius: 5px;
+  color: var(--bg-color);
+  margin-bottom: 5px;
+  cursor: pointer;
+  font-family: "fira-code", inconsolata, monospace;
+}
+
+.code-review__issue > div {
+  padding: 5px;
+}
+
+.code-review__issue__head {
+  border-bottom: 1px solid var(--bg-color);
+  border-radius: 5px 5px 0 0;
+  display: flex;
+  justify-content: space-between;
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.code-review__issue__head__link {
+  text-decoration: underline;
+}

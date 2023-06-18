@@ -12,13 +12,13 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 const initWidgets = [
-  'FunctionsMenu.js',
-  'StudentSession.js',
-  'HTMLReference.js',
-  'CSSReference.js',
-  'JSReference.js',
-  'CodeReview.js',
-  'KeyboardShortcuts.js'
+  'functions-menu',
+  'student-session',
+  'html-reference',
+  'css-reference',
+  'js-reference',
+  'code-review',
+  'keyboard-shortcuts'
 ]
 initWidgets.forEach(file => WIDGETS.load(file))
 

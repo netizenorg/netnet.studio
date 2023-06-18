@@ -95,12 +95,12 @@ router.get('/api/widgets', (req, res) => {
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
-    list.forEach(filename => {
-      const filepath = path.join(__dirname, `../www/widgets/${filename}`)
+    list.filter(f => f !== 'index.js' && f !== 'styles.css').forEach(dirname => {
+      const filepath = path.join(__dirname, `../www/widgets/${dirname}/index.js`)
       const opts = { encoding: 'utf8' }
       const code = fs.readFileSync(filepath, opts)
       if (!code.includes('listed = false')) {
-        const data = { filename, title: null, key: null, keywords: [] }
+        const data = { title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
           if (line.includes('this.title =') && !data.title) {
             data.title = line.split('=')[1].trim()
@@ -110,7 +110,7 @@ router.get('/api/widgets', (req, res) => {
             data.key = line.split('=')[1].trim()
             data.key = data.key.substr(1, data.key.length - 2)
           }
-          if (line.includes('this.keywords =') && !data.keywords) {
+          if (line.includes('this.keywords =') && data.keywords.length === 0) {
             let kw = line.split('=')[1].trim()
             kw = kw.replace(/\[/g, '').replace(/\]/g, '')
             data.keywords = kw.split(',')

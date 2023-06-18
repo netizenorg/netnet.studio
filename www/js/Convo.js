@@ -36,7 +36,11 @@ class Convo {
 
   static load (name, cb) {
     const s = document.createElement('script')
-    s.setAttribute('src', `convos/${name}/index.js`)
+    if (name.includes('.')) {
+      s.setAttribute('src', name)
+    } else {
+      s.setAttribute('src', `widgets/${name}/convo.js`)
+    }
     s.setAttribute('type', 'text/javascript')
     s.onerror = (e) => { console.error(`Convo.load: failed to load ${name}`) }
     s.onload = () => { if (cb) cb() }

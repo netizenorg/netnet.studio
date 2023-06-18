@@ -137,7 +137,7 @@ window.utils = {
   },
 
   _Convo: (id) => {
-    Convo.load('utils-misc', () => {
+    Convo.load('/js/utils-convo.js', () => {
       const convos = window.CONVOS['utils-misc'](window.utils)
       window.convo = new Convo(convos, id)
     })
@@ -293,7 +293,7 @@ window.utils = {
       return 'code'
     } else if (url.example) {
       if (!WIDGETS['code-examples']) {
-        WIDGETS.load('CodeExamples.js', w => w.loadExample(url.example, 'url'))
+        WIDGETS.load('code-examples', w => w.loadExample(url.example, 'url'))
       } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
       SNT.post(SNT.dataObj('REQ-example', url))
       return 'example'
@@ -317,7 +317,7 @@ window.utils = {
 
   loadTutorial: (tutorial, time) => {
     const tm = WIDGETS['learning-guide']
-    if (!tm) WIDGETS.load('LearningGuide.js', (w) => w.load(tutorial, time))
+    if (!tm) WIDGETS.load('learning-guide', (w) => w.load(tutorial, time))
     else tm.load(tutorial, time)
     window.utils.fadeOutLoader(false)
   },
@@ -355,7 +355,7 @@ window.utils = {
       info: json.info,
       key: json.key
     }
-    WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url'))
+    WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
   },
 
   loadShortCode: (code, layout) => {
@@ -446,11 +446,11 @@ window.utils = {
   // CSS related stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  loadStyleSheet: (name) => {
-    if (document.querySelector(`link[href="css/${name}.css"]`)) return
+  loadStyleSheet: (path) => {
+    if (document.querySelector(`link[href="${path}"]`)) return
     const link = document.createElement('link')
     link.setAttribute('rel', 'stylesheet')
-    link.setAttribute('href', `css/${name}.css`)
+    link.setAttribute('href', `${path}`)
     document.head.appendChild(link)
   },
 

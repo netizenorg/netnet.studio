@@ -45,11 +45,11 @@ class CodeField extends HTMLElement {
   }
 
   change () {
-    // this gets assigned in Widget.js createCodeField method
+    // this gets assigned in widgets/index.js createCodeField method
   }
 
   update () {
-    // this gets assigned in Widget.js createCodeField method
+    // this gets assigned in widgets/index.js createCodeField method
   }
 
   get value () {

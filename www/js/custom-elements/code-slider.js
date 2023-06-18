@@ -106,7 +106,7 @@ class CodeSlider extends HTMLElement {
   }
 
   change () {
-    // this gets assigned in Widget.js createSlider method
+    // this gets assigned in widgets/index.js createSlider method
   }
 
   updateThumb (v, t) {
