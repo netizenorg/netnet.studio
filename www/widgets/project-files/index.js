@@ -81,7 +81,7 @@ class ProjectFiles extends Widget {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'duplicate-file')
     } else {
-      utils.showCurtain('upload.html', {
+      document.querySelector('load-curtain').show('upload.html', {
         filename: file.name
       })
 
@@ -111,7 +111,7 @@ class ProjectFiles extends Widget {
   }
 
   _postDeletion (file) {
-    utils.showCurtain('delete.html')
+    document.querySelector('load-curtain').show('delete.html')
     const data = {
       owner: window.localStorage.getItem('owner'),
       repo: window.sessionStorage.getItem('opened-project'),
@@ -137,8 +137,7 @@ class ProjectFiles extends Widget {
     }
     utils.post('./api/github/open-project', data, (res) => {
       this.updateFiles(res.data)
-      utils.hideCurtain('delete.html')
-      utils.hideCurtain('upload.html')
+      document.querySelector('load-curtain').hide()
       NNE.update()
     })
   }

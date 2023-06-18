@@ -117,25 +117,6 @@ window.utils = {
     return nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   },
 
-  showCurtain: (filename, opts) => {
-    window.utils.get(`/custom-elements/misc/load-curtain/data/${filename}`, (html) => {
-      const curtain = document.createElement('div')
-      curtain.setAttribute('id', 'curtain-loading-screen')
-      if (opts) {
-        for (const key in opts) {
-          html = html.replace(`{{${key}}}`, opts[key])
-        }
-      }
-      curtain.innerHTML = html
-      document.body.appendChild(curtain)
-    }, true)
-  },
-
-  hideCurtain: () => {
-    const curtain = document.querySelector('#curtain-loading-screen')
-    if (curtain) curtain.remove()
-  },
-
   _Convo: (id) => {
     Convo.load('/core/utils-convo.js', () => {
       const convos = window.CONVOS['utils-misc'](window.utils)

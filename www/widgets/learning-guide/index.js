@@ -47,7 +47,7 @@ class LearningGuide extends Widget {
 
   load (name, time) {
     setTimeout(() => {
-      utils.showCurtain('tutorial.html')
+      document.querySelector('load-curtain').show('tutorial.html')
     }, 100)
 
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
@@ -69,7 +69,7 @@ class LearningGuide extends Widget {
     WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
     this.metadata = null
     this.data = null
-    utils.hideCurtain('tutorial.html')
+    document.querySelector('load-curtain').hide()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
