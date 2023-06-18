@@ -1,4 +1,4 @@
-This convo is meant to test the Conversation system. If/when we edit or add new functionality to `www/js/Convo.js` we should test it by adding to this example's `index.js`.
+This convo is meant to test the Conversation system. If/when we edit or add new functionality to `www/core/Convo.js` we should test it by adding to this example's `index.js`.
 
 To run the test, navigate to netnet in your browser, open the dev console and run `utils.testConvo()`, which is the equivalent of copy+paste the following:
 

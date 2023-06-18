@@ -18,24 +18,24 @@
 
 @font-face {
     font-family: 'fira-sans-bold';
-    src: url('fonts/firasans-bold-webfont.woff2') format('woff2'),
-         url('fonts/firasans-bold-webfont.woff') format('woff');
+    src: url('/fonts/firasans-bold-webfont.woff2') format('woff2'),
+         url('/fonts/firasans-bold-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'fira-sans-regular';
-    src: url('fonts/firasans-regular-webfont.woff2') format('woff2'),
-         url('fonts/firasans-regular-webfont.woff') format('woff');
+    src: url('/fonts/firasans-regular-webfont.woff2') format('woff2'),
+         url('/fonts/firasans-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'fira-mono-regular';
-    src: url('fonts/FiraMono-Regular.woff2') format('woff2'),
-         url('fonts/FiraMono-Regular.woff') format('woff');
+    src: url('/fonts/FiraMono-Regular.woff2') format('woff2'),
+         url('/fonts/FiraMono-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -199,12 +199,12 @@ button {
 
 /* screen reader text cc: https://css-tricks.com/inclusively-hidden */
 .screen-reader-only:not(:focus):not(:active) {
-  clip: rect(0 0 0 0); 
+  clip: rect(0 0 0 0);
   clip-path: inset(50%);
   height: 1px;
   overflow: hidden;
   position: absolute;
-  white-space: nowrap; 
+  white-space: nowrap;
   width: 1px;
 }
 

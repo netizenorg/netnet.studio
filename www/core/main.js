@@ -57,7 +57,10 @@ window.addEventListener('resize', (e) => {
 
 window.addEventListener('load', () => {
   utils.get('/api/custom-elements', (elements) => {
-    elements.forEach(file => utils.loadFile(`js/custom-elements/${file}`))
+    elements.forEach(dir => {
+      utils.loadFile(`/custom-elements/${dir}/index.js`)
+      utils.loadStyleSheet(`/custom-elements/${dir}/styles.css`)
+    })
 
     utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
       WIDGETS['student-session'].clearProjectData()

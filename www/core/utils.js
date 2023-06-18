@@ -118,7 +118,7 @@ window.utils = {
   },
 
   showCurtain: (filename, opts) => {
-    window.utils.get(`./data/curtains/${filename}`, (html) => {
+    window.utils.get(`/custom-elements/misc/load-curtain/data/${filename}`, (html) => {
       const curtain = document.createElement('div')
       curtain.setAttribute('id', 'curtain-loading-screen')
       if (opts) {
@@ -137,7 +137,7 @@ window.utils = {
   },
 
   _Convo: (id) => {
-    Convo.load('/js/utils-convo.js', () => {
+    Convo.load('/core/utils-convo.js', () => {
       const convos = window.CONVOS['utils-misc'](window.utils)
       window.convo = new Convo(convos, id)
     })
@@ -183,8 +183,7 @@ window.utils = {
     const faceLoaded = NNW.menu.faceLoaded
     const wigsloaded = wigs.filter(file => WIDGETS.loaded.includes(file))
     const loadedCoreWidgets = wigsloaded.length === wigs.length
-
-    const elesloaded = eles.map(e => e.split('.')[0])
+    const elesloaded = eles.map(e => e.split('/')[1])
       .filter(e => window.utils.customElementReady(e))
     const loadedCustomElements = elesloaded.length === eles.length
 
