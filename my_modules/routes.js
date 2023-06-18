@@ -13,7 +13,7 @@ const axios = require('axios')
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   ROUTES
 
-const frontEndDependencies = [
+const aliasRoutes = [
   { url: '/netitor.min.js', loc: '../www/core/netitor/build/netitor.min.js' },
   { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
@@ -22,10 +22,11 @@ const frontEndDependencies = [
   { url: '/images/*', loc: '../www/assets/images/' },
   { url: '/audios/*', loc: '../www/assets/audios/' },
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
-  { url: '/videos/*', loc: '../www/assets/videos/' }
+  { url: '/videos/*', loc: '../www/assets/videos/' },
+  { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' }
 ]
 
-frontEndDependencies.forEach(dep => {
+aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
       const filePath = path.join(__dirname, dep.loc, req.params[0])
