@@ -1,4 +1,4 @@
-/* global NNW, WIDGETS, utils, SearchBar */
+/* global NNW, WIDGETS, utils */
 class Menu {
   constructor (win) {
     this.face = {
@@ -45,7 +45,17 @@ class Menu {
     window.addEventListener('DOMContentLoaded', (e) => {
       this._setupFace() // netnet's face
       this._setupTextBubble() // <text-bubble> element
-      this.search = new SearchBar()
+      // this.search = new SearchBar()
+      const createSearchBar = () => {
+        if (!utils.customElementReady('search-bar')) {
+          setTimeout(() => createSearchBar(), 100)
+          return
+        }
+        this.search = document.createElement('search-bar')
+        document.body.appendChild(this.search)
+      }
+      createSearchBar()
+
       setTimeout(() => this.updatePosition(), 500)
     })
   }

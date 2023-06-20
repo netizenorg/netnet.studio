@@ -57,12 +57,12 @@ window.addEventListener('resize', (e) => {
 
 window.addEventListener('load', () => {
   utils.get('/api/custom-elements', (elements) => {
-    elements.forEach(dir => {
-      utils.loadFile(`/custom-elements/${dir}/index.js`)
-      utils.loadStyleSheet(`/custom-elements/${dir}/styles.css`)
+    elements.forEach(obj => {
+      utils.loadFile(`/custom-elements/${obj.path}/index.js`)
+      if (obj.css) utils.loadStyleSheet(`/custom-elements/${obj.path}/styles.css`)
     })
-
-    utils.whenLoaded(elements, initWidgets, () => { // when everythings loaded...
+    // when everythings loaded...
+    utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
       WIDGETS['student-session'].clearProjectData()
       // ...check URL for params, && fade out load screen when ready
       const param = utils.checkURL()

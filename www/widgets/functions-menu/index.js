@@ -522,8 +522,12 @@ class FunctionsMenu extends Widget {
       // hide downloadCode if project is open
       if (_is(btns[i], 'downloadCode')) hideIf(btns[i], projOpen)
     }
-    // update SearchBars dictionary
-    NNW.menu.search._loadFunctionsMenuData()
+    // update SearchBars dictionary when serach bar is ready
+    const loadSearchData = () => {
+      if (!NNW.menu.search) { setTimeout(() => loadSearchData(), 100); return }
+      NNW.menu.search._loadFunctionsMenuData()
+    }
+    loadSearchData()
   }
 
   _creatOption (value, parent) {
