@@ -282,7 +282,7 @@ class LearningGuide extends Widget {
         WIDGETS['hyper-video-player'].renderKeyframe()
 
         setTimeout(() => {
-          utils.hideCurtain('tutorial.html')
+          document.querySelector('load-curtain').hide()
           if (time) WIDGETS['hyper-video-player'].seek(time)
           WIDGETS['hyper-video-player'].video.oncanplay = null
         }, utils.getVal('--layout-transition-time'))
