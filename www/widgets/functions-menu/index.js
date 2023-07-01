@@ -472,6 +472,7 @@ class FunctionsMenu extends Widget {
         if (btn.select) {
           b.textContent = btn.click + '('
           const sel = document.createElement('select')
+          sel.classList.add('select')
           sel.id = btn.select
           b.appendChild(sel)
           b.addEventListener('click', () => sel.focus())

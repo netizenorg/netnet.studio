@@ -23,7 +23,7 @@
   z-index: 0
 }
 
-.curtain > div {
+.curtain__container {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -71,7 +71,7 @@
   }
 }
 
-.curtain__svg-name {
+.curtain__svg__name {
   position: absolute;
   top: 49%;
   left: 22.2%;

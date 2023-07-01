@@ -466,8 +466,8 @@ class StudentSession extends Widget {
 
     this.title = 'Your Session Data'
     this.ele.style.padding = '8px 5px 10px'
-    this.ele.querySelector('.w-top-bar').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.w-innerHTML').style.padding = '10px 0px'
+    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
+    this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
   }
 }
 

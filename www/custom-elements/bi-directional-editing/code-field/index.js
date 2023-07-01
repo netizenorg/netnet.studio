@@ -1,21 +1,9 @@
 /* global HTMLElement NNE */
 class CodeField extends HTMLElement {
   connectedCallback (opts) {
-    this.innerHTML = `<style>
-      .__code-field{
-        background-color: var(--netizen-meta);
-        font-family: monospace;
-        color: var(--netizen-hint-color);
-        padding: 6px;
-        border: none;
-        margin: 6px;
-        width: 250px;
-        border-radius: 5px;
-      }
-    </style>
-    <div>
-        <button>insert</button>
-        <input class='__code-field' type="text">
+    this.innerHTML = `<div>
+        <button class="pill-btn pill-btn--secondary">insert</button>
+        <input class="code-field" type="text">
     </div>`
     this.querySelector('input').value = this.value
 

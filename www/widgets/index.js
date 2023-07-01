@@ -139,7 +139,7 @@ class Widget {
       return console.error('Widget: title property must be set to a string')
     } else {
       this._title = v
-      const titlebar = this.ele.querySelector('.w-top-bar__title > span')
+      const titlebar = this.ele.querySelector('.widget__top__title > span')
       titlebar.innerHTML = v
       if (titlebar.children.length > 0) {
         titlebar.style.display = 'flex'
@@ -156,7 +156,7 @@ class Widget {
       return console.error('Widget: innerHTML property must be an ' + m)
     } else {
       this._innerHTML = v
-      const c = this.ele.querySelector('.w-innerHTML')
+      const c = this.ele.querySelector('.widget__inner-html')
       c.innerHTML = ''
       if (typeof v === 'string') c.innerHTML = v
       else if (v instanceof HTMLElement) c.appendChild(v)
@@ -167,7 +167,7 @@ class Widget {
   set closable (v) {
     this._closable = v
     const close = v ? '<span class="close">✖</span>' : ''
-    this.ele.querySelector('.w-top-bar__close').innerHTML = close
+    this.ele.querySelector('.widget__top__close').innerHTML = close
   }
 
   get left () { return parseInt(this.ele.style.left) }
@@ -196,7 +196,7 @@ class Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   $ (selector) {
-    const e = this.ele.querySelector('.w-innerHTML').querySelectorAll(selector)
+    const e = this.ele.querySelector('.widget__inner-html').querySelectorAll(selector)
     if (e.length > 1) return e
     else return e[0]
   }
@@ -376,20 +376,20 @@ class Widget {
     this.ele = document.createElement('div')
     this.ele.className = 'widget'
     this.ele.innerHTML = `
-      <div class="w-top-bar">
-        <span class="w-top-bar__title">
+      <div class="widget__top">
+        <span class="widget__top__title">
           <span>${this._title}</span>
         </span>
-        <span class="w-top-bar__close">
+        <span class="widget__top__close">
           ${this.closable ? '<span class="close">✖</span>' : ''}
         </span>
       </div>
-      <div class="w-innerHTML">${this.innerHTML}</div>
+      <div class="widget__inner-html">${this.innerHTML}</div>
     `
     document.body.appendChild(this.ele)
     this.ele.style.visibility = 'hidden'
 
-    const close = this.ele.querySelector('.w-top-bar .close')
+    const close = this.ele.querySelector('.widget__top .close')
     if (close) close.addEventListener('click', () => this.close())
 
     this.recenter()
@@ -397,13 +397,13 @@ class Widget {
   }
 
   _marquee () {
-    const titleWidth = this.ele.querySelector('.w-top-bar__title').clientWidth
-    const titleSpanWidth = this.ele.querySelector('.w-top-bar__title > span').clientWidth
+    const titleWidth = this.ele.querySelector('.widget__top__title').clientWidth
+    const titleSpanWidth = this.ele.querySelector('.widget__top__title > span').clientWidth
     if (titleSpanWidth > titleWidth) {
-      this.ele.querySelector('.w-top-bar__title').classList.add('marquee')
-      this.ele.querySelector('.w-top-bar__title > span').style.animationDelay = `${Math.random() * 3}s`
+      this.ele.querySelector('.widget__top__title').classList.add('marquee')
+      this.ele.querySelector('.widget__top__title > span').style.animationDelay = `${Math.random() * 3}s`
     } else {
-      this.ele.querySelector('.w-top-bar__title').classList.remove('marquee')
+      this.ele.querySelector('.widget__top__title').classList.remove('marquee')
     }
   }
 
@@ -450,8 +450,8 @@ class Widget {
     const self = e.target.parentNode === this.ele || e.target === this.ele
     if (self) {
       this.mousedown = e.target.className
-      if (e.target.className === 'w-top-bar') {
-        this.ele.querySelector('.w-top-bar').style.cursor = 'move'
+      if (e.target.className === 'widget__top') {
+        this.ele.querySelector('.widget__top').style.cursor = 'move'
       }
       // if it wasn't clicked on bottom right, then we shouldn't resize
       if (this.mousedown === 'widget' && !this._shouldResize(e)) {
@@ -465,7 +465,7 @@ class Widget {
   _mouseUp (e) {
     this.mousedown = false
     this.winOff = null
-    this.ele.querySelector('.w-top-bar').style.cursor = 'grab'
+    this.ele.querySelector('.widget__top').style.cursor = 'grab'
     this.keepInFrame()
     utils.selecting(true)
   }
@@ -481,7 +481,7 @@ class Widget {
     else utils.selecting(false)
 
     // move or resize window
-    if (this.mousedown === 'w-top-bar') {
+    if (this.mousedown === 'widget__top') {
       this._recentered = false
       if (!this.winOff || typeof this.winOff === 'undefined') {
         this.winOff = {

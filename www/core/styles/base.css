@@ -1,0 +1,64 @@
+/* vars */
+
+:root {
+  --fg-color: #fff;
+  --bg-color: #000;
+  --layout-transition-time: 1s;
+  --menu-fades-time: 500ms;
+  --sarah-ease: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+
+/* globals */
+
+body,
+html,
+input,
+button {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow: hidden;
+}
+
+* { 
+  box-sizing: border-box;
+}
+
+*::-moz-selection {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+}
+
+*::selection {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+}
+
+button,
+input {
+  appearance: none;
+  outline: none;
+}
+
+code {
+  font-family: "fira-mono-regular", inconsolata, monospace;
+}
+
+code::-moz-selection {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}
+
+code::selection {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}
+

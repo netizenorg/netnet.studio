@@ -113,7 +113,7 @@ class CodeReview extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createHTML () {
-    this.ele.querySelector('.w-innerHTML').style.padding = 0
+    this.ele.querySelector('.widget__inner-html').style.padding = 0
 
     this.innerHTML = `
       <div class="code-review"><!-- list issues --></div>

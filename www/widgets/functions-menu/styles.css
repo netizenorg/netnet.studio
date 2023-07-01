@@ -63,7 +63,6 @@
   border:none;
 }
 
-#func-menu-content select,
 #func-menu-content input {
   background: transparent;
   color: var(--bg-color);
@@ -74,7 +73,6 @@
   cursor: pointer;
 }
 
-#func-menu-content select:focus,
 #func-menu-content input:focus {
   background: var(--bg-color);
   color: var(--netizen-meta);

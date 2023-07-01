@@ -74,6 +74,7 @@ class TextBubble extends HTMLElement {
     opt.innerHTML = ''
     for (const key in options) {
       const ele = document.createElement('button')
+      ele.classList.add('pill-btn')
       ele.textContent = key
       ele.onclick = () => { options[key](self, this) }
       opt.appendChild(ele)

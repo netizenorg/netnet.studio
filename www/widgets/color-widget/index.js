@@ -170,14 +170,14 @@ class ColorWidget extends Widget {
 
   _changeSubWin (type) {
     // highlight button
-    this.$('.__clr-wig-sub-btn').forEach(b => {
+    this.$('.clr-wig__sub-btn').forEach(b => {
       b.style.color = null; b.style.backgroundColor = null
     })
     const ele = type === 'hsl'
-      ? this.$('.__clr-wig-sub-btn')[0]
+      ? this.$('.clr-wig__sub-btn')[0]
       : type === 'rgb'
-        ? this.$('.__clr-wig-sub-btn')[1]
-        : this.$('.__clr-wig-sub-btn')[2]
+        ? this.$('.clr-wig__sub-btn')[1]
+        : this.$('.clr-wig__sub-btn')[2]
     ele.style.color = 'var(--bg-color)'
     ele.style.backgroundColor = 'var(--netizen-match-color)'
 
@@ -213,57 +213,7 @@ class ColorWidget extends Widget {
   }
 
   _createHTML () {
-    this.innerHTML = `
-      <style>
-        :root {
-          --clr-wig-composite: hsl(180, 50%, 50%);
-        }
-        div.clr-row1 {
-          display: flex;
-          justify-content: space-between;
-          width: 640px;
-        }
-
-        div.clr-row1 > div {
-          display: block;
-          flex: 0 0 60%;
-        }
-
-        .clr-wig-type-opts {
-          display: flex;
-          justify-content: space-between;
-          padding: 0px 0px 16px 0px;
-          width: 258px;
-        }
-
-        #clr-wig-sliders {
-          display: block;
-          flex: 0 0 40%;
-          max-width: 255px;
-        }
-
-        #clr-wig-codes {
-          /* margin-right: 54px; */
-          position: relative;
-          z-index: 2;
-        }
-
-        .clr-wig-svg {
-          position: relative;
-          left: -15px;
-          width: 120px;
-          height: 120px;
-          display: block;
-          margin: 25px auto;
-        }
-
-        .clr-wig-svg-text {
-          fill: var(--clr-wig-composite);
-          fill-opacity: 1;
-          stroke: none;
-        }
-      </style>
-      <div class="clr-row1">
+    this.innerHTML = `<div class="clr-row1">
         <!-- <div id="clr-wig-sample"></div> -->
         <div>
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -281,9 +231,9 @@ class ColorWidget extends Widget {
         </div>
         <div>
           <div class="clr-wig-type-opts">
-            <button class="__clr-wig-sub-btn">hsl</button>
-            <button class="__clr-wig-sub-btn">rgb</button>
-            <button class="__clr-wig-sub-btn">hex</button>
+            <button class="clr-wig__sub-btn pill-btn pill-btn--secondary">hsl</button>
+            <button class="clr-wig__sub-btn pill-btn pill-btn--secondary">rgb</button>
+            <button class="clr-wig__sub-btn pill-btn pill-btn--secondary">hex</button>
           </div>
           <div id="clr-wig-sliders">
             <!-- INJECT CODE SLIDERS HERE -->
@@ -292,7 +242,7 @@ class ColorWidget extends Widget {
       </div>
     `
 
-    this.$('.__clr-wig-sub-btn').forEach(btn => {
+    this.$('.clr-wig__sub-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         this._changeSubWin(e.target.textContent)
       })

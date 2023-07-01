@@ -111,8 +111,8 @@ class DemoExampleMaker extends Widget {
         }
       </style>
       <div class="demo-example-maker">
-        editing step <select name="dem-current-step"></select>
-        <button name="dem-add-step" style="float: right">add new step</button>
+        editing step <select class="select select--invert" name="dem-current-step"></select>
+        <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
         <br>
         <br>
         <hr>
@@ -120,13 +120,13 @@ class DemoExampleMaker extends Widget {
         <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
         <br>
         <div name="dem-s-text" placeholder="explain step"></div>
-        <button name="dem-preview-step">preview</button>
-        <button name="dem-remove-step">remove this step</button>
+        <button class="pill-btn pill-btn--secondary" name="dem-preview-step">preview</button>
+        <button class="pill-btn pill-btn--secondary" name="dem-remove-step">remove this step</button>
         <br>
         <hr>
         <div style="margin: 10px 15px;">
           <div class="demo-example-maker-row">
-            <span>layout <select name="dem-demo-layout"></select></span>
+            <span>layout <select class="select select--invert" name="dem-demo-layout"></select></span>
             <span>
               display toc <input type="checkbox" name="dem-demo-toc">
               (table of contents)
@@ -137,9 +137,9 @@ class DemoExampleMaker extends Widget {
         </div>
         <hr>
         <div style="float: right">
-          <button name="dem-gen-url">generate link</button>
-          <button name="dem-up-json" id="json-btn">upload json</button>
-          <button name="dem-dl-json">download json</button>
+          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-gen-url">generate link</button>
+          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-up-json" id="json-btn">upload json</button>
+          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-dl-json">download json</button>
           <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
         </div>
         <br>

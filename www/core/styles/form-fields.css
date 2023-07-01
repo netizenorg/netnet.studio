@@ -1,0 +1,23 @@
+.select {
+	background: var(--bg-color);
+  color: var(--netizen-meta);
+  padding: 0 2px 1px 0;
+  border: 0;
+  border-radius: 5px;
+  margin: 0;
+  font-family: inconsolata, monospace;
+  cursor: pointer;
+}
+
+.select:focus {
+	background: var(--bg-color);
+  color: var(--netizen-meta);
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+.select--invert {
+	background: var(--netizen-meta);
+  color: var(--bg-color);
+}

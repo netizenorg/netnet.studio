@@ -32,14 +32,6 @@ class CssGradientWidget extends Widget {
 
   _createHTML () {
     this.innerHTML = `
-      <style>
-        .gradient-widget__title {
-          cursor: pointer;
-        }
-        .gradient-widget__description {
-          margin-bottom: 20px;
-        }
-      </style>
       <div class="gradient-widget">
         <div class="gradient-widget__description"></div>
         <div class="gradient-widget__preview"></div>

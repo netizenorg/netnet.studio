@@ -119,7 +119,7 @@ class TutorialMaker extends Widget {
   }
 
   _tutorialToolsHTML () {
-    this.ele.querySelector('.w-innerHTML').style.padding = 0
+    this.ele.querySelector('.widget__inner-html').style.padding = 0
     const ele = document.createElement('section')
     ele.style.display = 'flex'
     ele.style.flexDirection = 'column'
