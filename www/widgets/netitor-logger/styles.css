@@ -1,0 +1,9 @@
+@keyframes netr-lgr-rec {
+  0% { background: rgba(255, 0, 0, 0); }
+  50% { background: rgba(255, 0, 0, 1);}
+  100% { background: rgba(255, 0, 0, 0); }
+}
+
+.netr-lgr__rec-btn {
+  text-align: center;
+}

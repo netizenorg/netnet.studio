@@ -392,6 +392,7 @@ class CssGradientWidget extends Widget {
 
   _genList (items, callback) {
     const sel = document.createElement('select')
+    sel.classList.add('dropdown', 'dropdown--invert')
     items.forEach((key) => {
       const opt = document.createElement('option')
       opt.setAttribute('value', key)

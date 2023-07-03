@@ -96,7 +96,7 @@ class TutorialMaker extends Widget {
     ele.style.display = 'flex'
     ele.style.flexDirection = 'column'
     ele.innerHTML = `
-      <button name="load-metadata" style="margin-top: 5px">load metadata.json</button>
+      <button class="pill-btn pill-btn--secondary" name="load-metadata" style="margin-top: 5px">load metadata.json</button>
       <h1 style="text-align: center">Tutorial Metadata</h1>
       <input type="text" name="id" placeholder="id (folder name, lowercase, no spaces)"><br>
       <input type="text" name="title" placeholder="Tutorial Title"><br>
@@ -107,7 +107,7 @@ class TutorialMaker extends Widget {
       <input type="text" name="description" placeholder="A description of what the tutorial is about..."><br>
       <input type="text" name="videofile" placeholder="video filename (without extention)"><br>
       <input type="text" name="keywords" placeholder="comma, seperated, keywords"><br><br>
-      <button name="update-metadata" style="margin: 5px 0px">enter</button>`
+      <button class="pill-btn pill-btn--secondary" name="update-metadata" style="margin: 5px 0px">enter</button>`
 
     ele.querySelector('button[name="update-metadata"]')
       .addEventListener('click', () => this._updateMetadata())
@@ -124,69 +124,45 @@ class TutorialMaker extends Widget {
     ele.style.display = 'flex'
     ele.style.flexDirection = 'column'
     ele.innerHTML = `
-      <style>
-        .__tut-maker-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 0px !important;
-        }
-        .__tut-maker-label {
-          font-size: 12px;
-        }
-        .__tut-maker-row > input {
-          width: 70px !important;
-        }
-        .__tut-maker-row > span {
-          cursor: pointer;
-        }
-        .__tut-maker-btn {
-          display: block;
-          margin: 5px 0px;
-        }
-        .__tut-maker-row > input.ti {
-          width: 34px !important;
-        }
-      </style>
-      <button class="__tut-maker-btn" name="netitor-logger">load keylogs.json</button>
-      <button class="__tut-maker-btn" name="load-data">load data.json</button><br>
+      <button class="pill-btn pill-btn--secondary tut-maker-btn" name="netitor-logger">load keylogs.json</button>
+      <button class="pill-btn pill-btn--secondary tut-maker-btn" name="load-data">load data.json</button><br>
       <hr style="width: 100%">
-      <div class="__tut-maker-row" name="t">
-        <div class="__tut-maker-label">seconds :&nbsp;</div>
+      <div class="tut-maker-row" name="t">
+        <div class="tut-maker-label">seconds :&nbsp;</div>
         <span>❮❮</span>
         <input type="text" name="seconds" value="0">
         <span>❯❯</span>
       </div>
-      <div class="__tut-maker-row" name="kf">
-        <div class="__tut-maker-label" style="margin-top: 0px;">keyframe:&nbsp;</div>
+      <div class="tut-maker-row" name="kf">
+        <div class="tut-maker-label" style="margin-top: 0px;">keyframe:&nbsp;</div>
         <span>❮❮</span>
         <input type="text" name="keyframes">
         <span>❯❯</span>
       </div>
-      <button class="__tut-maker-btn" name="edit-keyframe">create keyframe</button>
+      <button class="pill-btn pill-btn--secondary tut-maker-btn" name="edit-keyframe">create keyframe</button>
       <hr style="width: 100%">
-      <button class="__tut-maker-btn" name="edit-widgets">add/edit widget</button>
+      <button class="pill-btn pill-btn--secondary tut-maker-btn" name="edit-widgets">add/edit widget</button>
       <br>
-      <div class="__tut-maker-row hl" style="margin-top: 10px !important;">
+      <div class="tut-maker-row hl" style="margin-top: 10px !important;">
         <input type="text" class="ti" placeholder="sl" title="start line number">
         <input type="text" class="ti" placeholder="sc" title="start column number">
         <input type="text" class="ti" placeholder="el" title="end line number">
         <input type="text" class="ti" placeholder="ec" title="end column number">
       </div>
       <input type="text" style="width: 172px;" placeholder="color" title="highlight color">
-      <div class="__tut-maker-row hl">
-        <button class="__tut-maker-btn" name="n-highlight">highlight code</button>
-        <button class="__tut-maker-btn" name="clear-highlight">clear</button>
+      <div class="tut-maker-row hl">
+        <button class="pill-btn pill-btn--secondary tut-maker-btn" name="n-highlight">highlight code</button>
+        <button class="pill-btn pill-btn--secondary tut-maker-btn" name="clear-highlight">clear</button>
       </div>
       <input type="text" placeholder="line numbers (comma separated)" style="width: 172px;">
-      <div class="__tut-maker-row">
-        <button class="__tut-maker-btn" name="n-spotlight">spotlight code</button>
-        <button class="__tut-maker-btn" name="clear-spotlight">clear</button>
+      <div class="tut-maker-row">
+        <button class="pill-btn pill-btn--secondary tut-maker-btn" name="n-spotlight">spotlight code</button>
+        <button class="pill-btn pill-btn--secondary tut-maker-btn" name="clear-spotlight">clear</button>
       </div>
-      <div class="__tut-maker-label">keylog recordings</div>
+      <div class="tut-maker-label">keylog recordings</div>
       <select style="margin-top: 10px !important;" title="keylog recordings"></select>
       <hr style="width: 100%">
-      <button class="__tut-maker-btn" name="download-data">DOWNLOAD DATA</button>`
+      <button class="pill-btn pill-btn--secondary tut-maker-btn" name="download-data">DOWNLOAD DATA</button>`
 
     ele.querySelector('button[name="edit-keyframe"]')
       .addEventListener('click', (e) => {
@@ -197,12 +173,12 @@ class TutorialMaker extends Widget {
     ele.querySelector('button[name="load-data"]')
       .addEventListener('click', () => this.upload())
 
-    const time = ele.querySelector('.__tut-maker-row[name="t"]')
+    const time = ele.querySelector('.tut-maker-row[name="t"]')
     time.children[1].addEventListener('click', () => this._goTo('time', -1))
     time.children[2].addEventListener('change', (e) => this._goTo('time', e))
     time.children[3].addEventListener('click', () => this._goTo('time', 1))
 
-    const keyframe = ele.querySelector('.__tut-maker-row[name="kf"]')
+    const keyframe = ele.querySelector('.tut-maker-row[name="kf"]')
     keyframe.children[1].addEventListener('click', () => this._goTo('keyframe', -1))
     keyframe.children[2].addEventListener('change', (e) => this._goTo('keyframe', e))
     keyframe.children[3].addEventListener('click', () => this._goTo('keyframe', 1))
@@ -215,7 +191,7 @@ class TutorialMaker extends Widget {
         NNE.highlight(null)
         this._tempHighlight = null
         const obj = {}
-        const ins = ele.querySelectorAll('.__tut-maker-row.hl > input')
+        const ins = ele.querySelectorAll('.tut-maker-row.hl > input')
         const props = ['startLine', 'startCol', 'endLine', 'endCol']
         ins.forEach((inp, i) => {
           if (inp.value !== '' && !isNaN(Number(inp.value))) {
@@ -231,7 +207,7 @@ class TutorialMaker extends Widget {
       })
     ele.querySelector('[name="clear-highlight"]')
       .addEventListener('click', () => {
-        const ins = ele.querySelectorAll('.__tut-maker-row.hl > input')
+        const ins = ele.querySelectorAll('.tut-maker-row.hl > input')
         ins.forEach((inp, i) => { inp.value = '' })
         ele.querySelector('input[title="highlight color"]').value = ''
         NNE.highlight(null)
@@ -401,7 +377,7 @@ class TutorialMaker extends Widget {
     const hlUI = this.$('[title="start line number"]')
     if (kf && kf.highlight) {
       const h = kf.highlight
-      const ins = this.$('.__tut-maker-row.hl > input')
+      const ins = this.$('.tut-maker-row.hl > input')
       const props = ['startLine', 'startCol', 'endLine', 'endCol']
       ins.forEach((inp, i) => {
         if (h[props[i]]) inp.value = h[props[i]]

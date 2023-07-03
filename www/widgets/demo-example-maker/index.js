@@ -67,51 +67,8 @@ class DemoExampleMaker extends Widget {
 
   _createHTML (types) {
     this.innerHTML = `
-      <style>
-        div[name="dem-s-text"] .CodeMirror {
-          height: 6rem;
-        }
-        .demo-example-maker div[name="dem-s-text"] {
-          width: 100%;
-          margin: 10px 5px;
-          border-radius: 5px;
-          border: 2px solid var(--netizen-meta);
-        }
-        div[name="dem-s-text"] .CodeMirror-gutter {
-          display: none;
-        }
-        div[name="dem-s-text"] .CodeMirror-gutter-wrapper {
-          display: none;
-        }
-        div[name="dem-s-text"] .CodeMirror-line {
-          font-size: .9rem;
-        }
-        .demo-example-maker > textarea {
-          width: 100%;
-          margin: 10px 5px;
-          border-radius: 5px;
-          padding: 5px;
-          border: none;
-        }
-        textarea[name="dem-url"] {
-          display: none;
-          color: var(--netizen-meta);
-          background-color: var(--netizen-hint-shadow);
-        }
-        .demo-example-maker-row {
-          display: flex;
-          justify-content: space-between;
-        }
-        .demo-example-maker  button[name="dem-remove-step"] {
-          float: right;
-        }
-        .demo-example-maker  button[name="dem-remove-step"]:hover {
-          background-color: rgb(252, 97, 86);
-          border-color: rgb(252, 97, 86);
-        }
-      </style>
       <div class="demo-example-maker">
-        editing step <select class="select select--invert" name="dem-current-step"></select>
+        editing step <select class="dropdown dropdown--invert" name="dem-current-step"></select>
         <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
         <br>
         <br>
@@ -126,7 +83,7 @@ class DemoExampleMaker extends Widget {
         <hr>
         <div style="margin: 10px 15px;">
           <div class="demo-example-maker-row">
-            <span>layout <select class="select select--invert" name="dem-demo-layout"></select></span>
+            <span>layout <select class="dropdown dropdown--invert" name="dem-demo-layout"></select></span>
             <span>
               display toc <input type="checkbox" name="dem-demo-toc">
               (table of contents)

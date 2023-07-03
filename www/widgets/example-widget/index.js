@@ -41,14 +41,6 @@ class ExampleWidget extends Widget {
     opts = opts || {}
     const message = opts.message || 'options object does not include a message'
     this.innerHTML = `
-      <style>
-        .example-widget__title {
-          cursor: pointer;
-        }
-        .example-widget__message {
-          text-transform: uppercase;
-        }
-      </style>
       <div class="example-widget">
         <h1 class="example-widget__title">A Very Important Message </h1>
         <span class="example-widget__message">${message}</span>

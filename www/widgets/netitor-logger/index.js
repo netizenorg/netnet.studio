@@ -20,7 +20,7 @@ class NetitorLogger extends Widget {
   }
 
   get selectedRecording () {
-    const val = this.$('.__netr-lgr-sel').value
+    const val = this.$('.netr-lgr__sel').value
     if (val && val !== 'NONE') return this.recordings[val]
     else return null
   }
@@ -45,7 +45,7 @@ class NetitorLogger extends Widget {
   }
 
   play (key, delta) {
-    key = key || this.$('.__netr-lgr-sel').value
+    key = key || this.$('.netr-lgr__sel').value
     const rec = this.recordings[key]
 
     if (!rec) {
@@ -60,19 +60,19 @@ class NetitorLogger extends Widget {
       this.running = key
       this._nextFrame(rec, 0)
     }
-    this.$('.__netr-lgr-ply-bck').textContent = 'pause'
+    this.$('.netr-lgr__ply-bck').textContent = 'pause'
   }
 
   pause () {
     if (this.run) clearTimeout(this.run)
-    this.$('.__netr-lgr-ply-bck').textContent = 'play'
+    this.$('.netr-lgr__ply-bck').textContent = 'play'
   }
 
   stop () {
     this.running = null
     if (this.run) clearTimeout(this.run)
     this.idx = 0
-    this.$('.__netr-lgr-ply-bck').textContent = 'play'
+    this.$('.netr-lgr__ply-bck').textContent = 'play'
   }
 
   startRecording () {
@@ -102,7 +102,7 @@ class NetitorLogger extends Widget {
       const delay = delta ? time - delta : time
       this.run = setTimeout(() => { this._nextFrame(rec, i + 1) }, delay)
     } else {
-      this.$('.__netr-lgr-ply-bck').textContent = 'play'
+      this.$('.netr-lgr__ply-bck').textContent = 'play'
       NNE.code = rec[i].code
       this.stop()
     }
@@ -111,35 +111,25 @@ class NetitorLogger extends Widget {
 
   _createHTML (opts) {
     this.innerHTML = `
-      <style>
-        @keyframes __netr-lgr-rec {
-          0% { background: rgba(255, 0, 0, 0); }
-          50% { background: rgba(255, 0, 0, 1);}
-          100% { background: rgba(255, 0, 0, 0); }
-        }
-        .__netr-lgr-rec-btn {
-          text-align: center;
-        }
-      </style>
-      <section>
-        <button class="__netr-lgr-rec-btn">start recording</button>
+      <section class="netr-lgr">
+        <button class="pill-btn netr-lgr__rec-btn">start recording</button>
         <span> | </span>
-        <select class="__netr-lgr-sel"><option value="NONE">NONE</option></select>
-        <button class="__netr-lgr-ply-bck">play</button>
-        <button class="__netr-lgr-stop">stop</button>
+        <select class="dropdown dropdown--invert netr-lgr__sel"><option value="NONE">NONE</option></select>
+        <button class="pill-btn pill-btn--secondary netr-lgr__ply-bck">play</button>
+        <button class="pill-btn pill-btn--secondary netr-lgr__stop">stop</button>
         <span> | </span>
-        <button class="__netr-lgr-upload">load json</button>
-        <button class="__netr-lgr-download">download</button>
+        <button class="pill-btn pill-btn--secondary netr-lgr__upload">load json</button>
+        <button class="pill-btn pill-btn--secondary netr-lgr__download">download</button>
       </section>
     `
 
     this.ele.style.minHeight = '110px'
     this.ele.style.height = '110px'
 
-    this.$('.__netr-lgr-rec-btn').addEventListener('click', (e) => {
+    this.$('.netr-lgr__rec-btn').addEventListener('click', (e) => {
       if (e.target.textContent === 'start recording') {
         e.target.textContent = 'stop recording'
-        e.target.style.animation = '__netr-lgr-rec 1s infinite'
+        e.target.style.animation = 'netr-lgr-rec 1s infinite'
         this.startRecording()
       } else {
         e.target.textContent = 'start recording'
@@ -148,23 +138,23 @@ class NetitorLogger extends Widget {
       }
     })
 
-    this.$('.__netr-lgr-ply-bck').addEventListener('click', (e) => {
+    this.$('.netr-lgr__ply-bck').addEventListener('click', (e) => {
       if (e.target.textContent === 'play') this.play()
       else { e.target.textContent = 'play'; this.pause() }
     })
 
-    this.$('.__netr-lgr-stop').addEventListener('click', (e) => this.stop())
+    this.$('.netr-lgr__stop').addEventListener('click', (e) => this.stop())
 
     this._createFileReader()
 
-    this.$('.__netr-lgr-download')
+    this.$('.netr-lgr__download')
       .addEventListener('click', (e) => this.download())
-    this.$('.__netr-lgr-upload')
+    this.$('.netr-lgr__upload')
       .addEventListener('click', (e) => this.uploader.click())
   }
 
   _createSelection () {
-    const sel = this.$('.__netr-lgr-sel')
+    const sel = this.$('.netr-lgr__sel')
     sel.innerHTML = '<option value="NONE">NONE</option>'
     Object.keys(this.recordings).forEach(key => {
       const opt = document.createElement('option')

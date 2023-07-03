@@ -1,0 +1,19 @@
+@keyframes av-strm-rec {
+  0% { background: rgba(255, 0, 0, 0); }
+  50% { background: rgba(255, 0, 0, 1);}
+  100% { background: rgba(255, 0, 0, 0); }
+}
+
+.av-strm-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.av-strm-controls {
+  display: none;
+  justify-content: space-around;
+}
+
+.av-str-post-msg {
+  display: none;
+}

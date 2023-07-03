@@ -470,9 +470,10 @@ class FunctionsMenu extends Widget {
           b.addEventListener('click', (e) => this[btn.click]())
         }
         if (btn.select) {
+          b.classList.add('select-inside')
           b.textContent = btn.click + '('
           const sel = document.createElement('select')
-          sel.classList.add('select')
+          sel.classList.add('dropdown')
           sel.id = btn.select
           b.appendChild(sel)
           b.addEventListener('click', () => sel.focus())

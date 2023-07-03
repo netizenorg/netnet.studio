@@ -10,40 +10,23 @@ class WidgetMaker extends Widget {
 
   _createHTML () {
     this.innerHTML = `
-      <style>
-        .__wig-maker-field {
-          width: 148px !important;
-        }
-        .__wig-maker-ta {
-          display: block;
-          width: 100%;
-          height: 250px;
-          padding: 10px;
-        }
-        .__wig-maker-templates {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin: 10px 0px 15px 0px;
-        }
-      </style>
-      <select class="__wig-maker-sel"></select>
-      <input class="__wig-maker-field" type="text" placeholder="widget-key">
-      <input class="__wig-maker-field" type="text" placeholder="Widget Title">
-      <div class="__wig-maker-templates"><span>templates:</span></div>
-      <textarea class="__wig-maker-ta"></textarea><hr>
-      <button name="update-widget">create widget</button>
-      <button name="open-widget">open widget</button>
+      <select class="dropdown dropdown--invert wig-maker-sel"></select>
+      <input class="wig-maker-field" type="text" placeholder="widget-key">
+      <input class="wig-maker-field" type="text" placeholder="Widget Title">
+      <div class="wig-maker-templates"><span>templates:</span></div>
+      <textarea class="wig-maker-ta"></textarea><hr>
+      <button class="pill-btn pill-btn--secondary" name="update-widget">create widget</button>
+      <button class="pill-btn pill-btn--secondary" name="open-widget">open widget</button>
     `
     this._createSelection()
-    this.$('.__wig-maker-sel').addEventListener('change', (e) => this._update(e))
+    this.$('.wig-maker-sel').addEventListener('change', (e) => this._update(e))
 
     const templates = ['info', 'quote', 'image', 'video']
     templates.forEach(t => {
       const btn = document.createElement('button')
       btn.textContent = t
       btn.addEventListener('click', () => this._loadTemplate(t))
-      this.$('.__wig-maker-templates').appendChild(btn)
+      this.$('.wig-maker-templates').appendChild(btn)
     })
 
     this.$('button[name="update-widget"]').addEventListener('click', (e) => {
@@ -60,7 +43,7 @@ class WidgetMaker extends Widget {
 
   _createSelection () {
     const tm = WIDGETS['tutorial-maker']
-    const sel = this.$('.__wig-maker-sel')
+    const sel = this.$('.wig-maker-sel')
     sel.innerHTML = '<option value="NEW">NEW</option>'
     if (tm) {
       Object.keys(tm.widgets).forEach(key => {
@@ -77,25 +60,25 @@ class WidgetMaker extends Widget {
 
   _update (e) {
     if (e.target.value === 'NEW') {
-      this.$('.__wig-maker-field').forEach(i => { i.value = '' })
-      this.$('.__wig-maker-ta').value = ''
+      this.$('.wig-maker-field').forEach(i => { i.value = '' })
+      this.$('.wig-maker-ta').value = ''
       this.$('button[name="update-widget"]').textContent = 'create widget'
     } else {
       const key = e.target.value
-      const inputs = this.$('.__wig-maker-field')
+      const inputs = this.$('.wig-maker-field')
       inputs[0].value = WIDGETS[key].key
       inputs[1].value = WIDGETS[key].title
-      this.$('.__wig-maker-ta').value = WIDGETS[key].innerHTML
+      this.$('.wig-maker-ta').value = WIDGETS[key].innerHTML
       this.$('button[name="update-widget"]').textContent = 'edit widget'
     }
   }
 
   _getData () {
-    const inputs = this.$('.__wig-maker-field')
+    const inputs = this.$('.wig-maker-field')
     const data = {
       key: inputs[0].value,
       title: inputs[1].value,
-      innerHTML: this.$('.__wig-maker-ta').value
+      innerHTML: this.$('.wig-maker-ta').value
     }
     return data
   }
@@ -159,7 +142,7 @@ class WidgetMaker extends Widget {
   <a href="HTTP" target="_blank">VIDEO</a>, by PERSON | <a href="${vpath}/FILE.mp4" target="_blank">download video</a>
 </p>`
     }
-    this.$('.__wig-maker-ta').value = val
+    this.$('.wig-maker-ta').value = val
   }
 }
 

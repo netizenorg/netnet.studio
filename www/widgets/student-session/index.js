@@ -319,39 +319,6 @@ class StudentSession extends Widget {
 
   _createHTML () {
     this.innerHTML = `
-      <style>
-        .student-session {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          max-height: 400px;
-          padding: 0px 15px;
-          overflow-y: scroll;
-          scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
-          scrollbar-width: thin;
-        }
-        .student-session input {
-          background-color: var(--netizen-meta);
-          font-family: monospace;
-          color: var(--netizen-hint-color);
-          padding: 6px;
-          border: none;
-          margin: 6px;
-          width: 250px;
-          border-radius: 5px;
-        }
-        .student-session input[readonly] {
-          opacity: 0.5
-        }
-
-        .student-session h2 {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          margin-top: 42px;
-        }
-      </style>
       <div class="student-session">
         <button name="reboot" style="align-self: flex-start;">Clear All My Data</button>
         <button name="general-data">?</button>

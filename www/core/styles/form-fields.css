@@ -1,23 +1,38 @@
-.select {
-	background: var(--bg-color);
-  color: var(--netizen-meta);
-  padding: 0 2px 1px 0;
+.dropdown {
+  padding: 3px 6px 4px;
   border: 0;
   border-radius: 5px;
   margin: 0;
+	
+  background: var(--bg-color);
+  color: var(--netizen-meta);
+  
   font-family: inconsolata, monospace;
+  font-size: 15px;
+  line-height: 1.2em;
+
   cursor: pointer;
 }
 
-.select:focus {
-	background: var(--bg-color);
-  color: var(--netizen-meta);
-  outline: none;
+.dropdown:focus {
+  outline: 1px solid var(--bg-color);
+  outline-radius: 5px;
+	outline-offset: 2px;
   box-shadow: none;
   border: none;
 }
 
-.select--invert {
+.dropdown--invert {
 	background: var(--netizen-meta);
   color: var(--bg-color);
+}
+
+.dropdown--invert:focus {
+	outline: 1px solid var(--netizen-meta);
+	outline-radius: 5px;
+	outline-offset: 2px;
+}
+
+.input {
+  appearance: none;
 }

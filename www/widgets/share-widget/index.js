@@ -46,42 +46,20 @@ class ShareWidget extends Widget {
   _createHTML (opts) {
     opts = opts || {}
     this.innerHTML = `
-      <style>
-      .share-widget > input {
-        display: block;
-        width: auto;
-        max-width: 100%;
-        padding: 4px 5px;
-        border: 1px solid var(--netizen-hint-shadow);
-        background-color: var(--netizen-hint-shadow);
-        color: var(--netizen-meta);
-        font-size: 0.9em;
-      }
-      .share-widget > input::placeholder {
-        color: var(--netizen-meta);
-        opacity: 0.8;
-      }
-      .share-widget > input:focus {
-        outline: 1px solid var(--fg-color);
-        outline-offset: 2px;
-      }
-
-      .share-widget > .qr-code {
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      </style>
       <div class="share-widget">
-        Click the encoded URL below to copy it to your clipboard.
+        <p>Click the encoded URL below to copy it to your clipboard.</p>
         <input name="share-url" value="${this._shareURL()}" style="display: inline-block; width: 100%" onclick="WIDGETS['share-widget']._copyURL()" readonly="readonly">
-        <br><br>
-        <button name="shorten-url">Shorten URL</button>
-        <button name="url-shortner">?</button>
-        select netnet layout
-        <select name="share-layout-select"></select>
-        <button name="layout-info">?</button>
+        <div class="share-widget__section">
+          <button class="pill-btn" name="shorten-url">Shorten URL</button>
+          <button class="pill-btn pill-btn--secondary" name="url-shortner">?</button>
+        </div>
+        <div class="share-widget__section">
+          <label>
+            select netnet layout
+            <select class="dropdown dropdown--invert" name="share-layout-select"></select>
+          </label>
+          <button class="pill-btn pill-btn--secondary" name="layout-info">?</button>
+        </div>
         <br><br>
         <p>
           <span class="link">Generate a QRCode</span> to easily view it on a mobile device.
