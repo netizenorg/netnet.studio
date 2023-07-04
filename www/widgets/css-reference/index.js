@@ -429,7 +429,7 @@ a:hover {
     if (nfo.default === 'variesFromBrowserToBrowser') {
       description.innerHTML += ' When this property isn\'t explicitly declared the default value varies, depending on the context.'
     } else if (nfo.default) {
-      description.innerHTML += ` When this property is not explicitly decalred, the default value is <b>${nfo.default}</b>.`
+      description.innerHTML += ` When this property is not explicitly declared, the default value is <b>${nfo.default}</b>.`
     }
     div.appendChild(description)
     div.appendChild(document.createElement('br'))
