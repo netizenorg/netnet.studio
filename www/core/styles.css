@@ -14,6 +14,7 @@
 @import 'styles/utils.css';
 
 /* styleguide */
+@import 'styles/text.css';
 @import 'styles/buttons.css';
 @import 'styles/form-fields.css';
 
