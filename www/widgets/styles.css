@@ -1,10 +1,5 @@
-:root {
-  --transition-time: .5s;
-}
-
-
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
-/* base widget */
+/* base widget box */
 
 .widget {
   position: absolute;
@@ -12,7 +7,7 @@
   min-height: 150px;
   color: var(--bg-color);
   background-color: transparent;
-  padding: 8px 15px 10px;
+  padding: 0 15px 10px;
   border: 1px solid var(--netizen-meta);
   border-radius: 15px;
   overflow: hidden;
@@ -33,7 +28,7 @@
 
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
-/* default styles for widget headers */
+/* default styles for widget dialog box top */
 
 .widget__top {
   display: flex;
@@ -43,9 +38,7 @@
   max-height: 1.2em;
   min-width: 100px;
   padding-left: 5px;
-  margin-bottom: 0.35em;
-  font-size: 20px;
-  font-weight: bold;
+  margin: 12px 0 9px;
 }
 
 .widget__top:before {
@@ -55,7 +48,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 2em;
+  height: 40px;
   background-color: var(--netizen-meta);
 }
 
@@ -68,20 +61,17 @@
   overflow: hidden;
 }
 
-.widget__top__title span {
-  width: auto;
-  font-size: 1em;
-  line-height: 1.2em;
-  letter-spacing: -0.02em;
-  font-weight: 400;
+.widget__top__title__txt {
+  display: inline-block;
+  white-space: nowrap;
 }
 
-.widget__top__title.marquee {
+.widget__top__title--marquee {
   -webkit-mask-image: linear-gradient(to left, transparent 2%, black 13%);
   mask-image: linear-gradient(to left, transparent 2%, black 13%);
 }
 
-.widget__top__title.marquee > span {
+.widget__top__title--marquee .widget__top__title__txt {
   transform: translate3d(0, 0, 0);
   animation: 15s marquee linear infinite;
 }
@@ -102,11 +92,6 @@
   100% {
     transform: translate3d(0%, 0, 0);
   }
-}
-
-.widget__top__title > span {
-  display: inline-block;
-  white-space: nowrap;
 }
 
 .widget__top .close {
@@ -148,7 +133,7 @@
   transform: translateY(-50%) rotate(-45deg);
 }
 
-.widget__top .star {
+.widget__top .star { /* this might be safe to delete? */
   position: relative;
   top: -3px;
   margin-right: 5px;
@@ -177,34 +162,6 @@
 .widget__inner-html p:first-of-type {
   margin-top: 0;
   margin-bottom: 0;
-}
-
-.widget__inner-html a,
-.widget__inner-html .link,
-.widget__inner-html section a,
-.widget__inner-html section .link {
-  position: relative;
-  color: var(--netizen-meta);
-  text-decoration: none;
-  transition: color .5s ease, border .5s ease;
-
-  /*underline*/
-  border-bottom: 1px solid var(--netizen-meta);
-  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-}
-.widget__inner-html a:hover,
-.widget__inner-html .link:hover,
-.widget__inner-html section a:hover,
-.widget__inner-html section .link:hover {
-  color: var(--netizen-match-color);
-  border-bottom: 1px solid var(--netizen-match-color);
-  cursor: pointer;
-}
-.widget__inner-html a:active,
-.widget__inner-html .link:active,
-.widget__inner-html section a:active,
-.widget__inner-html section .link:active {
-  color: var(--netizen-attribute);
 }
 
 .widget__inner-html input[type="text"] {
@@ -274,13 +231,9 @@
 
 .reference-widget > .reference-widget--slide {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.45em;
 }
 .reference-widget > .reference-widget--slide p {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.45em;
 }
 
 .reference-widget > .reference-widget--slide code {
@@ -295,12 +248,6 @@
   line-height: 1.4em;
   font-weight: 700;
   cursor: text;
-}
-.reference-widget > .reference-widget--slide b {
-  font-weight: 700;
-}
-.reference-widget > .reference-widget--slide i {
-  font-style: italic;
 }
 .reference-widget > .reference-widget--slide input {
   display: block;
@@ -320,157 +267,14 @@
   outline: 1px solid var(--fg-color);
   outline-offset: 2px;
 }
-.reference-widget > .reference-widget--slide a {
-  position: relative;
-  color: var(--fg-color);
-  text-decoration: none;
-  cursor: pointer;
-  transition: color .5s ease, border .5s ease;
 
-  /*underline*/
-  text-decoration: underline;
-  text-underline-position: under;
-}
-.reference-widget > .reference-widget--slide a:hover {
-  color: var(--netizen-match-color);
-}
-.reference-widget > .reference-widget--slide a:active {
-  color: var(--netizen-attribute);
-}
-.reference-widget > .reference-widget--slide a:active:after {
-  background-color: var(--netizen-attribute);
-}
 .reference-widget > .reference-widget--slide a code {
   text-decoration: underline;
   text-underline-position: under;
   cursor: pointer;
-  transition: color .5s ease;
+  transition: color var(--element-transition-time) ease;
   text-shadow: none;
 }
 .reference-widget > .reference-widget--slide a:hover code {
   color: var(--netizen-match-color);
-}
-
-/* styles for all possible h1s/headers */
-.reference-widget > .reference-widget--slide h1 {
-  display: inline-block;
-  position: relative;
-  width: auto;
-  margin-bottom: 12px;
-  color: var(--fg-color);
-  font-size: 20px;
-  line-height: 1.2em;
-  font-weight: 400;
-  transform: skew(0);
-  transition: color .2s ease;
-  z-index: 1;
-}
-
-.reference-widget > .reference-widget--slide h1 a {
-  display: inline-block;
-  position: relative;
-  width: auto;
-  color: var(--fg-color);
-  text-decoration: none;
-  transition: color .2s ease;
-
-  /* resets */
-  background: transparent;
-  border-bottom: none;
-  padding-bottom: 0;
-  text-shadow: none;
-}
-
-.reference-widget > .reference-widget--slide h1 a:after {
-  display: none;
-}
-
-.reference-widget > .reference-widget--slide h1 a:hover {
-  /* resets */
-  color: inherit;
-  border-bottom: none;
-  background-image: none;
-}
-
-.reference-widget > .reference-widget--slide h1 code {
-  display: inline-block;
-  position: relative;
-  width: auto;
-  color: var(--fg-color);
-  text-decoration: none;
-  transition: color .2s ease;
-  /* resets */
-  top: auto;
-  padding: 0;
-  border-radius: 0;
-  border: none;
-  background-color: transparent;
-  font-size: 20px;
-  line-height: 1.2em;
-  cursor: pointer;
-}
-
-.reference-widget > .reference-widget--slide h1 a:hover code {
-  color: inherit;
-}
-
-.reference-widget > .reference-widget--slide h1:before {
-  content: '';
-  position: absolute;
-  display: block;
-  top: 1px;
-  left: -2px;
-
-  width: 100%;
-  height: 95%;
-
-  padding: 0px 2px;
-
-  background-color: var(--netizen-hint-shadow);
-
-  z-index: -1;
-
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform .5s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.reference-widget > .reference-widget--slide h1:after {
-  content: '';
-  position: absolute;
-  display: block;
-  top: 1px;
-  right: -4px;
-
-  width: 2px;
-  height: 95%;
-
-  background-color: var(--netizen-meta);
-
-  animation: hdrCursorBlink 1.5s infinite linear;
-  transition: right .5s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-@keyframes hdrCursorBlink {
-  0% { opacity: 0; }
-  25% { opacity: 0; }
-  26% { opacity: 1; }
-  75% { opacity: 1; }
-  76% { opacity: 0; }
-  100% { opacity: 0; }
-}
-
-.reference-widget > .reference-widget--slide h1:hover {
-  color: var(--fg-color);
-  transform: skew(-5deg);
-  cursor: pointer;
-}
-.reference-widget > .reference-widget--slide h1:hover a {
-  color: var(--fg-color);
-}
-.reference-widget > .reference-widget--slide h1:hover:before {
-  transform: scaleX(1);
-}
-.reference-widget > .reference-widget--slide h1:hover:after {
-  right: calc(100% + 2px);
 }

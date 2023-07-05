@@ -78,6 +78,16 @@
       padding-left: 13px;
     }
 
+    #search-bar > section > span > label .screen-reader-only {
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      white-space: nowrap;
+      width: 1px;
+    }
+
     #search-bar > section > span > label .face {
       display: inline-block;
       width: 17px;
@@ -106,6 +116,9 @@
       background-color: transparent;
       font-size: 25px;
       filter: contrast(10) brightness(1);
+      font-family: 'fira-sans-regular';
+      appearance: none;
+      box-sizing: border-box;
     }
 
     #search-bar > section > span > input::placeholder {

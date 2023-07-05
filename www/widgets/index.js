@@ -139,7 +139,7 @@ class Widget {
       return console.error('Widget: title property must be set to a string')
     } else {
       this._title = v
-      const titlebar = this.ele.querySelector('.widget__top__title > span')
+      const titlebar = this.ele.querySelector('.widget__top__title__txt')
       titlebar.innerHTML = v
       if (titlebar.children.length > 0) {
         titlebar.style.display = 'flex'
@@ -377,9 +377,9 @@ class Widget {
     this.ele.className = 'widget'
     this.ele.innerHTML = `
       <div class="widget__top">
-        <span class="widget__top__title">
-          <span>${this._title}</span>
-        </span>
+        <div class="widget__top__title">
+          <span class="hdr-md widget__top__title__txt">${this._title}</span>
+        </div>
         <span class="widget__top__close">
           ${this.closable ? '<span class="close">✖</span>' : ''}
         </span>
@@ -398,12 +398,12 @@ class Widget {
 
   _marquee () {
     const titleWidth = this.ele.querySelector('.widget__top__title').clientWidth
-    const titleSpanWidth = this.ele.querySelector('.widget__top__title > span').clientWidth
+    const titleSpanWidth = this.ele.querySelector('.widget__top__title__txt').clientWidth
     if (titleSpanWidth > titleWidth) {
-      this.ele.querySelector('.widget__top__title').classList.add('marquee')
-      this.ele.querySelector('.widget__top__title > span').style.animationDelay = `${Math.random() * 3}s`
+      this.ele.querySelector('.widget__top__title').classList.add('widget__top__title--marquee')
+      this.ele.querySelector('.widget__top__title__txt').style.animationDelay = `${Math.random() * 3}s`
     } else {
-      this.ele.querySelector('.widget__top__title').classList.remove('marquee')
+      this.ele.querySelector('.widget__top__title').classList.remove('widget__top__title--marquee')
     }
   }
 

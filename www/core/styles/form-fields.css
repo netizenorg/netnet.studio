@@ -34,5 +34,32 @@
 }
 
 .input {
+  display: block;
+
+  width: auto;
+  max-width: 100%;
+
+  padding: 4px 5px;
+  border: 1px solid var(--netizen-hint-shadow);
+  border-radius: 2px;
+
+  background-color: var(--netizen-hint-shadow);
+  color: var(--netizen-meta);
+
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: inherit;
+  
   appearance: none;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--netizen-meta);
+  opacity: 0.8;
+}
+
+.input:focus {
+  outline: 1px solid var(--fg-color);
+  outline-radius: 2px;
+  outline-offset: 2px;
 }

@@ -5,6 +5,7 @@
   --bg-color: #000;
   --layout-transition-time: 1s;
   --menu-fades-time: 500ms;
+  --element-transition-time: 300ms;
   --sarah-ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -20,6 +21,8 @@ button {
   box-sizing: border-box;
 
   font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 16px;
+  line-height: 1.45em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }

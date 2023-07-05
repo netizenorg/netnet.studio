@@ -69,7 +69,6 @@ class JsReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
     this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
 

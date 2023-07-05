@@ -68,7 +68,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'first-time',
-    content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio! A hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input placeholder="what\'s your name?">',
+    content: 'Welcome to <a href="http://netizen.org" target="_blank">netizen.org</a>\'s Internet studio! A hypermedia space for fully realizing the Web\'s creative potential. I\'m netnet, <input class="input" placeholder="what\'s your name?">',
     options: {
       'hi netnet!': (e, t) => {
         const v = t.$('input').value

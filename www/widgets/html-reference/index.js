@@ -108,7 +108,6 @@ class HtmlReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
     this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
 
@@ -150,25 +149,8 @@ class HtmlReference extends Widget {
     const div = document.createElement('div')
     if (!nfo) nfo = NNE.edu.html[type][name]
 
-    const style = document.createElement('style')
-    style.innerHTML = `
-      .html-reference-widget--tag-link,
-      .html-reference-widget--attr-link {
-        color: var(--netizen-attribute);
-        cursor: pointer;
-        display: inline-block;
-        margin: 0px 5px;
-        border-bottom: 1px solid var(--netizen-attribute);
-      }
-
-      .html-reference-widget--tag-link {
-        color: var(--netizen-tag);
-        border-bottom: 1px solid var(--netizen-tag);
-      }
-    `
-    div.appendChild(style)
-
     const h1 = document.createElement('h1')
+    h1.classList.add('hdr-highlight')
     if (type === 'elements') {
       h1.innerHTML = nfo.singleton
         ? nfo.keyword.html
@@ -238,7 +220,7 @@ class HtmlReference extends Widget {
       d.innerHTML = `The following attributes can be applied to the opening <code>&lt;${name}&gt;</code> tag:`
       nfo.attributes.forEach(attr => {
         const span = document.createElement('span')
-        span.className = 'html-reference-widget--attr-link'
+        span.className = 'inline-link inline-link--attr'
         span.textContent = attr
         span.addEventListener('click', () => this._createInfoSlide('attributes', attr))
         d.appendChild(span)
@@ -276,7 +258,7 @@ class HtmlReference extends Widget {
         d.innerHTML = `The <b>${name}</b> attribute can be applied to the following elements:`
         nfo.elements.text.split(',').forEach(ele => {
           const span = document.createElement('span')
-          span.className = 'html-reference-widget--tag-link'
+          span.className = 'inline-link mx-5'
           span.textContent = ele
           const n = ele.substring(ele.indexOf('<') + 1, ele.indexOf('>'))
           span.addEventListener('click', () => this._createInfoSlide('elements', n))
@@ -294,9 +276,9 @@ class HtmlReference extends Widget {
           if (url.includes('mozilla')) dict.mdn = url
           else if (url.includes('w3s')) dict.w3s = url
         })
-        d.innerHTML = `Learn more about it at the <a href="${dict.mdn}" target="_blank">Mozilla Developer Network</a> and at <a href="${dict.w3s}" target="_blank">w3schools</a>`
+        d.innerHTML = `Learn more about it at the <a class="inline-link" href="${dict.mdn}" target="_blank">Mozilla Developer Network</a> and at <a href="${dict.w3s}" target="_blank">w3schools</a>`
       } else if (nfo.url) {
-        d.innerHTML = `<a href="${nfo.url}" target="_blank">Want to learn more about it?</a>`
+        d.innerHTML = `<a class="inline-link" href="${nfo.url}" target="_blank">Want to learn more about it?</a>`
       }
       slide.appendChild(d)
     }

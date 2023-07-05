@@ -271,7 +271,6 @@ class CssReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
     this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
 
@@ -407,6 +406,7 @@ a:hover {
     div.appendChild(style)
 
     const h1 = document.createElement('h1')
+    h1.classList.add('hdr-highlight')
     h1.innerHTML = nfo.keyword.html
     h1.querySelector('a').style.color = 'var(--netizen-property)'
     div.appendChild(h1)

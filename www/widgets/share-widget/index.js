@@ -62,7 +62,7 @@ class ShareWidget extends Widget {
         </div>
         <br><br>
         <p>
-          <span class="link">Generate a QRCode</span> to easily view it on a mobile device.
+          <span class="inline-link">Generate a QRCode</span> to easily view it on a mobile device.
         </p>
         <div class="qr-code" name="sketch-qr-code" style="display:none;">
           <p name="qr-warning"><b>NOTE:</b> There may be too much data in this QR code for your phone camera to decode, try shortening the URL to generate a simpler QR code<p>
@@ -85,7 +85,7 @@ class ShareWidget extends Widget {
       this.qrcode.element.appendChild(this.qrcode.canvas)
     }
 
-    this.$('.link').addEventListener('click', () => this._toggleQRCode())
+    this.$('.inline-link').addEventListener('click', () => this._toggleQRCode())
 
     this.layoutsSel = this.$('[name="share-layout-select"]')
     NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))

@@ -156,7 +156,6 @@ class CodeExamples extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
     this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
 
@@ -173,8 +172,8 @@ class CodeExamples extends Widget {
         </div>
         <div class="code-examples-search" style="display: none">
           <nav>
-            <input type="search" placeholder="search..."> filter by: &nbsp;
-            <select><option value="all">[ALL TAGS]</option></select>
+            <input class="input" type="search" placeholder="search..."> filter by: &nbsp;
+            <select class="dropdown dropdown--invert"><option value="all">[ALL TAGS]</option></select>
           </nav>
           <ul><!-- list searchable examlpes --></ul>
         </div>
@@ -203,14 +202,14 @@ class CodeExamples extends Widget {
       const clk = (eve, o) => {
         const p = eve.target.parentNode
         const update = (pnt, s) => { // update styles
-          pnt.querySelector('.ce--edit').style.display = s === 'a' ? 'none' : 'inline-block'
-          pnt.querySelector('.ce--prev').style.display = s === 'a' ? 'none' : 'inline-block'
-          pnt.querySelector('.ce--link').style.display = s === 'a' ? 'inline-block' : 'none'
+          pnt.querySelector('.ce__edit').style.display = s === 'a' ? 'none' : 'inline-block'
+          pnt.querySelector('.ce__prev').style.display = s === 'a' ? 'none' : 'inline-block'
+          pnt.querySelector('.ce__link').style.display = s === 'a' ? 'inline-block' : 'none'
         }
-        if (p.querySelector('.ce--edit').style.display === 'none') {
-          this.$('.ce--lnx').forEach(span => update(span, 'a')); update(p, 'b')
+        if (p.querySelector('.ce__edit').style.display === 'none') {
+          this.$('.ce__lnx').forEach(span => update(span, 'a')); update(p, 'b')
         } else {
-          if (eve.target.className === 'ce--prev') this.displayEx(o)
+          if (eve.target.className === 'ce__prev') this.displayEx(o)
           else {
             this.exData.key = o.key
             if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
@@ -221,16 +220,16 @@ class CodeExamples extends Widget {
       }
 
       const itemSetupHTML = (ele, o, tags) => {
-        ele.className = 'ce--lnx'
+        ele.className = 'ce__lnx'
         ele.innerHTML = `
-          <span class="ce--link">${o.name}</span>
-          <span class="ce--edit" style="display: none;">📝 edit</span>
-          <span class="ce--prev" style="display: none;">👀 preview</span>
-          ${tags ? '<span class="ce--tags"></span>' : ''}
+          <span class="ce__link inline-link inline-link--secondary">${o.name}</span>
+          <span class="ce__edit inline-link inline-link--secondary" style="display: none;">📝 edit</span>
+          <span class="ce__prev inline-link inline-link--secondary" style="display: none;">👀 preview</span>
+          ${tags ? '<span class="ce__tags"></span>' : ''}
         `
-        ele.querySelector('.ce--link').addEventListener('click', e => clk(e, o))
-        ele.querySelector('.ce--edit').addEventListener('click', e => clk(e, o))
-        ele.querySelector('.ce--prev').addEventListener('click', e => clk(e, o))
+        ele.querySelector('.ce__link').addEventListener('click', e => clk(e, o))
+        ele.querySelector('.ce__edit').addEventListener('click', e => clk(e, o))
+        ele.querySelector('.ce__prev').addEventListener('click', e => clk(e, o))
         return ele
       }
 
@@ -274,7 +273,7 @@ class CodeExamples extends Widget {
           s.addEventListener('click', (e) => {
             sel.value = e.target.value; onSelectChange(e)
           })
-          li.querySelector('.ce--tags').appendChild(s)
+          li.querySelector('.ce__tags').appendChild(s)
           if (TAGS.indexOf(t) < 0) TAGS.push(t)
         })
 
@@ -482,7 +481,7 @@ class CodeExamples extends Widget {
 
     data.info.forEach(part => {
       const link = document.createElement('span')
-      link.className = 'link'
+      link.className = 'inline-link inline-link--secondary'
       link.textContent = part.title
       link.addEventListener('click', () => this._explainerClick(data, part))
       const li = document.createElement('li')
@@ -617,12 +616,14 @@ class CodeExamples extends Widget {
     const frm = this.ele.querySelector('.code-examples--frame')
     const edi = this.ele.querySelector('.code-examples--editor')
     const rdr = this.ele.querySelector('.code-examples--render')
+    const ces = this.ele.querySelector('.code-examples-search')
     if (this.slide) this.slide.style.maxHeight = `${e.height - wst}px`
     if (this.slide) this.slide.style.width = `${e.width - wsl}px`
     if (rws) rws.style.height = `${e.height - wst}px`
     if (frm) frm.style.height = `${e.height - frt}px`
     if (edi) edi.style.height = `${e.height - top}px`
-    if (rdr) rdr.style.height = `${e.height - top}px`
+    if (ces) ces.style.height = `${e.height - top}px`
+    if (rdr) rdr.style.width = `${e.width - lef}px`
     if (rws) rws.style.width = `${e.width - lef}px`
     if (nav) nav.style.width = `${e.width + 8}px`
     if (frm) frm.style.width = `${e.width - lef}px`

@@ -43,7 +43,7 @@
 .text-bubble > section i {
   font-style: italic;
 }
-.text-bubble > section input {
+/*.text-bubble > section input {
   display: block;
   width: auto;
   max-width: 100%;
@@ -52,16 +52,15 @@
   background-color: var(--netizen-hint-shadow);
   color: var(--netizen-meta);
   font-size: 0.9em;
-}
-.text-bubble > section input::placeholder {
+}*/
+/*.text-bubble > section input::placeholder {
   color: var(--netizen-meta);
   opacity: 0.8;
-}
-.text-bubble > section input:focus {
+}*/
+/*.text-bubble > section input:focus {
   outline: 1px solid var(--fg-color);
   outline-offset: 2px;
-}
-.text-bubble > section a,
+}*/
 .text-bubble > section .link {
   position: relative;
   color: var(--fg-color);
