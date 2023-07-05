@@ -320,8 +320,8 @@ class StudentSession extends Widget {
   _createHTML () {
     this.innerHTML = `
       <div class="student-session">
-        <button name="reboot" style="align-self: flex-start;">Clear All My Data</button>
-        <button name="general-data">?</button>
+        <button class="pill-btn" name="reboot" style="align-self: flex-start;">Clear All My Data</button>
+        <button class="pill-btn pill-btn--secondary" name="general-data">?</button>
         <div>
           name:
           <input id="name-input" value="${this.data.username}">
@@ -342,7 +342,7 @@ class StudentSession extends Widget {
           netnet's chattiness:
           <input value="${this.data.editor.chattiness}" readonly="readonly">
         </div>
-        <h2><span>Last Save Point</span> <button name="last-save">?</button></h2>
+        <h2><span>Last Save Point</span> <button class="pill-btn pill-btn--secondary" name="last-save">?</button></h2>
         <div>
           netnet layout:
           <input  value="${this.data.lastSave.layout}" readonly="readonly">
@@ -358,7 +358,7 @@ class StudentSession extends Widget {
               ? this.data.lastSave.widgets.replace(/"/g, "'") : ''
           }" readonly="readonly">
         </div>
-        <h2><span>GitHub Data</span> <button name="github-data">?</button></h2>
+        <h2><span>GitHub Data</span> <button class="pill-btn pill-btn--secondary" name="github-data">?</button></h2>
         <div>
           username:
           <input  value="${this.data.github.owner}" readonly="readonly">
@@ -395,9 +395,9 @@ class StudentSession extends Widget {
           index sha:
           <input  value="${this.data.github.indexSha}" readonly="readonly">
         </div>
-        <button name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
+        <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
         <hr>
-        <div name="privacy-policy" style="align-self: center; cursor: pointer;">Privacy Policy</div>
+        <div class="inline-link inline-link--secondary" name="privacy-policy" style="align-self: center; cursor: pointer;">Privacy Policy</div>
       </div>
 
       <!-- TODO: add SIGNOUT of GitHub button -->

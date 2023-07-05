@@ -7,7 +7,7 @@
   min-height: 150px;
   color: var(--bg-color);
   background-color: transparent;
-  padding: 0 15px 10px;
+  padding: 0 15px 15px;
   border: 1px solid var(--netizen-meta);
   border-radius: 15px;
   overflow: hidden;
@@ -37,7 +37,7 @@
   cursor: grab;
   max-height: 1.2em;
   min-width: 100px;
-  padding-left: 5px;
+/*  padding-left: 5px;*/
   margin: 12px 0 9px;
 }
 
@@ -146,7 +146,7 @@
 
 .widget__inner-html {
   position: relative;
-  padding: 20px 15px 10px;
+  padding: 20px 0 0;
   color: var(--netizen-meta);
   font-size: 16px;
   line-height: 1.45em;
@@ -162,17 +162,6 @@
 .widget__inner-html p:first-of-type {
   margin-top: 0;
   margin-bottom: 0;
-}
-
-.widget__inner-html input[type="text"] {
-  background-color: var(--netizen-meta);
-  font-family: 'fira-mono-regular', monospace;
-  color: var(--netizen-hint-color);
-  padding: 6px;
-  border: none;
-  margin: 6px;
-  width: 250px;
-  border-radius: 5px;
 }
 
 

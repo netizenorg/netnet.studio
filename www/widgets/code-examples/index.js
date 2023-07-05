@@ -172,7 +172,7 @@ class CodeExamples extends Widget {
         </div>
         <div class="code-examples-search" style="display: none">
           <nav>
-            <input class="input" type="search" placeholder="search..."> filter by: &nbsp;
+            <input class="input input--lg" type="search" placeholder="search..."> filter by: &nbsp;
             <select class="dropdown dropdown--invert"><option value="all">[ALL TAGS]</option></select>
           </nav>
           <ul><!-- list searchable examlpes --></ul>

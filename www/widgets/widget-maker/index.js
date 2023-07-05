@@ -11,8 +11,8 @@ class WidgetMaker extends Widget {
   _createHTML () {
     this.innerHTML = `
       <select class="dropdown dropdown--invert wig-maker-sel"></select>
-      <input class="wig-maker-field" type="text" placeholder="widget-key">
-      <input class="wig-maker-field" type="text" placeholder="Widget Title">
+      <input class="wig-maker-field input input--lg" type="text" placeholder="widget-key">
+      <input class="wig-maker-field input input--lg" type="text" placeholder="Widget Title">
       <div class="wig-maker-templates"><span>templates:</span></div>
       <textarea class="wig-maker-ta"></textarea><hr>
       <button class="pill-btn pill-btn--secondary" name="update-widget">create widget</button>
@@ -24,6 +24,7 @@ class WidgetMaker extends Widget {
     const templates = ['info', 'quote', 'image', 'video']
     templates.forEach(t => {
       const btn = document.createElement('button')
+      btn.className = 'pill-btn pill-btn--secondary'
       btn.textContent = t
       btn.addEventListener('click', () => this._loadTemplate(t))
       this.$('.wig-maker-templates').appendChild(btn)

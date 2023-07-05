@@ -131,7 +131,8 @@ class ColorWidget extends Widget {
     this.alphaSlider.ele.style.opacity = this.alpha < 1 ? 1 : 0.33
 
     this.hslField.value = clr
-    this.hslField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
+    this.hslField.ele.querySelector('input').style.background = ''
+    this.hslField.ele.querySelector('input').className = 'input input--lg d-inline-block'
   }
 
   _updateRGB () {

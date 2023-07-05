@@ -207,10 +207,10 @@ class BrowserFest extends Widget {
         }
       </style>
       <div>
-        <input type="text" name="author" placeholder="name (alias, handle)">
-        <input type="email" name="email" placeholder="email (required)" required class="__bf-sub"><br>
-        <input type="text" name="title" placeholder="demo title">
-        <input type="url" class="__bf-sub" name="url" placeholder="url (homepage, github or social)"><br>
+        <input class="input input--lg" type="text" name="author" placeholder="name (alias, handle)">
+        <input class="input input--lg" type="email" name="email" placeholder="email (required)" required class="__bf-sub"><br>
+        <input class="input input--lg" type="text" name="title" placeholder="demo title">
+        <input class="input input--lg" type="url" class="__bf-sub" name="url" placeholder="url (homepage, github or social)"><br>
         <textarea name="description" class="__bf-sub" style="width: 516px; height: 126px;" placeholder="demo description. instructions (anything you want the judges to know?), attribution (credit for media, assets, code snippets. this should also be in your comments) shoutouts (folks who helped, folks you respect. always a good idea to include these in the demo itself)"></textarea>
         <br>
         <button class="pill-btn pill-btn--secondary" name="thumbnail">Upload Thumbnail</button>

@@ -98,15 +98,15 @@ class TutorialMaker extends Widget {
     ele.innerHTML = `
       <button class="pill-btn pill-btn--secondary" name="load-metadata" style="margin-top: 5px">load metadata.json</button>
       <h1 style="text-align: center">Tutorial Metadata</h1>
-      <input type="text" name="id" placeholder="id (folder name, lowercase, no spaces)"><br>
-      <input type="text" name="title" placeholder="Tutorial Title"><br>
-      <input type="text" name="subtitle" placeholder="Tutorial Subtitle"><br>
-      <input type="text" name="author-name" placeholder="Author's Full Name"><br>
-      <input type="text" name="author-preferred" placeholder="Author's Preferred Name"><br>
-      <input type="text" name="author-url" placeholder="Author's Homepage"><br>
-      <input type="text" name="description" placeholder="A description of what the tutorial is about..."><br>
-      <input type="text" name="videofile" placeholder="video filename (without extention)"><br>
-      <input type="text" name="keywords" placeholder="comma, seperated, keywords"><br><br>
+      <input class="input input--lg" type="text" name="id" placeholder="id (folder name, lowercase, no spaces)"><br>
+      <input class="input input--lg" type="text" name="title" placeholder="Tutorial Title"><br>
+      <input class="input input--lg" type="text" name="subtitle" placeholder="Tutorial Subtitle"><br>
+      <input class="input input--lg" type="text" name="author-name" placeholder="Author's Full Name"><br>
+      <input class="input input--lg" type="text" name="author-preferred" placeholder="Author's Preferred Name"><br>
+      <input class="input input--lg" type="text" name="author-url" placeholder="Author's Homepage"><br>
+      <input class="input input--lg" type="text" name="description" placeholder="A description of what the tutorial is about..."><br>
+      <input class="input input--lg" type="text" name="videofile" placeholder="video filename (without extention)"><br>
+      <input class="input input--lg" type="text" name="keywords" placeholder="comma, seperated, keywords"><br><br>
       <button class="pill-btn pill-btn--secondary" name="update-metadata" style="margin: 5px 0px">enter</button>`
 
     ele.querySelector('button[name="update-metadata"]')
@@ -119,7 +119,6 @@ class TutorialMaker extends Widget {
   }
 
   _tutorialToolsHTML () {
-    this.ele.querySelector('.widget__inner-html').style.padding = 0
     const ele = document.createElement('section')
     ele.style.display = 'flex'
     ele.style.flexDirection = 'column'
@@ -130,13 +129,13 @@ class TutorialMaker extends Widget {
       <div class="tut-maker-row" name="t">
         <div class="tut-maker-label">seconds :&nbsp;</div>
         <span>❮❮</span>
-        <input type="text" name="seconds" value="0">
+        <input class="input input--lg" type="text" name="seconds" value="0">
         <span>❯❯</span>
       </div>
       <div class="tut-maker-row" name="kf">
         <div class="tut-maker-label" style="margin-top: 0px;">keyframe:&nbsp;</div>
         <span>❮❮</span>
-        <input type="text" name="keyframes">
+        <input class="input input--lg" type="text" name="keyframes">
         <span>❯❯</span>
       </div>
       <button class="pill-btn pill-btn--secondary tut-maker-btn" name="edit-keyframe">create keyframe</button>
@@ -144,23 +143,23 @@ class TutorialMaker extends Widget {
       <button class="pill-btn pill-btn--secondary tut-maker-btn" name="edit-widgets">add/edit widget</button>
       <br>
       <div class="tut-maker-row hl" style="margin-top: 10px !important;">
-        <input type="text" class="ti" placeholder="sl" title="start line number">
-        <input type="text" class="ti" placeholder="sc" title="start column number">
-        <input type="text" class="ti" placeholder="el" title="end line number">
-        <input type="text" class="ti" placeholder="ec" title="end column number">
+        <input class="input input--lg" type="text" class="ti" placeholder="sl" title="start line number">
+        <input class="input input--lg" type="text" class="ti" placeholder="sc" title="start column number">
+        <input class="input input--lg" type="text" class="ti" placeholder="el" title="end line number">
+        <input class="input input--lg" type="text" class="ti" placeholder="ec" title="end column number">
       </div>
-      <input type="text" style="width: 172px;" placeholder="color" title="highlight color">
+      <input class="input input--lg" type="text" style="width: 172px;" placeholder="color" title="highlight color">
       <div class="tut-maker-row hl">
         <button class="pill-btn pill-btn--secondary tut-maker-btn" name="n-highlight">highlight code</button>
         <button class="pill-btn pill-btn--secondary tut-maker-btn" name="clear-highlight">clear</button>
       </div>
-      <input type="text" placeholder="line numbers (comma separated)" style="width: 172px;">
+      <input class="input input--lg" type="text" placeholder="line numbers (comma separated)" style="width: 172px;">
       <div class="tut-maker-row">
         <button class="pill-btn pill-btn--secondary tut-maker-btn" name="n-spotlight">spotlight code</button>
         <button class="pill-btn pill-btn--secondary tut-maker-btn" name="clear-spotlight">clear</button>
       </div>
       <div class="tut-maker-label">keylog recordings</div>
-      <select style="margin-top: 10px !important;" title="keylog recordings"></select>
+      <select class="dropdown dropdown--invert" style="margin-top: 10px !important;" title="keylog recordings"></select>
       <hr style="width: 100%">
       <button class="pill-btn pill-btn--secondary tut-maker-btn" name="download-data">DOWNLOAD DATA</button>`
 

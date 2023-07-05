@@ -25,7 +25,7 @@ class ProjectFiles extends Widget {
         </div>
         <!-- if logged into GitHub -->
         <div class="files-widget__header">
-          <button name="upload">Upload Asset</button>
+          <button class="pill-btn" name="upload">Upload Asset</button>
         </div>
         <ul class="files-widget__list">
           <!-- upldateFiles populates this div -->
