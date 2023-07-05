@@ -16,6 +16,14 @@ i {
 	font-style: italic;
 }
 
+.hdr-lg {
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 24px;
+  line-height: 1.2em;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+
 .hdr-md {
 	font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
 	font-size: 20px;

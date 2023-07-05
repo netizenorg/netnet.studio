@@ -72,9 +72,9 @@ class WidgetSlide extends HTMLElement {
 
   _createNav (parent, backOpts) {
     const n = document.createElement('div')
-    n.className = 'reference-widget--nav'
+    n.className = 'reference-widget__nav'
     const b = document.createElement('span')
-    b.textContent = '❮ BACK'
+    b.textContent = 'BACK'
     b.addEventListener('click', () => this.updateSlide(backOpts))
     n.appendChild(b)
     parent.appendChild(n)
@@ -82,10 +82,10 @@ class WidgetSlide extends HTMLElement {
 
   _createSlide (opts) {
     this.innerHTML = ''
-    this._currentSlide = `.reference-widget--slide[name="${opts.name}"]`
+    this._currentSlide = `.reference-widget__slide[name="${opts.name}"]`
 
     const slide = document.createElement('div')
-    slide.className = 'reference-widget--slide'
+    slide.className = 'reference-widget__slide'
     slide.setAttribute('name', opts.name)
 
     if (opts.back) this._createNav(slide, opts.back)
@@ -96,11 +96,11 @@ class WidgetSlide extends HTMLElement {
 
   _createList (opts) {
     this.innerHTML = ''
-    this._currentSlide = `.reference-widget--slide[name="${opts.name}"]`
+    this._currentSlide = `.reference-widget__slide[name="${opts.name}"]`
 
     const headings = []
     const slide = document.createElement('div')
-    slide.className = 'reference-widget--slide'
+    slide.className = 'reference-widget__slide'
     if (opts.columns) {
       let c = ''
       for (let i = 0; i < Number(opts.columns); i++) c += '1fr '
@@ -114,7 +114,7 @@ class WidgetSlide extends HTMLElement {
     // create content items (links && headings)
     const newHeading = (letter) => {
       const l = document.createElement('div')
-      l.className = 'reference-widget--list-heading'
+      l.className = 'reference-widget__list-heading hdr-lg'
       l.textContent = letter
       headings.push(letter)
       slide.appendChild(l)
@@ -122,7 +122,7 @@ class WidgetSlide extends HTMLElement {
 
     const newItem = (i) => {
       const item = document.createElement('div')
-      item.className = 'reference-widget--list-item'
+      item.className = 'reference-widget__list-item'
       if (i.html) item.innerHTML = i.html
       else item.innerHTML = `<span style="color:var(--netizen-tag-bracket);">${i.name}</span>`
       if (i.click) item.addEventListener('click', () => i.click())
@@ -135,7 +135,7 @@ class WidgetSlide extends HTMLElement {
     })
 
     // place content items into 3 columns
-    const sel = '.reference-widget--list-item, .reference-widget--list-heading'
+    const sel = '.reference-widget__list-item, .reference-widget__list-heading'
     const items = [...slide.querySelectorAll(sel)]
     const max = Math.ceil(opts.list.length / 3)
     for (let i = items.length - 1; i >= 0; i--) slide.querySelectorAll(sel)[i].remove()
