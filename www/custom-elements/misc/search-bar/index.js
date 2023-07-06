@@ -24,19 +24,30 @@ class SearchBar extends HTMLElement {
       Examples: 'var(--netizen-string)',
       netnet: 'var(--netizen-number)'
     }
+  }
 
-    this.attachShadow({ mode: 'open' })
-    utils.get('custom-elements/misc/search-bar/data/template.html', (html) => {
-      const temp = document.createElement('div')
-      temp.innerHTML = html
-      const template = temp.querySelector('#search-bar-template')
-      const instance = template.content.cloneNode(true)
-      this.shadowRoot.appendChild(instance)
-      this._loadMiscData()
-      this._loadWidgetsData()
-      this._loadTutorialsData()
-      this._setupSearchBar()
-    }, true)
+  connectedCallback () {
+    this.innerHTML = `
+    <div id="search-bar">
+      <div id="search-overlay"></div>
+      <section>
+        <span>
+          <input placeholder="what are you looking for?">
+          <label>
+            <span class="screen-reader-only">netnet: what are you looking for?</span>
+            <span class="face"></span>
+            <span class="face face--mouth"></span>
+            <span class="face"></span>
+          </label>
+        </span>
+        <div id="search-results" tabindex="-1"></div>
+      </section>
+    </div>
+    `
+    this._loadMiscData()
+    this._loadWidgetsData()
+    this._loadTutorialsData()
+    this._setupSearchBar()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -73,7 +84,7 @@ class SearchBar extends HTMLElement {
     this.style.transition = 'opacity var(--menu-fades-time) ease-out'
     this.style.visibility = 'visible'
     setTimeout(() => {
-      this.shadowRoot.querySelector('input').focus()
+      this.querySelector('input').focus()
       this.style.opacity = 1
       this.emit('open', {})
     }, 100)
@@ -123,7 +134,7 @@ class SearchBar extends HTMLElement {
       return res
     })
     results = results.filter(o => o.score < 0.5)
-    const resultsDiv = this.shadowRoot.querySelector('#search-results')
+    const resultsDiv = this.querySelector('#search-results')
     resultsDiv.innerHTML = ''
     results.forEach(res => this._createSearchResult(res))
 
@@ -315,7 +326,7 @@ class SearchBar extends HTMLElement {
   _createSearchResult (res) {
     const item = res.item
     const type = item.type.split('.')
-    const resultsDiv = this.shadowRoot.querySelector('#search-results')
+    const resultsDiv = this.querySelector('#search-results')
 
     const d = document.createElement('div')
     d.setAttribute('tabindex', '0')
@@ -324,7 +335,7 @@ class SearchBar extends HTMLElement {
     d.innerHTML += ` &gt; ${item.word}`
 
     d.addEventListener('click', () => {
-      this.shadowRoot.querySelector('input').value = ''
+      this.querySelector('input').value = ''
       resultsDiv.innerHTML = ''
       this.close()
       if (typeof item.clck === 'function') item.clck()
@@ -342,10 +353,10 @@ class SearchBar extends HTMLElement {
     this.style.visibility = 'hidden'
     this.style.opacity = '0'
 
-    this.shadowRoot.querySelector('input')
+    this.querySelector('input')
       .addEventListener('input', (e) => this.search(e))
 
-    this.shadowRoot.querySelector('#search-overlay')
+    this.querySelector('#search-overlay')
       .addEventListener('click', (e) => { if (this.opened) this.close() })
 
     document.addEventListener('keydown', (e) => this._keyDown(e))
@@ -353,7 +364,7 @@ class SearchBar extends HTMLElement {
 
   _keyDown (e) {
     if (this.opened) {
-      const res = this.shadowRoot.querySelector('#search-results')
+      const res = this.querySelector('#search-results')
       const arrows = (e.keyCode === 38 || e.keyCode === 40)
       const divs = res.children
       if (divs.length > 0 && arrows) {
