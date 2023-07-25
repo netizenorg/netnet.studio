@@ -11,8 +11,8 @@ class DemoExampleMaker extends Widget {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
     this.loaded = null
-    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this)})
-    
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
     utils.get('api/examples', (res) => {
       // this._data.key = Math.max(...Object.keys(res.data)) + 1
       this._data.key = Date.now()
@@ -192,11 +192,11 @@ class DemoExampleMaker extends Widget {
       input.addEventListener('change', () => {
         this._updateStep(this._curStep)
       })
-    });
+    })
 
     this.$('[name="dem-s-text"]').addEventListener('change', () => {
       this._updateStep(this._curStep)
-     })
+    })
 
     this.fu = new nn.FileUploader({
       maxsize: 500,
@@ -205,10 +205,10 @@ class DemoExampleMaker extends Widget {
       ready: (file) => {
         const d = file.data.split('data:application/json;base64,').pop()
         this.loaded = JSON.parse(window.atob(d))
-        if (NNW.layout === 'welcome') 
+        if (NNW.layout === 'welcome') {
           this._uploadJSON(this.loaded, 'demo-example-maker')
-           
-        else  window.convo = new Convo(this.convos, 'before-loading-json')
+          window.convo.hide()
+        } else window.convo = new Convo(this.convos, 'before-loading-json')
       },
       error: (err) => {
         console.error(err)
@@ -334,8 +334,6 @@ class DemoExampleMaker extends Widget {
   }
 
   _uploadJSON (ex, calledBy) {
-    //if (calledBy == 'url') ex = JSON.parse(window.atob(ex))
-    if (calledBy == 'url') console.log(ex)
     for (let step = this._data.steps.length; step >= 1; step--) {
       this._updateStep(step, 'remove')
     }

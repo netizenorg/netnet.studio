@@ -208,7 +208,8 @@ window.utils = {
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
       github: new URL(window.location).searchParams.get('gh'),
-      widget: new URL(window.location).searchParams.get('w')
+      widget: new URL(window.location).searchParams.get('w'),
+      dem: new URL(window.location).searchParams.get('dem')
     }
   },
 
@@ -219,7 +220,8 @@ window.utils = {
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh'),
-    widget: new URL(window.location).searchParams.get('w')
+    widget: new URL(window.location).searchParams.get('w'),
+    dem: new URL(window.location).searchParams.get('dem')
   },
 
   mobile: () => {
@@ -276,14 +278,11 @@ window.utils = {
       SNT.post(SNT.dataObj('REQ-#code', { hash, url }))
       return 'code'
     } else if (window.location.hash.includes('#example')) {
-      window.utils.loadCustomExample(url.layout)
+      console.log(url.dem)
+      if (url.dem == 'true') window.utils.loadCustomExample(url.layout, "true")
+      else window.utils.loadCustomExample(url.layout)
       SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
       return 'sketch'
-    } else if (window.location.hash.includes('#example-maker')) {
-      WIDGETS.load('DemoExampleMaker.js', w => w._uplaodJSON(url, 'url'))
-      //window.utils.loadCustomExample(url.layout)
-      //SNT.post(SNT.dataObj('REQ-#example', { hash, url }))
-      return 'example-maker'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       SNT.post(SNT.dataObj('REQ-#sketch', { hash, url }))
@@ -349,7 +348,9 @@ window.utils = {
     } else window.utils.fadeOutLoader(true)
   },
 
-  loadCustomExample: (layout) => {
+  loadCustomExample: (layout, dem) => {
+    console.log(dem)
+    dem = dem || null
     // an example created by anyone saved in the URL hash
     const hash = window.location.hash.split('#example/')[1]
     const json = JSON.parse(NNE._decode(hash))
@@ -360,7 +361,8 @@ window.utils = {
       info: json.info,
       key: json.key
     }
-    WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url'))
+    if (dem == "true") WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url', 'true'))
+    else WIDGETS.open('code-examples', null, w => w.loadExample(data, 'url'))
   },
 
   loadShortCode: (code, layout) => {
