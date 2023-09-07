@@ -8,6 +8,7 @@ const stat = promisify(fs.stat)
 const exec = require('child_process').exec
 const utils = require('./utils.js')
 const axios = require('axios')
+const os = require('os')
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
@@ -166,7 +167,15 @@ router.get('/api/custom-elements', async (req, res) => {
   try {
     const directory = path.join(__dirname, '../www/custom-elements')
     const directoriesInfo = await getSubdirectories(directory)
-    res.json(directoriesInfo.filter(dirInfo => dirInfo.path.includes('/')))
+    const separator = os.platform() === 'win32' ? '\\' : '/'
+    const filteredDirectoriesInfo = directoriesInfo
+      .filter(dirInfo => dirInfo.path.includes(separator))
+      .map(dirInfo => {
+        dirInfo.path = dirInfo.path.replace(/\\/g, '/')
+        return dirInfo
+      })
+    res.json(filteredDirectoriesInfo)
+
   } catch (error) { console.error(error); res.json([]) }
 })
 

@@ -10,6 +10,8 @@ class DemoExampleMaker extends Widget {
     this._data = {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
+    //this.loaded = null
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
     utils.get('api/examples', (res) => {
       // this._data.key = Math.max(...Object.keys(res.data)) + 1
       this._data.key = Date.now()
@@ -41,19 +43,19 @@ class DemoExampleMaker extends Widget {
         const data = JSON.parse(NNE._decode(hash))
         console.log(NNE._decode(hash))
         console.log(data)
-        data.steps = data.info
+        data.steps = data.info || []
         this._data = data
       }
 
-      console.log(this._data)
+      // console.log(this._data)
       if (this._data.steps) this._selectStep(this._data.steps[0])
       this.$('[name="dem-demo-name"]').value = this._data.name
-      this.$('[name="dem-demo-layout"]').value = this._data.layout
+      this.$('[name="dem-demo-layout"]').value = this._data.layout || 'dock-left'
       this.$('[name="dem-demo-toc"]').checked = this._data.toc
       if (this._data.tags && this._data.tags instanceof Array) {
         this.$('[name="dem-demo-tags"]').value = this._data.tags.join(',')
       } else if (this._data.tags && typeof this._data.tags === 'string') {
-        this.$('[name="dem-demo-tags"]').value = this._data.tags.join(',')
+        this.$('[name="dem-demo-tags"]').value = this._data.tags.replace(/ /g, ',')
       }
     }
 
@@ -182,8 +184,11 @@ class DemoExampleMaker extends Widget {
       click: '#json-btn',
       ready: (file) => {
         const d = file.data.split('data:application/json;base64,').pop()
-        const data = JSON.parse(window.atob(d))
-        this._uploadJSON(data)
+        this.loaded = JSON.parse(window.atob(d))
+        if (NNW.layout === 'welcome') {
+          this._uploadJSON(this.loaded, 'demo-example-maker')
+          window.convo.hide()
+        } else window.convo = new Convo(this.convos, 'before-loading-json')
       },
       error: (err) => {
         console.error(err)
@@ -260,6 +265,7 @@ class DemoExampleMaker extends Widget {
   }
 
   _selectStep (step) {
+    if (!step) return
     this._curStep = (typeof step === 'number')
       ? step
       : this._data.steps.indexOf(step)

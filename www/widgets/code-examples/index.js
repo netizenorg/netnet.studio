@@ -69,9 +69,9 @@ class CodeExamples extends Widget {
     SNT.post(SNT.dataObj('EX-select', { name: o.name, key: o.key }))
   }
 
-  loadExample (example, calledBy) {
+  loadExample (example, calledBy, dem) {
     if (!this.slide) {
-      setTimeout(() => this.loadExample(example, calledBy), 100)
+      setTimeout(() => this.loadExample(example, calledBy, dem), 100)
       return
     }
 
@@ -91,7 +91,10 @@ class CodeExamples extends Widget {
       NNE.addCustomRoot(null)
       setTimeout(() => NNE.cm.refresh(), 10)
       NNE.code = NNE._decode(json.hash.substr(6))
-      if (json.info) { // annotated
+      if (dem) {
+        //WIDGETS.load('DemoExampleMaker.js')
+        WIDGETS.open('demo-example-maker')
+      } else if (json.info) { // annotated
         this.explainExample()
         window.convo = new Convo(this.convos, 'loaded-explainer')
       } else window.convo = new Convo(this.convos, 'loaded-example')
