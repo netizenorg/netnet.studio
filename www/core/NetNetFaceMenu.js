@@ -1,5 +1,5 @@
 /* global NNW, WIDGETS, utils */
-class Menu {
+class NetNetFaceMenu {
   constructor (win) {
     this.face = {
       leftEye: '◕',
@@ -328,4 +328,4 @@ class Menu {
   }
 }
 
-window.Menu = Menu
+window.NetNetFaceMenu = NetNetFaceMenu

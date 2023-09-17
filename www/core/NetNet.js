@@ -22,7 +22,7 @@ class NetNet {
     this.rndr = document.querySelector('#nn-output')
     this.win = document.querySelector('#nn-window')
     this.edtr = document.querySelector('#nn-editor')
-    this.menu = new Menu(this.win) // document.querySelector('#nn-menu')
+    this.menu = new NetNetFaceMenu(this.win) // document.querySelector('#nn-menu')
     this.canv = this._createCanvas()
     this.title = this._createTitleBar()
     // ...canvas background visible when theme { background: false }
