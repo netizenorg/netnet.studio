@@ -46,9 +46,9 @@ class MenuItem extends HTMLElement {
       top: '0px',
       width: '20px',
       height: '15px',
-      background: 'var(--fg-color)',
-      clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-      webkitClipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)'
+      borderStyle: 'solid',
+      borderWidth: '0px 10px 15px',
+      borderColor: 'transparent transparent var(--fg-color) transparent',
     })
 
     this.appendChild(div)
