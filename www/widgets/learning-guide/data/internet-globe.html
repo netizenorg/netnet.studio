@@ -13,6 +13,7 @@
   // const n = new Netitor({ ele: document.createElement('div') })
   const clr1 = parent.window.utils.getVal('--netizen-tag')
   const clr2 = parent.window.utils.getVal('--netizen-meta')
+  const clock = new THREE.Clock()
   let globe1, globe2, renderer, scene, camera, controls
 
   function canvasTexture (callback) {
@@ -75,17 +76,16 @@
   }
 
   function draw () {
-    requestAnimationFrame(draw)
+    // requestAnimationFrame(draw)
+    setTimeout(draw, 1000/12)
 
     if (globe1) {
-
-
       if (globe2.scale.x < 1.75) {
-        const x = globe2.scale.x + 0.1
+        const x = globe2.scale.x + 0.3
         globe2.scale.set(x, x, x)
       } else {
         if (globe1.scale.x < 1.73) {
-          const x = globe1.scale.x + 0.08
+          const x = globe1.scale.x + 0.3
           globe1.scale.set(x, x, x)
         }
       }

@@ -173,7 +173,7 @@ window.utils = {
     } else {
       setTimeout(() => window.utils.whenLoaded(eles, wigs, callback), 100)
     }
-  }, //M@rco2012M3t@M@$k!!++
+  },
 
   updateURL: (path) => {
     if (!path) return
