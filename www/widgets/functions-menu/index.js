@@ -568,7 +568,7 @@ class FunctionsMenu extends Widget {
       this._creatOption('true', this.lineWrapping)
       this._creatOption('false', this.lineWrapping)
     }
-    this.lineWrapping.value = this.sesh.getData('wrap') === 'true'
+    this.lineWrapping.value = typeof this.sesh.getData('wrap') === 'string' ? this.sesh.getData('wrap') : true
     this.lineWrapping.addEventListener('change', () => this.wordWrap())
 
     this.chatty = this.$('#func-menu-chat-select')

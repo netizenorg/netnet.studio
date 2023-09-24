@@ -24,7 +24,7 @@ class StudentSession extends Widget {
       username: ls.getItem('username'),
       editor: {
         autoUpdate: ls.getItem('auto-update'),
-        wrap: ls.getItem('wrap'),
+        wrap: typeof ls.getItem('wrap') === 'string' ? ls.getItem('wrap') : true,
         chattiness: ls.getItem('chattiness'),
         theme: ls.getItem('theme')
       },
@@ -295,7 +295,7 @@ class StudentSession extends Widget {
     }
 
     NNE.autoUpdate = (this.getData('auto-update') === 'true')
-    NNE.wrap = (this.getData('wrap') === 'true')
+    NNE.wrap = (typeof this.getData('wrap') === 'string' && this.getData('wrap') === 'false') ? false  : true
 
     if (!window.localStorage.getItem('chattiness')) {
       this.setData('chattiness', 'high')
