@@ -597,3 +597,27 @@ window.utils = {
     }
   }
 }
+
+/*
+  handle messaging from iframe, for ex:
+
+  window.top.postMessage({
+    type: 'dialogue',
+    data: [
+      { content: 'hello world' },
+      { content: 'how are u?' }
+    ]
+  })
+
+  https://netnet.studio/?layout=dock-left#code/eJxtj8EKgzAQRM/NV+wtCqJ3UfsFPfVYekiTxUrTrE02iIj/3lBz7FyGmX2wTPeIzOQGxsBdk4PogvbTzIMQJ0M6vtFx/Yno1yta1Ey+kAcqy5qctpN+QQ9FCf0Am4CkZXKGlppprmcKfMEQ1IjFcQTgdcYWpJmUpTGirHJvFKsWbjkBbKDJcXqf4CdaS7CQt0bCXv1naAHlEeI5IZm4/3wvk+1CdE3e9gVLy0qk
+
+*/
+window.onmessage = function (e) {
+  const obj = e.data
+  if (!obj) return
+  if (obj.type === 'dialogue') {
+    new Convo(obj.data)
+  } else if (ob.type === 'widget') {
+    WIDGETS.open(obj.data)
+  }
+}
