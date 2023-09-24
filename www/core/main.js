@@ -69,6 +69,8 @@ window.addEventListener('load', () => {
       if (param === 'none') {
         NNE.code = utils.starterCode()
         WIDGETS['student-session'].greetStudent()
+        // make sure we at lead update the first time
+        if (!NNE.autoUpdate) NNE.update()
       }
     })
   })
