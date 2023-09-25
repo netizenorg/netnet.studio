@@ -1,7 +1,6 @@
-/* global nn, NNW */
-window.CONVOS['example-convo'] = (self) => {
+/* global utils, NNW */
+window.CONVOS['example-widget'] = (self) => {
   // setup some locally scoped variables for use in this conversation
-  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const newTheme = NNW.theme === 'dark' ? 'light' : 'dark'
   const oldTheme = NNW.theme
 
@@ -72,7 +71,7 @@ window.CONVOS['example-convo'] = (self) => {
       TESTING the use of locally scoped variabes && setting up event listeners
     */
     id: 'learn-to-change-layout',
-    content: `If you would like to change the layout try the shortcut keys <code>${hotkey} &gt;</code> and <code>${hotkey} &lt;</code>.`,
+    content: `If you would like to change the layout try the shortcut keys <code>${utils.hotKey()} &gt;</code> and <code>${utils.hotKey()} &lt;</code>.`,
     options: {}, // empty options array to avoid creating default prev/next options
     after: (e) => { // do something after this new textBubble shows up
       NNW.on('layout-change', (o) => {
