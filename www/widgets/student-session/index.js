@@ -424,7 +424,7 @@ class StudentSession extends Widget {
     }))
 
     this.$('div[name="privacy-policy"]').addEventListener('click', () => {
-      utils.openPrivacyPolicy()
+      WIDGETS.open('privacy-policy')
     })
 
     this.$('[name="reboot"]').addEventListener('click', () => {
