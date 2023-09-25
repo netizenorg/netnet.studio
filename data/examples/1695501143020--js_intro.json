@@ -1,0 +1,174 @@
+{
+  "name": "JS Intro",
+  "toc": true,
+  "tags": [
+    "js",
+    "javascript",
+    "intro"
+  ],
+  "layout": "dock-left",
+  "key": 1695501143020,
+  "code": "#code/eJyNUVGO0zAQ/W5OMRSJpMomjYqQVmkakFb8IOAnXMDYTmLheCJ7utmAegYutHfaK2A3LfSTyJLHM+89vXmpHM1a1hHABzWMaAmOVifrnmh05XbboiGXd4idlmxULuc4bLlzu/ctG5SeD1+RMG2kVW3aPLwRyo2azQc3sXG92XtVf76jmOGXL3zJ+I/O4tGIjKNGW8Lrorjf8fv9eXzttedv6QUHmVM/ZQlvi/FpaWplZNZL1fV0257QimyybCyBmXnqpZU3IovjEtbBM5w9Q/OwDohTVG0vQURV8FtHq+pVlsGKgkjswCD1ynQQnjBLuoNJxloDEwJIPvnYXBh/Yo+s4VaNBFlWe9VFLKrcuVkviXA0jsBp5nrp4AC7oiiWSXs0nBQaEJZNzQWQbC7xtWgh0ZJAeVKx91d1VfGPNL3iAPxqyRdGfW6ZETh4hRqK/N0/AIBAfhykoTxYzJUx0n4Li6QHiF+ef8cX4AmkdvK/ec9/ef5enaKl8GdS3siU+7w+Pnr2Z+VIemoSa2QivrtdeBOF37EE9genXszp",
+  "info": [
+    {
+      "title": "introduction",
+      "focus": null,
+      "text": "In this example we'll go over all the JavaScript basics by creating the generative maze pattern from the classic <a href=\"https://10print.org/\" target=\"_blank\">10print</a> algorithm."
+    },
+    {
+      "title": "CSS",
+      "focus": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "text": "We've got some CSS in here so that our output looks and feels like the classic 10print sketch."
+    },
+    {
+      "title": "custon font",
+      "focus": [
+        2,
+        10
+      ],
+      "text": "We're going to load up a custom font called \"Noto Serif SC\" from <a href=\"https://fonts.google.com/\" target=\"_blank\">Google Fonts</a> so that it looks consistent across different browsers."
+    },
+    {
+      "title": "HTML",
+      "focus": [
+        14,
+        15,
+        16
+      ],
+      "text": "We'll leave the <code>&lt;body&gt;</code> element of our HTML empty for now, because we'll be filling it in with forward and back slash characters using JavaScript to create the 10print maze pattern."
+    },
+    {
+      "title": "script element",
+      "focus": [
+        18,
+        34
+      ],
+      "text": "In order to add some JavaScript to our HTML page we'll need to create a pair of <code>&lt;script&gt;</code> tags."
+    },
+    {
+      "title": "slashes",
+      "focus": [
+        20
+      ],
+      "text": "The algorithm we're going to write creates a maze pattern by combining forward <code>／</code> and backward <code>＼</code> slashes, so we'll start by creating a variable that specifies how many slashes we want in our composition."
+    },
+    {
+      "title": "variables",
+      "focus": [
+        20
+      ],
+      "text": "A variable has a declaration keyword, in this case <code>const</code> followed by a name, we've called ours \"slashes\". A variable can be used to store our algorithm's data. To assign some value to the variable we use the <code>=</code> symbol followed by the data we want to store in that variable, in this case it's the number <b>2000</b>"
+    },
+    {
+      "title": "funciton declaration",
+      "focus": [
+        22,
+        30
+      ],
+      "text": "Here we've declared a function called \"drawSlashes\". We use the <code>function</code> keyword followed by a name and then <code>()</code> parenthesis. Then in the code block, between the <code>{</code> and the <code>}</code>, we write all the statements. This is the code which will be executed when we run or \"call\" that function later on in our code."
+    },
+    {
+      "title": "calling the function",
+      "focus": [
+        32
+      ],
+      "text": "There's lots of different ways to call a function, you can simply write the name with parenthesis next to it, like <code>drawSlashes()</code> elsewhere in your code to run it at that point. But you can also attach functions to specific \"events\" or moments of interaction. You can do that by using the <code>addEventListener()</code> method, in this case we're listening for an event called \"load\" on the entire browser <code>window</code>. Once the window is loaded it will run our \"drawSlashes\" function."
+    },
+    {
+      "title": "for loop",
+      "focus": [
+        23,
+        29
+      ],
+      "text": "The first thing inside our function is a <code>for</code> loop. The code within the for loop's code block, between the <code>{</code> and the <code>}</code>, will run more than once, depending on the statements we write within the for loop's <code>()</code> parenthesis. I'll explain each of these 3 statements here one by one, but if you'd like a more in-depth explanation check out <a href=\"https://netnet.studio/?ex=57\" target=\"_blank\">this example</a> on loops."
+    },
+    {
+      "title": "for loop, 1st statement",
+      "focus": [
+        23
+      ],
+      "text": "The first statement in our for loop's <code>()</code> parenthesis is the variable declaration <code>let i = 0;</code>. We use \"let\" instead of \"const\" because the value of <b>i</b> is going to change each time our loop runs."
+    },
+    {
+      "title": "for loop, 2nd statement",
+      "focus": [
+        23
+      ],
+      "text": "The second statement in the for loop's <code>()</code> parenthesis is <code>i < slashes;</code> is a \"conditional statement\" which asks the question \"is i currently less than slashes\", at first <b>i</b> is <b>0</b> and <b>slashes</b> is 2000, so the answer is \"yes\" or \"true\". As long as that statement is \"true\" the loop will keep running. You can learn more about conditional statements in <a href=\"https://netnet.studio/?ex=55\" target=\"_blank\">this example</a>."
+    },
+    {
+      "title": "for loop, 3rd statement",
+      "focus": [
+        23
+      ],
+      "text": "The third statement is <code>i++</code> which increments the current value of <b>i</b> by 1, so if <b>i</b> is 0, it now becomes 1. The next iteration in the loop it becomes 2, then 3, then 4 and so on. Once <b>i</b> reaches 2000 the loop will stop running because <b>i</b> is no longer less than the value contained in <b>slashes</b> or <code>i < slashes;</code>. You can learn more about loops in <a href=\"https://netnet.studio/?ex=57\" target=\"_blank\">this example</a>."
+    },
+    {
+      "title": "conditional statement",
+      "focus": [
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "text": "The next 5 lines of code contained inside of our for loop will run 2000 times, as stated by the three statements within our loop's <code>()</code> parenthesis. This code is a conditional statement which draws either a forward <code>／</code> or backward <code>＼</code> slash depending on whether the condition is true or false."
+    },
+    {
+      "title": "if statement",
+      "focus": [
+        24
+      ],
+      "text": "The first part of our conditional statement, the <code>if</code> statement uses the <code>Math.random()</code> which is part of JavaScript's <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math\" target=\"_blank\">Math</a> object to create a random number between <b>0</b> and <b>1</b>."
+    },
+    {
+      "title": "adding text to body",
+      "focus": [
+        24,
+        25,
+        26
+      ],
+      "text": "If the random number generated is greater than <b>0.5</b> then this line of code will run. Here we target the <code>body</code> element in our HTML <code>document</code> (which we left empty to start) and append to it (<code>+=</code> aka \"add to it\") the <code>／</code> character. <b>NOTE</b>: this isn't the typical forward slash you'll find on your keyboard, but rather <a href=\"https://www.amp-what.com/unicode/search/slash\" target=\"_blank\">a different slash</a> from the list of <a href=\"https://home.unicode.org/\" target=\"_blank\">Unicode Characters</a> which looks nicer for generating this sort of maze pattern in a browser (given the font we imported in our CSS)."
+    },
+    {
+      "title": "else statement",
+      "focus": [
+        26,
+        27,
+        28
+      ],
+      "text": "If the random number generated is less than <b>0.5</b> then this line of code will run. Here again we target the <code>body</code> element in our HTML <code>document</code> and append to it the <code>＼</code> slash (which again isn't the typical backslash but another slash symbol from the <a href=\"https://home.unicode.org/\" target=\"_blank\">Unicode Characters</a> list)."
+    },
+    {
+      "title": "fucntion recap",
+      "focus": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "text": "So to recap, the code inside our for loop will run 2000 times, each time we'll either add a forward or backslash to our page chosen randomly by our conditional statement. There are other ways of writing conditional statements, this one is fairly simple, but you can learn more about them in <a href=\"https://netnet.studio/?ex=55\" target=\"_blank\">this example</a>."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Keep in mind that our loop runs as fast as our computer can execute code, so even though the slashes are added to our <b>body</b> one at a time, it happens so fast that to the viewer it's as though the entire maze showed up at once! Also, don't forget that we're using <code>Math.random()</code> to decide which of the two slashes to add each time, which means every time you run this code the maze will be different!"
+    }
+  ]
+}

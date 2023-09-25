@@ -147,6 +147,21 @@ class CodeExamples extends Widget {
     SNT.post(SNT.dataObj('EX-explain', { name: data.name, key: data.key }))
   }
 
+  startExplination () {
+    if (this.exData && this.exData.info && this.exData.info[0]) {
+      const first = this.exData.info[0]
+      this._explainerClick(this.exData, first)
+    }
+  }
+
+  cancelExample () {
+    if (this.opened) {
+      this.close()
+      NNE.spotlight(null) 
+      NNE.marker(null) 
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -475,7 +490,7 @@ class CodeExamples extends Widget {
       <div>
         <!-- <p class="code-examples--ex-intro">Click on the parts below for it's explanation, or let netnet know if/when you want to hear the next or previous part.</p> -->
         <p class="code-examples--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's explanations might be off for the parts you've changed.</p>
-        <p class="code-examples--ex-edit2">⚠️ It looks like you've either added or removed a line of code. That's great, it's important to experiment!<br><br>Feel free to close this widget by pressing the "✖", or press <code>${utils.hotKey()}+Z</code> if you didn't mean to do that and want to undo your change. You could also press "back" if you want to reload this or any other code example.</p>
+        <p class="code-examples--ex-edit2">⚠️ It looks like you've either added or removed a line of code. That's great, it's important to experiment!<br><br>Feel free to close this widget by pressing the "✖" or <code>${utils.hotKey()}+S</code> to save this as your own sketch or project.<br><br>Otherwise, you can press <code>${utils.hotKey()}+Z</code> if you didn't mean to do that and want to undo your change. You could also press "back" in this widget if you want to reload this or any other code example.</p>
       </div>
       <ol class="code-examples--ex-parts"></ol>
     `

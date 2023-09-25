@@ -58,9 +58,16 @@ class TextBubble extends HTMLElement {
     }
   }
 
+  _interpolateString(str, vars) {
+    return new Function('_', 'return `' + str + '`;')(vars)
+  }
+
   updateContent (content) {
     const nfo = this.$('.text-bubble-content')
     if (typeof content === 'string') {
+      if (content.includes('${')) {
+        content = this._interpolateString(content, { utils })
+      }
       nfo.innerHTML = content
     } else {
       nfo.innerHTML = ''

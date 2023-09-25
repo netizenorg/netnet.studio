@@ -167,6 +167,7 @@ class FunctionsMenu extends Widget {
   }
 
   saveProject (redirect) {
+    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
     const op = WIDGETS['student-session'].data.github.openedProject
     if (utils.url.github) {
       this.convos = window.CONVOS[this.key](this)
@@ -262,6 +263,7 @@ class FunctionsMenu extends Widget {
   }
 
   saveSketch () {
+    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
     this.convos = window.CONVOS[this.key](this)
     window.convo = new Convo(this.convos, 'session-saved')
     this.sesh.setSavePoint()
@@ -390,7 +392,7 @@ class FunctionsMenu extends Widget {
         subSecParent.classList.add('open')
       }
     }
-    this.keepInFrame()
+    setTimeout(() => this.keepInFrame(), 500)
   }
 
   checkIfHidden (func) { // check if this menu function has been hidden
