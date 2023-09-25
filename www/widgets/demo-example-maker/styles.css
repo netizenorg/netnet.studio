@@ -1,23 +1,23 @@
-div[name="dem-s-text"] .CodeMirror {
+.demo-example-maker div[name="dem-s-text"] .CodeMirror {
   height: 6rem;
 }
 
 .demo-example-maker div[name="dem-s-text"] {
-  width: 100%;
+  width: 554px;
   margin: 10px 5px;
   border-radius: 5px;
   border: 2px solid var(--netizen-meta);
 }
 
-div[name="dem-s-text"] .CodeMirror-gutter {
+.demo-example-maker div[name="dem-s-text"] .CodeMirror-gutter {
   display: none;
 }
 
-div[name="dem-s-text"] .CodeMirror-gutter-wrapper {
+.demo-example-maker div[name="dem-s-text"] .CodeMirror-gutter-wrapper {
   display: none;
 }
 
-div[name="dem-s-text"] .CodeMirror-line {
+.demo-example-maker div[name="dem-s-text"] .CodeMirror-line {
   font-size: .9rem;
 }
 
@@ -29,7 +29,7 @@ div[name="dem-s-text"] .CodeMirror-line {
   border: none;
 }
 
-textarea[name="dem-url"] {
+.demo-example-maker textarea[name="dem-url"] {
   display: none;
   color: var(--netizen-meta);
   background-color: var(--netizen-hint-shadow);

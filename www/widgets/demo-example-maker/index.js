@@ -7,6 +7,7 @@ class DemoExampleMaker extends Widget {
     this.title = 'Demo/Example Maker'
     this._curStep = 0
     this._sections = null
+    this.resizable = false
     this._data = {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
@@ -117,8 +118,9 @@ class DemoExampleMaker extends Widget {
       language: 'html'
     })
 
-    this.$('div[name="dem-s-text"]').addEventListener('change', () => {
+    this._text.cm.on('blur', () => {
       this._updateStep(this._curStep)
+      console.log(this._text.code)
     })
 
     this._addStep({
@@ -249,6 +251,7 @@ class DemoExampleMaker extends Widget {
   }
 
   _updateStep (step, remove) {
+    console.log(step, remove)
     if (remove) {
       const prev = step - 1
       if (prev < 0) return window.alert('need at least 1 step')
