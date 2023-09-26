@@ -27,9 +27,9 @@ class DemoExampleMaker extends Widget {
 
       if (utils.url.example) {
         const obj = WIDGETS['code-examples'].exData
-        console.log('loadData', obj)
+        // console.log('loadData', obj)
         const data = JSON.parse(NNE._decode(obj.hash))
-        console.log('loadData', data)
+        // console.log('loadData', data)
         this._data = {
           name: obj.name,
           tags: obj.tags,
@@ -42,8 +42,8 @@ class DemoExampleMaker extends Widget {
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
-        console.log(NNE._decode(hash))
-        console.log(data)
+        // console.log(NNE._decode(hash))
+        // console.log(data)
         data.steps = data.info || []
         this._data = data
       }
@@ -250,7 +250,6 @@ class DemoExampleMaker extends Widget {
   }
 
   _updateStep (step, remove) {
-    console.log(step, remove)
     if (remove) {
       const prev = step - 1
       if (prev < 0) return window.alert('need at least 1 step')
