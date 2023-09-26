@@ -120,7 +120,6 @@ class DemoExampleMaker extends Widget {
 
     this._text.cm.on('blur', () => {
       this._updateStep(this._curStep)
-      console.log(this._text.code)
     })
 
     this._addStep({
