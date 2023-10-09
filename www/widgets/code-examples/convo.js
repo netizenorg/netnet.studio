@@ -11,6 +11,7 @@ window.CONVOS['code-examples'] = (self) => {
     content: 'Would you like me to get rid of the code currently in my editor and load up this example here, or would you prefer I open it up in a new tab?',
     options: {
       'load it here': (e) => {
+        utils.updateURL(`?ex=${self.exData.key}`)
         self.loadExample(self.exData.key)
       },
       'load it in a new tab': (e) => {

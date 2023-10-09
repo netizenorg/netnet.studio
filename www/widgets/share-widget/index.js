@@ -50,12 +50,12 @@ class ShareWidget extends Widget {
         <p>Click the encoded URL below to copy it to your clipboard.</p>
         <input name="share-url" value="${this._shareURL()}" style="display: inline-block; width: 100%" onclick="WIDGETS['share-widget']._copyURL()" readonly="readonly">
         <div class="share-widget__section">
-          <button class="pill-btn" name="shorten-url">Shorten URL</button>
+          <button class="pill-btn pill-btn--secondary" name="shorten-url">Shorten URL</button>
           <button class="pill-btn pill-btn--secondary" name="url-shortner">?</button>
         </div>
         <div class="share-widget__section">
-          <label>
-            select netnet layout
+          <label style="margin-left: 65px;">
+            netnet layout
             <select class="dropdown dropdown--invert" name="share-layout-select"></select>
           </label>
           <button class="pill-btn pill-btn--secondary" name="layout-info">?</button>

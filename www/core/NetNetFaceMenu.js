@@ -34,7 +34,7 @@ class NetNetFaceMenu {
         path: 'images/menu/tutorials.png',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('learning-guide')
+          WIDGETS.open('learning-guide', w => w.scrollTo('top'))
         }
       }
     }

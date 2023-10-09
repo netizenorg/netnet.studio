@@ -27,6 +27,6 @@
 }
 
 .share-widget__section {
-  display: block;
+  display: inline-block;
   margin-top: 10px;
 }

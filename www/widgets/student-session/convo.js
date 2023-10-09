@@ -2,45 +2,67 @@
 window.CONVOS['student-session'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
-  const coreConvo = [{
-    id: 'returning-student',
-    content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
-    options: {
-      'hi netnet!': (e) => e.goTo('what-to-do'),
-      'that\'s not my name?': (e) => e.goTo('diff-user')
-      // 'submit to BrowserFest': (e) => {
-      //   WIDGETS['functions-menu'].BrowserFest()
-      // }
-    }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(3)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
-  }, {
-    id: 'what-to-do',
-    before: () => NNW.menu.switchFace('happy'),
-    content: 'What do you want to do?',
-    options: {
-      'I want to learn': (e) => {
-        e.hide()
+
+  const firstOpts = (ai) => {
+    const o = {
+      'let\'s sketch': (e) => {
+        NNW.menu.switchFace('default')
+        self.checkForSavePoint()
+        SNT.post(SNT.dataObj('i-want-to-sketch'))
+      },
+      'let\'s learn': (e) => {
         NNW.menu.switchFace('default')
         WIDGETS.open('learning-guide')
         SNT.post(SNT.dataObj('i-want-to-learn'))
-      },
-      'I want to sketch': (e) => {
-        self.checkForSavePoint()
-        SNT.post(SNT.dataObj('i-want-to-sketch'))
       }
     }
+    if (ai) o['classical AI?'] = (e) => e.goTo('classical-ai')
+    else o['that\'s not my name?'] = (e) => e.goTo('diff-user')
+    return o
+  }
+
+  const coreConvo = [{
+    id: 'returning-student',
+    before: () => NNW.menu.switchFace('happy'),
+    content: self.greeted ? `Hi ${self.getData('username')}! What would you like to do?` : `Welcome back ${self.getData('username')}! What would you like to do?`,
+    options: firstOpts()
   }, {
+    id: 'return-student-no-greet',
+    content: 'What would you like to do?',
+    options: firstOpts('ai')
+  },
+  // {
+  //   id: 'returning-student',
+  //   content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
+  //   options: {
+  //     'hi netnet!': (e) => e.goTo('what-to-do'),
+  //     'that\'s not my name?': (e) => e.goTo('diff-user')
+  //     'submit to BrowserFest': (e) => {
+  //       WIDGETS['functions-menu'].BrowserFest()
+  //     }
+  //   },
+  //   after: () => {
+  //     document.querySelector('.text-bubble-options > button:nth-child(3)')
+  //       .classList.add('opt-rainbow-bg')
+  //   }
+  // }, 
+  {
     id: 'prior-opened-project',
     content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
     options: {
       'yes please': (e) => {
         WIDGETS['functions-menu']._openProject(self.getData('opened-project'))
       },
-      'no let\'s start from scratch': (e) => e.goTo('new-proj-or-sketch')
+      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
+    }
+  }, {
+    id: 'prior-github-login',
+    content: `Would you like to open one of your GitHub projects or do you want to start something new?`,
+    options: {
+      'yes, let\'s open one': (e) => {
+        WIDGETS['functions-menu'].openProject()
+      },
+      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
     }
   }, {
     id: 'new-proj-or-sketch',
@@ -57,7 +79,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'prior-save-state',
-    content: `Looks like you saved the state of the studio session last time you were here, I can inject that code back into my editor for you now if you'd like. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to undo anything I inject.`,
+    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code I add to the editor.`,
     options: {
       'yes please': (e) => {
         e.hide()
@@ -82,7 +104,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'no-name',
-    content: 'Wait a sec, I didn\'t get your name. Should i make one up? or did you forget to tell me: <input placeholder="type your preferred name here">',
+    content: 'Wait a sec, I didn\'t get your name. Should I make one up? or did you forget to tell me: <input placeholder="type your preferred name here">',
     options: {
       'here you go': (e, t) => {
         const v = t.$('input').value
@@ -99,29 +121,13 @@ window.CONVOS['student-session'] = (self) => {
   }, {
     id: 'name-entered',
     before: () => NNW.menu.switchFace('happy'),
-    content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?`,
-    options: {
-      'I want to learn': (e) => {
-        e.hide()
-        NNW.menu.switchFace('default')
-        WIDGETS.open('learning-guide')
-        SNT.post(SNT.dataObj('i-want-to-learn'))
-      },
-      'I want to sketch': (e) => {
-        NNW.menu.switchFace('default')
-        WIDGETS['functions-menu'].newSketch()
-        SNT.post(SNT.dataObj('i-want-to-sketch'))
-      }
-    }
-  }, {
-    id: 'make-one-up',
-    content: 'Sorry, that feature is still being refactored, should be ready again soon.',
-    options: { 'ah, ok': (e) => e.hide() }
+    content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Where'd you like to start?`,
+    options: firstOpts('ai')
   }, {
     id: 'diff-user',
     before: () => {
       NNW.menu.switchFace('default')
-      self.clearAllData()
+      self.clearAllData(true)
     },
     content: 'Woops! someone else might have been using this computer before you... sorry about that, where are my manners...',
     options: { 'it\'s ok': (e) => e.goTo('first-time') }
@@ -130,6 +136,12 @@ window.CONVOS['student-session'] = (self) => {
     before: () => NNW.menu.switchFace('default'),
     content: 'Sorry, that feature is still being refactored, should be ready again soon.',
     options: { 'ah, ok': (e) => e.hide() }
+  }, {
+    id: 'classical-ai',
+    content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI. That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
+    options: {
+      'oh, i see': (e) => e.goTo('return-student-no-greet')
+    }
   }]
 
   /*  (((
@@ -151,18 +163,8 @@ window.CONVOS['student-session'] = (self) => {
     after: () => NNW.menu.switchFace('default')
   }, {
     id: 'made-up-name-entered',
-    content: 'Like i said, I\'m netnet! an AI nested in a pedagogical cyberspace. part code playground; part interactive tutorial; part hypermedia essay; What do you want to do?',
-    options: {
-      'I want to learn': (e) => {
-        e.hide()
-        WIDGETS.open('learning-guide')
-        SNT.post(SNT.dataObj('i-want-to-learn'))
-      },
-      'I want to sketch': (e) => {
-        WIDGETS['functions-menu'].newSketch()
-        SNT.post(SNT.dataObj('i-want-to-sketch'))
-      }
-    }
+    content: 'Like i said, I\'m netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Where\'d you like to start?',
+    options: firstOpts('ai')
   }, {
     id: 'explain-made-up-name',
     content: (() => {
@@ -322,7 +324,8 @@ window.CONVOS['student-session'] = (self) => {
     content: 'Ok, I\'ve just disconnected from your GitHub and cleared all GitHub related data. You can keep sketching and following tutorials, but you won\'t be able to create new projects on your account until you log back in.',
     options: {
       ok: (e) => e.hide()
-    }
+    },
+    after: () => self.greetStudent()
   }, {
     id: 'reboot-session',
     content: 'This will wipe my entire memory, it will be like we first met...',

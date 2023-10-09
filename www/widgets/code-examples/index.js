@@ -51,8 +51,7 @@ class CodeExamples extends Widget {
     if (data.hash) this.exData.hash = data.hash
     if (data.hash && !this.exData.code) this.exData.code = data.hash
     if (data.info) this.exData.info = data.info
-    // this.exData.length
-    // this.exData.explaining
+    if (data.layout) this.exData.layout = data.layout
   }
 
   displayEx (o) {
@@ -77,18 +76,28 @@ class CodeExamples extends Widget {
 
     const checkB4Load = ['search', 'guide', 'guide-template']
     if (checkB4Load.includes(calledBy) && NNW.layout !== 'welcome') {
-      if (typeof example === 'number') this.exData.key = example
+      const eNum = Number(example)
+      const isNum = (typeof example === 'number' || (typeof eNum === 'number' && !isNaN(eNum)))
+      if (isNum) this.exData.key = example
       window.convo = new Convo(this.convos, 'before-loading-example')
       return
     }
 
     const loadIt = (json) => {
-      if (calledBy === 'url' || NNW.layout === 'welcome') {
-        NNW.layout = 'dock-left'
+      // if (calledBy === 'url' || NNW.layout === 'welcome') {
+      //   NNW.layout = 'dock-left'
+      // }
+      if (WIDGETS['student-session'].getData('opened-project')) {
+        WIDGETS['student-session'].clearProjectData()
       }
       if (!json.key) json.key = example
       this.newExData(json)
       NNE.addCustomRoot(null)
+      const eNum = Number(example)
+      const isNum = (typeof example === 'number' || (typeof eNum === 'number' && !isNaN(eNum)))
+      if (isNum) utils.updateURL(`?ex=${this.exData.key}`)
+      if (this.exData.layout) NNW.layout = this.exData.layout
+      else NNW.layout = 'dock-left'
       setTimeout(() => NNE.cm.refresh(), 10)
       NNE.code = NNE._decode(json.hash.substr(6))
       if (dem) {
@@ -97,7 +106,10 @@ class CodeExamples extends Widget {
       } else if (json.info) { // annotated
         this.explainExample()
         window.convo = new Convo(this.convos, 'loaded-explainer')
-      } else window.convo = new Convo(this.convos, 'loaded-example')
+      } else {
+        if (this.opened) this.close()
+        window.convo = new Convo(this.convos, 'loaded-example')
+      }
       if (calledBy === 'url') {
         window.utils.afterLayoutTransition(() => utils.fadeOutLoader(false))
       }
@@ -230,6 +242,7 @@ class CodeExamples extends Widget {
           if (eve.target.className === 'ce__prev') this.displayEx(o)
           else {
             this.exData.key = o.key
+            this.convos = window.CONVOS[this.key](this) 
             if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
             else window.convo = new Convo(this.convos, 'before-loading-example')
           }
@@ -589,6 +602,7 @@ class CodeExamples extends Widget {
 
     const explain = this.ele.querySelector('.code-examples--explain')
     explain.addEventListener('click', () => {
+      this.convos = window.CONVOS[this.key](this) 
       if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
       else window.convo = new Convo(this.convos, 'before-loading-example')
     })

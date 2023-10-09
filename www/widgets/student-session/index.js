@@ -136,23 +136,23 @@ class StudentSession extends Widget {
     ss.removeItem('ghpages')
     ss.removeItem('branch')
     NNE.addCustomRoot(null)
+    NNW.updateTitleBar(null)
     if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
     this._createHTML()
   }
 
-  clearAllData () {
+  clearAllData (skipDialogue) {
     window.localStorage.clear()
     window.sessionStorage.clear()
     this._init()
-    this.deleteGitHubSession()
-    this.greetStudent()
+    this.deleteGitHubSession(skipDialogue)
   }
 
   chatGitHubLogout () {
     window.convo = new Convo(this.convos, 'github-logout')
   }
 
-  deleteGitHubSession () {
+  deleteGitHubSession (skipDialogue) {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
       if (this.getData('opened-project')) {
@@ -164,7 +164,9 @@ class StudentSession extends Widget {
       this.setData('repos', null)
       this._createHTML()
       WIDGETS['functions-menu'].gitHubUpdated(false)
-      window.convo = new Convo(this.convos, 'logged-out-of-gh')
+      if (!skipDialogue) {
+        window.convo = new Convo(this.convos, 'logged-out-of-gh')
+      }
     })
   }
 
@@ -249,6 +251,8 @@ class StudentSession extends Widget {
     if (typeof this.getData('opened-project') === 'string') {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'prior-opened-project')
+    } else if (this.getData('owner')) {
+      window.convo = new Convo(this.convos, 'prior-github-login')
     } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {

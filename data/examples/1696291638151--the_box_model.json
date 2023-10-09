@@ -1,0 +1,115 @@
+{
+  "name": "The Box Model",
+  "toc": true,
+  "tags": [
+    "css",
+    "box",
+    "box-model",
+    "padding",
+    "border",
+    "margin"
+  ],
+  "layout": "dock-left",
+  "key": 1696291638151,
+  "code": "#code/eJw1j8EOwiAMhu88RX0Asulxkl28eN8TMEqwEenCmE6N7y6M7NT0/9ovrZrT29teCACkJ3xzBXgRplsHp7ad1vOWJLsmqT250IGxIdlY81Gbu4u8BJSGPccOosWKJo1IwRXNbhk5os0zx5zAzJ4QRp8NlT50dBQKLVgvifetVc702VzVIHNU2E8I1ewPqHx/f7XeM1yG4aCa0v8BD09DFA==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "Every HTML element is essentially a box, this is what's known as <a href=\"https://css-tricks.com/the-css-box-model/\" target=\"_blank\">the box model</a>. Understanding it is key to understanding how CSS works more generally."
+    },
+    {
+      "title": "HTML and CSS",
+      "focus": [
+        1,
+        13,
+        14,
+        15
+      ],
+      "text": "In this example we have a simple <code>div</code> element, as well as a <code>style</code> element with a single CSS rule defined within it targeting our div."
+    },
+    {
+      "title": "block elements",
+      "focus": null,
+      "text": "All HTML elements are either a <b>\"block\"</b> element or an \"inline\" element by default (though this can be changed using the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/display\" target=\"_blank\">display</a> property). <b>div</b> elements are \"block\" by default, this means they have a width as wide as their parent element (in this case the entire <b>body</b> of our page). Which is why div elements typically stack one on top of the other, rather than one next to the other, as is the case with \"inline\" elements."
+    },
+    {
+      "title": "width",
+      "focus": [
+        3,
+        4,
+        5,
+        11
+      ],
+      "text": "We've changed our div's <code>width</code> from it's default of <b>100%</b> to the very specific width of <b>200px</b>. And we've used the <code>text-align</code> property to center out text horizontally within its parent div."
+    },
+    {
+      "title": "background color",
+      "focus": [
+        3,
+        6,
+        11
+      ],
+      "text": "None of that would be noticeable if we hadn't also changed the default <code>background-color</code> from \"transparent\" to \"red\", making the entire \"box\" of our div visible."
+    },
+    {
+      "title": "padding",
+      "focus": [
+        3,
+        7,
+        11
+      ],
+      "text": "Typically, block elements like our <b>div</b> are only as tall as the content inside of them. We've added some <code>padding</code>, which essentially adds some space within our element, around its content, which in this case is our text. We've specifically added <b>20px</b> of padding all around our text."
+    },
+    {
+      "title": "padding details",
+      "focus": [
+        3,
+        7,
+        11
+      ],
+      "text": "We could have also specified only a specific side to add some padding within our div, like <b>padding-top</b> or <b>padding-left</b> for example. By using the <b>padding</b> property, our <b>20px</b> is applied to all sides. We could, however, pass up to 4 values to this property, for example had we passed <b>10px 20px 30px 40px</b> instead. We'd be declaring (clockwise) that we want <i>\"10px on top, 20px to the right, 30px below our text and 40px of padding to the left\"</i>."
+    },
+    {
+      "title": "border",
+      "focus": [
+        3,
+        8,
+        11
+      ],
+      "text": "Next we've added a <code>border</code> property with a <i>border-width</i> of <b>10px</b>, a <i>border-style</i> of <b>solid</b> (as opposed to something else like \"dashed\" or \"dotted\") and a <i>border-color</i> of <b>black</b>. We could have declared these as separate properties, but here I opted to use the single <i>border</i> property to declare these values all on one line."
+    },
+    {
+      "title": "margin",
+      "focus": [
+        3,
+        9,
+        11
+      ],
+      "text": "The <code>margin</code> property is similar to padding, except rather than adding space within our element, it adds it around our element. It too can be be passed a single value to apply all around it, or 4 separate values for its <i>margin-top</i>, <i>margin-right</i>, <i>margin-bottom</i> and <i>margin-left</i> respectively. When we pass it only two values (and this is also the case for padding) the first applies to both the bottom and top margins, while the second is applied to both the left and right margins."
+    },
+    {
+      "title": "margin center trick",
+      "focus": [
+        3,
+        9,
+        11
+      ],
+      "text": "In this case we're applying <b>100px</b> of margin, or space around our div, to the top and bottom and setting a value of <b>auto</b> for the left and right margin. The value \"auto\" will add as much margin as there is space left on the page, effectively centering our element. You'll often see developers set <code>margin: 0 auto;</code> on various elements to center them without adding any space above or below."
+    },
+    {
+      "title": "box-sizing",
+      "focus": [
+        3,
+        10,
+        11
+      ],
+      "text": "The last property is <code>box-sizing</code> which is \"<b>content-box</b>\" by default, but we've changed it to <b>border-box</b>. What this does is ensure that the width that we've set (in this case <b>200px</b>) remains the width of our element, regardless of any other properties. Had we left this out, our <b>div</b> would actually be <i>260px</i> wide, our initial <i>200px</i> + <i>40px</i> of padding (20px on either side) + <i>20px</i> of border (10px on either side)."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "As I mentioned earlier, understanding the \"box model\" is key to understanding how CSS works. To learn more checkout this <a href=\"https://css-tricks.com/the-css-box-model/\" target=\"_blank\">post</a> on css-tricks."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "name": "css transform",
+  "toc": true,
+  "tags": [
+    "css",
+    "transform",
+    "translate",
+    "position",
+    "rotate",
+    "skew",
+    "scale"
+  ],
+  "layout": "dock-bottom",
+  "key": 1696277965022,
+  "code": "#code/eJxtkNtuwyAMhu/zFFauWqkHmi7TlKW8Cw0eQaVkAnrStHefIZmUqkiA4bf5fGh9eBjkBYDUV/ghC3AU3Um54WJlA8rh4zOpNy1D38COse/7qPSoVR+epLNwStsGqn8h4D2shdGKxA5tQBf1X9q0Ng5lJiep02cnrP8a3LkZr0YEXHxQshXUdC7nqKO5YIYV5ReYG0Ik7ZlE9QShbtHmp4D2BeNPeBshK6gSC3wnDC7Ypl7OKq5YKnmd7JSvaLfT5IuWJs937Taa9IDOCO8PJc2h5NXMwfeZqNhhyd/mYXUmLLVQ8vfR9QdnopTX",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'll demonstrate just a few ways you can use the <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/transform\" target=\"_blank\">transform</a> property."
+    },
+    {
+      "title": "HTML elements",
+      "focus": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "text": "In our HTML we have a stack of <b>divs</b> each with their corresponding number in them, and a few with specific classes applied to them."
+    },
+    {
+      "title": "CSS rules",
+      "focus": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "text": "Up in our CSS, we have a CSS rule applied to all the <b>divs</b> which changes their background color, their default width and height as well as centers their text and adds a bit of margin around them."
+    },
+    {
+      "title": "transform: translate",
+      "focus": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "Our \"red\" class uses the <code>transform</code> property to change the placement of this <b>div</b>. It does this by using the CSS <code>translate()</code> function which takes two arguments separated by a comma. First, how much to nudge the div from the left of it's original position or it's \"<b>x</b>\" value, and second how much to shift it down, or it's \"<b>y</b>\" value."
+    },
+    {
+      "title": "relative behavior",
+      "focus": null,
+      "text": "The space that this div originally occupied remains intact, which is why we see the div sized gab between divs <b>1</b> and <b>3</b>. This is similar to how \"relative\" positioning works, as explained in the <a href=\"https://netnet.studio/?ex=1696274050310\" target=\"_blank\">basic positioning</a> example."
+    },
+    {
+      "title": "transform: rotate",
+      "focus": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "The \"blue\" class uses the <b>transform</b> property yet again, except rather than passing the <b>translate()</b> function as its value, it uses the CSS <code>rotate</code> function to turn our div <code>30deg</code>, or 30 degrees clock-wise."
+    },
+    {
+      "title": "other transform functions",
+      "focus": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "text": "These transform functions can be combined, notice how in the \"green\" class (you may need to scroll a big on the page to see it) we're using the <code>translate()</code> function yet again, this time along side the <code>scale()</code> function, used to resize the div (in this case making it smaller), and the <code>skew()</code> function used to distort the div. "
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "There's loads more you can do with the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/transform\" target=\"_blank\">transform</a> property, including move elements in <a href=\"https://3dtransforms.desandro.com/\" target=\"_blank\">3D space</a>. Check out <a href=\"https://netnet.studio/?ex=1696274050312\" target=\"_blank\">this example</a> for how to set up 3D transforms."
+    }
+  ]
+}

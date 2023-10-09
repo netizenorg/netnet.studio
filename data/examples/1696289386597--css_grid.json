@@ -1,0 +1,131 @@
+{
+  "name": "CSS grid",
+  "toc": true,
+  "tags": [
+    "css",
+    "grid",
+    "layout",
+    "design",
+    "responsive"
+  ],
+  "layout": "dock-left",
+  "key": 1696289386597,
+  "code": "#code/eJydkcFSwyAQhu99ip2e6iG2TavWGBlfhYQVGQkwQDUZp+/uxpCZ0IPOeGDg213+fxfqEAeNbLUCuJVca/QDfBEACBWc5kMF0ivx9BMaT0XEjuIRi9bqc2dCBftXP69FneSOUjvXj7ELraUFI/mPZNTw9l16ezZilLS+Ao/JsLFeIAVK10OwWgloNFVPSceFUEZSNpkAROxjwbWSpoIWTUS/MH/pUCgOm473xacS8a2C44mu3qQ+rub/c97J8vKrwaH8p8GVeL2d/6kO2EZlDbSah/C8TpprRmU1PSrb19txm7HM8ZDjMce7HO9zfMjxlONjQmp16pB9A0K1sCQ=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "Throughout the history of graphic design, <a href=\"https://en.wikipedia.org/wiki/Grid_%28graphic_design%29\" target=\"_blank\">grids</a> have been used as a tool for layout and composition. So it's no surprise that web designers adopted this design principle from the earliest days of the Web."
+    },
+    {
+      "title": "table as grid",
+      "focus": null,
+      "text": "At first they used the HTML <code>&lt;table&gt;</code> element to accomplish this. Technically, this element was created for displaying data (like a spreadsheet) and not meant to be used as a core design component. But designers managed to get pretty creative with it, <a href=\"https://netnet.studio/?layout=dock-left#code/eJx9T9uKwjAQfe9XzIuPxXrZVWvov6SdsQZjUtIR6y7+u9PGXQyCECY5tzBH9XyzVGUAcljXluBXXgBXg3wsYVEUs70Q92zU8SnWujm1wV8c5o23PpQQCPdR8gFJiGU3QO+tQaituKPYaUTjWlGLbogU08C5tqZ1JTTkmELkD95xftBnY28lnL3zfacbetF680Oy3zZ+dB8bqPmzTQZq6jL2UhyqKaUYq4Way/yHyxSu/qDc4S27Ts1fKfz+mN2k5m0Kd2lW5rQ8PADfVm6i\" target=\"_blank\">this example</a> looks almost identical to the one we're working on here, except that as soon as we try to do some fancier grid layouts, the limitations of the <b>table</b> element become very clear."
+    },
+    {
+      "title": "CSS libraries",
+      "focus": null,
+      "text": "Rather than trying to force the <b>table</b> element to work with lots of CSS and <a href=\"https://stackoverflow.com/a/5593821/1104148\" target=\"_blank\">invisible gifs</a>, web developers eventually created CSS libraries like <a href=\"https://getbootstrap.com/2.3.2/scaffolding.html#gridSystem\" target=\"_blank\">bootstrap</a> which came with a bunch of predefined CSS classes that acted as a kind of scaffolding developers could use to more easily describe the sorts of grid layouts they wanted (and let the library handle the more complex CSS rules to make it happen)."
+    },
+    {
+      "title": "CSS grid system",
+      "focus": null,
+      "text": "Eventually, the Web implemented <a href=\"https://css-tricks.com/snippets/css/complete-guide-grid/\" target=\"_blank\">CSS grid</a> to meet the design needs of developers with native CSS code, without having to depend on any 3rd party libraries. Here's now it works..."
+    },
+    {
+      "title": "HTML elements",
+      "focus": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "text": "We start by creating an HTML element with as many children as we want to be elements in our grid. In our case we've declared a <code>section</code> element with a class of \"gallery\" as the parent element, and declared 9 <code>div</code> elements within it as it's children."
+    },
+    {
+      "title": "display: grid",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "text": "Then in our CSS rule for that parent \"gallery\" element, we set our <code>display</code> property to <code>grid</code> which will convert this element into a CSS grid, allowing us to use a number of CSS grid properties to define all sorts of complex grid designs in a number of ways."
+    },
+    {
+      "title": "grid-template-columns",
+      "focus": [
+        3,
+        5,
+        7
+      ],
+      "text": "In this example, we've opted for the <code>grid-template-columns</code> property, which we can use to declare how many columns we want our grid to have and how wide each should be. Passing it three values, as we've done here, means we want 3 columns. We've set each to have a width of <code>1fr</code>. We could have used standard units like <i>px</i>, <i>%</i>, etc and made each a different width if we wanted to. Instead, I'm using <i>fr</i>, a special unit representing a fraction of the available space in a CSS grid. By setting them all to <b>1fr</b> we can ensure that each column is exactly the same size and use all the available space in the grid."
+    },
+    {
+      "title": "grid-gap",
+      "focus": [
+        3,
+        6,
+        7
+      ],
+      "text": "I've also added a <code>grid-gap</code> of <b>10px</b>, this adds a little bit of space around all the divs in our grid."
+    },
+    {
+      "title": "media queries",
+      "focus": [
+        16,
+        20,
+        22,
+        26
+      ],
+      "text": "We've also got a couple of <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries\" target=\"_blank\">CSS media queries</a> which I'm using to create some conditional logic. A 3 column layout looks great on wider screens, but feels a bit too tight on smaller screens."
+    },
+    {
+      "title": "small screens",
+      "focus": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "text": "This first media query checks to see if the window is less than <b>480px</b> wide, and if so it will adjust our <code>grid-template-columns</code> from <code>1fr 1fr 1fr</code> to <code>1fr 1fr</code> converting our 3 column grid into a 2 column grid. "
+    },
+    {
+      "title": "smaller screens",
+      "focus": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "The second media query checks to see if our window is even smaller, less than <b>320px</b> and if it is will adjust our grid from <code>1fr 1fr</code> to <code>1fr</code>, a single column layout. Resize the browser window to see this responsive logic in action."
+    },
+    {
+      "title": "extra styles",
+      "focus": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "text": "That's it! With very little code we're able to define fairly responsive behavior using CSS grid. The only other CSS rule here we didn't discuss, <code>.gallery > div</code>, is simply used to change the default styles for the individual divs into those red boxes."
+    },
+    {
+      "title": "more to learn",
+      "focus": null,
+      "text": "This is only the beginning, there's a lot more you can do with CSS grids and loads of ways to learn! Online you'll find <a href=\"https://www.youtube.com/watch?v=qNtJ5p3h2A4\" target=\"_blank\">video tutorials</a>, <a href=\"https://learncssgrid.com/\" target=\"_blank\">examples</a>, <a href=\"https://css-tricks.com/snippets/css/complete-guide-grid/\" target=\"_blank\">guides</a> and even <a href=\"https://cssgridgarden.com/\" target=\"_blank\">games</a> to help you master CSS grids!"
+    }
+  ]
+}

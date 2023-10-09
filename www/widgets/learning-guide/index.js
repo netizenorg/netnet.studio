@@ -1,16 +1,16 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, SNT, nn */
+/* global Widget, WIDGETS, utils, Convo, NNE, NNW, SNT, nn */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide (BETA-2.0)'
+    this.title = 'Learning Guide (BETA-3.0)'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
 
     this.on('open', () => {
-      this.update({ left: 392, top: 20 }, 500)
       this._openConvo()
+      this.update({ left: 40, top: 65 }, 500)
     })
 
     this.resizable = false
@@ -31,12 +31,29 @@ class LearningGuide extends Widget {
       // })
 
       // create sub pages
-      this._createPage('aboutOpts', 'about.html', this.mainOpts)
+      this.subpages = [
+        { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+        {
+          id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+          subs: [
+            { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
+            { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
+            { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
+          ]
+        },
+        { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+      ]
+      this.subpages.forEach(p => {
+        this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
+          if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+        })
+      })
+
 
       // initial HTML
       this._createHTML()
       const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
-      this.title = `${icon} Learning Guide (BETA-2.0)`
+      this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
     WIDGETS['functions-menu'].on('theme-change', () => {
@@ -53,6 +70,7 @@ class LearningGuide extends Widget {
     utils.get(`tutorials/${name}/metadata.json`, (json) => {
       this.metadata = json
       this.loaded = name
+      utils.updateURL(`?tutorial=${this.metadata.id}`)
       if (WIDGETS['student-session'].getData('opened-project')) {
         WIDGETS['student-session'].clearProjectData()
       }
@@ -65,11 +83,42 @@ class LearningGuide extends Widget {
     SNT.post(SNT.dataObj('TUT-select', { name }))
   }
 
-  quit () {
+  quit () { // quit tutorial
     WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
     this.metadata = null
     this.data = null
     document.querySelector('load-curtain').hide()
+    utils.updateURL()
+  }
+
+  scrollTo (sec) {
+    if (typeof sec === 'number') {
+      return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
+    }
+
+    const toc = {
+      'top': 0,
+      'toc': 624,
+      'the-net': 1075,
+      'the-web': 1268,
+      'the-craft': 1475,
+      'html': 1870,
+      'css': 2995,
+      'js': 4326,
+      'refs': 4808
+    }
+
+    const y = toc[sec]
+    const slide = this.ele.querySelector('widget-slide')
+    if (slide) slide.scrollTo({ top: y, behavior: 'smooth' })
+
+    if (sec === 'toc') {
+      window.convo = new Convo(this.convos, 'toc')
+      NNW.menu.switchFace('happy')
+    } else {
+      window.convo.hide()
+      NNW.menu.switchFace('default')
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -87,9 +136,26 @@ class LearningGuide extends Widget {
     utils.get(`./widgets/learning-guide/data/${page}`, (html) => {
       const div = document.createElement('div')
       div.innerHTML = html
+
+      if (page === 'the-web.html') { // update dynamic [PARTS] for "the Web" info page
+        html = html.replace('[YOUR-BROWSER]', nn.platformInfo().browser.name)
+        html = html.replace('[YOUR-HOTKEY]', nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL')
+        utils.get('/api/user-geo', res => {
+          if (res.success && res.data.city) {
+            html = html.replace('[YOUR-LOCATION]', `in ${res.data.city}`)
+          } else {
+            html = html.replace('[YOUR-LOCATION]', '')
+          }
+          div.innerHTML = html
+        }) 
+      }
+
       const name = page.split('.')[0]
       // options objects for <widget-slide> .updateSlide() method
       this[type] = { name: name, widget: this, back: b, ele: div }
+      if (type === 'mainOpts') {
+        this.mainOpts.cb = () => setTimeout(() => this._createStarField(), utils.getVal('--menu-fades-time'))
+      }
       if (cb) cb(div)
     }, true)
   }
@@ -109,14 +175,10 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    // this._enableExamplesButton()
     this._listTutorials()
     this._enableAppendixLinks()
 
-    // const canvas = this.ele.querySelector('canvas')
-    const canvas = document.createElement('canvas')
-    this._createStarField(canvas)
-    this.slide.appendChild(canvas)
+    this._createStarField()
 
     this._highlightTitles()
 
@@ -128,15 +190,6 @@ class LearningGuide extends Widget {
     //   })
     // })
   }
-
-  // _enableExamplesButton () {
-  //   this.slide.querySelector('#ex-open-btn')
-  //     .addEventListener('click', () => {
-  //       WIDGETS.open('code-examples')
-  //       this.close()
-  //       window.convo.hide()
-  //     })
-  // }
 
   _enableAppendixLinks () {
     this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
@@ -162,8 +215,8 @@ class LearningGuide extends Widget {
           </div>
           <div class="learning-guide__dotted-line"></div>
           <div>
-            <button name="tut:${t.id}">play</button>
-            <button name="i:${t.id}">i</button>
+            <button class="pill-btn pill-btn--secondary" name="tut:${t.id}">play</button>
+            <button class="pill-btn pill-btn--secondary" name="i:${t.id}">i</button>
           </div>
         </div>
         <p name="nfo:${t.id}">${t.description}</p>
@@ -204,11 +257,17 @@ class LearningGuide extends Widget {
   }
 
   _enableLearningGuideEventListeners () {
-    this.slide.querySelector('#page-aboutOpts')
-      .addEventListener('click', () => {
-        this.slide.updateSlide(this.aboutOpts)
+    this.subpages.forEach(p => {
+      // this is what happens when we click a <button> with a #page-* id
+      // assuming it's also been defined in this.subpages above
+      this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
+        this.slide.updateSlide({ 
+          ...this[p.id],
+          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
+        })
         window.convo.hide()
-      })
+      })     
+    })
 
     // enable "play" buttons
     this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
@@ -235,9 +294,10 @@ class LearningGuide extends Widget {
           vid.muted = true
           vid.play()
         })
-
+        
         div.addEventListener('mouseout', () => {
-          this.slide.querySelector('#tut-preview-video').remove()
+          const vid = this.slide.querySelector('#tut-preview-video')
+          if (vid) vid.remove()
         })
       })
 
@@ -312,10 +372,10 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
 
-  _createStarField (ele) {
+  _createStarField () {
+    const canvas = document.createElement('canvas')
     const self = this
 
-    const canvas = ele
     canvas.style.position = 'absolute'
     canvas.style.top = 0
     canvas.style.left = 0
@@ -397,6 +457,7 @@ class LearningGuide extends Widget {
       for (let i = 0; i < newStars; i++) stars.push(mkStar())
     }
 
+    this.slide.appendChild(canvas)
     animate()
   }
 

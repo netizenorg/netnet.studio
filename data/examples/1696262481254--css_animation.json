@@ -1,0 +1,120 @@
+{
+  "name": "css animation",
+  "toc": true,
+  "tags": [
+    "css",
+    "animation"
+  ],
+  "layout": "dock-left",
+  "key": 1696262481254,
+  "code": "#code/eJylUcFKxDAUvPcrngdBD3Fb0YPZsuxxj94EbzF9bcMmL0vyiltk/93YBMSKJyEMw5t5QzJpI88WdxVAOvsjzn1QDiNob3149d7BRxIA6utCIEsS3qzSx22ZcVAUex+chKiVxZvmNkuXBR9/r7+PhvHP9fru6UdAU//nApcqwdiUAMYzC2XNQBI0EmPIzpPqOkODhPv6dM6jBRQZp9h4EpSqkd/VbFdyN4WFSHiIa42NS9min0hnC6qIwpDwE6+9qZgcJLSfiCUY6g2VutJb2k35tETHZveCVnuHwB7cDIcv+qwGvGo3Saw+AdWDi6w=",
+  "info": [
+    {
+      "title": "CSS animations",
+      "focus": null,
+      "text": "<a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations\" target=\"_blank\">CSS animations</a> allow you to animate changes to CSS properties by specifying what the values should be in \"keyframes\" and letting the browser handle transitions between them."
+    },
+    {
+      "title": "define an animation",
+      "focus": [
+        3,
+        16
+      ],
+      "text": "We use the <code>@keyframes</code> \"at-rule\" to define a new animation sequence, you can name the sequence whatever you'd like, I've called this one \"colorZoom\". This is the only animation defined in this page, but you create as many as you'd like."
+    },
+    {
+      "title": "creating keyframes",
+      "focus": [
+        3,
+        4,
+        7,
+        16
+      ],
+      "text": "Inside the animation's code block, between the <code>{</code> and <code>}</code>, you create your \"keyframes\". Each starts with the percentage of time within the animation you this particular keyframe to occur, in this case <code>0%</code> would be the start of our animation, followed by it's own code block."
+    },
+    {
+      "title": "keyframe properties",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        16
+      ],
+      "text": "Inside the keyframe's code block, between the <code>{</code> and <code>}</code>, you declare which CSS properties should change at this keyframe. Here I've specified that at the start of our animation the element's text color should be black and it's size should remain normal (aka scaled to 1)."
+    },
+    {
+      "title": "additional keyframes",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "I've added two additional keyframes within our animation, one in the middle of our animation, <i>50%</i>, and the other at the end, <i>100%</i>. The one in the middle changes our text color from black to white as well as scale's our element down to 0.9 (or 90% of it's original size). The last keyframe returns those values back to what they were in the beginning. "
+    },
+    {
+      "title": "apply the animation",
+      "focus": null,
+      "text": "Once we've defined our animation, we can apply it to any, and as many, other elements as we want. In this example we're only going to apply it to our <code>h1</code> element."
+    },
+    {
+      "title": "animation-name",
+      "focus": [
+        18,
+        22,
+        26
+      ],
+      "text": "Within the CSS rule for the element (or elements) you want to apply the animation to, you first need to declare the <code>animation-name</code> property with the name of the animation as it's value. If you want to apply multiple animations you can do so by separating them with commas. You can check out <a href=\"https://netnet.studio/?ex=65\" target=\"_blank\">this example</a> for more on combining animations."
+    },
+    {
+      "title": "animation-duration",
+      "focus": [
+        18,
+        22,
+        23,
+        26
+      ],
+      "text": "Even though we've applied the animation-name, the animation won't run until we've specified an <code>animation-duration</code>. In this case we've set our animation to <code>4s</code> or four seconds. This means our keyframe for 50% will run 2 seconds into the animation and our keyframe for 100% will run at 4 seconds."
+    },
+    {
+      "title": "animation-timing-function",
+      "focus": [
+        18,
+        22,
+        23,
+        24,
+        26
+      ],
+      "text": "There are some other optional animation properties you can set, for example you can define an <code>animation-timing-function</code> to set a specific \"easing\" or \"tweening\" for the animation. If you're new to the concept of animation \"easing\" check out this <a href=\"https://easings.net/\" target=\"_blank\">Easing Cheat Sheet</a>. You can also refer to MDN to learn more about defining <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function\" target=\"_blank\">animation timing functions</a>"
+    },
+    {
+      "title": "animation-iteration-count",
+      "focus": [
+        18,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "The last property we have set here is the <code>animation-iteration-count</code> which specifies how many times the animation should run. The default is <b>1</b>, so if you only want your animation to run once you don't need to set this. But if you want it to run a larger number of times you can specify that number value or write \"infinite\" if you want it to run forever!"
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "There are other CSS animation properties, you can <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations\" target=\"_blank\">learn more about them here</a>. Or check out our other animation examples like this <a href=\"https://netnet.studio/?ex=65\" target=\"_blank\">combo animation example</a>."
+    }
+  ]
+}

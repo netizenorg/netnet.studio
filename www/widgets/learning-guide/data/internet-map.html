@@ -10,15 +10,12 @@
   let globe
   async function setup () {
 
-    const clr1 = parent.window.utils.getVal('--netizen-meta')
-    const clr2 = parent.window.utils.getVal('--netizen-tag')
-
     globe = Globe()
       .backgroundColor('#00000000')
       .atmosphereColor('#00000000')
       .atmosphereAltitude(0)
       .globeMaterial(new THREE.MeshBasicMaterial({
-        color: clr1,
+        // color: clr1,
         transparent: true,
         opacity: 0.15
       }))

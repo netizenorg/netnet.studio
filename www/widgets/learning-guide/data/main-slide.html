@@ -6,72 +6,106 @@
 </header>
 
 <main class="learning-guide__main" style="position:relative;z-index:2">
+  <div class="learning-guide__main__item">
+    <iframe src="./widgets/learning-guide/data/internet-globe.html"
+      style="width: 100%; height: 250px; border: none;"
+      onclick="WIDGETS['learning-guide'].scrollTo('toc')"></iframe>
+
+    <div class="learning-guide__arrow" style="cursor:pointer" onclick="WIDGETS['learning-guide'].scrollTo('toc')">➤</div>
+
+    <p style="transform: translateY(43px);">
+      "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
+    </p>
+
+  </div>
+
+  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
+
+
+  <!--                  <<<        -          >>>                              -->
+  <!--                  <<< TABLE OF CONTENTS >>>                              -->
+  <!--                  <<<        -          >>>                              -->
+
+  <div>
+    <h3>TABLE OF CONTENTS</h3>
+    <br>
+    1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Internet (history, tech, culture)</span><br>
+    2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-web')">The World Wide Web</span><br>
+    3. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft of Code</span><br>
+    4. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">HTML (Hypertext Markup Language)</span><br>
+    5. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">CSS (Cascading Style Sheets)</span><br>
+    6. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">JS (JavaScript)</span><br>
+    7. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span><br>
+  </div>
+
+  <br><br><br>
+
+  <div class="learning-guide__ex-divider"></div>
+
+  <br>
   <!--                  <<<      -       >>>                              -->
   <!--                  <<< THE INTERNET >>>                              -->
   <!--                  <<<      -       >>>                              -->
+
   <div class="learning-guide__main__item">
-    <iframe src="./widgets/learning-guide/data/internet-globe.html"
-      style="width: 100%; height: 250px; border: none;"></iframe>
+    <h3 style="cursor: default;">&lt;1&gt;</h3>
 
-    <div>
-      <div class="learning-guide__ex-start">
-        <span><b>a network of networks</b></span>
-        <button class="pill-btn pill-btn--secondary" 
-                onclick="WIDGETS['code-examples'].loadExample(48, 'guide')">
-          what is the Internet?
-        </button>
+    <div class="learning-guide__tc">
+      <div>
+        <div id="lg_platform">
+          <h2>the Internet</h2>
+          <b>a network of networks</b>
+        </div>
+        <div class="learning-guide__dotted-line"></div>
+        <div>
+          <button class="pill-btn pill-btn--secondary" id="page-theNetOpts">enter</button>
+        </div>
       </div>
-
-      <p>
-        The Internet is often described as a "cloud", an amorphous entity that is everywhere and nowhere at the same time. This sort of magical thinking does us a disservice as netizens. If we hope to make meaningful work with/about the Internet it's important to understand what the Internet actually is.
-      </p>
     </div>
   </div>
 
   <!--                  <<<      -       >>>                              -->
   <!--                  <<<  THE WWWeb   >>>                              -->
   <!--                  <<<      -       >>>                              -->
+
   <div class="learning-guide__main__item">
-    <!-- MARKUP DIAGRAM HERE -->
-    <svg-hypertext colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
+    <h3 style="cursor: default;">&lt;2&gt;</h3>
 
-    <div>
-      <div class="learning-guide__ex-start">
-        <span><b>the people's platform</b></span>
-        <button class="pill-btn pill-btn--secondary"
-                onclick="WIDGETS['code-examples'].loadExample(48, 'guide')">
-          what is the World Wide Web?
-        </button>
+    <div class="learning-guide__tc">
+      <div>
+        <div>
+          <h2>the World Wide Web</h2>
+          <b>the people's platform</b>
+        </div>
+        <div class="learning-guide__dotted-line"></div>
+        <div>
+          <button class="pill-btn pill-btn--secondary" id="page-theWebOpts">enter</button>
+        </div>
       </div>
-
-      <p>
-        "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
-      </p>
     </div>
-    <br><br><br>
-    <div class="learning-guide__ex-divider"></div>
   </div>
 
-  <div class="learning-guide__main__item">
-    <h3 style="cursor: default;">&lt;code&gt;</h3>
+  <!--                  <<<      -       >>>                              -->
+  <!--                  <<<     CODE     >>>                              -->
+  <!--                  <<<      -       >>>                              -->
 
-    <div class="learning-guide__ex-start">
-      <span><b>Code Examples/Demos</b></span>
-      <span>
-        <button class="pill-btn pill-btn--secondary"
-                onclick="WIDGETS['code-examples'].open()">
-          explore examples
-        </button>
-      </span>
-    </div>
-    <p>
-      A collection of code examples and annotated demos created and curated especially for internet artists. If you're new to creative coding, you may want to start with the interactive tutorial below before working your way through the rest of this learning guide.
-    </p>
+  <div class="learning-guide__main__item">
+    <h3 id="lg_craft" style="cursor: default;">&lt;3&gt;</h3>
+
     <div class="learning-guide__tut-code">
       <!-- What is Code tutorials here -->
     </div>
-  </div>
 
+    <div class="learning-guide__tc">
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <div onclick="WIDGETS.open('code-examples', w => w.slide.updateSlide(w.mainOpts))" class="learning-guide__code-example-btn">
+          &lt;/&gt;
+        </div>
+        <p style="padding: 20px; width: 331px;">← A collection of code examples and annotated demos created especially for internet artists. If you're new to creative coding, you may want to start with the interactive tutorial above.</p>
+      </div>
+      <br>
+    </div>
+  </div>
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<< HTML >>>                              -->
@@ -113,25 +147,25 @@
         </div>
         <div>
           <h2>Templates</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(67, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(67, 'learning-guide')">
             HTML5 (basic)
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(68, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(68, 'learning-guide')">
             social &lt;meta&gt; tags
           </span>
         </div>
         <div>
           <h2>Examples</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(0, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(0, 'learning-guide')">
             &lt;img&gt;
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1, 'learning-guide')">
             &lt;audio&gt;
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(2, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(2, 'learning-guide')">
             &lt;video&gt;
           </span>
         </div>
@@ -151,7 +185,7 @@
       <div class="learning-guide__ex-start">
         <span><b>Cascading Style Sheets</b></span>
         <button class="pill-btn pill-btn--secondary"
-                onclick="WIDGETS['code-examples'].loadExample(48, 'guide')">
+                onclick="WIDGETS['code-examples'].loadExample(49, 'guide')">
           review core concepts
         </button>
       </div>
@@ -184,16 +218,16 @@
         </div>
         <div>
           <h2>Templates</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1695683222462, 'learning-guide')">
             CSS still life
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            splash page
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696209632966, 'learning-guide')">
+            profile page
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            insta-grid
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696815273134, 'learning-guide')">
+            splash page
           </span>
         </div>
       </div>
@@ -201,45 +235,55 @@
       <div class="learning-guide__apx-list3">
         <div>
           <h2>Examples</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(12, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696291638151, 'learning-guide')">
+            the "box model"
+          </span>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(12, 'learning-guide')">
             custom cursor
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(13, 'guide-template')">
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(71, 'learning-guide')">
+            custom fonts
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(70, 'learning-guide')">
+            image background
+          </span>
+          <br>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696262481254, 'learning-guide')">
+            basic animation
+          </span>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(13, 'learning-guide')">
             animated cursor
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(4, 'learning-guide')">
+            animation delays
+          </span>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(65, 'learning-guide')">
+            combo animations
           </span>
         </div>
         <div>
           <h2>&nbsp;</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696274050310, 'learning-guide')">
+            basic positioning
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696277965022, 'learning-guide')">
+            transforms
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
-          </span>
-        </div>
-        <div>
-          <h2>&nbsp;</h2>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696285659953, 'learning-guide')">
+            flexbox
           </span>
           <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'guide-template')">
-            ...
-          </span>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(1696289386597, 'learning-guide')">
+            grid layouts
+          </span>     
         </div>
       </div>
     </div>
@@ -247,6 +291,177 @@
     <div class="learning-guide__ex-divider"></div>
   </div>
 
+  <!--                      <<<  -   >>>                              -->
+  <!--                      <<<  JS  >>>                              -->
+  <!--                      <<<  -   >>>                              -->
+  <div class="learning-guide__main__item">
+    <h3 onclick="WIDGETS['css-reference'].open()">&lt;JS&gt;</h3>
+    <br>
+    <div>
+      <div class="learning-guide__ex-start">
+        <span><b>JavaScript</b></span>
+        <button class="pill-btn pill-btn--secondary"
+                onclick="WIDGETS['code-examples'].loadExample(1695501143020, 'guide')">
+          review core concepts
+        </button>
+      </div>
+      <p>
+        JavasScript is the Web's defacto programming language, although you can use it in other contexts (robotics, AI, games, etc) it was first invented to add interactive and dynamic capabilities to the Web, converting our hypertext "documents" into hypermedia "applications".
+      </p>
+    </div>
+
+    <br>
+
+    <svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+    </svg-js-variable>
+
+    <!-- <div class="learning-guide__ex-row"> -->
+      <!-- <div style="width: 100%"> -->
+        <!-- <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2> -->
+        <!-- <div class="learning-guide__tut-js"> -->
+          <!-- JS tutorials here -->
+        <!-- </div> -->
+      <!-- </div> -->
+    <!-- </div> -->
+
+<!--
+    <div class="learning-guide__apx">
+      <div class="learning-guide__apx-list2">
+        <div>
+          <h2>Docs</h2>
+          <span class="highlight" name="ref:js:mainOpts">JS Reference</span><br>
+          <span class="highlight" name="ref:js:webAPIsOpts">Web APIs</span><br>
+          <span class="highlight" name="ref:js:libsOpts">Libraries</span><br>
+        </div>
+        <div>
+          <h2>Templates</h2>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+        </div>
+      </div>
+      <br>
+      <div class="learning-guide__apx-list3">
+        <div>
+          <h2>Examples</h2>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(12, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(13, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['code-examples'].loadExample(XX, 'learning-guide')">
+            ...
+          </span>
+        </div>
+      </div>
+    </div>
+  -->
+    <br><br>
+    <div class="learning-guide__ex-divider"></div>
+  </div>
+
+  <!--                      <<<     -    >>>                              -->
+  <!--                      <<< APPENDIX >>>                              -->
+  <!--                      <<<     -    >>>                              -->
+  <div class="learning-guide__main__item">
+    <h3 onclick="WIDGETS['html-reference'].open()">APPENDIX</h3>
+    <br>
+
+    <div class="learning-guide__apx-list2">
+      <div>
+        <div class="learning-guide__ex-start">
+          <span><b>coding resources</b></span>
+        </div>
+        <a href="https://developer.mozilla.org/" target="_blank">Mozilla Developer Docs</a><br>
+        <a href="https://www.w3schools.com/" target="_blank">W3 Schools</a><br>
+        <a href="https://css-tricks.com/" target="_blank">CSS Tricks</a><br>
+        <div class="learning-guide__ex-start">
+          <span><b>coding books</b></span>
+        </div>
+        <a href="https://archive.org/details/html-css-design-and-build-websites-jon-duckett" target="_blank"> HTML & CSS web design</a><br>
+        <a href="https://eloquentjavascript.net/" target="_blank">Eloquent JavaScript</a><br>
+        <a href="https://thebookofshaders.com/" target="_blank">Book of Shaders</a>
+      </div>
+      <div>
+        <div class="learning-guide__ex-start">
+          <span><b>creative communities</b></span>
+        </div>
+        <a href="https://neocities.org/" target="_blank">neocities</a><br>
+        <a href="https://codepen.io/search/pens?q=css+art" target="_blank">CodePen</a><br>
+        <a href="https://www.shadertoy.com/" target="_blank">Shadertoy</a><br>
+        <div class="learning-guide__ex-start">
+          <span><b>coding forumns</b></span>
+        </div>
+        <a href="https://stackoverflow.com/" target="_blank">stackoverflow</a><br>
+      </div>
+    </div>
+    <br>
+
+    <div class="learning-guide__apx-list2">
+      <div>
+        <div class="learning-guide__ex-start">
+          <span><b>cultural archives</b></span>
+        </div>
+        <a href="https://archive.org/" target="_blank">the Internet Archive</a><br>
+        <a href="https://geocities.restorativland.org/" target="_blank">geocities archive</a><br>
+        <a href="https://web.archive.org/web/20200707024903/http://netartnet.net/directory" target="_blank">netartnet.net</a><br>
+        <a href="https://www.pouet.net/prodlist.php?platform%5B%5D=JavaScript" target="_blank">the demoscene (pouet)</a><br>
+      </div>
+      <div>
+        <div class="learning-guide__ex-start">
+          <span><b>art/design collections</b></span>
+        </div>
+        <a href="https://anthology.rhizome.org/" target="_blank">Net Art Anthology (rhizome)</a><br>
+        <a href="https://whitney.org/artport/" target="_blank">the Whitney artport</a><br>
+        <a href="https://winners.webbyawards.com/winners/websites-and-mobile-sites/general-websites-and-mobile-sites/netart" target="_blank">NetArt (the Webby's)</a><br>
+        <a href="https://www.superhi.com/hall-of-fame" target="_blank">Hall of Fame (Super-Hi)</a><br>
+      </div>
+    </div>
+    <br>
+
+
+    <br><br><br>
+    <div class="learning-guide__ex-divider"></div>
+  </div>
 
   <br>
   <br>
@@ -267,4 +482,3 @@
 <br>
 <br>
 
-<!-- <canvas></canvas> -->

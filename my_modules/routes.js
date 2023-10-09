@@ -27,6 +27,21 @@ const aliasRoutes = [
   { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' }
 ]
 
+const images = fs.readdirSync(path.join(__dirname, '../www/assets/images'))
+images.forEach(sub => {
+  if (sub === 'cats' || sub === 'gifs' || sub === 'logos' || sub === 'bg' || sub === 'icons') {
+    const files = fs.readdirSync(path.join(__dirname, `../www/assets/images/${sub}`))
+    files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/images/${sub}/${f}` }))
+  }
+})
+
+const otherAssets = ['videos', 'audios', 'fonts']
+otherAssets.forEach(dir => {
+  const files = fs.readdirSync(path.join(__dirname, `../www/assets/${dir}`))
+  files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/${dir}/${f}` }))
+})
+
+
 aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
@@ -92,46 +107,6 @@ router.get('/api/proxy', (req, res) => {
     .then(r => res.end(r.data))
     .catch(err => console.log(err))
 })
-
-// function getSubdirectories (directory, depth = 0) {
-//   if (depth >= 2) {
-//     return Promise.resolve([])
-//   }
-//
-//   return readdir(directory)
-//     .then(files => {
-//       const subdirectories = []
-//
-//       const promises = files.map(file => {
-//         const filePath = path.join(directory, file)
-//         return stat(filePath).then(stats => {
-//           if (stats.isDirectory()) {
-//             subdirectories.push(file)
-//             return getSubdirectories(filePath, depth + 1).then(subdirs => {
-//               subdirectories.push(...subdirs.map(subdir => path.join(file, subdir)))
-//             })
-//           }
-//         })
-//       })
-//
-//       return Promise.all(promises).then(() => subdirectories)
-//     })
-//     .catch(error => {
-//       console.error(error)
-//       return []
-//     })
-// }
-//
-// router.get('/api/custom-elements', async (req, res) => {
-//   try {
-//     const directory = path.join(__dirname, '../www/custom-elements')
-//     const subdirectories = await getSubdirectories(directory)
-//     res.json(subdirectories.filter(s => s.includes('/')))
-//   } catch (error) {
-//     console.error(error)
-//     res.json([])
-//   }
-// })
 
 function getSubdirectories (directory, depth = 0) {
   if (depth >= 2) return Promise.resolve([])
@@ -310,8 +285,9 @@ router.post('/api/example-data', (req, res) => {
   const name = obj.name
   const hash = obj.code
   const info = obj.info
+  const layout = obj.layout
   if (typeof hash === 'string') {
-    res.json({ success: 'success', name, hash, info })
+    res.json({ success: 'success', name, hash, info, layout })
   } else {
     res.json({ error: `${req.body.key} is not in the database.` })
   }

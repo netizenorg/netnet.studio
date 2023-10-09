@@ -75,6 +75,12 @@
 .text-bubble > section code a  {
   color: var(--bg-color);
 }
+
+.text-bubble > section a,
+.text-bubble > section .link {
+  color: var(--fg-color);
+}
+
 .text-bubble > section a:hover,
 .text-bubble > section .link:hover {
   color: var(--netizen-match-color);

@@ -176,7 +176,7 @@ window.utils = {
   },
 
   updateURL: (path) => {
-    if (!path) return
+    if (!path) path = ''
     const p = window.location.protocol
     const h = window.location.host
     // window.location = `${p}//${h}/${path}`

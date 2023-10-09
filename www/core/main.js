@@ -28,7 +28,7 @@ initWidgets.forEach(file => WIDGETS.load(file))
 NNE.on('cursor-activity', (e) => {
   if (NNE._spotlighting) {
     NNE.spotlight(null)
-    window.convo.hide()
+    if (window.convo) window.convo.hide()
   } else utils.hideConvoIf()
 })
 

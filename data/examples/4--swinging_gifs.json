@@ -1,6 +1,118 @@
 {
-  "tags": "CSS animations",
   "name": "swinging gifs",
+  "toc": true,
+  "tags": [
+    "css",
+    "animation",
+    "cd",
+    "delay"
+  ],
+  "layout": "dock-left",
+  "key": 4,
   "code": "#code/eJydks2KgzAUhfd9iovQpVbjT0HbMu8xzCLEKGE0ionTSum7z1XrDzJZjCCYnHzn5ATuRemu4LcDAH4f37zLGlpyBeouZA5PFAHcIzyh4JmOIXB/7gm8Bjlc6dFK99w/Da/xDlHmn7TQV4ul1tf7grpSQotKxpCJB0+TQVz5hz2VoqQ9ZUtsGI8Nt0dp29AxKVDbMy1KdNhZK9mIcKq4LaRdtXrLCs3HIJtVrcQeQmZCoposL3FY6uE7dVXH/ZvrR7Iuwgvaoa4GGlEyo6EBdUg40/5EE1Ows8DBDBujzwsdTrRviCYzGs2oIZisO58nOjAFY+d+Fg6X03vqcInzAKphVwvhnKtTLjJ1YqmDfwumQQFWUKX6pWfd/u0hOzz+Dk+wwxPu8ETo+QX57SUR",
-  "key": "4"
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This example expands on the first <a href=\"https://netnet.studio/?ex=1696262481254\" target=\"_blank\">CSS animation</a> example. If you haven't already, make sure to check that one out first."
+    },
+    {
+      "title": "css animation",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "text": "Here I've created a CSS animation called \"swing\" with three keyframes. The first changes the <code>left</code> value to <b>40vw</b> (or 40% from the left of our window), the second changes it to <b>60vw</b> and the last returns it to <b>40vw</b>."
+    },
+    {
+      "title": "left property",
+      "focus": [
+        10,
+        11
+      ],
+      "text": "Remember that the <b>left</b> property can only be used if the <b>position</b> property is set. Same is true for <b>top</b>, <b>right</b>, <b>bottom</b> and <b>z-index</b>."
+    },
+    {
+      "title": "CSS selector",
+      "focus": [
+        9,
+        10,
+        11,
+        16
+      ],
+      "text": "In this CSS rule, we're targeting every <code>img</code> element that has an <code>alt</code> attribute set to <i>\"cd\"</i>. This will ensure we don't accidentally apply this CSS rule to other images on our page."
+    },
+    {
+      "title": "apply the animation",
+      "focus": [
+        9,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "It's within this rule that we're applying our animation, in this case with a duration of <code>4s</code> an easing function of <code>ease-in-out</code> and an iteration count of <code>infinite</code>."
+    },
+    {
+      "title": "the images",
+      "focus": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "text": "This is going to apply the animation to all the CD images we've defined below in our HTML, which by default would look like there was only a single CD on our page, because they'd all be moving together at the same time, each over layed over the other."
+    },
+    {
+      "title": "custom classes",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "text": "What we've done to make sure they're not over each other is create a unique CSS class for each of the <code>img</code> elements and give each a different <code>top</code> value, this way they line up in a line one above the other."
+    },
+    {
+      "title": "animation-delay",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "text": "If we'd only assigned a <b>top</b> value then our CD's would move back and fourth together like a single column. So what I've also done is given each class a different <code>animation-delay</code>, which delays the start of the \"swing\" animation applied to each."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Scattering the delay time by a quarter of a second for each we get more of a snake like swinging effect. Experiment with these values and notice the difference."
+    }
+  ]
 }

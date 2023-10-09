@@ -48,7 +48,7 @@ window.CONVOS['share-widget'] = (self) => {
     }
   }, {
     id: 'layout-info',
-    content: `When someone opens your share URL they'll see exactly what you see, including the code in the editor in the current "<i>${NNW.layout}<i>" layout, but you can change this by specifying the layout you want. If you'd perfer to hide the code and only share your output choose the "hidden" option.`,
+    content: `When someone opens your share URL they'll see exactly what you see, including the code in the editor in the current "<i>${NNW.layout}</i>" layout, but you can change this by specifying the layout you want. If you'd perfer to hide the code and only share your output choose the "hidden" option.`,
     options: {
       'got it, thanks!': (e) => e.hide()
     }

@@ -48,6 +48,8 @@ class KeyboardShortcuts extends Widget {
           NNW.prevLayout()
         }
       },
+      // NOTE: if u change any of the following 3, make sure to update
+      // the info in the learning-guide/convo.js bubbles
       {
         key: `${utils.hotKey()} + L`,
         nfo: 'open the Learning Guide',
@@ -58,7 +60,7 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
-        key: `${utils.hotKey()} + :`,
+        key: `${utils.hotKey()} + ;`,
         nfo: 'open the Functions Menu',
         condition: (e) => ((e.ctrlKey || e.metaKey) && e.keyCode === 59),
         callback: (e) => {
@@ -67,7 +69,7 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
-        key: `${utils.hotKey()} + "`,
+        key: `${utils.hotKey()} + '`,
         nfo: 'open universal search bar',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 222,
         callback: (e) => {
