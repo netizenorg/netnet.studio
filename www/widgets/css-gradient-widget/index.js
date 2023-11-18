@@ -9,7 +9,7 @@ class CssGradientWidget extends Widget {
     this.settings = {}
     this.resetSettings(true)
 
-    this.title = 'CSS Gradient Generator'
+    this.title = 'CSS Gradient Generator (beta)'
     this.width = 680
     this._createHTML()
 

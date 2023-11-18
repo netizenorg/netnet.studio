@@ -194,7 +194,7 @@
 }
 
 .hvp-pause-screen {
-	background-image: url(../images/widgets/static.png);
+	background-image: url(../../assets/images/widgets/static.png);
 	/* background-size: cover; */
 	/* background-attachment: fixed; */
 	width: 100%;
