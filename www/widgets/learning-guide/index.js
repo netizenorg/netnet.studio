@@ -80,7 +80,6 @@ class LearningGuide extends Widget {
         this._loadTutorial(name, time)
       })
     })
-    SNT.post(SNT.dataObj('TUT-select', { name }))
   }
 
   quit () { // quit tutorial
@@ -147,7 +146,7 @@ class LearningGuide extends Widget {
             html = html.replace('[YOUR-LOCATION]', '')
           }
           div.innerHTML = html
-        }) 
+        })
       }
 
       const name = page.split('.')[0]
@@ -261,12 +260,12 @@ class LearningGuide extends Widget {
       // this is what happens when we click a <button> with a #page-* id
       // assuming it's also been defined in this.subpages above
       this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
-        this.slide.updateSlide({ 
+        this.slide.updateSlide({
           ...this[p.id],
           cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
         })
         window.convo.hide()
-      })     
+      })
     })
 
     // enable "play" buttons
@@ -294,7 +293,7 @@ class LearningGuide extends Widget {
           vid.muted = true
           vid.play()
         })
-        
+
         div.addEventListener('mouseout', () => {
           const vid = this.slide.querySelector('#tut-preview-video')
           if (vid) vid.remove()

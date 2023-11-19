@@ -1,4 +1,4 @@
-/* global HTMLElement, utils, Fuse, WIDGETS, NNE, SNT */
+/* global HTMLElement, utils, Fuse, WIDGETS, NNE */
 class SearchBar extends HTMLElement {
   constructor () {
     super()
@@ -88,7 +88,6 @@ class SearchBar extends HTMLElement {
       this.style.opacity = 1
       this.emit('open', {})
     }, 100)
-    SNT.post(SNT.dataObj('search-open'))
   }
 
   close () {
@@ -139,9 +138,6 @@ class SearchBar extends HTMLElement {
     results.forEach(res => this._createSearchResult(res))
 
     if (this._termDebounce) clearTimeout(this._termDebounce)
-    this._termDebounce = setTimeout(() => {
-      if (term !== '') SNT.post(SNT.dataObj('search-term', { search: term }))
-    }, 1000)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

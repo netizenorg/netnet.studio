@@ -1,19 +1,16 @@
-/* global WIDGETS, NNW, utils, nn, Convo, SNT */
+/* global WIDGETS, NNW, utils, nn, Convo */
 window.CONVOS['student-session'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
-
 
   const firstOpts = (ai) => {
     const o = {
       'let\'s sketch': (e) => {
         NNW.menu.switchFace('default')
         self.checkForSavePoint()
-        SNT.post(SNT.dataObj('i-want-to-sketch'))
       },
       'let\'s learn': (e) => {
         NNW.menu.switchFace('default')
         WIDGETS.open('learning-guide')
-        SNT.post(SNT.dataObj('i-want-to-learn'))
       }
     }
     if (ai) o['classical AI?'] = (e) => e.goTo('classical-ai')
@@ -45,7 +42,7 @@ window.CONVOS['student-session'] = (self) => {
   //     document.querySelector('.text-bubble-options > button:nth-child(3)')
   //       .classList.add('opt-rainbow-bg')
   //   }
-  // }, 
+  // },
   {
     id: 'prior-opened-project',
     content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,

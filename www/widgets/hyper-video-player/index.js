@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, NNE, NNW, Convo, utils, SNT */
+/* global Widget, WIDGETS, NNE, NNW, Convo, utils */
 class HyperVideoPlayer extends Widget {
   constructor (opts) {
     super(opts)
@@ -26,12 +26,7 @@ class HyperVideoPlayer extends Widget {
       }
       NNE.readOnly = false
       if (window.convo.id === 'introducing-tutorial') window.convo.hide()
-      SNT.post(SNT.dataObj('hvp-close', this.actObj()))
       this.sid = null
-    })
-
-    window.addEventListener('beforeunload', () => {
-      if (this.sid) SNT.post(SNT.dataObj('hvp-quit', this.actObj()))
     })
 
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
@@ -92,7 +87,6 @@ class HyperVideoPlayer extends Widget {
       const kf = this._mostRecentKeyframe()
       const b = kf ? this.keyframes[kf.timecode].editable : false
       this._editable(b)
-      SNT.post(SNT.dataObj('hvp-play', this.actObj()))
     }
 
     const mid = tg && tg.metadata && this.video.currentTime > 0
@@ -136,7 +130,6 @@ class HyperVideoPlayer extends Widget {
 
     this._editable(true)
     this._generatePauseScreen()
-    SNT.post(SNT.dataObj('hvp-pause', this.actObj()))
   }
 
   toggle () {

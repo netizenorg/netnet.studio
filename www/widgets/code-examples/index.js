@@ -1,4 +1,4 @@
-/* global WIDGETS, Widget, Convo, SNT, NNE, NNW, Netitor, utils, Fuse */
+/* global WIDGETS, Widget, Convo, NNE, NNW, Netitor, utils, Fuse */
 class CodeExamples extends Widget {
   constructor (opts) {
     super(opts)
@@ -65,7 +65,6 @@ class CodeExamples extends Widget {
       this._resizeIt({ width: this.width, height: this.height })
     })
     window.convo = new Convo(this.convos, 'example-info')
-    SNT.post(SNT.dataObj('EX-select', { name: o.name, key: o.key }))
   }
 
   loadExample (example, calledBy, dem) {
@@ -156,7 +155,6 @@ class CodeExamples extends Widget {
       data.info.forEach((o, i) => addMarker(o, i))
       WIDGETS['code-review'].addIssueMarkers()
     })
-    SNT.post(SNT.dataObj('EX-explain', { name: data.name, key: data.key }))
   }
 
   startExplination () {
@@ -169,8 +167,8 @@ class CodeExamples extends Widget {
   cancelExample () {
     if (this.opened) {
       this.close()
-      NNE.spotlight(null) 
-      NNE.marker(null) 
+      NNE.spotlight(null)
+      NNE.marker(null)
     }
   }
 
@@ -242,7 +240,7 @@ class CodeExamples extends Widget {
           if (eve.target.className === 'ce__prev') this.displayEx(o)
           else {
             this.exData.key = o.key
-            this.convos = window.CONVOS[this.key](this) 
+            this.convos = window.CONVOS[this.key](this)
             if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
             else window.convo = new Convo(this.convos, 'before-loading-example')
           }
@@ -602,7 +600,7 @@ class CodeExamples extends Widget {
 
     const explain = this.ele.querySelector('.code-examples--explain')
     explain.addEventListener('click', () => {
-      this.convos = window.CONVOS[this.key](this) 
+      this.convos = window.CONVOS[this.key](this)
       if (NNW.layout === 'welcome') this.loadExample(this.exData.key)
       else window.convo = new Convo(this.convos, 'before-loading-example')
     })
