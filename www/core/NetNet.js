@@ -180,11 +180,13 @@ class NetNet {
     NNE.theme = theme || 'dark'
     NNE.background = background || false
     if (!background) { NNE.background = this.themeConfig[NNE.theme].background }
-    const de = document.documentElement
-    const fg = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
-    document.documentElement.style.setProperty('--fg-color', fg)
-    const bg = window.getComputedStyle(de).getPropertyValue('--netizen-background')
-    document.documentElement.style.setProperty('--bg-color', bg.substr(0, 7))
+    // const de = document.documentElement
+    // const fg = window.getComputedStyle(de).getPropertyValue('--netizen-tag')
+    // document.documentElement.style.setProperty('--fg-color', fg)
+    utils.setVal('fg-color', utils.getVal('netizen-tag'))
+    // const bg = window.getComputedStyle(de).getPropertyValue('--netizen-background')
+    // document.documentElement.style.setProperty('--bg-color', bg.substr(0, 7))
+    utils.setVal('bg-color', utils.getVal('netizen-background').substr(0, 7))
     this._calcCanvasColors()
     this._canvasResize()
     this._canvasUpdate(0, 0)
@@ -193,10 +195,10 @@ class NetNet {
   }
 
   getThemeColors () {
-    const de = document.documentElement
-    const fg = window.getComputedStyle(de).getPropertyValue('--fg-color')
-    const bg = window.getComputedStyle(de).getPropertyValue('--bg-color')
-    return { fg, bg }
+    // const de = document.documentElement
+    // const fg = window.getComputedStyle(de).getPropertyValue('--fg-color')
+    // const bg = window.getComputedStyle(de).getPropertyValue('--bg-color')
+    return { fg: utils.getVal('fg-color'), bg: utils.getVal('bg-color') }
   }
 
   update (opts, time) {

@@ -109,7 +109,7 @@ class ColorWidget extends Widget {
     const clr = this.alpha < 1
       ? `hsla(${this.hue}, ${this.sat}%, ${this.lit}%, ${this.alpha})`
       : `hsl(${this.hue}, ${this.sat}%, ${this.lit}%)`
-    document.documentElement.style.setProperty('--clr-wig-composite', clr)
+    utils.setVal('clr-wig-composite', clr)
 
     this.hueSlider.bubble = `hsl(${this.hue}, 100%, 50%)`
     this.hueSlider.updateThumb(this.hue)
@@ -140,7 +140,7 @@ class ColorWidget extends Widget {
     const clr = this.alpha < 1
       ? `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
       : `rgb(${this.red}, ${this.green}, ${this.blue})`
-    document.documentElement.style.setProperty('--clr-wig-composite', clr)
+    utils.setVal('clr-wig-composite', clr)
 
     this.redSlider.bubble = `rgb(${this.red}, 0, 0)`
     this.redSlider.updateThumb(this.red, this._SubWin)

@@ -1,4 +1,4 @@
-/* global WIDGETS, nn, Convo, NNW, NNE, SNT  */
+/* global WIDGETS, nn, Convo, NNW, NNE  */
 window.utils = {
 
   get: (url, cb, text) => {
@@ -242,7 +242,7 @@ window.utils = {
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
-    const hash = window.location.hash
+    // const hash = window.location.hash
     if (url.widget) WIDGETS.open(url.widget)
     if (nn.isMobile()) return window.utils.mobile()
     if (typeof ghAuth === 'string') {
@@ -442,10 +442,16 @@ window.utils = {
   },
 
   getVal: (prop) => { // get value of a CSS variable
+    const p = (prop.indexOf('--') === 0) ? prop : `--${prop}`
     const de = document.documentElement
-    const t = window.getComputedStyle(de).getPropertyValue(prop)
+    const t = window.getComputedStyle(de).getPropertyValue(p)
     return t.includes('ms') ? parseInt(t) : t.includes('s')
       ? parseInt(t) * 1000 : t
+  },
+
+  setVal: (prop, val) => { // set value of a CSS variable
+    const p = (prop.indexOf('--') === 0) ? prop : `--${prop}`
+    document.documentElement.style.setProperty(p, val)
   },
 
   // apply an object of CSS declarations to an element's styles
@@ -453,7 +459,7 @@ window.utils = {
 
   updateShadow: (e, ele, o) => {
     if (!NNW.themeConfig[NNW.theme].shadow) o = 0
-    const opac = (typeof o === 'undefined') ? 0.75 : o
+    const opac = (typeof o === 'undefined') ? 0.5 : o
     const center = {
       x: ele.getBoundingClientRect().left,
       y: ele.getBoundingClientRect().top
