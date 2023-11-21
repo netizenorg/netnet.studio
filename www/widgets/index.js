@@ -215,10 +215,11 @@ class Widget {
   }
 
   open (func) {
-    this.keepInFrame()
-    this._display('visible')
-    this.events.open.forEach(func => func())
-    if (func) return func(this)
+    this._display('visible', () => {
+      this.keepInFrame()
+      this.events.open.forEach(func => func())
+      if (func) return func(this)
+    })
   }
 
   close (func) {
@@ -406,11 +407,17 @@ class Widget {
     }
   }
 
-  _display (value) {
+  _display (value, callback) {
+    if (value === 'visible') {
+      this.ele.style.animation = 'openBounce 0.3s ease forwards'
+    } else {
+      this.ele.style.animation = 'none'
+    }
     if (value === 'visible' && this.ele.style.visibility === 'hidden') {
       this.bring2front()
     }
     this.ele.style.visibility = value
+    if (callback) setTimeout(callback, 300)
   }
 
   _css (prop, val) {

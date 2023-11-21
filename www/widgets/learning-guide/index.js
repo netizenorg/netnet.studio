@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, SNT, nn */
+/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -8,10 +8,12 @@ class LearningGuide extends Widget {
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
 
-    this.on('open', () => {
-      this._openConvo()
-      this.update({ left: 40, top: 65 }, 500)
-    })
+    this.update({ left: 40, top: 65 })
+
+    // this.on('open', () => {
+    //   this._openConvo()
+    //   this.update({ left: 40, top: 65 }, 500)
+    // })
 
     this.resizable = false
     // currently loaded tutorial data

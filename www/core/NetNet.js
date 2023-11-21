@@ -258,8 +258,7 @@ class NetNet {
     if (!this.themeConfig[NNE.theme].shadow) {
       this.win.style.boxShadow = 'none'
     } else {
-      const opac = this.layout === 'welcome' ? 0.5 : 0.75
-      utils.updateShadow(e, this.win, opac)
+      utils.updateShadow(e, this.win)
     }
 
     this._updateCursor(e)

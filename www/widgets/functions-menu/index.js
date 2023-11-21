@@ -325,12 +325,12 @@ class FunctionsMenu extends Widget {
     const prevTheme = NNW.theme
     NNW.theme = this.themesSel.value
     this.sesh.setData('theme', NNW.theme)
+    const nc = utils.starterCode()
+    if (NNE.code.includes('/* netnet default bg */') && NNE.code !== nc) {
+      NNE.code = nc
+    }
     if (NNW.theme !== prevTheme && this.events['theme-change']) {
       this.emit('theme-change', { data: NNW.theme })
-      const nc = utils.starterCode()
-      if (NNE.code.includes('/* netnet default bg */') && NNE.code !== nc) {
-        NNE.code = nc
-      }
     }
   }
 

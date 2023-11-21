@@ -187,27 +187,33 @@ class HyperVideoPlayer extends Widget {
       opened.push('hyper-video-player')
       if (WIDGETS['tutorial-maker']) opened.push('tutorial-maker')
       // open missing widgets ++ position widgets
+      let delayOpen = 100
       kf.widgets.forEach(obj => {
         obj = JSON.parse(JSON.stringify(obj))
         const key = obj.key
         const t = obj.transition || 500
-        // delete these so wig.update doesn't bugout w/unexpected props
-        delete obj.key
+        delete obj.key // delete so wig.update doesn't bugout w/unexpected props
         if (obj.transition) delete obj.transition
         const wig = WIDGETS[key]
         if (!wig) WIDGETS.open(key, wig => wig.update(obj, t))
         else {
-          if (!wig.opened) { wig.open(); wig.recenter() }
-          wig.update(obj, t)
+          wig.update(obj)
+          if (!wig.opened) {
+            setTimeout(() => {
+              wig.update(obj)
+              setTimeout(() => wig.open(), delayOpen + 50)
+            }, delayOpen)
+            delayOpen += 200
+          }
         }
       })
       // close any widgets that shouldn't be open
       WIDGETS.list().filter(w => w.opened)
         .filter(w => !opened.includes(w.key))
         .forEach(w => w.close())
-
-      if (kf.code && kf.code !== NNE.code) {
-        this._updateCode(kf.code)
+      const c = kf.code === 'DEFAULT' ? utils.starterCode() : kf.code
+      if (c && c !== NNE.code) {
+        this._updateCode(c)
         this._updateScrollBar(kf.scrollTo)
       }
 
@@ -246,7 +252,10 @@ class HyperVideoPlayer extends Widget {
     this.video.setAttribute('preload', 'auto')
     this.video.style.display = 'block'
     this.video.style.width = '100%'
-    this.video.addEventListener('loadeddata', () => this.keepInFrame())
+    this.video.addEventListener('loadeddata', () => {
+      this.keepInFrame()
+      this._generatePauseScreen()
+    })
     const name = (typeof opts.video === 'string') ? opts.video : 'screen-saver'
     this.updateVideo(name)
 

@@ -72,25 +72,28 @@ window.utils = {
   },
 
   starterCode: () => {
-    const clr1 = window.utils.getVal('--netizen-string')
-    const clr2 = window.utils.getVal('--netizen-number')
-    const clr3 = window.utils.getVal('--netizen-keyword')
+    const clr1 = window.utils.getVal('--fg-color')
+    const clr2 = window.utils.getVal('--netizen-comment')
     const sc = `<!DOCTYPE html>
 <style>
   /* netnet default bg */
-  @keyframes animBG {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
+  body {
+    margin: 0;
+    background-image: linear-gradient(${clr2}a8 2px, transparent 1px),
+      linear-gradient(90deg, ${clr2}a8 2px, transparent 1px);
+    background-size: 50px 50px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
   }
 
-  body {
-    background: linear-gradient(230deg, ${clr1}, ${clr2}, ${clr3});
-    background-size: 300% 300%;
-    animation: animBG 30s infinite;
+  body::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    background: linear-gradient(0deg, ${clr1}a8, ${clr2}a8);
   }
 </style>
     `
@@ -457,12 +460,12 @@ window.utils = {
   // apply an object of CSS declarations to an element's styles
   css: (ele, obj) => { for (const key in obj) ele.style[key] = obj[key] },
 
-  updateShadow: (e, ele, o) => {
-    if (!NNW.themeConfig[NNW.theme].shadow) o = 0
-    const opac = (typeof o === 'undefined') ? 0.5 : o
+  updateShadow: (e, ele) => {
+    const opac = (!NNW.themeConfig[NNW.theme].shadow) ? 0 : 0.15
+    const box = ele.getBoundingClientRect()
     const center = {
-      x: ele.getBoundingClientRect().left,
-      y: ele.getBoundingClientRect().top
+      x: box.left + (box.width / 2),
+      y: box.top + (box.height / 2)
     }
     const x = e.clientX < center.x
       ? nn.map(e.clientX, 0, center.x, 33, 0)
@@ -470,7 +473,7 @@ window.utils = {
     const y = e.clientY < center.y
       ? nn.map(e.clientY, 0, center.y, 33, 0)
       : nn.map(e.clientY, center.y, window.innerHeight, 0, -33)
-    ele.style.boxShadow = `${x}px ${y}px 33px -9px rgba(0, 0, 0, ${opac})`
+    ele.style.boxShadow = `rgba(0, 0, 0, ${opac}) ${x}px ${y}px 6px`
   },
 
   selecting: (bool) => {

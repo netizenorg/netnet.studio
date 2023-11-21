@@ -90,7 +90,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'play/pause tutorial',
         condition: (e) => !NNE.cm.hasFocus() && e.keyCode === 32,
         callback: (e) => {
-          if (utils.tutorialOpen()) WIDGETS['hyper-video-player'].toggle()
+          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].toggle()
         }
       },
       {
@@ -98,7 +98,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'skip ahead 5s in tutorial',
         condition: (e) => e.keyCode === 39,
         callback: (e) => {
-          if (utils.tutorialOpen()) WIDGETS['hyper-video-player'].skip(5)
+          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(5)
         }
       },
       {
@@ -106,7 +106,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'jump back 5s in tutorial',
         condition: (e) => e.keyCode === 37,
         callback: (e) => {
-          if (utils.tutorialOpen()) WIDGETS['hyper-video-player'].skip(-5)
+          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(-5)
         }
       },
       {
