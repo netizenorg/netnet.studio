@@ -36,6 +36,7 @@
   font-weight: 700;
   cursor: text;
   white-space: nowrap;
+  text-shadow: none;
 }
 .text-bubble > section b {
   font-weight: 700;
