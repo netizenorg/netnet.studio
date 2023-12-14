@@ -31,8 +31,10 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #1c1c36;
-  background: radial-gradient(circle, rgba(106,106,167,1) 0%, rgba(28,28,54,1) 100%);
+  background-color: #ffffff;
+  background-image: linear-gradient(#51519944 2px, transparent 1px),
+      linear-gradient(90deg, #51519944 2px, transparent 1px);
+  background-size: 50px 50px;
   font-family: "fira-mono-regular", inconsolata, monospace;
   color: #fff;
   opacity: 1;
@@ -40,8 +42,20 @@
   font-size: 20px;
 }
 
+#loader::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(0deg, #c76ebca8, #515199a8);
+}
+
 #loader > div {
   text-align: center;
+  color: #e7e5c9;
+  font-size: 32px;
+  text-shadow: 0px 1px 6px rgba(0,0,0,0.7);
 }
 
 #netnet {

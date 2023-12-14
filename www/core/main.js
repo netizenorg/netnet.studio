@@ -65,13 +65,7 @@ window.addEventListener('load', () => {
     utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
       WIDGETS['student-session'].clearProjectData()
       // ...check URL for params, && fade out load screen when ready
-      const param = utils.checkURL()
-      if (param === 'none') {
-        NNE.code = utils.starterCode()
-        WIDGETS['student-session'].greetStudent()
-        // make sure we at lead update the first time
-        if (!NNE.autoUpdate) NNE.update()
-      }
+      if (utils.checkURL() === 'none') utils.loadDefault()
     })
   })
 })

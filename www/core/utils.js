@@ -276,7 +276,6 @@ window.utils = {
       } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
       return 'example'
     } else {
-      window.utils.fadeOutLoader(false)
       return 'none'
     }
   },
@@ -291,6 +290,15 @@ window.utils = {
     setTimeout(() => {
       document.querySelector('#loader').style.display = 'none'
     }, window.utils.getVal('--layout-transition-time'))
+  },
+
+  loadDefault: () => {
+    NNE.code = window.utils.starterCode()
+    // make sure we at lead update the first time
+    if (!NNE.autoUpdate) NNE.update()
+    const t = NNE.updateDelay
+    setTimeout(() => window.utils.fadeOutLoader(false), t)
+    setTimeout(() => WIDGETS['student-session'].greetStudent(), t + 700)
   },
 
   loadTutorial: (tutorial, time) => {
