@@ -6,6 +6,7 @@ class CodeExamples extends Widget {
     this.keywords = ['ex', 'code', 'examples', 'snippets', 'demos']
     this.title = 'Code Examples'
     this.height = 471
+    this.expandable = true
 
     this.editor = null // netitor instance
     this.exData = { key: null, code: null, name: null }
@@ -55,6 +56,7 @@ class CodeExamples extends Widget {
   }
 
   displayEx (o) {
+    this.ele.querySelector('.reference-widget').style.padding = '0px 25px 0px 7px'
     // display selected example in the Widget's editor
     const opts = this._createExOpts(o)
     this.slide.updateSlide(opts)
@@ -237,7 +239,7 @@ class CodeExamples extends Widget {
         if (p.querySelector('.ce__edit').style.display === 'none') {
           this.$('.ce__lnx').forEach(span => update(span, 'a')); update(p, 'b')
         } else {
-          if (eve.target.className === 'ce__prev') this.displayEx(o)
+          if (eve.target.classList.contains('ce__prev')) this.displayEx(o)
           else {
             this.exData.key = o.key
             this.convos = window.CONVOS[this.key](this)
@@ -653,7 +655,7 @@ class CodeExamples extends Widget {
     if (frm) frm.style.height = `${e.height - frt}px`
     if (edi) edi.style.height = `${e.height - top}px`
     if (ces) ces.style.height = `${e.height - top}px`
-    if (rdr) rdr.style.width = `${e.width - lef}px`
+    if (rdr) rdr.style.height = `${e.height - frt}px`
     if (rws) rws.style.width = `${e.width - lef}px`
     if (nav) nav.style.width = `${e.width + 8}px`
     if (frm) frm.style.width = `${e.width - lef}px`

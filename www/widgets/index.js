@@ -62,6 +62,7 @@ const w = new Widget({
   title: 'netnet widget', // for widget title bar
   innerHTML: '',          // html string or HTMLElement
   closable: true,         // allow user to close the widget
+  expandable: false,      // allow user to close the widget
   resizable: true,        // allow user to resize the widget
   listed: true,           // should widget be listed in search results
   left: 20,               //
@@ -82,6 +83,7 @@ class Widget {
     this._listed = (typeof opts.listed === 'boolean') ? opts.listed : true
     this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
     this._closable = (typeof opts.closable === 'boolean') ? opts.closable : true
+    this._expandable = (typeof opts.expandable === 'boolean') ? opts.expandable : false
 
     this.mousedown = false
 
@@ -144,7 +146,7 @@ class Widget {
         titlebar.style.display = 'flex'
         titlebar.style.alignItems = 'center'
       }
-      this._marquee()
+      this._titleBarSetup()
     }
   }
 
@@ -166,7 +168,16 @@ class Widget {
   set closable (v) {
     this._closable = v
     const close = v ? '<span class="close">✖</span>' : ''
-    this.ele.querySelector('.widget__top__close').innerHTML = close
+    const expnd = this.expandable ? '<span class="expand">⇱</span>' : ''
+    this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
+  }
+
+  get expandable () { return this._expandable }
+  set expandable (v) {
+    this._expandable = v
+    const expnd = v ? '<span class="expand">⇱</span>' : ''
+    const close = this.closable ? '<span class="close">✖</span>' : ''
+    this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
   }
 
   get left () { return parseInt(this.ele.style.left) }
@@ -228,6 +239,28 @@ class Widget {
     this._display('hidden')
     this.events.close.forEach(func => func())
     if (func) return func(this)
+  }
+
+  expand () {
+    if (this._expanded) {
+      console.log('prev', this._prevSize)
+      this.update(this._prevSize, 500)
+      const o = { width: this._prevSize.width, height: this._prevSize.height }
+      setTimeout(() => this.emit('resize', o), 500)
+    } else {
+      this._prevSize = {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height
+      }
+      const w = window.innerWidth - 40
+      const h = window.innerHeight - 40
+      this.update({ left: 20, top: 20, width: w, height: h }, 500)
+      setTimeout(() => this.emit('resize', { width: w, height: h }), 500)
+    }
+
+    this._expanded = !this._expanded
   }
 
   update (opts, time) {
@@ -381,6 +414,7 @@ class Widget {
           <span class="hdr-md widget__top__title__txt">${this._title}</span>
         </div>
         <span class="widget__top__close">
+          ${this.expandable ? '<span class="expand">⇱</span>' : ''}
           ${this.closable ? '<span class="close">✖</span>' : ''}
         </span>
       </div>
@@ -389,14 +423,33 @@ class Widget {
     document.body.appendChild(this.ele)
     this.ele.style.visibility = 'hidden'
 
-    const close = this.ele.querySelector('.widget__top .close')
-    if (close) close.addEventListener('click', () => this.close())
-
     this.recenter()
-    setTimeout(() => this._marquee(), 100)
+    setTimeout(() => this._titleBarSetup(), 100)
   }
 
-  _marquee () {
+  _titleBarSetup () {
+    const close = this.ele.querySelector('.widget__top .close')
+    if (close && !this._attachedClose) {
+      close.addEventListener('click', () => this.close())
+      this._attachedClose = true
+    }
+
+    const expand = this.ele.querySelector('.widget__top .expand')
+    if (expand && !this._attachedExpand) {
+      expand.addEventListener('click', () => this.expand())
+      this._attachedExpand = true
+    }
+
+    window.addEventListener('resize', () => {
+      if (this._expanded) {
+        const w = window.innerWidth - 40
+        const h = window.innerHeight - 40
+        this.update({ left: 20, top: 20, width: w, height: h })
+        this.emit('resize', { width: w, height: h })
+      }
+    })
+
+    // marquee title logic
     const titleWidth = this.ele.querySelector('.widget__top__title').clientWidth
     const titleSpanWidth = this.ele.querySelector('.widget__top__title__txt').clientWidth
     if (titleSpanWidth > titleWidth) {

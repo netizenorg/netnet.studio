@@ -107,20 +107,25 @@
   }
 }
 
-.widget__top .close {
+.widget__top__close {
+  display: flex;
+}
+
+.widget__top .close,
+.widget__top .expand  {
   position: relative;
   display: inline-block;
   width: 16px;
   height: 16px;
   margin-bottom: 0.2em;
+  margin-left: 0.9em;
   cursor: pointer;
-  vertical-align: middle;
-
   /*just making this invisible for rn*/
   color: var(--netizen-meta);
 }
 
-.widget__top .close:before {
+.widget__top .close:before,
+.widget__top .expand:before {
   content: '';
   position: absolute;
   top: 50%;
@@ -131,6 +136,10 @@
   background-color: var(--bg-color);
   opacity: 1;
   transform: translateY(-50%) rotate(45deg);
+}
+
+.widget__top .expand:before {
+  width: 14px;
 }
 
 .widget__top .close:after {
@@ -146,13 +155,16 @@
   transform: translateY(-50%) rotate(-45deg);
 }
 
-.widget__top .star { /* this might be safe to delete? */
-  position: relative;
-  top: -3px;
-  margin-right: 5px;
-  cursor: pointer;
+.widget__top .expand:after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 4px;
+  border-top: 4px solid var(--bg-color);
+  border-left: 4px solid var(--bg-color);
+  transform: translateX(-14px);
 }
-
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* default styles for common elements in widget content */
