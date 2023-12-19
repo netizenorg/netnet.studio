@@ -57,7 +57,12 @@ class Convo {
 
   goTo (id) { this._update(id) }
 
-  hide () { NNW.menu.textBubble.fadeOut() }
+  hide () {
+    NNW.menu.textBubble.fadeOut()
+    if (NNW.menu.face.leftEye !== '◕') {
+      NNW.menu.switchFace('default')
+    }
+  }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
