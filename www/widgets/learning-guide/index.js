@@ -10,10 +10,13 @@ class LearningGuide extends Widget {
 
     this.update({ left: 40, top: 65 })
 
-    // this.on('open', () => {
-    //   this._openConvo()
-    //   this.update({ left: 40, top: 65 }, 500)
-    // })
+    this.on('open', () => {
+      // this._openConvo()
+      if (this.width !== 638 || this.height !== 473) {
+        this.update({ width: 638, height: 473 })
+      }
+      this.update({ left: 40, top: 65 }, 500)
+    })
 
     this.resizable = false
     // currently loaded tutorial data
@@ -100,13 +103,12 @@ class LearningGuide extends Widget {
     const toc = {
       'top': 0,
       'toc': 624,
-      'the-net': 1075,
-      'the-web': 1268,
-      'the-craft': 1475,
-      'html': 1870,
-      'css': 2995,
-      'js': 4326,
-      'refs': 4808
+      'the-net': 1042,
+      'the-craft': 1309,
+      'html': 1690,
+      'css': 2842,
+      'js': 4154,
+      'refs': 4634
     }
 
     const y = toc[sec]
@@ -155,7 +157,10 @@ class LearningGuide extends Widget {
       // options objects for <widget-slide> .updateSlide() method
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
-        this.mainOpts.cb = () => setTimeout(() => this._createStarField(), utils.getVal('--menu-fades-time'))
+        this.mainOpts.cb = () => setTimeout(() => {
+          this._createStarField()
+          // this._animateGlobe()
+        }, utils.getVal('--menu-fades-time'))
       }
       if (cb) cb(div)
     }, true)
@@ -178,6 +183,11 @@ class LearningGuide extends Widget {
 
     this._listTutorials()
     this._enableAppendixLinks()
+
+    // this._globeFrame = 0
+    // this._globeFrameCount = 124
+    // this._globeFrameRate = 1000 / 10
+    // this._animateGlobe()
 
     this._createStarField()
 
@@ -372,6 +382,16 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
+
+  _animateGlobe () { // NOTE: this is an alternative approach to the "internet-globe.html"
+    // at the moment only frames for "dark" theme exist
+    const img = this.slide.querySelector('#globe-animation-sequence')
+    if (!img) return
+    const f = this._globeFrame % this._globeFrameCount
+    img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
+    this._globeFrame++
+    setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  }
 
   _createStarField () {
     const canvas = document.createElement('canvas')

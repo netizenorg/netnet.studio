@@ -15,6 +15,7 @@
   const clr2 = parent.window.utils.getVal('--netizen-meta')
   const clock = new THREE.Clock()
   let globe1, globe2, renderer, scene, camera, controls
+  let canvas3D
 
   function canvasTexture (callback) {
     const svg = document.querySelector('svg')
@@ -73,6 +74,16 @@
     })
 
     camera.position.z = 3
+
+    /*
+      CAPTURE CODE:
+      click globe to start recording
+      click globe again to save frames to downloads folder
+    */
+    // renderer.domElement.addEventListener('click', () => {
+    //   window.recording = !window.recording
+    //   recordPNGs()
+    // })
   }
 
   function draw () {
@@ -90,6 +101,7 @@
         }
       }
 
+      // globe1.rotation.y += 0.05
       globe1.rotation.y += 0.01
       globe2.rotation.y = globe1.rotation.y
     }
@@ -98,6 +110,59 @@
 
     renderer.render(scene, camera)
   }
+
+
+  // PNG ANIMATION SEQUENCE
+  // ----------------------
+
+  /*
+    CAPTURE CODE:
+    click globe to start recording
+    click globe again to save frames to downloads folder
+  */
+
+  // window.sequenceData = []
+  // window.recording = false
+  // window.saving = false
+  // // const maxFrames = 10
+  //
+  //
+  // function saveAsPNG (index) {
+  //   window.saving = true
+  //   let i = (typeof index === 'number') ? index : 0
+  //   // renderer.render(scene, camera)
+  //   // const canvas = renderer.domElement
+  //   const link = document.createElement('a')
+  //   link.style.display = 'none'
+  //   document.body.appendChild(link)
+  //   // link.href = canvas.toDataURL('image/png')
+  //   link.href = window.sequenceData[i]
+  //   link.download = `frame-${i}.png`
+  //   link.click()
+  //   document.body.removeChild(link)
+  //   i++
+  //   if (i < window.sequenceData.length) saveAsPNG(i)
+  // }
+  //
+  // function recordPNGs () {
+  //   if (window.recording ) {
+  //     renderer.render(scene, camera)
+  //     const canvas = renderer.domElement
+  //     window.sequenceData.push(canvas.toDataURL('image/png'))
+  //     console.log(`${window.sequenceData.length} frames captured`)
+  //     // if (window.sequenceData.length > maxFrames) {
+  //     //   window.recording = false
+  //     // }
+  //     setTimeout(recordPNGs, 1000 / 12)
+  //   } else {
+  //     window.recording = false
+  //     // console.log(window.sequenceData)
+  //     if (!window.saving) saveAsPNG()
+  //   }
+  // }
+
+
+
 
   window.addEventListener('load', setup)
   window.addEventListener('load', draw)

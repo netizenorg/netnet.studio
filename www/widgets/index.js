@@ -124,7 +124,6 @@ class Widget {
       return console.error('Widget: listed property must be set to a boolean')
     } else {
       this._listed = v
-      // TODO update the Search dict so that it's no longer listed ???????????
     }
   }
 
@@ -243,7 +242,6 @@ class Widget {
 
   expand () {
     if (this._expanded) {
-      console.log('prev', this._prevSize)
       this.update(this._prevSize, 500)
       const o = { width: this._prevSize.width, height: this._prevSize.height }
       setTimeout(() => this.emit('resize', o), 500)
