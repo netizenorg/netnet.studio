@@ -1,6 +1,6 @@
 {
   "name": "netnet.studio",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web’s creative potential.",
   "main": "server.js",
   "scripts": {
