@@ -107,6 +107,15 @@ class FunctionsMenu extends Widget {
         alts: ['update', 'render', 'compile']
       },
       {
+        click: 'chattiness',
+        alts: ['chatty', 'dialogue', 'netnet', 'bubbles'],
+        select: 'func-menu-chat-select'
+      },
+      // {
+      //   click: 'popUpWindow',
+      //   alts: ['pop', 'up', 'out', 'separate', 'window']
+      // },
+      {
         click: 'changeLayout',
         alts: ['layout', 'view', 'orientation', 'setup'],
         select: 'func-menu-layout-select'
@@ -120,11 +129,6 @@ class FunctionsMenu extends Widget {
         click: 'wordWrap',
         alts: ['word', 'line', 'wrap', 'warpping'],
         select: 'func-menu-wrap-select'
-      },
-      {
-        click: 'chattiness',
-        alts: ['chatty', 'dialogue', 'netnet', 'bubbles'],
-        select: 'func-menu-chat-select'
       },
       {
         click: 'viewShortcuts',
@@ -319,6 +323,15 @@ class FunctionsMenu extends Widget {
 
   changeLayout () {
     NNW.layout = this.layoutsSel.value
+  }
+
+  popUpWindow () {
+    this.layoutsSel.value = 'full-screen'
+    this.changeLayout()
+    // TODO: working on:
+    // https://github.com/netizenorg/netnet.studio/issues/220
+    // https://github.com/netizenorg/netnet.studio/issues/240
+    // see: "window.onmessage" && notes at the bottom of www/core/utils.js
   }
 
   changeTheme () {
