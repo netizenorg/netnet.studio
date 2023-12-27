@@ -2,23 +2,56 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const fs = require('fs')
+const { promisify } = require('util')
+const readdir = promisify(fs.readdir)
+const stat = promisify(fs.stat)
 const exec = require('child_process').exec
 const utils = require('./utils.js')
 const axios = require('axios')
+const os = require('os')
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 // // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   ROUTES
 
-const frontEndDependencies = [
-  { url: '/netitor.min.js', loc: '../www/js/netitor/build/netitor.min.js' },
-  { url: '/netitor.js', loc: '../www/js/netitor/build/netitor.js' },
-  { url: '/netnet-standard-library.js', loc: '../www/js/netnet-standard-library/build/netnet-standard-library.js' },
-  { url: '/nn.min.js', loc: '../www/js/netnet-standard-library/build/nn.min.js' }
+const aliasRoutes = [
+  { url: '/netitor.min.js', loc: '../www/core/netitor/build/netitor.min.js' },
+  { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
+  { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
+  { url: '/nn.min.js', loc: '../www/core/netnet-standard-library/build/nn.min.js' },
+  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' },
+  { url: '/images/*', loc: '../www/assets/images/' },
+  { url: '/audios/*', loc: '../www/assets/audios/' },
+  { url: '/fonts/*', loc: '../www/assets/fonts/' },
+  { url: '/videos/*', loc: '../www/assets/videos/' },
+  { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' },
+  { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' }
 ]
 
-frontEndDependencies.forEach(dep => {
-  router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+const images = fs.readdirSync(path.join(__dirname, '../www/assets/images'))
+images.forEach(sub => {
+  if (sub === 'cats' || sub === 'gifs' || sub === 'logos' || sub === 'bg' || sub === 'icons') {
+    const files = fs.readdirSync(path.join(__dirname, `../www/assets/images/${sub}`))
+    files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/images/${sub}/${f}` }))
+  }
+})
+
+const otherAssets = ['videos', 'audios', 'fonts']
+otherAssets.forEach(dir => {
+  const files = fs.readdirSync(path.join(__dirname, `../www/assets/${dir}`))
+  files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/${dir}/${f}` }))
+})
+
+
+aliasRoutes.forEach(dep => {
+  if (dep.url.includes('*')) { // for routes with wildcards
+    router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
+      const filePath = path.join(__dirname, dep.loc, req.params[0])
+      res.sendFile(filePath)
+    })
+  } else { // for exact routes
+    router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+  }
 })
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
@@ -33,7 +66,9 @@ router.get('/tutorials/*', (req, res, next) => {
     const file = fs.readFileSync(list)
     const json = JSON.parse(file)
     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    json.listed = json.listed.filter(t => dirs.includes(t))
+    for (const sec in json) {
+      json[sec] = json[sec].filter(t => dirs.includes(t))
+    }
     res.json(json)
   } else next()
 })
@@ -74,15 +109,54 @@ router.get('/api/proxy', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/api/custom-elements', (req, res) => {
-  fs.readdir(path.join(__dirname, '../www/js/custom-elements'), (err, list) => {
-    if (err) return console.log(err)
-    else res.json(list)
-  })
+function getSubdirectories (directory, depth = 0) {
+  if (depth >= 2) return Promise.resolve([])
+  return readdir(directory)
+    .then(files => {
+      const directoriesInfo = []
+
+      const promises = files.map(file => {
+        const filePath = path.join(directory, file)
+        return stat(filePath).then(stats => {
+          if (stats.isDirectory()) {
+            const css = path.join(directory, `${file}/styles.css`)
+            const dirInfo = { path: file, css: fs.existsSync(css) }
+            directoriesInfo.push(dirInfo)
+
+            return getSubdirectories(filePath, depth + 1).then(subdirs => {
+              directoriesInfo.push(...subdirs.map(subdir => {
+                return {
+                  path: path.join(file, subdir.path),
+                  css: subdir.css
+                }
+              }))
+            })
+          }
+        })
+      })
+      return Promise.all(promises).then(() => directoriesInfo)
+    })
+    .catch(error => { console.error(error); return [] })
+}
+
+router.get('/api/custom-elements', async (req, res) => {
+  try {
+    const directory = path.join(__dirname, '../www/custom-elements')
+    const directoriesInfo = await getSubdirectories(directory)
+    const separator = os.platform() === 'win32' ? '\\' : '/'
+    const filteredDirectoriesInfo = directoriesInfo
+      .filter(dirInfo => dirInfo.path.includes(separator))
+      .map(dirInfo => {
+        dirInfo.path = dirInfo.path.replace(/\\/g, '/')
+        return dirInfo
+      })
+    res.json(filteredDirectoriesInfo)
+
+  } catch (error) { console.error(error); res.json([]) }
 })
 
 router.get('/api/face-assets', (req, res) => {
-  fs.readdir(path.join(__dirname, '../www/images/faces'), (err, list) => {
+  fs.readdir(path.join(__dirname, '../www/assets/images/faces'), (err, list) => {
     if (err) return console.log(err)
     else res.json(list)
   })
@@ -92,12 +166,12 @@ router.get('/api/widgets', (req, res) => {
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
-    list.forEach(filename => {
-      const filepath = path.join(__dirname, `../www/widgets/${filename}`)
+    list.filter(f => f !== 'index.js' && f !== 'styles.css').forEach(dirname => {
+      const filepath = path.join(__dirname, `../www/widgets/${dirname}/index.js`)
       const opts = { encoding: 'utf8' }
       const code = fs.readFileSync(filepath, opts)
       if (!code.includes('listed = false')) {
-        const data = { filename, title: null, key: null, keywords: [] }
+        const data = { title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
           if (line.includes('this.title =') && !data.title) {
             data.title = line.split('=')[1].trim()
@@ -107,7 +181,7 @@ router.get('/api/widgets', (req, res) => {
             data.key = line.split('=')[1].trim()
             data.key = data.key.substr(1, data.key.length - 2)
           }
-          if (line.includes('this.keywords =') && !data.keywords) {
+          if (line.includes('this.keywords =') && data.keywords.length === 0) {
             let kw = line.split('=')[1].trim()
             kw = kw.replace(/\[/g, '').replace(/\]/g, '')
             data.keywords = kw.split(',')
@@ -180,7 +254,7 @@ function createExamplesDict () {
     map: [] // sections in order
   }
   const exPath = path.join(__dirname, '../data/examples')
-  const files = fs.readdirSync(exPath)
+  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
     const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
     dict.examples[obj.key] = obj
@@ -212,8 +286,9 @@ router.post('/api/example-data', (req, res) => {
   const name = obj.name
   const hash = obj.code
   const info = obj.info
+  const layout = obj.layout
   if (typeof hash === 'string') {
-    res.json({ success: 'success', name, hash, info })
+    res.json({ success: 'success', name, hash, info, layout })
   } else {
     res.json({ error: `${req.body.key} is not in the database.` })
   }

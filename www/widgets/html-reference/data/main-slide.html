@@ -1,0 +1,86 @@
+<style>
+  .html-reference-widget--sec-link {
+    display: inline-block;
+    color: var(--netizen-meta);
+    font-size: 24px;
+    margin: 8px;
+    transition: color .5s ease, border .5s ease;
+    border-bottom: 2px solid var(--netizen-meta);
+    text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+  }
+
+  .html-reference-widget--sec-link:hover {
+    color: var(--netizen-match-color);
+    border-bottom: 2px solid var(--netizen-match-color);
+    cursor: pointer;
+  }
+
+</style>
+
+<p>
+  As a creative medium, the Web has three core coding languages at the center of its craft: HTML, CSS and JavaScript. The most fundamental of these is HTML, or Hypertext Markup Language. HTML is used to create the structure of a Web project. In order to fully grasp the creative potential of this language, we need to understand two concepts, hypertext (or hypermedia) and markup languages.
+</p>
+
+<svg-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-tag>
+
+<h2>Markup Languages</h2>
+<p>
+  Markup languages are a family of coding languages that share the same syntax and structure, but differ in their specific vocabulary. This vocabulary consists of a predefined set of <i>elements</i> and <i>attributes</i>. An element is used to annotate some content by surrounding that content with <i>tags</i>.
+</p>
+
+<svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag>
+
+
+<p>
+  In markup languages tags are written with the following <i>syntax</i>: a <code>&lt;</code> (less-than) bracket, followed by the name of the element and then the <code>&gt;</code> (greater-than) bracket. Tags usually come in pairs, an opening <code>&lt;tag&gt;</code> followed by some content and then a closing <code>&lt;/tag&gt;</code> (differentiated by the forward slash). We typically refer to the pair of tags and it's content as the <b>element</b>. While most elements consist of both an opening and closing tag, some are merely opening tags, these are called <i>singleton</i> or <i>void</i> elements.
+</p>
+
+<h2>Hypertext and Hypermedia</h2>
+
+<p>
+  <a href="https://en.wikipedia.org/wiki/Hypertext" target="_blank">Hypertext</a> is essentially non-linear, interactive text. The physical/material limitations of old media (ex books, newspapers, magazines) forced a linear paradigm onto the medium of text. But in a <a href="https://en.wikipedia.org/wiki/Metamedia" target="_blank">metamedia</a> like computers, text need not conform to those limitations. A hypertext document can, at various points, link to other hypertext documents, which means texts can be enganged with non-linearly, allowing each reader to chart their own unique journey through that text (compare the experience of reading a book vs reading on Wikipedia).
+</p>
+
+<svg-hypertext colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
+
+<p>
+  <a href="https://en.wikipedia.org/wiki/Hypermedia" target="_blank">Hypermedia</a> is the same concept extended to other forms of media. Radio, television and film were all similarly restricted to non-interactive linear experiences by the limitations of their physical material. On a computer, audio and video can be interacted with linearly (ex conventional media players) but they can also become parts of interactive non-linear systems... like me, netnet!
+</p>
+
+<h2>Hypertext Markup Language (HTML)</h2>
+
+<p>
+  HTML is a specific markup language designed to create nonlinear documents (hypertext) and interactive applications (hypermedia, software, games). HTML is how we code the frame or structure of a website or web app (though it can also be used to structure native desktop and mobile apps as well). Like all markup languages it consists of a set of predefined elements and attributes (though it is possible to create your own <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" target="_blank">custom elements</a>). The most important of these is arguably the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a" target="_blank">a</a> element (aka the "anchor" element), which is used to transform a specific piece of content into a "link", the most fundamental characteristic of hypertext.
+</p>
+
+
+<svg-a-tag colors="var(--netizen-tag),var(--netizen-text),var(--netizen-tag-bracket),var(--netizen-meta)"></svg-a-tag>
+
+
+<p>
+  By itself, the <b>a</b> element won't convert a piece of content into a link, we need to use the <code>href</code> attribute to specify where we want this link to take us when we click it. Attributes are always placed within the opening tag, always after the name of the element (separated by a space) and before the closing <code>&gt;</code> bracket.
+</p>
+
+<svg-a-attr colors="var(--netizen-text),var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-attribute),var(--netizen-string),var(--netizen-meta)"></svg-a-attr>
+
+<p>
+  Like tags, attributes have their own syntax: the attribute name is usually followed by an <code>=</code> (equal) symbol and then some value specified within <code>"</code> (quote) marks. Though most attributes require you specify some value, some of them do not.
+</p>
+<br>
+<p>
+  We'll explore different elements and attributes in more depth throughout the tutorials, but if you'd like to explore the full list of HTML elements or attributes click on the links below.
+</p>
+
+<br>
+
+<div class="html-reference-widget--sec-link" name="elements" style="color: var(--netizen-tag)">
+  List of HTML elements
+</div>
+<br>
+<div class="html-reference-widget--sec-link" name="attributes" style="color: var(--netizen-attribute)">
+  List of HTML attributes
+</div>
+
+<br>
+<br>
+<br>

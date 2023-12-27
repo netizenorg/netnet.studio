@@ -1,0 +1,140 @@
+{
+  "name": "css position",
+  "toc": true,
+  "tags": [
+    "css",
+    "position",
+    "absolute",
+    "relative",
+    "fixed",
+    "sticky"
+  ],
+  "layout": "dock-bottom",
+  "key": 1696274050310,
+  "code": "#code/eJxtUu1ugyAA/D2fgvjfVexsHXO8CypVUgYGsNUte/fhVwvORAN3HncHkmszcIqDlwCAit3Ajx0BuLPKNAjAOG77j4lpKKsb41EFKa+1kp2oEKgVHWb2i6iaCQSSVWZobyLCWW3JkgpD1cj/2tc+r4pWS6ZrZ9l5cSs1M0yKkeLEsBtdTGWLwOlRhdOLeeLV25aiYsd94rf+pNCSd8b1zzb+T/wdMVHRHoEIuoEF7+hO3khv4y6sX/c4ZcFNFkyhv5mCW8ddcwvmlaXkUiFwb5j5l6cNK6+DG7hNzB6nF+SH5VbYqb0UGOaHcZgAKDnR+jO0vyjEifMBH3dU01GH+M3VpTu68YhCfHJl512Z3WyIM1f37gIYewh6yGsLjx7yGsLUQ14tePaQVwV6XZKlyx9BA/o7",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example I'll demonstrate how the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/position\" target=\"_blank\">position</a> property works, which is one of many ways to change the default position of any element on your page."
+    },
+    {
+      "title": "div elements",
+      "focus": [
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "text": "If we take a look at our HTML, you'll notice we have a series of 20 divs stacked one on top of the other, each with their corresponding number inside them, three of which have a special CSS class applied."
+    },
+    {
+      "title": "div CSS rule",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "text": "Back up in our CSS we have a CSS rule applying to all of the divs which changes their default width and height to 100px, changes their background color to \"grey\", adds a bit of margin around them and centers their inner text. By default, these all have a <code>position</code> of <code>static</code>."
+    },
+    {
+      "title": "relative position",
+      "focus": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "The \"red\" class, in addition to changing this div's background from grey to red, has a <b>position</b> property set to <code>relative</code>. By setting this property to a value other than the default \"static\", you unlock a set of accompanying properties <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code> and <code>z-index</code>"
+    },
+    {
+      "title": "top/left",
+      "focus": [
+        11,
+        14,
+        15,
+        16
+      ],
+      "text": "Here we're using the <code>top</code> and the <code>left</code> to nudge the div off 60px down and 60px over. notice that this is 60px from the position it was previously in. The space it once occupied, between the first and third div, is also left unaltered."
+    },
+    {
+      "title": "absolute position",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "text": "In  the \"green\" class, we have the position set to <code>absolute</code>. Here too we've adjusted the <b>top</b> and <b>left</b> properties, but rather than being place relative to where it originally was, these values now correspond to the top left corner of the page."
+    },
+    {
+      "title": "pulled out of context",
+      "focus": null,
+      "text": "Notice too, that unlike \"relative\" positioning, when we apply an \"absolute\" position to an element, the space it once occupied is gone, which is why the stack of grey divs goes from 3 to 5, the 4th div (our \"green\" div) has been pulled out of it's context."
+    },
+    {
+      "title": "z-index",
+      "focus": [
+        18,
+        23,
+        24
+      ],
+      "text": "We've also included a <code>z-index</code> value, this changes the stacking order, or which element should be drawn over the other. If we wanted it to appear over all the other elements we might give it a large positive value, but by giving it a negative value we move it behind the rest."
+    },
+    {
+      "title": "fixed position",
+      "focus": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "text": "The \"blue\" class has a position set to <code>fixed</code>, at first glance it seems to behave just like the \"absolute\" div, having been pulled out of it's context (between the 5th and 7th divs) and placed 80px/80px from the top/left of the page. Except that it's not placed relative to the <i>page</i>, but instead it's relative to the <i>window</i>, scroll up and down on the page to see the difference between the green \"absolute\" div and the blue \"fixed\" div."
+    },
+    {
+      "title": "sticky position",
+      "focus": [
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "text": "You may have already noticed while scrolling, but our \"black\" class has a position value of <code>sticky</code>. Similar to the \"relative\" div, the space it once occupied between the 7th and 9th div remains open, but unlike that one only the \"left\" value is being applied. At first it seems to be ignoring the value we set for \"top\". Until we start scrolling, then you'll realize that this is where the div will land and remain fixed."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "Those are the basics, but keep in mind that the <code>position</code> property may start to behave in unexpected ways once you start nesting elements inside of other elements. To learn more about it check out MDN's docs on the <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/position\" target=\"_blank\">position</a> property."
+    }
+  ]
+}

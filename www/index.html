@@ -33,21 +33,13 @@
 
     <link rel="icon" type="image/png" href="images/eye.png">
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/search-bar.css"> <!-- SearchBar.js -->
-    <link rel="stylesheet" href="css/widget-styles.css"> <!-- Widget.js -->
-
-    <link rel="stylesheet" href="css/hvp-ui.css"> <!-- widgets/HyperVideoPlayer.js -->
-    <link rel="stylesheet" href="css/project-files.css"> <!-- widgets/ProjectFiles.js -->
-    <link rel="stylesheet" href="css/curtains.css"> <!-- loading curtains -->
-
-    <link rel="stylesheet" href="css/text-bubbles.css"> <!-- <text-bubble> -->
-    <link rel="stylesheet" href="css/reference-widget.css"> <!-- <widget-slide> -->
+    <link rel="stylesheet" href="./core/styles.css">
+    <link rel="stylesheet" href="./widgets/styles.css">
   </head>
   <body>
 
     <section id="loader">
-      <div>&lt;!-- loading (◕ ◞ ◕) &lt;BETA-2.0&gt; --&gt;</div>
+      <div>&lt;!-- loading (◕ ◞ ◕) &lt;BETA-3.0&gt; --&gt;</div>
     </section>
 
     <section id="netnet">
@@ -57,22 +49,21 @@
       </div>
     </section>
 
+    <!-- check out >> https://github.com/nbriz/StatsNotTracks -->
+    <!-- to learn about our privacy-focused web analytics -->
+    <script src="/stats-not-tracks.min.js"></script>
     <!-- netizen.org libs -->
     <script src="./nn.min.js"></script>
     <script src="./netitor.min.js"></script>
     <!-- 3rd party libs -->
-    <script src="./js/libs/fuse.js"></script>
-    <script src="./js/libs/qrious.min.js"></script>
-    <!-- check out >> https://github.com/nbriz/StatsNotTracks -->
-    <!-- to learn about our privacy-focused web analytics -->
-    <script src="/stats-not-tracks.min.js"></script>
+    <script src="./core/libs/fuse.js"></script>
+    <script src="./core/libs/qrious.min.js"></script>
     <!-- netnet core modules -->
-    <script src="./js/Convo.js"></script>
-    <script src="./js/Widget.js"></script>
-    <script src="./js/SearchBar.js"></script>
-    <script src="./js/Menu.js"></script>
-    <script src="./js/NetNet.js"></script>
-    <script src="./js/utils.js"></script>
-    <script src="./js/main.js"></script>
+    <script src="./widgets/index.js"></script>
+    <script src="./core/Convo.js"></script>
+    <script src="./core/NetNetFaceMenu.js"></script>
+    <script src="./core/NetNet.js"></script>
+    <script src="./core/utils.js"></script>
+    <script src="./core/main.js"></script>
   </body>
 </html>

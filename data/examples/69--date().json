@@ -1,0 +1,71 @@
+{
+  "name": "Date()",
+  "toc": true,
+  "tags": [
+    "javascript",
+    "date",
+    "time",
+    "clock"
+  ],
+  "layout": "dock-left",
+  "key": 69,
+  "code": "#code/eJxdUbFOwzAQnduvOLw0GdowIuFkoI0EElAE7YAQg+temoDjWM5FNEL8OzZOqoos7+z3fPfuhV+s1svN61MOJdUqm3IPoIQ+pAz1fPvCsumElyj2Die8RhIgS2FbpJR1VMyv2B9BFSnMVoIwimG9+0BJkB9FbRTyJJBTcB9vqXc1TwK63snQnO+afT+IJGpC6xtPuAGpRNumzLDsTmu0sMEj8cQEetcRNRoaLVUlP1NmsbDYllHMsudQgnfFkyAcBiTjBH8ajElbGQo3AAoJZGetk/nnkILGLwj7XZ9pjGP2jexqJ1wckHKFvmxv+qV3/ShqjGZmFr9dvo/PBjgZ/XdfdFpS5VY6CeB7oADMovIR3G4e7t3gM4Njkx+HLtPzZXzGIVuXtf/Jv8J4kEc=",
+  "info": [
+    {
+      "title": "What is a Date() ?",
+      "focus": null,
+      "text": "In JavaScript there is a built-in object called <code>Date()</code>. One example for using the <code>Date()</code> object, is grabbing your local time and date."
+    },
+    {
+      "title": "How are Date()s Represented",
+      "focus": null,
+      "text": "The <code>Date()</code> object is represented as {Day} {Month} {Date} {Year} {Hour:Minute:Second} {Greenwich Mean Time (GMT)} {Timezone}.\n<br><br>\n<span style=\"color:yellow\">For Example:</span> Sun Feb 12 2023 23:44:32 GMT-0600 (Central Standard Time)"
+    },
+    {
+      "title": "How to use the Date() Object",
+      "focus": [
+        15
+      ],
+      "text": "In this example, we are going to set a paragraph element's inner HTML to a <b>new</b> <code>Date()</code> object and create a button in order to refresh the date.\n<br><br>\nFirst we will create a variable called <code>currentDate</code> that will be set to a <code>new Date()</code>.\n<br><br>\n<span style=\"color:yellow\">Note:</span> You can create your own <code>Date()</code> by writting a date in the following format...\n<br><br>\n<code>new Date('July 20, 69 00:20:18');</code>\n<br><br>\nIf <b>not</b> specified, <code>New Date()</code> will be set to your local time and date."
+    },
+    {
+      "title": "Referencing our HTML Element",
+      "focus": [
+        16,
+        10
+      ],
+      "text": "Next, we will want to create a variable to store our paragraph element information in order to reference it later in the code.\n<br><br>\nHere we create the variable <code>p</code> which is set to <code>document.getElementsByClassName('p')[0];</code>\n<br><br> \n<code>document.getElementByClassName('p')</code> tells the browser to grab all the elements set with the specified class <code>'p'</code> in the <i>document</i>.\n<br><br>\nThe <code>[0]</code> at the end declares what individual element with the class 'p' we want. Since we want the first occurrence we will set this to 0. <span style=\"color:rgb(114, 79, 130)\">(This number is based on how arrays are constructed)</span>\n<br><br> \nFor more information on \n<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName\" target=\"_blank\">document</a>,  \n<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName\" target=\"_blank\" >getElementsByClassName</a>, and \n<a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array\" target=\"_blank\">arrays</a>\n<br><br>\nWe <b>also</b> need to set our paragraph element to have the corresponding class. To do so we will add a <code>class</code> attribute which should look like <code>class=\"p\"</code>."
+    },
+    {
+      "title": "Creating Refresh Function",
+      "focus": [
+        20,
+        21,
+        22,
+        10
+      ],
+      "text": "Now to create our <b>refresh</b> function!\n<br><br>\nSince we want to make our paragraph element's text be set to the <code>Date()</code> object we will call our <code>p</code> variable and use it's <code>.innerHTML</code> property to set it to equal the <code>currentDate</code> variable.\n<br><br>\nThe property <code>.innerHTML</code> get or sets the text in between the element's brackets. In our example, we are replacing the text \"Inner Text\" on line 10.\n<br><br>\nFor more information on <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML\" target=\"_blank\">.innerHTML</a>"
+    },
+    {
+      "title": "Button Setup",
+      "focus": [
+        11
+      ],
+      "text": "Here we create a <code>&ltbutton&gt</code> element with the inner text called \"Refresh Date\".\n<br><br>\nIn order for our button to actually work and trigger our <code>refresh()</code> function, we will need to add an <code>onclick</code> attribute and set it to our desired function.\n<br><br>\nIn this example the onclick attribute should look like <code>onclick=\"refresh()\"</code>"
+    },
+    {
+      "title": "Why line 17?",
+      "focus": [
+        17
+      ],
+      "text": "<i>Why are we calling the <code>refresh()</code> function on line 17?</i>\n<br><br>\nThis is so the paragraph's inner text represents the date and time as soon as our sketch loads. <span style=\"color:rgb(114, 79, 130)\">If this wasn't in place the paragraph element in our sketch would say \"Inner Text\" until we click the Refresh Date button.</span>"
+    },
+    {
+      "title": "Try This!",
+      "focus": [
+        21
+      ],
+      "text": "Now that you know how the <code>Date()</code> object works you can use it in your own sketches! &#127881 &#127881\n<br><br>\nIf you don't want all the information that is represented in the default <code>Date()</code> object, you can call to a specific piece of information you want.\n<br><br>\n<span style=\"color:yellow\">Try This!</span> On line 21, change the <code>p.innerHTML</code> to equal <code>currentdate.getFullYear()</code>\n<br><br>\nThere are multiple functions defined in the Date() object like <code>.getDay()</code>, <code>.getMonth()</code>, <code>.getFullYear()</code> and more!\n<br><br>\nFor more information on <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date\" target=\"_blank\">Date()</a>"
+    }
+  ]
+}

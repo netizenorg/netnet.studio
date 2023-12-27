@@ -1,0 +1,84 @@
+<style>
+  .css-reference-widget--sec-link {
+    display: inline-block;
+    color: var(--netizen-meta);
+    font-size: 24px;
+    margin: 8px;
+    transition: color .5s ease, border .5s ease;
+    border-bottom: 2px solid var(--netizen-meta);
+    text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+  }
+
+  .css-reference-widget--sec-link:hover {
+    color: var(--netizen-match-color);
+    border-bottom: 2px solid var(--netizen-match-color);
+    cursor: pointer;
+  }
+</style>
+<p>
+  Cascading Style Sheets, or CSS, was a language introduced to the Web in the mid 90s for the purpose of separating a webpage's "form" or "presentation" from it's "structure" and "content". Initially it handled things like layout, color and fonts, but today, it has evolved to become a much more expressive language capable of creating interactive effects and animations.
+</p>
+<br>
+
+<h2>CSS Rules</h2>
+
+<svg-css-rule colors="var(--netizen-property),var(--netizen-tag),var(--netizen-text),var(--netizen-meta),var(--netizen-keyword)"></svg-css-rule>
+
+<p>
+  You can apply a set of CSS delcarations to multiple elements at once using CSS rules. A CSS "rule" contains two parts, a selector which specifies which element(s) the rules will be applied to and a <code>{</code> declaration block <code>}</code>, surrounded by curly brackets, which specifies how the element should be styled.
+</p>
+<br>
+<p>
+  The declaration is split in two parts, the property which indicates the aspect of the element you want to change (ex: color, font, width, border) followed by a <code>:</code> (colon) and then the value (the setting you want to use for that specific property) followed by a <code>;</code> (semi-colon). To see a full list of all CSS properties click the link at the end of this reference.
+</p>
+<br>
+<h2>CSS Selectors</h2>
+<p>
+  The example above uses a type selector, which means it will apply the rules to every <code>&lt;a&gt;</code> tag on the page. You can apply the same rule to multiple elements by including them in a comma separated list within the selector. For example:
+  <code-sample name="css-ex-1"></code-sample>
+  This will change the color of all the <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, and <code>&lt;h3&gt;</code> tags on the page to purple.
+</p>
+<br>
+<p>
+  There are many other kinds of selectors which give you different ways of targeting specific elements to apply your CSS rules to. The most common selector is likely to be the class selector which targets any element whose class attribute’s value matches that of the class name.
+</p>
+<code-sample name="css-ex-2"></code-sample>
+<br>
+<p>
+  There are a number of different kinds of selectors and thus a number of ways to specify which elements on a page you want to apply a CSS rule to), The most common are:
+  <ul>
+    <li>
+      <b>Universal Selector</b>: <code>* { }</code><br> this rule will apply to all elements on a page
+    </li>
+    <br>
+    <li>
+      <b>Type Selector</b>: <code>p { }</code><br> this rule will apply to all elements of the specified type (in this case <i>&lt;p&gt;</i>)
+    </li>
+    <br>
+    <li>
+      <b>Class Selector</b>: <code>.stuff { }</code><br> this rule will apply to all elements with a class attribute that matches it (for example <i>&lt;div class="stuff"&gt;</i>), you can mix type/class selectors like this <i>p.stuff { }</i>, that will only target <i>&lt;p&gt;</i> tags with a <i>class="stuff"</i>
+    </li>
+    <br>
+    <li>
+      <b>ID Selector</b>: <code>#info { }</code><br> this rule will apply to all elements with an <i>id</i> attribute that matches it (for example <i>&lt;div id="info"&gt;</i>)
+    </li>
+    <br>
+  </ul>
+</p>
+
+<h2>CSS References</h2>
+<div class="css-reference-widget--sec-link" name="properties" style="color: var(--netizen-tag)">
+  List of CSS properties
+</div>
+<br>
+<div class="css-reference-widget--sec-link" name="selectors" style="color: var(--netizen-tag)">
+  List of CSS selectors
+</div>
+<br>
+<div class="css-reference-widget--sec-link" name="cascade" style="color: var(--netizen-tag)">
+  The Cascade
+</div>
+
+<!--
+TODO: add high-level HTML notes here
+<br> -->

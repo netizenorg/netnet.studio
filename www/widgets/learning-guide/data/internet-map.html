@@ -1,0 +1,68 @@
+<body style="margin: 0; cursor: grab;">
+<div id="globe-container"></div>
+<!-- via https://github.com/vasturiano/globe.gl -->
+<script src="internet-map-assets/globe.gl.min.js"></script>
+<script src="internet-map-assets/three.js"></script>
+<script src="/core/utils.js"></script>
+<script src="/netitor.min.js"></script>
+<script>
+
+  /*
+    NOTE: this is the first iteration of the globe map
+    this is no longer in use.
+    this was later replaced by internet-globe.html
+    we may potentially replace this with the _animateGlobe() method inside the learning guide js file
+    at the moment i only have frames for the dark theme created,
+    but more can be created by uncommenting the capture code in internet-globe.html
+  */
+
+  let globe
+  async function setup () {
+
+    globe = Globe()
+      .backgroundColor('#00000000')
+      .atmosphereColor('#00000000')
+      .atmosphereAltitude(0)
+      .globeMaterial(new THREE.MeshBasicMaterial({
+        // color: clr1,
+        transparent: true,
+        opacity: 0.15
+      }))
+      (document.querySelector('#globe-container'))
+
+    // via https://www.submarinecablemap.com
+    const req = await window.fetch('internet-map-assets/cable-geo.json')
+    const json = await req.json()
+    const cablePaths = []
+    json.features.forEach(({ geometry, properties }) => {
+      geometry.coordinates.forEach(coords => cablePaths.push({ coords, properties }))
+    })
+
+    globe
+      .pathsData(cablePaths)
+      .pathPoints('coords')
+      .pathPointLat(p => p[1])
+      .pathPointLng(p => p[0])
+      .pathColor(path => clr2)
+      // .pathDashLength(0.1)
+      // .pathDashGap(0.008)
+      // .pathDashAnimateTime(12000)
+
+    globe.scene().remove(globe.scene().children[0])
+    globe.scene().remove(globe.scene().children[0])
+    globe.scene().remove(globe.scene().children[0])
+    globe.scene().children[0].scale.set(1.333,1.333,1.333)
+    globe.controls().enableZoom = false
+  }
+
+  function draw () {
+    requestAnimationFrame(draw)
+    globe.scene().children[0].rotation.y += 0.01
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(() => { setup(); draw() }, 500)
+  })
+
+</script>
+</body>

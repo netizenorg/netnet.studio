@@ -1,0 +1,98 @@
+.curtain {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9000;
+  width: 100vw;
+  height: 100vh;
+  color: var(--fg-color);
+  opacity: 1;
+}
+.curtain::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
+  opacity:0.9;
+  z-index: 0
+}
+
+.curtain__container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  max-width: 1000px;
+  height: auto;
+  z-index: 1;
+}
+
+.curtain__svg svg {
+  width: 100%;
+  height: auto;
+}
+.curtain__svg svg .fill-color {
+  fill: var(--fg-color);
+}
+.curtain__svg svg .stroke-color {
+  stroke: var(--fg-color);
+}
+.curtain__svg svg .loading-bar:first-of-type {
+  animation: loadingAnim 2s linear infinite;
+}
+.curtain__svg svg .loading-bar:nth-of-type(2) {
+  animation: loadingAnim 2s linear .2s infinite;
+}
+.curtain__svg svg .loading-bar:nth-of-type(3) {
+  animation: loadingAnim 2s linear .4s infinite;
+}
+.curtain__svg svg .loading-bar:nth-of-type(4) {
+  animation: loadingAnim 2s linear .6s infinite;
+}
+.curtain__svg svg .loading-bar:nth-of-type(5) {
+  animation: loadingAnim 2s linear .8s infinite;
+}
+@keyframes loadingAnim {
+  0% {
+    fill:transparent;
+  }
+  25% {
+    fill: var(--fg-color);
+  }
+  50%{
+    fill:transparent;
+  }
+}
+
+.curtain__svg__name {
+  position: absolute;
+  top: 49%;
+  left: 22.2%;
+  transform: translateY(-50%);
+  width: 10%;
+  max-height: 6em;
+  color: var(--fg-color);
+  font-family: fira-mono-regular;
+  font-size: 1em;
+  text-align: left;
+  z-index: 1;
+  overflow-wrap: break-word;
+  overflow-y: hidden;
+}
+
+
+/* loading specificity */
+.curtain--delete .curtain__txt {
+  position: absolute;
+  top: 40%;
+  left: 45.4%;
+  transform: translate(-50%, 50%);
+  text-align: center;
+}

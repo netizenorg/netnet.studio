@@ -1,0 +1,252 @@
+{
+  "name": "profile page",
+  "toc": true,
+  "tags": [
+    "css",
+    "template",
+    "profile",
+    "grid",
+    "flexbox",
+    "lol",
+    "cats"
+  ],
+  "layout": "dock-left",
+  "key": 1696209632966,
+  "code": "#code/eJylVNFu2zAMfO9XEAaGtQ9q03YdBjcN9iuyTctsZUmQ5CTu0H8fZStB6qR7GZAABnk8no+k1yGOGjdXAPzrJRn4ww8ADQWn5VhCq3H/PIVehxCpHUVtTUQTSwhO1iikt4NpZojUpIygiH0ooWYQ+jlRWd+gF5WN0fYl3Ls9BKupAeVxnCG93IsdNbEr4efjyu0PUa/IlJAiIIdoU/hjlnvrvG1Jo3BUZ9mZ4P7pSNAhqS5+CmUxXjY0sM6n1bfPvR4yctnGyB5zn5Y9EIHesYQfR94p2MqeNPsWpAkioKf2JLnLYiqrs2MR91FEz+DWenZmcA59LQPOAlJ7JbVGPy4HozxljvQk2HOOR+Tx6KE3/F73rT/8T3BKOk6d+Psv11dnlh/EbIB69dn0h9WZ6SchW71izfYQh2u7nRcjs/7usSEJ10sxN7nBxa7HvrXU9fXj43YHYnqxm+ecP6j4AvBxELC+y0dwtU4XkI5hnfrUWobwUpxsWQHB1y+Fpp59lvH21amClz6+FJK7RFYUO5DcWPcY2cUGwbaQ4OAQdSgm7oa2S+60WsVGW51owvqOIRvWNcu5Wge2jqw5VGU7iqPSSVWNpMmoi8KcfeMUxI6PVSWJu85qBD732CHkygWf8kPvxot02s582zSUwQWMi1riMiM6GUTdIb5Xg1foz2i6wSgm4M2HGRGWNGZLgSo2qKK3y5bzTicl0sARDAm8YHrDsbLSN5fd4YOaSOAAW1Rr0qIaqrNC/iDWkxEUvweI/CFUPPFh6Ya2F8YyeZcyiWlRYEZ2b1Fg4FdFaZIuSh+n9thTjKm95z2p7G5p3//sKR/FvHSbvxMa60g=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This template is modeled on popular social media sites, except that it's hand coded which means it's infinitely more customizable. It uses some cat images as place holders, but keep in mind that if you save this to your own GitHub project you'll need to replace these with your own uploaded assets."
+    },
+    {
+      "title": "the HTML",
+      "focus": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64
+      ],
+      "text": "Our HTML has two sections, the <code>main</code> element contains the top row and the <code>section</code> below it contains our gallery of images."
+    },
+    {
+      "title": "the main element",
+      "focus": [
+        49,
+        50,
+        51,
+        52
+      ],
+      "text": "The <code>main</code> element has two \"child\" elements, an <code>img</code> element with a <b>class</b> of <i>profile-pic</i> and a <code>div</code> element with the <b>class</b> of <i>profile-name</i>"
+    },
+    {
+      "title": "main CSS",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "text": "If we take a look at our CSS, the first rule is applied to our <code>main</code> element."
+    },
+    {
+      "title": "flexbox",
+      "focus": [
+        3,
+        4,
+        10
+      ],
+      "text": "Setting it's <b>display</b> property to <i>flex</i> transforms this element into a CSS <a href=\"https://css-tricks.com/snippets/css/a-guide-to-flexbox/\" target=\"_blank\">flexbox</a> which by default will layout its child elements as a horizontal row (though you could could also change the <b>flex-direction</b> to <i>column</i>)"
+    },
+    {
+      "title": "flexbox: justify-content",
+      "focus": [
+        3,
+        4,
+        5,
+        10
+      ],
+      "text": "This unlocks the other flexbox properties which enables us to efficiently layout the child elements within this container (the <i>profile-pic</i> <b>img</b> and <i>profile-name</i> <b>div</b>). Here we're setting the <code>justify-content</code> to <i>space-around</i> which evenly spaces out our child elements with equal space around both of them (resize the window and notice how they remain evenly spaced)"
+    },
+    {
+      "title": "flexbox: align-items",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        10
+      ],
+      "text": "Another flexbox property we're making use of is <code>align-items</code> which we have set to <i>center</i>. Because our flexbox is a \"row\", this ensures that the items in the row are at their vertical center. Comment this line out and notice how the items are aligned with the top of the container by default. There's loads more we can do with this layout system, to learn more checkout this <a href=\"https://css-tricks.com/snippets/css/a-guide-to-flexbox/\" target=\"_blank\">CSS flexbox guide</a>."
+    },
+    {
+      "title": "profile-pic, profile-name",
+      "focus": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "text": "Next we have a couple of CSS rules which target the <i>profile-pic</i> class (applied to our <code>img</code> element) and the <i>profile-name</i> class (applied to our <code>div</code> element)."
+    },
+    {
+      "title": "gallery CSS",
+      "focus": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "text": "Below that we have a CSS rule for our <i>gallery</i> class which is applied to the <code>section</code> element in our HTML code below."
+    },
+    {
+      "title": "grid",
+      "focus": [
+        26,
+        27,
+        32
+      ],
+      "text": "Similar to flexbox, when we set our <code>display</code> property to <i>grid</i> we convert this element into a CSS <a href=\"https://css-tricks.com/snippets/css/complete-guide-grid/\" target=\"_blank\">grid</a>, which is another CSS layout system consisting of specific properties designed to easily express grid layouts. "
+    },
+    {
+      "title": "grid-template-columns",
+      "focus": [
+        26,
+        27,
+        28,
+        32
+      ],
+      "text": "Here we're using the <code>grid-template-columns</code> property which lets us specify how many columns our grid should have by defining the width of each. In this case we've defined the width for 3 columns setting each to <code>1fr</code>. You can use standard units like <i>px</i>, <i>%</i>, etc, but here I'm using <i>fr</i>, a special unit representing a fraction of the available space in a CSS grid. By setting them all to <b>1fr</b> we can ensure that each column is exactly the same size and use all the available space in the grid."
+    },
+    {
+      "title": "gallery HTML",
+      "focus": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64
+      ],
+      "text": "If we jump down to our HTML, you'll notice that all of the elements inside the <i>gallery</i> are direct children of their parent. We haven't created any sort of nested structure here. The number of columns/rows these <b>img</b> elements form is purely defined in the CSS rule."
+    },
+    {
+      "title": "grid-gap",
+      "focus": [
+        26,
+        27,
+        28,
+        29,
+        32
+      ],
+      "text": "Jumping back up to our CSS rule, there's one more CSS grid property, <code>grid-gap</code> set to <i>10px</i>, as the name implies this adds a gap, some spacing, between the cells of our grid. There are loads more properties you can use to control the grid's details, check out this CSS <a href=\"https://css-tricks.com/snippets/css/complete-guide-grid/\" target=\"_blank\">grid guide</a> for more info."
+    },
+    {
+      "title": "centering the gallery",
+      "focus": [
+        26,
+        30,
+        31,
+        32
+      ],
+      "text": "Here we use an old CSS trick to center the <code>section</code> element. By giving it a specific width (either using the <b>width</b> or <b>max-width</b> properties) and a margin with its <b>left</b> and <b>right</b> margins set to <i>auto</i> we can easily ensure our gallery is centered on the page."
+    },
+    {
+      "title": "margin",
+      "focus": [
+        26,
+        30,
+        31,
+        32
+      ],
+      "text": "Remember that <b>margin</b> adds space around any block element, though you can target specific sides using <b>margin-top</b>, <b>margin-right</b>, etc, you can also simply state <code>margin: 10px;</code> to apply <i>10px</i> of space on all sides of an element. Or you can pass two values, as we're doing here, to apply some value, in this case <i>0</i>, to the top and bottom and another to the left and right, which we've set to <i>auto</i>. This lets the browser know to automatically set as much margin as possible on both sides, pushing our <code>section</code> to the center of our page."
+    },
+    {
+      "title": "child selector",
+      "focus": [
+        34,
+        38
+      ],
+      "text": "Here's we're using a <code>&gt;</code>, which is a CSS \"child combinator\" selector, this lets us select all the children of a specific type which are directly inside another element. In this case, the CSS rule will apply to any <b>img</b> elements which are \"children\" of (or directly inside of) the element with a class of <i>gallery</i> (which is our <b>section</b> element)"
+    },
+    {
+      "title": "object-fit",
+      "focus": [
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "text": "We've set each of our <b>img</b>'s width and height to <i>200px</i>, but because our images don't have native square resolutions (they each have a different size and dimension) this will inevitably stretch and squeeze our images. But by setting the <code>object-fit</code> property to <i>cover</i> we can crop the image instead of distorting it. Comment this line out and notice how the images appear distorted."
+    },
+    {
+      "title": "alternative size",
+      "focus": [
+        41,
+        42,
+        43,
+        44
+      ],
+      "text": "Lastly, we have the same CSS child combinator selector as before, except this time setting a different width and height."
+    },
+    {
+      "title": "media-query",
+      "focus": [
+        40,
+        45
+      ],
+      "text": "Except that this CSS rule appears within a <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries\" target=\"_blank\">CSS media query</a> which I'm using to create some conditional logic. In this case the CSS rules defined here will only be applied to our page if the window happens to be less than <i>630px</i> wide."
+    },
+    {
+      "title": "mobile friendly",
+      "focus": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "text": "This will ensure that on mobile devices or other smaller screens our image's shrink to fit the screen. Rather than having a width and height of <i>200px</i>, we're using the CSS <code>calc()</code> function to calculate one-third of the screen's width (or <i>33vw</i>) minus <i>10px</i> (to account for our <b>grid-gap</b>)"
+    },
+    {
+      "title": "in conclusion",
+      "focus": null,
+      "text": "That's how all the code on this page works, feel free to remix it and make it your own! Don't forget that if you save this to your own GitHub project you'll need to replace these images with your own uploaded assets."
+    }
+  ]
+}

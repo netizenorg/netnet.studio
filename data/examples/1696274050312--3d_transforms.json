@@ -1,0 +1,149 @@
+{
+  "name": "3d transforms",
+  "tags": [
+    "css",
+    "javascript",
+    "3d",
+    "transforms",
+    "parallax",
+    "interactive"
+  ],
+  "key": 1696274050312,
+  "code": "#code/eJx9U11v0zAUfd+vuCqr1iIcJ/1e1g4JiY8HBJN4gPHCPNtpDIltbKdpmfbfsZ1udKvES3Rzfc+95x4fL63bVfzyBOBWsR3c+QCgJmYtZA7pRfxVG26KSrU5lIIxLrvsLaG/1kY1kiFRkzXPoTHVoHRO2xzjllRVoxPJHW41oko6Lh1udKUIs3iUZjOcZnh6PhvPUUUks5RojiRxjeFIE1ciZzi3aD5ZbCejLPmp18OjuVpZ4YTyTKnvzs1RgRV/PC8aFjg6M1xz4nKQah8eVRDnCC1r3zqHQmw5CxX3J/7zwvqBfK+WM0TaQpkaRS1z0IZbbjYcjVnXU3NjNadObPxplqap3h4dIGVEFH2c9mGy6HcFrWCuzGGWbtouUXKxLl3MlBdPLivzGSCNUx1LgMDzVhhmn/PMu7Aijn8fjKZ6OzyEBN3/i5gHxL/E9QCNp+ljkyXeO+pkacNmSoJgq14UrBd8thT1OqYitx5YQ1e9R9u0baLl2u/kEqpqXIiKW5xN8btK0V9IFehNQKGrT+/RVamcsqG8B6Ryq14RakAV0HV+Mixs9WwWZTKxpdKi2MVZ9mEazmbZAs/mszHWRrGGOott7Q0dPfkjG6XpNnzC6NebVTadjM6nk8Us2/MgEKddBi06CaIa1AjtAqlWSKbahDD2duPN9VFY/zi4GZzVqrG89m49ewUDPoTV5f4i/PuxDraw8umEVsKjvgF+aCSkR38NThnCy+CvA8zuEHP9DPMhmukY1Ll7BUzRJtg/+d1ws/vCK7+N8jw7+58NIyTGSbz05MDPn6OdfZOb07vtfR9O73b3/ZtgkWHQpRPjL0dGbI8=",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "This is an example of a <a href=\"https://en.wikipedia.org/wiki/Parallax\" target=\"_blank\">parallax</a> effect accomplished using plain CSS and a little bit of JavaScript (no fancy libraries) when you move your mouse around. There are loads of different ways to achieve this sort of effect, this is just one approach."
+    },
+    {
+      "title": "the scene",
+      "focus": [
+        30,
+        31,
+        32,
+        33
+      ],
+      "text": "I've created a \"scene\" with two image elements, one with an image of birds and the other of a tree. Both are png images with transparent backgrounds which appear to shift in perspective when you move your mouse, this effect is accomplished using a combination of CSS and JavaScript."
+    },
+    {
+      "title": "body CSS rule",
+      "focus": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "text": "In our CSS code, we first define a CSS rule for the <code>body</code> element. We've removed the default margin, and also set <code>overflow</code> to <code>hidden</code> which will hide any scroll bars that appear if/when we have elements that fall beyond the boundaries of the window. You can comment this line out to see what happens when we don't have it."
+    },
+    {
+      "title": "full screen background",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "text": "This section handle's the full screen background. You can check out the <a href=\"http://netnet.studio/?ex=70\" target=\"_blank\">full screen background</a> example to learn more abou these properties."
+    },
+    {
+      "title": "scene CSS rule",
+      "focus": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "text": "This next CSS rule is for our \"scene\" element, which is the parent element containing our two image elements. The CSS code we place in here is what turns the otherwise 2D elements inside of it into 3D elements."
+    },
+    {
+      "title": "3D perspective",
+      "focus": [
+        13
+      ],
+      "text": "We accomplish this first by setting the <code>transform-style</code> to <code>preserve-3d</code>, which means any <code>transform</code> properties we apply to it's child elements (the images in this case) will be treated as though they're in 3D space."
+    },
+    {
+      "title": "perspective propety",
+      "focus": [
+        14
+      ],
+      "text": "Next we set its <code>perspective</code> value, you can think of this as the <b>Z</b> position of the viewer, meaning how near or far from the images we are. Change that value to see how it effects the scene."
+    },
+    {
+      "title": "perspective-origin",
+      "focus": [
+        15
+      ],
+      "text": "The <code>perspective-origin</code> is similar to the previous property in that it also changes the perspective we're viewing the scene from, in this case it shifts our perspective on the <b>X</b> and <b>Y</b> axis (we'll come back to this one in a bit)."
+    },
+    {
+      "title": "scene size",
+      "focus": [
+        16,
+        17,
+        18
+      ],
+      "text": "Lastly we have the scene's width, height and margin. These should be familiar properties to anyone with basic CSS experience, except that because we're using a 3D perspective, like the previous properties, changing these will also effect the scene's perspective."
+    },
+    {
+      "title": "image CSS rules",
+      "focus": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "text": "These next two CSS rules are for our two image elements, each of which has a different <code>transform</code> applied. In a standard 2D page, we can use the <code>translateX</code> and <code>translateY</code> CSS functions to shift our elements on the horizontal and vertical axis. But because these elements are both child elements of an element which has <code>transform-style: preserve-3d;</code> applied, these transform values will be rendered in 3D space, meaning we can also use the CSS <code>translateZ</code> function to shift their position in depth. Larger values will appear closer to the viewer and smaller values will appear farther."
+    },
+    {
+      "title": "the JavaScript",
+      "focus": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "text": "Down here in our JavaScript code is where the interactive magic happens. We've set up an EventListener, which listens for any mouse movements on the screen and runs the function we've defined every time the \"mousemove\" event fires."
+    },
+    {
+      "title": "updating the perspective-origin",
+      "focus": [
+        39,
+        40
+      ],
+      "text": "Earlier I mentioned that our scene's CSS <code>perspective-origin</code> property is used to shift the viewers perspective along the <b>X</b> and <b>Y</b> axis. Here we're dynamically updating those values using the Web's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction\" target=\"_blank\">DOM API</a> to access our scene element and change it's style values by passing it our custom <code>x</code> and <code>y</code> variables."
+    },
+    {
+      "title": "calculating new x,y shift",
+      "focus": [
+        37,
+        38
+      ],
+      "text": "These <code>x</code> and <code>y</code> variables are calculated by scaling our mouse's position (<code>e.clientX</code> and <code>e.clientY</code>) by the width and height of our window. This will return values from 0 to 1. For example, when our mouse is all the way to the left of our screen it will return 0, when it's at the center it will return 0.5 and all the way to the right would return 1. By multiplying that by 100 we get values from 0 to 100, which is exactly the sort of <code>%</code> values we need to pass to our <code>perspectiveOrigin</code> property."
+    },
+    {
+      "title": "other resources",
+      "focus": null,
+      "text": "There's so much we can do with 3D transforms in CSS, you can learn all about it in this great <a href=\"https://3dtransforms.desandro.com/\" target=\"_blank\">intro to CSS 3D transforms</a> by David DeSandro."
+    }
+  ]
+}
