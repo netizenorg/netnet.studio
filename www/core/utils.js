@@ -305,6 +305,7 @@ window.utils = {
     const tm = WIDGETS['learning-guide']
     if (!tm) WIDGETS.load('learning-guide', (w) => w.load(tutorial, time))
     else tm.load(tutorial, time)
+    if (!NNE.autoUpdate) window.utils.afterLayoutTransition(() => NNE.update())
     window.utils.fadeOutLoader(false)
   },
 

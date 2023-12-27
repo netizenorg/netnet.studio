@@ -78,6 +78,11 @@ class HyperVideoPlayer extends Widget {
 
   play () {
     const tg = WIDGETS['learning-guide']
+
+    if (WIDGETS['student-session'].getData('auto-update') === 'false') {
+      NNE.autoUpdate = true
+    }
+
     const play = (e) => {
       if (e) e.hide()
       this.$('.hvp-pause-screen').style.display = 'none'
@@ -118,6 +123,11 @@ class HyperVideoPlayer extends Widget {
 
   pause () {
     this._updatePauseClock()
+
+    if (WIDGETS['student-session'].getData('auto-update') === 'false') {
+      NNE.autoUpdate = false
+    }
+
     this.$('.hvp-pause-screen').style.display = 'block'
     this.$('.hvp-toggle > span').classList.remove('pause')
     this.$('.hvp-toggle > span').classList.add('play')
