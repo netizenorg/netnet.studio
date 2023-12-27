@@ -4,6 +4,8 @@ netnet.studio is a non-profit open-source project and needs all the help it can 
 
 - if you'd like to contribute edits to the project yourself check out our [contributors guide](../developers)
 
+- if you're an educator teaching web art/design coding courses for creatively inclined individuals and want to help us improve netnet by providing feedback/thoughts/examples please reach out so we can chat about what that can look like: h<span></span>i@net<span></span>izen.org
+
 - netizen.org is a 501(c)3 tax deductible organization, so you might consider making a donation! We're working on setting up multiple avenues for financial contributions, but for now you can make donations to the org using our [donorbox](https://donorbox.org/netizen) account or get in touch if you'd like to help support netnet.studio directly: h<span></span>i@net<span></span>izen.org
 
 netnet.studio is still in *beta* but it's already being used by students at various universities. Here's what some of the Media Art and Design students at the University of Chicago have (anonymously) said about their experience using it in the classroom:
