@@ -2,7 +2,7 @@ netnet.studio is a non-profit open-source project and needs all the help it can 
 
 - if you notice any bugs or have any feedback feel free to open a new [issue](https://github.com/netizenorg/netnet.studio/issues) on this repo or send us an email: h<span></span>i@net<span></span>izen.org
 
-- if you'd like to contribute edits to the project yourself check out our [contributors guide](https://github.com/netizenorg/netnet.studio/tree/main/docs/developers/README.md)
+- if you'd like to contribute edits to the project yourself check out our [contributors guide](../developers)
 
 - netizen.org is a 501(c)3 tax deductible organization, so you might consider making a donation! We're working on setting up multiple avenues for financial contributions, but for now you can make donations to the org using our [donorbox](https://donorbox.org/netizen) account or get in touch if you'd like to help support netnet.studio directly: h<span></span>i@net<span></span>izen.org
 
