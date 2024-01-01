@@ -23,12 +23,6 @@ window.CONVOS['functions-menu'] = (self) => {
     else { c.hide(); self._createNewRepo(c, t, v) }
   }
 
-  const errorFace = () => {
-    NNW.menu.updateFace({
-      leftEye: 'ŏ', mouth: '︵', reightEye: 'ŏ', lookAtCursor: false
-    })
-  }
-
   const repoSelectionList = (() => {
     const ss = WIDGETS['student-session']
     if (ss && ss.data.github.repos) {
@@ -141,7 +135,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'project-already-exists',
-    after: () => errorFace(),
+    after: () => NNW.menu.switchFace('error'),
     content: 'GitHub just told me that you already have a project with that name on your account, want to try a different name?',
     options: {
       ok: (e) => e.goTo('create-new-project'),
@@ -320,11 +314,24 @@ window.CONVOS['functions-menu'] = (self) => {
     options: {}
   }, {
     id: 'oh-no-error',
-    after: () => errorFace(),
-    content: 'Oh dang! seems there was a server error... sorry about that...',
+    after: () => NNW.menu.switchFace('error'),
+    content: 'Oh dang! seems there was a server error, sorry about that... try refreshing this page, if that doesn\'t work consider logging out and logging back in again.',
     options: {
-      'it\'s ok, errors are a part of the process': (e) => e.hide()
+      'let\'s reboot!': (e) => window.location.reload(),
+      'how do I log out?': (e) => {
+        if (!self.opened) self.open()
+        NNW.menu.switchFace('default')
+        e.goTo('how2-logout')
+      },
+      'it\'s ok, never mind': (e) => {
+        NNW.menu.switchFace('default')
+        e.hide()
+      }
     }
+  }, {
+    id: 'how2-logout',
+    content: 'Press the "lougout" button in then <b>Functions Menu</b>, the press "login" to log back in with your GitHub account.',
+    options: { 'got it!': (e) => e.hide() }
   }, {
     id: 'coming-soon',
     content: 'Sorry, that feature is still being refactored, should be ready again soon.',

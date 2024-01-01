@@ -101,6 +101,8 @@ class NetNetFaceMenu {
     if (obj.animation) {
       this.face.animation = obj.animation
       this._runFaceAnimation()
+    } else {
+      NNW.menu.ele.querySelector('#face').style.animation = 'none'
     }
 
     const face = document.querySelectorAll('#face > span')
@@ -128,6 +130,9 @@ class NetNetFaceMenu {
       },
       menu: {
         leftEye: '◕', mouth: '✖', rightEye: '◕', lookAtCursor: true
+      },
+      error: {
+        leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false
       }
     }
     if (commonFaces[type]) newFace(commonFaces[type])
