@@ -36,13 +36,13 @@ body {
 }
 
 *::-moz-selection {
-  background-color: var(--fg-color);
   color: var(--bg-color);
+  background-color: var(--fg-color);
 }
 
 *::selection {
-  background-color: var(--fg-color);
   color: var(--bg-color);
+  background-color: var(--fg-color);
 }
 
 button,
@@ -56,12 +56,12 @@ code {
 }
 
 code::-moz-selection {
-  background-color: var(--bg-color);
   color: var(--fg-color);
+  background-color: var(--bg-color);
 }
 
 code::selection {
-  background-color: var(--bg-color);
   color: var(--fg-color);
+  background-color: var(--bg-color);
 }
 
