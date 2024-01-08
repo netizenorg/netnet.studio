@@ -593,7 +593,7 @@ window.onmessage = function (e) {
   if (!obj) return
   if (obj.type === 'dialogue') {
     new Convo(obj.data)
-  } else if (ob.type === 'widget') {
+  } else if (obj.type === 'widget') {
     WIDGETS.open(obj.data)
   }
 }
