@@ -324,6 +324,7 @@ window.utils = {
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()
       setTimeout(() => NNE.cm.refresh(), 10)
+      if (!NNE.autoUpdate) NNE.update()
     })
     if (layout) {
       NNW.layout = layout
