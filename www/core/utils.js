@@ -377,7 +377,10 @@ window.utils = {
       if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
         NNE.code = html
-        setTimeout(() => NNE.cm.refresh(), 10)
+        setTimeout(() => {
+          NNE.cm.refresh()
+          if (!NNE.autoUpdate) NNE.update()
+        }, 10)
         window.utils.fadeOutLoader(false)
         const o = WIDGETS['student-session'].getData('owner')
         if (o && o === a[0]) {
