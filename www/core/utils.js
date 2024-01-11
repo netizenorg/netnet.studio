@@ -354,7 +354,10 @@ window.utils = {
       NNE.code = ''
       window.utils.afterLayoutTransition(() => {
         NNE.loadFromHash()
-        setTimeout(() => NNE.cm.refresh(), 10)
+        setTimeout(() => {
+          NNE.cm.refresh()
+          if (!NNE.autoUpdate) NNE.update()
+        }, 10)
       })
       if (layout) {
         NNW.layout = layout
@@ -412,7 +415,10 @@ window.utils = {
         NNW.layout = 'dock-left'
         window.utils.afterLayoutTransition(() => {
           NNE.code = html
-          setTimeout(() => NNE.cm.refresh(), 10)
+          setTimeout(() => {
+            NNE.cm.refresh()
+            if (!NNE.autoUpdate) NNE.update()
+          }, 10)
           window.utils.fadeOutLoader(false)
           window.utils.updateURL(`?gh=${a[0]}/${a[1]}/${a[2]}`)
           window.utils._Convo('remix-github-project-auth-redirect')
@@ -427,7 +433,10 @@ window.utils = {
       NNE.code = decoded
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
-        setTimeout(() => NNE.cm.refresh(), 10)
+        setTimeout(() => {
+          NNE.cm.refresh()
+          if (!NNE.autoUpdate) NNE.update()
+        }, 10)
         window.utils.fadeOutLoader(false)
         window.localStorage.removeItem('gh-auth-temp-code')
         window.utils._Convo('gh-redirected')
