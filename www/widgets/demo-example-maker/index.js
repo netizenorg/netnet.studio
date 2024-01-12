@@ -340,7 +340,7 @@ class DemoExampleMaker extends Widget {
     } else {
       this.$('[name="dem-s-title"]').value = null
       this.$('[name="dem-s-focus"]').value = null
-      this._text.code = ""
+      this._text.code = null
       this._selectStep(null)
     }
   }
