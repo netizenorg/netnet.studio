@@ -1,0 +1,142 @@
+.reorderable-list .rl-highlight {
+    background-color: var(--bg-color);
+    border: 2px solid var(--netizen-meta);
+    border-radius: 5px;
+    display: flex;
+    padding: .25rem;
+    justify-content: space-between;
+    user-select: none;
+}
+
+.reorderable-list .rl-highlight > * {
+    margin: auto .2rem;    
+}
+
+.rl-highlight .rl-h-text {
+    display: flex;
+    margin: 0;
+}
+
+.rl-highlight .rl-h-text > * {
+    margin: 0 .2rem;
+}
+
+reorderable-list {
+    width: 75%;
+}
+
+.reorderable-list {
+    border: 1px solid var(--netizen-meta);
+    border-radius: 5px;
+    padding: .1rem;
+}
+
+.rl-list {
+    list-style-type: none;
+    margin: 0;
+    max-height: 0;
+    padding: 0;
+    transition: all .3s ease-in-out;
+    overflow: hidden;
+
+    overflow: scroll;
+    scrollbar-color: var(--netizen-meta) var(--bg-color);
+    scrollbar-width: thin;
+}
+
+.reorderable-list .rl-list .rl-step {
+    background-color: var(--netizen-meta);
+    border-radius: 5px;
+    color: var(--bg-color);
+    display: flex;
+    justify-content: space-between;
+    margin: .15rem;
+    padding: .25rem;
+    width: 97%;
+}
+
+.rl-step .rl-details {
+    display: flex;
+}
+
+.rl-step .rl-details > * {
+    margin: 0 .2rem;
+    color: var(--bg-color);
+    font-weight: 500;
+    text-wrap: nowrap;
+    overflow: hidden;
+}
+
+.rl-details .rl-dots {
+    height: 1rem;
+    color: var(--bg-color);
+    margin: auto .2rem;
+    margin-right: .6rem;
+}
+
+.rl-info {
+    display: flex;
+    z-index: 200;
+}
+
+.rl-step .rl-info-icon {
+    height: 1.3rem;
+    color: var(--bg-color);
+    margin: auto .2rem;
+    margin-right: .3rem;
+    width: initial;
+    overflow: hidden;
+    transition: width .3s ease;
+}
+
+.reorderable-list .rl-info-menu {
+    /* position: relative; */
+    /* left: -50px; */
+    display: flex;
+    background-color: var(--netizen-meta);
+    box-sizing: border-box;
+    height: 1.3rem;
+    width: 0;
+    transition: width .3s ease;
+    overflow: hidden;
+}
+
+.reorderable-list .rl-info-menu > *{
+    margin: 0 .2rem;
+    transition: all .3s ease;
+}
+
+.rl-info-menu .rl-trash-can {
+    fill: var(--bg-color);
+    overflow: none;
+}
+
+.rl-info-menu .arrow {
+    border-color: solid var(--bg-color);
+    margin: 0 .25rem;
+    padding: 7px;
+}
+
+.rl-info-menu .up {
+    margin-top: 7px;
+}
+
+.arrow {
+    border: solid var(--netizen-meta);
+    border-width: 0 3px 3px 0;
+    border-radius: 3px;
+    display: inline-block;
+    padding: 5px;
+    margin-right: .4rem;
+}
+
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.up {
+    transform: rotate(225deg);
+    -webkit-transform: rotate(225deg);
+}
+
