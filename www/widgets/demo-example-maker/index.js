@@ -11,7 +11,7 @@ class DemoExampleMaker extends Widget {
     this._data = {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
-    //this.loaded = null
+    // this.loaded = null
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
     utils.get('api/examples', (res) => {
       // this._data.key = Math.max(...Object.keys(res.data)) + 1
@@ -297,10 +297,20 @@ class DemoExampleMaker extends Widget {
     const layout = this._data.layout
     const info = this._data.steps.map(s => {
       if (s.focus && typeof s.focus === 'string') {
-        s.focus = s.focus.split(',').map(n => Number(n))
+        s.focus = s.focus.split(',').flatMap(f => {
+          console.log(f)
+          if (f.includes('-')) {
+            const [start, end] = f.split('-').map(n => Number(n))
+            console.log(Array.from({ length: end - start + 1 }, (_, i) => start + i))
+            return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+          } else {
+            return Number(f)
+          }
+        })
       }
       return s
     })
+
     const code = `#code/${NNE._encode(NNE.code)}`
     return { name, toc, tags, layout, key, code, info }
   }
