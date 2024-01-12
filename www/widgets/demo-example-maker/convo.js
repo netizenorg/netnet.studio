@@ -6,7 +6,7 @@ window.CONVOS['demo-example-maker'] = (self) => {
         options: { 
             'yes!': (e) => {
                 self._uploadJSON(self.loaded)
-                e.goTo('loaded-json')
+                e.hide()
             },
             'load it in a new tab': (e) => {
                 const l = window.location
