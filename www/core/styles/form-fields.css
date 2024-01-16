@@ -4,8 +4,8 @@
   border-radius: 5px;
   margin: 0;
 	
-  background: var(--bg-color);
   color: var(--netizen-meta);
+  background: var(--bg-color);
   
   font-family: inconsolata, monospace;
   font-size: 15px;
@@ -23,8 +23,8 @@
 }
 
 .dropdown--invert {
-	background: var(--netizen-meta);
   color: var(--bg-color);
+	background: var(--netizen-meta);
 }
 
 .dropdown--invert:focus {
@@ -36,6 +36,7 @@
 .input,
 .text-bubble-content input {
   display: block;
+  box-sizing: border-box;
 
   width: auto;
   max-width: 100%;
@@ -44,14 +45,13 @@
   border: 1px solid var(--netizen-hint-shadow);
   border-radius: 2px;
 
-  background-color: var(--netizen-hint-shadow);
   color: var(--netizen-meta);
+  background-color: var(--netizen-hint-shadow);
 
   font-family: 'fira-mono-regular', monospace;
   font-size: inherit;
   
   appearance: none;
-  box-sizing: border-box;
 }
 
 .input[readonly],
@@ -61,8 +61,8 @@
 
 .input::placeholder,
 .text-bubble-content input::placeholder {
-  color: var(--netizen-meta);
   opacity: 0.8;
+  color: var(--netizen-meta);
 }
 
 .input:focus,
@@ -80,8 +80,8 @@
   border-radius: 5px;
   margin: 5px 0;
 
-  background-color: var(--netizen-meta);
   color: var(--netizen-hint-color);
+  background-color: var(--netizen-meta);
 }
 
 .input--lg[readonly] {

@@ -1,7 +1,7 @@
-
 .privacy-policy {
   max-width: 575px;
   max-height: 400px;
+  
   overflow-y: scroll;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
   scrollbar-width: thin;

@@ -3,13 +3,17 @@
 }
 .wig-maker-ta {
   display: block;
+  
   width: 100%;
   height: 250px;
+  
   padding: 10px;
 }
 .wig-maker-templates {
   display: flex;
+
   justify-content: space-between;
   align-items: center;
+  
   margin: 10px 0px 15px 0px;
 }

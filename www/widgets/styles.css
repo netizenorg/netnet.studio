@@ -16,13 +16,17 @@
 
 .widget {
   position: absolute;
+
   min-width: 200px;
   min-height: 150px;
-  color: var(--bg-color);
-  background-color: transparent;
+  
   padding: 0 15px 15px;
   border: 4px solid var(--netizen-meta);
   border-radius: 10px;
+
+  color: var(--bg-color);
+  background-color: transparent;
+  
   overflow: hidden;
 }
 
@@ -31,12 +35,16 @@
   position: absolute;
   top: 0;
   left: 0;
+
+  opacity: 0.95;
+  z-index:0;
+  
   width: 100%;
   height: 100%;
+  
   background-color: var(--bg-color);
-  opacity: 0.95;
+
   pointer-events: none;
-  z-index:0;
 }
 
 
@@ -47,11 +55,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: grab;
+
   max-height: 1.2em;
   min-width: 100px;
+
 /*  padding-left: 5px;*/
   margin: 12px 0 9px;
+
+  cursor: grab;
 }
 
 .widget__top:before {
@@ -60,22 +71,27 @@
   position: absolute;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 40px;
+
   background-color: var(--netizen-meta);
 }
 
 .widget__top__title {
   display: inline-block;
   position: relative;
+
   width: 100%;
+
+  overflow: hidden;
   cursor: default;
   pointer-events: none;
-  overflow: hidden;
 }
 
 .widget__top__title__txt {
   display: inline-block;
+
   white-space: nowrap;
 }
 
@@ -115,11 +131,15 @@
 .widget__top .expand  {
   position: relative;
   display: inline-block;
+
   width: 16px;
   height: 16px;
+
   margin-bottom: 0.2em;
   margin-left: 0.9em;
+
   cursor: pointer;
+
   /*just making this invisible for rn*/
   color: var(--netizen-meta);
 }
@@ -130,11 +150,16 @@
   position: absolute;
   top: 50%;
   left: 0;
+
+  opacity: 1;
+
   width: 16px;
   height: 4px;
+
   border-radius: 15px;
+
   background-color: var(--bg-color);
-  opacity: 1;
+
   transform: translateY(-50%) rotate(45deg);
 }
 
@@ -147,22 +172,30 @@
   position: absolute;
   top: 50%;
   left: 0;
+
+  opacity: 1;
+
   width: 16px;
   height: 4px;
+
   border-radius: 15px;
+
   background-color: var(--bg-color);
-  opacity: 1;
+
   transform: translateY(-50%) rotate(-45deg);
 }
 
 .widget__top .expand:after {
   content: '';
   position: absolute;
+
   width: 10px;
   height: 10px;
+
   border-radius: 4px;
   border-top: 4px solid var(--bg-color);
   border-left: 4px solid var(--bg-color);
+
   transform: translateX(-14px);
 }
 
@@ -171,8 +204,11 @@
 
 .widget__inner-html {
   position: relative;
+
   padding: 20px 0 0;
+
   color: var(--netizen-meta);
+
   font-size: 16px;
   line-height: 1.45em;
 }
@@ -195,10 +231,13 @@
 
 .reference-widget {
   display: block;
+
   width: 600px;
   max-height: 400px;
-  overflow-y: auto;
+
   padding: 0px 15px 0px 25px;
+
+  overflow-y: auto;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
   scrollbar-width: thin;
 }
@@ -206,10 +245,13 @@
 .reference-widget__slide {
   display: none;
   opacity: 0;
-  transition: opacity var(--menu-fades-time) var(--sarah-ease);
+
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 10px;
+
   padding-top: 24px;
+
+  transition: opacity var(--menu-fades-time) var(--sarah-ease);
 }
 
 .reference-widget__nav {
@@ -218,6 +260,7 @@
   position: absolute;
   top: 0;
   left: -15px;
+  z-index: 20;
 
   width: calc(100% + 30px);
 
@@ -225,8 +268,6 @@
 
   background: var(--fg-color);
   color: var(--bg-color);
-
-  z-index: 20;
 }
 
 .reference-widget__nav span {
@@ -258,6 +299,7 @@
 
 .reference-widget__nav span:after {
   top: 50%;
+
   transform: translateY(-50%) rotate(-45deg);
 }
 
@@ -284,24 +326,32 @@
 .reference-widget > .reference-widget__slide code {
   position: relative;
   top: -0.1em;
+
   padding: .1em 0.3em 0.2em;
   border-radius: 6px;
+
   color: var(--bg-color);
   background-color: var(--fg-color);
+
   font-family: "fira-code", inconsolata, monospace;
   font-size: 14px;
   line-height: 1.4em;
   font-weight: 700;
+
   cursor: text;
 }
 .reference-widget > .reference-widget__slide input {
   display: block;
+
   width: auto;
   max-width: 100%;
+
   padding: 4px 5px;
   border: 1px solid var(--netizen-hint-shadow);
+
   background-color: var(--netizen-hint-shadow);
   color: var(--netizen-meta);
+
   font-size: 0.9em;
 }
 .reference-widget > .reference-widget__slide input::placeholder {
@@ -316,9 +366,10 @@
 .reference-widget > .reference-widget__slide a code {
   text-decoration: underline;
   text-underline-position: under;
+  text-shadow: none;
+  
   cursor: pointer;
   transition: color var(--element-transition-time) ease;
-  text-shadow: none;
 }
 .reference-widget > .reference-widget__slide a:hover code {
   color: var(--netizen-match-color);

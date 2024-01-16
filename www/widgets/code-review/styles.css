@@ -1,14 +1,17 @@
 .code-review {
   max-height: 66vh;
+
   overflow-y: scroll;
 }
 .code-review__issue {
   border: 1px solid var(--bg-color);
   border-radius: 5px;
-  color: var(--bg-color);
   margin-bottom: 5px;
-  cursor: pointer;
+
+  color: var(--bg-color);
+  
   font-family: "fira-code", inconsolata, monospace;
+  cursor: pointer;
 }
 
 .code-review__issue > div {
@@ -16,10 +19,13 @@
 }
 
 .code-review__issue__head {
+  display: flex;
+  
+  justify-content: space-between;
+
   border-bottom: 1px solid var(--bg-color);
   border-radius: 5px 5px 0 0;
-  display: flex;
-  justify-content: space-between;
+
   font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 

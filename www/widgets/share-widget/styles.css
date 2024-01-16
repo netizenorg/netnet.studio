@@ -1,16 +1,21 @@
 .share-widget > input {
   display: block;
+
   width: auto;
   max-width: 100%;
+  
   padding: 4px 5px;
   border: 1px solid var(--netizen-hint-shadow);
-  background-color: var(--netizen-hint-shadow);
+  
   color: var(--netizen-meta);
+  background-color: var(--netizen-hint-shadow);
+  
   font-size: 0.9em;
 }
 
 .share-widget > input::placeholder {
   color: var(--netizen-meta);
+
   opacity: 0.8;
 }
 
@@ -20,13 +25,16 @@
 }
 
 .share-widget > .qr-code {
-  margin-top: 20px;
   display: flex;
+
   align-items: center;
   justify-content: center;
+  
+  margin-top: 20px;
 }
 
 .share-widget__section {
   display: inline-block;
+  
   margin-top: 10px;
 }

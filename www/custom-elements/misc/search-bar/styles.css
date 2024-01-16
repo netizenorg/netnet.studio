@@ -4,8 +4,10 @@
   top: 0;
   left: 0;
   z-index: 500;
+
   width: 100vw;
   height: 100vh;
+
   transition: opacity .5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -14,15 +16,19 @@
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
+  
   background-color: rgba(0,0,0,0.75);
 }
 
 #search-bar > section {
   position: relative;
+
   width: 75vw;
   max-width: 780px;
+  
   margin: 25vh auto;
 }
 
@@ -32,24 +38,26 @@
   top: 0;
   left: 0;
 
+  opacity: 0.9;
+
   width: 100%;
   height: 100%;
 
   border-radius: 17px;
 
   background-color: var(--bg-color);
-
-  opacity: 0.9;
 }
 
 #search-bar > section > span {
   display: block;
   position: relative;
-  width: 100%;
-  height: 51px;
-  border-radius: 17px;
   opacity: 1;
   z-index: 500;
+
+  width: 100%;
+  height: 51px;
+
+  border-radius: 17px;
 }
 
 #search-bar > section > span:before {
@@ -58,6 +66,8 @@
   top: 0;
   left: 0;
 
+  opacity: 0.6;
+
   width: 100%;
   height: 100%;
 
@@ -65,32 +75,34 @@
   border: 1px solid var(--netizen-meta);
 
   background-color: var(--bg-color);
-
-  opacity: 0.6;
 }
 
 #search-bar > section > span > label {
   display: block;
+
   width: 87px;
+  
   padding-top: 18px;
   padding-left: 13px;
 }
 
 #search-bar > section > span > label .screen-reader-only {
+  position: absolute;
+  height: 1px;
+  width: 1px;
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
-  height: 1px;
   overflow: hidden;
-  position: absolute;
   white-space: nowrap;
-  width: 1px;
 }
 
 #search-bar > section > span > label .face {
   display: inline-block;
+  opacity: 0.9;
+
   width: 17px;
   height: 17px;
-  opacity: 0.9;
+  
   background-color: var(--netizen-meta);
   -webkit-mask: url(../../../assets/images/faces/◕.svg) no-repeat center;
   mask: url(../../../assets/images/faces/◕.svg) no-repeat center;
@@ -105,24 +117,29 @@
   position: absolute;
   top: 0;
   left: 0;
+  box-sizing: border-box;
+
   width: 100%;
   height: 51px;
+
   padding: 1vw 1vw 1vw 87px;
   border: none;
   border-radius: 17px;
+
   color: var(--netizen-meta);
   background-color: transparent;
-  font-size: 25px;
-  filter: contrast(10) brightness(1);
+
   font-family: 'fira-sans-regular';
+  font-size: 25px;
+
+  filter: contrast(10) brightness(1);
   appearance: none;
-  box-sizing: border-box;
 }
 
 #search-bar > section > span > input::placeholder {
-  color: var(--netizen-meta);
-
   opacity: 0.4;
+
+  color: var(--netizen-meta);
 }
 
 #search-bar > section > span > input:focus {
@@ -132,19 +149,26 @@
 
 #search-results {
   position: relative;
+
   height: auto;
   max-height: 500px;
+
   margin: 0;
+  
   color: var(--netizen-meta);
+  
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
 #search-results > div {
   position: relative;
+
   padding: 20px;
-  cursor: pointer;
+  
   font-size: 17px;
+
+  cursor: pointer;
 }
 
 #search-results > div:before {
@@ -152,10 +176,13 @@
   position: absolute;
   top: 0;
   left: 0;
+
+  opacity: 0;
+
   width: 100%;
   height: 100%;
+
   background-color: var(--netizen-hint-shadow);
-  opacity: 0;
 }
 #search-results > div:last-of-type:before {
   border-bottom-left-radius: 17px;
@@ -182,5 +209,6 @@
   font-family: monospace;
   font-weight: 700;
   font-size: 15px;
+  
   filter: saturate(1.2);
 }
