@@ -24,28 +24,13 @@ class DemoExampleMaker extends Widget {
       if (!this.$('.demo-example-maker')) {
         return setTimeout(() => loadData(), 100)
       }
-
       if (utils.url.example) {
         const obj = WIDGETS['code-examples'].exData
-        // console.log('loadData', obj)
-        const data = JSON.parse(NNE._decode(obj.hash))
-        // console.log('loadData', data)
-        this._data = {
-          name: obj.name,
-          tags: obj.tags,
-          toc: obj.toc,
-          layout: obj.layout,
-          key: Number(obj.key),
-          code: obj.code,
-          steps: obj.info
-        }
+        this._uploadJSON(obj)
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
-        // console.log(NNE._decode(hash))
-        // console.log(data)
-        data.steps = data.info || []
-        this._data = data
+        this._uploadJSON(data)
       }
 
       // console.log(this._data)
@@ -365,6 +350,7 @@ class DemoExampleMaker extends Widget {
         step.id = index
         this.reorderableList.addStep(step)
       })
+      this.reorderableList.selectStep(0)
     } else {
       this.$('[name="dem-s-title"]').value = null
       this.$('[name="dem-s-focus"]').value = null
