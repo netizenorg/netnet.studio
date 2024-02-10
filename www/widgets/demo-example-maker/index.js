@@ -286,6 +286,7 @@ class DemoExampleMaker extends Widget {
         focus: this.$('[name="dem-s-focus"]').value || null,
         text: this._text.code
       }
+      this.reorderableList.updateStep(this._data.steps[step])
     }
   }
 
