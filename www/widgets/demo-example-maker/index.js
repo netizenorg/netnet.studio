@@ -261,7 +261,7 @@ class DemoExampleMaker extends Widget {
     if (remove === 'uploading') {
       this._data.steps.splice(step, 1)
       this.reorderableList.updateStep(Number(step), 'uploading')
-    } else if (remove) { 
+    } else if (remove) {
       if (this._data.steps.length < 2) return window.alert('need at least 1 step')
       this._data.steps.splice(step, 1)
       this.reorderableList.updateStep(Number(step), 'remove')
