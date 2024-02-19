@@ -247,6 +247,7 @@ class DemoExampleMaker extends Widget {
     step = step || { title: null, focus: null, text: null }
     this._data.steps.push(step)
     this._selectStep(step)
+    this.$('[name="dem-url"]').style.display = 'none'
   }
 
   _updateStep (step, remove) {
