@@ -11,7 +11,7 @@ class DemoExampleMaker extends Widget {
     this._data = {
       name: null, toc: true, tags: [], layout: 'dock-left', key: null, code: null, steps: []
     }
-    //this.loaded = null
+    // this.loaded = null
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
     utils.get('api/examples', (res) => {
       // this._data.key = Math.max(...Object.keys(res.data)) + 1
@@ -24,32 +24,17 @@ class DemoExampleMaker extends Widget {
       if (!this.$('.demo-example-maker')) {
         return setTimeout(() => loadData(), 100)
       }
-
       if (utils.url.example) {
         const obj = WIDGETS['code-examples'].exData
-        // console.log('loadData', obj)
-        const data = JSON.parse(NNE._decode(obj.hash))
-        // console.log('loadData', data)
-        this._data = {
-          name: obj.name,
-          tags: obj.tags,
-          toc: obj.toc,
-          layout: obj.layout,
-          key: Number(obj.key),
-          code: obj.code,
-          steps: obj.info
-        }
+        this._uploadJSON(obj)
       } else if (window.location.hash.includes('#example/')) {
         const hash = window.location.hash.split('#example/')[1]
         const data = JSON.parse(NNE._decode(hash))
-        // console.log(NNE._decode(hash))
-        // console.log(data)
-        data.steps = data.info || []
-        this._data = data
+        this._uploadJSON(data)
       }
 
       // console.log(this._data)
-      if (this._data.steps) this._selectStep(this._data.steps[0])
+      if (this._data.steps) this._selectStep(0)
       this.$('[name="dem-demo-name"]').value = this._data.name
       this.$('[name="dem-demo-layout"]').value = this._data.layout || 'dock-left'
       this.$('[name="dem-demo-toc"]').checked = this._data.toc
@@ -71,14 +56,14 @@ class DemoExampleMaker extends Widget {
   _createHTML (types) {
     this.innerHTML = `
       <div class="demo-example-maker">
-        editing step <select class="dropdown dropdown--invert" name="dem-current-step"></select>
-        <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
-        <br>
-        <br>
+        <div class="dem-rl-div">
+          <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
+        </div>
         <hr>
-        <input placeholder="step title" type="text" name="dem-s-title">
-        <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
-        <br>
+        <div class="dem-div">
+          <input placeholder="step title" type="text" name="dem-s-title">
+          <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
+        </div>
         <div name="dem-s-text" placeholder="explain step"></div>
         <button class="pill-btn pill-btn--secondary" name="dem-preview-step">preview</button>
         <button class="pill-btn pill-btn--secondary" name="dem-remove-step">remove this step</button>
@@ -107,6 +92,7 @@ class DemoExampleMaker extends Widget {
         <textarea name="dem-url"></textarea>
       </div>
     `
+    this._setupReorderableList()
 
     this._text = new Netitor({
       ele: 'div[name="dem-s-text"]',
@@ -123,15 +109,16 @@ class DemoExampleMaker extends Widget {
     })
 
     this._addStep({
+      id: this._data.steps.length,
       title: 'getting started',
       focus: null,
       text: 'in this step...'
     })
 
-    this.$('[name="dem-current-step"]').addEventListener('change', (e) => {
-      const s = Number(e.target.value)
-      this._selectStep(this._data.steps[s])
-    })
+    // this.$('[name="dem-current-step"]').addEventListener('change', () => {
+    //   const s = Number(e.target.value)
+    //   this._selectStep(this._data.steps[s])
+    // })
 
     this.$('[name="dem-preview-step"]').addEventListener('click', () => {
       this._previewStep(this._curStep)
@@ -174,8 +161,9 @@ class DemoExampleMaker extends Widget {
     })
 
     this.$('input').forEach(input => {
-      input.addEventListener('change', () => {
+      input.addEventListener('change', (e) => {
         this._updateStep(this._curStep)
+        this.reorderableList.updateStep(this._data.steps[this._curStep])
       })
     })
 
@@ -235,6 +223,20 @@ class DemoExampleMaker extends Widget {
 
   // ------------------------------
 
+  _setupReorderableList () {
+    const createReorderableList = (key) => {
+      if (!utils.customElementReady('reorderable-list')) {
+        setTimeout(() => createReorderableList(key), 100)
+        return
+      }
+      this.reorderableList = document.createElement('reorderable-list')
+      this.reorderableList.widget = key
+      const dem = document.querySelector('.dem-rl-div')
+      dem.insertBefore(this.reorderableList, this.$('[name="dem-add-step"]'))
+    }
+    createReorderableList(this.key)
+  }
+
   _previewStep (step) {
     window.convo = new Convo({ content: this._text.code })
     if (this.$('[name="dem-s-focus"]').value.length > 0) {
@@ -244,46 +246,56 @@ class DemoExampleMaker extends Widget {
   }
 
   _addStep (step) {
-    step = step || { title: null, focus: null, text: null }
+    step = step || {
+      id: this._data.steps.length,
+      title: null,
+      focus: null,
+      text: null
+    }
     this._data.steps.push(step)
     this._selectStep(step)
+    this._selectStep(step.id)
+    this.reorderableList.addStep(step)
     this.$('[name="dem-url"]').style.display = 'none'
   }
 
   _updateStep (step, remove) {
-    if (remove) {
-      const prev = step - 1
-      if (prev < 0) return window.alert('need at least 1 step')
+    if (remove === 'uploading') {
       this._data.steps.splice(step, 1)
-      this._selectStep(prev)
+      this.reorderableList.updateStep(Number(step), 'uploading')
+    } else if (remove) {
+      if (this._data.steps.length < 2) return window.alert('need at least 1 step')
+      this._data.steps.splice(step, 1)
+      this.reorderableList.updateStep(Number(step), 'remove')
+      for (let i = step; i < this._data.steps.length; i++) {
+        this._data.steps[i].id = i
+      }
+      step = (step === 0)
+        ? Number(step)
+        : Number(step) - 1
+      this._selectStep(step)
+    } else if (isNaN(step)) {
+      const prev = this._data.steps[step.newIdx]
+      this._data.steps[step.newIdx].id = step.oldIdx
+      this._data.steps[step.newIdx] = this._data.steps[step.oldIdx]
+      this._data.steps[step.oldIdx].id = step.newIdx
+      this._data.steps[step.oldIdx] = prev
+      this._selectStep(step.newIdx)
     } else {
       this._data.steps[step] = {
+        id: this._data.steps[step].id,
         title: this.$('[name="dem-s-title"]').value,
         focus: this.$('[name="dem-s-focus"]').value || null,
         text: this._text.code
       }
-      this._selectStep(step)
+      this.reorderableList.updateStep(this._data.steps[step])
     }
     this.$('[name="dem-url"]').style.display = 'none'
   }
 
-  _selectStep (step) {
-    if (!step) return
-    this._curStep = (typeof step === 'number')
-      ? step
-      : this._data.steps.indexOf(step)
-    step = (typeof step === 'number') ? this._data.steps[step] : step
-
-    const stepSelect = this.$('[name="dem-current-step"]')
-    stepSelect.innerHTML = ''
-    this._data.steps.forEach((s, i) => {
-      const o = document.createElement('option')
-      o.textContent = `${i}. ${s.title}`
-      o.value = i
-      stepSelect.appendChild(o)
-    })
-    stepSelect.selectedIndex = this._curStep
-
+  _selectStep (index) {
+    this._curStep = index
+    const step = this._data.steps[index]
     this.$('[name="dem-s-title"]').value = step.title
     this.$('[name="dem-s-focus"]').value = step.focus
     this._text.code = step.text || 'in this step...'
@@ -319,7 +331,7 @@ class DemoExampleMaker extends Widget {
 
   _uploadJSON (ex) {
     for (let step = this._data.steps.length; step >= 1; step--) {
-      this._updateStep(step, 'remove')
+      this._updateStep(step, 'uploading')
     }
     this._data = {
       name: ex.name,
@@ -337,11 +349,16 @@ class DemoExampleMaker extends Widget {
     if (NNW.layout !== this._data.layout) NNW.layout = this._data.layout
     NNE.code = NNE._decode(ex.code.split('#code/').pop())
     if (this._data.steps.length > 0) {
-      this._selectStep(this._data.steps[0])
+      this._selectStep(0)
+      this._data.steps.forEach((step, index) => {
+        step.id = index
+        this.reorderableList.addStep(step)
+      })
+      this.reorderableList.selectStep(0)
     } else {
       this.$('[name="dem-s-title"]').value = null
       this.$('[name="dem-s-focus"]').value = null
-      this._text.code = null
+      this._text.code = ''
       this._selectStep(null)
     }
   }

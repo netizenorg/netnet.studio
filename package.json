@@ -8,8 +8,8 @@
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/core/* www/core/widgets/*",
     "pull-modules": "git submodule update --init --recursive",
-    "update-modules": "git submodule update --remote --merge",
-    "update-dev": "node my_modules/update-dev.js"
+    "update-modules-old": "git submodule update --remote --merge",
+    "update-modules": "git pull --recurse-submodules"
   },
   "repository": {
     "type": "git",
