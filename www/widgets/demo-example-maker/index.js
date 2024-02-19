@@ -240,7 +240,14 @@ class DemoExampleMaker extends Widget {
   _previewStep (step) {
     window.convo = new Convo({ content: this._text.code })
     if (this.$('[name="dem-s-focus"]').value.length > 0) {
-      const lines = this.$('[name="dem-s-focus"]').value.match(/\d+/g).map(Number)
+      const lines = this.$('[name="dem-s-focus"]').value.split(',').flatMap(f => {
+        if (f.includes('-')) {
+          const [start, end] = f.split('-').map(n => Number(n))
+          return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+        } else {
+          return Number(f)
+        }
+      })
       NNE.spotlight([...lines])
     } else NNE.spotlight(null)
   }
@@ -308,10 +315,18 @@ class DemoExampleMaker extends Widget {
     const layout = this._data.layout
     const info = this._data.steps.map(s => {
       if (s.focus && typeof s.focus === 'string') {
-        s.focus = s.focus.split(',').map(n => Number(n))
+        s.focus = s.focus.split(',').flatMap(f => {
+          if (f.includes('-')) {
+            const [start, end] = f.split('-').map(n => Number(n))
+            return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+          } else {
+            return Number(f)
+          }
+        })
       }
       return s
     })
+
     const code = `#code/${NNE._encode(NNE.code)}`
     return { name, toc, tags, layout, key, code, info }
   }
