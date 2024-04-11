@@ -260,9 +260,9 @@ class DemoExampleMaker extends Widget {
       text: null
     }
     this._data.steps.push(step)
-    this.$('[name="dem-url"]').style.display = 'none'
     this._selectStep(step.id)
     this.reorderableList.addStep(step)
+    this.$('[name="dem-url"]').style.display = 'none'
   }
 
   _updateStep (step, remove) {
