@@ -285,6 +285,7 @@ class FunctionsMenu extends Widget {
       : '<h1>Hello World Wide Web!</h1>'
     setTimeout(() => {
       window.convo = new Convo(this.convos, 'blank-canvas-ready')
+      if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
   }
 
@@ -739,6 +740,7 @@ class FunctionsMenu extends Widget {
           if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
           setTimeout(() => {
             NNW.menu.switchFace('default')
+            if (!NNE.autoUpdate) NNE.update()
             window.convo = new Convo(this.convos, 'project-opened')
           }, utils.getVal('--layout-transition-time'))
         })

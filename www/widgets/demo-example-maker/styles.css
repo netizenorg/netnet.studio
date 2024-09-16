@@ -5,7 +5,7 @@
 .demo-example-maker div[name="dem-s-text"] {
   width: 554px;
 
-  margin: 10px 5px;
+  margin: 10px 0;
   border-radius: 5px;
   border: 2px solid var(--netizen-meta);
 }
@@ -52,3 +52,44 @@
   border-color: rgb(252, 97, 86);
   background-color: rgb(252, 97, 86);
 }
+
+.dem-rl-div button {
+  height: fit-content;
+}
+
+.demo-example-maker hr {
+  border-color: var(--netizen-attribute);
+}
+
+.demo-example-maker input[type=text] {
+  background-color: var(--netizen-meta);
+  border-radius: 5px;
+  border: none;
+  margin: 5px 0;
+  padding: .3rem;
+}
+
+.demo-example-maker input[name="dem-s-focus"] {
+  width: 40%;
+}
+
+.demo-example-maker input[name="dem-s-title"] {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.dem-div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dem-rl-div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* .dem-rl-div .reorderable-list {
+  width: 200%;
+} */

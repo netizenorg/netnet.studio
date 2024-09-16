@@ -169,6 +169,7 @@ class Widget {
     const close = v ? '<span class="close">✖</span>' : ''
     const expnd = this.expandable ? '<span class="expand">⇱</span>' : ''
     this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
+    this._setupTitleBarButtons(true)
   }
 
   get expandable () { return this._expandable }
@@ -177,6 +178,7 @@ class Widget {
     const expnd = v ? '<span class="expand">⇱</span>' : ''
     const close = this.closable ? '<span class="close">✖</span>' : ''
     this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
+    this._setupTitleBarButtons(true)
   }
 
   get left () { return parseInt(this.ele.style.left) }
@@ -425,7 +427,11 @@ class Widget {
     setTimeout(() => this._titleBarSetup(), 100)
   }
 
-  _titleBarSetup () {
+  _setupTitleBarButtons (reset) {
+    if (reset) {
+      this._attachedClose = false
+      this._attachedExpand = false
+    }
     const close = this.ele.querySelector('.widget__top .close')
     if (close && !this._attachedClose) {
       close.addEventListener('click', () => this.close())
@@ -434,18 +440,22 @@ class Widget {
 
     const expand = this.ele.querySelector('.widget__top .expand')
     if (expand && !this._attachedExpand) {
+      window.addEventListener('resize', () => {
+        if (this._expanded) {
+          const w = window.innerWidth - 40
+          const h = window.innerHeight - 40
+          this.update({ left: 20, top: 20, width: w, height: h })
+          this.emit('resize', { width: w, height: h })
+        }
+      })
+
       expand.addEventListener('click', () => this.expand())
       this._attachedExpand = true
     }
+  }
 
-    window.addEventListener('resize', () => {
-      if (this._expanded) {
-        const w = window.innerWidth - 40
-        const h = window.innerHeight - 40
-        this.update({ left: 20, top: 20, width: w, height: h })
-        this.emit('resize', { width: w, height: h })
-      }
-    })
+  _titleBarSetup () {
+    this._setupTitleBarButtons()
 
     // marquee title logic
     const titleWidth = this.ele.querySelector('.widget__top__title').clientWidth
