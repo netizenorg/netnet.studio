@@ -3,40 +3,51 @@
 }
 div.clr-row1 {
   display: flex;
+  
   justify-content: space-between;
+
   width: 640px;
 }
 
 div.clr-row1 > div {
   display: block;
+
   flex: 0 0 60%;
 }
 
 .clr-wig-type-opts {
   display: flex;
+
   justify-content: space-between;
-  padding: 0px 0px 16px 0px;
+
   width: 258px;
+
+  padding: 0px 0px 16px 0px;
 }
 
 #clr-wig-sliders {
   display: block;
+
   flex: 0 0 40%;
+
   max-width: 255px;
 }
 
 #clr-wig-codes {
   /* margin-right: 54px; */
   position: relative;
+
   z-index: 2;
 }
 
 .clr-wig-svg {
+  display: block;
   position: relative;
   left: -15px;
+
   width: 120px;
   height: 120px;
-  display: block;
+
   margin: 25px auto;
 }
 

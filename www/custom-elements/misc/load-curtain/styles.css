@@ -1,37 +1,46 @@
 .curtain {
   display: block;
-  justify-content: center;
-  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
+
+  opacity: 1;
   z-index: 9000;
+  
+  justify-content: center;
+  align-items: center;
+  
   width: 100vw;
   height: 100vh;
+  
   color: var(--fg-color);
-  opacity: 1;
 }
 .curtain::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
+
+  opacity:0.9;
+  z-index: 0;
+
   width: 100%;
   height: 100%;
+  
   background: var(--bg-color);
-  opacity:0.9;
-  z-index: 0
 }
 
 .curtain__container {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  z-index: 1;
+  
   width: 95%;
   max-width: 1000px;
   height: auto;
-  z-index: 1;
+
+  transform: translate(-50%, -50%);
 }
 
 .curtain__svg svg {
@@ -75,16 +84,21 @@
   position: absolute;
   top: 49%;
   left: 22.2%;
-  transform: translateY(-50%);
+  z-index: 1;
+
   width: 10%;
   max-height: 6em;
+
   color: var(--fg-color);
+
   font-family: fira-mono-regular;
   font-size: 1em;
   text-align: left;
-  z-index: 1;
+
   overflow-wrap: break-word;
   overflow-y: hidden;
+
+  transform: translateY(-50%);
 }
 
 
@@ -93,6 +107,8 @@
   position: absolute;
   top: 40%;
   left: 45.4%;
-  transform: translate(-50%, 50%);
+
   text-align: center;
+  
+  transform: translate(-50%, 50%);
 }
