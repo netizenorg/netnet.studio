@@ -266,30 +266,34 @@ class DemoExampleMaker extends Widget {
   }
 
   _updateStep (step, remove) {
+    const { steps } = this._data
     if (remove === 'uploading') {
-      this._data.steps.splice(step, 1)
+      steps.splice(step, 1)
       this.reorderableList.updateStep(Number(step), 'uploading')
     } else if (remove) {
-      if (this._data.steps.length < 2) return window.alert('need at least 1 step')
-      this._data.steps.splice(step, 1)
+      if (steps.length < 2) return window.alert('need at least 1 step')
+      steps.splice(step, 1)
       this.reorderableList.updateStep(Number(step), 'remove')
-      for (let i = step; i < this._data.steps.length; i++) {
-        this._data.steps[i].id = i
+      for (let i = step; i < steps.length; i++) {
+        steps[i].id = i
       }
       step = (step === 0)
         ? Number(step)
         : Number(step) - 1
       this._selectStep(step)
     } else if (isNaN(step)) {
-      const prev = this._data.steps[step.newIdx]
-      this._data.steps[step.newIdx].id = step.oldIdx
-      this._data.steps[step.newIdx] = this._data.steps[step.oldIdx]
-      this._data.steps[step.oldIdx].id = step.newIdx
-      this._data.steps[step.oldIdx] = prev
-      this._selectStep(step.newIdx)
+      const { newIdx, oldIdx } = step
+
+      const [selectedStep] = steps.splice(oldIdx, 1);
+      const updatedSteps = steps.splice(newIdx, 0, selectedStep)
+
+      updatedSteps.forEach((step, index) => {
+        this._data.steps[index].id = index
+      })
+      this._selectStep(newIdx)
     } else {
-      this._data.steps[step] = {
-        id: this._data.steps[step].id,
+      steps[step] = {
+        id: steps[step].id,
         title: this.$('[name="dem-s-title"]').value,
         focus: this.$('[name="dem-s-focus"]').value || null,
         text: this._text.code
