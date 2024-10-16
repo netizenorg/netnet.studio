@@ -139,10 +139,9 @@ During the initial `npm run setup`, netnet would have installed a series of depe
 
 **occasionally we may update these, if/when that happens you'll want to pull those updates to your local repository as well.**
 
-There are two npm scripts, one for pulling and the other for updating the submodules:
+To pull updates to the submodules run:
 ```
 npm run pull-modules
-npm run update-modules
 ```
 
 **NOTE:** we've noticed issues running these scripts, where sometimes they don't actually pull updates (*plz open an issue if you think you might know why*), but alternatively you can also `cd` into the individual submodule folders found in [www/core](https://github.com/netizenorg/netnet.studio/tree/main/www/js/core) and pull the code using `git pull`

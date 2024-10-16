@@ -75,10 +75,9 @@ npm install
 
 In addition to the server-side (back-end) dependencies, this repo also contains [git submodules](https://github.com/netizenorg/netnet.studio/blob/main/.gitmodules) for a couple of the client-side (front-end) dependencies, maintained by us (@netizenorg). Specifically, those are the [netnet-standard-library](https://github.com/netizenorg/netnet-standard-library) (itself a collection of other sub-modules) as well as the [netitor](https://github.com/netizenorg/netitor), netnet's core code editor.
 
-There are two npm scripts, one for pulling and the other for updating the submodules:
+To pull and update the submodules run:
 ```
 npm run pull-modules
-npm run update-modules
 ```
 
 **NOTE:** we've noticed issues running these scripts, where sometimes they don't actually pull updates (*plz open an issue if you think you might know why*), but alternatively you can also `cd` into the individual submodule folders found in [www/core](https://github.com/netizenorg/netnet.studio/tree/main/www/js/core) and pull the code using `git pull`
