@@ -7,9 +7,7 @@
     "setup": "node my_modules/setup-script.js",
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/core/* www/core/widgets/*",
-    "pull-modules": "git submodule update --init --recursive",
-    "update-modules-old": "git submodule update --remote --merge",
-    "update-modules": "git pull --recurse-submodules"
+    "pull-modules": "git submodule update --init --recursive && (cd www/core/netnet-standard-library && git pull origin main) && (cd www/core/netitor && git pull origin master)"
   },
   "repository": {
     "type": "git",
