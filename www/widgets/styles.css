@@ -153,7 +153,7 @@
 
   opacity: 1;
 
-  width: 16px;
+  width: 18px;
   height: 4px;
 
   border-radius: 15px;
@@ -175,7 +175,7 @@
 
   opacity: 1;
 
-  width: 16px;
+  width: 18px;
   height: 4px;
 
   border-radius: 15px;
@@ -188,6 +188,7 @@
 .widget__top .expand:after {
   content: '';
   position: absolute;
+  left: 12px;
 
   width: 10px;
   height: 10px;
