@@ -190,12 +190,14 @@ class HtmlReference extends Widget {
     if (type === 'elements') this._createElementDetails(div, name, nfo)
     else if (type === 'attributes') this._createAttributeDetails(div, name, nfo)
 
-    this.slide.updateSlide({
-      name: `html-reference-${type}-${name}`,
-      widget: this,
-      back: type === 'elements' ? this.eleListOpts : this.attrListOpts,
-      ele: div
-    })
+    if (type === 'elements' || type === 'attributes') {
+      this.slide.updateSlide({
+        name: `html-reference-${type}-${name}`,
+        widget: this,
+        back: type === 'elements' ? this.eleListOpts : this.attrListOpts,
+        ele: div
+      })
+    }
   }
 
   _createElementDetails (slide, name, nfo) {
