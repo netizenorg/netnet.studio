@@ -243,7 +243,7 @@ class CssReference extends Widget {
 
     let s = `<h1><a href="https://developer.mozilla.org/en-US/docs/Web/CSS color_value" target="_blank">color</a></h1><p>This is a ${clr} code, `
 
-    s += (type === 'keyword') ? `this specific color <code>${val}</code> is defined using a color <a href="${clrURL[type]}" target="_blank">${type}</a>.` : `this specific color <code>${val}</code> is defined using ${type === 'hex' ? 'a' : 'an'} <a href="${clrURL[type]}" target="_blank">${type}</a> color code.`
+    s += (type === 'keyword') ? `this specific color <code>${val}</code> is defined using a color <a href="${clrURL[type]}" target="_blank">${type}</a>.` : `this specific color <code>${val}</code> is defined using ${type === 'hex' ? 'a' : 'an'} <a href="${clrURL[type]}" target="_blank">${type}</a> color ${type === 'hex' ? 'code' : '<a href="https://css-tricks.com/complete-guide-to-css-functions/#aa-color-functions" target="_blank">function</a>'}.`
 
     const ix = `written as a <i>hex</i> code it would be <code>${r.hex}</code>`
     const ir = `written as an <i>rgb</i> code it would be <code>${r.rgb}</code>`
