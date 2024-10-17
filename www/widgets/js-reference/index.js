@@ -47,10 +47,12 @@ class JsReference extends Widget {
       ok: (e) => { e.hide() }
     }
 
-    const extras = this.data[eve.data]
-    const content = (extras && extras.bubble)
+    const eduSup = this.data[eve.data]
+    const content = (eduSup && eduSup.bubble)
       ? `<p>${this.data[eve.data].bubble}</p>`
-      : `<p>${eve.nfo.description.html}</p>`
+      : (eduSup && eduSup.extra)
+        ? `<p>${eve.nfo.description.html}${eduSup.extra}</p>`
+        : `<p>${eve.nfo.description.html}</p>`
 
     // TODO: update HTML to display corresponding cheatsheet
 

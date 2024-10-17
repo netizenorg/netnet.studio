@@ -114,11 +114,12 @@ class CssReference extends Widget {
     const nval = parseInt(eve.data)
     const d = !isNaN(nval) ? eve.data.split(nval)[1] : eve.data
 
-    const extras = this.data[d]
-    let content = (extras && extras.bubble)
+    const eduSup = this.data[d]
+    const content = (eduSup && eduSup.bubble)
       ? `<p>${this.data[d].bubble}</p>`
-      : `<p>${eve.nfo.description.html}</p>`
-    if (eve.type === 'comment') content = this.data[eve.type].bubble
+      : (eduSup && eduSup.extra)
+        ? `<p>${eve.nfo.description.html}${eduSup.extra}</p>`
+        : `<p>${eve.nfo.description.html}</p>`
 
     // update slide if necessary
     if (eve.type === 'property') this._createPropSlide(eve.data)
@@ -411,15 +412,17 @@ a:hover {
     h1.querySelector('a').style.color = 'var(--netizen-property)'
     div.appendChild(h1)
 
-    const extras = this.data[name]
+    const eduSup = this.data[name]
 
     const description = document.createElement('p')
     description.innerHTML = ''
     if (typeof nfo.status !== 'undefined' && nfo.status !== 'standard') {
       description.innerHTML += `Be warned! this property is <b>${nfo.status}</b> so it may not work on all browsers. `
     }
-    if (extras && extras.bubble) {
-      description.innerHTML = extras.bubble
+    if (eduSup && eduSup.bubble) {
+      description.innerHTML = eduSup.bubble
+    } else if (eduSup && eduSup.extra) {
+      description.innerHTML += nfo.description.html + eduSup.extra
     } else {
       description.innerHTML += nfo.description.html
     }
@@ -434,11 +437,11 @@ a:hover {
     div.appendChild(description)
     div.appendChild(document.createElement('br'))
 
-    if (extras && extras.example) {
+    if (eduSup && eduSup.example) {
       const ce = document.createElement('code-sample')
       div.appendChild(ce)
       setTimeout(() => {
-        ce.updateExample(extras.example, 'css')
+        ce.updateExample(eduSup.example, 'css')
       }, utils.getVal('--menu-fades-time') + 100)
     } else {
       div.appendChild(document.createElement('br'))
