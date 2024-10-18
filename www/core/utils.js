@@ -545,6 +545,7 @@ window.utils = {
     const val = parseInt(str)
     if (keys.includes(e.keyCode) && !isNaN(val)) {
       e.preventDefault()
+      if (NNW.speaking) window.convo.hide()
       const unt = str.replace(val, '')
       const inc = e.shiftKey ? 10 : 1
       const num = e.keyCode === 38 ? val + inc : val - inc

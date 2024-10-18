@@ -58,12 +58,7 @@ class HtmlReference extends Widget {
 
   textBubble (eve) {
     if (!eve) return
-    else if (eve.type === 'tag bracket') {
-      const content = this.data['tag bracket'].bubble
-      const options = { ok: (e) => { NNE.spotlight(null); e.hide() } }
-      window.convo = new Convo({ content, options }, null, true)
-      return
-    } else if (!eve.nfo) return
+    else if (!eve.nfo) return
 
     const more = () => {
       if (eve.type === 'element' || eve.type === 'attribute') {
@@ -85,11 +80,12 @@ class HtmlReference extends Widget {
       ok: (e) => { NNE.spotlight(null); e.hide() }
     }
 
-    const extras = this.data[eve.type] ? this.data[eve.type][eve.data] : null
-    let content = (extras && extras.bubble)
-      ? `<p>${extras.bubble}</p>`
-      : `<p>${eve.nfo.description.html}</p>`
-    if (eve.type === 'comment') content = this.data.comment.bubble
+    const eduSup = this.data[eve.type] ? this.data[eve.type][eve.data] : null
+    const content = (eduSup && eduSup.bubble)
+      ? `<p>${eduSup.bubble}</p>`
+      : (eduSup && eduSup.extra)
+        ? `<p>${eve.nfo.description.html}${eduSup.extra}</p>`
+        : `<p>${eve.nfo.description.html}</p>`
 
     this._createInfoSlide(eve.type + 's', eve.data, eve.nfo)
 
@@ -168,12 +164,24 @@ class HtmlReference extends Widget {
     }
 
     const description = document.createElement('p')
-    const hasEle = this.data.element[name] && this.data.element[name].bubble
-    const hasAtr = this.data.attribute[name] && this.data.attribute[name].bubble
+    const hasEle = this.data.element[name]
+    const hasAtr = this.data.attribute[name]
     if (type === 'elements' && hasEle) {
-      description.innerHTML = this.data.element[name].bubble
+      if (this.data.element[name].bubble) {
+        description.innerHTML = this.data.element[name].bubble
+      } else if (this.data.element[name].extra) {
+        description.innerHTML = nfo.description.html + this.data.element[name].extra
+      } else {
+        description.innerHTML = nfo.description.html
+      }
     } else if (type === 'attributes' && hasAtr) {
-      description.innerHTML = this.data.attribute[name].bubble
+      if (this.data.attribute[name].bubble) {
+        description.innerHTML = this.data.attribute[name].bubble
+      } else if (this.data.attribute[name].extra) {
+        description.innerHTML = nfo.description.html + this.data.attribute[name].extra
+      } else {
+        description.innerHTML = nfo.description.html
+      }
     } else {
       description.innerHTML = nfo.description.html
     }
@@ -182,21 +190,23 @@ class HtmlReference extends Widget {
     if (type === 'elements') this._createElementDetails(div, name, nfo)
     else if (type === 'attributes') this._createAttributeDetails(div, name, nfo)
 
-    this.slide.updateSlide({
-      name: `html-reference-${type}-${name}`,
-      widget: this,
-      back: type === 'elements' ? this.eleListOpts : this.attrListOpts,
-      ele: div
-    })
+    if (type === 'elements' || type === 'attributes') {
+      this.slide.updateSlide({
+        name: `html-reference-${type}-${name}`,
+        widget: this,
+        back: type === 'elements' ? this.eleListOpts : this.attrListOpts,
+        ele: div
+      })
+    }
   }
 
   _createElementDetails (slide, name, nfo) {
-    const extras = this.data.element[name]
-    if (extras && extras.example) {
+    const eduSup = this.data.element[name]
+    if (eduSup && eduSup.example) {
       const ce = document.createElement('code-sample')
       slide.appendChild(ce)
       setTimeout(() => {
-        ce.updateExample(extras.example, 'html')
+        ce.updateExample(eduSup.example, 'html')
       }, utils.getVal('--menu-fades-time') + 100)
     } else {
       slide.appendChild(document.createElement('br'))
@@ -236,12 +246,12 @@ class HtmlReference extends Widget {
   }
 
   _createAttributeDetails (slide, name, nfo) {
-    const extras = this.data.attribute[name]
-    if (extras && extras.example) {
+    const eduSup = this.data.attribute[name]
+    if (eduSup && eduSup.example) {
       const ce = document.createElement('code-sample')
       slide.appendChild(ce)
       setTimeout(() => {
-        ce.updateExample(extras.example, 'html')
+        ce.updateExample(eduSup.example, 'html')
       }, utils.getVal('--menu-fades-time') + 100)
     }
     if (nfo.note) {
