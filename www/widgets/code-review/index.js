@@ -57,6 +57,7 @@ class CodeReview extends Widget {
       /*
         HACK: not sure why, but some errors return e.line: 0 ???
         ex: localhost:8001/?tutorial=html-crash-course&t=1157
+        NOTE: this should be fixed now... but doesn't hurt to keep it
       */
       if (e.line === 0) e.line = 1
       const m = NNE.marker(e.line, clr, clk)
