@@ -34,14 +34,13 @@
 .demo-example-maker textarea[name="dem-url"] {
   display: none;
 
+  width: 100%;
+  margin: 10px 0px;
+  border: none;
+  padding: 7px;
+
   color: var(--netizen-meta);
   background-color: var(--netizen-hint-shadow);
-}
-
-.demo-example-maker-row {
-  display: flex;
-  
-  justify-content: space-between;
 }
 
 .demo-example-maker  button[name="dem-remove-step"] {
@@ -55,10 +54,6 @@
 
 .dem-rl-div button {
   height: fit-content;
-}
-
-.demo-example-maker hr {
-  border-color: var(--netizen-attribute);
 }
 
 .demo-example-maker input[type=text] {
@@ -88,6 +83,49 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+}
+
+.demo-example-maker__step-cnt {
+  overflow: hidden;
+
+  height: 280px;
+
+  transition: height 1s;
+}
+
+.demo-example-maker__step-data {
+  margin: 18px 0px 10px 0px;
+  border: 4px solid var(--fg-color);
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.demo-example-maker__settings-btn {
+  cursor: pointer;
+  user-select: none;
+}
+
+.demo-example-maker__settings-btn:hover {
+  color: var(--netizen-text);
+}
+
+.demo-example-maker__settings-btn:hover > i {
+  border-color: var(--netizen-text);
+}
+
+.demo-example-maker__settings {
+  display: none;
+}
+
+.demo-exmaple-maker__settings__details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: 190px;
+  margin: 30px 10px 10px 10px;
 }
 
 /* .dem-rl-div .reorderable-list {
