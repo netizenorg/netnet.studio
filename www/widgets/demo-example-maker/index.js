@@ -166,6 +166,20 @@ class DemoExampleMaker extends Widget {
       }
     })
 
+    this.$('.pill-btn.pill-btn--secondary').forEach(b => b.addEventListener('click', (e) => {
+      if (e.target.name === 'dem-save-info') {
+        window.convo = new Convo(this.convos, 'save-info')
+      } else if (e.target.name === 'dem-layout-info') {
+        window.convo = new Convo(this.convos, 'layout-info')
+      } else if (e.target.name === 'dem-toc-info') {
+        window.convo = new Convo(this.convos, 'toc-info')
+      } else if (e.target.name === 'dem-name-info') {
+        window.convo = new Convo(this.convos, 'name-info')
+      } else if (e.target.name === 'dem-tags-info') {
+        window.convo = new Convo(this.convos, 'tags-info')
+      }
+    }))
+
     this.$('[name="dem-demo-toc"]').addEventListener('change', () => {
       if (this.$('[name="dem-demo-toc"]').checked) {
         this._data.toc = true
