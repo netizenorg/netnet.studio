@@ -196,9 +196,9 @@ class ReorderableList extends HTMLElement {
   }
 
   updateLastStep (steps = [...this.querySelectorAll('.rl-step')]) {
-    const previousLastStep = document.querySelector(".rl-last-step")
-    previousLastStep?.classList.remove("rl-last-step");
-    steps[steps.length - 1]?.classList.add("rl-last-step");
+    const previousLastStep = document.querySelector('.rl-last-step')
+    previousLastStep?.classList.remove('rl-last-step')
+    steps[steps.length - 1]?.classList.add('rl-last-step')
   }
 
   selectStep (step, container) {
@@ -220,26 +220,26 @@ class ReorderableList extends HTMLElement {
   }
 
   moveSteps (step, up) {
-    const steps = step.parentNode.querySelectorAll('.rl-step');
-    const currentIndex = Number(step.dataset.id);
-    const newIndex = up ? currentIndex - 1 : currentIndex + 1;
+    const steps = step.parentNode.querySelectorAll('.rl-step')
+    const currentIndex = Number(step.dataset.id)
+    const newIndex = up ? currentIndex - 1 : currentIndex + 1
 
     if (newIndex < 0 || newIndex >= steps.length) {
-      console.warn("Cannot move step further in this direction");
-      return;
+      console.warn('Cannot move step further in this direction')
+      return
     }
 
-    const parent = step.parentNode;
-    const targetStep = steps[newIndex];
+    const parent = step.parentNode
+    const targetStep = steps[newIndex]
 
     if (up) {
-      parent.insertBefore(step, targetStep);
+      parent.insertBefore(step, targetStep)
     } else {
-      parent.insertBefore(targetStep, step);
+      parent.insertBefore(targetStep, step)
     }
 
-    step.dataset.id = newIndex;
-    targetStep.dataset.id = currentIndex;
+    step.dataset.id = newIndex
+    targetStep.dataset.id = currentIndex
 
     WIDGETS[this.widget]._updateStep({
       oldIdx: currentIndex,
