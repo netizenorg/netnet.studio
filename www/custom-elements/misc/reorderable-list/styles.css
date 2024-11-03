@@ -44,7 +44,8 @@ reorderable-list {
     scrollbar-width: thin;
 }
 
-.reorderable-list .rl-list .rl-step {
+.rl-list .rl-step {
+    cursor: grab;
     background-color: var(--netizen-meta);
     border-radius: 5px;
     color: var(--bg-color);
@@ -53,6 +54,10 @@ reorderable-list {
     margin: .15rem;
     padding: .25rem;
     width: 97%;
+}
+
+.rl-step.dragging {
+    background-color: var(--netizen-text);
 }
 
 .rl-step .rl-details {
@@ -75,6 +80,7 @@ reorderable-list {
 }
 
 .rl-info {
+    cursor: pointer;
     display: flex;
     z-index: 200;
 }
@@ -90,8 +96,7 @@ reorderable-list {
 }
 
 .reorderable-list .rl-info-menu {
-    /* position: relative; */
-    /* left: -50px; */
+    cursor: pointer;
     display: flex;
     background-color: var(--netizen-meta);
     box-sizing: border-box;
@@ -107,36 +112,44 @@ reorderable-list {
 }
 
 .rl-info-menu .rl-trash-can {
+    cursor: pointer;
     fill: var(--bg-color);
     overflow: none;
 }
 
-.rl-info-menu .arrow {
+.rl-info-menu .rl-arrow {
     border-color: solid var(--bg-color);
     margin: 0 .25rem;
     padding: 7px;
 }
 
-.rl-info-menu .up {
+.rl-info-menu .rl-up {
     margin-top: 7px;
 }
 
-.arrow {
+.rl-arrow {
     border: solid var(--netizen-meta);
     border-width: 0 3px 3px 0;
     border-radius: 3px;
+    cursor: pointer;
     display: inline-block;
     padding: 5px;
     margin-right: .4rem;
 }
 
-.down {
+.rl-down {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
 }
 
-.up {
+.rl-up {
     transform: rotate(225deg);
     -webkit-transform: rotate(225deg);
 }
 
+.rl-step[data-id="0"] .rl-up-p,
+.rl-step.rl-last-step .rl-down-p {
+    cursor: not-allowed;
+    opacity: 0.3;
+    pointer-events: none;
+}
