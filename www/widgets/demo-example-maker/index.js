@@ -56,40 +56,57 @@ class DemoExampleMaker extends Widget {
   _createHTML (types) {
     this.innerHTML = `
       <div class="demo-example-maker">
-        <div class="dem-rl-div">
-          <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
-        </div>
-        <hr>
-        <div class="dem-div">
-          <input placeholder="step title" type="text" name="dem-s-title">
-          <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
-        </div>
-        <div name="dem-s-text" placeholder="explain step"></div>
-        <button class="pill-btn pill-btn--secondary" name="dem-preview-step">preview</button>
-        <button class="pill-btn pill-btn--secondary" name="dem-remove-step">remove this step</button>
-        <br>
-        <hr>
-        <div style="margin: 10px 15px;">
-          <div class="demo-example-maker-row">
-            <span>layout <select class="dropdown dropdown--invert" name="dem-demo-layout"></select></span>
-            <span>
-              display toc <input type="checkbox" name="dem-demo-toc">
-              (table of contents)
-            </span>
+        <div class="demo-example-maker__step-cnt">
+          <div class="dem-rl-div">
+            <button class="pill-btn pill-btn--secondary" name="dem-add-step" style="float: right">add new step</button>
           </div>
-          tags (for json) <input type="text" placeholder="(comma separated)"
-            name="dem-demo-tags" style="width: 370px">
+
+          <div class="demo-example-maker__step-data">
+            <div class="dem-div">
+              <input placeholder="step title" type="text" name="dem-s-title">
+              <input type="text" placeholder="line numbers (comma separated)" name="dem-s-focus">
+            </div>
+            <div name="dem-s-text" placeholder="explain step"></div>
+            <button class="pill-btn pill-btn--secondary" name="dem-preview-step">preview this step</button>
+            <button class="pill-btn pill-btn--secondary" name="dem-remove-step">remove this step</button>
+          </div>
         </div>
-        <hr>
-        <div style="float: right">
-          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-gen-url">generate link</button>
-          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-up-json" id="json-btn">upload json</button>
-          <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-dl-json">download json</button>
-          <input name="dem-demo-name" placeholder="demo name (for json file)" type="text">
+
+        <h3 class="demo-example-maker__settings-btn">
+           <i class="rl-arrow rl-down"></i> settings
+        </h3>
+
+        <div class="demo-example-maker__settings">
+          <div>
+            <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-gen-url">generate link</button>
+            <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-up-json" id="json-btn">upload json</button>
+            <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-dl-json">download json</button>
+            <button class="pill-btn pill-btn--secondary" name="dem-save-info">?</button>
+          </div>
+
+          <textarea name="dem-url"></textarea>
+
+          <div class="demo-exmaple-maker__settings__details">
+            <div>
+              <span>layout <select class="dropdown dropdown--invert" name="dem-demo-layout"></select></span>
+              <button class="pill-btn pill-btn--secondary" style="margin-left: 3px;" name="dem-layout-info">?</button>
+            </div>
+            <div>
+              <span>
+                <input type="checkbox" name="dem-demo-toc"> display table of contents
+              </span>
+              <button class="pill-btn pill-btn--secondary" style="margin-left: 10px;" name="dem-toc-info">?</button>
+            </div>
+            <div>
+            json file name <input style="width: 300px; margin: 0 10px 0 10px;" name="dem-demo-name" placeholder="demo name" type="text">
+              <button class="pill-btn pill-btn--secondary" name="dem-name-info">?</button>
+            </div>
+            <div>
+              json file tags <input type="text" placeholder="(comma separated)" name="dem-demo-tags" style="width: 300px; margin: 0 10px 0 20px;">
+              <button class="pill-btn pill-btn--secondary" name="dem-tags-info">?</button>
+            </div>
+          </div>
         </div>
-        <br>
-        <br>
-        <textarea name="dem-url"></textarea>
       </div>
     `
     this._setupReorderableList()
@@ -132,6 +149,36 @@ class DemoExampleMaker extends Widget {
       this._updateStep(this._curStep, 'remove')
     })
 
+    this.$('.demo-example-maker__settings-btn').addEventListener('click', () => {
+      if (this.$('.demo-example-maker__settings').style.display === 'block') {
+        this.$('.demo-example-maker__settings').style.display = 'none'
+        this.$('.demo-example-maker__settings-btn > i').classList.remove('rl-up')
+        this.$('.demo-example-maker__settings-btn > i').classList.add('rl-down')
+        this.$('.demo-example-maker__step-cnt').style.height = '280px'
+        this.keepInFrame()
+      } else {
+        this.$('.demo-example-maker__settings').style.display = 'block'
+        this.$('.demo-example-maker__settings-btn > i').classList.remove('rl-down')
+        this.$('.demo-example-maker__settings-btn > i').classList.add('rl-up')
+        this.$('.demo-example-maker__step-cnt').style.height = '0px'
+        this.keepInFrame()
+      }
+    })
+
+    this.$('.pill-btn.pill-btn--secondary').forEach(b => b.addEventListener('click', (e) => {
+      if (e.target.name === 'dem-save-info') {
+        window.convo = new Convo(this.convos, 'save-info')
+      } else if (e.target.name === 'dem-layout-info') {
+        window.convo = new Convo(this.convos, 'layout-info')
+      } else if (e.target.name === 'dem-toc-info') {
+        window.convo = new Convo(this.convos, 'toc-info')
+      } else if (e.target.name === 'dem-name-info') {
+        window.convo = new Convo(this.convos, 'name-info')
+      } else if (e.target.name === 'dem-tags-info') {
+        window.convo = new Convo(this.convos, 'tags-info')
+      }
+    }))
+
     this.$('[name="dem-demo-toc"]').addEventListener('change', () => {
       if (this.$('[name="dem-demo-toc"]').checked) {
         this._data.toc = true
@@ -140,6 +187,7 @@ class DemoExampleMaker extends Widget {
 
     this.$('[name="dem-gen-url"]').addEventListener('click', () => {
       this._generateURL()
+      this.keepInFrame()
     })
 
     this.$('[name="dem-dl-json"]').addEventListener('click', () => {
@@ -284,7 +332,7 @@ class DemoExampleMaker extends Widget {
     } else if (isNaN(step)) {
       const { newIdx, oldIdx } = step
 
-      const [selectedStep] = steps.splice(oldIdx, 1);
+      const [selectedStep] = steps.splice(oldIdx, 1)
       const updatedSteps = steps.splice(newIdx, 0, selectedStep)
 
       updatedSteps.forEach((step, index) => {
