@@ -73,11 +73,11 @@ class DemoExampleMaker extends Widget {
         </div>
 
         <h3 class="demo-example-maker__settings-btn">
-           <i class="arrow down"></i> settings
+           <i class="rl-arrow rl-down"></i> settings
         </h3>
 
         <div class="demo-example-maker__settings">
-          <div style="display: flex; justify-content: space-between;">
+          <div>
             <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-gen-url">generate link</button>
             <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-up-json" id="json-btn">upload json</button>
             <button class="pill-btn pill-btn--secondary"class="pill-btn pill-btn--secondary" name="dem-dl-json">download json</button>
@@ -89,21 +89,20 @@ class DemoExampleMaker extends Widget {
           <div class="demo-exmaple-maker__settings__details">
             <div>
               <span>layout <select class="dropdown dropdown--invert" name="dem-demo-layout"></select></span>
-              <button class="pill-btn pill-btn--secondary" name="dem-layout-info">?</button>
+              <button class="pill-btn pill-btn--secondary" style="margin-left: 3px;" name="dem-layout-info">?</button>
             </div>
             <div>
               <span>
-                display toc <input type="checkbox" name="dem-demo-toc">
-                (table of contents)
+                <input type="checkbox" name="dem-demo-toc"> display table of contents
               </span>
-              <button class="pill-btn pill-btn--secondary" name="dem-toc-info">?</button>
+              <button class="pill-btn pill-btn--secondary" style="margin-left: 10px;" name="dem-toc-info">?</button>
             </div>
             <div>
-              json file name <input name="dem-demo-name" placeholder="demo name" type="text">
+            json file name <input style="width: 300px; margin: 0 10px 0 10px;" name="dem-demo-name" placeholder="demo name" type="text">
               <button class="pill-btn pill-btn--secondary" name="dem-name-info">?</button>
             </div>
             <div>
-              json file tags <input type="text" placeholder="(comma separated)" name="dem-demo-tags" style="width: 370px">
+              json file tags <input type="text" placeholder="(comma separated)" name="dem-demo-tags" style="width: 300px; margin: 0 10px 0 20px;">
               <button class="pill-btn pill-btn--secondary" name="dem-tags-info">?</button>
             </div>
           </div>
@@ -153,14 +152,14 @@ class DemoExampleMaker extends Widget {
     this.$('.demo-example-maker__settings-btn').addEventListener('click', () => {
       if (this.$('.demo-example-maker__settings').style.display === 'block') {
         this.$('.demo-example-maker__settings').style.display = 'none'
-        this.$('.demo-example-maker__settings-btn > i').classList.remove('up')
-        this.$('.demo-example-maker__settings-btn > i').classList.add('down')
+        this.$('.demo-example-maker__settings-btn > i').classList.remove('rl-up')
+        this.$('.demo-example-maker__settings-btn > i').classList.add('rl-down')
         this.$('.demo-example-maker__step-cnt').style.height = '280px'
         this.keepInFrame()
       } else {
         this.$('.demo-example-maker__settings').style.display = 'block'
-        this.$('.demo-example-maker__settings-btn > i').classList.remove('down')
-        this.$('.demo-example-maker__settings-btn > i').classList.add('up')
+        this.$('.demo-example-maker__settings-btn > i').classList.remove('rl-down')
+        this.$('.demo-example-maker__settings-btn > i').classList.add('rl-up')
         this.$('.demo-example-maker__step-cnt').style.height = '0px'
         this.keepInFrame()
       }
