@@ -15,7 +15,7 @@ class ReorderableList extends HTMLElement {
                     <p class="rl-s-i">0.</p>
                     <p class="rl-s-t">getting started</p>
                 </div>
-                <p><i class="arrow down"></i></p>
+                <p><i class="rl-arrow rl-down"></i></p>
             </div>
             <ul class="rl-list">
             </ul
@@ -75,6 +75,7 @@ class ReorderableList extends HTMLElement {
       step.dataset.id = index
       step.querySelector('.rl-s-i').textContent = index.toString()
     })
+    this.updateLastStep(steps)
   }
 
   dropdownActivated () {
@@ -105,8 +106,8 @@ class ReorderableList extends HTMLElement {
             <div class="rl-info">
                 <img class="rl-info-icon" src="/assets/images/widgets/info-button.svg" activated="false" />
                 <div class="rl-info-menu">
-                    <p><i class="arrow up"></i></p>
-                    <p><i class="arrow down"></i></p>
+                    <p class="rl-up-p" ><i class="rl-arrow rl-up"></i></p>
+                    <p class="rl-down-p"><i class="rl-arrow rl-down"></i></p>
                     <img class="rl-trash-can" src="/assets/images/widgets/trash.svg"/>
                 </div>
             </div>
@@ -123,11 +124,11 @@ class ReorderableList extends HTMLElement {
       info.querySelector('.rl-info-menu').style.paddingLeft = '0'
     })
 
-    step.querySelector('.arrow.down').addEventListener('click', () => {
+    step.querySelector('.rl-down-p').addEventListener('click', () => {
       this.moveSteps(step)
     })
 
-    step.querySelector('.arrow.up').addEventListener('click', () => {
+    step.querySelector('.rl-up-p').addEventListener('click', () => {
       this.moveSteps(step, 'up')
     })
 
@@ -162,6 +163,7 @@ class ReorderableList extends HTMLElement {
     highlightedStep.querySelector('.rl-s-t').textContent = data.title
 
     this.querySelector('.rl-list').appendChild(step)
+    this.updateLastStep()
   }
 
   updateStep (data, remove) {
@@ -193,6 +195,12 @@ class ReorderableList extends HTMLElement {
     }
   }
 
+  updateLastStep (steps = [...this.querySelectorAll('.rl-step')]) {
+    const previousLastStep = document.querySelector('.rl-last-step')
+    previousLastStep?.classList.remove('rl-last-step')
+    steps[steps.length - 1]?.classList.add('rl-last-step')
+  }
+
   selectStep (step, container) {
     if (step === 0) {
       step = document.querySelector('.rl-step:nth-of-type(1)')
@@ -214,40 +222,31 @@ class ReorderableList extends HTMLElement {
   moveSteps (step, up) {
     const steps = step.parentNode.querySelectorAll('.rl-step')
     const currentIndex = Number(step.dataset.id)
-    const isFirst = currentIndex === 0
-    const isSecondToFirst = currentIndex === 1
-    const isSecondToLast = currentIndex === steps.length - 2
-    const isLast = currentIndex === steps.length - 1
+    const newIndex = up ? currentIndex - 1 : currentIndex + 1
 
-    const updateStepAndMove = (newIndex) => {
-      WIDGETS[this.widget]._updateStep({
-        oldIdx: currentIndex,
-        newIdx: newIndex
-      })
-      if (isSecondToLast) {
-        // last element
-        step.parentNode.appendChild(step)
-      } else {
-        const refStep = steps[newIndex]
-        step.parentNode.insertBefore(step, refStep)
-      }
-      this.updateList()
-      this.selectStep(step, this.querySelector('.rl-h-text'))
+    if (newIndex < 0 || newIndex >= steps.length) {
+      console.warn('Cannot move step further in this direction')
+      return
     }
+
+    const parent = step.parentNode
+    const targetStep = steps[newIndex]
 
     if (up) {
-      if (isSecondToFirst) {
-        updateStepAndMove(0)
-      } else if (!isFirst) {
-        updateStepAndMove(currentIndex - 1)
-      }
+      parent.insertBefore(step, targetStep)
     } else {
-      if (isSecondToLast) {
-        updateStepAndMove(currentIndex + 1)
-      } else if (!isLast) {
-        updateStepAndMove(currentIndex + 2)
-      }
+      parent.insertBefore(targetStep, step)
     }
+
+    step.dataset.id = newIndex
+    targetStep.dataset.id = currentIndex
+
+    WIDGETS[this.widget]._updateStep({
+      oldIdx: currentIndex,
+      newIdx: newIndex
+    })
+    this.updateList()
+    this.selectStep(step, this.querySelector('.rl-h-text'))
   }
 }
 
