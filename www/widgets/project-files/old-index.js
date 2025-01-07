@@ -9,7 +9,7 @@ class ProjectFiles extends Widget {
 
     this.title = 'Project Files'
     this._createHTML()
-    // this._setupFileUploader()
+    this._setupFileUploader()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -36,17 +36,9 @@ class ProjectFiles extends Widget {
     this.$('[name="upload"]')
       .addEventListener('click', () => this.fu.input.click())
 
-    // this.updateFiles()
+    this.updateFiles()
   }
 
-  saveCurrentFile () {
-    // this.convos = window.CONVOS[this.key](this)
-    // TODO: create convo logic for this.
-
-    // TODO: save currently opened file
-    console.log('PF: saveCurrentFile');
-  }
-/*
   updateFiles (data) {
     // runs everytime a new repo (github project) is created or opened
     // as well as anytime a file is uploaded or deleted
@@ -176,7 +168,6 @@ class ProjectFiles extends Widget {
       }
     })
   }
-  */
 }
 
 window.ProjectFiles = ProjectFiles

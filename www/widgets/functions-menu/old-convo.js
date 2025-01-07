@@ -41,10 +41,10 @@ window.CONVOS['functions-menu'] = (self) => {
         e.hide()
         self.downloadCode()
       },
-      'Can I share this sketch?': (e) => WIDGETS.open('share-widget')
+      'Can I share this sketch?': (e) => self.shareSketch()
     }
     if (window.localStorage.getItem('owner')) {
-      opts['can I create a new project?'] = () => self._newProject()
+      opts['can I create a new project?'] = () => self.saveProject()
     }
     opts['session data?'] = () => WIDGETS.open('student-session')
     return opts
@@ -52,7 +52,7 @@ window.CONVOS['functions-menu'] = (self) => {
 
   return [{
     id: 'need-to-update',
-    content: `When <code>auto-update</code> is set to <code>false</code> you'll need to manually run the update to see your changes by pressing <b>${hotkey}+Enter</b> keys on your keyboard`,
+    content: `When <code>autoUpdate</code> is set to <code>false</code> you'll need to manually run the update to see your changes. You can click the <code>runUpdate()</code> button in the Functions Menu or press <b>${hotkey}+Enter</b>`,
     options: { 'got it': (e) => e.hide() }
   }, {
     id: 'temp-disclaimer',
@@ -60,7 +60,7 @@ window.CONVOS['functions-menu'] = (self) => {
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'session-saved',
-    content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.',
+    content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later I\'ll give you the option to pick back up where you left off.',
     options: sessionSaveOpts()
   }, {
     id: 'blank-canvas-ready',
@@ -86,30 +86,11 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...
   // ... saving new projs...
   {
-    id: 'viewing-prev-saved-proj',
-    content: `It appears you're experimenting with your project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>. Would you like me to open it so you can continue working on it?`,
-    options: {
-      'yes open it': (e) => self.openFile(),
-      'no, let\'s create something new': (e) => self.new(),
-      'oh, never mind then': (e) => e.hide()
-    }
-  },
-  {
-    id: 'unsaved-changes-b4-fork-proj-logged-out',
-    content: `It appears you've got  <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a> open. If you connect me to your GitHub I can create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you so you can create your own remix from it.`,
-    options: {
-      'GitHub account?': (e) => { WIDGETS['student-session'].chatGitHubAuth() },
-      'no, let\'s create something new': (e) => self.new(),
-      'oh, never mind then': (e) => e.hide()
-    }
-  },
-  {
     id: 'unsaved-changes-b4-fork-proj',
     content: `It appears you've got  <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a> open. If you want to remix this project I can now create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you?`,
     options: {
       'yea let\'s remix it!': (e) => e.goTo('agree-to-fork'),
-      'no, let\'s create something new': (e) => self.new(),
-      'oh, never mind then': (e) => e.hide()
+      'no let\'s create a new project?': (e) => e.goTo('create-new-project')
     }
   }, {
     before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
@@ -123,7 +104,7 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'unsaved-changes-b4-new-proj',
     content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
-      ok: (e) => self.saveProject('new-project'), // TODO: must update
+      ok: (e) => self.saveProject('new-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
       'actually, i\'ll keep working on this': (e) => e.hide()
     }
@@ -135,19 +116,6 @@ window.CONVOS['functions-menu'] = (self) => {
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
-      }
-    }
-  }, {
-    id: 'new-proj-or-sketch',
-    content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
-    options: {
-      'let\'s start a new project': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newProject()
-      },
-      'I just want to sketch': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newSketch() // TODO: must update
       }
     }
   }, {
@@ -247,7 +215,7 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'unsaved-changes-b4-open-proj',
     content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
-      ok: (e) => self.saveProject('open-project'), // TODO: must update
+      ok: (e) => self.saveProject('open-project'),
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
       'actually, i\'ll keep working on this': (e) => e.hide()
     }

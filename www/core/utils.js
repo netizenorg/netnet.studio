@@ -515,7 +515,7 @@ window.utils = {
     if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
   },
 
-  hideConvoIf: () => {
+  hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
     const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()

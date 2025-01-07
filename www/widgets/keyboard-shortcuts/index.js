@@ -12,9 +12,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 83,
         callback: (e) => {
           e.preventDefault()
-          if (window.sessionStorage.getItem('opened-project')) {
-            WIDGETS['functions-menu'].saveProject()
-          } else WIDGETS['functions-menu'].saveSketch()
+          WIDGETS['functions-menu'].save()
         }
       },
       {
@@ -198,7 +196,10 @@ class KeyboardShortcuts extends Widget {
         e.preventDefault()
         e.stopPropagation()
         NNE.cm.undo() // remove \n that Enter adds
-        if (!NNE.autoUpdate) WIDGETS['functions-menu'].runUpdate()
+        if (!NNE.autoUpdate) {
+          console.clear()
+          NNE.update()
+        }
       }
     })
   }

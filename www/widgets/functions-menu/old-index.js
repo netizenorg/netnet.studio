@@ -2,82 +2,140 @@
 class FunctionsMenu extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'The Menu'
+    this.title = 'Functions Menu'
     this.key = 'functions-menu'
     this.keywords = ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
     this.listed = true
     this.resizable = false
 
-    this.codeMenu = [
+    this.ghAuthedMenu = [
       {
-        key: 'save',
-        alts: ['save', 'github', 'project', 'repo', 'repository']
-      },
-      {
-        key: 'new',
-        alts: ['new', 'blank', 'start', 'fresh', 'canvas']
-      },
-      {
-        key: 'open',
-        func: 'openFile',
-        alts: ['open', 'github', 'project', 'repo', 'repository']
-      },
-      {
-        key: 'share',
-        alts: ['host', 'github', 'publish', 'public', 'share'],
-        hrAfter: true
-      },
-      {
-        key: 'code review',
+        click: 'codeReview',
         alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
       },
       {
-        key: 'tidy code',
-        alts: ['tidy', 'format', 'clean', 'indent']
+        click: 'tidyCode',
+        alts: ['tidy', 'format', 'clean', 'indent'],
+        hrAfter: true
+      },
+      {
+        click: 'uploadAssets',
+        alts: ['files', 'upload', 'assets'],
+        hrAfter: true
+      },
+      {
+        click: 'newProject',
+        alts: ['new', 'blank', 'start', 'fresh', 'canvas']
+      },
+      {
+        click: 'openProject',
+        alts: ['open', 'github', 'project', 'repo', 'repository']
+      },
+      {
+        click: 'closeProject',
+        alts: ['quit', 'close', 'github', 'project', 'repo', 'repository']
+      },
+      {
+        click: 'saveProject',
+        alts: ['save', 'github', 'project', 'repo', 'repository'],
+        hrAfter: true
+      },
+      {
+        click: 'publishProject',
+        alts: ['host', 'github', 'publish', 'public']
+      },
+      {
+        click: 'shareProject',
+        alts: ['share', 'github', 'project', 'link']
+      },
+      {
+        click: 'downloadProject',
+        alts: ['download', 'export', 'save'],
+        hrAfter: true
+      },
+      {
+        click: 'downloadCode',
+        alts: ['download', 'export', 'save']
       }
       // {
-      //   key: 'BrowserFest',
+      //   click: 'BrowserFest',
       //   alts: []
       // }
     ]
 
+    this.noAuthedMenu = [
+      {
+        click: 'codeReview',
+        alts: ['check', 'code', 'review', 'audit', 'lint', 'error', 'mistake']
+      },
+      {
+        click: 'tidyCode',
+        alts: ['tidy', 'format', 'clean', 'indent'],
+        hrAfter: true
+      },
+      {
+        click: 'newSketch',
+        alts: ['new', 'sketch', 'blank', 'canvas']
+      },
+      {
+        click: 'shareSketch',
+        alts: ['share', 'link', 'save']
+      },
+      {
+        click: 'saveSketch',
+        alts: ['progress', 'save', 'state'],
+        hrAfter: true
+      },
+      {
+        click: 'downloadCode',
+        alts: ['download', 'export', 'save']
+      },
+      {
+        click: 'uploadCode',
+        alts: ['upload', 'import', 'open']
+      }
+    ]
+
     this.editorSettingsMenu = [
       {
-        key: 'auto-update',
+        click: 'autoUpdate',
         alts: ['update', 'render', 'auto', 'compile'],
         select: 'func-menu-update-select'
       },
       {
-        key: 'chattiness',
+        click: 'runUpdate',
+        alts: ['update', 'render', 'compile']
+      },
+      {
+        click: 'chattiness',
         alts: ['chatty', 'dialogue', 'netnet', 'bubbles'],
         select: 'func-menu-chat-select'
       },
       // {
-      //   key: 'popUpWindow',
+      //   click: 'popUpWindow',
       //   alts: ['pop', 'up', 'out', 'separate', 'window']
       // },
       {
-        key: 'layout',
+        click: 'changeLayout',
         alts: ['layout', 'view', 'orientation', 'setup'],
         select: 'func-menu-layout-select'
       },
       {
-        key: 'theme',
+        click: 'changeTheme',
         alts: ['theme', 'color', 'style', 'syntax highlight'],
         select: 'func-menu-themes-select'
       },
       {
-        key: 'word wrap',
+        click: 'wordWrap',
         alts: ['word', 'line', 'wrap', 'warpping'],
-        select: 'func-menu-wrap-select',
-        hrAfter: true
+        select: 'func-menu-wrap-select'
       },
       {
-        key: 'view shortcuts',
+        click: 'viewShortcuts',
         alts: []
       },
       {
-        key: 'view your data',
+        click: 'viewYourData',
         alts: []
       }
     ]
@@ -108,80 +166,29 @@ class FunctionsMenu extends Widget {
     NNE.tidy()
   }
 
-  // uploadAssets () {
-  //   WIDGETS.open('project-files')
-  // }
-
-  save () {
-    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
-    this.convos = window.CONVOS[this.key](this)
-
-    if (WIDGETS['student-session'].getData('opened-project')) {
-      // working on an opened github project
-      WIDGETS['project-files'].saveCurrentFile()
-    } else if (utils.url.github) {
-      this.convos = window.CONVOS[this.key](this)
-      const ghOwner = utils.url.github.split('/')[0]
-      const loggedIn = WIDGETS['student-session'].getData('owner')
-      if (loggedIn && loggedIn === ghOwner) { // viewing ur own project
-        window.convo = new Convo(this.convos, 'viewing-prev-saved-proj')
-      } else if (loggedIn) { // viewing someone else's gh project
-        window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
-      } else {
-        window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj-logged-out')
-      }
-    } else { // working on a sketch
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'session-saved')
-      this.sesh.setSavePoint() // TODO... see this through... convo options
-    }
+  uploadAssets () {
+    WIDGETS.open('project-files')
   }
 
-  new () {
-    this.convos = window.CONVOS[this.key](this)
-    const loggedIn = WIDGETS['student-session'].getData('owner')
-    const openedProj = WIDGETS['student-session'].getData('opened-project')
-    if (loggedIn) {
-      if (openedProj) {
-        // new file or new project?
+  saveProject (redirect) {
+    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
+    const op = WIDGETS['student-session'].data.github.openedProject
+    if (utils.url.github) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+    } if (op) {
+      this.convos = window.CONVOS[this.key](this)
+      this._redirect = redirect // if trying to create 'new-project' or 'open-project'
+      const msg = WIDGETS['student-session'].getData('last-commit-msg')
+      if (msg === 'netnet initialized repo' || msg === 'Initial commit') {
+        window.convo = new Convo(this.convos, 'save-newish-project')
       } else {
-        // new project or new sketch
+        window.convo = new Convo(this.convos, 'save-open-project')
       }
     } else {
-      // new project (explain login) or new sketch 
+      this.newProject()
     }
-    console.log('ran new');
   }
-
-  _newProject () {
-
-  }
-
-  _newSketch () {
-    this.convos = window.CONVOS[this.key](this)
-    WIDGETS['student-session'].clearSaveState()
-    const name = this.sesh.getData('username')
-    NNW.layout = 'dock-left'
-    NNE.code = typeof name === 'string'
-      ? `<h1>Hello World Wide Web!</h1>\n<h2>by ${name}</h2>`
-      : '<h1>Hello World Wide Web!</h1>'
-    setTimeout(() => {
-      window.convo = new Convo(this.convos, 'blank-canvas-ready')
-      if (!NNE.autoUpdate) NNE.update()
-    }, utils.getVal('--layout-transition-time'))
-  }
-
-  share () {
-
-  }
-
-  openFile () {
-    // TODO: check for utils.url.github
-    // if user's project is there (may have been redirectored from save())
-    // do something about it...
-    console.log('ran open');
-  }
-
 
   newProject () {
     const op = WIDGETS['student-session'].data.github.openedProject
@@ -259,6 +266,28 @@ class FunctionsMenu extends Widget {
     WIDGETS.open('share-widget')
   }
 
+  saveSketch () {
+    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'session-saved')
+    this.sesh.setSavePoint()
+  }
+
+  newSketch () {
+    WIDGETS['student-session'].clearSaveState()
+    const name = this.sesh.getData('username')
+    const adj = [
+      'Super Rad', 'Amazing', 'Spectacular', 'Revolutionary', 'Contemporary'
+    ]
+    NNW.layout = 'dock-left'
+    NNE.code = typeof name === 'string'
+      ? `<h1>${nn.random(adj)} Net Art</h1>\n<h2>by ${name}</h2>`
+      : '<h1>Hello World Wide Web!</h1>'
+    setTimeout(() => {
+      window.convo = new Convo(this.convos, 'blank-canvas-ready')
+      if (!NNE.autoUpdate) NNE.update()
+    }, utils.getVal('--layout-transition-time'))
+  }
 
   downloadCode () {
     const uri = `data:text/html;base64,${utils.btoa(NNE.code)}`
@@ -274,10 +303,6 @@ class FunctionsMenu extends Widget {
     this.fu.input.click()
   }
 
-
-
-  // ------------------------------------------ editor settings functions ------
-
   autoUpdate (val) {
     const gotVal = typeof val === 'boolean'
     NNE.autoUpdate = gotVal ? val : this.autoUpdateSel.value === 'true'
@@ -289,6 +314,12 @@ class FunctionsMenu extends Widget {
     } else if (!gotVal && window.convo && window.convo.id === 'need-to-update') {
       window.convo.hide()
     }
+    this._hideIrrelevantOpts('autoUpdate')
+  }
+
+  runUpdate () {
+    console.clear()
+    NNE.update()
   }
 
   changeLayout () {
@@ -353,7 +384,6 @@ class FunctionsMenu extends Widget {
     this._createHTML(gh)
   }
 
-  // TODO: MARK FOR RE-EVALUATION
   gitHubProjectsUpdated () {
     this.convos = window.CONVOS[this.key](this)
   }
@@ -379,8 +409,6 @@ class FunctionsMenu extends Widget {
     setTimeout(() => this.keepInFrame(), 500)
   }
 
-  // TODO: MARK FOR DELETION
-  // TODO: update in search-bar as well
   checkIfHidden (func) { // check if this menu function has been hidden
     const m = [...this.$('button')].filter(e => e.textContent.includes(func))
     if (m.length > 0 && m[0].style.display === 'none') return true
@@ -393,7 +421,8 @@ class FunctionsMenu extends Widget {
 
   _createHTML (gh) {
     this.subs = {}
-    this.subs['my code'] = this.codeMenu
+    if (gh) this.subs['my project'] = this.ghAuthedMenu
+    else this.subs['my sketch'] = this.noAuthedMenu
     this.subs['editor settings'] = this.editorSettingsMenu
 
     this.innerHTML = `
@@ -450,23 +479,22 @@ class FunctionsMenu extends Widget {
       div.appendChild(subSec)
       this.subs[sub].forEach(btn => {
         const b = document.createElement('button')
-        b.textContent = btn.key
-        const func = btn.func || this._toCamelCase(btn.key)
+        b.textContent = btn.click + '('
         // HACK: to avoid having netnet's textBubble pull focus from drop down
         // which causes autoUpdate to get stuck on false in some systems
-        if (btn.key !== 'auto-update' && btn.key !== 'chattiness') {
-          b.addEventListener('click', (e) => this[func]())
+        if (btn.click !== 'autoUpdate' && btn.click !== 'chattiness') {
+          b.addEventListener('click', (e) => this[btn.click]())
         }
         if (btn.select) {
           b.classList.add('select-inside')
-          b.textContent = btn.key
+          b.textContent = btn.click + '('
           const sel = document.createElement('select')
           sel.classList.add('dropdown')
           sel.id = btn.select
           b.appendChild(sel)
           b.addEventListener('click', () => sel.focus())
         } else if (btn.float) {
-          b.textContent = btn.key
+          b.textContent = btn.click + '('
           const inp = document.createElement('input')
           inp.setAttribute('type', 'number')
           inp.setAttribute('min', '0')
@@ -486,9 +514,9 @@ class FunctionsMenu extends Widget {
 
     this._initValues()
     this._setupListeners()
+    this._hideIrrelevantOpts('_createHTML')
   }
 
-  // TODO: MARK FOR DELETION
   _hideIrrelevantOpts (from) {
     // console.log('calling hide from:', from)
     const btns = this.$('button')
@@ -520,14 +548,6 @@ class FunctionsMenu extends Widget {
     loadSearchData()
   }
 
-  _toCamelCase (str) {
-    return str.split(' ')
-      .map((word, index) => {
-        if (index === 0) return word.toLowerCase()
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-      }).join('')
-  }
-
   _creatOption (value, parent) {
     const o = document.createElement('option')
     o.setAttribute('value', value)
@@ -542,10 +562,8 @@ class FunctionsMenu extends Widget {
     }
     this.sesh = WIDGETS['student-session']
     this.autoUpdateSel = this.$('#func-menu-update-select')
-    if (this.autoUpdateSel.children.length < 2) {
-      this._creatOption('true', this.autoUpdateSel)
-      this._creatOption('false', this.autoUpdateSel)
-    }
+    this._creatOption('true', this.autoUpdateSel)
+    this._creatOption('false', this.autoUpdateSel)
     this.autoUpdateSel.value = this.sesh.getData('auto-update')
     this.autoUpdateSel.addEventListener('change', () => this.autoUpdate())
 
@@ -581,7 +599,7 @@ class FunctionsMenu extends Widget {
 
   _setupListeners () {
     // setup FileUploader
-    this.fu = new nn.FileUploader({ // TODO: MARK FOR DELETION
+    this.fu = new nn.FileUploader({
       click: '#func-menu-upload',
       drop: '#nn-window',
       filter: (type) => {
@@ -633,7 +651,6 @@ class FunctionsMenu extends Widget {
     }
   }
 
-  // TODO: MARK FOR DELETION
   _createNewRepo (c, t, v) {
     WIDGETS['student-session'].clearSaveState()
     window.convo = new Convo(this.convos, 'pushing-updates')
@@ -681,7 +698,6 @@ class FunctionsMenu extends Widget {
     })
   }
 
-  // TODO: MARK FOR DELETION
   _openProject (repo) {
     const ohNoErr = (res) => {
       console.log('FunctionsMenu:', res)
@@ -742,7 +758,6 @@ class FunctionsMenu extends Widget {
     })
   }
 
-  // TODO: MARK FOR DELETION
   _updateProject (msg) {
     WIDGETS['student-session'].clearSaveState()
     window.convo = new Convo(this.convos, 'pushing-updates')
@@ -780,7 +795,6 @@ class FunctionsMenu extends Widget {
     })
   }
 
-  // TODO: MARK FOR DELETION
   _publishProject () {
     window.convo = new Convo(this.convos, 'pushing-updates')
     const data = {

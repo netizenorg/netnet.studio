@@ -256,7 +256,7 @@ class StudentSession extends Widget {
     } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {
-      WIDGETS['functions-menu'].newSketch()
+      WIDGETS['functions-menu']._newSketch()
     }
   }
 

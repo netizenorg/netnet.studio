@@ -1,4 +1,4 @@
-/* global WIDGETS, NNW, utils, nn, Convo */
+/* global WIDGETS, NNW, NNE, utils, nn, Convo */
 window.CONVOS['student-session'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
@@ -50,29 +50,16 @@ window.CONVOS['student-session'] = (self) => {
       'yes please': (e) => {
         WIDGETS['functions-menu']._openProject(self.getData('opened-project'))
       },
-      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
+      'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
     }
   }, {
     id: 'prior-github-login',
-    content: `Would you like to open one of your GitHub projects or do you want to start something new?`,
+    content: 'Would you like to open one of your GitHub projects or do you want to start something new?',
     options: {
       'yes, let\'s open one': (e) => {
         WIDGETS['functions-menu'].openProject()
       },
-      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
-    }
-  }, {
-    id: 'new-proj-or-sketch',
-    content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
-    options: {
-      'let\'s start a new project': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newProject()
-      },
-      'I just want to sketch': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newSketch()
-      }
+      'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
     }
   }, {
     id: 'prior-save-state',
@@ -83,7 +70,7 @@ window.CONVOS['student-session'] = (self) => {
         const delay = utils.getVal('--menu-fades-time')
         setTimeout(() => self.restoreSavePoint(), delay)
       },
-      'no let\'s start from scratch': (e) => WIDGETS['functions-menu'].newSketch()
+      'no let\'s start from scratch': (e) => WIDGETS['functions-menu'].new()
     }
   }, {
     id: 'first-time',
