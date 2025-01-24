@@ -265,7 +265,7 @@ class NetNet {
       const zIndex = Number(computedStyle.zIndex) + 1
       this.blocker = document.createElement('div')
       this.blocker.style.position = 'absolute'
-      this.blocker.style.background = 'rgba(255, 0, 0, 0.5)'
+      // this.blocker.style.background = 'rgba(255, 0, 0, 0.5)'
       this.blocker.style.zIndex = zIndex
       document.body.appendChild(this.blocker)
     }
@@ -746,11 +746,11 @@ class NetNet {
 
     // Prevent backward/forward navigation
     window.addEventListener('popstate', (event) => {
-      history.pushState(null, '', window.location.href)
+      window.history.pushState(null, '', window.location.href)
     })
 
     // Initialize history state to disable navigation
-    history.pushState(null, '', window.location.href)
+    window.history.pushState(null, '', window.location.href)
 
     // Optionally warn the user about navigation attempts
     window.addEventListener('beforeunload', (event) => {
