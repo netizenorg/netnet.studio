@@ -119,7 +119,7 @@ class LearningGuide extends Widget {
       window.convo = new Convo(this.convos, 'toc')
       NNW.menu.switchFace('happy')
     } else {
-      window.convo.hide()
+      if (window.convo) window.convo.hide()
       NNW.menu.switchFace('default')
     }
   }

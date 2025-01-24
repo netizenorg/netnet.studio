@@ -52,7 +52,7 @@ window.CONVOS['functions-menu'] = (self) => {
 
   return [{
     id: 'need-to-update',
-    content: `When <code>auto-update</code> is set to <code>false</code> you'll need to manually run the update to see your changes by pressing <b>${hotkey}+Enter</b> keys on your keyboard`,
+    content: `When <code>auto-update</code> is set to <code>false</code> you'll need to manually run the update to see your changes by pressing the <b>${hotkey}+Enter</b> keys on your keyboard`,
     options: { 'got it': (e) => e.hide() }
   }, {
     id: 'temp-disclaimer',
@@ -62,12 +62,6 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'session-saved',
     content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.',
     options: sessionSaveOpts()
-  }, {
-    id: 'blank-canvas-ready',
-    content: 'Great! Here\'s a relatively blank canvas. Click on my face if you need me, or double click on any piece of code if you want me to explain it to you.',
-    options: {
-      'will do, thanks!': (e) => e.hide()
-    }
   }, {
     id: 'chatty-level-low',
     content: 'Ok, I\'ll stop explaining everything you double click on and I won\'t <i>bug</i> you about issues anymore. I\'m still here if you need me for anything else though.',
@@ -142,12 +136,12 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
     options: {
       'let\'s start a new project': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newProject()
+        // self.clearProjectData() // TODO: must update
+        self._newProject() // alias
       },
       'I just want to sketch': (e) => {
-        self.clearProjectData()
-        WIDGETS['functions-menu'].newSketch() // TODO: must update
+        // self.clearProjectData() // TODO: must update
+        self._newSketch() // alias
       }
     }
   }, {
@@ -294,7 +288,7 @@ window.CONVOS['functions-menu'] = (self) => {
   },
   // ... share gh project
   {
-    id: 'cant-share-project',
+    id: 'cant-share-project', // TODO: MARK FOR DELETION
     content: 'You don\'t have a GitHub project open. Do you want to share the code in my editor as a sketch? Or would you like to save a new project?',
     options: {
       'save a new project': (e) => self.newProject(),
@@ -329,8 +323,8 @@ window.CONVOS['functions-menu'] = (self) => {
       'yes please!': (e) => self.publishProject(),
       'oh, no thanks': (e) => e.hide()
     }
-  }, {
-    id: 'published-to-ghpages',
+  }, { // TODO: should be part of new Project Files widget
+    id: 'published-to-ghpages', // TODO: MARK FOR DELETION (only referenced in 1 function marked for deletion)
     content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),

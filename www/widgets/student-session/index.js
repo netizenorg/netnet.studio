@@ -98,6 +98,17 @@ class StudentSession extends Widget {
     window.localStorage.removeItem('last-saved-widgets')
   }
 
+  newSketch () {
+    this.convos = window.CONVOS[this.key](this)
+    this.clearSaveState()
+    NNW.layout = 'dock-left'
+    NNE.code = ''
+    setTimeout(() => {
+      window.convo = new Convo(this.convos, 'blank-canvas-ready')
+      if (!NNE.autoUpdate) NNE.update()
+    }, utils.getVal('--layout-transition-time'))
+  }
+
   restoreSavePoint () {
     const code = window.localStorage.getItem('last-saved-sketch').substr(6)
     const decoded = NNE._decode(code)
@@ -256,7 +267,7 @@ class StudentSession extends Widget {
     } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {
-      WIDGETS['functions-menu']._newSketch()
+      this.newSketch()
     }
   }
 
@@ -299,7 +310,7 @@ class StudentSession extends Widget {
     }
 
     NNE.autoUpdate = (this.getData('auto-update') === 'true')
-    NNE.wrap = (typeof this.getData('wrap') === 'string' && this.getData('wrap') === 'false') ? false  : true
+    NNE.wrap = !(typeof this.getData('wrap') === 'string' && this.getData('wrap') === 'false')
 
     if (!window.localStorage.getItem('chattiness')) {
       this.setData('chattiness', 'high')

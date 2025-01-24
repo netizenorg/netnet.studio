@@ -112,7 +112,7 @@ window.utils = {
     const a = window.utils.url.github.split('/')
     const data = { owner: a[0], repo: a[1] }
     window.utils.post('./api/github/fork', data, (json) => {
-      WIDGETS['functions-menu']._openProject(json.data.name)
+      WIDGETS['functions-menu']._openProject(json.data.name) // TODO: replace with new PF method
     })
   },
 

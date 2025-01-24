@@ -21,11 +21,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 79,
         callback: (e) => {
           e.preventDefault()
-          if (WIDGETS['student-session'].getData('owner')) {
-            WIDGETS['functions-menu'].openProject()
-          } else {
-            WIDGETS['functions-menu'].uploadCode()
-          }
+          WIDGETS['functions-menu'].openFile()
         }
       },
       {
@@ -112,6 +108,7 @@ class KeyboardShortcuts extends Widget {
         nfo: 'close widget / close search',
         condition: (e) => e.keyCode === 27,
         callback: (e) => {
+          e.preventDefault()
           if (NNW.menu.search.opened) NNW.menu.search.close()
           else utils.closeTopMostWidget()
         }

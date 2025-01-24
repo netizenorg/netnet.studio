@@ -37,7 +37,8 @@ window.CONVOS['browser-fest'] = (self) => {
           NNW.layout = 'dock-left'
           window.utils.afterLayoutTransition(() => {
             setTimeout(() => NNE.cm.refresh(), 10)
-            WIDGETS['functions-menu'].newProject()
+            // THIS WAS REMOVED IN FILES + FOLDERS REFACTOR
+            // WIDGETS['functions-menu'].newProject()
           })
         }
       }

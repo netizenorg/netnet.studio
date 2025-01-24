@@ -2,7 +2,7 @@
 class FunctionsMenu extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'The Menu'
+    this.title = 'Coding Menu'
     this.key = 'functions-menu'
     this.keywords = ['settings', 'configure', 'configuration', 'options', 'edit', 'file']
     this.listed = true
@@ -109,7 +109,7 @@ class FunctionsMenu extends Widget {
   }
 
   // uploadAssets () {
-  //   WIDGETS.open('project-files')
+  //   WIDGETS.open('project-files') // TODO: remove all references to this
   // }
 
   save () {
@@ -133,56 +133,66 @@ class FunctionsMenu extends Widget {
     } else { // working on a sketch
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'session-saved')
-      this.sesh.setSavePoint() // TODO... see this through... convo options
+      WIDGETS['student-session'].setSavePoint()
     }
   }
 
-  new () {
+  new () { // TODO: ... still working on this...
     this.convos = window.CONVOS[this.key](this)
     const loggedIn = WIDGETS['student-session'].getData('owner')
     const openedProj = WIDGETS['student-session'].getData('opened-project')
     if (loggedIn) {
       if (openedProj) {
         // new file or new project?
+        // or maybe new files only through PF, && here it confirms u want to close open one
       } else {
         // new project or new sketch
+        // this._newSketch()
       }
     } else {
-      // new project (explain login) or new sketch 
+      // new project (explain login) or new sketch
     }
     console.log('ran new');
   }
 
   _newProject () {
-
+    // TODO: alias for PF new project?
   }
 
   _newSketch () {
-    this.convos = window.CONVOS[this.key](this)
-    WIDGETS['student-session'].clearSaveState()
-    const name = this.sesh.getData('username')
-    NNW.layout = 'dock-left'
-    NNE.code = typeof name === 'string'
-      ? `<h1>Hello World Wide Web!</h1>\n<h2>by ${name}</h2>`
-      : '<h1>Hello World Wide Web!</h1>'
-    setTimeout(() => {
-      window.convo = new Convo(this.convos, 'blank-canvas-ready')
-      if (!NNE.autoUpdate) NNE.update()
-    }, utils.getVal('--layout-transition-time'))
+    WIDGETS['student-session'].newSketch()
   }
 
-  share () {
-
+  share () { // TODO: ... still working on this...
+    if (WIDGETS['student-session'].getData('opened-project')) {
+      // working on an opened github project
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'share-project')
+    } else if (utils.url.github) {
+      this.convos = window.CONVOS[this.key](this)
+      const ghOwner = utils.url.github.split('/')[0]
+      const loggedIn = WIDGETS['student-session'].getData('owner')
+      if (loggedIn && loggedIn === ghOwner) { // viewing ur own project
+        // window.convo = new Convo(this.convos, 'viewing-prev-saved-proj')
+      } else if (loggedIn) { // viewing someone else's gh project
+        // window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+      } else {
+        // window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj-logged-out')
+      }
+    } else { // working on a sketch
+      WIDGETS.open('share-widget')
+    }
   }
 
-  openFile () {
+  openFile () { // TODO: ... still working on this...
     // TODO: check for utils.url.github
     // if user's project is there (may have been redirectored from save())
     // do something about it...
+    // also offer a chance to "upload code" (without this.fu)
     console.log('ran open');
   }
 
-
+  // TODO: MARK FOR DELETION
   newProject () {
     const op = WIDGETS['student-session'].data.github.openedProject
     const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
@@ -202,6 +212,7 @@ class FunctionsMenu extends Widget {
     }
   }
 
+  // TODO: MARK FOR DELETION (find all references to this funtion first)
   openProject () {
     if (WIDGETS['browser-fest']) WIDGETS['browser-fest'].close()
     const op = WIDGETS['student-session'].data.github.openedProject
@@ -216,6 +227,7 @@ class FunctionsMenu extends Widget {
     }
   }
 
+  // TODO: MARK FOR DELETION (find all references to this funtion first)
   closeProject () {
     const projOpen = WIDGETS['student-session'].getData('opened-project')
     if (projOpen) {
@@ -227,20 +239,24 @@ class FunctionsMenu extends Widget {
     }
   }
 
-  shareProject () {
-    const op = WIDGETS['student-session'].data.github.openedProject
-    if (op) {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'share-project')
-    } else window.convo = new Convo(this.convos, 'cant-share-project')
-  }
+  // TODO: MARK FOR DELETION
+  // shareProject () {
+  //   const op = WIDGETS['student-session'].data.github.openedProject
+  //   if (op) {
+  //     this.convos = window.CONVOS[this.key](this)
+  //     window.convo = new Convo(this.convos, 'share-project')
+  //   } else window.convo = new Convo(this.convos, 'cant-share-project')
+  // }
 
+  // TODO: MARK FOR DELETION (find all references to this funtion first)
   publishProject () {
     const op = WIDGETS['student-session'].data.github.openedProject
     if (op) this._publishProject()
     else window.convo = new Convo(this.convos, 'cant-publish-project')
   }
 
+  // TODO: MARK FOR DELETION (find all references to this funtion first)
+  // MOVE THIS TO PROJECT FILES
   downloadProject () {
     const p = WIDGETS['student-session'].getData('opened-project')
     const o = WIDGETS['student-session'].getData('owner')
@@ -255,10 +271,10 @@ class FunctionsMenu extends Widget {
 
   // -------------
 
-  shareSketch () {
+  // TODO: MARK FOR DELETION
+  shareSketch () { // NOTE: only being called in 1 convo (which is marked for deletion)
     WIDGETS.open('share-widget')
   }
-
 
   downloadCode () {
     const uri = `data:text/html;base64,${utils.btoa(NNE.code)}`
@@ -269,12 +285,10 @@ class FunctionsMenu extends Widget {
     a.remove()
   }
 
-  uploadCode () {
-    this.close()
-    this.fu.input.click()
-  }
-
-
+  // uploadCode () { // TODO: MARK FOR DELETION (see openFile)
+  //   this.close()
+  //   this.fu.input.click()
+  // }
 
   // ------------------------------------------ editor settings functions ------
 
@@ -291,20 +305,20 @@ class FunctionsMenu extends Widget {
     }
   }
 
-  changeLayout () {
+  layout () {
     NNW.layout = this.layoutsSel.value
   }
 
   popUpWindow () {
     this.layoutsSel.value = 'full-screen'
-    this.changeLayout()
+    this.layout()
     // TODO: working on:
     // https://github.com/netizenorg/netnet.studio/issues/220
     // https://github.com/netizenorg/netnet.studio/issues/240
     // see: "window.onmessage" && notes at the bottom of www/core/utils.js
   }
 
-  changeTheme () {
+  theme () {
     const prevTheme = NNW.theme
     NNW.theme = this.themesSel.value
     this.sesh.setData('theme', NNW.theme)
@@ -381,11 +395,11 @@ class FunctionsMenu extends Widget {
 
   // TODO: MARK FOR DELETION
   // TODO: update in search-bar as well
-  checkIfHidden (func) { // check if this menu function has been hidden
-    const m = [...this.$('button')].filter(e => e.textContent.includes(func))
-    if (m.length > 0 && m[0].style.display === 'none') return true
-    else return false
-  }
+  // checkIfHidden (func) { // check if this menu function has been hidden
+  //   const m = [...this.$('button')].filter(e => e.textContent.includes(func))
+  //   if (m.length > 0 && m[0].style.display === 'none') return true
+  //   else return false
+  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
@@ -489,36 +503,36 @@ class FunctionsMenu extends Widget {
   }
 
   // TODO: MARK FOR DELETION
-  _hideIrrelevantOpts (from) {
-    // console.log('calling hide from:', from)
-    const btns = this.$('button')
-    const _is = (ele, func) => ele.textContent.includes(func)
-    const projOpen = WIDGETS['student-session']
-      ? WIDGETS['student-session'].getData('opened-project') : null
-    const hideIf = (b, condition) => {
-      if (condition) b.style.display = 'none'
-      else b.style.display = 'block'
-    }
-    // reset: display all buttons at first...
-    btns.forEach(b => { b.style.display = 'block' })
-    // ...then figure out which need to be hidden
-    for (let i = 0; i < btns.length; i++) {
-      // hide runUpdate if autoUpdate is enabled (default)
-      if (_is(btns[i], 'runUpdate')) hideIf(btns[i], NNE.autoUpdate)
-      // hide closeProject if project isn't open
-      if (_is(btns[i], 'closeProject')) hideIf(btns[i], !projOpen)
-      // hide downloadProject if project isn't open
-      if (_is(btns[i], 'downloadProject')) hideIf(btns[i], !projOpen)
-      // hide downloadCode if project is open
-      if (_is(btns[i], 'downloadCode')) hideIf(btns[i], projOpen)
-    }
-    // update SearchBars dictionary when serach bar is ready
-    const loadSearchData = () => {
-      if (!NNW.menu.search) { setTimeout(() => loadSearchData(), 100); return }
-      NNW.menu.search._loadFunctionsMenuData()
-    }
-    loadSearchData()
-  }
+  // _hideIrrelevantOpts (from) {
+  //   // console.log('calling hide from:', from)
+  //   const btns = this.$('button')
+  //   const _is = (ele, func) => ele.textContent.includes(func)
+  //   const projOpen = WIDGETS['student-session']
+  //     ? WIDGETS['student-session'].getData('opened-project') : null
+  //   const hideIf = (b, condition) => {
+  //     if (condition) b.style.display = 'none'
+  //     else b.style.display = 'block'
+  //   }
+  //   // reset: display all buttons at first...
+  //   btns.forEach(b => { b.style.display = 'block' })
+  //   // ...then figure out which need to be hidden
+  //   for (let i = 0; i < btns.length; i++) {
+  //     // hide runUpdate if autoUpdate is enabled (default)
+  //     if (_is(btns[i], 'runUpdate')) hideIf(btns[i], NNE.autoUpdate)
+  //     // hide closeProject if project isn't open
+  //     if (_is(btns[i], 'closeProject')) hideIf(btns[i], !projOpen)
+  //     // hide downloadProject if project isn't open
+  //     if (_is(btns[i], 'downloadProject')) hideIf(btns[i], !projOpen)
+  //     // hide downloadCode if project is open
+  //     if (_is(btns[i], 'downloadCode')) hideIf(btns[i], projOpen)
+  //   }
+  //   // update SearchBars dictionary when serach bar is ready
+  //   const loadSearchData = () => {
+  //     if (!NNW.menu.search) { setTimeout(() => loadSearchData(), 100); return }
+  //     NNW.menu.search._loadFunctionsMenuData()
+  //   }
+  //   loadSearchData()
+  // }
 
   _toCamelCase (str) {
     return str.split(' ')
@@ -551,7 +565,11 @@ class FunctionsMenu extends Widget {
 
     this.layoutsSel = this.$('#func-menu-layout-select')
     if (this.layoutsSel.children.length < NNW.layouts.length) {
-      NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
+      NNW.layouts // lets hide 'separate-window' for now
+        .filter(l => l !== 'separate-window') // will be misleading when we create popUpWindow()
+        .forEach(l => {
+          if (this.layoutsSel.children.length < 4) this._creatOption(l, this.layoutsSel)
+        })
     }
     this.layoutsSel.value = NNW.layout
 
@@ -582,7 +600,7 @@ class FunctionsMenu extends Widget {
   _setupListeners () {
     // setup FileUploader
     this.fu = new nn.FileUploader({ // TODO: MARK FOR DELETION
-      click: '#func-menu-upload',
+      click: '#func-menu-upload', // (see: https://github.com/netizenorg/netnet.studio/issues/89)
       drop: '#nn-window',
       filter: (type) => {
         if (type !== 'text/html') return false
@@ -626,10 +644,10 @@ class FunctionsMenu extends Widget {
     const status = this.$('#func-menu-login').textContent.trim()
     if (status === 'login') {
       WIDGETS['student-session'].chatGitHubAuth()
-      if (this.events.login) this.emit('login', { data: null })
+      if (this.events.login) this.emit('login', { data: null }) // TODO: what is this for? check tutorials?
     } else {
       WIDGETS['student-session'].chatGitHubLogout()
-      if (this.events.logout) this.emit('logout', { data: null })
+      if (this.events.logout) this.emit('logout', { data: null }) // TODO: what is this for? check tutorials?
     }
   }
 

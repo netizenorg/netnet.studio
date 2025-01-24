@@ -63,7 +63,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'prior-save-state',
-    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code I add to the editor.`,
+    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code you or I add to the editor.`,
     options: {
       'yes please': (e) => {
         e.hide()
@@ -125,6 +125,12 @@ window.CONVOS['student-session'] = (self) => {
     content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI. That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
     options: {
       'oh, i see': (e) => e.goTo('return-student-no-greet')
+    }
+  }, {
+    id: 'blank-canvas-ready',
+    content: 'Great! Here\'s a blank canvas. Click on my face if you need me, or double click on any piece of code if you want me to explain it to you. You might also check out the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget for inspiration!',
+    options: {
+      'will do, thanks!': (e) => e.hide()
     }
   }]
 

@@ -47,6 +47,7 @@ class SearchBar extends HTMLElement {
     this._loadMiscData()
     this._loadWidgetsData()
     this._loadTutorialsData()
+    this._loadFunctionsMenuData()
     this._setupSearchBar()
   }
 
@@ -151,8 +152,8 @@ class SearchBar extends HTMLElement {
     }
 
     // remove previously created items if we login/logout
-    this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
-    this.updateDict()
+    // this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
+    // this.updateDict()
     const loggedIn = window.localStorage.getItem('owner')
 
     const arr = []
@@ -175,21 +176,19 @@ class SearchBar extends HTMLElement {
         }
       })
       funcs.forEach(func => {
-        const hidden = WIDGETS['functions-menu'].checkIfHidden(func.click)
-        if (!hidden) { // only add to search if it's currently in the menu
-          arr.push({
-            type: `Functions Menu.${submenu}`,
-            word: `${func.click}()`,
-            alts: func.alts,
-            clck: () => {
-              if (func.select) {
-                WIDGETS['functions-menu'].open()
-                const id = `func-menu-${submenu.replace(/ /g, '-')}`
-                WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-              } else WIDGETS['functions-menu'][func.click]()
-            }
-          })
-        }
+        const callFunc = func.func || WIDGETS['functions-menu']._toCamelCase(func.key)
+        arr.push({
+          type: `Functions Menu.${submenu}`,
+          word: func.key,
+          alts: func.alts,
+          clck: () => {
+            if (func.select) {
+              WIDGETS['functions-menu'].open()
+              const id = `func-menu-${submenu.replace(/ /g, '-')}`
+              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+            } else WIDGETS['functions-menu'][callFunc]()
+          }
+        })
       })
     }
 
