@@ -39,6 +39,8 @@ class NetNet {
       this._bubbleUpiFrameEvents()
       if (this.layout === 'welcome') this._showEditor(false)
     })
+
+    this._preventAccidentalExit() // for Mac
   }
 
   err (m) {
@@ -731,6 +733,30 @@ class NetNet {
     if (ey < this.win.offsetTop) y = 0
     else if (ey > this.win.offsetTop + this.win.offsetHeight) y = this.canv.height
     this._canvasUpdate(x, y)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
+
+  _preventAccidentalExit () {
+    // NOTE: students on mace would often double-finger swipe back on their
+    // trackpads (when trying to move their scroll bars) and this would trigger
+    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
+    // if they accidentally refresh, they loos all their progress. This code
+    // prevents both from happening (refresh tirggers confirmation box)
+
+    // Prevent backward/forward navigation
+    window.addEventListener('popstate', (event) => {
+      history.pushState(null, '', window.location.href)
+    })
+
+    // Initialize history state to disable navigation
+    history.pushState(null, '', window.location.href)
+
+    // Optionally warn the user about navigation attempts
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault()
+      event.returnValue = '' // Required for Chrome to show the warning dialog
+    })
   }
 }
 
