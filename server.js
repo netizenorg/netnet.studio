@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const path = require('path')
 const express = require('express')
 const app = express()
 const http = require('http')
@@ -28,6 +29,7 @@ ANALYTICS.setup(app, {
 app.use(ROUTES)
 app.use(GITHUB)
 app.use(express.static(`${__dirname}/www`))
+app.use('/docs', express.static(path.join(__dirname, 'docs')))
 
 const io = new SocketsServer.Server()
 io.on('connection', (socket) => SOCKETS(socket, io))

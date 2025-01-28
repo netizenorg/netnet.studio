@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span><a href="/docs/index.html">introduction</a></span>
+      <ul><li><a href="/docs/advocates/index.html">advocates</a><ul></ul></li><li><a href="/docs/developers/index.html">developers</a><ul><li><a href="/docs/developers/contributor-workflow.html">contributor-workflow</a></li><li><a href="/docs/developers/manual-setup.html">manual-setup</a></li></ul></li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <h1>Setup a Local Development Environment <em>MANUALLY</em></h1>
+<p>For those looking for a much easier way to set things up locally, see our <a href="contributor-workflow">Contributor Workflow</a> doc. This page documents how to setup a local development environment manually for those interested in doing things the hard way or for those interested in learning about what exactly our setup script <code>npm run setup</code> is doing behind the scenes (the <a href="https://github.com/netizenorg/netnet.studio/blob/main/my_modules/setup-script.js" target="_blank">setup-script.js</a>).</p>
+<h2>1. fork our repo</h2>
+<p>First, <a href="https://guides.github.com/activities/forking/" target="_blank">fork</a> the netnet.studio repo and then clone it to your local computer (replacing &quot;YOUR_USER_NAME&quot; in the git URL below with your own)</p>
+<pre><code>git clone https://github.com/YOUR_USER_NAME/netnet.studio.git
+</code></pre>
+<h2>2. add remote &quot;upstream&quot;</h2>
+<p>Then you&#39;ll need to <code>cd</code> (change directory) and then add a remote &quot;upstream&quot; to our repository so you can pull changes from our repo when need be.</p>
+<pre><code>cd netnet.studio
+git remote add upstream https://github.com/netizenorg/netnet.studio.git
+</code></pre>
+<p>You can confirm this worked by running <code>git remote -v</code>, you should see both your &quot;origin&quot; and the new &quot;upstream&quot;. Another way to confirm this is to open up your git config locally in your preferred editor, for example <code>nano .git/config</code>, you should see something like this:</p>
+<pre><code>[remote &quot;origin&quot;]
+	url = https://github.com/YOUR_USER_NAME/netnet.studio.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch &quot;main&quot;]
+	remote = origin
+	merge = refs/heads/main
+[remote &quot;upstream&quot;]
+	url = https://github.com/netizenorg/netnet.studio.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*
+</code></pre>
+<p><strong>NOTE:</strong> unless you&#39;ve already authorized your preferred editor to push code to your GitHub account, you&#39;ll need to generate a <a href="https://github.com/settings/tokens" target="_blank">personal access token</a> and add that to your git config by either removing your &quot;origin&quot; and re-adding it with the token embedded in the URL, or simply manually edit this file so that the [remote &quot;origin&quot;] url includes it like so:</p>
+<pre><code>[remote &quot;origin&quot;]
+	url = https://YOUR_ACCESS_TOKEN@github.com/YOUR_USER_NAME/netnet.studio.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+</code></pre>
+<p>This is something the startup script (optionally) handles for you as well. <em>note the <code>@</code> symbol between your token and <code>github.com/</code></em></p>
+<h2>3. create the <code>.env</code> file</h2>
+<p>In the project&#39;s root directory, use your preferred editor to create a <code>.env</code> and set your preferred development port:</p>
+<pre><code>PORT = 8001
+</code></pre>
+<p>netnet allows its netizens to open any of their GitHub repos (assuming they&#39;re web projects) in the studio as well as save (commit, push, etc) changes they make in the studio back to their GitHub accounts. If you want to test this functionality locally and/or work on any aspects of the code base that deals with it, you&#39;ll have to <a href="https://docs.github.com/en/developers/apps/creating-an-oauth-app" target="_blank">create your own GitHub OAuth credentials</a>. for <strong>Homepage URL</strong> enter <code>http://localhost:8001</code> (ensuring that <code>:8001</code> matches the port number defined in the previous step) and for <strong>Authorization callback URL</strong> enter <code>http://localhost:8001/user/signin/callback</code>. Then copy and paste your <strong>Client ID</strong> and <strong>Client Secret</strong> into the <code>.env</code>:</p>
+<pre><code>PORT = 8001
+GITHUB_CLIENT_ID = YOUR_CLIENT_ID_HERE
+GITHUB_CLIENT_SECRET = YOUR_CLIENT_SECRET_
+TOKEN_PASSWORD = MAKE_UP_SOME_RANDOM_PASSWORD_HERE
+</code></pre>
+<p><strong>NOTE:</strong> the <code>TOKEN_PASSWORD</code> should be a long, randomly generated string. Although we store the user&#39;s session GitHub auth token in a secure, same-site restricted, http-only cookie, we also use three extra layers on encryption to protect this locally stored cookie because we believe you can never be too carefully when it comes to our user&#39;s privacy and security. This random password is used in this extra encryption process.</p>
+<h2>4. install (and update) the dependencies</h2>
+<p>Lastly, you&#39;ll need to install all the server-side (and a few client-side) dependencies (listed in the <a href="https://github.com/netizenorg/netnet.studio/blob/fd71acd7c99eca82702600236051a74babc27e09/package.json#L24-L37" target="_blank">package.json</a>), as you would with most nodejs projects, by running:</p>
+<pre><code>npm install
+</code></pre>
+<p><strong>Updating Submodules</strong></p>
+<p>In addition to the server-side (back-end) dependencies, this repo also contains <a href="https://github.com/netizenorg/netnet.studio/blob/main/.gitmodules" target="_blank">git submodules</a> for a couple of the client-side (front-end) dependencies, maintained by us (@netizenorg). Specifically, those are the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a> (itself a collection of other sub-modules) as well as the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a>, netnet&#39;s core code editor.</p>
+<p>To pull and update the submodules run:</p>
+<pre><code>npm run pull-modules
+</code></pre>
+<p><strong>NOTE:</strong> we&#39;ve noticed issues running these scripts, where sometimes they don&#39;t actually pull updates (<em>plz open an issue if you think you might know why</em>), but alternatively you can also <code>cd</code> into the individual submodule folders found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/js/core" target="_blank">www/core</a> and pull the code using <code>git pull</code></p>
+<h2>5. running the local server</h2>
+<p>Once everything is setup you can run the server:</p>
+<pre><code>node server
+</code></pre>
+<p>Then visit <a href="http://localhost:8001" target="_blank">http://localhost:8001</a> (ensuring that <code>:8001</code> matches the port number defined in your <code>.env</code> file) in the browser.</p>
+
+    </div>
+  </body>
+</html>

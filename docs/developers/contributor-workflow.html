@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span><a href="/docs/index.html">introduction</a></span>
+      <ul><li><a href="/docs/advocates/index.html">advocates</a><ul></ul></li><li><a href="/docs/developers/index.html">developers</a><ul><li><a href="/docs/developers/contributor-workflow.html">contributor-workflow</a></li><li><a href="/docs/developers/manual-setup.html">manual-setup</a></li></ul></li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <h1>Contributor Workflow</h1>
+<p><a href="https://standardjs.com" target="_blank"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide" /></a></p>
+<hr>
+<h2>The (tl;dr) Overview:</h2>
+<p><strong>SETUP</strong></p>
+<ol>
+<li><a href="https://github.com/netizenorg/netnet.studio/fork" target="_blank">fork our repo</a></li>
+<li>clone your fork <code>git clone https://github.com/[YOUR_USER_NAME]/netnet.studio.git</code></li>
+<li>cd into the repo <code>cd netnet.studio</code></li>
+<li>run the setup script <code>npm run setup</code></li>
+<li>run the server <code>npm run start</code></li>
+</ol>
+<p><strong>DEVELOPMENT</strong></p>
+<ol>
+<li>create a &quot;feature&quot; branch <code>git checkout -b [FEATURE-NAME]</code> from the main branch (make sure to always <code>git pull upstream main</code> before starting a new feature branch)</li>
+<li>work locally, ensuring you&#39;re conforming to our <a href="#style">coding style</a> while making commits to the new feature branch and occasionally/eventually pushing to your fork <code>git push origin [FEATURE-NAME]</code> to back up your progress.</li>
+<li>Create a <a href="https://github.com/netizenorg/netnet.studio/pulls" target="_blank">PR</a> from your <code>feature</code> branch to our <code>main</code> branch.</li>
+<li>Once your PR has been merged, clean things up before starting on your next feature</li>
+</ol>
+<pre><code>git checkout main
+git pull upstream main
+git push origin --delete [FEATURE-NAME]
+git branch --delete [FEATURE-NAME]
+</code></pre>
+<hr>
+<h2>The Details:</h2>
+<ul>
+<li><a href="#env">setup a local development environment</a></li>
+<li><a href="#run">running netnet locally</a></li>
+<li><a href="#contribute">making contributions</a><ul>
+<li><a href="#branch">setup a feature branch</a></li>
+<li><a href="#style">make sure you conform to the style guide</a></li>
+<li><a href="#push">commit and push your changes</a></li>
+<li><a href="#pr">create a PR (pull request)</a></li>
+<li><a href="#clean">post-merge clean up</a></li>
+</ul>
+</li>
+<li><a href="#update">updating dependencies</a></li>
+</ul>
+<h2><a id="env"></a> setup a local development environment</h2>
+<p>netnet.studio is almost entirely a client-side application, but there is some server side logic. For this reason we need to have <a href="https://nodejs.org/en/" target="_blank">nodejs</a> installed (to get things setup and run the server) as well as <a href="https://git-scm.com/" target="_blank">git</a>. Assuming you have both installed, you can setup a local development environment in a couple easy steps:</p>
+<ol>
+<li>First, <a href="https://guides.github.com/activities/forking/" target="_blank">fork</a> the netnet.studio repo and then clone it to your local computer (replacing &quot;YOUR_USER_NAME&quot; in the git URL below with your own)</li>
+</ol>
+<pre><code>git clone https://github.com/YOUR_USER_NAME/netnet.studio.git
+</code></pre>
+<ol start="2">
+<li>Then you&#39;ll need to <code>cd</code> (change directory) into the netnet.studio folder and run our setup script.</li>
+</ol>
+<pre><code>cd netnet.studio
+npm run setup
+</code></pre>
+<p>The setup script will guide you through a series of questions and handle the entire setup for you. You don&#39;t need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we&#39;ve also put together document ion for <a href="Setting-Up-The-Repo-Locally">how to setup a local environment *manually*</a> if you&#39;re curious.</p>
+<h2><a id="run"></a> running netnet locally</h2>
+<p>Assuming you still have a terminal open to the repo&#39;s directory, simply run:</p>
+<pre><code>npm run start
+</code></pre>
+<p>Then visit <a href="http://localhost:8001" target="_blank">http://localhost:8001</a> in the browser (assuming you haven&#39;t changed the default port number in the <code>.env</code> file from 8001 to something else).</p>
+<h2><a id="contribute"></a> making contributions</h2>
+<h4><a id="branch"></a>  setup a feature branch</h4>
+<p>Before you start working on a new feature or bug fix ensure you&#39;re working with the latest version of netnet.studio by pulling updates from our main branch</p>
+<pre><code>git pull upstream main
+</code></pre>
+<p>If that failed, make sure you setup our repo as your remote &quot;upstream&quot; by running <code>git remote -v</code>, if you didn&#39;t setup a remote upstream during the setup you will need to do this manually by running <code>git remote add upstream https://github.com/netizenorg/netnet.studio.git</code></p>
+<p>Create a &quot;feature branch&quot; for the feature/bugfix/etc you plan on working on by running the command below (replacing <code>[FEATURE-NAME]</code> with name for this feature/task)</p>
+<pre><code>git checkout -b [FEATURE-NAME]
+</code></pre>
+<h4><a id="style"></a> make sure you conform to the style guide</h4>
+<p>We&#39;re using <a href="https://standardjs.com/" target="_blank">standardJS</a> as our style guide, so before commuting/pushing any code you should check that everything&#39;s tidy by running:</p>
+<pre><code>npm run lint
+</code></pre>
+<p>But that can get annoying, so it&#39;s better to just install a <a href="https://standardjs.com/#are-there-text-editor-plugins" target="_blank">standard plugin</a> for your preferred code editor. This way we do our linting as we code and don&#39;t have to worry about running this command and then going through all the required changes in order to conform to the style guide after the fact.</p>
+<p>When writing any CSS, we&#39;re doing our best to stick to <a href="http://getbem.com/introduction/" target="_blank">BEM</a>, refer to this post on <a href="https://css-tricks.com/bem-101/" target="_blank">CSS-Tricks</a> for a general introduction.</p>
+<h4><a id="push"></a> commit and push your changes</h4>
+<p>Commit significant changes to your feature branch as you work (ensuring you don&#39;t have any linting errors or bugs in your console first):</p>
+<pre><code>git commit -m &quot;a brief but useful message&quot;
+</code></pre>
+<p>Push your changes to your fork&#39;s feature branch:</p>
+<pre><code>git push origin [FEATURE-NAME]
+</code></pre>
+<h4><a id="pr"></a>  create a PR (pull request)</h4>
+<p>When you&#39;re finished <a href="https://github.com/netizenorg/netnet.studio/pulls" target="_blank">create a  PR</a> (pull request) <em>from</em> the feature branch of your form <em>into</em> the main branch of the class repo. The arrow icon in the GitHub PR interface between the two repos being merged conveys the direction of the pull request. <em>NOTE: If you don&#39;t see your fork in the the drop-down menus, you may first need to click on the &quot;compare across forks&quot; link in the PR page</em></p>
+<p>We may start a &quot;review&quot; for your PR before merging it. If we do give you some feedback or request some changes, the PR will remain open during the review and any future commits you push will automatically be registered in the PR page. Once everything looks good we&#39;ll accept your PR and merge your changes with our repo.</p>
+<h4><a id="clean"></a> post-merge clean up</h4>
+<p>Once your PR has been merged, clean things up before starting on your next feature. Check out your main branch and pull the changes we merged from your (and any one else&#39;s) PRs:</p>
+<pre><code>git checkout main
+git pull upstream main
+</code></pre>
+<p>Then delete the feature branch from your remote and local repos:</p>
+<pre><code>git push origin --delete [FEATURE-NAME]
+git branch --delete [FEATURE-NAME]
+</code></pre>
+<h2><a id="update"></a> updating dependencies</h2>
+<p>During the initial <code>npm run setup</code>, netnet would have installed a series of dependencies. In addition to the server-side (back-end) dependencies, this repo also contains <a href="https://github.com/netizenorg/netnet.studio/blob/main/.gitmodules" target="_blank">git submodules</a> for a couple of the client-side (front-end) dependencies, maintained by us (@netizenorg). Specifically, those are the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a> (itself a collection of other sub-modules) as well as the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a>, netnet&#39;s core code editor.</p>
+<p><strong>occasionally we may update these, if/when that happens you&#39;ll want to pull those updates to your local repository as well.</strong></p>
+<p>To pull updates to the submodules run:</p>
+<pre><code>npm run pull-modules
+</code></pre>
+<p><strong>NOTE:</strong> we&#39;ve noticed issues running these scripts, where sometimes they don&#39;t actually pull updates (<em>plz open an issue if you think you might know why</em>), but alternatively you can also <code>cd</code> into the individual submodule folders found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/js/core" target="_blank">www/core</a> and pull the code using <code>git pull</code></p>
+
+    </div>
+  </body>
+</html>
