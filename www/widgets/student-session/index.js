@@ -148,7 +148,7 @@ class StudentSession extends Widget {
     ss.removeItem('branch')
     NNE.addCustomRoot(null)
     NNW.updateTitleBar(null)
-    if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
+    // if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([]) // TODO: ensure this exists
     this._createHTML()
   }
 

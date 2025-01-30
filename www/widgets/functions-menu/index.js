@@ -108,8 +108,8 @@ class FunctionsMenu extends Widget {
     NNE.tidy()
   }
 
-  // uploadAssets () {
-  //   WIDGETS.open('project-files') // TODO: remove all references to this
+  // uploadAssets () { // TODO: remove all references to this
+  //   WIDGETS.open('project-files')
   // }
 
   save () {
@@ -137,26 +137,20 @@ class FunctionsMenu extends Widget {
     }
   }
 
-  new () { // TODO: ... still working on this...
+  new () {
     this.convos = window.CONVOS[this.key](this)
-    const loggedIn = WIDGETS['student-session'].getData('owner')
-    const openedProj = WIDGETS['student-session'].getData('opened-project')
-    if (loggedIn) {
-      if (openedProj) {
-        // new file or new project?
-        // or maybe new files only through PF, && here it confirms u want to close open one
-      } else {
-        // new project or new sketch
-        // this._newSketch()
-      }
-    } else {
-      // new project (explain login) or new sketch
-    }
-    console.log('ran new');
+    window.convo = new Convo(this.convos, 'new-proj-or-sketch')
   }
 
   _newProject () {
-    // TODO: alias for PF new project?
+    const loggedIn = WIDGETS['student-session'].getData('owner')
+    const openedProj = WIDGETS['student-session'].getData('opened-project')
+    // TODO: if not logged into GitHub need to explain that part
+    // TODO: otherwise:
+    // check for unsaved changes: 'unsaved-changes-b4-new-proj'
+    // check for code in editor: 'clear-code?'
+    // ...maybe this is an alias for PF new project?
+    console.log('new project')
   }
 
   _newSketch () {
@@ -164,20 +158,18 @@ class FunctionsMenu extends Widget {
   }
 
   share () { // TODO: ... still working on this...
+    this.convos = window.CONVOS[this.key](this)
     if (WIDGETS['student-session'].getData('opened-project')) {
       // working on an opened github project
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'share-project')
+      window.convo = new Convo(this.convos, 'share-project') // TODO: this convo links to publish (NEEDS UPDATE)
     } else if (utils.url.github) {
       this.convos = window.CONVOS[this.key](this)
       const ghOwner = utils.url.github.split('/')[0]
       const loggedIn = WIDGETS['student-session'].getData('owner')
       if (loggedIn && loggedIn === ghOwner) { // viewing ur own project
-        // window.convo = new Convo(this.convos, 'viewing-prev-saved-proj')
-      } else if (loggedIn) { // viewing someone else's gh project
-        // window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
-      } else {
-        // window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj-logged-out')
+        window.convo = new Convo(this.convos, 'share-my-gh-project')
+      } else { // viewing someone else's gh project
+        window.convo = new Convo(this.convos, 'share-other-gh-project')
       }
     } else { // working on a sketch
       WIDGETS.open('share-widget')
@@ -185,59 +177,66 @@ class FunctionsMenu extends Widget {
   }
 
   openFile () { // TODO: ... still working on this...
-    // TODO: check for utils.url.github
-    // if user's project is there (may have been redirectored from save())
-    // do something about it...
-    // also offer a chance to "upload code" (without this.fu)
-    console.log('ran open');
-  }
-
-  // TODO: MARK FOR DELETION
-  newProject () {
-    const op = WIDGETS['student-session'].data.github.openedProject
-    const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
-    const currCode = utils.btoa(NNE.code)
-    if (utils.url.github) {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
-    } else if (op && lastCode !== currCode) {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
-    } else {
-      this.convos = window.CONVOS[this.key](this)
-      if (NNE.code !== '') {
-        window.convo = new Convo(this.convos, 'clear-code?')
-      } else { window.convo = new Convo(this.convos, 'create-new-project') }
-      // if users says "yes" convo will call _createNewRepo()
-    }
-  }
-
-  // TODO: MARK FOR DELETION (find all references to this funtion first)
-  openProject () {
-    if (WIDGETS['browser-fest']) WIDGETS['browser-fest'].close()
-    const op = WIDGETS['student-session'].data.github.openedProject
-    const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
-    const currCode = utils.btoa(NNE.code)
     this.convos = window.CONVOS[this.key](this)
-    if (op && lastCode !== currCode) {
-      window.convo = new Convo(this.convos, 'unsaved-changes-b4-open-proj')
+    const loggedIn = WIDGETS['student-session'].getData('owner')
+    if (loggedIn) {
+      const op = WIDGETS['student-session'].getData('opened-project')
+      if (op) {                 // TODO: trigger the new project-files open logic
+        window.convo = new Convo(this.convos, 'open-logged-in-proj')
+      } else {
+        window.convo = new Convo(this.convos, 'open-logged-in')
+      }
     } else {
-      // if user chooses a project to open, convo will call _openProject()
-      window.convo = new Convo(this.convos, 'open-project')
+      window.convo = new Convo(this.convos, 'open-logged-out')
     }
   }
 
+  // // TODO: MARK FOR DELETION
+  // newProject () {
+  //   const op = WIDGETS['student-session'].data.github.openedProject
+  //   const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
+  //   const currCode = utils.btoa(NNE.code)
+  //   if (utils.url.github) {
+  //     this.convos = window.CONVOS[this.key](this)
+  //     window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+  //   } else if (op && lastCode !== currCode) {
+  //     this.convos = window.CONVOS[this.key](this)
+  //     window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
+  //   } else {
+  //     this.convos = window.CONVOS[this.key](this)
+  //     if (NNE.code !== '') {
+  //       window.convo = new Convo(this.convos, 'clear-code?')
+  //     } else { window.convo = new Convo(this.convos, 'create-new-project') }
+  //     // if users says "yes" convo will call _createNewRepo()
+  //   }
+  // }
+
+  // // TODO: MARK FOR DELETION (find all references to this funtion first)
+  // openProject () {
+  //   if (WIDGETS['browser-fest']) WIDGETS['browser-fest'].close()
+  //   const op = WIDGETS['student-session'].data.github.openedProject
+  //   const lastCode = WIDGETS['student-session'].data.github.lastCommitCode
+  //   const currCode = utils.btoa(NNE.code)
+  //   this.convos = window.CONVOS[this.key](this)
+  //   if (op && lastCode !== currCode) {
+  //     window.convo = new Convo(this.convos, 'unsaved-changes-b4-open-proj')
+  //   } else {
+  //     // if user chooses a project to open, convo will call _openProject()
+  //     window.convo = new Convo(this.convos, 'open-project')
+  //   }
+  // }
+
   // TODO: MARK FOR DELETION (find all references to this funtion first)
-  closeProject () {
-    const projOpen = WIDGETS['student-session'].getData('opened-project')
-    if (projOpen) {
-      WIDGETS['student-session'].clearProjectData()
-      NNE.code = ''
-      NNW.updateTitleBar(null)
-      if (window.convo) window.convo.hide()
-      this._hideIrrelevantOpts('closeProject')
-    }
-  }
+  // closeProject () {
+  //   const projOpen = WIDGETS['student-session'].getData('opened-project')
+  //   if (projOpen) {
+  //     WIDGETS['student-session'].clearProjectData()
+  //     NNE.code = ''
+  //     NNW.updateTitleBar(null)
+  //     if (window.convo) window.convo.hide()
+  //     this._hideIrrelevantOpts('closeProject')
+  //   }
+  // }
 
   // TODO: MARK FOR DELETION
   // shareProject () {
@@ -249,11 +248,11 @@ class FunctionsMenu extends Widget {
   // }
 
   // TODO: MARK FOR DELETION (find all references to this funtion first)
-  publishProject () {
-    const op = WIDGETS['student-session'].data.github.openedProject
-    if (op) this._publishProject()
-    else window.convo = new Convo(this.convos, 'cant-publish-project')
-  }
+  // publishProject () {
+  //   const op = WIDGETS['student-session'].data.github.openedProject
+  //   if (op) this._publishProject()
+  //   else window.convo = new Convo(this.convos, 'cant-publish-project')
+  // }
 
   // TODO: MARK FOR DELETION (find all references to this funtion first)
   // MOVE THIS TO PROJECT FILES
@@ -271,10 +270,10 @@ class FunctionsMenu extends Widget {
 
   // -------------
 
-  // TODO: MARK FOR DELETION
-  shareSketch () { // NOTE: only being called in 1 convo (which is marked for deletion)
-    WIDGETS.open('share-widget')
-  }
+  // // TODO: MARK FOR DELETION
+  // shareSketch () { // NOTE: only being called in 1 convo (which is marked for deletion)
+  //   WIDGETS.open('share-widget')
+  // }
 
   downloadCode () {
     const uri = `data:text/html;base64,${utils.btoa(NNE.code)}`
@@ -283,6 +282,41 @@ class FunctionsMenu extends Widget {
     a.setAttribute('href', uri)
     a.click()
     a.remove()
+  }
+
+  uploadCode () {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.html'
+
+      input.addEventListener('change', function (event) {
+        const file = event.target.files[0]
+        if (!file) {
+          reject(new Error('No file selected'))
+          return
+        }
+
+        if (!file.type.includes('html')) {
+          reject(new Error('Please upload a valid HTML file'))
+          return
+        }
+
+        const reader = new window.FileReader()
+        reader.onload = function (e) {
+          NNE.code = e.target.result
+          resolve(e.target.result)
+        }
+
+        reader.onerror = function () {
+          reject(new Error('Error reading file'))
+        }
+
+        reader.readAsText(file)
+      })
+
+      input.click()
+    })
   }
 
   // uploadCode () { // TODO: MARK FOR DELETION (see openFile)

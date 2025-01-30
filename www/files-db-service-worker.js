@@ -3,15 +3,15 @@
 
 this class is used to intercept requests coming from the website (specifically
 the iframe rendering the output) and resolve those by returning the data stored
-in indexedDB via the files-db.js file.
+in indexedDB via the project-files widget.
  __________                                           ________________
 |    www   |                                         | service-worker |
 | <iframe> | <--------- send res to -----------------|________________|
 |_ netitor_|                                                      |
-      \__                 _____________                        __/
-         \__ save to --> | files-db.js | <--- get data from __/
-                         |  IndexedDB  |
-                         |_____________|
+      \__                 _______________                        /
+         \__ save to --> | project-files | <--- get data from __/
+                         |   IndexedDB   |
+                         |_______________|
 
 // NOTE: for debug console visit "about:debugging" in Firefox
 */

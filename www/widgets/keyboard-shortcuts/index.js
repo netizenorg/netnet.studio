@@ -7,9 +7,22 @@ class KeyboardShortcuts extends Widget {
 
     this.shortcuts = [
       {
+        hidden: true,
+        key: `${utils.hotKey()} + Shift + K`,
+        nfo: 'kiosk mode',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k',
+        callback: (e) => {
+          e.preventDefault()
+          const element = document.documentElement
+          if (element.requestFullscreen) element.requestFullscreen()
+          else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen()
+          else if (element.msRequestFullscreen) element.msRequestFullscreen()
+        }
+      },
+      {
         key: `${utils.hotKey()} + S`,
         nfo: 'quick save / share options',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 83,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 's',
         callback: (e) => {
           e.preventDefault()
           WIDGETS['functions-menu'].save()
@@ -18,16 +31,26 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + O`,
         nfo: 'open project / upload sketch',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 79,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'o',
         callback: (e) => {
           e.preventDefault()
           WIDGETS['functions-menu'].openFile()
         }
       },
+      { // NOTE: doesn't work :( browser's don't let u use "Ctrl + N"
+        hidden: true,
+        key: `${utils.hotKey()} + N`,
+        nfo: 'new sketch / new project',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'n',
+        callback: (e) => {
+          e.preventDefault()
+          WIDGETS['functions-menu'].new()
+        }
+      },
       {
         key: `${utils.hotKey()} + >`,
         nfo: 'switch netnet to next layout',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 190,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === '.',
         callback: (e) => {
           e.preventDefault()
           NNW.nextLayout()
@@ -36,7 +59,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + <`,
         nfo: 'swtich netnet to previous layout',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 188,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === ',',
         callback: (e) => {
           e.preventDefault()
           NNW.prevLayout()
@@ -47,7 +70,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + L`,
         nfo: 'open the Learning Guide',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 76,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'l',
         callback: (e) => {
           e.preventDefault()
           WIDGETS.open('learning-guide')
@@ -56,7 +79,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + ;`,
         nfo: 'open the Functions Menu',
-        condition: (e) => ((e.ctrlKey || e.metaKey) && e.keyCode === 59),
+        condition: (e) => ((e.ctrlKey || e.metaKey) && e.key === ';'),
         callback: (e) => {
           e.preventDefault()
           WIDGETS.open('functions-menu')
@@ -65,7 +88,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + '`,
         nfo: 'open universal search bar',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 222,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === "'",
         callback: (e) => {
           e.preventDefault()
           NNW.menu.search.open()
@@ -74,7 +97,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: `${utils.hotKey()} + Enter`,
         nfo: 'update/refresh output',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.keyCode === 13,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'Enter',
         callback: (e) => {
           // SEE _preventCodeMirrorDefaults BELLOW
         }
@@ -82,7 +105,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: 'Spacebar',
         nfo: 'play/pause tutorial',
-        condition: (e) => !NNE.cm.hasFocus() && e.keyCode === 32,
+        condition: (e) => !NNE.cm.hasFocus() && e.key === ' ',
         callback: (e) => {
           if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].toggle()
         }
@@ -90,7 +113,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: 'Right Arrow',
         nfo: 'skip ahead 5s in tutorial',
-        condition: (e) => e.keyCode === 39,
+        condition: (e) => e.key === 'ArrowRight',
         callback: (e) => {
           if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(5)
         }
@@ -98,7 +121,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: 'Left Arrow',
         nfo: 'jump back 5s in tutorial',
-        condition: (e) => e.keyCode === 37,
+        condition: (e) => e.key === 'ArrowLeft',
         callback: (e) => {
           if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(-5)
         }
@@ -106,7 +129,7 @@ class KeyboardShortcuts extends Widget {
       {
         key: 'Esc',
         nfo: 'close widget / close search',
-        condition: (e) => e.keyCode === 27,
+        condition: (e) => e.key === 'Escape',
         callback: (e) => {
           e.preventDefault()
           if (NNW.menu.search.opened) NNW.menu.search.close()
@@ -117,7 +140,7 @@ class KeyboardShortcuts extends Widget {
         hidden: true,
         key: `${utils.hotKey()} + Shift + P`,
         nfo: 'open the Search Bar',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 80,
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'p',
         callback: (e) => {
           e.preventDefault() // CTRL/CMD+SHIFT+P
           e.stopPropagation() // TODO... not working :(
@@ -203,8 +226,12 @@ class KeyboardShortcuts extends Widget {
 
   _createShortcuts () {
     this.shortcuts.forEach(sc => {
-      window.addEventListener('keydown', (e) => {
-        if (sc.condition(e)) sc.callback(e)
+      document.addEventListener('keydown', (e) => {
+        if (sc.condition(e)) {
+          // e.stopPropagation()
+          // window.event.cancelBubble = true
+          sc.callback(e)
+        }
       })
     })
   }

@@ -8,16 +8,16 @@ window.CONVOS['project-files'] = (self) => {
   // ...
   return [{
     id: 'explain',
-    content: 'The <b>Project Files</b> widget let\'s you upload assets like images or other files for you to use in your project. After uploading a file you can reference it in your code.',
+    content: 'The <b>Project Files</b> let\'s you manage all the individual files in your project.',
     options: {
       cool: (e) => e.hide(),
       'how?': (e) => e.goTo('explain2')
     }
   }, {
     id: 'explain2',
-    content: 'Say you uploaded an image called <code>cat.jpg</code> for example, in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code>',
+    content: 'For example, you could upload additional assets to your project, say you have an image called <code>cat.jpg</code> on your computer, you could upload that file to include it in your project using the <b>Project Files</b> widget and then in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code> to embed that image into your page.',
     options: {
-      ok: (e) => e.hide()
+      'I see': (e) => e.hide()
     }
   }, {
     id: 'confirm-delete',

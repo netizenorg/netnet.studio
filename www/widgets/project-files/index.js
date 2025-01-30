@@ -1,4 +1,4 @@
-/* global NNE, Widget, Convo, utils, nn */
+/* global NNE, WIDGETS, Widget, Convo, utils, nn */
 class ProjectFiles extends Widget {
   constructor (opts) {
     super(opts)
@@ -17,13 +17,19 @@ class ProjectFiles extends Widget {
   }
 
   _createHTML () {
+    const loggedInMsg = `You're currently working on a "<b>sketch</b>", that's what we call a web page made from a single HTML file. If you'd like we can open a project you have stored on GitHub or we could create a new one?`
+
+    const loggedOutMsg = `You're currently working on a "<b>sketch</b>", that's what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you'll need to <span class="inline-link" onclick="WIDGETS['functions-menu']._login()">authenticate your GitHub account</span>. This is because we don't store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you're not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don't worry, you won't need to interact with it directly, we'll walk you through all the steps here in the studio.`
+
+    const loggedIn = WIDGETS['student-session'].getData('owner')
+
     this.innerHTML = `
       <div class="files-widget">
-        <!-- if logged out of GitHub -->
+        <!-- if project is not open -->
         <div class="files-widget__disclaimer">
-          You're working on a sketch. In order to add assets (other files) you need to create a project first by authenticating your GitHub account and then clicking <code>newProject()</code> in the <b>Functions Menu</b>. (click on netnet's face to launch the <b>Functions Menu</b>)
+          ${loggedIn ? loggedInMsg : loggedOutMsg}
         </div>
-        <!-- if logged into GitHub -->
+        <!-- if project is open -->
         <div class="files-widget__header">
           <button class="pill-btn" name="upload">Upload Asset</button>
         </div>
@@ -33,10 +39,22 @@ class ProjectFiles extends Widget {
       </div>
     `
 
-    this.$('[name="upload"]')
-      .addEventListener('click', () => this.fu.input.click())
+    this._showHideDivs()
 
     // this.updateFiles()
+  }
+
+  _showHideDivs () {
+    const op = window.sessionStorage.getItem('opened-project')
+    if (!op) {
+      this.$('.files-widget__disclaimer').style.display = 'block'
+      this.$('.files-widget__header').style.display = 'none'
+      this.$('.files-widget__list').style.display = 'none'
+    } else {
+      this.$('.files-widget__disclaimer').style.display = 'none'
+      this.$('.files-widget__header').style.display = 'block'
+      this.$('.files-widget__list').style.display = 'block'
+    }
   }
 
   saveCurrentFile () {
@@ -150,18 +168,7 @@ class ProjectFiles extends Widget {
     })
   }
 
-  _showHideDivs () {
-    const op = window.sessionStorage.getItem('opened-project')
-    if (!op) {
-      this.$('.files-widget__disclaimer').style.display = 'block'
-      this.$('.files-widget__header').style.display = 'none'
-      this.$('.files-widget__list').style.display = 'none'
-    } else {
-      this.$('.files-widget__disclaimer').style.display = 'none'
-      this.$('.files-widget__header').style.display = 'block'
-      this.$('.files-widget__list').style.display = 'block'
-    }
-  }
+
 
   _setupFileUploader () {
     this.fu = new nn.FileUploader({

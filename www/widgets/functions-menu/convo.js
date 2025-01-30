@@ -20,7 +20,8 @@ window.CONVOS['functions-menu'] = (self) => {
     const v = t.$('input').value.replace(/\s/g, '-')
     const p = /^(\w|\.|-)+$/
     if (!p.test(v)) c.goTo('explain-proj-name')
-    else { c.hide(); self._createNewRepo(c, t, v) }
+    else { c.hide(); self._createNewRepo(c, t, v) } // TODO: MARK FOR DELETION
+    // TODO: need to replace _createNewRepo with something else
   }
 
   const repoSelectionList = (() => {
@@ -80,6 +81,37 @@ window.CONVOS['functions-menu'] = (self) => {
   // ...
   // ... saving new projs...
   {
+    id: 'new-proj-or-sketch',
+    content: 'Would you like to start from scratch with a blank <b>sketch</b>? Or are you interested in starting a new <b>project</b>?',
+    options: {
+      'new sketch': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        if (NNE.code === '') e.goTo('already-blank-sketch')
+        else self._newSketch()
+      },
+      'new project': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        self._newProject()
+      },
+      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff'),
+      'oh, never mind': (e) => e.hide()
+    }
+  },
+  {
+    id: 'already-blank-sketch',
+    content: 'Great! There isn\'t any code in my editor yet, so you\'ve essentially got a blank canvas to start sketching! If you\'re looking for some inspiration check out the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget!',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  },
+  {
+    id: 'proj-or-sketch-diff',
+    content: 'By default I\'m designed to help you work on a single <a href="http://luckysoap.com/statements/handmadeweb.html" target="_blank">hand-crafted</a> HTML page, what we call a "sketch." These can be shared using only URLs (we don\'t store the data anywhere). But if you\'d like to work on a web page that involves other files or assets (like fonts, images or videos) then you can create a "project." Again, we don\'t store your code on our server, but you can connect me to your GitHub account and I can save your work there for you. We can also use GitHub\'s servers (via <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>) to publish your project on the web.',
+    options: {
+      'got it': (e) => e.goTo('new-proj-or-sketch')
+    }
+  },
+  {
     id: 'viewing-prev-saved-proj',
     content: `It appears you're experimenting with your project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>. Would you like me to open it so you can continue working on it?`,
     options: {
@@ -117,7 +149,7 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'unsaved-changes-b4-new-proj',
     content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
-      ok: (e) => self.saveProject('new-project'), // TODO: must update
+      ok: (e) => self.saveProject('new-project'), // TODO: must update (some method in PF)
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
       'actually, i\'ll keep working on this': (e) => e.hide()
     }
@@ -129,19 +161,6 @@ window.CONVOS['functions-menu'] = (self) => {
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
-      }
-    }
-  }, {
-    id: 'new-proj-or-sketch',
-    content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
-    options: {
-      'let\'s start a new project': (e) => {
-        // self.clearProjectData() // TODO: must update
-        self._newProject() // alias
-      },
-      'I just want to sketch': (e) => {
-        // self.clearProjectData() // TODO: must update
-        self._newSketch() // alias
       }
     }
   }, {
@@ -238,6 +257,41 @@ window.CONVOS['functions-menu'] = (self) => {
   },
   // ... opening old projects
   {
+    id: 'open-logged-out',
+    content: 'If you connect me to GitHub we could open any web projects you\'ve saved there, otherwise we could load an HTML file you have saved on your computer?',
+    options: {
+      'login to GitHub': (e) => {
+        e.hide(); self._login()
+      },
+      'open file from computer': (e) => {
+        e.hide(); self.uploadCode()
+      }
+    }
+  },
+  {
+    id: 'open-logged-in',
+    content: 'Would you like to open a project you were working on from GitHub or load an HTML file from your computer?',
+    options: {
+      'open a GitHub project': (e) => {
+        e.hide() // TODO: trigger project-files open logic
+      },
+      'open an HTML file': (e) => {
+        e.hide(); self.uploadCode()
+      },
+      'neither, never mind': (e) => e.hide()
+    }
+  },
+  {
+    id: 'open-logged-in-proj',
+    content: `You currently have your project "${WIDGETS['student-session'].getData('opened-project')}" open, do you want to close it and open a new one?`,
+    options: {
+      'no, never mind': (e) => e.hide(),
+      'yes, open a new one': (e) => {
+        e.hide() // TODO: trigger project-files open logic
+      }
+    }
+  },
+  {
     id: 'unsaved-changes-b4-open-proj',
     content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
     options: {
@@ -292,7 +346,7 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'You don\'t have a GitHub project open. Do you want to share the code in my editor as a sketch? Or would you like to save a new project?',
     options: {
       'save a new project': (e) => self.newProject(),
-      'share as a sketch': (e) => self.shareSketch(),
+      'share as a sketch': (e) => WIDGETS.open('share-widget'),
       'never mind': (e) => e.hide()
     }
   }, {
@@ -304,17 +358,23 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'share-project',
-    content: 'I can generate the usual share-link, but I could also publish your project to the Web for you?',
+    content: 'I can generate a share-link to netnet.studio, but I could also publish your project to the Web for you?',
     options: {
       'I\'ll take that share link': (e) => e.goTo('share-gh-url'),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
     }
   }, {
-    id: 'share-gh-url',
-    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareGhURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    id: 'share-my-gh-project',
+    content: `It appears you're viewing your project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>. Which you can share with others with this link <input value="https://netnet.studio/?gh=${utils.url.github}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"> but if you open this project we could also publish it on the web so you could share a public URL instead of sending them to netnet.`,
     options: {
-      'great thanks!': (e) => e.hide(),
-      'publish on the Web?': (e) => e.goTo('publish-to-web?')
+      'ok thanks': (e) => e.hide(),
+      'can I open this project?': (e) => self.openFile()
+    }
+  }, {
+    id: 'share-other-gh-project',
+    content: `Your viewing ${utils.url.github ? utils.url.github.split('/')[0] : ''}'s project, if you'd like to share it with others here in the studio you can use this link <input value="https://netnet.studio/?gh=${utils.url.github}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly">`,
+    options: {
+      'great thanks!': (e) => e.hide()
     }
   }, {
     id: 'publish-to-web?',
