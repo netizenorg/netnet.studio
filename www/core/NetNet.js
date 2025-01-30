@@ -1,4 +1,4 @@
-/* global NNE, Menu, nn, utils */
+/* global NetNetFaceMenu, NNE, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -39,6 +39,8 @@ class NetNet {
       this._bubbleUpiFrameEvents()
       if (this.layout === 'welcome') this._showEditor(false)
     })
+
+    this._preventAccidentalExit() // for Mac
   }
 
   err (m) {
@@ -251,6 +253,37 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸ window drag/move via mouse
 
+  _updateResizeBlocker (msg) {
+    // NOTE: this creates a div over the #nn-output div (which has the iframe)
+    // because when the mouse moves over an iframe it gets resizing stuck
+    if (msg === 'remove') {
+      if (this.blocker) this.blocker.remove()
+      return
+    } else if (msg === 'create') {
+      const output = document.querySelector('#nn-output')
+      const computedStyle = window.getComputedStyle(output)
+      const zIndex = Number(computedStyle.zIndex) + 1
+      this.blocker = document.createElement('div')
+      this.blocker.style.position = 'absolute'
+      // this.blocker.style.background = 'rgba(255, 0, 0, 0.5)'
+      this.blocker.style.zIndex = zIndex
+      document.body.appendChild(this.blocker)
+    }
+
+    if (!this.blocker) return
+    const rbox = NNE.render.getBoundingClientRect()
+    this.blocker.style.left = rbox.x + 'px'
+    this.blocker.style.top = rbox.y + 'px'
+    this.blocker.style.width = rbox.width + 'px'
+    this.blocker.style.height = rbox.height + 'px'
+  }
+
+  _updateMouseDown (bool) {
+    this.mousedown = bool
+    if (bool) this._updateResizeBlocker('create')
+    else this._updateResizeBlocker('remove')
+  }
+
   _mouseMove (e) {
     // e.preventDefault()
     this._canvasMouseMove(e)
@@ -272,7 +305,8 @@ class NetNet {
   _mouseUp (e) {
     if (this.mousedown) this._toss('after')
     if (this.mousedown) this.keepInFrame()
-    this.mousedown = false
+    // this.mousedown = false
+    this._updateMouseDown(false)
     this.cursor = 'auto'
     this.winOff = null
     utils.selecting(true)
@@ -280,9 +314,11 @@ class NetNet {
 
   _mouseDown (e) {
     const mw = (this.layout === 'separate-window' || this.layout === 'welcome')
-    if (e.target.id === 'nn-window') this.mousedown = true
+    // if (e.target.id === 'nn-window') this.mousedown = true
+    if (e.target.id === 'nn-window') this._updateMouseDown(true)
     else if (e.target.id === 'nn-menu' && mw) {
-      this.mousedown = true
+      // this.mousedown = true
+      this._updateMouseDown(true)
       this.cursor = 'move'
       utils.selecting(false)
       this.win.style.cursor = this.cursor
@@ -351,6 +387,7 @@ class NetNet {
     }
 
     this._canvasResize(e)
+    this._updateResizeBlocker()
   }
 
   _moveWindow (e) {
@@ -696,6 +733,30 @@ class NetNet {
     if (ey < this.win.offsetTop) y = 0
     else if (ey > this.win.offsetTop + this.win.offsetHeight) y = this.canv.height
     this._canvasUpdate(x, y)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
+
+  _preventAccidentalExit () {
+    // NOTE: students on mace would often double-finger swipe back on their
+    // trackpads (when trying to move their scroll bars) and this would trigger
+    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
+    // if they accidentally refresh, they loos all their progress. This code
+    // prevents both from happening (refresh tirggers confirmation box)
+
+    // Prevent backward/forward navigation
+    window.addEventListener('popstate', (event) => {
+      window.history.pushState(null, '', window.location.href)
+    })
+
+    // Initialize history state to disable navigation
+    window.history.pushState(null, '', window.location.href)
+
+    // Optionally warn the user about navigation attempts
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault()
+      event.returnValue = '' // Required for Chrome to show the warning dialog
+    })
   }
 }
 
