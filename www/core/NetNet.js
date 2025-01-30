@@ -305,7 +305,6 @@ class NetNet {
   _mouseUp (e) {
     if (this.mousedown) this._toss('after')
     if (this.mousedown) this.keepInFrame()
-    // this.mousedown = false
     this._updateMouseDown(false)
     this.cursor = 'auto'
     this.winOff = null
@@ -314,10 +313,8 @@ class NetNet {
 
   _mouseDown (e) {
     const mw = (this.layout === 'separate-window' || this.layout === 'welcome')
-    // if (e.target.id === 'nn-window') this.mousedown = true
     if (e.target.id === 'nn-window') this._updateMouseDown(true)
     else if (e.target.id === 'nn-menu' && mw) {
-      // this.mousedown = true
       this._updateMouseDown(true)
       this.cursor = 'move'
       utils.selecting(false)
