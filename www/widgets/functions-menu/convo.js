@@ -24,16 +24,16 @@ window.CONVOS['functions-menu'] = (self) => {
     // TODO: need to replace _createNewRepo with something else
   }
 
-  const repoSelectionList = (() => {
-    const ss = WIDGETS['student-session']
-    if (ss && ss.data.github.repos) {
-      let str = '<select class="dropdown dropdown--invert">'
-      const list = ss.data.github.repos.split(', ')
-      list.forEach(r => { str += `<option value="${r}">${r}</option>` })
-      str += '</select>'
-      return str
-    }
-  })()
+  // const repoSelectionList = (() => {
+  //   const ss = WIDGETS['student-session']
+  //   if (ss && ss.data.github.repos) {
+  //     let str = '<select class="dropdown dropdown--invert">'
+  //     const list = ss.data.github.repos.split(', ')
+  //     list.forEach(r => { str += `<option value="${r}">${r}</option>` })
+  //     str += '</select>'
+  //     return str
+  //   }
+  // })()
 
   const sessionSaveOpts = () => {
     const opts = {
@@ -273,7 +273,7 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'Would you like to open a project you were working on from GitHub or load an HTML file from your computer?',
     options: {
       'open a GitHub project': (e) => {
-        e.hide() // TODO: trigger project-files open logic
+        e.hide(); WIDGETS.open('project-files', (w) => w.openProject())
       },
       'open an HTML file': (e) => {
         e.hide(); self.uploadCode()
@@ -299,46 +299,6 @@ window.CONVOS['functions-menu'] = (self) => {
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
       'actually, i\'ll keep working on this': (e) => e.hide()
     }
-  }, {
-    id: 'open-project',
-    content: `Choose the project you want me to open ${repoSelectionList}`,
-    options: {
-      'ok, this one': (e, t) => {
-        const repo = t.$('select').value
-        self._openProject(repo)
-      },
-      'actually, never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'opening-project',
-    before: () => NNW.menu.switchFace('processing'),
-    content: '...asking GitHub for data...',
-    options: {}
-  }, {
-    id: 'not-a-web-project',
-    content: 'I can only help you work on Web projects and this repo doesn\'t seem to have an <code>index.html</code> file in it\'s root directory. Want to try opening another project?',
-    options: {
-      ok: (e) => e.goTo('open-project'),
-      'no, never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'project-opened',
-    content: 'Here ya go! If you\'d like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>',
-    options: {
-      ok: (e) => e.hide()
-      // 'submit to BrowserFest': (e) => {
-      //   if (WIDGETS['browser-fest']) {
-      //     WIDGETS['browser-fest'].submit()
-      //   } else {
-      //     WIDGETS.load('browser-fest', (w) => w.submit())
-      //   }
-      // }
-    }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
   },
   // ... share gh project
   {

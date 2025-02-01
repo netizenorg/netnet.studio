@@ -401,10 +401,10 @@ class FunctionsMenu extends Widget {
     this._createHTML(gh)
   }
 
-  // TODO: MARK FOR RE-EVALUATION
-  gitHubProjectsUpdated () {
-    this.convos = window.CONVOS[this.key](this)
-  }
+  // // TODO: MARK FOR RE-EVALUATION
+  // gitHubProjectsUpdated () {
+  //   this.convos = window.CONVOS[this.key](this)
+  // }
 
   toggleSubMenu (id, type) {
     const subSec = this.$(`#${id} > .func-menu-sub-section`)

@@ -34,9 +34,7 @@ class StudentSession extends Widget {
         openedProject: ss.getItem('opened-project'),
         projectURL: ss.getItem('project-url'),
         branch: ss.getItem('branch'),
-        indexSha: ss.getItem('index-sha'),
         lastCommitMsg: ss.getItem('last-commit-msg'),
-        lastCommitCode: ss.getItem('last-commit-code'),
         ghpages: ss.getItem('ghpages')
       },
       lastSave: {
@@ -72,7 +70,7 @@ class StudentSession extends Widget {
 
   setData (type, value) {
     const sesh = [
-      'opened-project', 'project-url', 'branch', 'index-sha', 'last-commit-msg', 'last-commit-code', 'ghpages'
+      'opened-project', 'project-url', 'branch', 'last-commit-msg', 'ghpages'
     ]
     const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
     if (!value) window[store].removeItem(type)
@@ -129,11 +127,9 @@ class StudentSession extends Widget {
     // TODO: will need to update mutli-file-widget if/when we make that widget
     if (data.name) ss.setItem('opened-project', data.name)
     if (data.message) ss.setItem('last-commit-msg', data.message)
-    if (data.sha) ss.setItem('index-sha', data.sha)
     if (data.url) ss.setItem('project-url', data.url)
     if (data.ghpages) ss.setItem('ghpages', data.ghpages)
     if (data.branch) ss.setItem('branch', data.branch)
-    if (data.code) ss.setItem('last-commit-code', data.code)
     this._createHTML()
   }
 
@@ -141,8 +137,6 @@ class StudentSession extends Widget {
     const ss = window.sessionStorage
     ss.removeItem('opened-project')
     ss.removeItem('last-commit-msg')
-    ss.removeItem('last-commit-code')
-    ss.removeItem('index-sha')
     ss.removeItem('project-url')
     ss.removeItem('ghpages')
     ss.removeItem('branch')
@@ -214,7 +208,7 @@ class StudentSession extends Widget {
         if (!json.data) return
         const names = json.data.map(o => o.name)
         this.setData('repos', names.join(', '))
-        WIDGETS['functions-menu'].gitHubProjectsUpdated()
+        this.convos = window.CONVOS[this.key](this) // to redo repoSelectionList
       })
     } else {
       this.authStatus = false
@@ -222,20 +216,21 @@ class StudentSession extends Widget {
     }
   }
 
-  updateRoot () {
-    const owner = window.localStorage.getItem('owner')
-    const repo = window.sessionStorage.getItem('opened-project')
-    const main = window.sessionStorage.getItem('branch')
-    if (owner && repo) {
-      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      NNE.addCustomRoot({ base, proxy })
-    } else {
-      NNE.addCustomRoot(null)
-    }
-  }
+  // TODO: MARKED FOR DELETION (CHECK FIRST)
+  // updateRoot () {
+  //   const owner = window.localStorage.getItem('owner')
+  //   const repo = window.sessionStorage.getItem('opened-project')
+  //   const main = window.sessionStorage.getItem('branch')
+  //   if (owner && repo) {
+  //     const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
+  //     const proto = window.location.protocol
+  //     const host = window.location.host
+  //     const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
+  //     NNE.addCustomRoot({ base, proxy })
+  //   } else {
+  //     NNE.addCustomRoot(null)
+  //   }
+  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -399,16 +394,8 @@ class StudentSession extends Widget {
           <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
         <div>
-          last commit code:
-          <input  value="${this.data.github.lastCommitCode}" readonly="readonly">
-        </div>
-        <div>
           last commit message:
           <input  value="${this.data.github.lastCommitMsg}" readonly="readonly">
-        </div>
-        <div>
-          index sha:
-          <input  value="${this.data.github.indexSha}" readonly="readonly">
         </div>
         <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
         <hr>

@@ -1,25 +1,62 @@
-/* global NNE, WIDGETS, Widget, Convo, utils, nn */
+/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn */
+/*
+
+this widget is used to store project files in local storage, it works in tandem
+with /files-db-service-worker.js (in root), which is used to resolve requests
+made from this site for any of the files stored in the indexedDB
+ __________                                           ________________
+|    www   |                                         | service-worker |
+| <iframe> | <--------- send res to -----------------|________________|
+|_ netitor_|                                                      |
+     \__                 _______________                        /
+        \__ save to --> | project-files | <--- get data from __/
+                        |   IndexedDB   |
+                        |_______________|
+
+this file also sends various API calls to my_modules/github.js
+
+*/
 class ProjectFiles extends Widget {
   constructor (opts) {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-
-    this.shaDict = {}
-
     this.title = 'Project Files'
+    // this.shaDict = {}
+
+    // indexedDB file data store
+    this.log = true // debug logging
+    this.dbName = 'netnetDB'
+    this.storeName = 'filesStore'
+    this.objName = 'files'
+    this.dbVersion = 1
+    this.files = {} // GitHub info, includes {name, sha, type, etc} + code
+    this.db = null // IndexedDB, only { name: code }
+    this.sw = null // service worker
+
+    // state
+    this.rendering = null // which html file is rendered in iframe
+
     this._createHTML()
     // this._setupFileUploader()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.on('open', () => { window.convo = new Convo(this.convos, 'explain') })
+
+    window.addEventListener('beforeunload', async () => {
+      this._clearIndexedDB(true)
+    })
   }
 
-  _createHTML () {
-    const loggedInMsg = `You're currently working on a "<b>sketch</b>", that's what we call a web page made from a single HTML file. If you'd like we can open a project you have stored on GitHub or we could create a new one?`
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. GUI methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-    const loggedOutMsg = `You're currently working on a "<b>sketch</b>", that's what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you'll need to <span class="inline-link" onclick="WIDGETS['functions-menu']._login()">authenticate your GitHub account</span>. This is because we don't store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you're not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don't worry, you won't need to interact with it directly, we'll walk you through all the steps here in the studio.`
+  _createHTML () {
+    const loggedInMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. If you\'d like to work on "<b>project</b>" consisting of multiple files/assets which can be published on the web, we can either <span class="inline-link" onclick="WIDGETS[\'project-files\'].openProject()">open a project</span> you have stored on GitHub or we could <span class="inline-link" onclick="WIDGETS[\'project-files\'].newProject()">create a new one?</span>'
+
+    const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'functions-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
 
     const loggedIn = WIDGETS['student-session'].getData('owner')
 
@@ -57,33 +94,19 @@ class ProjectFiles extends Widget {
     }
   }
 
-  saveCurrentFile () {
-    // this.convos = window.CONVOS[this.key](this)
-    // TODO: create convo logic for this.
-
-    // TODO: save currently opened file
-    console.log('PF: saveCurrentFile');
-  }
-/*
-  updateFiles (data) {
+  _updateFilesGUI () {
     // runs everytime a new repo (github project) is created or opened
     // as well as anytime a file is uploaded or deleted
     this._showHideDivs()
     this.$('.files-widget__list').innerHTML = ''
-    if (!data) return
 
-    const files = data
-      .filter(f => f.name !== 'index.html')
-      .filter(f => f.name !== 'README.md')
-    files.forEach(file => {
-      this.shaDict[file.name] = file.sha
-
+    Object.keys(this.files).forEach(file => {
       const ele = document.createElement('li')
       ele.className = 'files-widget__file'
 
       const name = document.createElement('span')
       name.className = 'files-widget__name'
-      name.textContent = file.name
+      name.textContent = file
 
       const del = document.createElement('span')
 
@@ -93,7 +116,7 @@ class ProjectFiles extends Widget {
       del.appendChild(receptacle)
 
       del.className = 'files-widget__del files-widget--pointer'
-      del.addEventListener('click', () => this.deleteFile(file.name))
+      del.addEventListener('click', () => this.deleteFile(file))
 
       ele.appendChild(name)
       ele.appendChild(del)
@@ -101,6 +124,360 @@ class ProjectFiles extends Widget {
     })
   }
 
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  openProject (repo) {
+    this.convos = window.CONVOS[this.key](this)
+    if (!repo) {
+      window.convo = new Convo(this.convos, 'open-project')
+    } else {
+      WIDGETS['student-session'].clearSaveState()
+      const owner = WIDGETS['student-session'].getData('owner')
+
+      // load data for all the files
+      utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
+        if (!res.success) return this._ohNoErr(res)
+
+        if (Object.keys(res.data).includes('index.html')) {
+          NNE.addCustomRoot(null)
+          // utils.updateURL(`?gh=${owner}/${repo}`) // TODO: uncommment && test once open file is working
+
+          // update student session data
+          const htmlUrl = res.data['index.html'].html_url
+          const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
+          const url = (htmlUrl.includes('/blob/master'))
+            ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
+          WIDGETS['student-session'].setProjectData({ url, branch, name: repo })
+
+          await this._clearIndexedDB(true) // reset indexedDB && kill service worker
+          this.sw = await this._initServiceWorker() // setup service worker
+          this.db = await this._initIndexedDB() // setup indexedDB
+          // setup netitor's custom renderer to work with service worker
+          this._setCustomRenderer()
+
+          // load all the data
+          Object.entries(res.data).forEach((arr) => {
+            const name = arr[0]
+            const data = arr[1]
+            const mimetype = this._getMimeType(name)
+            this.files[name] = data
+            let code // store plain-text/code
+            if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json') {
+              code = utils.atob(data.content)
+            } else { // otherwise assume binary file && store blob-url
+              code = this._base64ToBlob(data.content, mimetype)
+            }
+            this._updateFile(name, code)
+          })
+
+          // update last commit data
+          const filename = 'index.html'
+          utils.post('./api/github/get-commits', { filename, repo, owner }, (res) => {
+            if (!res.success) return this._ohNoErr(res)
+            const msg = res.data[0].commit.message
+            WIDGETS['student-session'].setData('last-commit-msg', msg)
+          })
+
+          this._updateFilesGUI()
+          // TODO: show/hide screen blocker
+
+          // open the index.html file by default
+          this.openFile('index.html')
+        } else {
+          this.files = {}
+          window.convo = new Convo(this.convos, 'not-a-web-project')
+        }
+      })
+    }
+  }
+
+  openFile (filename) {
+    const extension = filename.split('.').pop().toLowerCase()
+    if (extension === 'html') this.rendering = filename
+
+    const repo = WIDGETS['student-session'].getData('opened-project')
+    NNW.updateTitleBar(`${repo}/${filename}`) // TODO: might need to update for nested files
+
+    NNE.code = this.files[filename].code
+    if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+
+    setTimeout(() => {
+      NNW.menu.switchFace('default')
+      if (!NNE.autoUpdate) NNE.update() // NOTE: TODO: probably want to change auto-update when working on projects
+      window.convo = new Convo(this.convos, 'project-opened')
+    }, utils.getVal('--layout-transition-time'))
+  }
+
+  deleteFile (filename) {
+    console.log(`delete ${filename}`);
+  }
+
+  newProject () {
+    // TODO: display netnet convo for naming a new project (&& creating a repo)
+    console.log('new project')
+  }
+
+  saveCurrentFile () {
+    // this.convos = window.CONVOS[this.key](this)
+    // TODO: create convo logic for this.
+
+    // TODO: save currently opened file
+    console.log('PF: saveCurrentFile');
+  }
+
+  // List all files in the store
+  listAllFiles () {
+    return Object.keys(this.files)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _ohNoErr (res) {
+    console.log('ProjectFiles:', res)
+    window.convo = new Convo(this.convos, 'oh-no-error')
+  }
+
+  _readyToRender () {
+    return this.sw && this.listAllFiles().length > 0
+  }
+
+  _setCustomRenderer () {
+    NNE.customRender = (eve) => {
+      if (this._readyToRender()) {
+        eve.iframe.src = this.rendering || 'index.html'
+        console.log('rendered this.rendering')
+      } else {
+        // eve.iframe.srcdoc = eve.code
+        eve.update(eve.code)
+        console.log('rendered default')
+      }
+    }
+  }
+
+  _base64ToBlob (base64, mimeType) {
+    mimeType = mimeType || ''
+    const sliceSize = 1024
+    const byteCharacters = window.atob(base64)
+    const byteArrays = []
+
+    for (let offset = 0, len = byteCharacters.length; offset < len; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize)
+      const byteNumbers = new Array(slice.length)
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      byteArrays.push(byteArray)
+    }
+
+    const blob = new window.Blob(byteArrays, { type: mimeType })
+    return URL.createObjectURL(blob)
+  }
+
+  // Update a specific text file in the files object
+  async _updateFile (filePath, fileContent) {
+    this.files[filePath].code = fileContent
+    await this.saveFilesToIndexedDB()
+  }
+
+  // .....................
+  // ..................... Initialize Service Worker
+  // ...........................................................................
+  async _initServiceWorker () {
+    if (!('serviceWorker' in navigator)) {
+      console.error('ProjectFiles: no service worker support in this browser')
+      return
+    }
+
+    if (this.log) console.log('ProjectFiles: service worker loading')
+
+    // Listen for messages from the service worker
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (this.log) console.log('ProjectFiles: Message received from service worker:', event.data)
+      // Handle the data received from the service worker
+      this._handleServiceWorkerMessage(event.data)
+    })
+
+    try { // setup the service worker
+      const reg = await navigator.serviceWorker.register('/files-db-service-worker.js', {
+        scope: '/'
+      })
+
+      const sw = reg.installing || reg.waiting || reg.active
+      if (this.log) console.log('ProjectFiles: service worker is registered')
+
+      if (sw) {
+        sw.postMessage({
+          dbName: this.dbName,
+          dbVersion: this.dbVersion,
+          storeName: this.storeName,
+          objName: this.objName,
+          log: this.log
+        })
+      }
+
+      if (this.log && navigator.serviceWorker.controller) {
+        console.log('ProjectFiles: we have a service worker installed')
+      }
+
+      return sw
+    } catch (error) {
+      console.error('ProjectFiles: error registering service worker', error)
+    }
+  }
+
+  _handleServiceWorkerMessage (data) {
+    if (this.log) console.log('MESSAGE:', data)
+    // if (data.type === 'UPDATE_FILES') {
+    //   // Update the files object with new data
+    //   this.files = data.files
+    //   if (this.log) console.log('ProjectFiles: Files updated from service worker message')
+    // } else {
+    //   if (this.log) console.log('ProjectFiles: _handleServiceWorkerMessage disregarded message')
+    //   // TODO Example: handle different types of messages from the service worker
+    // }
+  }
+
+  async _disableServiceWorker () {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.getRegistration('/files-db-service-worker.js')
+      if (registration) {
+        await registration.unregister()
+        this.sw = null
+        if (this.log) console.log('ProjectFiles: Service worker unregistered successfully')
+      } else {
+        if (this.log) console.log('ProjectFiles: No service worker found to unregister')
+      }
+    }
+  }
+
+  // .....................
+  // ..................... Initialize IndexedDB
+  // ...........................................................................
+  async _initIndexedDB () {
+    if (!window.indexedDB) {
+      console.error('ProjectFiles: is not supported in this browser.')
+      return
+    }
+
+    try {
+      const request = window.indexedDB.open(this.dbName, this.dbVersion)
+      const db = await new Promise((resolve, reject) => {
+        request.onerror = event => {
+          console.error('ProjectFiles: error:', event.target.error)
+          reject(event.target.error)
+        }
+        request.onupgradeneeded = event => {
+          const db = event.target.result
+          if (!db.objectStoreNames.contains(this.storeName)) {
+            db.createObjectStore(this.storeName)
+          }
+        }
+        request.onsuccess = event => {
+          resolve(event.target.result)
+        }
+      })
+
+      return db
+    } catch (error) {
+      console.error('ProjectFiles: error initializing IndexedDB:', error)
+    }
+  }
+
+  async _clearIndexedDB (disableServiceWorker) {
+    if (!this.db) {
+      if (disableServiceWorker) await this._disableServiceWorker()
+      if (this.log) console.log('ProjectFiles: IndexedDB hasn\'t been not initialized yet.')
+      return
+    }
+
+    try {
+      const transaction = this.db.transaction([this.storeName], 'readwrite')
+      const objectStore = transaction.objectStore(this.storeName)
+      const request = objectStore.clear()
+
+      await new Promise((resolve, reject) => {
+        request.onerror = event => {
+          console.error('ProjectFiles: IndexedDB clear error:', event.target.error)
+          reject(event.target.error)
+        }
+        request.onsuccess = () => resolve()
+      })
+
+      if (this.log) console.log('ProjectFiles: All data cleared from IndexedDB successfully.')
+      // Clear the in-memory files object as well
+      this.files = {}
+      // disable the service worker
+      if (disableServiceWorker) await this._disableServiceWorker()
+    } catch (error) {
+      console.error('ProjectFiles: Error while clearing IndexedDB:', error)
+    }
+  }
+
+  // save the "code" in this.files into indexedDB (avoids storing all other GH data)
+  saveFilesToIndexedDB () {
+    const filesDict = {}
+    Object.values(this.files).forEach(file => {
+      if (file.code) filesDict[file.name] = file.code
+    })
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.storeName], 'readwrite')
+      const objectStore = transaction.objectStore(this.storeName)
+      const request = objectStore.put(filesDict, this.objName)
+
+      request.onerror = (event) => {
+        console.error('ProjectFiles: IndexedDB save error:', event.target.error)
+        reject(event.target.error)
+      }
+
+      request.onsuccess = () => {
+        if (this.log) console.log('ProjectFiles: Files saved to IndexedDB successfully.')
+        resolve()
+      }
+    })
+  }
+
+  // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
+  _getMimeType (filePath) {
+    const extension = filePath.split('.').pop().toLowerCase()
+    switch (extension) {
+      case 'md': return 'text/markdown'
+      case 'html': return 'text/html'
+      case 'css': return 'text/css'
+      case 'js': return 'text/javascript'
+      case 'png': return 'image/png'
+      case 'gif': return 'image/gif'
+      case 'jpg': return 'image/jpeg'
+      case 'jpeg': return 'image/jpeg'
+      case 'svg': return 'image/svg+xml'
+      case 'json': return 'application/json'
+      case 'ico': return 'image/x-icon'
+      case 'webp': return 'image/webp'
+      case 'woff': return 'font/woff'
+      case 'woff2': return 'font/woff2'
+      case 'ttf': return 'font/ttf'
+      case 'otf': return 'font/otf'
+      case 'mp4': return 'video/mp4'
+      case 'webm': return 'video/webm'
+      case 'mp3': return 'audio/mpeg'
+      case 'wav': return 'audio/wav'
+      case 'txt': return 'text/plain'
+      case 'xml': return 'application/xml'
+      case 'pdf': return 'application/pdf'
+      case 'zip': return 'application/zip'
+      case 'csv': return 'text/csv'
+      // Add more MIME types as needed
+      default: return 'application/octet-stream'
+    }
+  }
+
+
+/*
   uploadFile (file) {
     this._upload = file.name
     if (this.shaDict[file.name]) {

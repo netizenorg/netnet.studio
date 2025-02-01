@@ -53,59 +53,37 @@ function openDB () {
   })
 }
 
+// NOTE: this method needs to stay in sync with the method in the Project Files widget
 function getMimeType (filePath) {
   const extension = filePath.split('.').pop().toLowerCase()
   switch (extension) {
-    case 'html':
-      return 'text/html'
-    case 'css':
-      return 'text/css'
-    case 'js':
-      return 'text/javascript'
-    case 'png':
-      return 'image/png'
-    case 'gif':
-      return 'image/gif'
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg'
-    case 'svg':
-      return 'image/svg+xml'
-    case 'json':
-      return 'application/json'
-    case 'ico':
-      return 'image/x-icon'
-    case 'webp':
-      return 'image/webp'
-    case 'woff':
-      return 'font/woff'
-    case 'woff2':
-      return 'font/woff2'
-    case 'ttf':
-      return 'font/ttf'
-    case 'otf':
-      return 'font/otf'
-    case 'mp4':
-      return 'video/mp4'
-    case 'webm':
-      return 'video/webm'
-    case 'mp3':
-      return 'audio/mpeg'
-    case 'wav':
-      return 'audio/wav'
-    case 'txt':
-      return 'text/plain'
-    case 'xml':
-      return 'application/xml'
-    case 'pdf':
-      return 'application/pdf'
-    case 'zip':
-      return 'application/zip'
-    case 'csv':
-      return 'text/csv'
+    case 'md': return 'text/markdown'
+    case 'html': return 'text/html'
+    case 'css': return 'text/css'
+    case 'js': return 'text/javascript'
+    case 'png': return 'image/png'
+    case 'gif': return 'image/gif'
+    case 'jpg': return 'image/jpeg'
+    case 'jpeg': return 'image/jpeg'
+    case 'svg': return 'image/svg+xml'
+    case 'json': return 'application/json'
+    case 'ico': return 'image/x-icon'
+    case 'webp': return 'image/webp'
+    case 'woff': return 'font/woff'
+    case 'woff2': return 'font/woff2'
+    case 'ttf': return 'font/ttf'
+    case 'otf': return 'font/otf'
+    case 'mp4': return 'video/mp4'
+    case 'webm': return 'video/webm'
+    case 'mp3': return 'audio/mpeg'
+    case 'wav': return 'audio/wav'
+    case 'txt': return 'text/plain'
+    case 'xml': return 'application/xml'
+    case 'pdf': return 'application/pdf'
+    case 'zip': return 'application/zip'
+    case 'csv': return 'text/csv'
     // Add more MIME types as needed
-    default:
-      return 'application/octet-stream'
+    default: return 'application/octet-stream'
   }
 }
 
@@ -189,10 +167,9 @@ self.addEventListener('message', event => {
 })
 
 self.addEventListener('fetch', (event) => {
+  if (LOG) console.log('fetching file...')
   const url = new URL(event.request.url)
   const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
-
-  if (LOG) console.log('Fetching from IndexedDB:', filePath)
 
   event.respondWith(
     (async () => {
@@ -200,6 +177,7 @@ self.addEventListener('fetch', (event) => {
         const fileData = await getFileFromIndexedDB(filePath)
 
         if (fileData) {
+          if (LOG) console.log('Fetching from IndexedDB:', filePath)
           const response = await generateResponse(filePath, fileData)
           // if (LOG) console.log('DATA:', filePath, fileData)
           if (LOG) console.log('RES:', response)
