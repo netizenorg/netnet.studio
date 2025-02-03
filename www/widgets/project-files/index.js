@@ -22,6 +22,7 @@ class ProjectFiles extends Widget {
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
     this.title = 'Project Files'
+    this.width = 450
     // this.shaDict = {}
 
     // indexedDB file data store
@@ -35,8 +36,10 @@ class ProjectFiles extends Widget {
     this.sw = null // service worker
 
     // state
+    this.viewing = null
     this.rendering = null // which html file is rendered in iframe
 
+    this._createContextMenu()
     this._createHTML()
     // this._setupFileUploader()
 
@@ -59,19 +62,47 @@ class ProjectFiles extends Widget {
     const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'functions-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
 
     const loggedIn = WIDGETS['student-session'].getData('owner')
+    const c1 = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    const fileClr = `rgb(${c1.r},${c1.g},${c1.b})`
+    const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+    const fldrClr = `rgb(${c2.r},${c2.g},${c2.b})`
 
     this.innerHTML = `
-      <div class="files-widget">
+      <style>
+        .proj-files__tree-view li:before {
+          margin-right: 10px;
+          content: "";
+          height: 20px;
+          vertical-align: middle;
+          width: 20px;
+          background-repeat: no-repeat;
+          display: inline-block;
+          /* file icon by default */
+          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='${fileClr}' d='M85.714,42.857V87.5c0,1.487-0.521,2.752-1.562,3.794c-1.042,1.041-2.308,1.562-3.795,1.562H19.643 c-1.488,0-2.753-0.521-3.794-1.562c-1.042-1.042-1.562-2.307-1.562-3.794v-75c0-1.487,0.521-2.752,1.562-3.794 c1.041-1.041,2.306-1.562,3.794-1.562H50V37.5c0,1.488,0.521,2.753,1.562,3.795s2.307,1.562,3.795,1.562H85.714z M85.546,35.714 H57.143V7.311c3.05,0.558,5.505,1.767,7.366,3.627l17.41,17.411C83.78,30.209,84.989,32.665,85.546,35.714z' /></svg>");
+          background-position: center 2px;
+          background-size: 60% auto;
+        }
+
+        .proj-files__tree-view li.folder:before {
+          /* folder icon if folder class is specified */
+          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='${fldrClr}' d='M96.429,37.5v39.286c0,3.423-1.228,6.361-3.684,8.817c-2.455,2.455-5.395,3.683-8.816,3.683H16.071 c-3.423,0-6.362-1.228-8.817-3.683c-2.456-2.456-3.683-5.395-3.683-8.817V23.214c0-3.422,1.228-6.362,3.683-8.817 c2.455-2.456,5.394-3.683,8.817-3.683h17.857c3.422,0,6.362,1.228,8.817,3.683c2.455,2.455,3.683,5.395,3.683,8.817V25h37.5 c3.422,0,6.361,1.228,8.816,3.683C95.201,31.138,96.429,34.078,96.429,37.5z' /></svg>");
+          background-position: center top;
+          background-size: 75% auto;
+        }
+      </style>
+      <div class="proj-files">
         <!-- if project is not open -->
-        <div class="files-widget__disclaimer">
+        <div class="proj-files__disclaimer">
           ${loggedIn ? loggedInMsg : loggedOutMsg}
         </div>
         <!-- if project is open -->
-        <div class="files-widget__header">
-          <button class="pill-btn" name="upload">Upload Asset</button>
+        <div class="proj-files__header">
+          <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
+          <!-- <button class="pill-btn" name="upload">Upload Asset</button> -->
+          Tree View
         </div>
-        <ul class="files-widget__list">
-          <!-- upldateFiles populates this div -->
+        <ul class="proj-files__list proj-files__tree-view">
+          <!-- this._updateFilesGUI() populates this div -->
         </ul>
       </div>
     `
@@ -82,51 +113,225 @@ class ProjectFiles extends Widget {
   }
 
   _showHideDivs () {
-    const op = window.sessionStorage.getItem('opened-project')
-    if (!op) {
-      this.$('.files-widget__disclaimer').style.display = 'block'
-      this.$('.files-widget__header').style.display = 'none'
-      this.$('.files-widget__list').style.display = 'none'
-    } else {
-      this.$('.files-widget__disclaimer').style.display = 'none'
-      this.$('.files-widget__header').style.display = 'block'
-      this.$('.files-widget__list').style.display = 'block'
-    }
+    const op = WIDGETS['student-session'].getData('opened-project')
+    this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
+    this.$('.proj-files__header').style.display = op ? 'block' : 'none'
+    this.$('.proj-files__list').style.display = op ? 'block' : 'none'
   }
 
   _updateFilesGUI () {
     // runs everytime a new repo (github project) is created or opened
     // as well as anytime a file is uploaded or deleted
     this._showHideDivs()
-    this.$('.files-widget__list').innerHTML = ''
+    this.$('.proj-files__list').innerHTML = ''
 
-    Object.keys(this.files).forEach(file => {
-      const ele = document.createElement('li')
-      ele.className = 'files-widget__file'
+    // update view
+    this._setupTreeView()
+  }
 
-      const name = document.createElement('span')
-      name.className = 'files-widget__name'
-      name.textContent = file
+  _setupTreeView () {
+    // create "tree" data structure
+    // ----------------------------
 
-      const del = document.createElement('span')
-
-      const trash = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><g transform="translate(0.000000,511.000000) scale(0.100000,-0.100000)"><path d="M4230.9,4975.2c-271.7-74.3-476.8-241-607.6-497.3c-69.2-138.4-71.8-153.8-79.5-625.5c-7.7-464-7.7-484.5,46.1-540.9c151.2-161.5,556.3-125.6,638.3,56.4c15.4,35.9,28.2,220.5,28.2,430.7c0,335.8,5.1,376.8,51.3,423c28.2,28.2,76.9,56.4,110.2,64.1c30.8,7.7,320.4,12.8,643.5,7.7l584.5-7.7l61.5-71.8c59-69.2,61.5-87.2,61.5-464c0-423,0-423,153.8-502.5c89.7-48.7,330.7-43.6,428.1,7.7c133.3,69.2,141,107.7,130.7,592.2c-7.7,428.1-10.3,440.9-87.1,605c-100,212.8-258.9,371.7-471.7,471.7l-166.6,79.5l-692.1,5.1C4510.4,5013.7,4343.7,5006,4230.9,4975.2z"/><path d="M2936.4,4616.3c-753.7-182-1286.9-435.8-1591.9-758.8c-269.2-284.5-343.5-499.9-343.5-994.6c0-474.3,74.3-710.1,294.8-945.9l110.2-117.9l182-1768.8c100-974.1,223-2171.3,271.7-2666.1c89.7-892.1,92.3-897.2,179.4-1079.2c258.9-530.7,956.2-874.2,2102.1-1040.8c358.9-51.3,1463.8-43.6,1832.9,15.4c1074.1,166.6,1748.3,512.7,1997,1020.3c92.3,184.6,61.5-61.5,505,4288.8l123.1,1204.8l105.1,128.2c248.7,299.9,294.8,448.6,294.8,961.3c0,487.1-43.6,640.9-253.8,917.7c-251.2,328.1-974.1,687-1709.8,846l-233.3,48.7l48.7-130.7c28.2-71.8,58.9-220.5,66.6-333.3l17.9-202.5l256.3-71.8c825.4-230.7,1274.1-594.7,1168.9-951.1c-43.6-146.1-269.2-364-502.4-487.1c-1322.8-687-4258-705-5639.7-30.8c-512.7,248.7-689.6,543.5-512.7,846c148.7,253.8,584.5,479.4,1335.6,689.6c15.4,5.1,35.9,87.2,43.6,184.6c7.7,97.4,38.4,246.1,66.7,330.7c28.2,82,48.7,151.2,46.2,153.8C3195.3,4675.3,3077.4,4649.6,2936.4,4616.3z M2741.5,1145.3c100-28.2,243.5-156.4,299.9-264c25.6-48.7,92.3-605,205.1-1691.9c89.7-892.1,182-1779.1,202.5-1971.4c20.5-192.3,38.5-415.3,38.5-492.2c0-123-7.7-146.1-79.5-205.1c-174.3-148.7-474.3-17.9-558.8,246.1C2821-3143.4,2408.3,748,2408.3,940.2c-2.6,92.3,10.3,125.6,66.7,171.8C2549.3,1176.1,2608.2,1183.8,2741.5,1145.3z M7548.1,1117.1c56.4-43.6,66.6-71.8,66.6-179.4c0-192.3-405-4047.8-438.3-4163.1c-56.4-202.5-289.7-356.3-471.7-310.2c-76.9,20.5-158.9,102.5-171.8,176.9c-20.5,112.8,407.6,4160.6,448.6,4237.5C7107.2,1117.1,7394.3,1240.2,7548.1,1117.1z M5187.1,783.8c30.8-15.4,76.9-53.8,100-84.6c41-48.7,46.2-205.1,46.2-2199.5v-2143.1l-64.1-79.5c-169.2-197.4-507.6-143.5-576.8,94.9c-20.5,64.1-25.6,751.1-20.5,2186.7c7.7,2053.4,7.7,2094.4,59,2150.8c28.2,30.8,74.3,66.7,102.5,79.5C4910.3,819.7,5123,817.2,5187.1,783.8z"/></g></svg>'
-      const receptacle = document.createElement('span')
-      receptacle.innerHTML = trash
-      del.appendChild(receptacle)
-
-      del.className = 'files-widget__del files-widget--pointer'
-      del.addEventListener('click', () => this.deleteFile(file))
-
-      ele.appendChild(name)
-      ele.appendChild(del)
-      this.$('.files-widget__list').appendChild(ele)
+    this.tree = []
+    const agg = { temp: [] }
+    Object.values(this.files).forEach(file => {
+      // via: https://stackoverflow.com/a/73514205/1104148
+      file.path.split('/').reduce((agg, part, level, parts) => {
+        if (!agg[part]) {
+          agg[part] = { temp: [] }
+          agg.temp.push({
+            id: parts.slice(0, level + 1).join('/'),
+            level: level + 1,
+            children: agg[part].temp
+          })
+        }
+        return agg[part]
+      }, agg)
+      // update files + folders dictionary/array
+      this.tree = agg.temp
     })
+
+    // tree DOM helper functions
+    // ----------------------------
+
+    const hover = (e, type) => {
+      if (type === 'over') {
+        e.stopPropagation()
+        const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+        e.target.style.background = `rgba(${c2.r},${c2.g},${c2.b}, 0.25)`
+      } else if (type === 'out') {
+        e.stopPropagation()
+        e.target.style.background = 'transparent'
+      }
+    }
+
+    const createLi = (path, parent, click) => {
+      const ele = document.createElement('li')
+      const arr = path.split('/')
+      ele.textContent = arr[arr.length - 1]
+      ele.dataset.path = path
+      if (click) {
+        ele.addEventListener('click', (e) => {
+          e.stopPropagation(); this.openFile(path)
+        })
+      }
+      ele.addEventListener('contextmenu', (e) => this._openContextMenu(e))
+      ele.addEventListener('mouseover', (e) => hover(e, 'over'))
+      ele.addEventListener('mouseout', (e) => hover(e, 'out'))
+      parent.appendChild(ele)
+      return ele
+    }
+
+    const createUl = (parent) => {
+      const ele = document.createElement('ul')
+      ele.classList.add('active')
+      parent.appendChild(ele)
+      return ele
+    }
+
+    const toggleFolder = (e, init) => {
+      const li = e.target
+      const ul = li.querySelector('ul')
+      if (!ul) return
+      e.preventDefault(); e.stopPropagation()
+      if (!ul.classList.contains('active')) { // open folder
+        ul.classList.add('active')
+        ul.style.height = 'auto'
+      } else { // close folder
+        ul.style.height = '0px'
+        ul.classList.remove('active')
+        ul.querySelectorAll('.active').forEach((ulc) => {
+          ulc.style.height = '0px'
+          ulc.classList.remove('active')
+        })
+      }
+    }
+
+    const iterate = (obj, ele = this.$('.proj-files__tree-view')) => {
+      if (obj.children.length > 0) {
+        // create folder if obj has children...
+        const li = createLi(obj.id, ele)
+        li.classList.add('folder')
+        const ul = createUl(li)
+        li.addEventListener('click', (e) => toggleFolder(e))
+        // - - - - - - - - - - - - - - recuuuursssiiiion
+        obj.children.forEach(child => iterate(child, ul))
+        // ...otherwise create file
+      } else createLi(obj.id, ele, true)
+    }
+
+    // create the tree DOM elements
+    // ----------------------------
+    // obj = { id: [filepath], level: [number], children: [array] }
+    this.tree.forEach(obj => iterate(obj))
+
+    if (this.$('.proj-files__tree-view > .folder')) {
+      // close folders by default
+      if (this.$('.proj-files__tree-view > .folder') instanceof window.NodeList) {
+        this.$('.proj-files__tree-view > .folder').forEach(f => f.click())
+      } else {
+        this.$('.proj-files__tree-view > .folder').click()
+      }
+    }
+
+    // TODO: why was this here originally?????
+    // // label file currently (rendering)
+    // if (this._rendering) {
+    //   this._updateOpenFile()
+    //   this._renderToIframe()
+    // }
+  }
+
+  // .................................................... CONTEXT MENU .........
+
+  _createContextMenu () {
+    if (this.ctxmenu) return
+    this.ctxmenu = document.createElement('nav')
+    this.ctxmenu.className = 'proj-files__ctx'
+    this.ctxmenu.style.display = 'none'
+    this.ctxmenu.style.position = 'absolute'
+    this.ctxmenu.style.zIndex = '500'
+    this.ctxmenu.style.color = 'var(--bg-color)'
+    this.ctxmenu.style.backgroundColor = 'var(--netizen-meta)'
+    this.ctxmenu.style.border = '1px solid var(--bg-color)'
+    this.ctxmenu.style.padding = '10px'
+    this.ctxmenu.innerHTML = `
+      <!-- the right-click context menu -->
+      <div class="proj-files__ctx-rename">rename</div>
+      <div class="proj-files__ctx-delete">delete</div>
+      <div class="proj-files__ctx-copy">copy relative path</div>
+      <hr>
+      <div>upload file</div>
+      <div>new file</div>
+      <div>new folder</div>
+    `
+    document.body.appendChild(this.ctxmenu)
+
+    this.ctxmenu.querySelectorAll('div').forEach(div => {
+      div.addEventListener('click', (e) => {
+        if (e.target.textContent.includes('rename')) this.renameFile()
+        else if (e.target.textContent.includes('delete')) this.deleteFile()
+        else if (e.target.textContent.includes('copy relative path')) this.copyRelativePath()
+        else if (e.target.textContent.includes('upload file')) this.fu.input.click()
+        else if (e.target.textContent.includes('new file')) this.newFile()
+        else if (e.target.textContent.includes('new folder')) this.newFolder()
+      })
+    })
+
+    const close = () => {
+      if (this.ctxmenu.dataset.open === 'true') this._closeContextMenu()
+    }
+    window.addEventListener('click', () => close())
+    window.addEventListener('keyup', () => close())
+    NNE.on('render-update', () => {
+      NNE.iframe.contentWindow.addEventListener('click', () => close())
+    })
+  }
+
+  _openContextMenu (e) {
+    e.preventDefault()
+    this._rightClicked = e.target
+    const rn = this.ctxmenu.querySelector('.proj-files__ctx-rename')
+    const dl = this.ctxmenu.querySelector('.proj-files__ctx-delete')
+    const cp = this.ctxmenu.querySelector('.proj-files__ctx-copy')
+    const hr = this.ctxmenu.querySelector('hr')
+    const name = e.target.childNodes[0].nodeValue.trim()
+
+    if (!name || name === '') {
+      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'none'
+    } else {
+      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'block'
+      rn.textContent = `rename "${name}"`
+      dl.textContent = `delete "${name}"`
+    }
+
+    this.ctxmenu.style.left = e.clientX - 8 + 'px'
+    this.ctxmenu.style.top = e.clientY - 8 + 'px'
+    this.ctxmenu.style.display = 'inline-block'
+    this.ctxmenu.dataset.open = 'true'
+  }
+
+  _closeContextMenu () {
+    this.ctxmenu.style.display = 'none'
+    this.ctxmenu.dataset.open = 'false'
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  copyRelativePath () { // TODO: needs updating (THIS IS FROM OLD LOGIC)
+    const b = WIDGETS['student-session'].getData('branch')
+    let cpath = this._rightClicked.dataset.path
+    let bpath = NNE._root.split(b)[1]
+    cpath = cpath.split('/').filter(i => i !== '')
+    bpath = bpath.split('/').filter(i => i !== '')
+    while (bpath[0] === cpath[0]) { bpath.shift(); cpath.shift() }
+    cpath = cpath.join('/')
+    for (let i = 0; i < bpath.length; i++) { cpath = '../' + cpath }
+    navigator.clipboard.writeText(cpath)
+  }
 
   openProject (repo) {
     this.convos = window.CONVOS[this.key](this)
@@ -185,6 +390,7 @@ class ProjectFiles extends Widget {
 
           // open the index.html file by default
           this.openFile('index.html')
+          window.convo = new Convo(this.convos, 'project-opened')
         } else {
           this.files = {}
           window.convo = new Convo(this.convos, 'not-a-web-project')
@@ -196,6 +402,7 @@ class ProjectFiles extends Widget {
   openFile (filename) {
     const extension = filename.split('.').pop().toLowerCase()
     if (extension === 'html') this.rendering = filename
+    this.viewing = filename
 
     const repo = WIDGETS['student-session'].getData('opened-project')
     NNW.updateTitleBar(`${repo}/${filename}`) // TODO: might need to update for nested files
@@ -206,7 +413,6 @@ class ProjectFiles extends Widget {
     setTimeout(() => {
       NNW.menu.switchFace('default')
       if (!NNE.autoUpdate) NNE.update() // NOTE: TODO: probably want to change auto-update when working on projects
-      window.convo = new Convo(this.convos, 'project-opened')
     }, utils.getVal('--layout-transition-time'))
   }
 
@@ -551,7 +757,7 @@ class ProjectFiles extends Widget {
     this.fu = new nn.FileUploader({
       maxSize: 5000, // 5 MB (see widgets/project-files/convo.js)
       ready: (file) => this.uploadFile(file),
-      drop: '.files-widget',
+      drop: '.proj-files',
       error: (err) => {
         console.error('ProjectFiles:', err)
         if (err.includes('file larger than max size')) {

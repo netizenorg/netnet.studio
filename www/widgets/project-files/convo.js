@@ -66,7 +66,7 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'project-opened',
-    content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (including assets, like images or fonts) to use in your project. Don\'t forget to save your progress as you work!',
+    content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (images, fonts, etc) to use in your project. Don\'t forget to save your progress as you work!',
     options: {
       ok: (e) => e.hide()
       // 'submit to BrowserFest': (e) => {
