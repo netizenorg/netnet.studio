@@ -13,7 +13,7 @@ made from this site for any of the files stored in the indexedDB
                         |   IndexedDB   |
                         |_______________|
 
-this file also sends various API calls to my_modules/github.js
+this file also sends API calls to my_modules/github.js
 
 */
 class ProjectFiles extends Widget {
@@ -38,6 +38,36 @@ class ProjectFiles extends Widget {
     // state
     this.viewing = null
     this.rendering = null // which html file is rendered in iframe
+    this.lastCommitFiles = {} // for tracking changes
+
+    // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
+    this.mimeTypes = {
+      md: 'text/markdown',
+      html: 'text/html',
+      css: 'text/css',
+      js: 'text/javascript',
+      png: 'image/png',
+      gif: 'image/gif',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      svg: 'image/svg+xml',
+      json: 'application/json',
+      ico: 'image/x-icon',
+      webp: 'image/webp',
+      woff: 'font/woff',
+      woff2: 'font/woff2',
+      ttf: 'font/ttf',
+      otf: 'font/otf',
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      mp3: 'audio/mpeg',
+      wav: 'audio/wav',
+      txt: 'text/plain',
+      xml: 'application/xml',
+      pdf: 'application/pdf',
+      zip: 'application/zip',
+      csv: 'text/csv'
+    }
 
     this._createContextMenu()
     this._createHTML()
@@ -46,6 +76,12 @@ class ProjectFiles extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.on('open', () => { window.convo = new Convo(this.convos, 'explain') })
+
+    NNE.on('code-update', () => {
+      const repo = WIDGETS['student-session'].getData('opened-project')
+      if (!repo) return
+      this._updateViewingFile()
+    })
 
     window.addEventListener('beforeunload', async () => {
       this._clearIndexedDB(true)
@@ -98,8 +134,7 @@ class ProjectFiles extends Widget {
         <!-- if project is open -->
         <div class="proj-files__header">
           <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
-          <!-- <button class="pill-btn" name="upload">Upload Asset</button> -->
-          Tree View
+          <div class="git-btn">git push</div>
         </div>
         <ul class="proj-files__list proj-files__tree-view">
           <!-- this._updateFilesGUI() populates this div -->
@@ -109,48 +144,63 @@ class ProjectFiles extends Widget {
 
     this._showHideDivs()
 
-    // this.updateFiles()
+    this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
   }
 
   _showHideDivs () {
     const op = WIDGETS['student-session'].getData('opened-project')
     this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
-    this.$('.proj-files__header').style.display = op ? 'block' : 'none'
+    this.$('.proj-files__header').style.display = op ? 'flex' : 'none'
     this.$('.proj-files__list').style.display = op ? 'block' : 'none'
   }
 
+  // runs everytime a new repo (github project) is created or opened
+  // as well as anytime a file is uploaded or deleted
   _updateFilesGUI () {
-    // runs everytime a new repo (github project) is created or opened
-    // as well as anytime a file is uploaded or deleted
+    // get all currently opened folders
+    this._openDirNames = nn.getAll('.folder > ul.active').map(ul => ul.parentNode.childNodes[0].textContent)
+
     this._showHideDivs()
     this.$('.proj-files__list').innerHTML = ''
-
     // update view
     this._setupTreeView()
+
+    // reopen previously opened folders
+    const rootName = this.$('.proj-files__tree-view li')[0].childNodes[0].textContent
+    const folders = [...this.ele.querySelectorAll('.folder')]
+    folders
+      .filter(li => this._openDirNames.includes(li.childNodes[0].textContent))
+      .forEach(li => {
+        const name = li.childNodes[0].textContent
+        if (name !== rootName) li.click()
+      })
   }
 
   _setupTreeView () {
+    const root = WIDGETS['student-session'].getData('opened-project')
+
     // create "tree" data structure
     // ----------------------------
-
     this.tree = []
     const agg = { temp: [] }
-    Object.values(this.files).forEach(file => {
-      // via: https://stackoverflow.com/a/73514205/1104148
-      file.path.split('/').reduce((agg, part, level, parts) => {
-        if (!agg[part]) {
-          agg[part] = { temp: [] }
-          agg.temp.push({
-            id: parts.slice(0, level + 1).join('/'),
-            level: level + 1,
-            children: agg[part].temp
-          })
-        }
-        return agg[part]
-      }, agg)
-      // update files + folders dictionary/array
-      this.tree = agg.temp
-    })
+    Object.values(this.files)
+      .map(file => `${root}/${file.path}`)
+      .forEach(filepath => {
+        // via: https://stackoverflow.com/a/73514205/1104148
+        filepath.split('/').reduce((agg, part, level, parts) => {
+          if (!agg[part]) {
+            agg[part] = { temp: [] }
+            agg.temp.push({
+              id: parts.slice(0, level + 1).join('/'),
+              level: level + 1,
+              children: agg[part].temp
+            })
+          }
+          return agg[part]
+        }, agg)
+        // update files + folders dictionary/array
+        this.tree = agg.temp
+      })
 
     // tree DOM helper functions
     // ----------------------------
@@ -170,10 +220,11 @@ class ProjectFiles extends Widget {
       const ele = document.createElement('li')
       const arr = path.split('/')
       ele.textContent = arr[arr.length - 1]
-      ele.dataset.path = path
+      const subRootPath = path.slice(root.length + 1)
+      ele.dataset.path = subRootPath
       if (click) {
         ele.addEventListener('click', (e) => {
-          e.stopPropagation(); this.openFile(path)
+          e.stopPropagation(); this.openFile(subRootPath)
         })
       }
       ele.addEventListener('contextmenu', (e) => this._openContextMenu(e))
@@ -226,21 +277,8 @@ class ProjectFiles extends Widget {
     // obj = { id: [filepath], level: [number], children: [array] }
     this.tree.forEach(obj => iterate(obj))
 
-    if (this.$('.proj-files__tree-view > .folder')) {
-      // close folders by default
-      if (this.$('.proj-files__tree-view > .folder') instanceof window.NodeList) {
-        this.$('.proj-files__tree-view > .folder').forEach(f => f.click())
-      } else {
-        this.$('.proj-files__tree-view > .folder').click()
-      }
-    }
-
-    // TODO: why was this here originally?????
-    // // label file currently (rendering)
-    // if (this._rendering) {
-    //   this._updateOpenFile()
-    //   this._renderToIframe()
-    // }
+    this.$('.proj-files__tree-view li')[0].click() // close root (and thus sub folders) by default
+    this.$('.proj-files__tree-view li')[0].click() // re-open root folder only
   }
 
   // .................................................... CONTEXT MENU .........
@@ -260,7 +298,7 @@ class ProjectFiles extends Widget {
       <!-- the right-click context menu -->
       <div class="proj-files__ctx-rename">rename</div>
       <div class="proj-files__ctx-delete">delete</div>
-      <div class="proj-files__ctx-copy">copy relative path</div>
+      <div class="proj-files__ctx-copy">copy file path</div>
       <hr>
       <div>upload file</div>
       <div>new file</div>
@@ -269,11 +307,11 @@ class ProjectFiles extends Widget {
     document.body.appendChild(this.ctxmenu)
 
     this.ctxmenu.querySelectorAll('div').forEach(div => {
-      div.addEventListener('click', (e) => {
+      div.addEventListener('click', (e) => { // TODO: need to implement some of these functions
         if (e.target.textContent.includes('rename')) this.renameFile()
         else if (e.target.textContent.includes('delete')) this.deleteFile()
-        else if (e.target.textContent.includes('copy relative path')) this.copyRelativePath()
-        else if (e.target.textContent.includes('upload file')) this.fu.input.click()
+        else if (e.target.textContent.includes('copy file path')) this.copyFilePath()
+        else if (e.target.textContent.includes('upload file')) this.uploadFile()
         else if (e.target.textContent.includes('new file')) this.newFile()
         else if (e.target.textContent.includes('new folder')) this.newFolder()
       })
@@ -285,6 +323,7 @@ class ProjectFiles extends Widget {
     window.addEventListener('click', () => close())
     window.addEventListener('keyup', () => close())
     NNE.on('render-update', () => {
+      NNE.iframe.addEventListener('click', () => close())
       NNE.iframe.contentWindow.addEventListener('click', () => close())
     })
   }
@@ -296,9 +335,10 @@ class ProjectFiles extends Widget {
     const dl = this.ctxmenu.querySelector('.proj-files__ctx-delete')
     const cp = this.ctxmenu.querySelector('.proj-files__ctx-copy')
     const hr = this.ctxmenu.querySelector('hr')
+    const repo = WIDGETS['student-session'].getData('opened-project')
     const name = e.target.childNodes[0].nodeValue.trim()
 
-    if (!name || name === '') {
+    if (!name || name === '' || name === repo) {
       cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'none'
     } else {
       cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'block'
@@ -321,33 +361,29 @@ class ProjectFiles extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  copyRelativePath () { // TODO: needs updating (THIS IS FROM OLD LOGIC)
-    const b = WIDGETS['student-session'].getData('branch')
-    let cpath = this._rightClicked.dataset.path
-    let bpath = NNE._root.split(b)[1]
-    cpath = cpath.split('/').filter(i => i !== '')
-    bpath = bpath.split('/').filter(i => i !== '')
-    while (bpath[0] === cpath[0]) { bpath.shift(); cpath.shift() }
-    cpath = cpath.join('/')
-    for (let i = 0; i < bpath.length; i++) { cpath = '../' + cpath }
-    navigator.clipboard.writeText(cpath)
-  }
-
   openProject (repo) {
+    if (!window.CONVOS[this.key]) { // make sure convo is laoded before proceeding
+      return setTimeout(() => this.openProject(repo), 100)
+    }
+
     this.convos = window.CONVOS[this.key](this)
     if (!repo) {
       window.convo = new Convo(this.convos, 'open-project')
     } else {
       WIDGETS['student-session'].clearSaveState()
       const owner = WIDGETS['student-session'].getData('owner')
+      nn.get('load-curtain').show('upload.html', { filename: repo })
+      this.open()
 
       // load data for all the files
       utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-        if (!res.success) return this._ohNoErr(res)
+        if (!res.success) {
+          nn.get('load-curtain').hide()
+          return this._ohNoErr(res)
+        }
 
         if (Object.keys(res.data).includes('index.html')) {
           NNE.addCustomRoot(null)
-          // utils.updateURL(`?gh=${owner}/${repo}`) // TODO: uncommment && test once open file is working
 
           // update student session data
           const htmlUrl = res.data['index.html'].html_url
@@ -355,6 +391,12 @@ class ProjectFiles extends Widget {
           const url = (htmlUrl.includes('/blob/master'))
             ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
           WIDGETS['student-session'].setProjectData({ url, branch, name: repo })
+
+          // update netnet URL
+          const ghStr = branch === 'main'
+            ? `?gh=${owner}/${repo}`
+            : `?gh=${owner}/${repo}/${branch}`
+          utils.updateURL(ghStr)
 
           await this._clearIndexedDB(true) // reset indexedDB && kill service worker
           this.sw = await this._initServiceWorker() // setup service worker
@@ -367,7 +409,9 @@ class ProjectFiles extends Widget {
             const name = arr[0]
             const data = arr[1]
             const mimetype = this._getMimeType(name)
-            this.files[name] = data
+            // this.files[name] = data // NOTE: no longer storing all the github data
+            this.files[name] = { path: data.path, raw: data.download_url } // NOTE: adding "raw" as potential fix for large image bug (TODO)
+            // TODO: if we decide to keep "raw" would be good to expose it in getFileData as well
             let code // store plain-text/code
             if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json') {
               code = utils.atob(data.content)
@@ -377,47 +421,117 @@ class ProjectFiles extends Widget {
             this._updateFile(name, code)
           })
 
+          this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+
+          // TODO: NOTE: may not need this anymore? check back in once finished with new git logic
           // update last commit data
-          const filename = 'index.html'
-          utils.post('./api/github/get-commits', { filename, repo, owner }, (res) => {
-            if (!res.success) return this._ohNoErr(res)
-            const msg = res.data[0].commit.message
-            WIDGETS['student-session'].setData('last-commit-msg', msg)
-          })
+          // const filename = 'index.html'
+          // utils.post('./api/github/get-commits', { filename, repo, owner }, (res) => {
+          //   if (!res.success) return this._ohNoErr(res)
+          //   const msg = res.data[0].commit.message
+          //   WIDGETS['student-session'].setData('last-commit-msg', msg)
+          // })
 
           this._updateFilesGUI()
-          // TODO: show/hide screen blocker
 
           // open the index.html file by default
           this.openFile('index.html')
           window.convo = new Convo(this.convos, 'project-opened')
         } else {
           this.files = {}
+          nn.get('load-curtain').hide()
           window.convo = new Convo(this.convos, 'not-a-web-project')
         }
       })
     }
   }
 
-  openFile (filename) {
-    const extension = filename.split('.').pop().toLowerCase()
-    if (extension === 'html') this.rendering = filename
-    this.viewing = filename
+  closeProject () {
+    utils.updateURL() // remove github path from URL
+    this._clearIndexedDB(true)
+    this._createHTML()
+  }
+
+  _openImageViewer (filepath) { // TODO: make sure widget fits (might need to scale image down)
+    const urlBlob = this.files[filepath].code
+    const img = `
+      <div style="text-align:right">
+        <a href="${urlBlob}" target="_blank">open image in new tab</a>
+      </div>
+      <img src="${urlBlob}" style="max-height: ${nn.height / 2}px">
+    `
+    if (WIDGETS.instantiated.includes(`VIEW-${filepath}`)) {
+      WIDGETS[`VIEW-${filepath}`].innerHTML = img
+      return WIDGETS[`VIEW-${filepath}`].open()
+    } else {
+      return WIDGETS.create({
+        key: `VIEW-${filepath}`, title: 'Image Viewer', innerHTML: img
+      }).open()
+    }
+  }
+
+  openFile (filepath) {
+    const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'webp'] // TODO: move svg here?
+    const txts = ['html', 'svg', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml']
+    // const { filename, sub, ext } = this._parsePath(filepath)
+    const ext = filepath.split('.').pop().toLowerCase()
+
+    // TODO: add widgets for opening up audio files and video files (maybe zip too?)
+    // const vids = ['mp4', 'webm']
+    // const auds = ['mp3', 'wav']
+    // TODO: create 'CNAME' convo object
+    if (imgs.includes(ext) || imgs.includes(ext.toLowerCase())) {
+      return this._openImageViewer(filepath)
+    } else if (!filepath.includes('.gitkeep') && !txts.includes(ext) && !txts.includes(ext.toLowerCase())) {
+      window.convo = new Convo(this.convos, 'unknown-format')
+      return
+    }
+
+    if (ext === 'html') this.rendering = filepath
+    this.viewing = filepath
 
     const repo = WIDGETS['student-session'].getData('opened-project')
-    NNW.updateTitleBar(`${repo}/${filename}`) // TODO: might need to update for nested files
+    NNW.updateTitleBar(`${repo}/${filepath}`)
 
-    NNE.code = this.files[filename].code
+    // update netitor
+    NNE.code = this.files[filepath].code
     if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+    if (ext === 'html' || ext === 'js' || ext === 'css') {
+      NNE.language = ext === 'js' ? 'javascript' : ext
+      if (ext === 'html') NNE.update() // TODO: should we auto-upate html files?
+    } else if (ext === 'json' || ext === 'csv' || ext === 'txt' || ext === 'md') {
+      NNE.language = 'markdown'
+    } else {
+      NNE.language = 'html'
+    }
+    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
 
     setTimeout(() => {
       NNW.menu.switchFace('default')
-      if (!NNE.autoUpdate) NNE.update() // NOTE: TODO: probably want to change auto-update when working on projects
+      nn.get('load-curtain').hide()
+      if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
   }
 
-  deleteFile (filename) {
-    console.log(`delete ${filename}`);
+  deleteFile (filepath) {
+    const fpath = this._rightClicked.dataset.path
+    if (filepath || !fpath) return console.error('deleteFile: can only be used via the project-files context menu')
+    this._delete = fpath
+    this.convos = window.CONVOS[this.key](this)
+    if (!this.files[fpath]) { // assume it's a folder (which can only exist if there are files in it)
+      window.convo = new Convo(this.convos, 'can-no-delete')
+      return
+    }
+    window.convo = new Convo(this.convos, 'confirm-delete')
+  }
+
+  renameFile (file) {
+    const fpath = this._rightClicked.dataset.path
+    const type = this._fpathExists(fpath)
+    if (file || !type) return console.error('renameFile: can only be used via the project-files context menu')
+    this._rename = type === 'file' ? this.getFileData(fpath).fullname : fpath.split('/').pop()
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, `${type}-rename`)
   }
 
   newProject () {
@@ -425,17 +539,117 @@ class ProjectFiles extends Widget {
     console.log('new project')
   }
 
-  saveCurrentFile () {
-    // this.convos = window.CONVOS[this.key](this)
-    // TODO: create convo logic for this.
+  newFolder () {
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'new-folder')
+  }
 
-    // TODO: save currently opened file
-    console.log('PF: saveCurrentFile');
+  newFile () {
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'new-file')
+  }
+
+  async uploadFile () {
+    const cpath = this._rightClicked.dataset.path
+    const type = this._fpathExists(cpath)
+    const path = type === 'folder' ? cpath : this._getSubPath(cpath)
+    const allowedTypes = Object.values(this.mimeTypes)
+    allowedTypes.push('application/x-javascript')
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = allowedTypes.join(',')
+    input.style.display = 'none'
+    document.body.appendChild(input)
+    input.addEventListener('change', async () => {
+      const file = input.files[0]
+      document.body.removeChild(input)
+      if (!file) return
+      if (allowedTypes.length > 0 && !allowedTypes.includes(file.type)) {
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'unknown-format')
+      } else if (this.files[file.name]) {
+        this._duplicate = file.name
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'duplicate-file')
+      } else {
+        nn.get('load-curtain').show('upload.html', { filename: file.name })
+        const isTextType = file.type.split('/')[0] === 'text' ||
+          file.type === 'application/json' || file.type === 'application/x-javascript'
+        const reader = new window.FileReader()
+        reader.onloadend = async () => {
+          // console.log({ name: file.name, type: file.type, data })
+          let data = reader.result
+          if (!isTextType) {
+            data = this._base64ToBlob(data.split(',')[1], file.type)
+          }
+          const filepath = path ? `${path}/${file.name}` : file.name
+          await this._updateFile(filepath, data)
+          this._updateFilesGUI()
+          setTimeout(() => nn.get('load-curtain').hide(), 200)
+        }
+        if (isTextType) reader.readAsText(file)
+        else reader.readAsDataURL(file)
+      }
+    })
+    input.click()
+  }
+
+  saveCurrentFile (skipUpdate) {
+    this._updateFile(this.viewing, NNE.code)
+    if (!skipUpdate) NNE.update()
+    this._updateViewingFile()
+    if (this.log) console.log('PF: saveCurrentFile')
+  }
+
+  // Read a specific file from the files object
+  readFile (filePath) {
+    return this.files[filePath]?.code || null // Return the file content or null if the file doesn't exist
+  }
+
+  getFileData (filePath) {
+    const path = filePath
+    let code = this.readFile(filePath)
+    if (!code) code = ''
+
+    const arr = filePath.split('.')
+    const name = arr[arr.length - 2].split('/').pop()
+    const ext = arr[arr.length - 1]
+    const fullname = name + '.' + ext
+    const sansFile = filePath.substring(0, filePath.lastIndexOf('/'))
+    const dir = sansFile.endsWith('/') ? sansFile.slice(0, -1) : sansFile
+
+    let lang = 'binary'
+    if (ext === 'html') lang = 'html'
+    else if (ext === 'css') lang = 'css'
+    else if (ext === 'js') lang = 'javascript'
+
+    // const github = Object.fromEntries(
+    //   Object.entries(this.files[filePath]).filter(([key]) => key !== 'code')
+    // )
+
+    // return { code, lang, dir, name, ext, fullname, path, github }
+    return { code, lang, dir, name, ext, fullname, path }
   }
 
   // List all files in the store
   listAllFiles () {
     return Object.keys(this.files)
+  }
+
+  copyFilePath () {
+    const cpath = this._rightClicked.dataset.path
+    navigator.clipboard.writeText(`/${cpath}`)
+  }
+
+  explainTitleBar (path) {
+    this.convos = window.CONVOS[this.key](this)
+    if (path.includes('index.html') && path.match(/\//g).length === 1) {
+      window.convo = new Convo(this.convos, 'netnet-title-bar-index')
+    } else if (path.includes('README.md') && path.match(/\//g).length === 1) {
+      window.convo = new Convo(this.convos, 'netnet-title-bar-readme')
+    } else {
+      window.convo = new Convo(this.convos, 'netnet-title-bar-misc')
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -455,6 +669,9 @@ class ProjectFiles extends Widget {
     NNE.customRender = (eve) => {
       if (this._readyToRender()) {
         eve.iframe.src = this.rendering || 'index.html'
+        if (!this.files[this.rendering].code) {
+          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${this.rendering}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before rendering it.`)
+        }
         console.log('rendered this.rendering')
       } else {
         // eve.iframe.srcdoc = eve.code
@@ -462,6 +679,37 @@ class ProjectFiles extends Widget {
         console.log('rendered default')
       }
     }
+  }
+
+  _getSubPath (fromPath) {
+    const arr = fromPath.split('/')
+    arr.pop()
+    return arr.join('/')
+  }
+
+  _fpathExists (fpath) {
+    const allFiles = Object.keys(this.files)
+    const allDirs = allFiles.map(p => this._getSubPath(p)).filter(s => s !== '')
+    // check if file exists...
+    if (this.files[fpath]) { // file exists
+      return 'file'
+    } else if (allDirs.includes(fpath)) {
+      return 'folder'
+    } else {
+      return false
+    }
+  }
+
+  _name2path (name, type) {
+    const fldr = this._rightClicked.classList.contains('folder')
+    let path = (!this._rightClicked.dataset.path) // path to array
+      ? [''] : this._rightClicked.dataset.path.split('/')
+    if (path.length !== 0 && !fldr) path.pop() // if clicked file, pop it out
+    path = path.join('/') // convert path back to string
+    if (type === 'folder') path += `/${name}/.gitkeep`
+    else if (type === 'file') path += `/${name}`
+    path = path[0] === '/' ? path.substring(1) : path
+    return path
   }
 
   _base64ToBlob (base64, mimeType) {
@@ -484,10 +732,108 @@ class ProjectFiles extends Widget {
     return URL.createObjectURL(blob)
   }
 
-  // Update a specific text file in the files object
   async _updateFile (filePath, fileContent) {
-    this.files[filePath].code = fileContent
-    await this.saveFilesToIndexedDB()
+    if (!this.files[filePath]) { // create new file
+      this.files[filePath] = { code: fileContent, path: filePath }
+    } else { // update existing file
+      this.files[filePath].code = fileContent
+    }
+    await this._saveFilesToIndexedDB()
+  }
+
+  _updateViewingFile () {
+    // runs on each netitor update
+    const lastSave = this.readFile(this.viewing)
+    const title = NNW.title.textContent
+    if (NNE.code !== lastSave) {
+      NNW.updateTitleBar(title, true)
+      NNW.title.dataset.unsaved = true
+    } else {
+      NNW.updateTitleBar(title, false)
+      delete NNW.title.dataset.unsaved
+    }
+  }
+
+  _getMimeType (filePath) {
+    const extension = filePath.split('.').pop().toLowerCase()
+    const type = this.mimeTypes[extension] || 'application/octet-stream'
+    return type
+  }
+
+  // --------------------- --------------------- --------------------- ---------
+  // ------- functions which run after user dialogue with context menu functions
+
+  async _postNew (name, type) {
+    window.convo.hide()
+    const path = this._name2path(name, type) // based on last context-click
+    const exists = this._fpathExists(path)
+    if (exists) {
+      this._duplicate = name
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, `duplicate-${type}`)
+    } else if (type === 'file') {
+      await this._updateFile(path, '')
+    } else if (type === 'folder') {
+      const str = 'This ".gitkeep" file is a typical GitHub hack. The file exists in order to create an otherwise empty folder/directory on GitHub. Once you\'ve pushed other files to this folder you can delete this file, but if this is the only file in the folder, deleting it will also delete the folder. To learn more see: https://stackoverflow.com/a/7229996/1104148'
+      await this._updateFile(path, str)
+    }
+    this._updateFilesGUI()
+  }
+
+  async _postDeletion (filepath) {
+    // nn.get('load-curtain').show('delete.html')
+    if (this.files[filepath]) {
+      if (this.files[filepath].code.indexOf('blob') === 0) {
+        URL.revokeObjectURL(this.files[filepath].code) // for memory management
+      }
+      delete this.files[filepath]
+      await this._saveFilesToIndexedDB()
+      if (this.log) console.log(`FilesDB: File '${filepath}' deleted successfully.`)
+      this._updateFilesGUI()
+      // setTimeout(() => nn.get('load-curtain').hide(), 100)
+    } else {
+      console.warn(`FilesDB: File '${filepath}' not found.`)
+      // setTimeout(() => nn.get('load-curtain').hide(), 100)
+    }
+  }
+
+  async _postRenameFile (tempname) {
+    window.convo.hide()
+    const fpath = this._rightClicked.dataset.path
+    const subPath = this._getSubPath(fpath)
+    const type = this._fpathExists(fpath)
+    const newPath = subPath ? `${subPath}/${tempname}` : tempname
+    const dup = this._fpathExists(newPath)
+    const renameFile = (newPath, oldPath) => {
+      this.files[newPath] = JSON.parse(JSON.stringify(this.files[oldPath]))
+      this.files[newPath].path = newPath
+      delete this.files[oldPath]
+    }
+
+    if (dup) {
+      this._duplicate = tempname
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, `duplicate-${type}`)
+    } else {
+      if (type === 'file') {
+        renameFile(newPath, fpath)
+      } else {
+        Object.keys(this.files).forEach(path => {
+          const file = this.getFileData(path)
+          if (file.dir === fpath) {
+            const newName = `${newPath}/${file.fullname}`
+            const oldName = `${fpath}/${file.fullname}`
+            renameFile(newName, oldName)
+          }
+        })
+      }
+      // update database && tree view
+      await this._saveFilesToIndexedDB()
+      if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
+      this._updateFilesGUI()
+      this._duplicate = null
+      this._rename = null
+    }
   }
 
   // .....................
@@ -562,7 +908,7 @@ class ProjectFiles extends Widget {
   }
 
   // .....................
-  // ..................... Initialize IndexedDB
+  // .....................  IndexedDB methods
   // ...........................................................................
   async _initIndexedDB () {
     if (!window.indexedDB) {
@@ -625,10 +971,10 @@ class ProjectFiles extends Widget {
   }
 
   // save the "code" in this.files into indexedDB (avoids storing all other GH data)
-  saveFilesToIndexedDB () {
+  _saveFilesToIndexedDB () {
     const filesDict = {}
     Object.values(this.files).forEach(file => {
-      if (file.code) filesDict[file.name] = file.code
+      if (file.code) filesDict[file.path] = file.code
     })
 
     return new Promise((resolve, reject) => {
@@ -647,126 +993,6 @@ class ProjectFiles extends Widget {
       }
     })
   }
-
-  // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
-  _getMimeType (filePath) {
-    const extension = filePath.split('.').pop().toLowerCase()
-    switch (extension) {
-      case 'md': return 'text/markdown'
-      case 'html': return 'text/html'
-      case 'css': return 'text/css'
-      case 'js': return 'text/javascript'
-      case 'png': return 'image/png'
-      case 'gif': return 'image/gif'
-      case 'jpg': return 'image/jpeg'
-      case 'jpeg': return 'image/jpeg'
-      case 'svg': return 'image/svg+xml'
-      case 'json': return 'application/json'
-      case 'ico': return 'image/x-icon'
-      case 'webp': return 'image/webp'
-      case 'woff': return 'font/woff'
-      case 'woff2': return 'font/woff2'
-      case 'ttf': return 'font/ttf'
-      case 'otf': return 'font/otf'
-      case 'mp4': return 'video/mp4'
-      case 'webm': return 'video/webm'
-      case 'mp3': return 'audio/mpeg'
-      case 'wav': return 'audio/wav'
-      case 'txt': return 'text/plain'
-      case 'xml': return 'application/xml'
-      case 'pdf': return 'application/pdf'
-      case 'zip': return 'application/zip'
-      case 'csv': return 'text/csv'
-      // Add more MIME types as needed
-      default: return 'application/octet-stream'
-    }
-  }
-
-
-/*
-  uploadFile (file) {
-    this._upload = file.name
-    if (this.shaDict[file.name]) {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'duplicate-file')
-    } else {
-      document.querySelector('load-curtain').show('upload.html', {
-        filename: file.name
-      })
-
-      const data = {
-        owner: window.localStorage.getItem('owner'),
-        repo: window.sessionStorage.getItem('opened-project'),
-        name: file.name,
-        code: file.data.split('base64,')[1]
-      }
-      utils.post('./api/github/upload-file', data, (res) => {
-        if (!res.success) {
-          console.log('FunctionsMenu:', res)
-          window.convo = new Convo(this.convos, 'oh-no-error')
-        } else {
-          this._upload = null
-          this._postUpdate()
-        }
-      })
-    }
-  }
-
-  deleteFile (filename) {
-    // runs when user clicks a files delete button
-    this._delete = filename
-    this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'confirm-delete')
-  }
-
-  _postDeletion (file) {
-    document.querySelector('load-curtain').show('delete.html')
-    const data = {
-      owner: window.localStorage.getItem('owner'),
-      repo: window.sessionStorage.getItem('opened-project'),
-      name: this._delete,
-      sha: this.shaDict[this._delete]
-    }
-    utils.post('./api/github/delete-file', data, (res) => {
-      if (!res.success) {
-        console.log('FunctionsMenu:', res)
-        window.convo = new Convo(this.convos, 'oh-no-error')
-      } else {
-        delete this.shaDict[this._delete]
-        this._delete = null
-        this._postUpdate()
-      }
-    })
-  }
-
-  _postUpdate () {
-    const data = {
-      owner: window.localStorage.getItem('owner'),
-      repo: window.sessionStorage.getItem('opened-project')
-    }
-    utils.post('./api/github/open-project', data, (res) => {
-      this.updateFiles(res.data)
-      document.querySelector('load-curtain').hide()
-      NNE.update()
-    })
-  }
-
-
-
-  _setupFileUploader () {
-    this.fu = new nn.FileUploader({
-      maxSize: 5000, // 5 MB (see widgets/project-files/convo.js)
-      ready: (file) => this.uploadFile(file),
-      drop: '.proj-files',
-      error: (err) => {
-        console.error('ProjectFiles:', err)
-        if (err.includes('file larger than max size')) {
-          window.convo = new Convo(this.convos, 'file-too-big')
-        }
-      }
-    })
-  }
-  */
 }
 
 window.ProjectFiles = ProjectFiles

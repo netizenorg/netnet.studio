@@ -120,7 +120,16 @@ async function generateResponse (filePath, data) {
       'Content-Type': mimeType,
       'Access-Control-Allow-Origin': '*'
     })
-    const blob = new Blob([data], { type: mimeType })
+
+    let blob
+    if (data.startsWith('blob:')) {
+      // Fetch the actual Blob data from the blob URL
+      const response = await fetch(data)
+      blob = await response.blob()
+    } else {
+      blob = new Blob([data], { type: mimeType })
+    }
+
     return new Response(blob, { headers })
   } catch (error) {
     console.error('Error generating response', error)
@@ -167,23 +176,22 @@ self.addEventListener('message', event => {
 })
 
 self.addEventListener('fetch', (event) => {
-  if (LOG) console.log('fetching file...')
   const url = new URL(event.request.url)
   const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
+  if (LOG) console.log('checking for file:', filePath)
 
   event.respondWith(
     (async () => {
       try {
         const fileData = await getFileFromIndexedDB(filePath)
-
         if (fileData) {
-          if (LOG) console.log('Fetching from IndexedDB:', filePath)
+          if (LOG) console.log('...fetching from IndexedDB:', filePath)
           const response = await generateResponse(filePath, fileData)
           // if (LOG) console.log('DATA:', filePath, fileData)
-          if (LOG) console.log('RES:', response)
+          if (LOG) console.log('...RES:', response)
           return response
         } else {
-          console.warn('File not found in IndexedDB, fetching from network:', filePath)
+          console.warn('...file not found in IndexedDB, fetching from network:', filePath)
           return fetch(event.request, { cache: 'no-store' })
         }
       } catch (err) {

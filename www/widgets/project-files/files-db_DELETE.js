@@ -1,16 +1,6 @@
 /*
 
-  this class is used to store project files in local storage, it works in tandem
-  with the files-db-service-worker.js file, which is used to resolve requests
-  made from this site for any of the files stored in the indexedDB
-  __________                                           ________________
- |    www   |                                         | service-worker |
- | <iframe> | <--------- send res to -----------------|________________|
- |_ netitor_|                                                      |
-       \__                 _______________                        /
-          \__ save to --> | project-files | <--- get data from __/
-                          |   IndexedDB   |
-                          |_______________|
+  NOTE: THIS NEEDS TO BE MIGRATED INTO project-files
 
 PROPERTIES:
   files   // dictionary object, { filename: data }

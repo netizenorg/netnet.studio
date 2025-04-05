@@ -60,6 +60,49 @@ async function fetchFiles (octokit, owner, repo, path) {
   return result
 }
 
+// ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ proxy for raw.githubusercontent.com
+// ~ .  used when viewing someone's github project (rather than opening ur own)
+
+function reWriteCSSPaths (req, data) { // HACK!!!
+  // b/c all requests for JS files (via <script>) && CSS files (via <link>)
+  // are routed through the proxy below (in order to get around the issue
+  // linked below) any CSS url(...) w/realtive paths assume the root path is
+  // /api/github/ (ie. the proxy server's path) && so it won't find any of the
+  // linked assets. in order to get around this, here we reconstruct relative
+  // paths w/in a stylesheet so that they become absolute paths to the assett.
+  // ...this is a huge HACK, it works fine for now, but may cause issues
+  // if/when we decide to support multi-file editing in netnet.
+  let str = data.toString()
+  // HACK: redird converst '//' into '/' ...so we need to undo that >_<
+  const url = req.query.url.replace('https:/raw', 'https://raw')
+  const arr = url.split('/')
+  const path = arr.slice(0, arr.length - 1).join('/')
+  const urlMatches = str.match(/\burl\(([^()]*)\)/g) || []
+  urlMatches.forEach(m => { // all url(...) matches in stylesheet
+    const n = (m.includes('"') || m.includes("'")) ? 5 : 4
+    const s = m.substring(n, m.length)
+    const r = m.replace(s, `${path}/${s}`)
+    if (s.indexOf('http') !== 0) str = str.replace(m, r)
+  })
+  return str
+}
+
+router.get('/api/github/proxy', (req, res) => {
+  // HACK: on the live version, the redbird proxy screws w/this proxy
+  // && removes one of the slashes after the protocol https://
+  // ...this fixes the redbird screw up
+  const url = req.query.url.replace('https:/raw', 'https://raw')
+  // HACK: the purpose of this proxy to get around this issue:
+  // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
+  axios.get(url, { responseType: 'arraybuffer' })
+    .then(r => {
+      if (req.query.url.includes('.css')) {
+        res.end(reWriteCSSPaths(req, r.data))
+      } else res.end(r.data)
+    })
+    .catch(err => console.log(err))
+})
+
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ * Auth Token
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *
 
@@ -151,20 +194,20 @@ router.get('/api/github/saved-projects', (req, res) => {
   makeRequest(req, res, 'saved-projects', obj)
 })
 
-router.post('/api/github/open-project', (req, res) => {
+router.post('/api/github/open-project', (req, res) => { // NOTE: might not need anymore
   const owner = req.body.owner
   const repo = req.body.repo
   makeRequest(req, res, 'open-project', { owner, repo })
 })
 
-router.post('/api/github/open-file', (req, res) => {
+router.post('/api/github/open-file', (req, res) => { // NOTE: might not need anymore
   const owner = req.body.owner
   const repo = req.body.repo
   const path = req.body.filename
   makeRequest(req, res, 'open-file', { owner, repo, path })
 })
 
-router.post('/api/github/get-commits', (req, res) => {
+router.post('/api/github/get-commits', (req, res) => { // NOTE: might not need anymore
   const owner = req.body.owner
   const repo = req.body.repo
   makeRequest(req, res, 'get-commits', { owner, repo })
@@ -182,5 +225,8 @@ router.post('/api/github/open-all-files', (req, res) => {
     }
   })
 })
+
+// POST UPDATES
+// https://chatgpt.com/g/g-p-6781ccc0fbbc819187ec15d2e4d1da35-netnet/c/67f05172-4e04-800c-8a02-17b04226d207
 
 module.exports = router

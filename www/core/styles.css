@@ -72,7 +72,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  
+
   z-index: -30;
 
   width: 100vw;
@@ -98,8 +98,18 @@
   min-height: 200px;
 
   border: 4px solid var(--fg-color);
-  
+
   background-color: rgba(0, 0, 0, 0);
+}
+
+#nn-window  #proj-title[data-unsaved]::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--netizen-number);
+  transform: translateX(5px);
 }
 
 #nn-window > #nn-menu {
@@ -141,7 +151,7 @@
 
 #nn-window > #nn-editor {
   height: calc(100% - 60px);
-  
+
   overflow-y: scroll;
   scrollbar-color: var(--fg-color) rgba(0,0,0,0);
   scrollbar-width: thin;

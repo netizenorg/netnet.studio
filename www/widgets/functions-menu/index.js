@@ -139,7 +139,9 @@ class FunctionsMenu extends Widget {
 
   new () {
     this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'new-proj-or-sketch')
+    const repo = WIDGETS['student-session'].getData('opened-project')
+    if (repo) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
+    else window.convo = new Convo(this.convos, 'new-proj-or-sketch')
   }
 
   _newProject () {
@@ -181,7 +183,7 @@ class FunctionsMenu extends Widget {
     const loggedIn = WIDGETS['student-session'].getData('owner')
     if (loggedIn) {
       const op = WIDGETS['student-session'].getData('opened-project')
-      if (op) {                 // TODO: trigger the new project-files open logic
+      if (op) {
         window.convo = new Convo(this.convos, 'open-logged-in-proj')
       } else {
         window.convo = new Convo(this.convos, 'open-logged-in')
@@ -333,8 +335,10 @@ class FunctionsMenu extends Widget {
     if (this.sesh) this.sesh.setData('auto-update', NNE.autoUpdate.toString())
 
     if (!NNE.autoUpdate && !gotVal) {
-      window.convo = new Convo(this.convos, 'need-to-update')
-    } else if (!gotVal && window.convo && window.convo.id === 'need-to-update') {
+      const repo = WIDGETS['student-session'].getData('opened-project')
+      if (repo) window.convo = new Convo(this.convos, 'need-to-update2')
+      else window.convo = new Convo(this.convos, 'need-to-update')
+    } else if (!gotVal && window.convo && window.convo.id.startsWith('need-to-update')) {
       window.convo.hide()
     }
   }

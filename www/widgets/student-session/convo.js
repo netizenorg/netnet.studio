@@ -48,7 +48,7 @@ window.CONVOS['student-session'] = (self) => {
     content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
     options: {
       'yes please': (e) => {
-        WIDGETS.open('project-files', (w) => w.openProject(self.getData('opened-project')))
+        WIDGETS.load('project-files', (w) => w.openProject(self.getData('opened-project')))
       },
       'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
     }
@@ -56,7 +56,7 @@ window.CONVOS['student-session'] = (self) => {
     id: 'prior-github-login',
     content: 'Would you like to open one of your GitHub projects or do you want to start something new?',
     options: {
-      'yes, let\'s open one': (e) => WIDGETS.open('project-files', (w) => w.openProject()),
+      'yes, let\'s open one': (e) => WIDGETS.load('project-files', (w) => w.openProject()),
       'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
     }
   }, {

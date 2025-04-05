@@ -1,3 +1,7 @@
+.proj-files {
+  height: 100%;
+}
+
 .proj-files * {
   user-select: none;
 }
@@ -16,10 +20,25 @@
   cursor: pointer;
 }
 
+.proj-files__header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.git-btn {
+  border: 1px solid var(--netizen-meta);
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: -30px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
 .proj-files__tree-view {
   margin: 0;
   padding: 0;
-  max-height: 400px;
+  height: 100%;
   overflow-y: auto;
 }
 

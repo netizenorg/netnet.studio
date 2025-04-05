@@ -1,4 +1,4 @@
-/* global NetNetFaceMenu, NNE, nn, utils */
+/* global NetNetFaceMenu, NNE, WIDGETS, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -631,13 +631,16 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
-    // const gh = WIDGETS['student-session'].data.github
-    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+  updateTitleBar (text, unsaved) {
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        const path = this.title.textContent
+        WIDGETS['project-files'].explainTitleBar(path)
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'

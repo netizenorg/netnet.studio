@@ -48,6 +48,15 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
+        key: `${utils.hotKey()} + G`,
+        nfo: 'push to GitHub',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'g',
+        callback: (e) => {
+          e.preventDefault()
+          console.log('PUSH TO GITHUB') // TODO
+        }
+      },
+      {
         key: `${utils.hotKey()} + >`,
         nfo: 'switch netnet to next layout',
         condition: (e) => (e.ctrlKey || e.metaKey) && e.key === '.',

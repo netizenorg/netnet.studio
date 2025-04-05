@@ -53,8 +53,21 @@ window.CONVOS['functions-menu'] = (self) => {
 
   return [{
     id: 'need-to-update',
-    content: `When <code>auto-update</code> is set to <code>false</code> you'll need to manually run the update to see your changes by pressing the <b>${hotkey}+Enter</b> keys on your keyboard`,
+    content: `When <code>auto-update</code> is set to <code>false</code> you'll need to manually run the update to see changes you make to your sketch by pressing the <b>${hotkey}+Enter</b> keys on your keyboard`,
     options: { 'got it': (e) => e.hide() }
+  }, {
+    id: 'need-to-update2',
+    content: `The <code>auto-update</code> setting only applies when working on a "sketch". At the moment you're working on a "project", so you can simply run <b>${hotkey}+S</b> to save your code and update the rendering`,
+    options: {
+      'got it': (e) => e.hide(),
+      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optHide')
+    }
+  }, {
+    id: 'proj-or-sketch-diff-optHide',
+    content: 'By default I\'m designed to help you work on a single <a href="http://luckysoap.com/statements/handmadeweb.html" target="_blank">hand-crafted</a> HTML page, what we call a "sketch." These can be shared using URLs (we don\'t save your sketch on our servers, the data itself is encoded in the URL). But if you\'d like to work on a web page that involves other files or assets (like fonts, images or videos) then you can create a "project." Again, we don\'t store your code on our server, but you can connect me to your GitHub account and I can save your work there for you. We can also use GitHub\'s servers (via <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>) to publish your project on the web.',
+    options: {
+      'got it': (e) => e.hide()
+    }
   }, {
     id: 'temp-disclaimer',
     content: 'Sorry, at the moment you can only upload HTML files.',
@@ -93,11 +106,26 @@ window.CONVOS['functions-menu'] = (self) => {
         WIDGETS['student-session'].clearProjectData()
         self._newProject()
       },
-      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff'),
+      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew'),
       'oh, never mind': (e) => e.hide()
     }
-  },
-  {
+  }, {
+    id: 'new-proj-or-sketch2',
+    content: 'You\'re currently working on a project, if you\'d like to create a new file or folder in that project use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span>. Otherwise, if you\'d like to start working on something new, we can create a blank <b>sketch</b>? Or maybe you\'re interested in starting a new <b>project</b>?',
+    options: {
+      'new sketch': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        if (NNE.code === '') e.goTo('already-blank-sketch')
+        else self._newSketch()
+      },
+      'new project': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        self._newProject()
+      },
+      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew'),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
     id: 'already-blank-sketch',
     content: 'Great! There isn\'t any code in my editor yet, so you\'ve essentially got a blank canvas to start sketching! If you\'re looking for some inspiration check out the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget!',
     options: {
@@ -105,8 +133,8 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   },
   {
-    id: 'proj-or-sketch-diff',
-    content: 'By default I\'m designed to help you work on a single <a href="http://luckysoap.com/statements/handmadeweb.html" target="_blank">hand-crafted</a> HTML page, what we call a "sketch." These can be shared using only URLs (we don\'t store the data anywhere). But if you\'d like to work on a web page that involves other files or assets (like fonts, images or videos) then you can create a "project." Again, we don\'t store your code on our server, but you can connect me to your GitHub account and I can save your work there for you. We can also use GitHub\'s servers (via <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>) to publish your project on the web.',
+    id: 'proj-or-sketch-diff-optNew',
+    content: 'By default I\'m designed to help you work on a single <a href="http://luckysoap.com/statements/handmadeweb.html" target="_blank">hand-crafted</a> HTML page, what we call a "sketch." These can be shared using URLs (we don\'t save your sketch on our servers, the data itself is encoded in the URL). But if you\'d like to work on a web page that involves other files or assets (like fonts, images or videos) then you can create a "project." Again, we don\'t store your code on our server, but you can connect me to your GitHub account and I can save your work there for you. We can also use GitHub\'s servers (via <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>) to publish your project on the web.',
     options: {
       'got it': (e) => e.goTo('new-proj-or-sketch')
     }
@@ -273,7 +301,7 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'Would you like to open a project you were working on from GitHub or load an HTML file from your computer?',
     options: {
       'open a GitHub project': (e) => {
-        e.hide(); WIDGETS.open('project-files', (w) => w.openProject())
+        e.hide(); WIDGETS.load('project-files', (w) => w.openProject())
       },
       'open an HTML file': (e) => {
         e.hide(); self.uploadCode()
@@ -287,7 +315,7 @@ window.CONVOS['functions-menu'] = (self) => {
     options: {
       'no, never mind': (e) => e.hide(),
       'yes, open a new one': (e) => {
-        e.hide() // TODO: trigger project-files open logic
+        e.hide(); WIDGETS.load('project-files', (w) => w.openProject())
       }
     }
   },
