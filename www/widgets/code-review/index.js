@@ -21,7 +21,7 @@ class CodeReview extends Widget {
   }
 
   updateIssues (e) {
-    const t = 'sketch' // TODO check if in GH project, change to "tab" or "file"
+    const Mac = nn.platformInfo().platform.includes('Mac')
     if (e) this.issues = e
     // mark editor
     const c = WIDGETS['student-session']
@@ -31,7 +31,11 @@ class CodeReview extends Widget {
     // update code review widget list
     const list = this.$('.code-review')
     if (this.issues.length > 0) list.innerHTML = ''
-    else list.innerHTML = `<h3>No issues were found in this ${t}</h3>`
+    else {
+      list.innerHTML = `
+        <h3>Passed Code Review</h3>
+        <p>No issues were found when I reviewed your code, however, after your code gets rendered by your browser it might catch other errors. I will notify you if this is the case by leaving a red mark on the line of code which caused the error. Or you can review these errors yourself in your <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools" target="_blank">developer tools</a>. To open them press <code>${Mac ? 'Fn + ' : ''}F12</code> and then switch to the "Console" tab. You can learn more about the error there.</p>`
+    }
     this.issues.forEach((err, i) => this._createErrDiv(err, i))
   }
 

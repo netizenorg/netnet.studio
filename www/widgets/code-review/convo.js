@@ -1,13 +1,12 @@
 /* global nn, WIDGETS, NNE */
 window.CONVOS['code-review'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
-  const type = 'sketch' // TODO check if in GH project, change to "tab" or "file"
   const codeReview = WIDGETS['code-review']
   const done = (e) => { codeReview.close(); e.hide() }
 
   return [{
     id: 'error-free',
-    content: `The code in this ${type} looks good to me. I've got no comments or critique for you.`,
+    content: 'The code in this file looks good to me. I\'ve got no comments or critique for you. However, your browser may catch other errors after rendering your code. If it does, I\'ll mark the line causing the error with a red dot for you to click to learn more.',
     options: {
       'great!': (e) => done(e)
     }

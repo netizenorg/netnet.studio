@@ -64,11 +64,17 @@ window.addEventListener('load', () => {
     // when everythings loaded...
     utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
       WIDGETS['student-session'].clearProjectData()
+      // setup custom renderer to catch errors (see on "message" below)
+      utils.setCustomRenderer(null)
       // ...check URL for params, && fade out load screen when ready
       if (utils.checkURL() === 'none') utils.loadDefault()
     })
   })
 })
+
+// the <iframe> messanger is injected into the rendered html pages via
+// setCustomRenderer or files-db-service-worker.js (for projects)
+window.addEventListener('message', e => utils.customRendererError(e))
 
 window.addEventListener('beforeunload', () => {
   WIDGETS['student-session'].clearProjectData()

@@ -5,6 +5,10 @@ window.WIDGETS = { // GLOBAL WIDGETS OBJECT
   instantiated: [], // list of keys of all currently instantiated widgets
   list: () => WIDGETS.instantiated.map(key => WIDGETS[key]), // array of widgets
   load: (dirname, cbfunc) => {
+    if (WIDGETS.loaded.includes(dirname)) {
+      if (cbfunc) cbfunc(WIDGETS[dirname])
+      return
+    }
     utils.loadStyleSheet(`widgets/${dirname}/styles.css`)
     const s = document.createElement('script')
     s.setAttribute('src', `widgets/${dirname}/index.js`)

@@ -238,7 +238,7 @@ window.utils = {
       const proto = window.location.protocol
       const host = window.location.host
       const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      NNE.addCustomRoot({ base, proxy })
+      window.utils.setCustomRenderer(base, proxy)
     }
   },
 
@@ -321,15 +321,13 @@ window.utils = {
   loadFromCodeHash: (layout) => {
     window.utils.checkForDiffRoot()
     NNE.code = ''
+    if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()
       setTimeout(() => NNE.cm.refresh(), 10)
       if (!NNE.autoUpdate) NNE.update()
+      window.utils.fadeOutLoader(!layout)
     })
-    if (layout) {
-      NNW.layout = layout
-      window.utils.fadeOutLoader(false)
-    } else window.utils.fadeOutLoader(true)
   },
 
   loadCustomExample: (layout, dem) => {
@@ -375,7 +373,8 @@ window.utils = {
     const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
     const rawHTML = `${proxy}index.html`
     window.utils.get(rawHTML, (html) => {
-      NNE.addCustomRoot({ base, proxy })
+      window.utils.setCustomRenderer(base, proxy)
+
       NNE.code = ''
       if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
@@ -410,7 +409,7 @@ window.utils = {
       const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
       const rawHTML = `${proxy}index.html`
       window.utils.get(rawHTML, (html) => {
-        NNE.addCustomRoot({ base, proxy })
+        window.utils.setCustomRenderer(base, proxy)
         NNE.code = ''
         NNW.layout = 'dock-left'
         window.utils.afterLayoutTransition(() => {
@@ -429,7 +428,7 @@ window.utils = {
       // if they had some code they were working on in the editor
       // before they got redirected over to GitHub to auth...
       const decoded = NNE._decode(code.substr(6))
-      NNE.addCustomRoot(null)
+      window.utils.setCustomRenderer(null)
       NNE.code = decoded
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
@@ -511,6 +510,39 @@ window.utils = {
   // netitor stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  setCustomRenderer: (base, proxy) => {
+    const errMsgr = `<script>
+      window.onerror = function (message, source, lineno) {
+        window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
+      }
+    </script>`
+    if (!base) {
+      NNE.customRender = function (event) { event.update(errMsgr + event.code) }
+    } else {
+      NNE.customRender = function (event) {
+        let newCode = `<base href="${base}">` + errMsgr + event.code
+        if (proxy) newCode = NNE.prependProxyURL(newCode, proxy)
+        event.update(newCode)
+      }
+    }
+  },
+
+  customRendererError: (event) => {
+    if (event.data && event.data.type === 'iframe-error') {
+      const op = WIDGETS['student-session'].getData('opened-project')
+      const diff = 4 // these are the number of lines added to the top of the file before rendering (see errMsgr above)
+      const line = event.data.lineno - diff
+      const message = event.data.message
+      let file = event.data.source.includes('.') ? event.data.source : null
+      if (op) file = new URL(file).pathname
+      const m = NNE.marker(line, 'red', () => {
+        window.utils._crErr = { message, line, file }
+        window.utils._Convo('custom-renderer-error')
+      })
+      m.setAttribute('title', message)
+    }
+  },
+
   netitorInput: (e) => {
     if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
   },
@@ -589,6 +621,7 @@ window.utils = {
 
 /*
   handle messaging from iframe, for ex:
+  NOTE: keep in mind iframe error messanger (see setCustomRenderer, customRenderError)
 
   window.top.postMessage({
     type: 'dialogue',
@@ -601,12 +634,12 @@ window.utils = {
   https://netnet.studio/?layout=dock-left#code/eJxtj8EKgzAQRM/NV+wtCqJ3UfsFPfVYekiTxUrTrE02iIj/3lBz7FyGmX2wTPeIzOQGxsBdk4PogvbTzIMQJ0M6vtFx/Yno1yta1Ey+kAcqy5qctpN+QQ9FCf0Am4CkZXKGlppprmcKfMEQ1IjFcQTgdcYWpJmUpTGirHJvFKsWbjkBbKDJcXqf4CdaS7CQt0bCXv1naAHlEeI5IZm4/3wvk+1CdE3e9gVLy0qk
 
 */
-window.onmessage = function (e) {
-  const obj = e.data
-  if (!obj) return
-  if (obj.type === 'dialogue') {
-    new Convo(obj.data)
-  } else if (obj.type === 'widget') {
-    WIDGETS.open(obj.data)
-  }
-}
+// window.onmessage = function (e) {
+//   const obj = e.data
+//   if (!obj) return
+//   if (obj.type === 'dialogue') {
+//     new Convo(obj.data)
+//   } else if (obj.type === 'widget') {
+//     WIDGETS.open(obj.data)
+//   }
+// }

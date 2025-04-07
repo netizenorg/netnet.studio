@@ -53,38 +53,45 @@ function openDB () {
   })
 }
 
-// NOTE: this method needs to stay in sync with the method in the Project Files widget
+// NOTE: this method needs to stay in sync with the mimeTypes object in the Project Files widget
 function getMimeType (filePath) {
   const extension = filePath.split('.').pop().toLowerCase()
-  switch (extension) {
-    case 'md': return 'text/markdown'
-    case 'html': return 'text/html'
-    case 'css': return 'text/css'
-    case 'js': return 'text/javascript'
-    case 'png': return 'image/png'
-    case 'gif': return 'image/gif'
-    case 'jpg': return 'image/jpeg'
-    case 'jpeg': return 'image/jpeg'
-    case 'svg': return 'image/svg+xml'
-    case 'json': return 'application/json'
-    case 'ico': return 'image/x-icon'
-    case 'webp': return 'image/webp'
-    case 'woff': return 'font/woff'
-    case 'woff2': return 'font/woff2'
-    case 'ttf': return 'font/ttf'
-    case 'otf': return 'font/otf'
-    case 'mp4': return 'video/mp4'
-    case 'webm': return 'video/webm'
-    case 'mp3': return 'audio/mpeg'
-    case 'wav': return 'audio/wav'
-    case 'txt': return 'text/plain'
-    case 'xml': return 'application/xml'
-    case 'pdf': return 'application/pdf'
-    case 'zip': return 'application/zip'
-    case 'csv': return 'text/csv'
-    // Add more MIME types as needed
-    default: return 'application/octet-stream'
+  const mimeTypes = {
+    md: 'text/markdown',
+    html: 'text/html',
+    css: 'text/css',
+    js: 'text/javascript',
+    txt: 'text/plain',
+    csv: 'text/csv',
+    json: 'application/json',
+    xml: 'application/xml',
+    // image
+    png: 'image/png',
+    gif: 'image/gif',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    svg: 'image/svg+xml',
+    ico: 'image/x-icon',
+    webp: 'image/webp',
+    // fonts
+    woff: 'font/woff',
+    woff2: 'font/woff2',
+    ttf: 'font/ttf',
+    otf: 'font/otf',
+    // av media
+    mp4: 'video/mp4',
+    webm: 'video/webm',
+    ogv: 'video/ogg',
+    mp3: 'audio/mpeg',
+    wav: 'audio/wav',
+    weba: 'audio/webm',
+    ogg: 'audio/ogg',
+    oga: 'audio/ogg',
+    // misc
+    pdf: 'application/pdf',
+    zip: 'application/zip'
   }
+  return mimeTypes[extension]
 }
 
 async function getFileFromIndexedDB (filePath) {
@@ -137,6 +144,31 @@ async function generateResponse (filePath, data) {
   }
 }
 
+// if a stuent has a large .js file (like a minified library) in their GH project
+// it won't load when 'opening a project', instead we store the raw URL to the hosted js file on github
+// this handles (ie. proxies) requesting and returning that large .js file
+async function handleProxyRequest (targetUrl) {
+  try {
+    const response = await fetch(targetUrl, {
+      mode: 'cors',
+      credentials: 'omit'
+    })
+
+    if (!response.ok) {
+      return new Response('Failed to fetch resource', { status: 502 })
+    }
+
+    const contentType = response.headers.get('content-type') || 'application/javascript'
+    const data = await response.text()
+
+    return new Response(data, {
+      headers: { 'Content-Type': contentType }
+    })
+  } catch (err) {
+    return new Response('Error: ' + err.message, { status: 500 })
+  }
+}
+
 /*
 TODO: function for sending messages to the client
 
@@ -180,12 +212,28 @@ self.addEventListener('fetch', (event) => {
   const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
   if (LOG) console.log('checking for file:', filePath)
 
+  const comingFromNetnet = () => {
+    const hosts = ['localhost', 'netnet.studio', 'dev.netnet.studio']
+    return hosts.includes(url.hostname)
+  }
+
   event.respondWith(
     (async () => {
       try {
-        const fileData = await getFileFromIndexedDB(filePath)
-        if (fileData) {
+        let fileData = await getFileFromIndexedDB(filePath)
+        if (fileData && fileData.startsWith('http') && comingFromNetnet()) {
+          // assume absolute path in student project's code (whether from their actual code or localStorage like gitHub raw url)
+          if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)
+          else return fetch(fileData, { cache: 'no-store' })
+        } else if (fileData) {
           if (LOG) console.log('...fetching from IndexedDB:', filePath)
+          if (filePath.includes('.html')) {
+            fileData = `<script>
+              window.onerror = function (message, source, lineno) {
+                window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
+              }
+            </script>` + fileData
+          }
           const response = await generateResponse(filePath, fileData)
           // if (LOG) console.log('DATA:', filePath, fileData)
           if (LOG) console.log('...RES:', response)

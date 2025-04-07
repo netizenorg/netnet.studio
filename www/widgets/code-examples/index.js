@@ -93,7 +93,7 @@ class CodeExamples extends Widget {
       }
       if (!json.key) json.key = example
       this.newExData(json)
-      NNE.addCustomRoot(null)
+      utils.setCustomRenderer(null)
       const eNum = Number(example)
       const isNum = (typeof example === 'number' || (typeof eNum === 'number' && !isNaN(eNum)))
       if (isNum) utils.updateURL(`?ex=${this.exData.key}`)

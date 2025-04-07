@@ -303,6 +303,10 @@ window.CONVOS['project-files'] = (self) => {
       'no, never mind': (e) => { e.hide(); self._delete = null }
     }
   }, {
+    id: 'no-delete-index',
+    content: `You can not delete the <code>index.html</code> file from your root directory. Every website needs at least one HTML file named <i>index</i> in it's "root" (aka your project's main folder <i>${gh.p}</i>).`,
+    options: { ok: (e) => e.hide() }
+  }, {
     id: 'can-no-delete',
     content: `The <code>${self._delete}</code> folder has files in it. You must delete all the files inside a folder before I can remove the folder itself.`,
     options: { ok: (e) => e.hide() }
@@ -315,21 +319,90 @@ window.CONVOS['project-files'] = (self) => {
     content: `There is already a folder named <code>${self._duplicate}</code> in that parent folder. You must either delete the older <i>${self._duplicate}</i> folder or give this folder another name.`,
     options: { ok: (e) => e.hide() }
   }, {
-    id: 'file-too-big',
-    content: 'I\'m gonna have to stop you right there. That files a bit too big to be including it in a Web project. Try and see if you can get the file size to be smaller',
+    id: 'text-file-too-big',
+    content: `The file you want to upload is <code>${self._uploadedFile.smb} MB</code>. That's pretty large for a file containing text/code, a little too large for me to display in my editor for you to edit. That said, if this is a library or a data file (JSON/CSV/XML) you can still reference it in your code. Would you still like me to upload it?`,
     options: {
-      ok: (e) => e.hide(),
+      'yes, please upload it': (e) => {
+        e.hide(); self._postUpload()
+      },
+      'oh, never mind': (e) => e.hide(),
+      'how small does it have to be?': (e) => e.goTo('text-file-size')
+    }
+  }, {
+    id: 'file-pretty-big',
+    content: `The file you want to upload is <code>${self._uploadedFile.smb} MB</code>. That might not seem that large, but on the web that could actually take a few seconds for your visitor to load (as it gets sent over the Internet, from the computer hosting your code, to their computer). I just want to warn you in advance, I can still upload it if you want though?`,
+    options: {
+      'yes, please upload it': (e) => {
+        e.hide(); self._postUpload()
+      },
+      'oh, never mind': (e) => e.hide(),
       'how small does it have to be?': (e) => e.goTo('size')
     }
   }, {
+    id: 'file-too-big',
+    content: `Wow! <code>${self._uploadedFile.smb} MB</code> that's a big file! Unfortunately, I have a file size limit of <code>50 MB</code>, so I won't be able to upload that for you. While it is possible to host a file that large on your own website, I would recommend finding a separate hosting storage solution for a file that large and simply reference it's URL to use it in your code.`,
+    options: {
+      ok: (e) => e.hide(),
+      'how small does it have to be?': (e) => e.goTo('text-file-size')
+    }
+  }, {
+    id: 'text-file-size',
+    content: 'Sure, at the moment I\'m limited to <code>1 MB</code> file sizes for any text/code files. Or <code>50 MB</code> for other media files and assetts, although I would try to keep those much smaller than that.',
+    options: {
+      ok: (e) => e.hide(),
+      'how much smaller?': (e) => e.goTo('size')
+    }
+  }, {
     id: 'size',
-    content: 'There\'s no specific number, it really depends on your audience\'s Internet speeds. As of <a href="https://www.speedtest.net/global-index" target="_blank">July 2020</a> average global download speeds were 34Mbps or ~4.3MB a second. So assuming you don\'t want your page to take longer than a second to load, I\'d try to keep assets under 5MB',
-    options: { ok: (e) => e.hide() }
+    content: 'There\'s no specific number, it really depends on your audience\'s Internet speeds. As of <a href="https://www.speedtest.net/global-index" target="_blank">Feb 2025</a> average global download speeds were 98.31 Mbps or ~12.4 MB a second. So assuming you don\'t want your page to take longer than a second to load, I\'d try to keep assets under <code>5 MB</code>',
+    options: {
+      ok: (e) => e.hide(),
+      'Can I upload files larger than that?': (e) => e.goTo('text-file-size')
+    }
+  },
+  // -------------------------- viewing / opening files ----------
+  {
+    id: 'will-loose-data',
+    content: `You haven't saved your changes to your current file, you must save them first (${hotkey}+S) or you will loose your changes.`,
+    options: {
+      'ok thanks!': (e) => e.hide(),
+      'I don\'t want to save it': (e) => { self.openFile(self._opening, true); e.hide() }
+    }
   }, {
     id: 'unknown-format',
     content: 'Unfortunately that\'s not a file I know how to open, if you think this is a mistake you should let my creators know by filing an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a>.',
     options: {
       ok: (e) => e.hide()
+    }
+  }, {
+    id: 'unknown-format2',
+    content: `Unfortunately that's not a file I know how to open here, but we could try to <a href="${self._openingCode}" target="_blank">open it in a new tab</a>?`,
+    options: {
+      'ok, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'cname',
+    content: 'A <a href="https://en.wikipedia.org/wiki/CNAME_record" target="_blank">CNAME</a> is a file used by the Domain Name System when mapping domain names to the IP address of the computer serving the website files associated with a given domain name. If a CNAME file showed up in your project it\'s likely because you published your project on GitHub and added a "<a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site" target="_blank">custom domain</a>". GitHub creates a URL for you by default when you publish a website on its platform and it uses this CNAME record to associated that URL with your custom domain.',
+    options: {
+      'I see': (e) => e.hide()
+    }
+  }, {
+    id: 'txt-too-big',
+    content: 'The file you want to view is larger than <code>1 MB</code>, while you can reference this file in your code (for example loading data via JavaScript) I can\'t display it\'s content in my editor (at least not without running into memory issues and bugging out).',
+    options: {
+      'I see': (e) => e.hide()
+    }
+  }, {
+    id: 'js-too-big',
+    content: `It looks like this JavaScript file was too large to load from GitHub. If this was a library or framework it's unlikely that you want to view and edit that file directly, however if you simply want to view the data stored in this file you can <a href="${self._jsLibPath}" target="_blank">view it in a new tab</a>.`,
+    options: {
+      'ok thanks!': (e) => e.hide()
+    }
+  }, {
+    id: 'misc-too-big',
+    content: `It looks like that file was too large to load from GitHub. If this was a library or some sort of data file it's unlikely that you want to edit that file directly in my editor anyway, however if you simply want to view the data stored in this file you can <a href="${self._jsLibPath}" target="_blank">view it in a new tab</a>.`,
+    options: {
+      'ok thanks!': (e) => e.hide()
     }
   }, {
     id: 'oh-no-error',

@@ -79,7 +79,7 @@ class LearningGuide extends Widget {
       if (WIDGETS['student-session'].getData('opened-project')) {
         WIDGETS['student-session'].clearProjectData()
       }
-      NNE.addCustomRoot(`tutorials/${name}/`)
+      utils.setCustomRenderer(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
         this._loadTutorial(name, time)

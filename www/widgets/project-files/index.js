@@ -26,7 +26,7 @@ class ProjectFiles extends Widget {
     // this.shaDict = {}
 
     // indexedDB file data store
-    this.log = true // debug logging
+    this.log = false // debug logging
     this.dbName = 'netnetDB'
     this.storeName = 'filesStore'
     this.objName = 'files'
@@ -39,34 +39,44 @@ class ProjectFiles extends Widget {
     this.viewing = null
     this.rendering = null // which html file is rendered in iframe
     this.lastCommitFiles = {} // for tracking changes
+    this._uploadedFile = {}
 
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
+    // TODO: add ogg/ogv
     this.mimeTypes = {
       md: 'text/markdown',
       html: 'text/html',
       css: 'text/css',
       js: 'text/javascript',
+      txt: 'text/plain',
+      csv: 'text/csv',
+      json: 'application/json',
+      xml: 'application/xml',
+      // image
       png: 'image/png',
       gif: 'image/gif',
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
       svg: 'image/svg+xml',
-      json: 'application/json',
       ico: 'image/x-icon',
       webp: 'image/webp',
+      // fonts
       woff: 'font/woff',
       woff2: 'font/woff2',
       ttf: 'font/ttf',
       otf: 'font/otf',
+      // av media
       mp4: 'video/mp4',
       webm: 'video/webm',
+      ogv: 'video/ogg',
       mp3: 'audio/mpeg',
       wav: 'audio/wav',
-      txt: 'text/plain',
-      xml: 'application/xml',
+      weba: 'audio/webm',
+      ogg: 'audio/ogg',
+      oga: 'audio/ogg',
+      // misc
       pdf: 'application/pdf',
-      zip: 'application/zip',
-      csv: 'text/csv'
+      zip: 'application/zip'
     }
 
     this._createContextMenu()
@@ -223,6 +233,7 @@ class ProjectFiles extends Widget {
       const subRootPath = path.slice(root.length + 1)
       ele.dataset.path = subRootPath
       if (click) {
+        if (!this.files[subRootPath].code) ele.classList.add('empty')
         ele.addEventListener('click', (e) => {
           e.stopPropagation(); this.openFile(subRootPath)
         })
@@ -383,7 +394,7 @@ class ProjectFiles extends Widget {
         }
 
         if (Object.keys(res.data).includes('index.html')) {
-          NNE.addCustomRoot(null)
+          utils.setCustomRenderer(null)
 
           // update student session data
           const htmlUrl = res.data['index.html'].html_url
@@ -410,13 +421,15 @@ class ProjectFiles extends Widget {
             const data = arr[1]
             const mimetype = this._getMimeType(name)
             // this.files[name] = data // NOTE: no longer storing all the github data
-            this.files[name] = { path: data.path, raw: data.download_url } // NOTE: adding "raw" as potential fix for large image bug (TODO)
-            // TODO: if we decide to keep "raw" would be good to expose it in getFileData as well
+            this.files[name] = { path: data.path }
             let code // store plain-text/code
-            if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json') {
-              code = utils.atob(data.content)
-            } else { // otherwise assume binary file && store blob-url
-              code = this._base64ToBlob(data.content, mimetype)
+            if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json' || mimetype === 'image/svg+xml') {
+              code = (data.content === '')
+                ? data.download_url : utils.atob(data.content)
+            } else { // otherwise assume binary file && store blob-url (or github URL)
+              // b/c github sends back empty strings for large binary files's content
+              code = (data.content === '')
+                ? data.download_url : this._base64ToBlob(data.content, mimetype)
             }
             this._updateFile(name, code)
           })
@@ -450,45 +463,80 @@ class ProjectFiles extends Widget {
     utils.updateURL() // remove github path from URL
     this._clearIndexedDB(true)
     this._createHTML()
+    NNE.customRender = null
   }
 
-  _openImageViewer (filepath) { // TODO: make sure widget fits (might need to scale image down)
+  _openMediaViewer (filepath, type) { // TODO: make sure widget fits (might need to scale image down)
     const urlBlob = this.files[filepath].code
-    const img = `
-      <div style="text-align:right">
-        <a href="${urlBlob}" target="_blank">open image in new tab</a>
-      </div>
-      <img src="${urlBlob}" style="max-height: ${nn.height / 2}px">
-    `
+
+    let html = `<div style="text-align:right">
+      <a href="${urlBlob}" target="_blank">open file in new tab</a>
+    </div>`
+    if (type === 'image') {
+      html += `<img src="${urlBlob}" style="max-height: ${nn.height / 2}px">`
+    } else if (type === 'video') {
+      html += `<video src="${urlBlob}" controls style="max-height: ${nn.height / 2}px"></video`
+    } else if (type === 'audio') {
+      html += `<audio src="${urlBlob}" controls></audio`
+    }
+
     if (WIDGETS.instantiated.includes(`VIEW-${filepath}`)) {
-      WIDGETS[`VIEW-${filepath}`].innerHTML = img
+      WIDGETS[`VIEW-${filepath}`].innerHTML = html
       return WIDGETS[`VIEW-${filepath}`].open()
     } else {
       return WIDGETS.create({
-        key: `VIEW-${filepath}`, title: 'Image Viewer', innerHTML: img
+        key: `VIEW-${filepath}`, title: 'Media File Viewer', innerHTML: html
       }).open()
     }
   }
 
-  openFile (filepath) {
-    const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'webp'] // TODO: move svg here?
-    const txts = ['html', 'svg', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml']
-    // const { filename, sub, ext } = this._parsePath(filepath)
+  openFile (filepath, skipSave) {
+    this._opening = filepath
+    this._openingCode = this.files[filepath].code
+    this.convos = window.CONVOS[this.key](this)
+    const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'webp']
+    const txts = ['html', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml', 'svg']
+    const vids = ['mp4', 'webm', 'ogv']
+    const auds = ['mp3', 'wav', 'ogg']
     const ext = filepath.split('.').pop().toLowerCase()
 
-    // TODO: add widgets for opening up audio files and video files (maybe zip too?)
-    // const vids = ['mp4', 'webm']
-    // const auds = ['mp3', 'wav']
-    // TODO: create 'CNAME' convo object
     if (imgs.includes(ext) || imgs.includes(ext.toLowerCase())) {
-      return this._openImageViewer(filepath)
+      return this._openMediaViewer(filepath, 'image')
+    } else if (vids.includes(ext) || vids.includes(ext.toLowerCase())) {
+      return this._openMediaViewer(filepath, 'video')
+    } else if (auds.includes(ext) || auds.includes(ext.toLowerCase())) {
+      return this._openMediaViewer(filepath, 'audio')
+    } else if (filepath === 'CNAME') {
+      window.convo = new Convo(this.convos, 'cname'); return
     } else if (!filepath.includes('.gitkeep') && !txts.includes(ext) && !txts.includes(ext.toLowerCase())) {
-      window.convo = new Convo(this.convos, 'unknown-format')
+      window.convo = new Convo(this.convos, 'unknown-format2'); return
+    } else if (this.files[filepath].code.startsWith('https://raw.')) {
+      this._jsLibPath = this.files[filepath].code
+      if (filepath.endsWith('.js')) window.convo = new Convo(this.convos, 'js-too-big')
+      else window.convo = new Convo(this.convos, 'misc-too-big')
       return
     }
 
-    if (ext === 'html') this.rendering = filepath
+    if (this.viewing && this.files[this.viewing] && !skipSave) { // make sure not to loose unsaved data
+      const lastSave = this.readFile(this.viewing)
+      if (NNE.code !== lastSave) {
+        window.convo = new Convo(this.convos, 'will-loose-data'); return
+      }
+    }
+
+    if (this.files[filepath].code.length / (1024 * 1024) >= 1.0) {
+      window.convo = new Convo(this.convos, 'txt-too-big'); return
+    }
+
+    if (ext === 'html' || ext === 'svg') {
+      if (this.$('li.rendering')) this.$('li.rendering').classList.remove('rendering')
+      this.rendering = filepath
+      const newRnd = this.$(`li[data-path="${filepath}"]`)
+      if (newRnd) newRnd.classList.add('rendering')
+    }
     this.viewing = filepath
+    this._opening = null
+    this._openingCode = null
 
     const repo = WIDGETS['student-session'].getData('opened-project')
     NNW.updateTitleBar(`${repo}/${filepath}`)
@@ -516,11 +564,13 @@ class ProjectFiles extends Widget {
   deleteFile (filepath) {
     const fpath = this._rightClicked.dataset.path
     if (filepath || !fpath) return console.error('deleteFile: can only be used via the project-files context menu')
+    if (fpath === 'index.html') {
+      window.convo = new Convo(this.convos, 'no-delete-index'); return
+    }
     this._delete = fpath
     this.convos = window.CONVOS[this.key](this)
     if (!this.files[fpath]) { // assume it's a folder (which can only exist if there are files in it)
-      window.convo = new Convo(this.convos, 'can-no-delete')
-      return
+      window.convo = new Convo(this.convos, 'can-no-delete'); return
     }
     window.convo = new Convo(this.convos, 'confirm-delete')
   }
@@ -550,48 +600,40 @@ class ProjectFiles extends Widget {
   }
 
   async uploadFile () {
-    const cpath = this._rightClicked.dataset.path
-    const type = this._fpathExists(cpath)
-    const path = type === 'folder' ? cpath : this._getSubPath(cpath)
+    const bytesToMB = (bytes) => {
+      if (bytes === 0) return 0
+      const mb = bytes / (1024 * 1024)
+      return Number(mb.toFixed(1))
+    }
+
     const allowedTypes = Object.values(this.mimeTypes)
     allowedTypes.push('application/x-javascript')
+    allowedTypes.push('application/ogg')
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = allowedTypes.join(',')
     input.style.display = 'none'
     document.body.appendChild(input)
     input.addEventListener('change', async () => {
-      const file = input.files[0]
-      document.body.removeChild(input)
-      if (!file) return
-      if (allowedTypes.length > 0 && !allowedTypes.includes(file.type)) {
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'unknown-format')
-      } else if (this.files[file.name]) {
-        this._duplicate = file.name
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'duplicate-file')
+      this._uploadedFile = input.files[0]
+      if (!input.files[0]) return
+      const mb = bytesToMB(this._uploadedFile.size)
+      const txt = input.files[0].type.startsWith('text') ||
+          input.files[0].type === 'application/x-javascript'
+      this._uploadedFile.smb = mb
+      this.convos = window.CONVOS[this.key](this)
+      if (txt && mb > 1.0) {
+        window.convo = new Convo(this.convos, 'text-file-too-big')
+      } else if (mb > 50.0) {
+        window.convo = new Convo(this.convos, 'file-too-big')
+      } else if (mb > 5.0) {
+        window.convo = new Convo(this.convos, 'file-pretty-big')
       } else {
-        nn.get('load-curtain').show('upload.html', { filename: file.name })
-        const isTextType = file.type.split('/')[0] === 'text' ||
-          file.type === 'application/json' || file.type === 'application/x-javascript'
-        const reader = new window.FileReader()
-        reader.onloadend = async () => {
-          // console.log({ name: file.name, type: file.type, data })
-          let data = reader.result
-          if (!isTextType) {
-            data = this._base64ToBlob(data.split(',')[1], file.type)
-          }
-          const filepath = path ? `${path}/${file.name}` : file.name
-          await this._updateFile(filepath, data)
-          this._updateFilesGUI()
-          setTimeout(() => nn.get('load-curtain').hide(), 200)
-        }
-        if (isTextType) reader.readAsText(file)
-        else reader.readAsDataURL(file)
+        this._postUpload()
       }
     })
     input.click()
+    setTimeout(() => document.body.removeChild(input), 200)
   }
 
   saveCurrentFile (skipUpdate) {
@@ -668,15 +710,17 @@ class ProjectFiles extends Widget {
   _setCustomRenderer () {
     NNE.customRender = (eve) => {
       if (this._readyToRender()) {
-        eve.iframe.src = this.rendering || 'index.html'
-        if (!this.files[this.rendering].code) {
-          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${this.rendering}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before rendering it.`)
+        if (NNE.code === this.readFile(this.viewing)) {
+          eve.iframe.src = this.rendering || 'index.html'
+          if (this.log) console.log('rendered this.rendering')
         }
-        console.log('rendered this.rendering')
+        if (!this.files[this.rendering].code) {
+          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${this.rendering}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
+        }
       } else {
         // eve.iframe.srcdoc = eve.code
         eve.update(eve.code)
-        console.log('rendered default')
+        if (this.log) console.log('rendered default')
       }
     }
   }
@@ -698,6 +742,14 @@ class ProjectFiles extends Widget {
     } else {
       return false
     }
+  }
+
+  _isTxt (name, type) {
+    const mimeType = type || this.mimeTypes[name.split('.')[1]]
+    return mimeType.split('/')[0] === 'text' ||
+      mimeType === 'application/json' ||
+      mimeType === 'application/x-javascript' ||
+      mimeType === 'application/xml'
   }
 
   _name2path (name, type) {
@@ -732,11 +784,25 @@ class ProjectFiles extends Widget {
     return URL.createObjectURL(blob)
   }
 
+  _base64ToText (base64) {
+    try {
+      const decoded = window.atob(base64)
+      const bytes = new Uint8Array([...decoded].map(c => c.charCodeAt(0)))
+      const decoder = new TextDecoder('utf-8')
+      return decoder.decode(bytes)
+    } catch (err) {
+      console.error('Failed to decode base64 to text:', err)
+      return null
+    }
+  }
+
   async _updateFile (filePath, fileContent) {
     if (!this.files[filePath]) { // create new file
       this.files[filePath] = { code: fileContent, path: filePath }
     } else { // update existing file
+      const oldCode = this.files[filePath].code
       this.files[filePath].code = fileContent
+      if (!oldCode) this._updateFilesGUI() // ren-render to remove "(empty file)"
     }
     await this._saveFilesToIndexedDB()
   }
@@ -773,11 +839,57 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, `duplicate-${type}`)
     } else if (type === 'file') {
       await this._updateFile(path, '')
+      if (this._isTxt(path)) this.openFile(path) // open file by default
+      this._updateFilesGUI()
     } else if (type === 'folder') {
       const str = 'This ".gitkeep" file is a typical GitHub hack. The file exists in order to create an otherwise empty folder/directory on GitHub. Once you\'ve pushed other files to this folder you can delete this file, but if this is the only file in the folder, deleting it will also delete the folder. To learn more see: https://stackoverflow.com/a/7229996/1104148'
       await this._updateFile(path, str)
+      this._updateFilesGUI()
+      // open dir by default (NOT WORKING)
+      // this.$(`li[data-path="${path}"]`).click()
     }
-    this._updateFilesGUI()
+  }
+
+  _postUpload () {
+    const cpath = this._rightClicked.dataset.path
+    const type = this._fpathExists(cpath)
+    const path = type === 'folder' ? cpath : this._getSubPath(cpath)
+    const allowedTypes = Object.values(this.mimeTypes)
+    allowedTypes.push('application/x-javascript')
+    allowedTypes.push('application/ogg')
+    const file = this._uploadedFile
+    if (!file) return console.error('project-files: upload file faild, no file data to uplaod')
+
+    if (allowedTypes.length > 0 && !allowedTypes.includes(file.type)) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'unknown-format')
+      this._uploadedFile = {}
+    } else if (this.files[file.name]) {
+      this._duplicate = file.name
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'duplicate-file')
+      this._uploadedFile = {}
+    } else {
+      nn.get('load-curtain').show('upload.html', { filename: file.name })
+      const isTextType = this._isTxt(file.name, file.type)
+      const reader = new window.FileReader()
+      reader.onloadend = async () => {
+        // console.log({ name: file.name, type: file.type, data })
+        let data = reader.result
+        if (!isTextType && file.type !== 'image/svg+xml') {
+          data = this._base64ToBlob(data.split(',')[1], file.type)
+        } else if (file.type === 'image/svg+xml') {
+          data = utils.atob(data.split(',')[1])
+        }
+        const filepath = path ? `${path}/${file.name}` : file.name
+        await this._updateFile(filepath, data)
+        this._updateFilesGUI()
+        setTimeout(() => nn.get('load-curtain').hide(), 200)
+        this._uploadedFile = {}
+      }
+      if (isTextType) reader.readAsText(file)
+      else reader.readAsDataURL(file)
+    }
   }
 
   async _postDeletion (filepath) {
@@ -790,6 +902,7 @@ class ProjectFiles extends Widget {
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: File '${filepath}' deleted successfully.`)
       this._updateFilesGUI()
+      if (this.viewing === filepath) this.openFile('index.html')
       // setTimeout(() => nn.get('load-curtain').hide(), 100)
     } else {
       console.warn(`FilesDB: File '${filepath}' not found.`)

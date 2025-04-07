@@ -140,7 +140,7 @@ class StudentSession extends Widget {
     ss.removeItem('project-url')
     ss.removeItem('ghpages')
     ss.removeItem('branch')
-    NNE.addCustomRoot(null)
+    utils.setCustomRenderer(null)
     NNW.updateTitleBar(null)
     if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
     this._createHTML()

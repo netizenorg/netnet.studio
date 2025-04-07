@@ -56,6 +56,28 @@
   cursor: pointer;
 }
 
+.proj-files__tree-view li.empty {
+  opacity: 0.5
+}
+
+.proj-files__tree-view li.empty::after {
+  content: " (empty file)";
+  font-style: italic;
+}
+
+/* .proj-files__tree-view li.rendering {
+  border: 1px solid var(--netizen-meta);
+  border-radius: 6px;
+  border-style: dashed;
+} */
+
+.proj-files__tree-view li.rendering::after {
+  content: " rendering";
+  opacity: 0.5;
+  font-style: italic;
+  /* float: right; */
+}
+
 .proj-files__tree-view ul {
   margin-left: 10px;
   border-left: 1px dashed var(--netizen-meta);
