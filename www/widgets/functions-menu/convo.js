@@ -11,8 +11,11 @@ window.CONVOS['functions-menu'] = (self) => {
   }
 
   const a = (() => {
-    if (NNE._root && NNE._root.includes('.com')) {
-      return NNE._root.split('.com/')[1].split('/')
+    const ss = WIDGETS['student-session']
+    if (utils.url.github) {
+      return utils.url.github.split('/')
+    } else if (ss.getData('opened-project')) {
+      return [ss.getData('owner'), ss.getData('opened-project')]
     } else return []
   })()
 
@@ -349,6 +352,13 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'I can generate a share-link to netnet.studio, but I could also publish your project to the Web for you?',
     options: {
       'I\'ll take that share link': (e) => e.goTo('share-gh-url'),
+      'publish on the Web?': (e) => e.goTo('publish-to-web?')
+    }
+  }, {
+    id: 'share-gh-url',
+    content: `Sure thing, here's a URL that'll display the code alongside your work in the studio. <input value="${shareGhURL()}" style="display: inline-block; width: 100%" onclick="utils.copyLink(this)" readonly="readonly"><br><br> If you prefer your code not be present consider publishing your project on the Web.`,
+    options: {
+      'great thanks!': (e) => e.hide(),
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
     }
   }, {

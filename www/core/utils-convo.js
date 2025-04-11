@@ -5,11 +5,12 @@ window.CONVOS['utils-misc'] = (self) => {
   const Mac = nn.platformInfo().platform.includes('Mac')
 
   const a = (() => {
-    const c = window.localStorage.getItem('gh-auth-temp-code')
+    let c = window.localStorage.getItem('gh-auth-temp-code')
     const gh = window.utils.url.github
     if (c) {
       window.localStorage.removeItem('gh-auth-temp-code')
-      return c.split('.com/')[1].split('/')
+      c = c.replace('__TEMP__', '')
+      return c.split('/')
     } else if (gh) return window.utils.url.github.split('/')
     else return []
   })()

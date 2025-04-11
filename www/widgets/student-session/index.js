@@ -183,9 +183,8 @@ class StudentSession extends Widget {
     const temp = `#code/${NNE._encode('<h1>Hello World Wide Web</h1>')}`
     const code = (utils.btoa(NNE.code) === utils.starterCodeB64)
       ? temp : NNE.generateHash()
-    if (NNE._root && NNE._root.includes('.com')) {
-      // if gitHub url in root
-      window.localStorage.setItem('gh-auth-temp-code', NNE._root)
+    if (utils.url.github) {
+      window.localStorage.setItem('gh-auth-temp-code', '__TEMP__' + utils.url.github)
     } else window.localStorage.setItem('gh-auth-temp-code', code)
     utils.get('api/github/client-id', (json) => {
       const id = `client_id=${json.message}`

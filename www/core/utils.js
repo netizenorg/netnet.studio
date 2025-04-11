@@ -397,33 +397,12 @@ window.utils = {
 
   loadGHRedirect: () => {
     // code set by WIDGETS['student-session'].authGitHubSession()
-    const code = window.localStorage.getItem('gh-auth-temp-code')
+    let code = window.localStorage.getItem('gh-auth-temp-code')
     // code might be an encoded hash, or a gh root URL
-    if (code.includes('raw.githubusercontent.com')) {
-      // if they were looking at someone else's GitHub poroject
-      // before they got redirected over to GitHub for auth...
-      const a = code.split('.com/')[1].split('/')
-      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      const rawHTML = `${proxy}index.html`
-      window.utils.get(rawHTML, (html) => {
-        window.utils.setCustomRenderer(base, proxy)
-        NNE.code = ''
-        NNW.layout = 'dock-left'
-        window.utils.afterLayoutTransition(() => {
-          NNE.code = html
-          setTimeout(() => {
-            NNE.cm.refresh()
-            if (!NNE.autoUpdate) NNE.update()
-          }, 10)
-          window.utils.fadeOutLoader(false)
-          window.utils.updateURL(`?gh=${a[0]}/${a[1]}/${a[2]}`)
-          window.utils._Convo('remix-github-project-auth-redirect')
-          // removeItem('gh-auth-temp-code') called in Convo data
-        })
-      }, true)
+    if (code.includes('__TEMP__')) {
+      // TODO: need a better way to check if code has gh in it...
+      code = code.replace('__TEMP__', '')
+      window.utils.loadGithub(code, window.utils.url.layout)
     } else {
       // if they had some code they were working on in the editor
       // before they got redirected over to GitHub to auth...
