@@ -121,8 +121,8 @@ async function getFileFromIndexedDB (filePath) {
 }
 
 async function generateResponse (filePath, data) {
-  try {
-    const mimeType = getMimeType(filePath)
+  try { // NOTE: render .md as HTML (see markdownToHtml in fetch listener below)
+    const mimeType = filePath.endsWith('.md') ? 'text/html; charset=UTF-8' : getMimeType(filePath)
     const headers = new Headers({
       'Content-Type': mimeType,
       'Access-Control-Allow-Origin': '*'
@@ -167,6 +167,52 @@ async function handleProxyRequest (targetUrl) {
   } catch (err) {
     return new Response('Error: ' + err.message, { status: 500 })
   }
+}
+
+// in order to render markdown files
+function markdownToHtml (md) {
+  if (typeof md !== 'string') {
+    throw new TypeError('Expected a string')
+  }
+  const escapeHtml = str => str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  // Code blocks
+  md = md.replace(/```([\s\S]*?)```/g, (_, code) => {
+    return '<pre><code>' + escapeHtml(code) + '</code></pre>'
+  })
+  // Inline code
+  md = md.replace(/`([^`]+)`/g, (_, code) => {
+    return '<code>' + escapeHtml(code) + '</code>'
+  })
+  // Headers (h1 to h6)
+  md = md.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+  md = md.replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+  md = md.replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+  md = md.replace(/^### (.*)$/gm, '<h3>$1</h3>')
+  md = md.replace(/^## (.*)$/gm, '<h2>$1</h2>')
+  md = md.replace(/^# (.*)$/gm, '<h1>$1</h1>')
+  // Bold and italic
+  md = md.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+  md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  md = md.replace(/\*(.*?)\*/g, '<em>$1</em>')
+  // Images
+  md = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+  // Links
+  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+  // Unordered lists
+  md = md.replace(/(?:^|\n)([-+*]) (.*?)(?=\n[^-*+]|$)/gs, match => {
+    const items = match.trim().split('\n').map(item => {
+      return '<li>' + item.replace(/^[-+*] /, '') + '</li>'
+    }).join('')
+    return '<ul>' + items + '</ul>'
+  })
+  // Paragraphs (very naive — do this last)
+  md = md.replace(/^(?!<(h\d|ul|li|pre|code|blockquote|\/)).+/gm, line => {
+    return '<p>' + line + '</p>'
+  })
+  return md.trim()
 }
 
 /*
@@ -227,12 +273,14 @@ self.addEventListener('fetch', (event) => {
           else return fetch(fileData, { cache: 'no-store' })
         } else if (fileData) {
           if (LOG) console.log('...fetching from IndexedDB:', filePath)
-          if (filePath.includes('.html')) {
+          if (filePath.endsWith('.html')) {
             fileData = `<script>
               window.onerror = function (message, source, lineno) {
                 window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
               }
             </script>` + fileData
+          } else if (filePath.endsWith('.md')) {
+            fileData = markdownToHtml(fileData)
           }
           const response = await generateResponse(filePath, fileData)
           // if (LOG) console.log('DATA:', filePath, fileData)

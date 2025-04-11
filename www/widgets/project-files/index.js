@@ -528,7 +528,7 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'txt-too-big'); return
     }
 
-    if (ext === 'html' || ext === 'svg') {
+    if (ext === 'html' || ext === 'svg' || ext === 'md') {
       if (this.$('li.rendering')) this.$('li.rendering').classList.remove('rendering')
       this.rendering = filepath
       const newRnd = this.$(`li[data-path="${filepath}"]`)
