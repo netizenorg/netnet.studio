@@ -387,6 +387,18 @@ window.CONVOS['project-files'] = (self) => {
       'I see': (e) => e.hide()
     }
   }, {
+    id: 'gitignore',
+    content: 'A <code>.gitignore</code> file tells Git which files or folders to ignore so they don\'t get tracked or uploaded when you commit changes to your project. It\'s especially useful for keeping sensitive files, temporary files, or system-specific stuff (like log files or local config files) out of your version control. You can read more about <a href="https://git-scm.com/docs/gitignore" target="_blank">how .gitignore works here</a>.',
+    options: {
+      'I see': (e) => e.hide()
+    }
+  }, {
+    id: 'license',
+    content: 'A software license dictates the terms of use, because we\'re hosting our code on GitHub it\'s common to include an open source license dictating the terms of use for any web app/site hosted there. As an open source project myself, I\'m licensed under the <a href="https://github.com/netizenorg/netnet.studio/blob/main/LICENSE" target="_blank">GPL-3.0</a> license. You can visit this page to <a href="https://choosealicense.com/licenses/" target="_blank">learn more about open source licenses</a>.',
+    options: {
+      'I see': (e) => e.hide()
+    }
+  }, {
     id: 'txt-too-big',
     content: 'The file you want to view is larger than <code>1 MB</code>, while you can reference this file in your code (for example loading data via JavaScript) I can\'t display it\'s content in my editor (at least not without running into memory issues and bugging out).',
     options: {
@@ -400,7 +412,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'misc-too-big',
-    content: `It looks like that file was too large to load from GitHub. If this was a library or some sort of data file it's unlikely that you want to edit that file directly in my editor anyway, however if you simply want to view the data stored in this file you can <a href="${self._jsLibPath}" target="_blank">view it in a new tab</a>.`,
+    content: `It looks like that file was too large to load from GitHub. If this was a library or a large data file it's unlikely that you want to edit that file directly in my editor anyway, however if you simply want to view the data stored in this file you can <a href="${self._jsLibPath}" target="_blank">view it in a new tab</a>.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }

@@ -267,6 +267,14 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       try {
         let fileData = await getFileFromIndexedDB(filePath)
+
+        if (!fileData) { // check if they clicked on a link in their page to navigate to a new directory (with an index file in it)
+          fileData = await getFileFromIndexedDB(filePath + '/index.html')
+          if (fileData) {
+            fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, instead of navigating directly to that file. While this will work once published on the web, in order for me to render a preview here, you\'ll need to link directly to the index.html file in this folder. Make sure to add index.html to the end of the path you navigated to in your code.'
+          }
+        }
+
         if (fileData && fileData.startsWith('http') && comingFromNetnet()) {
           // assume absolute path in student project's code (whether from their actual code or localStorage like gitHub raw url)
           if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)

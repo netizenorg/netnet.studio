@@ -21,7 +21,7 @@ class ProjectFiles extends Widget {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-    this.title = 'Project Files'
+    this.title = 'Project Files (Beta 0.1)'
     this.width = 450
     // this.shaDict = {}
 
@@ -40,6 +40,7 @@ class ProjectFiles extends Widget {
     this.rendering = null // which html file is rendered in iframe
     this.lastCommitFiles = {} // for tracking changes
     this._uploadedFile = {}
+    this._agreed2beta = false
 
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
     // TODO: add ogg/ogv
@@ -85,7 +86,10 @@ class ProjectFiles extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    this.on('open', () => { window.convo = new Convo(this.convos, 'explain') })
+    this.on('open', () => {
+      if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
+      window.convo = new Convo(this.convos, 'explain')
+    })
 
     NNE.on('code-update', () => {
       const repo = WIDGETS['student-session'].getData('opened-project')
@@ -141,6 +145,13 @@ class ProjectFiles extends Widget {
         <div class="proj-files__disclaimer">
           ${loggedIn ? loggedInMsg : loggedOutMsg}
         </div>
+        <div class="proj-files__beta">
+          <h1>Beta Agreement</h1>
+          <p>
+            THERE WILL BE BUGS! This widget is in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. We’re not liable for any glitches or losses of data that may result from using it. If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
+          </p>
+          <button class="pill-btn pill-btn--secondary" style="margin-top: 20px;">Got it!</button>
+        </div>
         <!-- if project is open -->
         <div class="proj-files__header">
           <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
@@ -155,13 +166,22 @@ class ProjectFiles extends Widget {
     this._showHideDivs()
 
     this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
+
+    this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
+      this._agreed2beta = true
+      this._showHideDivs()
+    })
   }
 
   _showHideDivs () {
+    const a = this._agreed2beta
     const op = WIDGETS['student-session'].getData('opened-project')
+
     this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
-    this.$('.proj-files__header').style.display = op ? 'flex' : 'none'
-    this.$('.proj-files__list').style.display = op ? 'block' : 'none'
+
+    this.$('.proj-files__beta').style.display = op && !a ? 'block' : 'none'
+    this.$('.proj-files__header').style.display = op && a ? 'flex' : 'none'
+    this.$('.proj-files__list').style.display = op && a ? 'block' : 'none'
   }
 
   // runs everytime a new repo (github project) is created or opened
@@ -383,6 +403,9 @@ class ProjectFiles extends Widget {
     } else {
       WIDGETS['student-session'].clearSaveState()
       const owner = WIDGETS['student-session'].getData('owner')
+      if (WIDGETS['student-session'].getData('opened-project')) {
+        WIDGETS['student-session'].clearProjectData()
+      }
       nn.get('load-curtain').show('upload.html', { filename: repo })
       this.open()
 
@@ -450,6 +473,7 @@ class ProjectFiles extends Widget {
           // open the index.html file by default
           this.openFile('index.html')
           window.convo = new Convo(this.convos, 'project-opened')
+          // NOTE: load-curtain is hidden after index.html file is opened
         } else {
           this.files = {}
           nn.get('load-curtain').hide()
@@ -463,6 +487,9 @@ class ProjectFiles extends Widget {
     utils.updateURL() // remove github path from URL
     this._clearIndexedDB(true)
     this._createHTML()
+    this.viewing = null
+    this.rendering = null
+    this.lastCommitFiles = {}
     NNE.customRender = null
   }
 
@@ -506,12 +533,17 @@ class ProjectFiles extends Widget {
       return this._openMediaViewer(filepath, 'video')
     } else if (auds.includes(ext) || auds.includes(ext.toLowerCase())) {
       return this._openMediaViewer(filepath, 'audio')
+    } else if (filepath === 'LICENSE') {
+      window.convo = new Convo(this.convos, 'license'); return
+    } else if (filepath.includes('.gitignore')) {
+      window.convo = new Convo(this.convos, 'gitignore'); return
     } else if (filepath === 'CNAME') {
       window.convo = new Convo(this.convos, 'cname'); return
     } else if (!filepath.includes('.gitkeep') && !txts.includes(ext) && !txts.includes(ext.toLowerCase())) {
       window.convo = new Convo(this.convos, 'unknown-format2'); return
     } else if (this.files[filepath].code.startsWith('https://raw.')) {
       this._jsLibPath = this.files[filepath].code
+      this.convos = window.CONVOS[this.key](this)
       if (filepath.endsWith('.js')) window.convo = new Convo(this.convos, 'js-too-big')
       else window.convo = new Convo(this.convos, 'misc-too-big')
       return
@@ -640,6 +672,7 @@ class ProjectFiles extends Widget {
     this._updateFile(this.viewing, NNE.code)
     if (!skipUpdate) NNE.update()
     this._updateViewingFile()
+    console.clear()
     if (this.log) console.log('PF: saveCurrentFile')
   }
 
@@ -692,6 +725,7 @@ class ProjectFiles extends Widget {
     } else {
       window.convo = new Convo(this.convos, 'netnet-title-bar-misc')
     }
+    if (!this.opened) this.open()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
