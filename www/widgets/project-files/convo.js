@@ -26,9 +26,37 @@ window.CONVOS['project-files'] = (self) => {
     }
   })()
 
+  const pathSelect = (() => {
+    const allFiles = Object.keys(self.files)
+    const dirPaths = new Set()
+    allFiles.forEach(fp => {
+      const idx = fp.lastIndexOf('/')
+      if (idx === -1) return
+      // start with the immediate parent
+      let dir = fp.slice(0, idx)
+      // add this dir *and* all its ancestors
+      while (true) {
+        dirPaths.add(dir)
+        const slash = dir.lastIndexOf('/')
+        if (slash === -1) break
+        dir = dir.slice(0, slash)
+      }
+    })
+    let str = '<select class="dropdown dropdown--invert">'
+    const list = Array.from(dirPaths).sort((a, b) => a.localeCompare(b))
+    list.unshift('[root directory]')
+    list.forEach(r => { str += `<option value="${r}">${r}</option>` })
+    str += '</select>'
+    return str
+  })()
+
   let tempName = null
   const validateFName = (c, t, f, rename) => {
     const v = tempName = t.$('input').value
+    const a = v.split('.')
+    const e = a[a.length - 1]
+    const validExt = Object.keys(self.mimeTypes).includes(e)
+
     if (v.length < 1) c.goTo(f + '-name-blank')
     else if (v.length > 72) c.goTo(f + '-name-too-long')
     else if (v.includes(' ')) c.goTo(f + '-name-has-spaces')
@@ -42,6 +70,8 @@ window.CONVOS['project-files'] = (self) => {
     } else if (f === 'file' && v.indexOf('.') === 0) {
       if (rename) c.goTo('file-rename-hidden')
       else c.goTo('file-new-hidden')
+    } else if (f === 'file' && v.indexOf('.') > 0 && !validExt) {
+      c.goTo('file-invalid-ext')
     } else {
       if (rename) self._postRenameFile(v)
       else self._postNew(v, f)
@@ -58,7 +88,8 @@ window.CONVOS['project-files'] = (self) => {
       'f-rename': `How would you like to rename the ${f} <code>${n}</code>? <input placeholder="${f}-name?">`,
       'f-ext': `Your ${f} name is missing its extention, what type of file is this? If it's an HTML file you should add <code>.html</code> to the end of its name, if it's a CSS file add <code>.css</code> or <code>.js</code> for JavaScript, or <code>.md</code> for Markdown, etc. <input placeholder="${f}-name?">`,
       'f-name-is-hidden': `You've got a <code>.</code> at the start of your ${f} name, in most systems this will be interpreted as a "hidden" ${f}, was that intentional?`,
-      'fldr-has-dot': `You've got a <code>.</code> in your folder name, this is common when adding extensions to your file names (like <code>.html</code> or <code>.css</code>) but not when creating folder names. If you were trying to create a "hidden" folder, then you should place the <code>.</code> at the start of the folder's name  <input placeholder="${f}-name?">`
+      'fldr-has-dot': `You've got a <code>.</code> in your folder name, this is common when adding extensions to your file names (like <code>.html</code> or <code>.css</code>) but not when creating folder names. If you were trying to create a "hidden" folder, then you should place the <code>.</code> at the start of the folder's name  <input placeholder="${f}-name?">`,
+      'invalid-f-ext': `The extention you gave this ${f} is either invalid or something I don't support, please give your file a valid extention like ${['html', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml', 'svg'].map(e => `<code>.${e}</code>`).join(', ')} <input placeholder="${f}-name?">`
     }
     return convos[c]
   }
@@ -176,7 +207,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'folder-name-blank',
-    content: namingConvos('f-name-blank', 'folder'),
+    content: namingConvos('f-name-blank', 'folder', self._rename),
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder'),
       'never mind': (e) => e.hide()
@@ -185,21 +216,21 @@ window.CONVOS['project-files'] = (self) => {
     id: 'folder-name-too-long',
     content: namingConvos('f-name-too-long', 'folder'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'folder'),
+      'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'folder-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'folder'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'folder'),
+      'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'folder-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'folder'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'folder'),
+      'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
@@ -213,7 +244,7 @@ window.CONVOS['project-files'] = (self) => {
     id: 'folder-dot',
     content: namingConvos('fldr-has-dot', 'folder'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'folder'),
+      'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
@@ -234,28 +265,28 @@ window.CONVOS['project-files'] = (self) => {
     id: 'file-name-blank',
     content: namingConvos('f-name-blank', 'file'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'file'),
+      'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'file-name-too-long',
     content: namingConvos('f-name-too-long', 'file'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'file'),
+      'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'file-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'file'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'file'),
+      'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'file-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'file'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'file'),
+      'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
@@ -269,12 +300,19 @@ window.CONVOS['project-files'] = (self) => {
     id: 'file-new-missing-ext',
     content: namingConvos('f-ext', 'file'),
     options: {
-      'save it!': (c, t) => validateFName(c, t, 'file'),
+      'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'file-rename-missing-ext',
     content: namingConvos('f-ext', 'file'),
+    options: {
+      'save it!': (c, t) => validateFName(c, t, 'file', true),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'file-invalid-ext',
+    content: namingConvos('invalid-f-ext', 'file'),
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -359,6 +397,39 @@ window.CONVOS['project-files'] = (self) => {
       ok: (e) => e.hide(),
       'Can I upload files larger than that?': (e) => e.goTo('text-file-size')
     }
+  },
+  {
+    id: 'move-update-path',
+    content: `Below is every file path in your project, where each <code>/</code> dives you into a deeper folder. "The root directory" (aka project folder) is your top‐level directory that contains everything else. Use the list below to select which directory path you want to move this to ${pathSelect}`,
+    options: {
+      'ok, this one': (e, t) => self._postMoveFile(t.$('select').value),
+      'actually, never mind': (e) => e.hide()
+    }
+  },
+  {
+    id: 'move-folder-denied',
+    content: 'That directory (aka folder) already has a folder in it with the same name as the one you are trying to move there.',
+    options: { ok: (e) => e.hide() }
+  },
+  {
+    id: 'move-file-denied',
+    content: 'That directory (aka folder) already has a file in it with the same name as the one you are trying to move there.',
+    options: { ok: (e) => e.hide() }
+  },
+  {
+    id: 'move-folder-same',
+    content: 'That\'s the same directory (aka folder) that the folder you are trying to move is already located in. Moving it there won\'t change anything.',
+    options: { ok: (e) => e.hide() }
+  },
+  {
+    id: 'move-file-same',
+    content: 'That\'s the same directory (aka folder) that the file you are trying to move is already located in. Moving it there won\'t change anything.',
+    options: { ok: (e) => e.hide() }
+  },
+  {
+    id: 'move-folder-self',
+    content: 'That\'s the same directory (aka folder) that you\'re trying to move. You can\'t move a folder into itself.',
+    options: { ok: (e) => e.hide() }
   },
   // -------------------------- viewing / opening files ----------
   {

@@ -329,7 +329,8 @@ class ProjectFiles extends Widget {
       <!-- the right-click context menu -->
       <div class="proj-files__ctx-rename">rename</div>
       <div class="proj-files__ctx-delete">delete</div>
-      <div class="proj-files__ctx-copy">copy file path</div>
+      <div class="proj-files__ctx-copy">copy path</div>
+      <div class="proj-files__ctx-move">move/update path</div>
       <hr>
       <div>upload file</div>
       <div>new file</div>
@@ -341,7 +342,8 @@ class ProjectFiles extends Widget {
       div.addEventListener('click', (e) => { // TODO: need to implement some of these functions
         if (e.target.textContent.includes('rename')) this.renameFile()
         else if (e.target.textContent.includes('delete')) this.deleteFile()
-        else if (e.target.textContent.includes('copy file path')) this.copyFilePath()
+        else if (e.target.textContent.includes('copy path')) this.copyFilePath()
+        else if (e.target.textContent.includes('move/update path')) this.moveFilePath()
         else if (e.target.textContent.includes('upload file')) this.uploadFile()
         else if (e.target.textContent.includes('new file')) this.newFile()
         else if (e.target.textContent.includes('new folder')) this.newFolder()
@@ -365,14 +367,15 @@ class ProjectFiles extends Widget {
     const rn = this.ctxmenu.querySelector('.proj-files__ctx-rename')
     const dl = this.ctxmenu.querySelector('.proj-files__ctx-delete')
     const cp = this.ctxmenu.querySelector('.proj-files__ctx-copy')
+    const mv = this.ctxmenu.querySelector('.proj-files__ctx-move')
     const hr = this.ctxmenu.querySelector('hr')
     const repo = WIDGETS['student-session'].getData('opened-project')
     const name = e.target.childNodes[0].nodeValue.trim()
 
     if (!name || name === '' || name === repo) {
-      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'none'
+      cp.style.display = mv.style.display = hr.style.display = rn.style.display = dl.style.display = 'none'
     } else {
-      cp.style.display = hr.style.display = rn.style.display = dl.style.display = 'block'
+      cp.style.display = mv.style.display = hr.style.display = rn.style.display = dl.style.display = 'block'
       rn.textContent = `rename "${name}"`
       dl.textContent = `delete "${name}"`
     }
@@ -616,6 +619,14 @@ class ProjectFiles extends Widget {
     window.convo = new Convo(this.convos, `${type}-rename`)
   }
 
+  moveFilePath (file) {
+    const fpath = this._rightClicked.dataset.path
+    const type = this._fpathExists(fpath)
+    if (file || !type) return console.error('moveFilePath: can only be used via the project-files context menu')
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'move-update-path')
+  }
+
   newProject () {
     // TODO: display netnet convo for naming a new project (&& creating a repo)
     console.log('new project')
@@ -683,26 +694,28 @@ class ProjectFiles extends Widget {
 
   getFileData (filePath) {
     const path = filePath
-    let code = this.readFile(filePath)
-    if (!code) code = ''
+    const code = this.readFile(path) || ''
+    // directory (empty string for root)
+    const slashIdx = path.lastIndexOf('/')
+    const dir = slashIdx === -1 ? '' : path.slice(0, slashIdx)
+    // filename (with extension)
+    const fileName = slashIdx === -1 ? path : path.slice(slashIdx + 1)
+    // split name + ext
+    const dotIdx = fileName.lastIndexOf('.')
+    let name = fileName
+    let ext = ''
+    let fullname = fileName
 
-    const arr = filePath.split('.')
-    const name = arr[arr.length - 2].split('/').pop()
-    const ext = arr[arr.length - 1]
-    const fullname = name + '.' + ext
-    const sansFile = filePath.substring(0, filePath.lastIndexOf('/'))
-    const dir = sansFile.endsWith('/') ? sansFile.slice(0, -1) : sansFile
+    if (dotIdx > 0) {
+      name = fileName.slice(0, dotIdx)
+      ext = fileName.slice(dotIdx + 1)
+      fullname = `${name}.${ext}`
+    }
 
     let lang = 'binary'
     if (ext === 'html') lang = 'html'
     else if (ext === 'css') lang = 'css'
     else if (ext === 'js') lang = 'javascript'
-
-    // const github = Object.fromEntries(
-    //   Object.entries(this.files[filePath]).filter(([key]) => key !== 'code')
-    // )
-
-    // return { code, lang, dir, name, ext, fullname, path, github }
     return { code, lang, dir, name, ext, fullname, path }
   }
 
@@ -767,11 +780,27 @@ class ProjectFiles extends Widget {
 
   _fpathExists (fpath) {
     const allFiles = Object.keys(this.files)
-    const allDirs = allFiles.map(p => this._getSubPath(p)).filter(s => s !== '')
-    // check if file exists...
-    if (this.files[fpath]) { // file exists
+    const dirPaths = new Set()
+
+    allFiles.forEach(fp => {
+      const idx = fp.lastIndexOf('/')
+      if (idx === -1) return
+
+      // start with the immediate parent
+      let dir = fp.slice(0, idx)
+
+      // add this dir *and* all its ancestors
+      while (true) {
+        dirPaths.add(dir)
+        const slash = dir.lastIndexOf('/')
+        if (slash === -1) break
+        dir = dir.slice(0, slash)
+      }
+    })
+
+    if (this.files[fpath]) {
       return 'file'
-    } else if (allDirs.includes(fpath)) {
+    } else if (dirPaths.has(fpath)) {
       return 'folder'
     } else {
       return false
@@ -944,13 +973,54 @@ class ProjectFiles extends Widget {
     }
   }
 
+  async _postMoveFile (newSubPath) {
+    window.convo.hide()
+    const fpath = this._rightClicked.dataset.path
+    const type = this._fpathExists(fpath)
+    const filename = this.getFileData(fpath).fullname
+    const newPath = newSubPath === '[root directory]' ? filename : `${newSubPath}/${filename}`
+    const dup = this._fpathExists(newPath)
+
+    const renameFile = (newPath, oldPath) => {
+      this.files[newPath] = JSON.parse(JSON.stringify(this.files[oldPath]))
+      this.files[newPath].path = newPath
+      delete this.files[oldPath]
+    }
+
+    let errConvo
+    if (newSubPath === fpath) {
+      errConvo = 'move-folder-self'
+    } else if (newPath === fpath) {
+      errConvo = `move-${type}-same`
+    } else if (dup) { errConvo = `move-${type}-denied` }
+    if (errConvo) { window.convo = new Convo(this.convos, errConvo); return }
+
+    if (type === 'file') {
+      renameFile(newPath, fpath)
+    } else { // move this folder (&& all relevant paths)
+      Object.keys(this.files).forEach(oldPath => {
+        if (!oldPath.startsWith(`${fpath}/`)) return
+        const rest = oldPath.slice(fpath.length + 1)
+        const updatedPath = `${newPath}/${rest}`
+        renameFile(updatedPath, oldPath)
+      })
+    }
+
+    // update database && tree view
+    await this._saveFilesToIndexedDB()
+    if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
+    this._updateFilesGUI()
+  }
+
   async _postRenameFile (tempname) {
     window.convo.hide()
     const fpath = this._rightClicked.dataset.path
     const subPath = this._getSubPath(fpath)
     const type = this._fpathExists(fpath)
     const newPath = subPath ? `${subPath}/${tempname}` : tempname
+
     const dup = this._fpathExists(newPath)
+
     const renameFile = (newPath, oldPath) => {
       this.files[newPath] = JSON.parse(JSON.stringify(this.files[oldPath]))
       this.files[newPath].path = newPath
@@ -964,14 +1034,12 @@ class ProjectFiles extends Widget {
     } else {
       if (type === 'file') {
         renameFile(newPath, fpath)
-      } else {
-        Object.keys(this.files).forEach(path => {
-          const file = this.getFileData(path)
-          if (file.dir === fpath) {
-            const newName = `${newPath}/${file.fullname}`
-            const oldName = `${fpath}/${file.fullname}`
-            renameFile(newName, oldName)
-          }
+      } else { // rename this folder (&& all relevant paths)
+        Object.keys(this.files).forEach(oldPath => {
+          if (!oldPath.startsWith(`${fpath}/`)) return
+          const rest = oldPath.slice(fpath.length + 1)
+          const updatedPath = `${newPath}/${rest}`
+          renameFile(updatedPath, oldPath)
         })
       }
       // update database && tree view
