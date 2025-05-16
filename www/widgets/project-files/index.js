@@ -43,7 +43,6 @@ class ProjectFiles extends Widget {
     this._agreed2beta = false
 
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
-    // TODO: add ogg/ogv
     this.mimeTypes = {
       md: 'text/markdown',
       html: 'text/html',
@@ -96,10 +95,6 @@ class ProjectFiles extends Widget {
       if (!repo) return
       this._updateViewingFile()
     })
-
-    window.addEventListener('beforeunload', async () => {
-      this._clearIndexedDB(true)
-    })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -148,7 +143,7 @@ class ProjectFiles extends Widget {
         <div class="proj-files__beta">
           <h1>Beta Agreement</h1>
           <p>
-            THERE WILL BE BUGS! This widget is in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. We’re not liable for any glitches or losses of data that may result from using it. If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
+            THERE MAY BE BUGS! This widget is in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. We’re not liable for any glitches or losses of data that may result from using it. If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
           </p>
           <button class="pill-btn pill-btn--secondary" style="margin-top: 20px;">Got it!</button>
         </div>
@@ -339,7 +334,7 @@ class ProjectFiles extends Widget {
     document.body.appendChild(this.ctxmenu)
 
     this.ctxmenu.querySelectorAll('div').forEach(div => {
-      div.addEventListener('click', (e) => { // TODO: need to implement some of these functions
+      div.addEventListener('click', (e) => {
         if (e.target.textContent.includes('rename')) this.renameFile()
         else if (e.target.textContent.includes('delete')) this.deleteFile()
         else if (e.target.textContent.includes('copy path')) this.copyFilePath()

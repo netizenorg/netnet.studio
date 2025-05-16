@@ -738,25 +738,18 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
 
   _preventAccidentalExit () {
-    // NOTE: students on mace would often double-finger swipe back on their
+    // NOTE: students on mac would often double-finger swipe back on their
     // trackpads (when trying to move their scroll bars) and this would trigger
-    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
-    // if they accidentally refresh, they loos all their progress. This code
-    // prevents both from happening (refresh tirggers confirmation box)
+    // Mac's "back" button, and thus they'd loose all their progress. Similarly,
+    // if they accidentally refresh, they loose all their progress. This code,
+    // along with the 'unload' event in main.js, prevents both from happening.
 
     // Prevent backward/forward navigation
     window.addEventListener('popstate', (event) => {
       window.history.pushState(null, '', window.location.href)
     })
-
     // Initialize history state to disable navigation
     window.history.pushState(null, '', window.location.href)
-
-    // Optionally warn the user about navigation attempts
-    window.addEventListener('beforeunload', (event) => {
-      event.preventDefault()
-      event.returnValue = '' // Required for Chrome to show the warning dialog
-    })
   }
 }
 

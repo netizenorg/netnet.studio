@@ -64,6 +64,7 @@ window.addEventListener('load', () => {
     // when everythings loaded...
     utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
       WIDGETS['student-session'].clearProjectData()
+
       // setup custom renderer to catch errors (see on "message" below)
       utils.setCustomRenderer(null)
       // ...check URL for params, && fade out load screen when ready
@@ -72,12 +73,13 @@ window.addEventListener('load', () => {
   })
 })
 
-// the <iframe> messanger is injected into the rendered html pages via
-// setCustomRenderer or files-db-service-worker.js (for projects)
+// the <iframe> messanger is injected into the rendered html pages, handled in:
+// setCustomRenderer or files-db-service-worker.js (when working on projects)
 window.addEventListener('message', e => utils.customRendererError(e))
 
-window.addEventListener('beforeunload', () => {
-  WIDGETS['student-session'].clearProjectData()
+// warn the user about accidental navigation attempts
+window.addEventListener('beforeunload', (event) => {
+  event.preventDefault(); event.returnValue = ''
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
