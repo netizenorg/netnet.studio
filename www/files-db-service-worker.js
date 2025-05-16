@@ -1,4 +1,4 @@
-/* global self, clients, indexedDB, Blob, Response, Headers, fetch */
+/* global self, clients, indexedDB, Blob, Response, Headers, fetch, Request */
 /*
 
 this class is used to intercept requests coming from the website (specifically
@@ -144,27 +144,32 @@ async function generateResponse (filePath, data) {
   }
 }
 
-// if a stuent has a large .js file (like a minified library) in their GH project
+// if a stuent has a large media file (like an image) or .js file (like a minified library) in their GH project
 // it won't load when 'opening a project', instead we store the raw URL to the hosted js file on github
 // this handles (ie. proxies) requesting and returning that large .js file
 async function handleProxyRequest (targetUrl) {
   try {
-    const response = await fetch(targetUrl, {
-      mode: 'cors',
-      credentials: 'omit'
-    })
-
-    if (!response.ok) {
+    // 1) build a Request so we can set redirect:'follow'
+    const proxyReq = new Request(targetUrl, { mode: 'cors', credentials: 'omit', redirect: 'follow' })
+    const res = await fetch(proxyReq)
+    // 2) if GitHub/raw gave us an error status, bail
+    if (!res.ok) {
+      console.warn('Proxy target returned', res.status, res.statusText)
       return new Response('Failed to fetch resource', { status: 502 })
     }
-
-    const contentType = response.headers.get('content-type') || 'application/javascript'
-    const data = await response.text()
-
-    return new Response(data, {
-      headers: { 'Content-Type': contentType }
-    })
+    // 3) grab a fresh Headers object to copy back later
+    const headers = new Headers(res.headers)
+    // 4) only read as text if we need to mutate (e.g. JS injection)
+    if (targetUrl.endsWith('.js')) {
+      const body = await res.text()
+      // ensure Content-Type stays correct
+      headers.set('Content-Type', headers.get('Content-Type') || 'application/javascript')
+      return new Response(body, { status: res.status, statusText: res.statusText, headers })
+    }
+    // 5) all other assets (images, CSS, etc.) get streamed straight back
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers })
   } catch (err) {
+    console.error('Proxy fetch error:', err)
     return new Response('Error: ' + err.message, { status: 500 })
   }
 }
