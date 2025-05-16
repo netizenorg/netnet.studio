@@ -451,7 +451,7 @@ class FunctionsMenu extends Widget {
     this.innerHTML = `
       <div id="func-menu-content">
         <div id="func-menu-login" tabindex="0">
-          ${gh ? 'logout' : 'login'}
+          ${gh ? 'disconnect from GitHub' : 'connect to GitHub'}
           <span class="icon"></span>
         </div>
       </div>
@@ -680,7 +680,7 @@ class FunctionsMenu extends Widget {
 
   _login () {
     const status = this.$('#func-menu-login').textContent.trim()
-    if (status === 'login') {
+    if (status === 'connect to GitHub') {
       WIDGETS['student-session'].chatGitHubAuth()
       if (this.events.login) this.emit('login', { data: null }) // TODO: what is this for? check tutorials?
     } else {
