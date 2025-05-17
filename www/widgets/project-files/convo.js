@@ -94,6 +94,14 @@ window.CONVOS['project-files'] = (self) => {
     return convos[c]
   }
 
+  const titleBarOpts = () => {
+    const opts = { 'I see': (e) => e.hide() }
+    if (NNW.title.dataset.unsaved) {
+      opts['what does the circle mean?'] = (e) => e.goTo('netnet-title-save')
+    }
+    return opts
+  }
+
   // ...
   return [{
     id: 'explain',
@@ -112,25 +120,16 @@ window.CONVOS['project-files'] = (self) => {
   // ------------- explain title bar
   {
     id: 'netnet-title-bar-index',
-    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>, the first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. The other files in your project's "root directory" (the <code>${gh.p}</code> folder) can be accessed in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget. But remember, I won't be saving these files on my server, instead you'll push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
-    options: {
-      'got it': (e) => e.hide(),
-      'what does the circle mean?': (e) => e.goTo('netnet-title-save')
-    }
+    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code> (this main folder is also known as your project's "root directory"), the first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. The other files in your project's root directory can be accessed in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget. But remember, I won't be saving these files on my server, instead you'll push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
+    options: titleBarOpts()
   }, {
     id: 'netnet-title-bar-readme',
     content: `When you create a versioned code project on GitHub (aka a "repository" or "repo" for short) it's customary to include a file called <code>README.md</code> in your project's "root directory" (your project's main folder <code>${gh.p}</code>), this file is "metadata", meaning it's information <i>about</i> your project. You can write whatever you want here using a simple markup language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown</a>, this is the first thing someone will see when they checkout your code on <a href="${gh.url}" target="_blank">GitHub</a>.`,
-    options: {
-      'I see': (e) => e.hide(),
-      'what does the circle mean?': (e) => e.goTo('netnet-title-save')
-    }
+    options: titleBarOpts()
   }, {
     id: 'netnet-title-bar-misc',
     content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>. A project's main folder is also called its "root directory", you can access all the files in your project using the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget. But remember, I won't be saving these files on my server, instead you'll push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
-    options: {
-      'got it': (e) => e.hide(),
-      'what does the circle mean?': (e) => e.goTo('netnet-title-save')
-    }
+    options: titleBarOpts()
   }, {
     id: 'netnet-title-save',
     content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code>`,
@@ -254,6 +253,10 @@ window.CONVOS['project-files'] = (self) => {
       'save it!': (c, t) => validateFName(c, t, 'folder', true),
       'never mind': (e) => e.hide()
     }
+  }, {
+    id: 'copy-relative-path',
+    content: `I've copied the relative path to this file to your clipboard, press <code>${hotkey}+V</code> to paste it. <br><br>A relative path shows how to locate a file from your current file’s folder: each <code>../</code> goes up one level, and each folder name followed by a <code>/</code> dives into that subfolder until you reach the target file.`,
+    options: { ok: (e) => e.hide() }
   }, { // ---------------------------------------------------- file stuff ------
     id: 'new-file',
     content: namingConvos('new-f', 'file'),

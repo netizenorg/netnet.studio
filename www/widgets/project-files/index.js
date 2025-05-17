@@ -324,7 +324,7 @@ class ProjectFiles extends Widget {
       <!-- the right-click context menu -->
       <div class="proj-files__ctx-rename">rename</div>
       <div class="proj-files__ctx-delete">delete</div>
-      <div class="proj-files__ctx-copy">copy path</div>
+      <div class="proj-files__ctx-copy">copy relative path</div>
       <div class="proj-files__ctx-move">move/update path</div>
       <hr>
       <div>upload file</div>
@@ -337,7 +337,7 @@ class ProjectFiles extends Widget {
       div.addEventListener('click', (e) => {
         if (e.target.textContent.includes('rename')) this.renameFile()
         else if (e.target.textContent.includes('delete')) this.deleteFile()
-        else if (e.target.textContent.includes('copy path')) this.copyFilePath()
+        else if (e.target.textContent.includes('copy relative path')) this.copyFilePath()
         else if (e.target.textContent.includes('move/update path')) this.moveFilePath()
         else if (e.target.textContent.includes('upload file')) this.uploadFile()
         else if (e.target.textContent.includes('new file')) this.newFile()
@@ -404,7 +404,7 @@ class ProjectFiles extends Widget {
       if (WIDGETS['student-session'].getData('opened-project')) {
         WIDGETS['student-session'].clearProjectData()
       }
-      nn.get('load-curtain').show('upload.html', { filename: repo })
+      nn.get('load-curtain').show('folder.html', { filename: repo })
       this.open()
 
       // load data for all the files
@@ -720,8 +720,21 @@ class ProjectFiles extends Widget {
   }
 
   copyFilePath () {
-    const cpath = this._rightClicked.dataset.path
-    navigator.clipboard.writeText(`/${cpath}`)
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'copy-relative-path')
+
+    const from = this.viewing.split('/').slice(0, -1)
+    const to = this._rightClicked.dataset.path.split('/')
+    // find common path depth
+    let i = 0
+    while (i < from.length && i < to.length && from[i] === to[i]) { i++ }
+    // build “up” moves
+    const up = from.length - i
+    const rel = [
+      ...Array(up).fill('..'), // ['..','..',…]
+      ...to.slice(i) // then the rest of the target path
+    ].join('/')
+    navigator.clipboard.writeText(rel)
   }
 
   explainTitleBar (path) {
