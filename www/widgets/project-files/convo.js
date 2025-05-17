@@ -9,9 +9,9 @@ window.CONVOS['project-files'] = (self) => {
   }
 
   const gh = (() => {
-    const u = window.localStorage.getItem('username')
-    const o = window.localStorage.getItem('owner')
-    const p = window.sessionStorage.getItem('opened-project')
+    const u = WIDGETS['student-session'].getData('username')
+    const o = WIDGETS['student-session'].getData('owner')
+    const p = WIDGETS['student-session'].getData('opened-project')
     return { u, o, p, url: `https://github.com/${o}/${p}` }
   })()
 

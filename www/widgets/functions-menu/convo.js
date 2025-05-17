@@ -3,9 +3,9 @@ window.CONVOS['functions-menu'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareGhURL = (opts) => {
     opts = opts || {}
-    const repo = window.sessionStorage.getItem('opened-project')
-    const owner = window.localStorage.getItem('owner')
-    const branch = window.sessionStorage.getItem('branch')
+    const repo = WIDGETS['student-session'].getData('opened-project')
+    const owner = WIDGETS['student-session'].getData('owner')
+    const branch = WIDGETS['student-session'].getData('branch')
     const root = window.location.protocol + '//' + window.location.host
     return `${root}/?gh=${owner}/${repo}/${branch}`
   }
@@ -178,7 +178,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${WIDGETS['student-session'].getData('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('new-project'), // TODO: must update (some method in PF)
       'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -253,7 +253,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${window.sessionStorage.getItem('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
+    content: `The last time you saved your progress you said, "${WIDGETS['student-session'].getData('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
     options: {
       'ok, commit and push this update': (c, t) => {
         const v = t.$('input').value
@@ -324,7 +324,7 @@ window.CONVOS['functions-menu'] = (self) => {
   },
   {
     id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${window.sessionStorage.getItem('opened-project')}". You should save those first.`,
+    content: `You have unsaved changes in your current project "${WIDGETS['student-session'].getData('opened-project')}". You should save those first.`,
     options: {
       ok: (e) => self.saveProject('open-project'), // TODO: must update
       'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
@@ -383,7 +383,7 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, { // TODO: should be part of new Project Files widget
     id: 'published-to-ghpages', // TODO: MARK FOR DELETION (only referenced in 1 function marked for deletion)
-    content: `Your project is live at <a href="${window.sessionStorage.getItem('ghpages')}" target="_blank">${window.sessionStorage.getItem('ghpages')}</a> (note: it might take a few minutes before that link works)`,
+    content: `Your project is live at <a href="${WIDGETS['student-session'].getData('ghpages')}" target="_blank">${WIDGETS['student-session'].getData('ghpages')}</a> (note: it might take a few minutes before that link works)`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
