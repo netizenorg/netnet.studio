@@ -876,6 +876,11 @@ class ProjectFiles extends Widget {
       NNW.updateTitleBar(title, false)
       delete NNW.title.dataset.unsaved
     }
+    // make sure project files list says "rendering"
+    if (this.viewing === this.rendering && NNE.code !== '' && !NNW.title.dataset.unsaved) {
+      const r = this.$(`li[data-path="${this.viewing}"]`)
+      if (r && !r.classList.contains('rendering')) r.classList.add('rendering')
+    }
   }
 
   _getMimeType (filePath) {
