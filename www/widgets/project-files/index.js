@@ -390,7 +390,7 @@ class ProjectFiles extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  openProject (repo) {
+  async openProject (repo) {
     if (!window.CONVOS[this.key]) { // make sure convo is laoded before proceeding
       return setTimeout(() => this.openProject(repo), 100)
     }

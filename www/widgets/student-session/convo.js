@@ -50,7 +50,13 @@ window.CONVOS['student-session'] = (self) => {
       'yes please': (e) => {
         WIDGETS.load('project-files', (w) => w.openProject(self.getData('opened-project')))
       },
-      'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
+      'no, open a different project': (e) => {
+        WIDGETS.load('project-files', (w) => w.openProject())
+      },
+      'no, let\'s start something new': (e) => {
+        self.clearProjectData()
+        WIDGETS['functions-menu'].new()
+      }
     }
   }, {
     id: 'prior-github-login',

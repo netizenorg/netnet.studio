@@ -230,18 +230,6 @@ window.utils = {
     }
   },
 
-  checkForDiffRoot: () => {
-    if (typeof window.utils.url.github === 'string') {
-      WIDGETS['student-session'].clearProjectData()
-      const a = window.utils.url.github.split('/')
-      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      window.utils.setCustomRenderer(base, proxy)
-    }
-  },
-
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
@@ -319,7 +307,6 @@ window.utils = {
   },
 
   loadFromCodeHash: (layout) => {
-    window.utils.checkForDiffRoot()
     NNE.code = ''
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
@@ -327,6 +314,13 @@ window.utils = {
       setTimeout(() => NNE.cm.refresh(), 10)
       if (!NNE.autoUpdate) NNE.update()
       window.utils.fadeOutLoader(!layout)
+    })
+  },
+
+  loadShortCode: (code, layout) => {
+    window.utils.post('./api/expand-url', { key: code }, (json) => {
+      window.location.hash = json.hash
+      window.utils.loadFromCodeHash(layout)
     })
   },
 
@@ -343,25 +337,6 @@ window.utils = {
     }
     if (dem) WIDGETS.open('code-examples', w => w.loadExample(data, 'url', true))
     else WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
-  },
-
-  loadShortCode: (code, layout) => {
-    window.utils.post('./api/expand-url', { key: code }, (json) => {
-      window.utils.checkForDiffRoot()
-      window.location.hash = json.hash
-      NNE.code = ''
-      window.utils.afterLayoutTransition(() => {
-        NNE.loadFromHash()
-        setTimeout(() => {
-          NNE.cm.refresh()
-          if (!NNE.autoUpdate) NNE.update()
-        }, 10)
-      })
-      if (layout) {
-        NNW.layout = layout
-        window.utils.fadeOutLoader(false)
-      } else window.utils.fadeOutLoader(true)
-    })
   },
 
   loadGithub: (github, layout, callback) => {

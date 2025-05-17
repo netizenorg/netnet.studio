@@ -314,7 +314,7 @@ window.CONVOS['functions-menu'] = (self) => {
   },
   {
     id: 'open-logged-in-proj',
-    content: `You currently have your project "${WIDGETS['student-session'].getData('opened-project')}" open, do you want to close it and open a new one?`,
+    content: `You currently have your project "${WIDGETS['student-session'].getData('opened-project')}" open, do you want to close it and open a new one? Remember, you can only work on 1 project at a time (if you have project opened on another tab, there will be bugs).`,
     options: {
       'no, never mind': (e) => e.hide(),
       'yes, open a new one': (e) => {

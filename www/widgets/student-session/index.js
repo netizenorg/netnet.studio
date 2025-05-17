@@ -19,7 +19,7 @@ class StudentSession extends Widget {
 
   get data () {
     const ls = window.localStorage
-    const ss = window.sessionStorage
+    // const ss = window.sessionStorage
     const data = {
       username: ls.getItem('username'),
       editor: {
@@ -31,11 +31,11 @@ class StudentSession extends Widget {
       github: {
         owner: ls.getItem('owner'),
         repos: ls.getItem('repos'),
-        openedProject: ss.getItem('opened-project'),
-        projectURL: ss.getItem('project-url'),
-        branch: ss.getItem('branch'),
-        lastCommitMsg: ss.getItem('last-commit-msg'),
-        ghpages: ss.getItem('ghpages')
+        openedProject: ls.getItem('opened-project'),
+        projectURL: ls.getItem('project-url'),
+        branch: ls.getItem('branch'),
+        lastCommitMsg: ls.getItem('last-commit-msg'),
+        ghpages: ls.getItem('ghpages')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -69,8 +69,10 @@ class StudentSession extends Widget {
   }
 
   setData (type, value) {
+    // NOTE: used to use "sessionStorage" for project data to allow multiple tabs
+    // on diff projects, but no longer possible in new "Project Files" widget
     const sesh = [
-      'opened-project', 'project-url', 'branch', 'last-commit-msg', 'ghpages'
+      // 'opened-project', 'project-url', 'branch', 'last-commit-msg', 'ghpages'
     ]
     const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
     if (!value) window[store].removeItem(type)
@@ -123,23 +125,28 @@ class StudentSession extends Widget {
   }
 
   setProjectData (data) {
-    const ss = window.sessionStorage
+    // close tutorial if one is open
+    if (WIDGETS['hyper-video-player']?.opened) WIDGETS['hyper-video-player'].close()
+
+    // const ss = window.sessionStorage
+    const ls = window.localStorage
     // TODO: will need to update mutli-file-widget if/when we make that widget
-    if (data.name) ss.setItem('opened-project', data.name)
-    if (data.message) ss.setItem('last-commit-msg', data.message)
-    if (data.url) ss.setItem('project-url', data.url)
-    if (data.ghpages) ss.setItem('ghpages', data.ghpages)
-    if (data.branch) ss.setItem('branch', data.branch)
+    if (data.name) ls.setItem('opened-project', data.name)
+    if (data.message) ls.setItem('last-commit-msg', data.message)
+    if (data.url) ls.setItem('project-url', data.url)
+    if (data.ghpages) ls.setItem('ghpages', data.ghpages)
+    if (data.branch) ls.setItem('branch', data.branch)
     this._createHTML()
   }
 
   clearProjectData () {
-    const ss = window.sessionStorage
-    ss.removeItem('opened-project')
-    ss.removeItem('last-commit-msg')
-    ss.removeItem('project-url')
-    ss.removeItem('ghpages')
-    ss.removeItem('branch')
+    // const ss = window.sessionStorage
+    const ls = window.localStorage
+    ls.removeItem('opened-project')
+    ls.removeItem('last-commit-msg')
+    ls.removeItem('project-url')
+    ls.removeItem('ghpages')
+    ls.removeItem('branch')
     utils.setCustomRenderer(null)
     NNW.updateTitleBar(null)
     if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
