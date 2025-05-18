@@ -31,8 +31,12 @@
   border-radius: 20px;
   display: inline-block;
   margin-bottom: -30px;
-  opacity: 0.5;
+  opacity: 0.25;
   cursor: pointer;
+}
+
+.git-btn.changes {
+  opacity: 1
 }
 
 .proj-files__tree-view {
@@ -56,6 +60,7 @@
   cursor: pointer;
 }
 
+/* when a new file is created but it's still empty */
 .proj-files__tree-view li.empty {
   opacity: 0.5
 }

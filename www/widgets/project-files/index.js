@@ -162,6 +162,8 @@ class ProjectFiles extends Widget {
 
     this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
 
+    this.ele.querySelector('.git-btn').addEventListener('click', () => this._launchGit())
+
     this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
       this._agreed2beta = true
       this._showHideDivs()
@@ -199,6 +201,31 @@ class ProjectFiles extends Widget {
         const name = li.childNodes[0].textContent
         if (name !== rootName) li.click()
       })
+
+    this._colorizeChanges()
+  }
+
+  async _colorizeChanges () {
+    if (nn.get('load-curtain').showing) return
+    const changes = await this.computeChanges()
+    if (changes.length > 0) this.$('.git-btn').classList.add('changes')
+    else this.$('.git-btn').classList.remove('changes')
+    const changeMap = new Map(changes.map(c => [c.path, c]))
+    const clr = { create: '--netizen-attribute', update: '--netizen-number' }
+    Array.from(this.$('.proj-files__list.proj-files__tree-view li'))
+      .filter(li => !li.classList.contains('folder'))
+      .forEach(li => {
+        const change = changeMap.get(li.dataset.path)?.action
+        if (change) li.style.color = `var(${clr[change]})`
+        else li.style.color = null
+      })
+  }
+
+  _launchGit () {
+    // TODO:
+    // convo for when there haven't been changes
+    // pop up git window (with intro convo) when there have been
+    console.log('CLICKED GIT', this.$('.git-btn').classList.contains('changes'));
   }
 
   _setupTreeView () {
@@ -749,6 +776,64 @@ class ProjectFiles extends Widget {
     if (!this.opened) this.open()
   }
 
+  async computeChanges () {
+    const oldFiles = this.lastCommitFiles
+    const newFiles = this.files
+
+    // helper for turning a blob: URL into a bare Base64 string
+    const toBase64 = async blobUrl => {
+      const res = await window.fetch(blobUrl, { mode: 'cors' })
+      const blob = await res.blob()
+      return new Promise((resolve, reject) => {
+        const reader = new window.FileReader()
+        reader.onloadend = () => {
+          // strip off "data:*/*;base64," prefix
+          resolve(reader.result.split(',')[1])
+        }
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+    }
+
+    const changes = []
+    const allPaths = new Set([
+      ...Object.keys(oldFiles),
+      ...Object.keys(newFiles)
+    ])
+
+    for (const path of allPaths) {
+      const oldEntry = oldFiles[path]
+      const newEntry = newFiles[path]
+
+      if (!oldEntry && newEntry) {
+        // CREATE
+        const change = { action: 'create', path }
+        if (newEntry.code.startsWith('blob:')) {
+          change.isBinary = true
+          change.content = await toBase64(newEntry.code)
+        } else {
+          change.content = newEntry.code
+        }
+        changes.push(change)
+      } else if (oldEntry && !newEntry) {
+        // DELETE
+        changes.push({ action: 'delete', path })
+      } else if (oldEntry && newEntry && oldEntry.code !== newEntry.code) {
+        // UPDATE
+        const change = { action: 'update', path }
+        if (newEntry.code.startsWith('blob:')) {
+          change.isBinary = true
+          change.content = await toBase64(newEntry.code)
+        } else {
+          change.content = newEntry.code
+        }
+        changes.push(change)
+      }
+    }
+
+    return changes
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -870,10 +955,12 @@ class ProjectFiles extends Widget {
   async _updateFile (filePath, fileContent) {
     if (!this.files[filePath]) { // create new file
       this.files[filePath] = { code: fileContent, path: filePath }
+      this._colorizeChanges()
     } else { // update existing file
       const oldCode = this.files[filePath].code
       this.files[filePath].code = fileContent
       if (!oldCode) this._updateFilesGUI() // ren-render to remove "(empty file)"
+      else this._colorizeChanges()
     }
     await this._saveFilesToIndexedDB()
   }
