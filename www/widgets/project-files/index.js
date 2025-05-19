@@ -89,6 +89,7 @@ class ProjectFiles extends Widget {
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
+      this.update({ right: 20, bottom: 20 }, 500)
     })
 
     NNE.on('code-update', () => {
@@ -168,6 +169,7 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
       this._agreed2beta = true
       this._showHideDivs()
+      this.update({ right: 20, bottom: 20 }, 500)
     })
   }
 
@@ -180,6 +182,8 @@ class ProjectFiles extends Widget {
     this.$('.proj-files__beta').style.display = op && !a ? 'block' : 'none'
     this.$('.proj-files__header').style.display = op && a ? 'flex' : 'none'
     this.$('.proj-files__list').style.display = op && a ? 'block' : 'none'
+
+    this.keepInFrame()
   }
 
   // runs everytime a new repo (github project) is created or opened
@@ -208,7 +212,10 @@ class ProjectFiles extends Widget {
 
   async _colorizeChanges () {
     if (nn.get('load-curtain').showing) return
+
     this.changes = await this.computeChanges()
+    if (WIDGETS['git-push']) WIDGETS['git-push']._createHTML()
+
     if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
     else this.$('.git-btn').classList.remove('changes')
     const changeMap = new Map(this.changes.map(c => [c.path, c]))
@@ -223,10 +230,8 @@ class ProjectFiles extends Widget {
   }
 
   _launchGit () {
-    // TODO:
-    // convo for when there haven't been changes
-    // pop up git window (with intro convo) when there have been
-    console.log('CLICKED GIT', this.$('.git-btn').classList.contains('changes'));
+    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => w.open())
+    else { window.convo = new Convo(this.convos, 'git-push-not-ready') }
   }
 
   _setupTreeView () {

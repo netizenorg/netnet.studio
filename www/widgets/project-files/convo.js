@@ -490,6 +490,14 @@ window.CONVOS['project-files'] = (self) => {
     options: {
       'ok thanks!': (e) => e.hide()
     }
+  },
+  // -------------------------- misc ----------
+  {
+    id: 'git-push-not-ready',
+    content: 'Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to GitHub. Try making and saving a change to your code first.',
+    options: {
+      'ok thanks!': (e) => e.hide()
+    }
   }, {
     id: 'oh-no-error',
     after: () => errorFace(),

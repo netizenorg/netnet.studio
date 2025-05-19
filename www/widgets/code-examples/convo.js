@@ -1,4 +1,4 @@
-/* global utils, NNW */
+/* global utils, NNW, WIDGETS */
 window.CONVOS['code-examples'] = (self) => {
   return [{
     id: 'example-info',
@@ -23,6 +23,7 @@ window.CONVOS['code-examples'] = (self) => {
     }
   }, {
     id: 'loaded-example',
+    before: () => WIDGETS['student-session'].clearProjectData(),
     content: 'Check out this example! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
     options: { ok: (e) => e.hide() }
   }, {

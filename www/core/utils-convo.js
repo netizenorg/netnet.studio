@@ -48,7 +48,10 @@ window.CONVOS['utils-misc'] = (self) => {
         e.hide()
         e.hide(); WIDGETS.load('project-files', (w) => w.openProject(a[1]))
       },
-      'just experimenting': (e) => e.hide()
+      'just experimenting': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        e.hide()
+      }
     }
   }, {
     id: 'remix-github-project-auth-redirect',

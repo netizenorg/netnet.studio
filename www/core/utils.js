@@ -308,6 +308,7 @@ window.utils = {
 
   loadFromCodeHash: (layout) => {
     NNE.code = ''
+    WIDGETS['student-session'].clearProjectData()
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()

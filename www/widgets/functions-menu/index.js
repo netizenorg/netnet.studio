@@ -258,17 +258,17 @@ class FunctionsMenu extends Widget {
 
   // TODO: MARK FOR DELETION (find all references to this funtion first)
   // MOVE THIS TO PROJECT FILES
-  downloadProject () {
-    const p = WIDGETS['student-session'].getData('opened-project')
-    const o = WIDGETS['student-session'].getData('owner')
-    const b = WIDGETS['student-session'].getData('branch')
-    const url = `https://github.com/${o}/${p}/archive/refs/heads/${b}.zip`
-    const a = document.createElement('a')
-    a.setAttribute('download', 'index.html')
-    a.setAttribute('href', url)
-    a.click()
-    a.remove()
-  }
+  // downloadProject () {
+  //   const p = WIDGETS['student-session'].getData('opened-project')
+  //   const o = WIDGETS['student-session'].getData('owner')
+  //   const b = WIDGETS['student-session'].getData('branch')
+  //   const url = `https://github.com/${o}/${p}/archive/refs/heads/${b}.zip`
+  //   const a = document.createElement('a')
+  //   a.setAttribute('download', 'index.html')
+  //   a.setAttribute('href', url)
+  //   a.click()
+  //   a.remove()
+  // }
 
   // -------------
 

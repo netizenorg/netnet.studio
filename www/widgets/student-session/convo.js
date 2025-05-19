@@ -10,6 +10,7 @@ window.CONVOS['student-session'] = (self) => {
       },
       'let\'s learn': (e) => {
         NNW.menu.switchFace('default')
+        WIDGETS['student-session'].clearProjectData()
         WIDGETS.open('learning-guide')
       }
     }
@@ -51,6 +52,7 @@ window.CONVOS['student-session'] = (self) => {
         WIDGETS.load('project-files', (w) => w.openProject(self.getData('opened-project')))
       },
       'no, open a different project': (e) => {
+        self.clearProjectData()
         WIDGETS.load('project-files', (w) => w.openProject())
       },
       'no, let\'s start something new': (e) => {
