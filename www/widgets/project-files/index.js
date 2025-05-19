@@ -41,6 +41,7 @@ class ProjectFiles extends Widget {
     this.lastCommitFiles = {} // for tracking changes
     this._uploadedFile = {}
     this._agreed2beta = false
+    this.changes = [] // "change" objects ("create", "updated", "delete") since last git commit
 
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
     this.mimeTypes = {
@@ -207,10 +208,10 @@ class ProjectFiles extends Widget {
 
   async _colorizeChanges () {
     if (nn.get('load-curtain').showing) return
-    const changes = await this.computeChanges()
-    if (changes.length > 0) this.$('.git-btn').classList.add('changes')
+    this.changes = await this.computeChanges()
+    if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
     else this.$('.git-btn').classList.remove('changes')
-    const changeMap = new Map(changes.map(c => [c.path, c]))
+    const changeMap = new Map(this.changes.map(c => [c.path, c]))
     const clr = { create: '--netizen-attribute', update: '--netizen-number' }
     Array.from(this.$('.proj-files__list.proj-files__tree-view li'))
       .filter(li => !li.classList.contains('folder'))

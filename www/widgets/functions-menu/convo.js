@@ -101,11 +101,13 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'Would you like to start from scratch with a blank <b>sketch</b>? Or are you interested in starting a new <b>project</b>?',
     options: {
       'new sketch': (e) => {
+        if (WIDGETS['project-files']?.changes.length > 0) return e.goTo('save-reminder-b4-sketch')
         WIDGETS['student-session'].clearProjectData()
         if (NNE.code === '') e.goTo('already-blank-sketch')
         else self._newSketch()
       },
       'new project': (e) => {
+        if (WIDGETS['project-files']?.changes.length > 0) return e.goTo('save-reminder-b4-proj')
         WIDGETS['student-session'].clearProjectData()
         self._newProject()
       },
@@ -117,16 +119,39 @@ window.CONVOS['functions-menu'] = (self) => {
     content: 'You\'re currently working on a project, if you\'d like to create a new file or folder in that project use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span>. Otherwise, if you\'d like to start working on something new, we can create a blank <b>sketch</b>? Or maybe you\'re interested in starting a new <b>project</b>?',
     options: {
       'new sketch': (e) => {
+        if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-sketch')
         WIDGETS['student-session'].clearProjectData()
         if (NNE.code === '') e.goTo('already-blank-sketch')
         else self._newSketch()
       },
       'new project': (e) => {
+        if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-proj')
         WIDGETS['student-session'].clearProjectData()
         self._newProject()
       },
       'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew'),
       'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'save-reminder-b4-sketch',
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new sketch now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    options: {
+      'ok, I will': (e) => e.hide(),
+      'that\'s ok, I don\'t need to save it.': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        if (NNE.code === '') e.goTo('already-blank-sketch')
+        else self._newSketch()
+      }
+    }
+  }, {
+    id: 'save-reminder-b4-proj',
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new project now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    options: {
+      'ok, I will': (e) => e.hide(),
+      'that\'s ok, I don\'t need to save it.': (e) => {
+        WIDGETS['student-session'].clearProjectData()
+        self._newProject()
+      }
     }
   }, {
     id: 'already-blank-sketch',
@@ -318,6 +343,17 @@ window.CONVOS['functions-menu'] = (self) => {
     options: {
       'no, never mind': (e) => e.hide(),
       'yes, open a new one': (e) => {
+        if (WIDGETS['project-files']?.changes.length > 0) e.goTo('save-reminder-b4-open')
+        else { e.hide(); WIDGETS.load('project-files', (w) => w.openProject()) }
+      }
+    }
+  },
+  {
+    id: 'save-reminder-b4-open',
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you open a new project now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    options: {
+      'ok, I will': (e) => e.hide(),
+      'that\'s ok, I don\'t need to save it.': (e) => {
         e.hide(); WIDGETS.load('project-files', (w) => w.openProject())
       }
     }
