@@ -1,4 +1,4 @@
-/* global Widget, Convo, WIDGETS */
+/* global Widget, Convo, WIDGETS, NNW, nn, utils */
 class GitPush extends Widget {
   constructor (opts) {
     super(opts)
@@ -6,7 +6,7 @@ class GitPush extends Widget {
     this.key = 'git-push'
     this.keywords = ['git', 'github', 'push', 'version', 'upload', 'publish', 'repo', 'repository']
 
-    this.title = 'Version Control'
+    this.title = 'Version Control <span style="opacity:0.5;padding-left:10px;">(BETA 0.1)</span>'
     this.width = 680
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
@@ -45,7 +45,10 @@ class GitPush extends Widget {
             <div class="git-push-widget__terminal">
               <span class="git-push-widget__prompt">${user}@netnet</span>:<span class="git-push-widget__path">${proj}</span>$
               <span class="git-push-widget__cli">${this.steps.status.cli}</span>
-              <button class="pill-btn pill-btn--secondary">run</button>
+              <div>
+                <button class="pill-btn pill-btn--secondary" name="run">run</button>
+                <button class="pill-btn pill-btn--secondary" name="back" style="opacity:0.25">back</button>
+              </div>
             </div>
             <div class="git-push-widget__info">
               Running <code>git status</code> in the terminal will list all the files which have changed since your last commit. However, when nothing has changed it will just output:<br><br>
@@ -55,7 +58,7 @@ class GitPush extends Widget {
           </section>
         </div>
       `
-      this.$('.git-push-widget__terminal button').onclick = () => {
+      this.$('.git-push-widget__terminal button[name="run"]').onclick = () => {
         window.convo = new Convo(this.convos, 'pre-stage')
       }
       return
@@ -67,7 +70,10 @@ class GitPush extends Widget {
           <div class="git-push-widget__terminal">
             <span class="git-push-widget__prompt">${user}@netnet</span>:<span class="git-push-widget__path">${proj}</span>$
             <span class="git-push-widget__cli">${this.steps.status.cli}</span>
-            <button class="pill-btn pill-btn--secondary">run</button>
+            <div>
+              <button class="pill-btn pill-btn--secondary" name="run">run</button>
+              <button class="pill-btn pill-btn--secondary" name="back" style="opacity:0.25">back</button>
+            </div>
           </div>
           <div class="git-push-widget__info">
             ${this.steps.status.info()}
@@ -75,7 +81,8 @@ class GitPush extends Widget {
         </section>
       </div>
     `
-    this.$('.git-push-widget__terminal button').onclick = () => this.steps.status.next()
+    this.$('button[name="run"]').onclick = () => this.steps.status.next()
+    utils.afterLayoutTransition(() => this.$('button[name="run"]').focus())
   }
 
   _nextCmd (key) {
@@ -83,7 +90,15 @@ class GitPush extends Widget {
     this.$('.git-push-widget__cli').innerHTML = obj.cli
     this.$('.git-push-widget__info').innerHTML = obj.info()
     window.convo = new Convo(this.convos, obj.convo)
-    this.$('.git-push-widget__terminal button').onclick = () => obj.next()
+    this.$('button[name="run"]').innerHTML = obj.btn || 'run'
+    this.$('button[name="run"]').onclick = () => obj.next()
+    const o = (key === 'finished' || key === 'status') ? 0.25 : 1
+    this.$('button[name="back"]').style.opacity = o
+    this.$('button[name="back"]').onclick = () => obj.back()
+    utils.afterLayoutTransition(() => {
+      if (obj.btn === 'edit') nn.get('text-bubble input').focus()
+      else this.$('button[name="run"]').focus()
+    })
   }
 
   _createSteps () {
@@ -101,7 +116,7 @@ class GitPush extends Widget {
         convo: 'git-stage',
         info: () => {
           const clr = { create: 'var(--netizen-attribute)', update: 'var(--netizen-number)', delete: 'red' }
-          let str = 'Choose which of the changes below to "stage" in this commit. I will replace the <code>...</code> in the terminal with the changes you\'ve selected.<br>'
+          let str = 'Choose which of the changes below to "stage" in this commit. I will replace the <code>...</code> in the terminal above with the changes you\'ve selected.<br>'
           WIDGETS['project-files'].changes.forEach((c, i) => {
             str += `
               <span class="git-state-item" style="color:${clr[c.action]}" data-index="${i}">
@@ -117,16 +132,17 @@ class GitPush extends Widget {
           this.include = list
             .filter(s => s.children[0].checked)
             .map(s => WIDGETS['project-files'].changes[Number(s.dataset.index)])
-          console.log(this.include)
           this.convos = window.CONVOS[this.key](this)
           if (this.include.length <= 0) {
             window.convo = new Convo(this.convos, 'empty-stage')
           } else this._nextCmd('commit')
-        }
+        },
+        back: () => this._nextCmd('status')
       },
       commit: {
         cli: 'git commit -m "..."',
         convo: 'git-commit',
+        btn: 'edit',
         info: () => {
           const owner = WIDGETS['student-session'].getData('owner')
           const op = WIDGETS['student-session'].getData('opened-project')
@@ -136,7 +152,8 @@ class GitPush extends Widget {
           if (!this._commitMessage) {
             window.convo = new Convo(this.convos, 'git-commit')
           } else this._nextCmd('push')
-        }
+        },
+        back: () => this._nextCmd('stage')
       },
       push: {
         cli: 'git push',
@@ -147,10 +164,29 @@ class GitPush extends Widget {
           return `Pushing this commit to your <a href="https://github.com/${owner}/${op}" target="_blank">GitHub repo</a> perminantly adds it to your project's <a href="https://github.com/${owner}/${op}/network" target="_blank">timeline</a> and stores your progress there so the next time you come back to netnet.studio you can pick up where you left off.`
         },
         next: () => {
+          const owner = WIDGETS['student-session'].getData('owner')
+          const repo = WIDGETS['student-session'].getData('opened-project')
+          const branch = WIDGETS['student-session'].getData('branch')
+          const commitMessage = this._commitMessage
+          const changes = this.include
+          nn.get('load-curtain').show('folder.html', { filename: repo })
           // TODO: actually create git commit
-          console.log(this._commitMessage, this.include);
-          this._nextCmd('finished')
-        }
+          // console.log(this._commitMessage, this.include);
+          const data = { owner, repo, branch, commitMessage, changes }
+          window.utils.post('/api/github/push', data, async (json) => {
+            if (json.success) {
+              const changes = await WIDGETS['project-files'].resetChanges()
+              WIDGETS['project-files']._updateFilesGUI(changes)
+              nn.get('load-curtain').hide()
+              this._nextCmd('finished')
+            } else {
+              console.log('GIT SERVER ERROR:', json)
+              const face = { leftEye: 'ŏ', mouth: '︵', reightEye: 'ŏ', lookAtCursor: false }
+              NNW.menu.updateFace(face)
+            }
+          })
+        },
+        back: () => this._nextCmd('commit')
       },
       finished: {
         cli: '',

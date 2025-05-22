@@ -35,3 +35,6 @@
 .git-push-widget__info {
   margin: 15px;
 }
+.git-state-item {
+  display: block;
+}
