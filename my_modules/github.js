@@ -227,6 +227,97 @@ router.post('/api/github/open-all-files', (req, res) => {
 })
 
 // POST UPDATES
-// https://chatgpt.com/g/g-p-6781ccc0fbbc819187ec15d2e4d1da35-netnet/c/67f05172-4e04-800c-8a02-17b04226d207
+router.post('/api/github/push', (req, res) => {
+  const { owner, repo, branch = 'main', commitMessage, changes } = req.body
+  if (!owner || !repo || !commitMessage || !Array.isArray(changes)) {
+    return res.json({ success: false, message: 'Missing required data' })
+  }
+
+  decryptToken(req, res, async octokit => {
+    try {
+      // 1. Get the latest commit SHA on the branch
+      const refResponse = await octokit.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
+        owner, repo, ref: `heads/${branch}`
+      })
+      const latestCommitSha = refResponse.data.object.sha
+
+      // 2. Get the base commit tree SHA
+      const baseCommitResponse = await octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
+        owner, repo, commit_sha: latestCommitSha
+      })
+      const baseTreeSha = baseCommitResponse.data.tree.sha
+
+      // 3. Retrieve the full base tree recursively
+      const baseTreeResponse = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+        owner, repo, tree_sha: baseTreeSha, recursive: '1'
+      })
+      const baseTree = baseTreeResponse.data.tree
+
+      // 4. Build a map of the base tree keyed by file path
+      const treeMap = {}
+      baseTree.forEach(item => { treeMap[item.path] = item })
+
+      // 5. Process the changes from the payload
+      // For "delete", remove the file; for "create" or "update", add/update the file content
+      for (const change of changes) {
+        if (change.action === 'delete') {
+          // tell GitHub to delete this path by setting its sha to null
+          const existing = treeMap[change.path] || {}
+          treeMap[change.path] = {
+            path: change.path, mode: existing.mode || '100644', type: existing.type || 'blob', sha: null
+          }
+        } else if (change.action === 'update' || change.action === 'create') {
+          if (change.isBinary) {
+            // Create a blob for binary content using Base64 encoding
+            const blobResponse = await octokit.request('POST /repos/{owner}/{repo}/git/blobs', {
+              owner, repo, content: change.content, encoding: 'base64'
+            })
+            treeMap[change.path] = {
+              path: change.path, mode: '100644', type: 'blob', sha: blobResponse.data.sha
+            }
+          } else {
+            // For text files, include the content inline
+            treeMap[change.path] = {
+              path: change.path, mode: '100644', type: 'blob', content: change.content
+            }
+          }
+        }
+      }
+
+      // 6. Convert the map back into an array for creating the new tree
+      const newTreeItems = Object.values(treeMap).map(item => {
+        if (item.content !== undefined) {
+          return {
+            path: item.path, mode: item.mode, type: item.type, content: item.content
+          }
+        }
+        return {
+          path: item.path, mode: item.mode, type: item.type, sha: item.sha
+        }
+      })
+
+      // 7. Create the new tree with the updated items
+      const treeResponse = await octokit.request('POST /repos/{owner}/{repo}/git/trees', {
+        owner, repo, tree: newTreeItems, base_tree: baseTreeSha
+      })
+      const newTreeSha = treeResponse.data.sha
+
+      // 8. Create a new commit referencing the new tree and the previous commit as parent
+      const commitResponse = await octokit.request('POST /repos/{owner}/{repo}/git/commits', {
+        owner, repo, message: commitMessage, tree: newTreeSha, parents: [latestCommitSha]
+      })
+      const newCommitSha = commitResponse.data.sha
+
+      // 9. Update the branch reference to point to the new commit
+      await octokit.request('PATCH /repos/{owner}/{repo}/git/refs/{ref}', {
+        owner, repo, ref: `heads/${branch}`, sha: newCommitSha
+      })
+
+      res.json({ success: true, message: 'Commit pushed successfully', commitSha: newCommitSha })
+    } catch (error) {
+      res.json({ success: false, message: 'Push failed', error })
+    }
+  })
+})
 
 module.exports = router
