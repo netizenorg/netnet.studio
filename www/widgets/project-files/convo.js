@@ -402,6 +402,13 @@ window.CONVOS['project-files'] = (self) => {
     }
   },
   {
+    id: 'move-no-other-path',
+    content: 'You haven\'t created any sub-folders (other folders within your main project folders), so there isn\'t anywhere else to move this file. If you\'d like you can create a new folder and then you can move or create new files in it.',
+    options: {
+      'I see': (e) => e.hide()
+    }
+  },
+  {
     id: 'move-update-path',
     content: `Below is every file path in your project, where each <code>/</code> dives you into a deeper folder. "The root directory" (aka project folder) is your top‐level directory that contains everything else. Use the list below to select which directory path you want to move this to ${pathSelect}`,
     options: {

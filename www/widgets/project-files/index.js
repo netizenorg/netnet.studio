@@ -21,7 +21,7 @@ class ProjectFiles extends Widget {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-    this.title = 'Project Files (Beta 0.1)'
+    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 0.1)</span>'
     this.width = 450
     // this.shaDict = {}
 
@@ -38,6 +38,9 @@ class ProjectFiles extends Widget {
     // state
     this.viewing = null
     this.rendering = null // which html file is rendered in iframe
+    this.history = {
+      stack: {}, redoStack: {}, max: 100, skipPush: false, debounce: 400, timer: null
+    }
     this.lastCommitFiles = {} // for tracking changes
     this._uploadedFile = {}
     this._agreed2beta = false
@@ -89,8 +92,16 @@ class ProjectFiles extends Widget {
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
-      this.update({ right: 20, bottom: 20 }, 500)
+      this.update({ left: 20, top: 50 }, 500)
     })
+
+    const CM = NNE.cm.constructor
+    CM.commands.nnU = cm => this.undo(cm)
+    CM.commands.nnR = cm => this.redo(cm)
+    CM.keyMap.default['Cmd-Z'] = 'nnU'
+    CM.keyMap.default['Ctrl-Z'] = 'nnU'
+    CM.keyMap.default['Cmd-Y'] = 'nnR'
+    CM.keyMap.default['Ctrl-Y'] = 'nnR'
 
     NNE.on('code-update', () => {
       const repo = WIDGETS['student-session'].getData('opened-project')
@@ -145,7 +156,7 @@ class ProjectFiles extends Widget {
         <div class="proj-files__beta">
           <h1>Beta Agreement</h1>
           <p>
-            THERE MAY BE BUGS! This widget is in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. We’re not liable for any glitches or losses of data that may result from using it. If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
+            THERE MAY BE BUGS! This widget and the accompanying Version Control widget are in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. Keep watch for glitches and/or losses of data that may result from using these widgets while they're in development. <br><br>If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
           </p>
           <button class="pill-btn pill-btn--secondary" style="margin-top: 20px;">Got it!</button>
         </div>
@@ -169,7 +180,7 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
       this._agreed2beta = true
       this._showHideDivs()
-      this.update({ right: 20, bottom: 20 }, 500)
+      this.update({ left: 20, top: 50 }, 500)
     })
   }
 
@@ -617,11 +628,41 @@ class ProjectFiles extends Widget {
     }
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
 
+    if (this.history.stack[filepath]?.length === 0) {
+      this.history.stack[filepath] = [NNE.code]
+      this.history.redoStack[filepath] = []
+    }
+
     setTimeout(() => {
       NNW.menu.switchFace('default')
       nn.get('load-curtain').hide()
       if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
+  }
+
+  undo () {
+    const path = this.viewing
+    const s = this.history.stack[path]
+    if (!s || s.length < 2) return
+    const cur = s.pop()
+    this.history.redoStack[path].push(cur)
+    const prev = s[s.length - 1]
+    this.history.skipPush = true
+    NNE.code = prev.code
+    NNE.cm.setCursor(prev.cursor)
+    NNE.cm.scrollTo(prev.scroll.left, prev.scroll.top)
+  }
+
+  redo () {
+    const path = this.viewing
+    const r = this.history.redoStack[path]
+    if (!r || !r.length) return
+    const next = r.pop()
+    this.history.stack[path].push(next)
+    this.history.skipPush = true
+    NNE.code = next.code
+    NNE.cm.setCursor(next.cursor)
+    NNE.cm.scrollTo(next.scroll.left, next.scroll.top)
   }
 
   deleteFile (filepath) {
@@ -652,7 +693,9 @@ class ProjectFiles extends Widget {
     const type = this._fpathExists(fpath)
     if (file || !type) return console.error('moveFilePath: can only be used via the project-files context menu')
     this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'move-update-path')
+    if (Object.keys(this.files).filter(path => path.includes('/')).length > 0) {
+      window.convo = new Convo(this.convos, 'move-update-path')
+    } else window.convo = new Convo(this.convos, 'move-no-other-path')
   }
 
   newProject () {
@@ -780,6 +823,12 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'netnet-title-bar-misc')
     }
     if (!this.opened) this.open()
+  }
+
+  async resetChanges () {
+    this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+    this.changes = await this.computeChanges()
+    return this.changes
   }
 
   async computeChanges () {
@@ -987,6 +1036,27 @@ class ProjectFiles extends Widget {
       const r = this.$(`li[data-path="${this.viewing}"]`)
       if (r && !r.classList.contains('rendering')) r.classList.add('rendering')
     }
+    // update file edit history (for under/redo)
+    if (this.history.skipPush) {
+      clearTimeout(this.history.timer)
+      this.history.skipPush = false
+      return
+    }
+    const path = this.viewing || 'index.html'
+    clearTimeout(this.history.timer)
+    this.history.timer = setTimeout(() => {
+      const code = NNE.code
+      const cursor = NNE.cm.getCursor()
+      const scroll = NNE.cm.getScrollInfo()
+      this.history.stack[path] = this.history.stack[path] || []
+      this.history.redoStack[path] = []
+      const len = this.history.stack[path].length
+      const last = this.history.stack[path][len - 1]
+      if (!last || last.code !== code) { // only push if text really changed
+        this.history.stack[path].push({ code, cursor, scroll })
+        if (len > this.history.max) this.history.stack[path].shift()
+      }
+    }, this.history.debounce)
   }
 
   _getMimeType (filePath) {
