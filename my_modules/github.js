@@ -4,6 +4,24 @@ const { Octokit } = require('@octokit/core')
 const express = require('express')
 const router = express.Router()
 
+const README_TEMPLATE = `# [project-title]
+
+This is your project's README a file which contains information about your work. This can include things like instructions, installation guides or documentation. You can write whatever you want here using a simple markup language called [markdown](https://markdownguide.offshoot.io/basic-syntax/). This is the first thing someone will see when they view your project on GitHub, but it won't be visible to the audience viewing your published site on the Web.
+
+## project files
+
+When working on a project in netnet.studio you should always see a file-path at the top of the editor, in the case of this file it would be \`[project-title]/README.md\`, this lets you know which file you're currently working on. Clicking on this path in netnet will also open the **Project Files** widget which you can use to upload, create, delete and navigate between the different files in your project.
+
+When you make a change to a file you're working on, you'll notice a small circle appear next to the path, this means your changes have not yet been saved. You'll need to save it (CTRL+S or CMD+S on Mac) to see those changes reflected in the rendered output section of netnet.studio. Thisis only temporarily saved while working on the project. To make these saved changes permanent, you'll need to click on the **git push** button in the Project Files widget to commit these changes and upload them to your GitHub.
+
+## publishing to the Web
+
+When you're ready to publish your work on the Web click on netnet's face and open the **Coding Menu**, under *my code* press the "share" button. Choose to "publish on the Web", where you'll be reminded that you can of course download your project and upload it to your preferred Web host. But, because this project is being versioned on GitHub you could simply ask netnet to publish your work to the Web using GitHub's "ghpages" server, which also conveniently generates a publicly accessible URL for you.
+
+----
+
+◕ ◞ ◕ This project was made by [user-name] using https://netnet.studio`
+
 // Helper function for decrypting token
 function decryptToken (req, res, cb) {
   const token = req.cookies.AuthTok
@@ -171,7 +189,9 @@ const dict = {
   'open-project': 'GET /repos/{owner}/{repo}/contents/{path}',
   'open-file': 'GET /repos/{owner}/{repo}/contents/{path}',
   // https://docs.github.com/en/rest/reference/repos#list-commits
-  'get-commits': 'GET /repos/{owner}/{repo}/commits'
+  'get-commits': 'GET /repos/{owner}/{repo}/commits',
+  // https://docs.github.com/en/rest/reference/repos#create-a-fork
+  'fork-repo': 'POST /repos/{owner}/{repo}/forks'
 }
 
 function makeRequest (req, res, query, obj) {
@@ -213,6 +233,11 @@ router.post('/api/github/get-commits', (req, res) => { // NOTE: might not need a
   makeRequest(req, res, 'get-commits', { owner, repo })
 })
 
+router.post('/api/github/fork', (req, res) => {
+  const obj = { owner: req.body.owner, repo: req.body.repo }
+  makeRequest(req, res, 'fork-repo', obj)
+})
+
 router.post('/api/github/open-all-files', (req, res) => {
   const owner = req.body.owner
   const repo = req.body.repo
@@ -223,6 +248,56 @@ router.post('/api/github/open-all-files', (req, res) => {
     } catch (error) {
       res.json({ success: false, message: 'open-all-files error', error })
     }
+  })
+})
+
+router.post('/api/github/new-repo', (req, res) => {
+  const { name, user, indexData } = req.body
+  if (typeof name !== 'string' || typeof indexData !== 'string' || typeof user !== 'string') {
+    return res.json({ success: false, message: 'Missing name, user or indexData' })
+  }
+
+  decryptToken(req, res, octokit => {
+    octokit.request('POST /user/repos', {
+      name,
+      description: '◕ ◞ ◕ This project was made using https://netnet.studio',
+      auto_init: false
+    }).then(repoRes => {
+      const owner = repoRes.data.owner.login
+      const repo = repoRes.data.name
+      const branch = repoRes.data.default_branch || 'main'
+
+      const readmeData = README_TEMPLATE
+        .replace(/\[project-title\]/g, name)
+        .replace(/\[user-name\]/g, user)
+
+      const indexContent = Buffer.from(indexData, 'utf8').toString('base64')
+      const readmeContent = Buffer.from(readmeData, 'utf8').toString('base64')
+
+      return octokit.request(
+        'PUT /repos/{owner}/{repo}/contents/index.html',
+        { owner, repo, path: 'index.html', message: 'created index.html', content: indexContent, branch }
+      ).then(() => {
+        return octokit.request(
+          'PUT /repos/{owner}/{repo}/contents/README.md',
+          { owner, repo, path: 'README.md', message: 'created README.md', content: readmeContent, branch }
+        )
+      }).then(() => {
+        res.json({
+          success: true,
+          owner,
+          repo,
+          branch,
+          url: repoRes.data.html_url,
+          data: [
+            ['README.md', readmeData],
+            ['index.html', indexData]
+          ]
+        })
+      })
+    }).catch(err => {
+      res.json({ success: false, message: 'error creating repo', error: err.response.data })
+    })
   })
 })
 
@@ -317,6 +392,37 @@ router.post('/api/github/push', (req, res) => {
     } catch (error) {
       res.json({ success: false, message: 'Push failed', error })
     }
+  })
+})
+
+// POST PUBLISH PROJECT
+router.post('/api/github/gh-pages', (req, res) => {
+  decryptToken(req, res, (octokit) => {
+    // https://docs.github.com/en/rest/reference/repos#get-a-repository
+    octokit.request('GET /repos/{owner}/{repo}', {
+      owner: req.body.owner,
+      repo: req.body.repo
+    }).then(gitRes => {
+      if (gitRes.data.has_pages) {
+        // https://docs.github.com/en/rest/reference/repos#get-a-github-pages-site
+        return octokit.request('GET /repos/{owner}/{repo}/pages', {
+          owner: req.body.owner,
+          repo: req.body.repo
+        })
+      } else {
+        // https://docs.github.com/en/rest/reference/repos#create-a-github-pages-site
+        return octokit.request('POST /repos/{owner}/{repo}/pages', {
+          owner: req.body.owner,
+          repo: req.body.repo,
+          source: { branch: req.body.branch, path: '/' },
+          mediaType: { previews: ['switcheroo'] }
+        })
+      }
+    }).then(gitRes => {
+      res.json({ success: true, message: 'success', data: gitRes.data })
+    }).catch(err => {
+      res.json({ success: false, message: 'error updating ghpages', error: err })
+    })
   })
 })
 

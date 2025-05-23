@@ -377,7 +377,7 @@ window.CONVOS['functions-menu'] = (self) => {
       'never mind': (e) => e.hide()
     }
   }, {
-    id: 'cant-publish-project',
+    id: 'cant-publish-project', // TODO: MARK FOR DELETION
     content: 'You don\'t have a GitHub project open for me to publish. Do you want me to save a new project for you?',
     options: {
       'yes please': (e) => self.newProject(),
@@ -414,7 +414,7 @@ window.CONVOS['functions-menu'] = (self) => {
     id: 'publish-to-web?',
     content: `You could always <a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}/${WIDGETS['student-session'].getData('branch')}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved to your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
     options: {
-      'yes please!': (e) => self.publishProject(),
+      'yes please!': (e) => WIDGETS['project-files'].publishProject(),
       'oh, no thanks': (e) => e.hide()
     }
   }, { // TODO: should be part of new Project Files widget

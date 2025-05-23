@@ -1,12 +1,23 @@
-/* global NNW, WIDGETS, nn, utils */
+/* global NNW, NNE, WIDGETS, nn, utils */
 window.CONVOS['project-files'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
+  const f12 = nn.platformInfo().platform.includes('Mac') ? 'Fn + F12' : 'F12'
+  const safari = nn.platformInfo().name === 'Safari'
 
   const errorFace = () => {
     NNW.menu.updateFace({
-      leftEye: 'ŏ', mouth: '︵', reightEye: 'ŏ', lookAtCursor: false
+      leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false
     })
   }
+
+  const a = (() => {
+    const ss = WIDGETS['student-session']
+    if (utils.url.github) {
+      return utils.url.github.split('/')
+    } else if (ss.getData('opened-project')) {
+      return [ss.getData('owner'), ss.getData('opened-project')]
+    } else return []
+  })()
 
   const gh = (() => {
     const u = WIDGETS['student-session'].getData('username')
@@ -14,6 +25,13 @@ window.CONVOS['project-files'] = (self) => {
     const p = WIDGETS['student-session'].getData('opened-project')
     return { u, o, p, url: `https://github.com/${o}/${p}` }
   })()
+
+  const createNewRepo = (c, t) => {
+    const v = t.$('input').value.replace(/\s/g, '-').toLowerCase()
+    const p = /^(\w|\.|-)+$/
+    if (!p.test(v)) c.goTo('explain-proj-name')
+    else { c.hide(); self._postNewRepo(c, t, v) }
+  }
 
   const repoSelectionList = (() => {
     const ss = WIDGETS['student-session']
@@ -145,6 +163,104 @@ window.CONVOS['project-files'] = (self) => {
     content: 'I\'ve saved your changes locally, but this is only temporary while you\'re working on the project. You\'ll need to <b>"push"</b> (aka upload) your updates to your GitHub using the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget in order to save them permanently.',
     options: {
       ok: (e) => e.hide()
+    }
+  },
+  // -------------------------- creating a new project -------------------------
+  {
+    id: 'unsaved-changes-b4-fork-proj',
+    content: `It appears you've got  <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a> open. If you want to remix this project I can now create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you?`,
+    options: {
+      'yea let\'s remix it!': (e) => e.goTo('agree-to-fork'),
+      'no, let\'s create something new': (e) => self.new(),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
+    id: 'agree-to-fork',
+    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
+    options: {
+      'let\'s do it!': (e) => utils.forkRepo(), // TODO test this
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'unsaved-changes-b4-own-proj',
+    content: `It appears you're experimenting with one of your own projects, <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>. I'll have to clear this code out in order to start a new project, is that ok?`,
+    options: {
+      'yes, let\'s start something new': (e) => {
+        NNE.code = ''
+        e.goTo('create-new-project')
+      },
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'unsaved-changes-b4-new-proj',
+    content: `You've saved changes to your current project "${WIDGETS['student-session'].getData('opened-project')}" which have not been backed up to GitHub. You should commit and "git push" those first.`,
+    options: {
+      ok: (e) => WIDGETS.open('git-push'),
+      'no, I\'ll discard the changes': (e) => e.goTo('create-new-project'),
+      'actually, I\'ll keep working on this': (e) => e.hide()
+    }
+  }, {
+    id: 'clear-code?',
+    content: 'It appears you\'ve got some code in the editor, do you want this to be the start of your new project or should we delete this and start from scratch?',
+    options: {
+      'I want to keep it': (e) => e.goTo('create-new-project'),
+      'let\'s start from scratch': (e) => {
+        NNE.code = ''
+        e.goTo('create-new-project')
+      }
+    }
+  }, {
+    id: 'create-new-project',
+    before: () => {
+      WIDGETS['student-session'].clearProjectData()
+      NNW.menu.switchFace('default')
+    },
+    content: 'What would you like this new project to be called? <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'explain-proj-name', // if createNewRepo receives a bad name value
+    content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
+    options: {
+      'save it!': (c, t) => createNewRepo(c, t),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'project-already-exists',
+    after: () => NNW.menu.switchFace('error'),
+    content: 'GitHub just told me that you already have a project with that name on your account, want to try a different name?',
+    options: {
+      ok: (e) => e.goTo('create-new-project'),
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'new-project-created',
+    content: `Your project "<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. You can now upload and create additional files as a part of this project.`,
+    options: {
+      'cool!': (e) => e.hide()
+    }
+  }, {
+    id: 'published-to-ghpages',
+    content: `Your project is live at <a href="${WIDGETS['student-session'].getData('ghpages')}" target="_blank">${WIDGETS['student-session'].getData('ghpages')}</a>. From now on everytime you "push" updates to your GitHub repo it will automatically update your published site as well. It usually takes a few minutes before the updates show up on the live site, you can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/actions" target="_blank">view the deployment progress here</a>.`,
+    options: {
+      'great!': (e) => e.hide(),
+      'can I create a custom URL?': (e) => e.goTo('custom-url')
+    }
+  }, {
+    id: 'custom-url',
+    content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
+    options: { 'ok, thanks!': (e) => e.hide() }
+  },
+  // -------------------------- publishing project --------------------------------
+  {
+    id: 'cant-publish-project',
+    content: 'You don\'t have a GitHub project open for me to publish. Do you want me to save a new project for you?',
+    options: {
+      'yes please': (e) => self.newProject(),
+      'no, never mind': (e) => e.hide()
     }
   },
   // -------------------------- opening project --------------------------------
@@ -501,16 +617,24 @@ window.CONVOS['project-files'] = (self) => {
   // -------------------------- misc ----------
   {
     id: 'git-push-not-ready',
-    content: 'Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to GitHub. Try making and saving a change to your code first.',
+    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">GitHub repo</a>.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }
   }, {
     id: 'oh-no-error',
-    after: () => errorFace(),
+    before: () => errorFace(),
     content: 'Oh dang! seems there was a server error... sorry about that...',
     options: {
-      'it\'s ok, errors are a part of the process': (e) => e.hide()
+      'it\'s ok, errors are a part of the process': (e) => {
+        e.hide(); NNW.menu.switchFace('default')
+      },
+      'what was the error?': (e) => e.goTo('explain-error')
     }
+  }, {
+    id: 'explain-error',
+    before: () => NNW.menu.switchFace('default'),
+    content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and you could <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on the netizen.org GitHub to let us know what you found!`,
+    options: { ok: (e) => e.hide() }
   }]
 }

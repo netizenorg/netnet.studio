@@ -92,7 +92,7 @@ class ProjectFiles extends Widget {
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
-      this.update({ left: 20, top: 50 }, 500)
+      this.update({ right: 20, bottom: 20 }, 500)
     })
 
     const CM = NNE.cm.constructor
@@ -180,7 +180,7 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
       this._agreed2beta = true
       this._showHideDivs()
-      this.update({ left: 20, top: 50 }, 500)
+      this.update({ right: 20, bottom: 20 }, 500)
     })
   }
 
@@ -219,6 +219,7 @@ class ProjectFiles extends Widget {
       })
 
     this._colorizeChanges()
+    this.keepInFrame()
   }
 
   async _colorizeChanges () {
@@ -327,6 +328,7 @@ class ProjectFiles extends Widget {
           ulc.classList.remove('active')
         })
       }
+      this.keepInFrame()
     }
 
     const iterate = (obj, ele = this.$('.proj-files__tree-view')) => {
@@ -535,6 +537,32 @@ class ProjectFiles extends Widget {
     NNE.customRender = null
   }
 
+  publishProject () {
+    const op = WIDGETS['student-session'].getData('opened-project')
+    if (!op) {
+      window.convo = new Convo(this.convos, 'cant-publish-project')
+      return
+    }
+
+    nn.get('load-curtain').show('folder.html', { filename: op }) // TODO: update to GitHub curtain
+    const data = {
+      owner: WIDGETS['student-session'].getData('owner'),
+      repo: WIDGETS['student-session'].getData('opened-project'),
+      branch: WIDGETS['student-session'].getData('branch')
+    }
+    utils.post('./api/github/gh-pages', data, (res) => {
+      if (!res.success) {
+        console.log('FunctionsMenu:', res)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      } else {
+        WIDGETS['student-session'].setData('ghpages', res.data.html_url)
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'published-to-ghpages')
+      }
+      nn.get('load-curtain').hide()
+    })
+  }
+
   _openMediaViewer (filepath, type) { // TODO: make sure widget fits (might need to scale image down)
     const urlBlob = this.files[filepath].code
 
@@ -699,8 +727,25 @@ class ProjectFiles extends Widget {
   }
 
   newProject () {
-    // TODO: display netnet convo for naming a new project (&& creating a repo)
-    console.log('new project')
+    if (typeof window.CONVOS[this.key] !== 'function') {
+      setTimeout(() => this.newProject(), 100); return
+    }
+    // if convo is ready, then continue...
+    const op = WIDGETS['student-session'].getData('opened-project')
+    const owner = WIDGETS['student-session'].getData('owner')
+    const urlUser = utils.url.github ? utils.url.github.split('/')[0] : null
+    this.convos = window.CONVOS[this.key](this)
+    if (!op && utils.url.github && urlUser !== owner) {
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj')
+    } else if (!op && utils.url.github && urlUser === owner) {
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-own-proj')
+    } else if (this.changes.length > 0) {
+      window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
+    } else {
+      if (NNW.layout !== 'welcome' && NNE.code !== '') {
+        window.convo = new Convo(this.convos, 'clear-code?')
+      } else { window.convo = new Convo(this.convos, 'create-new-project') }
+    }
   }
 
   newFolder () {
@@ -1067,6 +1112,80 @@ class ProjectFiles extends Widget {
 
   // --------------------- --------------------- --------------------- ---------
   // ------- functions which run after user dialogue with context menu functions
+
+  _postNewRepo (c, t, v) {
+    WIDGETS['student-session'].clearSaveState()
+    const user = WIDGETS['student-session'].getData('owner')
+    const indexData = utils.starterCode() === NNE.code || NNE.code === ''
+      ? '<h1>Hello World Wide Web!</h1>' : NNE.code
+    nn.get('load-curtain').show('folder.html', { filename: v }) // TODO: update to GitHub curtain
+    const data = { name: v, user, indexData }
+    window.utils.post('./api/github/new-repo', data, async (res) => {
+      if (res.error) {
+        console.log('ProjectFiles:', res.error)
+        if (res.error.errors[0].message.includes('name already exists')) {
+          window.convo = new Convo(this.convos, 'project-already-exists')
+        } else window.convo = new Convo(this.convos, 'oh-no-error')
+        setTimeout(() => nn.get('load-curtain').hide(), 500)
+      } else if (!res.success) {
+        console.log('ProjectFiles:', res)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+        setTimeout(() => nn.get('load-curtain').hide(), 500)
+      } else { // otherwise let the user know it's all good!
+        if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'new-project-created')
+
+        // ... upldate list of repos...
+        utils.get('/api/github/saved-projects', (json) => {
+          if (!json.data) return
+          const names = json.data.map(o => o.name)
+          WIDGETS['student-session'].setData('repos', names.join(', '))
+        })
+
+        // update student session data
+        WIDGETS['student-session'].setProjectData({
+          name: res.repo,
+          message: 'netnet initialized repo',
+          // sha: res.sha,  TODO: dont' need this anymore right?
+          url: res.url,
+          ghpages: null,
+          branch: res.branch
+          // code: utils.btoa(NNE.code) TODO don't need this either
+        })
+
+        // update netnet URL
+        const ghStr = res.branch === 'main'
+          ? `?gh=${res.owner}/${res.repo}`
+          : `?gh=${res.owner}/${res.repo}/${res.branch}`
+        utils.updateURL(ghStr)
+
+        await this._clearIndexedDB(true) // reset indexedDB && kill service worker
+        this.sw = await this._initServiceWorker() // setup service worker
+        this.db = await this._initIndexedDB() // setup indexedDB
+        // setup netitor's custom renderer to work with service worker
+        this._setCustomRenderer()
+
+        // load all the data
+        res.data.forEach((arr) => {
+          const name = arr[0]
+          this.files[name] = { path: name }
+          this._updateFile(name, arr[1])
+        })
+
+        this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+
+        this._updateFilesGUI()
+
+        if (!this.opened) this.open()
+
+        // open the index.html file by default
+        this.openFile('index.html')
+        window.convo = new Convo(this.convos, 'project-opened')
+        // NOTE: load-curtain is hidden after index.html file is opened
+      }
+    })
+  }
 
   async _postNew (name, type) {
     window.convo.hide()

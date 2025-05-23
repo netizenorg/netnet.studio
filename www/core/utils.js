@@ -110,9 +110,9 @@ window.utils = {
   forkRepo: () => {
     NNW.menu.switchFace('processing')
     const a = window.utils.url.github.split('/')
-    const data = { owner: a[0], repo: a[1] }
+    const data = { owner: a[0], repo: a[1], branch: a[2] }
     window.utils.post('./api/github/fork', data, (json) => {
-      WIDGETS['functions-menu']._openProject(json.data.name) // TODO: replace with new PF method
+      WIDGETS.open('project-files', (w) => w.openProject(json.data.name))
     })
   },
 

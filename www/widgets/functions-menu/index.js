@@ -140,19 +140,14 @@ class FunctionsMenu extends Widget {
   new () {
     this.convos = window.CONVOS[this.key](this)
     const repo = WIDGETS['student-session'].getData('opened-project')
-    if (repo) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
+    const pf = WIDGETS['project-files']
+    if (repo && pf) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
     else window.convo = new Convo(this.convos, 'new-proj-or-sketch')
   }
 
   _newProject () {
-    const loggedIn = WIDGETS['student-session'].getData('owner')
-    const openedProj = WIDGETS['student-session'].getData('opened-project')
-    // TODO: if not logged into GitHub need to explain that part
-    // TODO: otherwise:
-    // check for unsaved changes: 'unsaved-changes-b4-new-proj'
-    // check for code in editor: 'clear-code?'
-    // ...maybe this is an alias for PF new project?
-    console.log('new project')
+    if (WIDGETS['project-files']) WIDGETS['project-files'].newProject()
+    else WIDGETS.load('project-files', (w) => w.newProject())
   }
 
   _newSketch () {

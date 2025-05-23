@@ -2,7 +2,7 @@
 window.CONVOS['project-files'] = (self) => {
   const errorFace = () => {
     NNW.menu.updateFace({
-      leftEye: 'ŏ', mouth: '︵', reightEye: 'ŏ', lookAtCursor: false
+      leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false
     })
   }
   // ...

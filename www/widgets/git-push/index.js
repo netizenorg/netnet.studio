@@ -51,9 +51,8 @@ class GitPush extends Widget {
               </div>
             </div>
             <div class="git-push-widget__info">
-              Running <code>git status</code> in the terminal will list all the files which have changed since your last commit. However, when nothing has changed it will just output:<br><br>
+              Running <code>git status</code> in the terminal will list all the files which have changed since your last commit. However, when nothing has changed it will just output:<br>
               <code style="padding-left: 10px">nothing to commit, working tree clean</code>
-              <br><br>If you'd like, you can <span class="link" onclick="WIDGETS['git-push'].downloadProject()">download</span> the most recently committed version project locally to your computer.
             </div>
           </section>
         </div>
@@ -181,7 +180,7 @@ class GitPush extends Widget {
               this._nextCmd('finished')
             } else {
               console.log('GIT SERVER ERROR:', json)
-              const face = { leftEye: 'ŏ', mouth: '︵', reightEye: 'ŏ', lookAtCursor: false }
+              const face = { leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false }
               NNW.menu.updateFace(face)
             }
           })
@@ -194,7 +193,7 @@ class GitPush extends Widget {
         info: () => {
           const owner = WIDGETS['student-session'].getData('owner')
           const op = WIDGETS['student-session'].getData('opened-project')
-          return `Your <a href="https://github.com/${owner}/${op}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now par of your project's timeline or "<a href="https://github.com/${owner}/${op}/network" target="_blank">version hisotry</a>". Feel free to <span class="link" onclick="WIDGETS['git-push'].downloadProject()">download</span> a backup copy of the current stage of your project.`
+          return `Your <a href="https://github.com/${owner}/${op}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now part of your project's timeline or "<a href="https://github.com/${owner}/${op}/network" target="_blank">version hisotry</a>". To publish your project on the World Wide Web, open the <b>Coding Menu > my code > share</b>, if you previously published your project you do not need to republish it, it will update automaticlly (You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/actions" target="_blank">view the deployment progress here</a>). Feel free to also <span class="link" onclick="WIDGETS['git-push'].downloadProject()">download</span> a backup copy of the current stage of your project.`
         },
         next: () => {
           this.include = []
