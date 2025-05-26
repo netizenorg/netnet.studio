@@ -34,7 +34,6 @@ class StudentSession extends Widget {
         openedProject: ls.getItem('opened-project'),
         projectURL: ls.getItem('project-url'),
         branch: ls.getItem('branch'),
-        lastCommitMsg: ls.getItem('last-commit-msg'),
         ghpages: ls.getItem('ghpages')
       },
       lastSave: {
@@ -69,10 +68,10 @@ class StudentSession extends Widget {
   }
 
   setData (type, value) {
-    // NOTE: used to use "sessionStorage" for project data to allow multiple tabs
-    // on diff projects, but no longer possible in new "Project Files" widget
+    // NOTE: was used to use "sessionStorage" for project data to allow multiple
+    // tabs on diff projects, but no longer possible in new "Project Files" widget
     const sesh = [
-      // 'opened-project', 'project-url', 'branch', 'last-commit-msg', 'ghpages'
+      // 'opened-project', 'project-url', 'branch', 'ghpages'
     ]
     const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
     if (!value) window[store].removeItem(type)
@@ -127,12 +126,9 @@ class StudentSession extends Widget {
   setProjectData (data) {
     // close tutorial if one is open
     if (WIDGETS['hyper-video-player']?.opened) WIDGETS['hyper-video-player'].close()
-
     // const ss = window.sessionStorage
     const ls = window.localStorage
-    // TODO: will need to update mutli-file-widget if/when we make that widget
     if (data.name) ls.setItem('opened-project', data.name)
-    if (data.message) ls.setItem('last-commit-msg', data.message)
     if (data.url) ls.setItem('project-url', data.url)
     if (data.ghpages) ls.setItem('ghpages', data.ghpages)
     if (data.branch) ls.setItem('branch', data.branch)
@@ -143,7 +139,6 @@ class StudentSession extends Widget {
     // const ss = window.sessionStorage
     const ls = window.localStorage
     ls.removeItem('opened-project')
-    ls.removeItem('last-commit-msg')
     ls.removeItem('project-url')
     ls.removeItem('ghpages')
     ls.removeItem('branch')
@@ -175,7 +170,7 @@ class StudentSession extends Widget {
       this.setData('owner', null)
       this.setData('repos', null)
       this._createHTML()
-      WIDGETS['functions-menu'].gitHubUpdated(false)
+      WIDGETS['coding-menu'].gitHubUpdated(false)
       if (!skipDialogue) {
         window.convo = new Convo(this.convos, 'logged-out-of-gh')
       }
@@ -208,7 +203,7 @@ class StudentSession extends Widget {
     if (json.success) {
       utils.get('/api/github/username', (json) => {
         if (json.data) this.setData('owner', json.data.login)
-        WIDGETS['functions-menu'].gitHubUpdated(true)
+        WIDGETS['coding-menu'].gitHubUpdated(true)
       })
       utils.get('/api/github/saved-projects', (json) => {
         if (!json.data) return
@@ -218,25 +213,9 @@ class StudentSession extends Widget {
       })
     } else {
       this.authStatus = false
-      WIDGETS['functions-menu'].gitHubUpdated(false)
+      WIDGETS['coding-menu'].gitHubUpdated(false)
     }
   }
-
-  // TODO: MARKED FOR DELETION (CHECK FIRST)
-  // updateRoot () {
-  //   const owner = window.localStorage.getItem('owner')
-  //   const repo = window.sessionStorage.getItem('opened-project')
-  //   const main = window.sessionStorage.getItem('branch')
-  //   if (owner && repo) {
-  //     const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
-  //     const proto = window.location.protocol
-  //     const host = window.location.host
-  //     const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-  //     NNE.addCustomRoot({ base, proxy })
-  //   } else {
-  //     NNE.addCustomRoot(null)
-  //   }
-  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -302,7 +281,7 @@ class StudentSession extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _init () {
-    if (!WIDGETS['functions-menu']) {
+    if (!WIDGETS['coding-menu']) {
       setTimeout(() => this._init(), 100); return
     }
 
@@ -399,16 +378,10 @@ class StudentSession extends Widget {
           hosted url:
           <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
-        <div>
-          last commit message:
-          <input  value="${this.data.github.lastCommitMsg}" readonly="readonly">
-        </div>
         <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
         <hr>
         <div class="inline-link inline-link--secondary" name="privacy-policy" style="align-self: center; cursor: pointer;">Privacy Policy</div>
       </div>
-
-      <!-- TODO: add SIGNOUT of GitHub button -->
     `
 
     this.$('#name-input').addEventListener('change', (e) => {

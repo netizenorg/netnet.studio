@@ -91,7 +91,6 @@ function reWriteCSSPaths (req, data) { // HACK!!!
   // ...this is a huge HACK, it works fine for now, but may cause issues
   // if/when we decide to support multi-file editing in netnet.
   let str = data.toString()
-  // HACK: redird converst '//' into '/' ...so we need to undo that >_<
   const url = req.query.url.replace('https:/raw', 'https://raw')
   const arr = url.split('/')
   const path = arr.slice(0, arr.length - 1).join('/')
@@ -106,9 +105,6 @@ function reWriteCSSPaths (req, data) { // HACK!!!
 }
 
 router.get('/api/github/proxy', (req, res) => {
-  // HACK: on the live version, the redbird proxy screws w/this proxy
-  // && removes one of the slashes after the protocol https://
-  // ...this fixes the redbird screw up
   const url = req.query.url.replace('https:/raw', 'https://raw')
   // HACK: the purpose of this proxy to get around this issue:
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463

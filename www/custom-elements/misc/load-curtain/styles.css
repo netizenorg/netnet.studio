@@ -110,6 +110,12 @@
   width: 12.8%;
 }
 
+.curtain__svg__name.curtain__svg__github {
+  top: 62%;
+  right: 18%;
+  width: 17%;
+}
+
 
 /* loading specificity */
 .curtain--delete .curtain__txt {

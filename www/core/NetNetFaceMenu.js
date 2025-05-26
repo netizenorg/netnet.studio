@@ -16,10 +16,10 @@ class NetNetFaceMenu {
         }
       },
       functions: {
-        path: 'images/menu/functions.png',
+        path: 'images/menu/code.png',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('functions-menu')
+          WIDGETS.open('coding-menu')
         }
       },
       search: {
@@ -275,18 +275,18 @@ class NetNetFaceMenu {
 
     // run new animation
     // NOTE: CSS defined found in www/css/styles.css
-    if (this.face.animation === 'blink') { // TODO: bring blink back after project-files
-      // if (this.face.leftEye === '-') {
-      //   this._faceAnimTO = setTimeout(() => {
-      //     this.updateFace({ leftEye: '◕', rightEye: '◕', lookAtCursor: true })
-      //     this._runFaceAnimation()
-      //   }, 150)
-      // } else {
-      //   this._faceAnimTO = setTimeout(() => {
-      //     this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
-      //     this._runFaceAnimation()
-      //   }, Math.random() * 6000 + 8000)
-      // }
+    if (this.face.animation === 'blink') {
+      if (this.face.leftEye === '-') {
+        this._faceAnimTO = setTimeout(() => {
+          this.updateFace({ leftEye: '◕', rightEye: '◕', lookAtCursor: true })
+          this._runFaceAnimation()
+        }, 150)
+      } else {
+        this._faceAnimTO = setTimeout(() => {
+          this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
+          this._runFaceAnimation()
+        }, Math.random() * 6000 + 8000)
+      }
     } else if (this.face.animation === 'processing') {
       this._faceAnimTO = setTimeout(() => {
         if (this.face.leftEye === '◉') {

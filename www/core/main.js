@@ -12,7 +12,7 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 const initWidgets = [
-  'functions-menu',
+  'coding-menu',
   'student-session',
   'html-reference',
   'css-reference',

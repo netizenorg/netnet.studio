@@ -1,5 +1,5 @@
 /* global nn, WIDGETS, NNW, NNE, utils */
-window.CONVOS['functions-menu'] = (self) => {
+window.CONVOS['coding-menu'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareGhURL = (opts) => {
     opts = opts || {}
@@ -18,25 +18,6 @@ window.CONVOS['functions-menu'] = (self) => {
       return [ss.getData('owner'), ss.getData('opened-project')]
     } else return []
   })()
-
-  const createNewRepo = (c, t) => {
-    const v = t.$('input').value.replace(/\s/g, '-')
-    const p = /^(\w|\.|-)+$/
-    if (!p.test(v)) c.goTo('explain-proj-name')
-    else { c.hide(); self._createNewRepo(c, t, v) } // TODO: MARK FOR DELETION
-    // TODO: need to replace _createNewRepo with something else
-  }
-
-  // const repoSelectionList = (() => {
-  //   const ss = WIDGETS['student-session']
-  //   if (ss && ss.data.github.repos) {
-  //     let str = '<select class="dropdown dropdown--invert">'
-  //     const list = ss.data.github.repos.split(', ')
-  //     list.forEach(r => { str += `<option value="${r}">${r}</option>` })
-  //     str += '</select>'
-  //     return str
-  //   }
-  // })()
 
   const sessionSaveOpts = () => {
     const opts = {
@@ -71,10 +52,6 @@ window.CONVOS['functions-menu'] = (self) => {
     options: {
       'got it': (e) => e.hide()
     }
-  }, {
-    id: 'temp-disclaimer',
-    content: 'Sorry, at the moment you can only upload HTML files.',
-    options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'session-saved',
     content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.',
@@ -201,115 +178,6 @@ window.CONVOS['functions-menu'] = (self) => {
       'let\'s do it!': (e) => utils.forkRepo(),
       'oh, never mind': (e) => e.hide()
     }
-  }, {
-    id: 'unsaved-changes-b4-new-proj',
-    content: `You have unsaved changes in your current project "${WIDGETS['student-session'].getData('opened-project')}". You should save those first.`,
-    options: {
-      ok: (e) => self.saveProject('new-project'), // TODO: must update (some method in PF)
-      'no, i\'ll discard the changes': (e) => e.goTo('create-new-project'),
-      'actually, i\'ll keep working on this': (e) => e.hide()
-    }
-  }, {
-    id: 'clear-code?',
-    content: 'It appears you\'ve got some code in the editor, do you want this to be the start of your new project or should we delete this and start from scratch?',
-    options: {
-      'I want to keep it': (e) => e.goTo('create-new-project'),
-      'let\'s start from scratch': (e) => {
-        NNE.code = ''
-        e.goTo('create-new-project')
-      }
-    }
-  }, {
-    id: 'create-new-project',
-    before: () => { WIDGETS['student-session'].clearProjectData() },
-    content: 'What would you like this new project to be called? <input placeholder="project-name">',
-    options: {
-      'save it!': (c, t) => createNewRepo(c, t),
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'explain-proj-name', // if createNewRepo receives a bad name value
-    content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
-    options: {
-      'save it!': (c, t) => createNewRepo(c, t),
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'project-already-exists',
-    after: () => NNW.menu.switchFace('error'),
-    content: 'GitHub just told me that you already have a project with that name on your account, want to try a different name?',
-    options: {
-      ok: (e) => e.goTo('create-new-project'),
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'new-project-created',
-    content: `Your project "<a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. If you'd like to upload images or any other assets to use in your project, click on my face to find the <b>Project Files</b> widget, or click <code>uploadAssets()</code> in the <b>Functions Menu</b>`,
-    options: {
-      'cool!': (e) => e.hide()
-    }
-  },
-  // ... save open project
-  {
-    id: 'save-newish-project',
-    content: 'The last time you saved this project was when you first created it, from now on everytime I "push" updates to your GitHub you\'ll need to leave a short message (one sentence) explainig what changed: <input placeholder="what\'s new?">',
-    options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'why?': (e) => e.goTo('explain-versions')
-    }
-  }, {
-    id: 'explain-versions',
-    content: 'Instead of overwritting your previous HTML file, GitHub keeps track of all previous "versions" each time you save your project and so it needs some message to associate with each version as your project evolves',
-    options: { 'I see.': (e) => e.goTo('save-version') }
-  }, {
-    id: 'save-version',
-    content: 'So, what\'s changed since you first created this project? <input placeholder="what\'s new?">',
-    options: {
-      ok: (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'save-open-project',
-    content: `The last time you saved your progress you said, "${WIDGETS['student-session'].getData('last-commit-msg')}", what has changed since then? <input placeholder="what's new?">`,
-    options: {
-      'ok, commit and push this update': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'again-too-long',
-    content: 'That message is too long, I need you to keep it below 72 characters <input placeholder="what\'s new?">',
-    options: {
-      'ok, try now': (c, t) => {
-        const v = t.$('input').value
-        if (v.length < 1 || v.length > 72) c.goTo('again-too-long')
-        else self._updateProject(v)
-      },
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'pushing-updates',
-    before: () => NNW.menu.switchFace('processing'),
-    content: '...sending data to GitHub...',
-    options: {}
-  }, {
-    id: 'project-saved',
-    content: 'Your project has been saved!',
-    options: {
-      'great, thanks!': (e) => e.hide(),
-      'can I share it?': (e) => e.goTo('share-project')
-    }
   },
   // ... opening old projects
   {
@@ -358,32 +226,8 @@ window.CONVOS['functions-menu'] = (self) => {
       }
     }
   },
-  {
-    id: 'unsaved-changes-b4-open-proj',
-    content: `You have unsaved changes in your current project "${WIDGETS['student-session'].getData('opened-project')}". You should save those first.`,
-    options: {
-      ok: (e) => self.saveProject('open-project'), // TODO: must update
-      'no, i\'ll discard the changes': (e) => e.goTo('open-project'),
-      'actually, i\'ll keep working on this': (e) => e.hide()
-    }
-  },
   // ... share gh project
   {
-    id: 'cant-share-project', // TODO: MARK FOR DELETION
-    content: 'You don\'t have a GitHub project open. Do you want to share the code in my editor as a sketch? Or would you like to save a new project?',
-    options: {
-      'save a new project': (e) => self.newProject(),
-      'share as a sketch': (e) => WIDGETS.open('share-widget'),
-      'never mind': (e) => e.hide()
-    }
-  }, {
-    id: 'cant-publish-project', // TODO: MARK FOR DELETION
-    content: 'You don\'t have a GitHub project open for me to publish. Do you want me to save a new project for you?',
-    options: {
-      'yes please': (e) => self.newProject(),
-      'no, never mind': (e) => e.hide()
-    }
-  }, {
     id: 'share-project',
     content: 'I can generate a share-link to netnet.studio, but I could also publish your project to the Web for you?',
     options: {
@@ -412,17 +256,10 @@ window.CONVOS['functions-menu'] = (self) => {
     }
   }, {
     id: 'publish-to-web?',
-    content: `You could always <a href="https://github.com/${window.localStorage.getItem('owner')}/${WIDGETS['student-session'].getData('opened-project')}/${WIDGETS['student-session'].getData('branch')}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved to your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
+    content: `You could always <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/${WIDGETS['student-session'].getData('branch')}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved to your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
     options: {
       'yes please!': (e) => WIDGETS['project-files'].publishProject(),
       'oh, no thanks': (e) => e.hide()
-    }
-  }, { // TODO: should be part of new Project Files widget
-    id: 'published-to-ghpages', // TODO: MARK FOR DELETION (only referenced in 1 function marked for deletion)
-    content: `Your project is live at <a href="${WIDGETS['student-session'].getData('ghpages')}" target="_blank">${WIDGETS['student-session'].getData('ghpages')}</a> (note: it might take a few minutes before that link works)`,
-    options: {
-      'great!': (e) => e.hide(),
-      'can I create a custom URL?': (e) => e.goTo('custom-url')
     }
   }, {
     id: 'custom-url',

@@ -179,7 +179,7 @@ window.CONVOS['project-files'] = (self) => {
     id: 'agree-to-fork',
     content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
     options: {
-      'let\'s do it!': (e) => utils.forkRepo(), // TODO test this
+      'let\'s do it!': (e) => utils.forkRepo(),
       'oh, never mind': (e) => e.hide()
     }
   }, {

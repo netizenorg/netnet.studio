@@ -1,4 +1,4 @@
-/* global WIDGETS, NNW, NNE, utils, nn, Convo */
+/* global WIDGETS, NNW, utils, nn, Convo */
 window.CONVOS['student-session'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
 
@@ -36,7 +36,7 @@ window.CONVOS['student-session'] = (self) => {
   //     'hi netnet!': (e) => e.goTo('what-to-do'),
   //     'that\'s not my name?': (e) => e.goTo('diff-user')
   //     'submit to BrowserFest': (e) => {
-  //       WIDGETS['functions-menu'].BrowserFest()
+  //       WIDGETS['coding-menu'].BrowserFest()
   //     }
   //   },
   //   after: () => {
@@ -57,7 +57,7 @@ window.CONVOS['student-session'] = (self) => {
       },
       'no, let\'s start something new': (e) => {
         self.clearProjectData()
-        WIDGETS['functions-menu'].new()
+        WIDGETS['coding-menu'].new()
       }
     }
   }, {
@@ -65,7 +65,7 @@ window.CONVOS['student-session'] = (self) => {
     content: 'Would you like to open one of your GitHub projects or do you want to start something new?',
     options: {
       'yes, let\'s open one': (e) => WIDGETS.load('project-files', (w) => w.openProject()),
-      'no let\'s start something new': (e) => WIDGETS['functions-menu'].new()
+      'no let\'s start something new': (e) => WIDGETS['coding-menu'].new()
     }
   }, {
     id: 'prior-save-state',
@@ -76,7 +76,7 @@ window.CONVOS['student-session'] = (self) => {
         const delay = utils.getVal('--menu-fades-time')
         setTimeout(() => self.restoreSavePoint(), delay)
       },
-      'no let\'s start from scratch': (e) => WIDGETS['functions-menu'].new()
+      'no let\'s start from scratch': (e) => WIDGETS['coding-menu'].new()
     }
   }, {
     id: 'first-time',
@@ -128,7 +128,7 @@ window.CONVOS['student-session'] = (self) => {
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'classical-ai',
-    content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI. That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
+    content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI like Large Language Models (LLM). That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
     options: {
       'oh, i see': (e) => e.goTo('return-student-no-greet')
     }

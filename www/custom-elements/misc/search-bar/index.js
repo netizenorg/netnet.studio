@@ -47,7 +47,7 @@ class SearchBar extends HTMLElement {
     this._loadMiscData()
     this._loadWidgetsData()
     this._loadTutorialsData()
-    this._loadFunctionsMenuData()
+    this._loadCodingMenuData()
     this._setupSearchBar()
   }
 
@@ -145,9 +145,9 @@ class SearchBar extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _loadFunctionsMenuData () {
-    if (!WIDGETS['functions-menu']) {
-      setTimeout(() => this._loadFunctionsMenuData(), 250)
+  _loadCodingMenuData () {
+    if (!WIDGETS['coding-menu']) {
+      setTimeout(() => this._loadCodingMenuData(), 250)
       return
     }
 
@@ -161,32 +161,32 @@ class SearchBar extends HTMLElement {
       type: 'Functions Menu',
       word: loggedIn ? 'logout' : 'login',
       alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
-      clck: () => { WIDGETS['functions-menu'].open() }
+      clck: () => { WIDGETS['coding-menu'].open() }
     })
-    for (const submenu in WIDGETS['functions-menu'].subs) {
-      const funcs = WIDGETS['functions-menu'].subs[submenu]
+    for (const submenu in WIDGETS['coding-menu'].subs) {
+      const funcs = WIDGETS['coding-menu'].subs[submenu]
       arr.push({
         type: 'Functions Menu',
         word: submenu,
         alts: funcs.map(f => f.click),
         clck: () => {
-          WIDGETS['functions-menu'].open()
+          WIDGETS['coding-menu'].open()
           const id = `func-menu-${submenu.replace(/ /g, '-')}`
-          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+          WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
         }
       })
       funcs.forEach(func => {
-        const callFunc = func.func || WIDGETS['functions-menu']._toCamelCase(func.key)
+        const callFunc = func.func || WIDGETS['coding-menu']._toCamelCase(func.key)
         arr.push({
           type: `Functions Menu.${submenu}`,
           word: func.key,
           alts: func.alts,
           clck: () => {
             if (func.select) {
-              WIDGETS['functions-menu'].open()
+              WIDGETS['coding-menu'].open()
               const id = `func-menu-${submenu.replace(/ /g, '-')}`
-              WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-            } else WIDGETS['functions-menu'][callFunc]()
+              WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
+            } else WIDGETS['coding-menu'][callFunc]()
           }
         })
       })

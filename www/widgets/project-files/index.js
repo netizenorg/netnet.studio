@@ -117,7 +117,7 @@ class ProjectFiles extends Widget {
   _createHTML () {
     const loggedInMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. If you\'d like to work on "<b>project</b>" consisting of multiple files/assets which can be published on the web, we can either <span class="inline-link" onclick="WIDGETS[\'project-files\'].openProject()">open a project</span> you have stored on GitHub or we could <span class="inline-link" onclick="WIDGETS[\'project-files\'].newProject()">create a new one?</span>'
 
-    const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'functions-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
+    const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'coding-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
 
     const loggedIn = WIDGETS['student-session'].getData('owner')
     const c1 = nn.hex2rgb(utils.getVal('--netizen-meta'))
@@ -503,15 +503,6 @@ class ProjectFiles extends Widget {
 
           this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
 
-          // TODO: NOTE: may not need this anymore? check back in once finished with new git logic
-          // update last commit data
-          // const filename = 'index.html'
-          // utils.post('./api/github/get-commits', { filename, repo, owner }, (res) => {
-          //   if (!res.success) return this._ohNoErr(res)
-          //   const msg = res.data[0].commit.message
-          //   WIDGETS['student-session'].setData('last-commit-msg', msg)
-          // })
-
           this._updateFilesGUI()
 
           // open the index.html file by default
@@ -538,13 +529,14 @@ class ProjectFiles extends Widget {
   }
 
   publishProject () {
+    const ur = WIDGETS['student-session'].getData('owner')
     const op = WIDGETS['student-session'].getData('opened-project')
     if (!op) {
       window.convo = new Convo(this.convos, 'cant-publish-project')
       return
     }
 
-    nn.get('load-curtain').show('folder.html', { filename: op }) // TODO: update to GitHub curtain
+    nn.get('load-curtain').show('github.html', { filename: `${ur}/${op}` })
     const data = {
       owner: WIDGETS['student-session'].getData('owner'),
       repo: WIDGETS['student-session'].getData('opened-project'),
@@ -552,7 +544,6 @@ class ProjectFiles extends Widget {
     }
     utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {
-        console.log('FunctionsMenu:', res)
         window.convo = new Convo(this.convos, 'oh-no-error')
       } else {
         WIDGETS['student-session'].setData('ghpages', res.data.html_url)
@@ -1118,7 +1109,7 @@ class ProjectFiles extends Widget {
     const user = WIDGETS['student-session'].getData('owner')
     const indexData = utils.starterCode() === NNE.code || NNE.code === ''
       ? '<h1>Hello World Wide Web!</h1>' : NNE.code
-    nn.get('load-curtain').show('folder.html', { filename: v }) // TODO: update to GitHub curtain
+    nn.get('load-curtain').show('github.html', { filename: `${user}/${v}` })
     const data = { name: v, user, indexData }
     window.utils.post('./api/github/new-repo', data, async (res) => {
       if (res.error) {
@@ -1146,12 +1137,9 @@ class ProjectFiles extends Widget {
         // update student session data
         WIDGETS['student-session'].setProjectData({
           name: res.repo,
-          message: 'netnet initialized repo',
-          // sha: res.sha,  TODO: dont' need this anymore right?
           url: res.url,
           ghpages: null,
           branch: res.branch
-          // code: utils.btoa(NNE.code) TODO don't need this either
         })
 
         // update netnet URL

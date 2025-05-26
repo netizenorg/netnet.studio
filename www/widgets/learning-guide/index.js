@@ -32,7 +32,7 @@ class LearningGuide extends Widget {
 
     this._createPage('mainOpts', 'main-slide.html', null, (div) => {
       // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['functions-menu'].BrowserFest()
+      //   WIDGETS['coding-menu'].BrowserFest()
       // })
 
       // create sub pages
@@ -61,7 +61,7 @@ class LearningGuide extends Widget {
       this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
-    WIDGETS['functions-menu'].on('theme-change', () => {
+    WIDGETS['coding-menu'].on('theme-change', () => {
       const src = this.ele.querySelector('iframe').src
       this.ele.querySelector('iframe').src = src
     })

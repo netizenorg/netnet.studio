@@ -100,8 +100,8 @@ window.CONVOS['git-push'] = (self) => {
     id: 'git-updated',
     content: 'Your GitHub repo has been updated! You can download a copy of your updated project locally if you\'d like, but remember this will only reflect the current commit. If you\'d like to work on your project locally in your own code editor, it would be best to "clone" your repo, this way you not only download the latest code, but the entire history of changes as well.',
     options: {
-      'got it': (e) => e.hide(),
-      'clone to my own editor?': (e) => e.hide() // TODO
+      'got it': (e) => e.hide()
+      // 'clone to my own editor?': (e) => e.hide() // TODO
     }
   }, {
     id: 'oh-no-error',

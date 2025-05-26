@@ -25,7 +25,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 's',
         callback: (e) => {
           e.preventDefault()
-          WIDGETS['functions-menu'].save()
+          WIDGETS['coding-menu'].save()
         }
       },
       {
@@ -34,7 +34,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'o',
         callback: (e) => {
           e.preventDefault()
-          WIDGETS['functions-menu'].openFile()
+          WIDGETS['coding-menu'].openFile()
         }
       },
       { // NOTE: doesn't work :( browser's don't let u use "Ctrl + N"
@@ -44,7 +44,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'n',
         callback: (e) => {
           e.preventDefault()
-          WIDGETS['functions-menu'].new()
+          WIDGETS['coding-menu'].new()
         }
       },
       {
@@ -91,7 +91,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => ((e.ctrlKey || e.metaKey) && e.key === ';'),
         callback: (e) => {
           e.preventDefault()
-          WIDGETS.open('functions-menu')
+          WIDGETS.open('coding-menu')
         }
       },
       {

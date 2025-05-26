@@ -169,8 +169,6 @@ class GitPush extends Widget {
           const commitMessage = this._commitMessage
           const changes = this.include
           nn.get('load-curtain').show('folder.html', { filename: repo })
-          // TODO: actually create git commit
-          // console.log(this._commitMessage, this.include);
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
             if (json.success) {
@@ -209,7 +207,6 @@ class GitPush extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   downloadProject () {
-    // TODO: display convo which explains what was downloaded (most recent "commit")
     const p = WIDGETS['student-session'].getData('opened-project')
     const o = WIDGETS['student-session'].getData('owner')
     const b = WIDGETS['student-session'].getData('branch')
