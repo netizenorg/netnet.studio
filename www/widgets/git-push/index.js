@@ -51,7 +51,6 @@ class GitPush extends Widget {
               </div>
             </div>
             <div class="git-push-widget__info">
-              Running <code>git status</code> in the terminal will list all the files which have changed since your last commit. However, when nothing has changed it will just output:<br>
               <code style="padding-left: 10px">nothing to commit, working tree clean</code>
             </div>
           </section>
@@ -75,7 +74,7 @@ class GitPush extends Widget {
             </div>
           </div>
           <div class="git-push-widget__info">
-            ${this.steps.status.info()}
+            ${this.steps.status.info ? this.steps.status.info() : ''}
           </div>
         </section>
       </div>
@@ -86,14 +85,18 @@ class GitPush extends Widget {
 
   _nextCmd (key) {
     const obj = this.steps[key]
-    this.$('.git-push-widget__cli').innerHTML = obj.cli
-    this.$('.git-push-widget__info').innerHTML = obj.info()
     window.convo = new Convo(this.convos, obj.convo)
-    this.$('button[name="run"]').innerHTML = obj.btn || 'run'
-    this.$('button[name="run"]').onclick = () => obj.next()
+    // update widget HTML
+    this.$('.git-push-widget__cli').innerHTML = obj.cli
+    if (obj.info) this.$('.git-push-widget__info').innerHTML = obj.info()
+    else this.$('.git-push-widget__info').innerHTML = ''
+    // setup back button
     const o = (key === 'finished' || key === 'status') ? 0.25 : 1
     this.$('button[name="back"]').style.opacity = o
     this.$('button[name="back"]').onclick = () => obj.back()
+    // setup run button
+    this.$('button[name="run"]').innerHTML = obj.btn || 'run'
+    this.$('button[name="run"]').onclick = () => obj.next()
     utils.afterLayoutTransition(() => {
       if (obj.btn === 'edit') nn.get('text-bubble input').focus()
       else this.$('button[name="run"]').focus()
@@ -105,17 +108,14 @@ class GitPush extends Widget {
       status: {
         cli: 'git status',
         convo: 'start-ready',
-        info: () => {
-          return 'Running <code>git status</code> in the terminal will list all the files which have changed since your last commit.'
-        },
         next: () => this._nextCmd('stage')
       },
       stage: {
-        cli: 'git add ...',
+        cli: 'git add <span style="opacity:0.5">&lt;selected files below&gt;<span>',
         convo: 'git-stage',
         info: () => {
           const clr = { create: 'var(--netizen-attribute)', update: 'var(--netizen-number)', delete: 'red' }
-          let str = 'Choose which of the changes below to "stage" in this commit. I will replace the <code>...</code> in the terminal above with the changes you\'ve selected.<br>'
+          let str = ''
           WIDGETS['project-files'].changes.forEach((c, i) => {
             str += `
               <span class="git-state-item" style="color:${clr[c.action]}" data-index="${i}">
@@ -142,11 +142,6 @@ class GitPush extends Widget {
         cli: 'git commit -m "..."',
         convo: 'git-commit',
         btn: 'edit',
-        info: () => {
-          const owner = WIDGETS['student-session'].getData('owner')
-          const op = WIDGETS['student-session'].getData('opened-project')
-          return `Creating a "commit" generates something like a save-point in your git history. Each commit is a point in the <a href="https://github.com/${owner}/${op}/network" target="_blank">timeline</a> of your project's evolution, containing the changes made as well as the date, time and message you enter with netnet.`
-        },
         next: () => {
           if (!this._commitMessage) {
             window.convo = new Convo(this.convos, 'git-commit')
@@ -157,18 +152,13 @@ class GitPush extends Widget {
       push: {
         cli: 'git push',
         convo: 'git-push',
-        info: () => {
-          const owner = WIDGETS['student-session'].getData('owner')
-          const op = WIDGETS['student-session'].getData('opened-project')
-          return `Pushing this commit to your <a href="https://github.com/${owner}/${op}" target="_blank">GitHub repo</a> perminantly adds it to your project's <a href="https://github.com/${owner}/${op}/network" target="_blank">timeline</a> and stores your progress there so the next time you come back to netnet.studio you can pick up where you left off.`
-        },
         next: () => {
           const owner = WIDGETS['student-session'].getData('owner')
           const repo = WIDGETS['student-session'].getData('opened-project')
           const branch = WIDGETS['student-session'].getData('branch')
           const commitMessage = this._commitMessage
           const changes = this.include
-          nn.get('load-curtain').show('folder.html', { filename: repo })
+          nn.get('load-curtain').show('github.html', { filename: repo })
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
             if (json.success) {
@@ -188,11 +178,6 @@ class GitPush extends Widget {
       finished: {
         cli: '',
         convo: 'git-updated',
-        info: () => {
-          const owner = WIDGETS['student-session'].getData('owner')
-          const op = WIDGETS['student-session'].getData('opened-project')
-          return `Your <a href="https://github.com/${owner}/${op}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now part of your project's timeline or "<a href="https://github.com/${owner}/${op}/network" target="_blank">version hisotry</a>". To publish your project on the World Wide Web, open the <b>Coding Menu > my code > share</b>, if you previously published your project you do not need to republish it, it will update automaticlly (You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/actions" target="_blank">view the deployment progress here</a>). Feel free to also <span class="link" onclick="WIDGETS['git-push'].downloadProject()">download</span> a backup copy of the current stage of your project.`
-        },
         next: () => {
           this.include = []
           this._commitMessage = ''
@@ -216,12 +201,6 @@ class GitPush extends Widget {
     a.setAttribute('href', url)
     a.click()
     a.remove()
-  }
-
-  // here's an example of a "private" method
-  _startConvo () {
-    // this is referencing a convo key from the convo.js file
-    window.convo = new Convo(this.convos, 'start')
   }
 }
 

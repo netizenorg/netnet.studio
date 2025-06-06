@@ -112,7 +112,7 @@ class CodingMenu extends Widget {
     if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
     this.convos = window.CONVOS[this.key](this)
 
-    if (WIDGETS['student-session'].getData('opened-project')) {
+    if (WIDGETS['project-files'] && WIDGETS['student-session'].getData('opened-project')) {
       // working on an opened github project
       WIDGETS['project-files'].saveCurrentFile()
     } else if (utils.url.github) {
