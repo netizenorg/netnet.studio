@@ -465,6 +465,7 @@ window.utils = {
   // netitor stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  // main.js listens for these errors + sends them to 'code-review' widget
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
       window.onerror = function (message, source, lineno) {
@@ -479,22 +480,6 @@ window.utils = {
         if (proxy) newCode = NNE.prependProxyURL(newCode, proxy)
         event.update(newCode)
       }
-    }
-  },
-
-  customRendererError: (event) => {
-    if (event.data && event.data.type === 'iframe-error') {
-      const op = WIDGETS['student-session'].getData('opened-project')
-      const diff = 4 // these are the number of lines added to the top of the file before rendering (see errMsgr above)
-      const line = event.data.lineno - diff
-      const message = event.data.message
-      let file = event.data.source.includes('.') ? event.data.source : null
-      if (op) file = new URL(file).pathname
-      const m = NNE.marker(line, 'red', () => {
-        window.utils._crErr = { message, line, file }
-        window.utils._Convo('custom-renderer-error')
-      })
-      m.setAttribute('title', message)
     }
   },
 

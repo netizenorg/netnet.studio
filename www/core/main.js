@@ -33,7 +33,7 @@ NNE.on('cursor-activity', (e) => {
 })
 
 NNE.on('lint-error', (e) => {
-  WIDGETS['code-review'].updateIssues(e)
+  WIDGETS['code-review'].review({ issues: e })
 })
 
 NNE.cm.on('keydown', (cm, e) => {
@@ -73,7 +73,7 @@ window.addEventListener('load', () => {
 
 // the <iframe> messanger is injected into the rendered html pages, handled in:
 // setCustomRenderer or files-db-service-worker.js (when working on projects)
-window.addEventListener('message', e => utils.customRendererError(e))
+window.addEventListener('message', e => WIDGETS['code-review'].review({ error: e }))
 
 // warn the user about accidental navigation attempts
 window.addEventListener('beforeunload', (event) => {

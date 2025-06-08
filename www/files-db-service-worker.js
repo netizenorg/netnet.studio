@@ -287,6 +287,7 @@ self.addEventListener('fetch', (event) => {
         } else if (fileData) {
           if (LOG) console.log('...fetching from IndexedDB:', filePath)
           if (filePath.endsWith('.html')) {
+            // main.js listens for these errors + sends them to 'code-review' widget
             fileData = `<script>
               window.onerror = function (message, source, lineno) {
                 window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')

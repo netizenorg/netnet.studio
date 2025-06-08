@@ -1,9 +1,5 @@
-/* global utils, WIDGETS, NNW, nn */
+/* global utils, WIDGETS, NNW */
 window.CONVOS['utils-misc'] = (self) => {
-  if (!self._crErr) self._crErr = {}
-
-  const Mac = nn.platformInfo().platform.includes('Mac')
-
   const a = (() => {
     let c = window.localStorage.getItem('gh-auth-temp-code')
     const gh = window.utils.url.github
@@ -94,27 +90,6 @@ window.CONVOS['utils-misc'] = (self) => {
     content: 'You can access all the project related functions in my <b>Functions Menu</b> which you can open by clicking on my face. There you\'ll be able to create, save and open projects as well as upload assets like images, video or audio files.',
     options: {
       'cool!': (e) => e.hide()
-    }
-  }, {
-    id: 'custom-renderer-error',
-    content: `<i>Your browser passed me this error</i>:<br><span style="font-family: fira-code, inconsolata, monospace">${self._crErr.message}</span>`,
-    options: {
-      'ok, I\'ll fix it': (e) => e.hide(),
-      'what does that mean?': (e) => e.goTo('custom-renderer-error2'),
-      'my browser did?': (e) => e.goTo('custom-renderer-error3')
-    }
-  }, {
-    id: 'custom-renderer-error2',
-    content: 'When I review your code for mistakes I try to explain them in a clear way, but this isn\'t an issue I caught. This was an error your browser informed me of after we ran your code, and the browser errors aren\'t always easy to make sense of, but your browser might have more info which could help!',
-    options: {
-      ok: (e) => e.hide(),
-      'my browser did?': (e) => e.goTo('custom-renderer-error3')
-    }
-  }, {
-    id: 'custom-renderer-error3',
-    content: `Your browser converts the code you write into the rendered output we see. When it does this, it also catches any errors I missed before rendering and displays them in the <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools" target="_blank">developer tools</a>. To open them press <code>${Mac ? 'Fn + ' : ''}F12</code> and then switch to the "Console" tab. You can learn more about the error there.`,
-    options: {
-      ok: (e) => e.hide()
     }
   }]
 }

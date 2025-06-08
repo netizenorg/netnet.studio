@@ -11,70 +11,85 @@ class CodeReview extends Widget {
     this.title = 'Code Review'
     this.info = ''
     this.tempCode = null
-    this.issues = []
+    this.issues = [] // issues netnet catches via linting
+    this.error = {} // last error passed by browser console
     this._createHTML()
 
     this.on('open', () => this._opened())
     NNW.on('theme-change', () => this.updateIssues())
 
-    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key]() })
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
 
-  updateIssues (e) {
-    const Mac = nn.platformInfo().platform.includes('Mac')
-    if (e) this.issues = e
+  review (obj = {}) {
+    this.updateIssues(obj.issues)
+    this.updateError(obj.error)
+    // update code review widget view
+    this._reviewIssues()
+  }
+
+  updateIssues (issues) {
+    // issues array from netnet 'lint-errors'
+    if (issues) this.issues = issues
     // mark editor
     const c = WIDGETS['student-session']
       ? WIDGETS['student-session'].getData('chattiness') : null
-    if (c && c !== 'low') this._markErrors(this.issues, true)
+    if (c && c !== 'low') this._markIssues(this.issues, true)
     else NNE.marker(null)
-    // update code review widget list
-    const list = this.$('.code-review')
-    if (this.issues.length > 0) list.innerHTML = ''
-    else {
-      list.innerHTML = `
-        <h3>Passed Code Review</h3>
-        <p>No issues were found when I reviewed your code, however, after your code gets rendered by your browser it might catch other errors. I will notify you if this is the case by leaving a red mark on the line of code which caused the error. Or you can review these errors yourself in your <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools" target="_blank">developer tools</a>. To open them press <code>${Mac ? 'Fn + ' : ''}F12</code> and then switch to the "Console" tab. You can learn more about the error there.</p>`
+  }
+
+  updateError (event) {
+    const pf = WIDGETS['project-files']
+    const ss = WIDGETS['student-session']
+    // check chattiness level
+    const c = ss ? ss.getData('chattiness') : null
+    // event object from 'onerror' event injected into iframe either via
+    // utils.setCustomRenderer (sketch) or files-db-service-worker.js (project)
+    if (c && c !== 'low' && event?.data && event?.data.type === 'iframe-error') {
+      // these are the number of lines added to the top of the file before rendering
+      // (see errMsgr in utils.setCustomRenderer)
+      const diff = 4
+      const message = event.data.message
+      let file = event.data.source.includes('.') ? event.data.source : null
+      let line = event.data.lineno - diff
+
+      // if project, ensure only showing errors on current file
+      if (ss.getData('opened-project') && pf) {
+        file = new URL(file).pathname
+        if (file !== '/' + pf.viewing) return
+        if (!file.endsWith('.html')) line += diff
+      }
+
+      // add error markers (aka _markErrors)
+      const m = NNE.marker(line, 'red', () => {
+        // _explainError
+        this.error = { message, line, file }
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'custom-renderer-error')
+      })
+      m.setAttribute('title', message)
+      m.dataset.err = JSON.stringify({ message, line, file })
     }
-    this.issues.forEach((err, i) => this._createErrDiv(err, i))
   }
 
   undoTidy () {
     if (this.tempCode) NNE.code = this.tempCode
   }
 
-  addIssueMarkers () { // used after explainer markers are added
-    this._markErrors(this.issues, false)
+  addIssueMarkers () { // used after green annoted example markers are added
+    this._markIssues(this.issues, false)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _markErrors (arr, clearFirst) {
-    if (clearFirst) NNE.marker(null)
-    const lines = []
-    arr.forEach(e => {
-      if (lines.includes(e.line)) return
-      lines.push(e.line)
-      const clk = () => this._explainError(e)
-      const clr = (e.type === 'warning') ? 'orange' : 'red'
-      /*
-        HACK: not sure why, but some errors return e.line: 0 ???
-        ex: localhost:8001/?tutorial=html-crash-course&t=1157
-        NOTE: this should be fixed now... but doesn't hurt to keep it
-      */
-      if (e.line === 0) e.line = 1
-      const m = NNE.marker(e.line, clr, clk)
-      m.setAttribute('title', e.message)
-    })
+  _findErrors () { // list console error objects
+    return Array.from(nn.getAll('.netitor-gutter-marker'))
+      .filter(ele => ele.dataset.err)
+      .map(ele => JSON.parse(ele.dataset.err))
   }
 
-  _textBubble (id) {
-    this.convos = window.CONVOS[this.key]()
-    window.convo = new Convo(this.convos, id)
-  }
-
-  _explainError (err, loc) {
+  _explainIssue (err, loc) {
     const opts = {
       'ok thanks': (e) => { NNE.spotlight(null); e.hide() }
     }
@@ -90,6 +105,30 @@ class CodeReview extends Widget {
       content: `On line ${err.line}, ${err.friendly}`,
       options: opts
     })
+  }
+
+  _markIssues (arr, clearFirst) {
+    if (clearFirst) NNE.marker(null)
+    const lines = []
+    arr.forEach(e => {
+      if (lines.includes(e.line)) return
+      lines.push(e.line)
+      const clk = () => this._explainIssue(e)
+      const clr = (e.type === 'warning') ? 'orange' : 'red'
+      /*
+        HACK: not sure why, but some errors return e.line: 0 ???
+        ex: localhost:8001/?tutorial=html-crash-course&t=1157
+        NOTE: this should be fixed now... but doesn't hurt to keep it
+      */
+      if (e.line === 0) e.line = 1
+      const m = NNE.marker(e.line, clr, clk)
+      m.setAttribute('title', e.message)
+    })
+  }
+
+  _textBubble (id) {
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, id)
   }
 
   _couldTidy () {
@@ -125,9 +164,86 @@ class CodeReview extends Widget {
     `
   }
 
-  _createErrDiv (e, i) {
-    // TODO check if in GH project, change to "index.html" to filename
-    const filename = 'index.html'
+  _createBanner (selected) {
+    const s = this.issues.length
+    const e = this._findErrors().length
+    const b = nn.browserInfo().name || 'browser'
+    const div = nn.create('div').set('class', 'code-review__tabs')
+    nn.create('span').content(`netnet caught ${s} issue${s === 1 ? '' : 's'}`)
+      .set('class', 'code-review__tab')
+      .css({
+        background: selected === 'issues' ? 'var(--netizen-meta)' : 'var(--bg-color)',
+        color: selected === 'issues' ? 'var(--bg-color)' : 'var(--netizen-meta)'
+      })
+      .on('click', () => this._back2Issues())
+      .addTo(div)
+    nn.create('span').content(`${b} caught ${e} error${e === 1 ? '' : 's'}`)
+      .set('class', 'code-review__tab')
+      .css({
+        background: selected === 'errors' ? 'var(--netizen-meta)' : 'var(--bg-color)',
+        color: selected === 'errors' ? 'var(--bg-color)' : 'var(--netizen-meta)'
+      })
+      .on('click', () => this._reviewErrors())
+      .addTo(div)
+    return div
+  }
+
+  _reviewIssues () {
+    let html = ''
+    if (this.issues.length > 0) {
+      const many = `Below are ${this.issues.length} potential issues`
+      const opener = this.issues.length > 1 ? many : 'Below is one potential issue'
+      html += `${opener} netnet noticed in your code.`
+    } else {
+      const errs = this._findErrors().length
+      html = 'No issues found, your code has passed netnet\'s code review.'
+      if (errs > 0) {
+        html += ` That said, your browser did catch ${errs} error${errs > 1 ? 's' : ''}, click on the tab above to view those.`
+      }
+    }
+
+    const tabs = this._createBanner('issues')
+    const info = nn.create('div').content(html).css({ marginBottom: '5px' })
+    this.$('.code-review').innerHTML = ''
+    this.$('.code-review').appendChild(tabs)
+    this.$('.code-review').appendChild(info)
+    this.issues.forEach((err, i) => this._createIssueDiv(err, i))
+  }
+
+  _reviewErrors () {
+    const errs = this._findErrors()
+    let html = ''
+    if (errs.length > 0) {
+      const Mac = nn.platformInfo().platform.includes('Mac')
+      const count = errs.length > 1 ? `${errs.length} errors` : '1 error'
+      html += `After rending your code, your browser caught ${count}. You can also view these in your browser's JavaScript error console by presssing <code>${Mac ? 'Fn+' : ''}F12</code> to open your browser's "<a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools" target="_blank">developer tools</a>" and then switch to the "Console" tab.`
+    } else {
+      const ish = this.issues.length
+      html = 'There were no errors caught by your browser.'
+      if (ish > 0) {
+        html += ` That said, netnet did notice ${ish} potential issue${ish > 1 ? 's' : ''} with your code, click on the tab above to view those.`
+      }
+    }
+
+    const tabs = this._createBanner('errors')
+    const info = nn.create('div').content(html).css({ marginBottom: '5px' })
+    this.$('.code-review').innerHTML = ''
+    this.$('.code-review').appendChild(tabs)
+    this.$('.code-review').appendChild(info)
+    errs.forEach((err, i) => this._createErrorDiv(err, i))
+  }
+
+  _back2Issues () { this.review(); NNE.update() }
+
+  _fileName () {
+    const op = WIDGETS['student-session'].getData('opened-project')
+    const pf = WIDGETS['project-files']
+    const file = (op && pf) ? pf.viewing : 'index.html'
+    return file
+  }
+
+  _createIssueDiv (e, i) {
+    const filename = this._fileName()
     const div = document.createElement('div')
     div.className = 'code-review__issue'
     div.style.background = utils.getVal('--netizen-meta') + nn.alpha2hex(0.7)
@@ -144,7 +260,25 @@ class CodeReview extends Widget {
       <div>${msg}</div>
     `
     div.querySelector('.code-review__issue__head').style.background = clr
-    div.addEventListener('click', () => this._explainError(e, loc))
+    div.addEventListener('click', () => this._explainIssue(e, loc))
+    this.$('.code-review').appendChild(div)
+  }
+
+  _createErrorDiv (e, i) {
+    const filename = this._fileName()
+    const div = document.createElement('div')
+    div.className = 'code-review__issue'
+    div.style.background = utils.getVal('--netizen-meta') + nn.alpha2hex(0.7)
+    const msg = e.message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`/g, '')
+    div.innerHTML = `
+      <div class="code-review__issue__head">
+        <span>Error</span>
+        <span>${filename}:${e.line}</span>
+      </div>
+      <div>${msg}</div>
+    `
+    div.querySelector('.code-review__issue__head').style.background = 'rgba(255,0,0,0.70)'
+    div.addEventListener('click', () => NNE.spotlight(e.line))
     this.$('.code-review').appendChild(div)
   }
 }

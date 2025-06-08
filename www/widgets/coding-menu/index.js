@@ -285,7 +285,7 @@ class CodingMenu extends Widget {
     const v = val || this.chatty.value
     this.chatty.value = v
     this.sesh.setData('chattiness', v)
-    WIDGETS['code-review'].updateIssues()
+    WIDGETS['code-review'].review()
     if (this.chatty.value === 'low') {
       window.convo = new Convo(this.convos, 'chatty-level-low')
     } else if (this.chatty.value === 'medium') {
