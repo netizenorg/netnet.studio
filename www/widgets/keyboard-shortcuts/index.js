@@ -53,7 +53,7 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'g',
         callback: (e) => {
           e.preventDefault()
-          console.log('PUSH TO GITHUB') // TODO
+          WIDGETS.open('git-push')
         }
       },
       {

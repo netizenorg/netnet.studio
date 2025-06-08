@@ -83,7 +83,7 @@ window.CONVOS['git-push'] = (self) => {
     options: { 'I see': (e) => e.hide() }
   }, {
     id: 'git-commit',
-    content: `${self.include.length === WIDGETS['project-files'].changes.length ? 'All the changes' : 'The specific files you selected'} have been added to your "stage" and now await your commit. Write a short message describing the changes included in this commit. Then click <code>run</code> to commit it.<br><input style="width:350px" placeholder="what has changed since last commit?">`,
+    content: `${self.include.length === WIDGETS['project-files']?.changes.length ? 'All the changes' : 'The specific files you selected'} have been added to your "stage" and now await your commit. Write a short message describing the changes included in this commit. Then click <code>run</code> to commit it.<br><input style="width:350px" placeholder="what has changed since last commit?">`,
     options: {
       'ok, ready to commit': (e, t) => updateCommitMessage(e, t),
       'never mind': (e) => e.hide()
