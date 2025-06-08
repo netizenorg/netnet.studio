@@ -1,8 +1,17 @@
 .privacy-policy {
   max-width: 575px;
   max-height: 400px;
-  
+
   overflow-y: scroll;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
   scrollbar-width: thin;
+}
+
+.privacy-policy h1 {
+  font-family: "fira-sans-bold";
+  font-size: 49px;
+  line-height: 49px;
+  text-align: center;
+  width: 83%;
+  margin: 10px auto;
 }

@@ -324,10 +324,10 @@ window.CONVOS['student-session'] = (self) => {
     after: () => self.greetStudent()
   }, {
     id: 'reboot-session',
-    content: 'This will wipe my entire memory, it will be like we first met...',
+    content: 'Are you sure you want to clear all your data and reboot me? This will wipe my entire memory, it will be like we first met...',
     options: {
       ok: (e) => { e.hide(); self.clearAllData() },
-      'no, never mind': (e) => e.hide()
+      'oh, no never mind': (e) => e.hide()
     }
   }]
 

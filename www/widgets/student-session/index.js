@@ -315,7 +315,10 @@ class StudentSession extends Widget {
   _createHTML () {
     this.innerHTML = `
       <div class="student-session">
-        <button class="pill-btn" name="reboot" style="align-self: flex-start;">Clear All My Data</button>
+        <div style="width: 100%; margin-bottom: 27px;">
+          <button class="pill-btn" name="reboot" style="align-self: flex-start;">Clear All My Data</button>
+          <button class="pill-btn pill-btn--secondary" name="privacy-policy">View Privacy Policy</button>
+        </div>
         <button class="pill-btn pill-btn--secondary" name="general-data">?</button>
         <div>
           name:
@@ -353,7 +356,11 @@ class StudentSession extends Widget {
               ? this.data.lastSave.widgets.replace(/"/g, "'") : ''
           }" readonly="readonly">
         </div>
-        <h2><span>GitHub Data</span> <button class="pill-btn pill-btn--secondary" name="github-data">?</button></h2>
+        <h2>
+          <span>GitHub Data</span>
+          <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
+          <button class="pill-btn pill-btn--secondary" name="github-data">?</button>
+        </h2>
         <div>
           username:
           <input  value="${this.data.github.owner}" readonly="readonly">
@@ -378,9 +385,6 @@ class StudentSession extends Widget {
           hosted url:
           <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
-        <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
-        <hr>
-        <div class="inline-link inline-link--secondary" name="privacy-policy" style="align-self: center; cursor: pointer;">Privacy Policy</div>
       </div>
     `
 
@@ -404,7 +408,7 @@ class StudentSession extends Widget {
       }
     }))
 
-    this.$('div[name="privacy-policy"]').addEventListener('click', () => {
+    this.$('[name="privacy-policy"]').addEventListener('click', () => {
       WIDGETS.open('privacy-policy')
     })
 
