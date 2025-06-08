@@ -18,7 +18,7 @@ class SearchBar extends HTMLElement {
     }
 
     this.type2color = {
-      'Functions Menu': 'var(--netizen-variable)',
+      'Coding Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
       Tutorials: 'var(--netizen-string)',
       Examples: 'var(--netizen-string)',
@@ -152,13 +152,13 @@ class SearchBar extends HTMLElement {
     }
 
     // remove previously created items if we login/logout
-    // this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
+    // this.dict = this.dict.filter(o => !o.type.includes('Coding Menu'))
     // this.updateDict()
     const loggedIn = window.localStorage.getItem('owner')
 
     const arr = []
     arr.push({
-      type: 'Functions Menu',
+      type: 'Coding Menu',
       word: loggedIn ? 'logout' : 'login',
       alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
       clck: () => { WIDGETS['coding-menu'].open() }
@@ -166,7 +166,7 @@ class SearchBar extends HTMLElement {
     for (const submenu in WIDGETS['coding-menu'].subs) {
       const funcs = WIDGETS['coding-menu'].subs[submenu]
       arr.push({
-        type: 'Functions Menu',
+        type: 'Coding Menu',
         word: submenu,
         alts: funcs.map(f => f.click),
         clck: () => {
@@ -178,7 +178,7 @@ class SearchBar extends HTMLElement {
       funcs.forEach(func => {
         const callFunc = func.func || WIDGETS['coding-menu']._toCamelCase(func.key)
         arr.push({
-          type: `Functions Menu.${submenu}`,
+          type: `Coding Menu.${submenu}`,
           word: func.key,
           alts: func.alts,
           clck: () => {

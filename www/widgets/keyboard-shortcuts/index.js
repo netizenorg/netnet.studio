@@ -87,7 +87,7 @@ class KeyboardShortcuts extends Widget {
       },
       {
         key: `${utils.hotKey()} + ;`,
-        nfo: 'open the Functions Menu',
+        nfo: 'open the Coding Menu',
         condition: (e) => ((e.ctrlKey || e.metaKey) && e.key === ';'),
         callback: (e) => {
           e.preventDefault()

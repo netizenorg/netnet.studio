@@ -87,7 +87,7 @@ window.CONVOS['utils-misc'] = (self) => {
     }
   }, {
     id: 'gh-create-proj',
-    content: 'You can access all the project related functions in my <b>Functions Menu</b> which you can open by clicking on my face. There you\'ll be able to create, save and open projects as well as upload assets like images, video or audio files.',
+    content: 'You can access all the code related actions in the <b>Coding Menu</b> which you can open by clicking on my face. There you\'ll be able to save, open and create new sketchs or projects.',
     options: {
       'cool!': (e) => e.hide()
     }

@@ -39,7 +39,7 @@ window.CONVOS['code-review'] = (self) => {
     }
   }, {
     id: 'review-tidy',
-    content: `No problem, you can always use the <code>tidyCode()</code> function in the <b>Functions Menu</b> whenever you want me to automatically clean your indentation, and <b>${hotkey}+Z</b> to undo it.`,
+    content: `No problem, you can always use the <code>tidyCode()</code> function in the <b>Coding Menu</b> whenever you want me to automatically clean your indentation, and <b>${hotkey}+Z</b> to undo it.`,
     options: {
       'ok thanks': (e) => done(e)
     }

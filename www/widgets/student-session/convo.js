@@ -255,7 +255,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'general-data-info',
-    content: 'You can change your name at anytime here, but if you\'d like to change any editor settings, like my theme, you\'ll need to use the Functions Menu.',
+    content: 'You can change your name at anytime here, but if you\'d like to change any editor settings, like my theme, you\'ll need to use the Coding Menu.',
     options: {
       'got it': (e) => e.hide()
     }
@@ -273,7 +273,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'github-data-info-2',
-    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
+    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Coding Menu</b> (just click on my face)',
     options: {
       'what\'s GitHub?': (e) => e.goTo('what-is-github'),
       'got it': (e) => e.hide()

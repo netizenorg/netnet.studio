@@ -287,7 +287,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'how2-logout',
-    content: 'Press the "lougout" button in then <b>Functions Menu</b>, the press "login" to log back in with your GitHub account.',
+    content: 'Press the "disconnect from GitHub" button in then <b>Coding Menu</b>, the press "connect to GitHub" to log back in with your GitHub account.',
     options: { 'got it!': (e) => e.hide() }
   }, {
     id: 'coming-soon',
