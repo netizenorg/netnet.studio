@@ -500,8 +500,9 @@ class ProjectFiles extends Widget {
             this.files[name] = { path: data.path }
             let code // store plain-text/code
             if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json' || mimetype === 'image/svg+xml') {
-              code = (data.content === '')
-                ? data.download_url : utils.atob(data.content)
+              code = (data.content === '') ? data.download_url : utils.atob(data.content)
+              // exception for empty index.html files
+              if (name === 'index.html' && data.content === '') code = ''
             } else { // otherwise assume binary file && store blob-url (or github URL)
               // b/c github sends back empty strings for large binary files's content
               code = (data.content === '')
