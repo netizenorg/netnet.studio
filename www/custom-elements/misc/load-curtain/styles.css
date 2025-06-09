@@ -99,21 +99,24 @@
 }
 
 .curtain__svg__name.curtain__svg__upload {
-  top: 49%;
+  top: 60%;
   left: 22.2%;
   width: 10%;
+  text-align: center;
 }
 
 .curtain__svg__name.curtain__svg__folder {
-  top: 49%;
+  top: 58%;
   left: 19.6%;
   width: 12.8%;
+  text-align: center;
 }
 
 .curtain__svg__name.curtain__svg__github {
   top: 62%;
-  right: 18%;
+  right: 18.4%;
   width: 17%;
+  text-align: center;
 }
 
 
