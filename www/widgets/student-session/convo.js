@@ -10,8 +10,9 @@ window.CONVOS['student-session'] = (self) => {
       },
       'let\'s learn': (e) => {
         NNW.menu.switchFace('default')
-        WIDGETS['student-session'].clearProjectData()
+        // WIDGETS['student-session'].clearProjectData()
         WIDGETS.open('learning-guide')
+        e.hide()
       }
     }
     if (ai) o['classical AI?'] = (e) => e.goTo('classical-ai')
