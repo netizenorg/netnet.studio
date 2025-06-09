@@ -26,6 +26,12 @@ window.CONVOS['project-files'] = (self) => {
     return { u, o, p, url: `https://github.com/${o}/${p}` }
   })()
 
+  const fn = (path) => {
+    if (!path) return ''
+    const parts = path.split('/')
+    return parts[parts.length - 1]
+  }
+
   const createNewRepo = (c, t) => {
     const v = t.$('input').value.replace(/\s/g, '-').toLowerCase()
     const p = /^(\w|\.|-)+$/
@@ -371,8 +377,45 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'copy-relative-path',
-    content: `I've copied the relative path to this file to your clipboard, press <code>${hotkey}+V</code> to paste it. <br><br>A relative path shows how to locate a file from your current file’s folder: each <code>../</code> goes up one level, and each folder name followed by a <code>/</code> dives into that subfolder until you reach the target file.`,
-    options: { ok: (e) => e.hide() }
+    content: `I've copied the relative path from the file you're editing, <i>"${fn(self.viewing)}"</i>, to the file you selected, <i>"${fn(self._rightClicked?.dataset.path)}"</i>, onto your clipboard, press <code>${hotkey}+V</code> to paste it.`,
+    options: {
+      ok: (e) => e.hide(),
+      'what\'s a file path?': (e) => e.goTo('file-path')
+    }
+  }, {
+    id: 'copy-relative-path2',
+    content: `Your working on a JavaScript file, paths written here are relative to the HTML file you've imported this file into. Assuming that's the file you are currently rendering, <i>"${fn(self.rendering)}"</i>, I've copied the relative path from that file to the file you selected, <i>"${fn(self._rightClicked?.dataset.path)}"</i>, onto your clipboard, press <code>${hotkey}+V</code> to paste it.`,
+    options: {
+      ok: (e) => e.hide(),
+      'what\'s a file path?': (e) => e.goTo('file-path')
+    }
+  }, {
+    id: 'file-path',
+    content: 'A file path is how you write directions that tells your browser where to find a file or asset. In HTML you use it in tags like <code>&lt;img src="images/photo.jpg"&gt;</code>, <code>&lt;link href="css/styles.css" rel="stylesheet"&gt;</code>, and <code>&lt;script src="js/app.js"&gt;</code>. In CSS code you find paths inside <code>url(...)</code> for backgrounds or fonts, and in JavaScript you assign it to certain variables like <code>img.src</code> or pass it to functions like <code>fetch()</code>. Paths can be written a few different ways, like relative or absolute.',
+    options: {
+      ok: (e) => e.hide(),
+      'relative? absolute?': (e) => e.goTo('relative-absolute-path')
+    }
+  }, {
+    id: 'relative-absolute-path',
+    content: 'Relative paths define directions to a given file starting from the file you\'re currently editing. For example, <code>images/photo.jpg</code> looks in an "images" folder next to your current file, while <code>../css/styles.css</code> goes up (or back) one folder then into the "css" folder. <br><br>Absolute paths always start with a leading <code>/</code> or include a full URL. A slash means "from my site’s root directory" aka your project\'s main folder, like <code>/project/images/photo.jpg</code>. To point to a file somewhere else on the Web you can use a full URL like <code>https://example.com/images/photo.jpg</code>',
+    options: {
+      ok: (e) => e.hide(),
+      'when do I use each?': (e) => e.goTo('relative-absolute-path2')
+    }
+  }, {
+    id: 'relative-absolute-path2',
+    content: 'Relative paths adapt if you move folders, while absolute paths always load the same file no matter where your code runs. Use relative paths to point to files and assets inside your project and absolute paths when you need a fixed location or external link.',
+    options: {
+      ok: (e) => e.hide(),
+      'can\'t I make them all absolute?': (e) => e.goTo('relative-absolute-path3')
+    }
+  }, {
+    id: 'relative-absolute-path3',
+    content: 'Yes, you could simply write everything as an absolute path starting with a <code>/</code> from your root, but this may break once you publish your work to the Web, especially when using GitHub Pages. This is because GitHub will create a URL for you which looks like "https://username.github.io/project-name" which means your code will no longer be in the "root" realative to that URL, but rather in a sub-folder named after your project. That said, if you use your own custom URL that wouldn\'t be an issue.',
+    options: {
+      ok: (e) => e.hide()
+    }
   }, { // ---------------------------------------------------- file stuff ------
     id: 'new-file',
     content: namingConvos('new-f', 'file'),

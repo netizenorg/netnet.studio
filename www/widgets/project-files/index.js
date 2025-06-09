@@ -296,6 +296,7 @@ class ProjectFiles extends Widget {
         if (!this.files[subRootPath].code) ele.classList.add('empty')
         ele.addEventListener('click', (e) => {
           e.stopPropagation(); this.openFile(subRootPath)
+          if (this.ctxmenu.dataset.open === 'true') this._closeContextMenu()
         })
       }
       ele.addEventListener('contextmenu', (e) => this._openContextMenu(e))
@@ -328,6 +329,7 @@ class ProjectFiles extends Widget {
           ulc.classList.remove('active')
         })
       }
+      if (this.ctxmenu.dataset.open === 'true') this._closeContextMenu()
       this.keepInFrame()
     }
 
@@ -395,6 +397,7 @@ class ProjectFiles extends Widget {
       if (this.ctxmenu.dataset.open === 'true') this._closeContextMenu()
     }
     window.addEventListener('click', () => close())
+    this.ele.addEventListener('click', () => close())
     window.addEventListener('keyup', () => close())
     NNE.on('render-update', () => {
       NNE.iframe.addEventListener('click', () => close())
@@ -425,6 +428,12 @@ class ProjectFiles extends Widget {
     this.ctxmenu.style.top = e.clientY - 8 + 'px'
     this.ctxmenu.style.display = 'inline-block'
     this.ctxmenu.dataset.open = 'true'
+
+    const offY = this.ctxmenu.offsetHeight + this.ctxmenu.offsetTop - nn.height
+    const offX = this.ctxmenu.offsetWidth + this.ctxmenu.offsetLeft - nn.width
+
+    if (offY > 0) { this.ctxmenu.style.top = e.clientY - (offY + 16) + 'px' }
+    if (offX > 0) { this.ctxmenu.style.left = e.clientX - (offX + 16) + 'px' }
   }
 
   _closeContextMenu () {
@@ -832,21 +841,30 @@ class ProjectFiles extends Widget {
   }
 
   copyFilePath () {
-    this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'copy-relative-path')
+    const editingExt = this.viewing.split('.').pop().toLowerCase()
+    const baseFile = editingExt === 'css' ? this.viewing : this.rendering
 
-    const from = this.viewing.split('/').slice(0, -1)
+    let convo = 'copy-relative-path'
+    if (editingExt === 'js') convo = 'copy-relative-path2'
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, convo)
+
+    const from = baseFile.split('/').slice(0, -1)
     const to = this._rightClicked.dataset.path.split('/')
-    // find common path depth
+
     let i = 0
-    while (i < from.length && i < to.length && from[i] === to[i]) { i++ }
-    // build “up” moves
-    const up = from.length - i
-    const rel = [
-      ...Array(up).fill('..'), // ['..','..',…]
-      ...to.slice(i) // then the rest of the target path
-    ].join('/')
-    navigator.clipboard.writeText(rel)
+    while (i < from.length && i < to.length && from[i] === to[i]) {
+      i++
+    }
+
+    const upCount = from.length - i
+    const relParts = [
+      ...Array(upCount).fill('..'),
+      ...to.slice(i)
+    ]
+
+    const relPath = relParts.join('/')
+    navigator.clipboard.writeText(relPath)
   }
 
   explainTitleBar (path) {
