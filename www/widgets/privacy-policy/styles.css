@@ -8,10 +8,48 @@
 }
 
 .privacy-policy h1 {
+  position: relative;
   font-family: "fira-sans-bold";
   font-size: 49px;
   line-height: 49px;
   text-align: center;
   width: 83%;
   margin: 10px auto;
+  color: var(--netizen-tag);
+}
+
+@keyframes sheen {
+  0% {
+    background-position: -100% 0;
+  }
+  70% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.privacy-policy h1:after {
+  content: 'Our Code Reflects Our Values';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+
+  /* Prepare for text-gradient clipping */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--netizen-meta) 50%,
+    transparent 100%
+  );
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  /* Clip the gradient to the text */
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* Make the text itself transparent so you only see the background gradient */
+  -webkit-text-fill-color: transparent;
+  animation: sheen 10s ease-in-out infinite;
 }

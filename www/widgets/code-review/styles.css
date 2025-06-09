@@ -3,7 +3,6 @@
   margin-top: 20px;
   padding-right: 5px;
   overflow-y: scroll;
-  /* display: flex; */
 }
 
 .code-review__tabs {
@@ -15,10 +14,13 @@
 .code-review__tab {
   border: 1px solid var(--netizen-meta);
   border-bottom: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   padding: 4px;
   cursor: pointer;
   margin-right: 4px;
   display: inline-block;
+
 }
 
 .code-review__issue {
