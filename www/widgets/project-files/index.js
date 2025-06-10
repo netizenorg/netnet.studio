@@ -85,7 +85,6 @@ class ProjectFiles extends Widget {
 
     this._createContextMenu()
     this._createHTML()
-    // this._setupFileUploader()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
