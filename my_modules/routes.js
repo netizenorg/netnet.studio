@@ -42,7 +42,6 @@ otherAssets.forEach(dir => {
   files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/${dir}/${f}` }))
 })
 
-
 aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
@@ -56,21 +55,44 @@ aliasRoutes.forEach(dep => {
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 
+// router.get('/tutorials/*', (req, res, next) => {
+//   if (req.headers.host.includes(':1337')) { // for dev server
+//     const file = `../../netnet.studio/www/${req.originalUrl}`
+//     res.sendFile(path.join(__dirname, file))
+//   } else if (req.originalUrl.includes('/list.json')) {
+//     // if asking for tutorials that don't exist (ex: in local dev)
+//     const list = path.join(__dirname, '../www/tutorials/list.json')
+//     const file = fs.readFileSync(list)
+//     const json = JSON.parse(file)
+//     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
+//     for (const sec in json) {
+//       json[sec] = json[sec].filter(t => dirs.includes(t))
+//     }
+//     res.json(json)
+//   } else next()
+// })
+
 router.get('/tutorials/*', (req, res, next) => {
-  if (req.headers.host.includes(':1337')) { // for dev server
-    const file = `../../netnet.studio/www/${req.originalUrl}`
-    res.sendFile(path.join(__dirname, file))
-  } else if (req.originalUrl.includes('/list.json')) {
-    // if asking for tutorials that don't exist (ex: in local dev)
-    const list = path.join(__dirname, '../www/tutorials/list.json')
-    const file = fs.readFileSync(list)
+  const host = req.hostname
+  // any subdomains (ex dev.netnet) should load tutorials from production server
+  if (host.endsWith('.netnet.studio')) {
+    const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
+    return res.sendFile(filePath)
+  }
+
+  // if asking for tutorials that don't exist (ex: in local dev)
+  if (req.originalUrl.endsWith('/list.json')) {
+    const listPath = path.join(__dirname, '../www/tutorials/list.json')
+    const file = fs.readFileSync(listPath, 'utf8')
     const json = JSON.parse(file)
-    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    for (const sec in json) {
-      json[sec] = json[sec].filter(t => dirs.includes(t))
-    }
-    res.json(json)
-  } else next()
+    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials'))
+    Object.keys(json).forEach(section => {
+      json[section] = json[section].filter(t => dirs.includes(t))
+    })
+    return res.json(json)
+  }
+
+  next()
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -151,7 +173,6 @@ router.get('/api/custom-elements', async (req, res) => {
         return dirInfo
       })
     res.json(filteredDirectoriesInfo)
-
   } catch (error) { console.error(error); res.json([]) }
 })
 
