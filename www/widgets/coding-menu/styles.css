@@ -1,5 +1,5 @@
 #func-menu-content {
-  min-width: 290px;
+  min-width: 210px;
 
   color: var(--netizen-meta);
   webkit-user-select: none;
@@ -21,28 +21,16 @@
   padding: 8px 0;
   border: none;
   margin: 0;
-  
+
   color: var(--bg-color);
   background: none;
 
   font-family: inconsolata, monospace;
   font-weight: bold;
   text-align: left;
-  
+
   transition: color var(--transition-time) ease;
   cursor: pointer;
-}
-
-#func-menu-content button:after {
-  content: ')';
-  display: inline-block;
-  position: relative;
-  right: 0;
-
-  color: inherit;
-  
-  font-family: inherit;
-  font-size: inherit;
 }
 
 #func-menu-content button:hover {
@@ -64,7 +52,7 @@
 
   color: var(--bg-color);
   background: transparent;
-  
+
   font-family: inconsolata, monospace;
 
   cursor: pointer;
@@ -91,6 +79,10 @@
   background-color: transparent;
 }
 
+#func-menu-content select.dropdown {
+  margin-left: 4px;
+}
+
 #func-menu-content hr {
   height: 1px;
 
@@ -105,7 +97,7 @@
   position: relative;
 
   padding: 0 0 8px;
-  
+
   transition: color var(--transition-time) ease;
   cursor: pointer;
 }
@@ -166,9 +158,9 @@
   display: block;
 
   width: 100%;
-  
+
   padding: 8px 0;
-  
+
   cursor: pointer;
 }
 #func-menu-content .func-menu-dropdown > span:before,
@@ -183,7 +175,7 @@
   height: 3px;
 
   border-radius: 20px;
-  
+
   background-color: var(--netizen-meta);
 
   transition: color .5s cubic-bezier(0.165, 0.84, 0.44, 1);

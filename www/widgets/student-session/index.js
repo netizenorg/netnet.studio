@@ -19,7 +19,7 @@ class StudentSession extends Widget {
 
   get data () {
     const ls = window.localStorage
-    const ss = window.sessionStorage
+    // const ss = window.sessionStorage
     const data = {
       username: ls.getItem('username'),
       editor: {
@@ -31,13 +31,10 @@ class StudentSession extends Widget {
       github: {
         owner: ls.getItem('owner'),
         repos: ls.getItem('repos'),
-        openedProject: ss.getItem('opened-project'),
-        projectURL: ss.getItem('project-url'),
-        branch: ss.getItem('branch'),
-        indexSha: ss.getItem('index-sha'),
-        lastCommitMsg: ss.getItem('last-commit-msg'),
-        lastCommitCode: ss.getItem('last-commit-code'),
-        ghpages: ss.getItem('ghpages')
+        openedProject: ls.getItem('opened-project'),
+        projectURL: ls.getItem('project-url'),
+        branch: ls.getItem('branch'),
+        ghpages: ls.getItem('ghpages')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -71,8 +68,10 @@ class StudentSession extends Widget {
   }
 
   setData (type, value) {
+    // NOTE: was used to use "sessionStorage" for project data to allow multiple
+    // tabs on diff projects, but no longer possible in new "Project Files" widget
     const sesh = [
-      'opened-project', 'project-url', 'branch', 'index-sha', 'last-commit-msg', 'last-commit-code', 'ghpages'
+      // 'opened-project', 'project-url', 'branch', 'ghpages'
     ]
     const store = sesh.includes(type) ? 'sessionStorage' : 'localStorage'
     if (!value) window[store].removeItem(type)
@@ -98,6 +97,17 @@ class StudentSession extends Widget {
     window.localStorage.removeItem('last-saved-widgets')
   }
 
+  newSketch () {
+    this.convos = window.CONVOS[this.key](this)
+    this.clearSaveState()
+    NNW.layout = 'dock-left'
+    NNE.code = ''
+    setTimeout(() => {
+      window.convo = new Convo(this.convos, 'blank-canvas-ready')
+      if (!NNE.autoUpdate) NNE.update()
+    }, utils.getVal('--layout-transition-time'))
+  }
+
   restoreSavePoint () {
     const code = window.localStorage.getItem('last-saved-sketch').substr(6)
     const decoded = NNE._decode(code)
@@ -114,30 +124,27 @@ class StudentSession extends Widget {
   }
 
   setProjectData (data) {
-    const ss = window.sessionStorage
-    // TODO: will need to update mutli-file-widget if/when we make that widget
-    if (data.name) ss.setItem('opened-project', data.name)
-    if (data.message) ss.setItem('last-commit-msg', data.message)
-    if (data.sha) ss.setItem('index-sha', data.sha)
-    if (data.url) ss.setItem('project-url', data.url)
-    if (data.ghpages) ss.setItem('ghpages', data.ghpages)
-    if (data.branch) ss.setItem('branch', data.branch)
-    if (data.code) ss.setItem('last-commit-code', data.code)
+    // close tutorial if one is open
+    if (WIDGETS['hyper-video-player']?.opened) WIDGETS['hyper-video-player'].close()
+    // const ss = window.sessionStorage
+    const ls = window.localStorage
+    if (data.name) ls.setItem('opened-project', data.name)
+    if (data.url) ls.setItem('project-url', data.url)
+    if (data.ghpages) ls.setItem('ghpages', data.ghpages)
+    if (data.branch) ls.setItem('branch', data.branch)
     this._createHTML()
   }
 
   clearProjectData () {
-    const ss = window.sessionStorage
-    ss.removeItem('opened-project')
-    ss.removeItem('last-commit-msg')
-    ss.removeItem('last-commit-code')
-    ss.removeItem('index-sha')
-    ss.removeItem('project-url')
-    ss.removeItem('ghpages')
-    ss.removeItem('branch')
-    NNE.addCustomRoot(null)
+    // const ss = window.sessionStorage
+    const ls = window.localStorage
+    ls.removeItem('opened-project')
+    ls.removeItem('project-url')
+    ls.removeItem('ghpages')
+    ls.removeItem('branch')
+    utils.setCustomRenderer(null)
     NNW.updateTitleBar(null)
-    if (WIDGETS['project-files']) WIDGETS['project-files'].updateFiles([])
+    if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
     this._createHTML()
   }
 
@@ -163,7 +170,7 @@ class StudentSession extends Widget {
       this.setData('owner', null)
       this.setData('repos', null)
       this._createHTML()
-      WIDGETS['functions-menu'].gitHubUpdated(false)
+      WIDGETS['coding-menu'].gitHubUpdated(false)
       if (!skipDialogue) {
         window.convo = new Convo(this.convos, 'logged-out-of-gh')
       }
@@ -178,9 +185,8 @@ class StudentSession extends Widget {
     const temp = `#code/${NNE._encode('<h1>Hello World Wide Web</h1>')}`
     const code = (utils.btoa(NNE.code) === utils.starterCodeB64)
       ? temp : NNE.generateHash()
-    if (NNE._root && NNE._root.includes('.com')) {
-      // if gitHub url in root
-      window.localStorage.setItem('gh-auth-temp-code', NNE._root)
+    if (utils.url.github) {
+      window.localStorage.setItem('gh-auth-temp-code', '__TEMP__' + utils.url.github)
     } else window.localStorage.setItem('gh-auth-temp-code', code)
     utils.get('api/github/client-id', (json) => {
       const id = `client_id=${json.message}`
@@ -197,32 +203,17 @@ class StudentSession extends Widget {
     if (json.success) {
       utils.get('/api/github/username', (json) => {
         if (json.data) this.setData('owner', json.data.login)
-        WIDGETS['functions-menu'].gitHubUpdated(true)
+        WIDGETS['coding-menu'].gitHubUpdated(true)
       })
       utils.get('/api/github/saved-projects', (json) => {
         if (!json.data) return
         const names = json.data.map(o => o.name)
         this.setData('repos', names.join(', '))
-        WIDGETS['functions-menu'].gitHubProjectsUpdated()
+        this.convos = window.CONVOS[this.key](this) // to redo repoSelectionList
       })
     } else {
       this.authStatus = false
-      WIDGETS['functions-menu'].gitHubUpdated(false)
-    }
-  }
-
-  updateRoot () {
-    const owner = window.localStorage.getItem('owner')
-    const repo = window.sessionStorage.getItem('opened-project')
-    const main = window.sessionStorage.getItem('branch')
-    if (owner && repo) {
-      const base = `https://raw.githubusercontent.com/${owner}/${repo}/${main}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      NNE.addCustomRoot({ base, proxy })
-    } else {
-      NNE.addCustomRoot(null)
+      WIDGETS['coding-menu'].gitHubUpdated(false)
     }
   }
 
@@ -256,7 +247,7 @@ class StudentSession extends Widget {
     } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {
-      WIDGETS['functions-menu'].newSketch()
+      this.newSketch()
     }
   }
 
@@ -290,7 +281,7 @@ class StudentSession extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _init () {
-    if (!WIDGETS['functions-menu']) {
+    if (!WIDGETS['coding-menu']) {
       setTimeout(() => this._init(), 100); return
     }
 
@@ -299,7 +290,7 @@ class StudentSession extends Widget {
     }
 
     NNE.autoUpdate = (this.getData('auto-update') === 'true')
-    NNE.wrap = (typeof this.getData('wrap') === 'string' && this.getData('wrap') === 'false') ? false  : true
+    NNE.wrap = !(typeof this.getData('wrap') === 'string' && this.getData('wrap') === 'false')
 
     if (!window.localStorage.getItem('chattiness')) {
       this.setData('chattiness', 'high')
@@ -324,7 +315,10 @@ class StudentSession extends Widget {
   _createHTML () {
     this.innerHTML = `
       <div class="student-session">
-        <button class="pill-btn" name="reboot" style="align-self: flex-start;">Clear All My Data</button>
+        <div style="width: 100%; margin-bottom: 27px;">
+          <button class="pill-btn" name="reboot" style="align-self: flex-start;">Clear All My Data</button>
+          <button class="pill-btn pill-btn--secondary" name="privacy-policy">View Privacy Policy</button>
+        </div>
         <button class="pill-btn pill-btn--secondary" name="general-data">?</button>
         <div>
           name:
@@ -362,7 +356,11 @@ class StudentSession extends Widget {
               ? this.data.lastSave.widgets.replace(/"/g, "'") : ''
           }" readonly="readonly">
         </div>
-        <h2><span>GitHub Data</span> <button class="pill-btn pill-btn--secondary" name="github-data">?</button></h2>
+        <h2>
+          <span>GitHub Data</span>
+          <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
+          <button class="pill-btn pill-btn--secondary" name="github-data">?</button>
+        </h2>
         <div>
           username:
           <input  value="${this.data.github.owner}" readonly="readonly">
@@ -387,24 +385,7 @@ class StudentSession extends Widget {
           hosted url:
           <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
-        <div>
-          last commit code:
-          <input  value="${this.data.github.lastCommitCode}" readonly="readonly">
-        </div>
-        <div>
-          last commit message:
-          <input  value="${this.data.github.lastCommitMsg}" readonly="readonly">
-        </div>
-        <div>
-          index sha:
-          <input  value="${this.data.github.indexSha}" readonly="readonly">
-        </div>
-        <button class="pill-btn pill-btn--secondary" name="github">Sign-${this.authStatus ? 'Out of' : 'In to'} GitHub</button>
-        <hr>
-        <div class="inline-link inline-link--secondary" name="privacy-policy" style="align-self: center; cursor: pointer;">Privacy Policy</div>
       </div>
-
-      <!-- TODO: add SIGNOUT of GitHub button -->
     `
 
     this.$('#name-input').addEventListener('change', (e) => {
@@ -427,7 +408,7 @@ class StudentSession extends Widget {
       }
     }))
 
-    this.$('div[name="privacy-policy"]').addEventListener('click', () => {
+    this.$('[name="privacy-policy"]').addEventListener('click', () => {
       WIDGETS.open('privacy-policy')
     })
 

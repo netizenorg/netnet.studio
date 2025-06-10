@@ -12,7 +12,7 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 const initWidgets = [
-  'functions-menu',
+  'coding-menu',
   'student-session',
   'html-reference',
   'css-reference',
@@ -33,7 +33,7 @@ NNE.on('cursor-activity', (e) => {
 })
 
 NNE.on('lint-error', (e) => {
-  WIDGETS['code-review'].updateIssues(e)
+  WIDGETS['code-review'].review({ issues: e })
 })
 
 NNE.cm.on('keydown', (cm, e) => {
@@ -63,15 +63,21 @@ window.addEventListener('load', () => {
     })
     // when everythings loaded...
     utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
-      WIDGETS['student-session'].clearProjectData()
+      // setup custom renderer to catch errors (see on "message" below)
+      utils.setCustomRenderer(null)
       // ...check URL for params, && fade out load screen when ready
       if (utils.checkURL() === 'none') utils.loadDefault()
     })
   })
 })
 
-window.addEventListener('beforeunload', () => {
-  WIDGETS['student-session'].clearProjectData()
+// the <iframe> messanger is injected into the rendered html pages, handled in:
+// setCustomRenderer or files-db-service-worker.js (when working on projects)
+window.addEventListener('message', e => WIDGETS['code-review'].review({ error: e }))
+
+// warn the user about accidental navigation attempts
+window.addEventListener('beforeunload', (event) => {
+  event.preventDefault(); event.returnValue = ''
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners

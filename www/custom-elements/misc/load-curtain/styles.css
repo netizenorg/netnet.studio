@@ -6,13 +6,13 @@
 
   opacity: 1;
   z-index: 9000;
-  
+
   justify-content: center;
   align-items: center;
-  
+
   width: 100vw;
   height: 100vh;
-  
+
   color: var(--fg-color);
 }
 .curtain::before {
@@ -26,7 +26,7 @@
 
   width: 100%;
   height: 100%;
-  
+
   background: var(--bg-color);
 }
 
@@ -35,7 +35,7 @@
   top: 50%;
   left: 50%;
   z-index: 1;
-  
+
   width: 95%;
   max-width: 1000px;
   height: auto;
@@ -82,11 +82,8 @@
 
 .curtain__svg__name {
   position: absolute;
-  top: 49%;
-  left: 22.2%;
   z-index: 1;
 
-  width: 10%;
   max-height: 6em;
 
   color: var(--fg-color);
@@ -101,6 +98,27 @@
   transform: translateY(-50%);
 }
 
+.curtain__svg__name.curtain__svg__upload {
+  top: 60%;
+  left: 22.2%;
+  width: 10%;
+  text-align: center;
+}
+
+.curtain__svg__name.curtain__svg__folder {
+  top: 58%;
+  left: 19.6%;
+  width: 12.8%;
+  text-align: center;
+}
+
+.curtain__svg__name.curtain__svg__github {
+  top: 62%;
+  right: 18.4%;
+  width: 17%;
+  text-align: center;
+}
+
 
 /* loading specificity */
 .curtain--delete .curtain__txt {
@@ -109,6 +127,6 @@
   left: 45.4%;
 
   text-align: center;
-  
+
   transform: translate(-50%, 50%);
 }

@@ -29,7 +29,7 @@ window.CONVOS['browser-fest'] = (self) => {
     content: 'To submit to <a href="https://browserfest.netizen.org/" target="_blank">BrowserFest</a>, you need to have a project open. Do you want to open a saved project or would you like to create a new one?',
     options: {
       'open a project I made earlier': (e) => {
-        WIDGETS['functions-menu'].openProject()
+        WIDGETS['coding-menu'].openProject()
       },
       'start a new project': (e) => {
         if (NNW.layout === 'welcome') {
@@ -37,7 +37,8 @@ window.CONVOS['browser-fest'] = (self) => {
           NNW.layout = 'dock-left'
           window.utils.afterLayoutTransition(() => {
             setTimeout(() => NNE.cm.refresh(), 10)
-            WIDGETS['functions-menu'].newProject()
+            // THIS WAS REMOVED IN FILES + FOLDERS REFACTOR
+            // WIDGETS['coding-menu'].newProject()
           })
         }
       }

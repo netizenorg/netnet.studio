@@ -1,4 +1,4 @@
-/* global NetNetFaceMenu, NNE, nn, utils */
+/* global NetNetFaceMenu, NNE, WIDGETS, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -305,7 +305,6 @@ class NetNet {
   _mouseUp (e) {
     if (this.mousedown) this._toss('after')
     if (this.mousedown) this.keepInFrame()
-    // this.mousedown = false
     this._updateMouseDown(false)
     this.cursor = 'auto'
     this.winOff = null
@@ -314,10 +313,8 @@ class NetNet {
 
   _mouseDown (e) {
     const mw = (this.layout === 'separate-window' || this.layout === 'welcome')
-    // if (e.target.id === 'nn-window') this.mousedown = true
     if (e.target.id === 'nn-window') this._updateMouseDown(true)
     else if (e.target.id === 'nn-menu' && mw) {
-      // this.mousedown = true
       this._updateMouseDown(true)
       this.cursor = 'move'
       utils.selecting(false)
@@ -634,13 +631,16 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
-    // const gh = WIDGETS['student-session'].data.github
-    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+  updateTitleBar (text, unsaved) {
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        const path = this.title.textContent
+        WIDGETS['project-files'].explainTitleBar(path)
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
@@ -738,25 +738,18 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
 
   _preventAccidentalExit () {
-    // NOTE: students on mace would often double-finger swipe back on their
+    // NOTE: students on mac would often double-finger swipe back on their
     // trackpads (when trying to move their scroll bars) and this would trigger
-    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
-    // if they accidentally refresh, they loos all their progress. This code
-    // prevents both from happening (refresh tirggers confirmation box)
+    // Mac's "back" button, and thus they'd loose all their progress. Similarly,
+    // if they accidentally refresh, they loose all their progress. This code,
+    // along with the 'unload' event in main.js, prevents both from happening.
 
     // Prevent backward/forward navigation
     window.addEventListener('popstate', (event) => {
       window.history.pushState(null, '', window.location.href)
     })
-
     // Initialize history state to disable navigation
     window.history.pushState(null, '', window.location.href)
-
-    // Optionally warn the user about navigation attempts
-    window.addEventListener('beforeunload', (event) => {
-      event.preventDefault()
-      event.returnValue = '' // Required for Chrome to show the warning dialog
-    })
   }
 }
 

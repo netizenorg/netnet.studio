@@ -4,13 +4,15 @@ window.CONVOS['student-session'] = (self) => {
 
   const firstOpts = (ai) => {
     const o = {
-      'let\'s sketch': (e) => {
+      'let\'s code': (e) => {
         NNW.menu.switchFace('default')
         self.checkForSavePoint()
       },
       'let\'s learn': (e) => {
         NNW.menu.switchFace('default')
+        // WIDGETS['student-session'].clearProjectData()
         WIDGETS.open('learning-guide')
+        e.hide()
       }
     }
     if (ai) o['classical AI?'] = (e) => e.goTo('classical-ai')
@@ -35,7 +37,7 @@ window.CONVOS['student-session'] = (self) => {
   //     'hi netnet!': (e) => e.goTo('what-to-do'),
   //     'that\'s not my name?': (e) => e.goTo('diff-user')
   //     'submit to BrowserFest': (e) => {
-  //       WIDGETS['functions-menu'].BrowserFest()
+  //       WIDGETS['coding-menu'].BrowserFest()
   //     }
   //   },
   //   after: () => {
@@ -48,42 +50,34 @@ window.CONVOS['student-session'] = (self) => {
     content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
     options: {
       'yes please': (e) => {
-        WIDGETS['functions-menu']._openProject(self.getData('opened-project'))
+        WIDGETS.load('project-files', (w) => w.openProject(self.getData('opened-project')))
       },
-      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
-    }
-  }, {
-    id: 'prior-github-login',
-    content: `Would you like to open one of your GitHub projects or do you want to start something new?`,
-    options: {
-      'yes, let\'s open one': (e) => {
-        WIDGETS['functions-menu'].openProject()
-      },
-      'no let\'s start something new': (e) => e.goTo('new-proj-or-sketch')
-    }
-  }, {
-    id: 'new-proj-or-sketch',
-    content: 'Ok, do you want to create a new GitHub project or do you just want to sketch?',
-    options: {
-      'let\'s start a new project': (e) => {
+      'no, open a different project': (e) => {
         self.clearProjectData()
-        WIDGETS['functions-menu'].newProject()
+        WIDGETS.load('project-files', (w) => w.openProject())
       },
-      'I just want to sketch': (e) => {
+      'no, let\'s start something new': (e) => {
         self.clearProjectData()
-        WIDGETS['functions-menu'].newSketch()
+        WIDGETS['coding-menu'].new()
       }
     }
   }, {
+    id: 'prior-github-login',
+    content: 'Would you like to open one of your GitHub projects or do you want to start something new?',
+    options: {
+      'yes, let\'s open one': (e) => WIDGETS.load('project-files', (w) => w.openProject()),
+      'no let\'s start something new': (e) => WIDGETS['coding-menu'].new()
+    }
+  }, {
     id: 'prior-save-state',
-    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code I add to the editor.`,
+    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code you or I add to the editor.`,
     options: {
       'yes please': (e) => {
         e.hide()
         const delay = utils.getVal('--menu-fades-time')
         setTimeout(() => self.restoreSavePoint(), delay)
       },
-      'no let\'s start from scratch': (e) => WIDGETS['functions-menu'].newSketch()
+      'no let\'s start from scratch': (e) => WIDGETS['coding-menu'].new()
     }
   }, {
     id: 'first-time',
@@ -135,9 +129,15 @@ window.CONVOS['student-session'] = (self) => {
     options: { 'ah, ok': (e) => e.hide() }
   }, {
     id: 'classical-ai',
-    content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI. That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
+    content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI like Large Language Models (LLM). That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
     options: {
       'oh, i see': (e) => e.goTo('return-student-no-greet')
+    }
+  }, {
+    id: 'blank-canvas-ready',
+    content: 'Great! Here\'s a blank canvas. Click on my face if you need me, or double click on any piece of code if you want me to explain it to you. You might also check out the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget for inspiration!',
+    options: {
+      'will do, thanks!': (e) => e.hide()
     }
   }]
 
@@ -256,7 +256,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'general-data-info',
-    content: 'You can change your name at anytime here, but if you\'d like to change any editor settings, like my theme, you\'ll need to use the Functions Menu.',
+    content: 'You can change your name at anytime here, but if you\'d like to change any editor settings, like my theme, you\'ll need to use the Coding Menu.',
     options: {
       'got it': (e) => e.hide()
     }
@@ -274,7 +274,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'github-data-info-2',
-    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Functions Widget</b> (just click on my face)',
+    content: 'I want to help set you up for success as a pro Internet artist! These days that means hosting your projects on GitHub. If you connect me to your GitHub account I\'ll store some data here I\'ll need to help keep things seamless. You could also just download your code using the <b>Coding Menu</b> (just click on my face)',
     options: {
       'what\'s GitHub?': (e) => e.goTo('what-is-github'),
       'got it': (e) => e.hide()
@@ -325,10 +325,10 @@ window.CONVOS['student-session'] = (self) => {
     after: () => self.greetStudent()
   }, {
     id: 'reboot-session',
-    content: 'This will wipe my entire memory, it will be like we first met...',
+    content: 'Are you sure you want to clear all your data and reboot me? This will wipe my entire memory, it will be like we first met...',
     options: {
       ok: (e) => { e.hide(); self.clearAllData() },
-      'no, never mind': (e) => e.hide()
+      'oh, no never mind': (e) => e.hide()
     }
   }]
 

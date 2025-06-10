@@ -1,10 +1,14 @@
-/* global HTMLElement, WIDGETS, utils */
+/* global HTMLElement, WIDGETS, NNE, utils */
 window.WIDGETS = { // GLOBAL WIDGETS OBJECT
   // all named/keyed instantiated widgets are properties of this global object
   loaded: [], // list of filenames of all currently loaded widgets
   instantiated: [], // list of keys of all currently instantiated widgets
   list: () => WIDGETS.instantiated.map(key => WIDGETS[key]), // array of widgets
   load: (dirname, cbfunc) => {
+    if (WIDGETS.loaded.includes(dirname)) {
+      if (cbfunc) cbfunc(WIDGETS[dirname])
+      return
+    }
     utils.loadStyleSheet(`widgets/${dirname}/styles.css`)
     const s = document.createElement('script')
     s.setAttribute('src', `widgets/${dirname}/index.js`)
@@ -513,6 +517,31 @@ class Widget {
     return e.clientX > offX && e.clientY > offY && this._resizable
   }
 
+  _updateResizeBlocker (msg) {
+    // NOTE: this creates a div over the #nn-output div (which has the iframe)
+    // because when the mouse moves over an iframe it gets resizing stuck
+    if (msg === 'remove') {
+      if (this.blocker) this.blocker.remove()
+      return
+    } else if (msg === 'create') {
+      const output = document.querySelector('#nn-output')
+      const computedStyle = window.getComputedStyle(output)
+      const zIndex = Number(computedStyle.zIndex) + 1
+      this.blocker = document.createElement('div')
+      this.blocker.style.position = 'absolute'
+      // this.blocker.style.background = 'rgba(255, 0, 0, 0.5)'
+      this.blocker.style.zIndex = zIndex
+      document.body.appendChild(this.blocker)
+    }
+
+    if (!this.blocker) return
+    const rbox = NNE.render.getBoundingClientRect()
+    this.blocker.style.left = rbox.x + 'px'
+    this.blocker.style.top = rbox.y + 'px'
+    this.blocker.style.width = rbox.width + 'px'
+    this.blocker.style.height = rbox.height + 'px'
+  }
+
   _mouseDown (e) {
     const self = e.target.parentNode === this.ele || e.target === this.ele
     if (self) {
@@ -520,9 +549,11 @@ class Widget {
       if (e.target.className === 'widget__top') {
         this.ele.querySelector('.widget__top').style.cursor = 'move'
       }
+      this._updateResizeBlocker('create')
       // if it wasn't clicked on bottom right, then we shouldn't resize
       if (this.mousedown === 'widget' && !this._shouldResize(e)) {
         this.mousedown = false
+        this._updateResizeBlocker('remove')
       }
       // update z index so it's above other widgets
       this.bring2front()
@@ -531,6 +562,7 @@ class Widget {
 
   _mouseUp (e) {
     this.mousedown = false
+    this._updateResizeBlocker('remove')
     this.winOff = null
     this.ele.querySelector('.widget__top').style.cursor = 'grab'
     this.keepInFrame()

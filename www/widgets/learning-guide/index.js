@@ -32,7 +32,7 @@ class LearningGuide extends Widget {
 
     this._createPage('mainOpts', 'main-slide.html', null, (div) => {
       // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['functions-menu'].BrowserFest()
+      //   WIDGETS['coding-menu'].BrowserFest()
       // })
 
       // create sub pages
@@ -61,7 +61,7 @@ class LearningGuide extends Widget {
       this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
-    WIDGETS['functions-menu'].on('theme-change', () => {
+    WIDGETS['coding-menu'].on('theme-change', () => {
       const src = this.ele.querySelector('iframe').src
       this.ele.querySelector('iframe').src = src
     })
@@ -79,7 +79,7 @@ class LearningGuide extends Widget {
       if (WIDGETS['student-session'].getData('opened-project')) {
         WIDGETS['student-session'].clearProjectData()
       }
-      NNE.addCustomRoot(`tutorials/${name}/`)
+      utils.setCustomRenderer(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
         this._loadTutorial(name, time)
@@ -119,7 +119,7 @@ class LearningGuide extends Widget {
       window.convo = new Convo(this.convos, 'toc')
       NNW.menu.switchFace('happy')
     } else {
-      window.convo.hide()
+      if (window.convo) window.convo.hide()
       NNW.menu.switchFace('default')
     }
   }

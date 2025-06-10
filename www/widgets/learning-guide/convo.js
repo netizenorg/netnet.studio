@@ -7,7 +7,7 @@ window.CONVOS['learning-guide'] = (self) => {
     return {
       'ok!': (e) => e.hide(),
       'Learning Guide?': (e) => e.goTo('nfo-lg'),
-      'Functions Menu?': (e) => e.goTo('nfo-fm'),
+      'Coding Menu?': (e) => e.goTo('nfo-fm'),
       'Search Bar?': (e) => e.goTo('nfo-sb')
     }
   }
@@ -28,7 +28,7 @@ window.CONVOS['learning-guide'] = (self) => {
     }
   }, {
     id: 'explain',
-    content: 'Scroll through the learning guide to find interactive tutorials, examples and references. If you\'d like to jump straight to coding your own sketch just click on my face and say <img src="images/menu/hi.png" class="learning-guide__d-icons"> anytime, or you can click on the <img src="images/menu/functions.png" class="learning-guide__d-icons"> <b>Functions Menu</b>, or the <img src="images/menu/tutorials.png" class="learning-guide__d-icons"> <b>Learning Guide</b> or the <img src="images/menu/search.png" class="learning-guide__d-icons"> <b>Search Bar</b>.',
+    content: 'Scroll through the learning guide to find interactive tutorials, examples and references. If you\'d like to jump straight to coding your own sketch just click on my face and say <img src="images/menu/hi.png" class="learning-guide__d-icons"> anytime, or you can click on the <img src="images/menu/code.png" class="learning-guide__d-icons"> <b>Coding Menu</b>, or the <img src="images/menu/tutorials.png" class="learning-guide__d-icons"> <b>Learning Guide</b> or the <img src="images/menu/search.png" class="learning-guide__d-icons"> <b>Search Bar</b>.',
     options: menuOpts()
   }, {
     id: 'nfo-lg',
@@ -36,7 +36,7 @@ window.CONVOS['learning-guide'] = (self) => {
     options: menuOpts()
   }, {
     id: 'nfo-fm',
-    content: `The <img src="images/menu/functions.png" class="learning-guide__d-icons"> <b>Functions Menu</b> widget controls my code editor settings and other details having to do with your sketch. It also lets you connect me (login) to your GitHub so you can create and publish projects (or "repositories") to the World Wide Web. You can also open it using the <code>${utils.hotKey()} + ;</code> key (<i>${utils.hotKey()} semicolon</i>).`,
+    content: `The <img src="images/menu/code.png" class="learning-guide__d-icons"> <b>Coding Menu</b> widget controls my code editor settings and other details having to do with your sketch. It also lets you connect me (login) to your GitHub so you can create and publish projects (or "repositories") to the World Wide Web. You can also open it using the <code>${utils.hotKey()} + ;</code> key (<i>${utils.hotKey()} semicolon</i>).`,
     options: menuOpts()
   }, {
     id: 'nfo-sb',

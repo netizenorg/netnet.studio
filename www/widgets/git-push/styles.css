@@ -1,0 +1,41 @@
+.git-push-widget p {
+  max-width: 500px;
+}
+
+.git-push-widget__terminal::before {
+  content: "Terminal";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--fg-color);
+  color: var(--bg-color);
+  padding: 0px 8px;
+}
+
+.git-push-widget__terminal {
+  font-family: "FiraMono", inconsolata, monospace;
+  color: var(--netizen-text);
+  padding: 12px;
+  border: 2px solid var(--netizen-tag);
+  border-radius: 10px;
+}
+
+.git-push-widget__prompt {
+  color: var(--netizen-attribute);
+}
+
+.git-push-widget__path {
+  color: var(--netizen-string);
+}
+
+.git-push-widget__terminal button {
+  float: right;
+}
+
+.git-push-widget__info {
+  margin: 15px;
+  margin-top: 23px;
+}
+.git-state-item {
+  display: block;
+}

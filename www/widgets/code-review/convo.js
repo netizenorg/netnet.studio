@@ -1,13 +1,12 @@
-/* global nn, WIDGETS, NNE */
+/* global nn, NNE */
 window.CONVOS['code-review'] = (self) => {
-  const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
-  const type = 'sketch' // TODO check if in GH project, change to "tab" or "file"
-  const codeReview = WIDGETS['code-review']
-  const done = (e) => { codeReview.close(); e.hide() }
+  const Mac = nn.platformInfo().platform.includes('Mac')
+  const hotkey = Mac ? 'CMD' : 'CTRL'
+  const done = (e) => { self.close(); e.hide() }
 
   return [{
     id: 'error-free',
-    content: `The code in this ${type} looks good to me. I've got no comments or critique for you.`,
+    content: 'The code in this file looks good to me. I\'ve got no comments or critique for you. However, your browser may catch other errors after rendering your code. If it does, I\'ll mark the line causing the error with a red dot for you to click to learn more.',
     options: {
       'great!': (e) => done(e)
     }
@@ -27,8 +26,8 @@ window.CONVOS['code-review'] = (self) => {
     options: {
       'this looks good to me': (e) => done(e),
       'revert back to how it was': (e) => {
-        codeReview.undoTidy()
-        codeReview.close()
+        self.undoTidy()
+        self.close()
         e.goTo('revert-tidy')
       }
     }
@@ -40,13 +39,13 @@ window.CONVOS['code-review'] = (self) => {
     }
   }, {
     id: 'review-tidy',
-    content: `No problem, you can always use the <code>tidyCode()</code> function in the <b>Functions Menu</b> whenever you want me to automatically clean your indentation, and <b>${hotkey}+Z</b> to undo it.`,
+    content: `No problem, you can always use the <code>tidyCode()</code> function in the <b>Coding Menu</b> whenever you want me to automatically clean your indentation, and <b>${hotkey}+Z</b> to undo it.`,
     options: {
       'ok thanks': (e) => done(e)
     }
   }, {
     id: 'found-errors',
-    content: `I found ${codeReview.issues.length} issues with your code. Click the individual issues in my Code Review Widget to learn more about each, but keep in mind that like all AI I'm biased. Some of the things I consider "issues" might not be from your vector view.`,
+    content: `I found ${self.issues.length} issue${self.issues.length > 1 ? 's' : ''} with your code. Click the individual issues in my Code Review Widget to learn more about each, but keep in mind that like all AI I'm biased, you might not agree that these are all "issues".`,
     options: {
       'What\'s a Code Review?': (e) => e.goTo('explain-code-review'),
       'What do you mean biased?': (e) => e.goTo('explain-bias')
@@ -66,7 +65,7 @@ window.CONVOS['code-review'] = (self) => {
     }
   }, {
     id: 'explain-bias',
-    content: 'Like all AIs I reflect the world views of the folks who programmed me. A lot of modern AI developed through a process known as <a href="https://www.youtube.com/watch?v=zl9y8tg7MA0&feature=emb_title" target="_blank">Machine Learning</a> often reflect the bias of the data set they were trained on. As classical AI, my opinions were hand coded by the folks at <a href="https://netizen.org" target="_blank">netizen.org</a>. They based their decisions on modern web development conventions. Not everything I consider an "issue" will cause a "bug", and even when it does, you might be instigating that bug for creative purposes.',
+    content: 'Like all AIs I reflect the views of the folks who programmed me. A lot of modern AI, developed through a process known as <a href="https://www.youtube.com/watch?v=zl9y8tg7MA0&feature=emb_title" target="_blank">Machine Learning</a>, often reflect the bias of the data set they were trained on. As classical AI, my opinions were hand coded by the folks at <a href="https://netizen.org" target="_blank">netizen.org</a>. They based their decisions on modern web development conventions and "best practices". Not everything I consider an "issue" will cause a "bug", and even when it does, you might be instigating that bug for creative purposes.',
     options: {
       'I see': (e) => e.goTo('explain-bias-2')
     }
@@ -88,6 +87,29 @@ window.CONVOS['code-review'] = (self) => {
     content: 'Good Bye!',
     options: {
       'ok thanks': (e) => done(e)
+    }
+  },
+  // console error convos
+  {
+    id: 'custom-renderer-error',
+    content: `<i>Your browser passed me this error</i>:<br><span style="font-family: fira-code, inconsolata, monospace">${self.error.message}</span>`,
+    options: {
+      'ok, I\'ll fix it': (e) => e.hide(),
+      'what does that mean?': (e) => e.goTo('custom-renderer-error2'),
+      'my browser did?': (e) => e.goTo('custom-renderer-error3')
+    }
+  }, {
+    id: 'custom-renderer-error2',
+    content: 'When I review your code for mistakes I try to explain them in a clear way, but this isn\'t an issue I caught. This was an error your browser informed me of after we ran your code, and the browser errors aren\'t always easy to make sense of, but your browser might have more info which could help!',
+    options: {
+      ok: (e) => e.hide(),
+      'my browser did?': (e) => e.goTo('custom-renderer-error3')
+    }
+  }, {
+    id: 'custom-renderer-error3',
+    content: `Your browser converts the code you write into the rendered output we see. When it does this, it also catches any errors I missed before rendering and displays them in the <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools" target="_blank">developer tools</a>. To open them press <code>${Mac ? 'Fn + ' : ''}F12</code> and then switch to the "Console" tab. You can learn more about the error there.`,
+    options: {
+      ok: (e) => e.hide()
     }
   }]
 }
