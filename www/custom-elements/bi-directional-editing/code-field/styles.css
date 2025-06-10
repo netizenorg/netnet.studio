@@ -1,0 +1,13 @@
+.code-field {
+  width: 250px;
+
+  padding: 6px;
+  border: none;
+  border-radius: 5px;
+  margin: 6px;
+
+  color: var(--netizen-hint-color);
+  background-color: var(--netizen-meta);
+  
+  font-family: monospace;
+}

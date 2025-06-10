@@ -1,0 +1,125 @@
+{
+  "name": "CSS Art Template",
+  "toc": true,
+  "tags": [
+    "template",
+    "css",
+    "art",
+    "still",
+    "life",
+    "center",
+    "composition",
+    "flex",
+    "flexbox"
+  ],
+  "layout": "dock-left",
+  "key": 1695683222462,
+  "code": "#code/eJxVkMFuwyAMhs/NU7g9TmJlh13SLOcd1ttegIBDvBKIgGbJqr77vNLDKiHr5/dvPuEm5dVhWwHweYILdGERiX7I25p1NBgFWwe4lkgXzAoXFgCG0uTUWkPvcDncrK9zytSvQgef0ecaNFeMpakcWS8o45geGwOSHTj8IuU8FGtU0ZKvQf5dr9WG63Mf1Yh39hQSZQqciOhUphnL3DeZPNTwKuW0PD7+zyrfYt60QAqODHRO6VNBVc3+vhKWhmbQTqX0trvRd221abZCwDnC++fxA3QwCDZgYk5EEKLlLTV7nmt/AW0dZRQ=",
+  "info": [
+    {
+      "title": "the template",
+      "focus": null,
+      "text": "Here's a CSS Art template, perfect anytime you want to make a composition of a specific size which you'd like to center in the middle of a page."
+    },
+    {
+      "title": "frame html",
+      "focus": [
+        23,
+        24,
+        25
+      ],
+      "text": "You should place all your HTML elements within the div with the class of \"frame\" this way you can position all the elements relative to that frame which will ensure that all these elements remain arranged how you want them (even as the page size changes)"
+    },
+    {
+      "title": "frame css",
+      "focus": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "The frame class has a specific <code>width</code> and <code>height</code> set which you are welcome to change, but keep in mind not to exceed common screen sizes. "
+    },
+    {
+      "title": "frame position",
+      "focus": [
+        13,
+        14,
+        18
+      ],
+      "text": "It also has a <code>position</code> property set to \"relative\" which will ensure that any of the frame's child elements stay positioned relative to it (assuming you don't override this by setting any of your element's <b>position</b>'s to \"fixed\" for example). You can learn lots more about <a href=\"https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Positioning\" target=\"_blank\">CSS position here</a>. "
+    },
+    {
+      "title": "frame border",
+      "focus": [
+        13,
+        17,
+        18
+      ],
+      "text": "It also has a <code>border</code> property set, this is here so you can <i>see</i> the frame (otherwise it would be invisible) and know what you are positioning your elements relative to. I think it's helpful to leave this here while working on your composition, but feel free to remove it when you're finished if it detracts from your piece."
+    },
+    {
+      "title": "body css",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "Although we haven't explicity defined a <code>&lt;body&gt;</code> element in our page, the browser's always creates one by default and place all your HTML code inside it, which is why we can style it here."
+    },
+    {
+      "title": "flexbox",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        11
+      ],
+      "text": "We can make the entire body a CSS <a href=\"https://css-tricks.com/snippets/css/a-guide-to-flexbox/\" target=\"_blank\">flexbox</a> by setting the <code>display</code> to \"flex\". This allows us to use a couple of other CSS properties, <code>justify-content</code> and <code>align-items</code> which allows us to center the body's only child element (our frame) horizontally and vertically."
+    },
+    {
+      "title": "body height",
+      "focus": [
+        5,
+        9,
+        11
+      ],
+      "text": "Here we're setting our body's <code>height</code> to \"100vh\" or 100 percent of the \"viewport height\" (ie. your browser window). This is the default on some browsers, but not on all. Adding this line makes our composition look consistent across different browsers."
+    },
+    {
+      "title": "body margin",
+      "focus": [
+        5,
+        10,
+        11
+      ],
+      "text": "Most browsers will add a bit of margin around the entire body element. Here we're setting the margin to 0 for consistency."
+    },
+    {
+      "title": "box-sizing reset",
+      "focus": [
+        3
+      ],
+      "text": "Here we've defined a CSS rule for the <code>*</code> selector, which means it will be applied to \"every\" element on the page. In this case we want to change the dfault value for every element's <code>box-sizing</code> property from \"content-box\" to \"border-box\". This is a common <i>reset</i> found on most websites today."
+    },
+    {
+      "title": "box-sizing info",
+      "focus": [
+        3
+      ],
+      "text": "All HTML elements are \"boxes\" and have the potential of containing padding (space around its inside), a border surrounding it and a margin (space around its outside). When you start playing with an elements width/height and start adjusting it's padding, border and/or margin (as we have with our frame) the size you set isn't always the size you get, unless we use this \"reset\". You can read more about why that is <a href=\"https://css-tricks.com/box-sizing/\" target=\"_blank\">here</a> and <a href=\"https://css-tricks.com/the-css-box-model/\" target=\"_blank\">here</a>."
+    },
+    {
+      "title": "dont' forget!",
+      "focus": null,
+      "text": "Don't forget to press <code>${utils.hotKey()}+S</code> when you're ready to start working on your sketch to save your progress. It's a good idea to get into the habit of pressing this \"save\" shortcut key often while you work so you don't loose any of your progress!"
+    }
+  ]
+}

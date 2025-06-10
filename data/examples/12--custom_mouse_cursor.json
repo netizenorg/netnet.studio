@@ -1,6 +1,38 @@
 {
-  "tags": "custom cursors",
-  "name": "custom mouse cursor",
-  "code": "#code/eJxNkNFuwyAMRd/zFX5cqyWQrg9TWu1fSOMEaxAi7Iym0/59qGTSHkD2xffIlyvL5vCjqgD6MGzwnQsAb+JEcwf68mwTDWI7aLX+SkWxSJOVItki3dbIIXawRvdC3kzIqkisoqG5D0npZqLx8ApmlVBM6gg0AweP0MeQGCODWASmB4IjTwJjiDsbChaIoT293/NZ7nBUfyCx+eE5AiM5hGQ4BxkyecvZPtdkBGc29M9iRRbulEopNfuy9XltbsHvu6uTbs9Kv6l87ynqheZkEV3NKI0V7wrwp6quav/NX0qKar0=",
-  "key": "12"
+  "name": "custom cursor",
+  "toc": true,
+  "tags": [
+    "css",
+    "custom",
+    "mouse",
+    "cursor",
+    "rainbow"
+  ],
+  "layout": "dock-left",
+  "key": 12,
+  "code": "#code/eJyzKS6pzEm14+JSUEjKT6lUqAYyFBRyE4vSM/OsFAyswdyM1Mz0jBIrBUMDg7IMiFByaVFxfpGVQmlRjkZmbmJ6arE+RKhYvygxMy8pv1zfQC89M01TRyGxtCQfpKmWi8tGH2odADRVI9w=",
+  "info": [
+    {
+      "title": "custom cursor",
+      "focus": null,
+      "text": "In this example I've created a custom mouse cursor, hover over the blank page to see what the cursor looks like. This custom cursor was designed by <a href=\"https://www.cursors-4u.com/cursor/2014/03/14/rainbow-pinwheel-set.html\" target=\"_blank\">bokuwatensai</a>."
+    },
+    {
+      "title": "cursor property",
+      "focus": null,
+      "text": "It's not uncommon to change the mouse cursor when hovering over specific elements, for example you might change a <code>button</code>'s CSS to <code>cursor: pointer;</code> so that the default arrow cursor is replaced with a pointing hand to indicate that the button is clickable. "
+    },
+    {
+      "title": "custom url",
+      "focus": [
+        6
+      ],
+      "text": "But you can also create a custom cursor for your entire page by applying the <code>cursor</code> property to your <b>body</b>. Instead of using one of the <a href=\"https://css-tricks.com/almanac/properties/c/cursor/\" target=\"_blank\">built-in values</a> like \"pointer\", we can use our own image by writing a path to a particular file using the same CSS <code>url()</code> function we use for background-images, followed by \", auto\"."
+    },
+    {
+      "title": "size limit",
+      "focus": null,
+      "text": "It's important to note, that most browsers will restict the maximum allowed image file size which can be used as a cursor, usually to 128px wide and 128px high. Most custom cursor's tend to be around 32px wide by 32px high."
+    }
+  ]
 }

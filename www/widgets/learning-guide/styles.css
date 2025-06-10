@@ -1,0 +1,358 @@
+.learning-guide__header {
+  display: flex;
+  position: relative;
+  
+  flex-direction: column;
+  align-items: center;
+  
+  margin: -10px 0px 20px 0px;
+  
+  z-index: 2;
+}
+
+.learning-guide__header > * {
+  position: relative;
+  
+  margin: 0px 2px;
+
+  text-align: center;
+}
+
+.learning-guide__header > h2 {
+  font-family: "fira-sans-bold";
+  font-size: 49px;
+  line-height: 49px;
+}
+
+.learning-guide__header > .bg {
+  position: absolute;
+
+  width: 80%;
+  height: 80%;
+
+  background: linear-gradient(90deg, var(--netizen-tag) 30%, var(--netizen-attribute) 60%, var(--netizen-string) 100%);
+  background-size: 200% 100%;
+
+  filter: blur(50px);
+  animation: bg-shift 10s infinite;
+}
+
+@keyframes bg-shift {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+
+.learning-guide__main {
+  position: relative;
+  z-index: 2;
+}
+
+.learning-guide__main h3 {
+  margin: 80px 0 20px 0;
+
+  font-family: 'fira-mono-regular', monospace;
+  font-size: 31px;
+  text-align: center;
+  font-weight: lighter;
+  
+  cursor: pointer;
+}
+
+.learning-guide__main h3::before {
+  content: "";
+  position: relative;
+  left: 2.3rem;
+
+  transition: left 0.5s;
+}
+
+.learning-guide__main h3:hover::before {
+  content: "<<";
+  left: 0rem;
+}
+
+.learning-guide__main h3::after {
+  content: "";
+  position: relative;
+  left: -2.3rem;
+
+  transition: left 0.5s;
+}
+
+.learning-guide__main h3:hover::after {
+  content: ">>";
+  left: 0rem;
+}
+
+@keyframes arrow-bounce {
+  0% { transform: rotate(90deg) translateX(-30px); }
+  50% { transform: rotate(90deg) translateX(10px); }
+  100% { transform: rotate(90deg) translateX(-30px); }
+}
+
+.learning-guide__arrow {
+  font-size: 50px;
+  text-align: center;
+
+  transform: rotate(90deg) translateX(-25px);
+  animation: arrow-bounce 2s infinite;
+}
+
+
+.learning-guide__ex {
+  margin-bottom: 50px;
+}
+
+.learning-guide__ex-row {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 0;
+}
+
+.learning-guide__ex-start {
+  padding: 10px 0 15px;
+  border-bottom: 1px solid var(--netizen-meta);
+  margin-bottom: 10px;
+}
+
+.learning-guide__ex-start b {
+  text-transform: uppercase;
+
+  vertical-align: middle;
+}
+
+.learning-guide__ex-start span {
+  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
+}
+
+.learning-guide__ex-start button {
+  float: right;
+  vertical-align: middle;
+}
+
+.learning-guide__ex-divider {
+  height: 1px;
+
+  width: 100%;
+  
+  background: linear-gradient(90deg, var(--netizen-number) 0%, var(--netizen-string) 50%, var(--netizen-comment) 100%);
+}
+
+.learning-guide__tut,
+.learning-guide__tc {
+  margin-bottom: 18px;
+}
+
+.learning-guide__tut > div,
+.learning-guide__tc > div {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+.learning-guide__tut > div:hover .learning-guide__dotted-line,
+.learning-guide__tc > div:hover .learning-guide__dotted-line {
+  width: 170px;
+}
+
+.learning-guide__tut > div:hover .learning-guide__dotted-line::after,
+.learning-guide__tc > div:hover .learning-guide__dotted-line::after {
+  opacity: 1;
+}
+
+.learning-guide__dotted-line {
+  position: relative;
+
+  width: 0px;
+  
+  border-top: 3px dotted var(--netizen-atom);
+  
+  transition: width 0.5s;
+}
+
+.learning-guide__dotted-line::after {
+  content: "➤";
+  position: absolute;
+  right: -13px;
+  top: -12.7px;
+
+  opacity: 0;
+  
+  transition: opacity 0.25s;
+}
+
+.learning-guide__tut > div > div:nth-child(1),
+.learning-guide__tc > div > div:nth-child(1) {
+  margin: 10px 0;
+}
+
+.learning-guide__tut h2,
+.learning-guide__tc h2 {
+  margin: 4px 0;
+}
+
+.learning-guide__tut b,
+.learning-guide__tc b {
+  font-weight: bold;
+}
+
+.learning-guide__tut > p,
+.learning-guide__tc > p {
+  /* display: none; */
+  /* height: auto; */
+  padding: 8px;
+  border-top: 1px solid var(--netizen-atom);
+  
+  overflow: hidden;
+  
+  transition: 1s all;
+}
+
+.learning-guide__apx-list3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.learning-guide__apx-list2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.learning-guide__code-example-btn {
+  padding: 33px 20px;
+  border: 1px solid var(--fg-color);
+  border-radius: 20px;
+  outline: 1px solid var(--fg-color);
+  outline-offset: -5px;
+
+  color: var(--fg-color);
+
+  font-size: 41.9px;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.learning-guide__code-example-btn:hover {
+  color: var(--netizen-text);
+  border-color: var(--netizen-text);
+  outline-color: var(--netizen-text);
+}
+
+.learning-guide__code-example-btn::before {
+  content: 'code examples';
+  display: block;
+  position: relative;
+  top: -34px;
+  left: -21px;
+
+  width: 146%;
+  
+  border-radius: 20px 20px 0px 0px;
+  
+  color: var(--bg-color);
+  background: var(--fg-color);
+  
+  font-size: 14px;
+  text-align: center;
+}
+
+.learning-guide__code-example-btn:hover::before  {
+  background-color: var(--netizen-text);
+}
+
+
+/* BROWSERFEST BUTTON */
+.rainbow-bg {
+  background-image: linear-gradient(to right, #ffa50066, #ffff0066, #00800066, #00ffff66, #0000ff66, #ee82ee66) !important;
+  background-position-x: 0;
+
+  animation: pan-rainbow 5s infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes pan-rainbow {
+  0% { background-position-x: 0px; }
+  100% { background-position-x: 182px; }
+}
+
+
+/*ARPANET SCANLINES EFFECT*/
+
+@keyframes scan {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  10% { opacity: 0.9; }
+  20% { opacity: 1; }
+  30% { opacity: 0.90; }
+  40% { opacity: 1; }
+  50% { opacity: 0.97; }
+  60% { opacity: 1; }
+  70% { opacity: 0.92; }
+  80% { opacity: 1; }
+  90% { opacity: 0.95; }
+  100% { opacity: 1; }
+}
+
+
+.learning-guide__tv-frame {
+  position: relative;
+
+  width: 290px;
+  height: 188px;
+
+  border: 2px solid var(--netizen-text);
+  border-radius: 28px;
+  outline: 1px solid var(--fg-color);
+  outline-offset: 3px;
+  
+  overflow: hidden;
+}
+
+.learning-guide__tv-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  
+  animation: flicker 1s infinite;
+}
+
+.learning-guide__scan-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    transparent 0%, 
+    rgba(255, 255, 255, 0.05), 50%, 
+    transparent 100%
+  );
+
+  animation: scan 3s infinite linear;
+}
+
+
+.learning-guide__d-icons {
+  width: 25px;
+  
+  border-radius: 50%;
+  border: 4px solid var(--fg-color);
+  margin-bottom: -8px;
+
+  background: var(--fg-color);
+}

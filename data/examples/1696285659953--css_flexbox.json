@@ -1,0 +1,118 @@
+{
+  "name": "CSS flexbox",
+  "toc": true,
+  "tags": [
+    "css",
+    "flexbox",
+    "layout",
+    "menu",
+    "nav",
+    "responsive",
+    "mobile"
+  ],
+  "layout": "dock-left",
+  "key": 1696285659953,
+  "code": "#code/eJx1kc1OwzAQhO99ilVQpSLVNKACkkkjXsW1N80i/0Rep6SgvjtOk0NBRfLBmrHnW81WnE4W6wVAPg8OfQ/f+QZgiDurThIai8PbRfroOVFzEjr4hD5J4E5pFCqG3pvxyfk6pgY1R+lgQ5RwiIh+SmpygmiUI5sBrDwLxkjNlcn0hRKett3MTjgkYVCHqBIFL8EHj7eYsg1HjL/JLdvV40u5htdyuYbncnk/he5DNBjFPqQUXKZ1A3CwZP75MKPeHRpSsHJqEJ9kUithW5bdcD9Dr1uES33CUEQ9zZ1H6t1cA4CydPCCEjrOVi4V42SdL7xFtZn3s6i8OoK2inlXjIBi3FmloI3Y7Iq7onY9k6426q/etSEFvmEcyeBNY+x60qtNptY/XuSdpg==",
+  "info": [
+    {
+      "title": "getting started",
+      "focus": null,
+      "text": "In this example we'll use the CSS <a href=\"https://css-tricks.com/snippets/css/a-guide-to-flexbox/\" target=\"_blank\">flexbox</a> system to create a responsive menu design. CSS flexbox."
+    },
+    {
+      "title": "HTML elements",
+      "focus": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "text": "In our HTML we have a <code>nav</code> element with a class of \"menu\" which contains 4 <code>a</code> child elements, hypothetical links to some other pages."
+    },
+    {
+      "title": "flexbox",
+      "focus": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "text": "Our CSS starts with that <code>menu</code> class which sets our <code>display</code> property to <code>flex</code> which converts this element into a flexbox allowing us to control the placement of its child elements in different ways.\n"
+    },
+    {
+      "title": "justify-content",
+      "focus": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "text": "One of the properties we can use from the flexbox system is <code>justify-content</code>, which by default is set to \"start\". This would place all the links on the left side of our menu, one tightly placed next to the other. But because we've changed this to <code>space-around</code> our links are evenly spread across the full width of our menu, with an equal amount of space around each. There are other values we can apply to this property, check out <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content\" target=\"_blank\">these docs</a> to learn more."
+    },
+    {
+      "title": "responsive design",
+      "focus": null,
+      "text": "With just these two lines of CSS we've already got a fairly responsive design, resize the width of the browser and notice how well it adapts. Resizing the browser bellow 400px will trigger the media query and change our flexbox from a \"row\" to a \"column\""
+    },
+    {
+      "title": "media query",
+      "focus": [
+        20,
+        25
+      ],
+      "text": "In order to make our design a bit more \"mobile friendly\", we can define a <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries\" target=\"_blank\">CSS media query</a> using the <code>@media</code> <i>at-rule</i>. In this case, anything we put within the media query's code block, the <code>{</code> and <code>}</code>, will only be applied to the page when the width of the window is less than 400px."
+    },
+    {
+      "title": "CSS for mobile",
+      "focus": [
+        3,
+        4,
+        5,
+        22,
+        23
+      ],
+      "text": "What we've added in hear is some alternative rules for our <b>menu</b> class. Both of these properties are part of the flexbox system which we can use because we've declared the menu to have a <b>display</b> of <b>flex</b> above. This CSS rule doesn't <i>replace</i> the initial one, it adds to it."
+    },
+    {
+      "title": "flex-direction",
+      "focus": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "text": "Specifically, we're using the <code>flex-direction</code> property to change our flexbox from it's default \"row\" orientation to a \"column\". As well as the <code>align-items</code> property to ensure our column stays horizontally centered on the screen."
+    },
+    {
+      "title": "link styles",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "The rest of the CSS are just some aesthetic details for our links. This rule targets all the <code>a</code> elements which are direct children of the <code>menu</code> class. It changes their color to green, their font to \"sans-serif\", their size to 24px and removes the default underline applied to all links by setting the <b>text-decoration</b> to <b>none</b>."
+    },
+    {
+      "title": "link hover styles",
+      "focus": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "We've also defined a CSS rule for the \"hover\" pseudo-class on these links as well, so that when we hover over each link the color changes to a brighter shade of green and a 2px thick border appears underneath it."
+    },
+    {
+      "title": "in closing",
+      "focus": null,
+      "text": "There's a lot more we can do with this layout system, to learn more checkout this <a href=\"https://css-tricks.com/snippets/css/a-guide-to-flexbox/\" target=\"_blank\">CSS flexbox guide</a>."
+    }
+  ]
+}

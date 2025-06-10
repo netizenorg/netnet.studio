@@ -1,0 +1,93 @@
+.dropdown {
+  padding: 3px 6px 4px;
+  border: 0;
+  border-radius: 5px;
+  margin: 0;
+	
+  color: var(--netizen-meta);
+  background: var(--bg-color);
+  
+  font-family: inconsolata, monospace;
+  font-size: 15px;
+  line-height: 1.2em;
+
+  cursor: pointer;
+}
+
+.dropdown:focus {
+  outline: 1px solid var(--bg-color);
+  outline-radius: 5px;
+	outline-offset: 2px;
+  box-shadow: none;
+  border: none;
+}
+
+.dropdown--invert {
+  color: var(--bg-color);
+	background: var(--netizen-meta);
+}
+
+.dropdown--invert:focus {
+	outline: 1px solid var(--netizen-meta);
+	outline-radius: 5px;
+	outline-offset: 2px;
+}
+
+.input,
+.text-bubble-content input {
+  display: block;
+  box-sizing: border-box;
+
+  width: auto;
+  max-width: 100%;
+
+  padding: 4px 5px;
+  border: 1px solid var(--netizen-hint-shadow);
+  border-radius: 2px;
+
+  color: var(--netizen-meta);
+  background-color: var(--netizen-hint-shadow);
+
+  font-family: 'fira-mono-regular', monospace;
+  font-size: inherit;
+  
+  appearance: none;
+}
+
+.input[readonly],
+.text-bubble-content input[readonly] {
+  opacity: 0.5;
+}
+
+.input::placeholder,
+.text-bubble-content input::placeholder {
+  opacity: 0.8;
+  color: var(--netizen-meta);
+}
+
+.input:focus,
+.text-bubble-content input:focus {
+  outline: 1px solid var(--fg-color);
+  outline-radius: 2px;
+  outline-offset: 2px;
+}
+
+.input--lg {
+  width: 250px;
+
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  margin: 5px 0;
+
+  color: var(--netizen-hint-color);
+  background-color: var(--netizen-meta);
+}
+
+.input--lg[readonly] {
+  opacity: 0.8;
+}
+
+.input--lg::placeholder {
+  color: var(--netizen-hint-shadow);
+}

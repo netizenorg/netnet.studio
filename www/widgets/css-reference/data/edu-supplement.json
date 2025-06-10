@@ -1,0 +1,44 @@
+{
+  "margin": {
+    "example": "{\n\t/* amount of margin to add around the box\n\tclockwise starting from the top */\n\tmargin: 10px 20px 30px 40px;\n\t/* above is a short-hand for the code below */\n\tmargin-top: 10px;\n\tmargin-right: 20px;\n\tmargin-bottom: 30px;\n\tmargin-left: 40px;\n\t\n\t/* apply 10px of margin all around */\n\tmargin: 10px;\n\t/* apply 10px to the top and bottom */\n\t/* and 20px to the left and right  */\n\tmargin: 10px 20px;\n\t/* using \"auto\" on the left/right will */\n\t/* automatically fill the space with as */\n\t/* much margin as possible, this has the */\n\t/* effect of \"centering\" the element. */\n\tmargin: 0px auto;\n}"
+  },
+  "vw": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "vh": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "s": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "ms": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "%": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "em": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "rem": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "ch": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "px": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "deg": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "grad": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "rad": {
+    "extra": "<br><br>When numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  },
+  "turn": {
+    "extra": "<br><br>when numbers are highlighted you can use the <i>up/down</i> arrow keys to adjust this value, hold the <i>Shift</i> key to adjust by 10."
+  }
+}

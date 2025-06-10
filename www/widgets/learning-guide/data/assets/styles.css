@@ -1,0 +1,10 @@
+/* this is an example stylesheet used in the CSS review example */
+
+body {
+  background-color: #ace7ea;
+}
+
+img {
+  position: relative;
+  left: calc(50vw - 100px);
+}

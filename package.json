@@ -1,15 +1,13 @@
 {
   "name": "netnet.studio",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web’s creative potential.",
   "main": "server.js",
   "scripts": {
     "setup": "node my_modules/setup-script.js",
     "start": "node server.js",
-    "lint": "standard *.js my_modules/* www/js/* www/js/widgets/*",
-    "pull-modules": "git submodule update --init --recursive",
-    "update-modules": "git submodule update --remote --merge",
-    "update-dev": "node my_modules/update-dev.js"
+    "lint": "standard *.js my_modules/* www/core/* www/core/widgets/*",
+    "pull-modules": "git submodule update --init --recursive && (cd www/core/netnet-standard-library && git pull origin main) && (cd www/core/netitor && git pull origin master)"
   },
   "repository": {
     "type": "git",

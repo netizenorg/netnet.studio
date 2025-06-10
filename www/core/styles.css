@@ -1,0 +1,148 @@
+/*
+ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/                                    '.
+| hi there! welcome to netnet.studio's |
+| main stylesheet! coded from scratch  |
+| w/love by the artists at netizen.org |
+` _ _ _ _ _ __ _ _ _ _ _ _ _ _ _ _  ,/
+                                .'`
+                          ( ◕ ◞ ◕ )つ
+*/
+
+@import 'styles/base.css';
+@import 'styles/fonts.css';
+@import 'styles/utils.css';
+
+/* styleguide */
+@import 'styles/text.css';
+@import 'styles/buttons.css';
+@import 'styles/form-fields.css';
+
+
+/* loader */
+
+#loader {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  justify-content: space-around;
+  align-items: center;
+
+  opacity: 1;
+  z-index: 999999;
+
+  width: 100vw;
+  height: 100vh;
+
+  color: #fff;
+  background-color: #ffffff;
+  background-image: linear-gradient(#51519944 2px, transparent 1px),
+      linear-gradient(90deg, #51519944 2px, transparent 1px);
+  background-size: 50px 50px;
+
+  font-size: 20px;
+  font-family: "fira-mono-regular", inconsolata, monospace;
+
+  transition: opacity 1s;
+}
+
+#loader::before {
+  content: "";
+  position: absolute;
+
+  z-index: -1;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: linear-gradient(0deg, #c76ebca8, #515199a8);
+}
+
+#loader > div {
+  color: #e7e5c9;
+
+  font-size: 32px;
+  text-align: center;
+  text-shadow: 0px 1px 6px rgba(0,0,0,0.7);
+}
+
+#netnet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  z-index: -30;
+
+  width: 100vw;
+  height: 100vh;
+
+  transition: filter .5s var(--sarah-ease);
+}
+
+#nn-output {
+  position: absolute;
+  z-index: -20;
+}
+
+#nn-output > iframe {
+  /* HACK: at 100% it creates scrollbars for some reason */
+  height: 99.7% !important;
+}
+
+#nn-window {
+  position: absolute;
+
+  min-width: 300px;
+  min-height: 200px;
+
+  border: 4px solid var(--fg-color);
+  
+  background-color: rgba(0, 0, 0, 0);
+}
+
+#nn-window > #nn-menu {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+
+  padding: 15px 15px 5px 5px;
+
+  color: var(--fg-color);
+}
+
+#nn-window > #nn-menu > #face  {
+  height: 26px;
+
+  font-family: sans-serif;
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
+  -webkit-user-select: none;
+  user-select: none;
+
+  cursor: pointer;
+
+  transition: font-size var(--layout-transition-time);
+}
+
+#nn-window > #nn-menu > #face svg  {
+  transition: width var(--layout-transition-time),
+    height var(--layout-transition-time);
+}
+
+#nn-window > #nn-menu > #face > span {
+  display: inline-block;
+
+  padding: 0px 2px 0px 5px;
+
+  transform-origin: center;
+}
+
+#nn-window > #nn-editor {
+  height: calc(100% - 60px);
+  
+  overflow-y: scroll;
+  scrollbar-color: var(--fg-color) rgba(0,0,0,0);
+  scrollbar-width: thin;
+}
