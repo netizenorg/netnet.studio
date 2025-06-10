@@ -1399,16 +1399,29 @@ class ProjectFiles extends Widget {
     }
   }
 
-  _handleServiceWorkerMessage (data) {
-    if (this.log) console.log('MESSAGE:', data)
-    // if (data.type === 'UPDATE_FILES') {
-    //   // Update the files object with new data
-    //   this.files = data.files
-    //   if (this.log) console.log('ProjectFiles: Files updated from service worker message')
-    // } else {
-    //   if (this.log) console.log('ProjectFiles: _handleServiceWorkerMessage disregarded message')
-    //   // TODO Example: handle different types of messages from the service worker
-    // }
+  _badPathsConvo () {
+    window.convo = new Convo(this.convos, 'file-path')
+  }
+
+  _handleServiceWorkerMessage (message) {
+    if (this.log) console.log('SW MESSAGE:', message)
+    if (message.type === 'BAD_PATHS') {
+      for (const path in message.data) {
+        const type = 'warning'
+        const badPath = message.data[path].badPath
+        const line = message.data[path].lineNo
+        const col = message.data[path].line.indexOf(badPath)
+        const parts = path.split('/')
+        const language = parts[parts.length - 1].split('.')[1]
+        if (language === 'html' || language === 'css') {
+          const loc = window.location
+          const message = `Failed to load ‘${loc.protocol}//${loc.host}/${badPath}’. A ServiceWorker intercepted the request and encountered an unexpected error.`
+          const friendly = `It seems you're trying to load <code>${badPath}</code> but that file does not exist in your project. Double check your spelling and make sure the <span class="link" onclick="WIDGETS['project-files']._badPathsConvo()">file path</span> is written correctly.`
+          const obj = { type, language, message, friendly, line, col }
+          WIDGETS['code-review'].appendIssue(obj)
+        }
+      }
+    }
   }
 
   async _disableServiceWorker () {

@@ -120,6 +120,33 @@ async function getFileFromIndexedDB (filePath) {
   }
 }
 
+async function getAllFilesFromIndexedDB () {
+  try {
+    const db = await openDB()
+    const transaction = db.transaction([STORE_NAME], 'readonly')
+    const store = transaction.objectStore(STORE_NAME)
+    const getRequest = store.get(OBJ_NAME)
+
+    return new Promise((resolve, reject) => {
+      getRequest.onsuccess = () => {
+        if (getRequest.result) {
+          // An object whose keys are file paths and values are your files
+          resolve(getRequest.result)
+        } else {
+          // No files stored yet
+          resolve(false)
+        }
+      }
+      getRequest.onerror = () => {
+        reject(new Error('Error retrieving files from IndexedDB'))
+      }
+    })
+  } catch (error) {
+    console.error('Error accessing the database', error)
+    throw new Error('Error accessing the database')
+  }
+}
+
 async function generateResponse (filePath, data) {
   try { // NOTE: render .md as HTML (see markdownToHtml in fetch listener below)
     const mimeType = filePath.endsWith('.md') ? 'text/html; charset=UTF-8' : getMimeType(filePath)
@@ -220,25 +247,43 @@ function markdownToHtml (md) {
   return md.trim()
 }
 
-/*
-TODO: function for sending messages to the client
+async function findFileReferences (filePath) {
+  const files = await getAllFilesFromIndexedDB()
+  const before = ['src="', 'href="', 'url(', 'poster="']
+  const result = {}
+  if (!files) return result
 
-(async () => {
+  for (const path in files) {
+    const content = files[path]
+    const lines = content.split(/\r?\n/)
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      for (const prefix of before) {
+        if (line.includes(prefix + filePath)) {
+          result[path] = {
+            lineNo: i + 1,
+            line: line,
+            badPath: filePath
+          }
+          break
+        }
+      }
+      if (result[path]) break
+    }
+  }
+  return result
+}
+
+// send a message to the client (see _handleServiceWorkerMessage in project-files widget)
+async function postMessage (type, data) {
   // Get all clients that are currently controlled by the service worker
   const clients = await self.clients.matchAll({
     type: 'window',
     includeUncontrolled: true
   })
   // Iterate through clients and send messages
-  for (const client of clients) {
-    client.postMessage({
-      msg: 'CHECK_FOR_FILE',
-      url: event.request.url
-    })
-    console.log('Message sent to client:', client.url)
-  }
-})()
-*/
+  for (const client of clients) client.postMessage({ type, data })
+}
 
 self.addEventListener('install', (event) => {
   self.skipWaiting() // Forces the waiting service worker to become the active service worker
@@ -273,11 +318,15 @@ self.addEventListener('fetch', (event) => {
       try {
         let fileData = await getFileFromIndexedDB(filePath)
 
-        if (!fileData) { // check if they clicked on a link in their page to navigate to a new directory (with an index file in it)
+        if (!fileData) {
+          // check if they clicked on a link in their page to navigate to a new directory (with an index file in it)
           fileData = await getFileFromIndexedDB(filePath + '/index.html')
           if (fileData) {
             fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, instead of navigating directly to that file. While this will work once published on the web, in order for me to render a preview here, you\'ll need to link directly to the index.html file in this folder. Make sure to add index.html to the end of the path you navigated to in your code.'
           }
+          // check if they're trying to link (src, href, ) to a local file that does not exist
+          const obj = await findFileReferences(filePath)
+          if (Object.keys(obj).length > 0) postMessage('BAD_PATHS', obj)
         }
 
         if (fileData && fileData.startsWith('http') && comingFromNetnet()) {

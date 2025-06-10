@@ -38,6 +38,11 @@ class CodeReview extends Widget {
     else NNE.marker(null)
   }
 
+  appendIssue (issue) {
+    this.issues.push(issue)
+    this.review()
+  }
+
   updateError (event) {
     const pf = WIDGETS['project-files']
     const ss = WIDGETS['student-session']
