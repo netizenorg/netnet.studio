@@ -45,7 +45,7 @@ marked.setOptions({ renderer })
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function generateNav (directory, basePath = '') {
   const items = fs.readdirSync(directory, { withFileTypes: true })
-  let nav = '<ul>'
+  let nav = '<ul class="docs__panel__list">'
   items.forEach(item => {
     const itemPath = path.join(directory, item.name)
     const relativePath = path.join(basePath, item.name)
@@ -55,13 +55,13 @@ function generateNav (directory, basePath = '') {
       const hasReadme = fs.existsSync(readmePath)
       const link = hasReadme ? path.join(relativePath, 'index.html').replace(/\\/g, '/') : '#'
       const text = item.name
-      nav += `<li><a href="/docs/${link}">${text}</a>${generateNav(itemPath, relativePath)}</li>`
+      nav += `<li class="docs__panel__list-item"><a class="inline-link" href="/docs/${link}">${text}</a>${generateNav(itemPath, relativePath)}</li>`
     } else if (path.extname(item.name) === '.md') {
       if (path.basename(item.name).toLowerCase() !== 'readme.md') {
         const outputFileName = `${path.basename(item.name, '.md')}.html`
         const link = path.join(basePath, outputFileName).replace(/\\/g, '/')
-        const text = path.basename(item.name, '.md')
-        nav += `<li><a href="/docs/${link}">${text}</a></li>`
+        const text = path.basename(item.name, '.md').replace(/-/g, ' ')
+        nav += `<li class="docs__panel__list-item"><a class="inline-link" href="/docs/${link}">${text}</a></li>`
       }
     }
   })
