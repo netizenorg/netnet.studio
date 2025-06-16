@@ -170,8 +170,8 @@ class Widget {
   get closable () { return this._closable }
   set closable (v) {
     this._closable = v
-    const close = v ? '<span class="close">✖</span>' : ''
-    const expnd = this.expandable ? '<span class="expand">⇱</span>' : ''
+    const close = v ? '<span class="close"></span>' : ''
+    const expnd = this.expandable ? '<span class="expand"></span>' : ''
     this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
     this._setupTitleBarButtons(true)
   }
@@ -179,8 +179,8 @@ class Widget {
   get expandable () { return this._expandable }
   set expandable (v) {
     this._expandable = v
-    const expnd = v ? '<span class="expand">⇱</span>' : ''
-    const close = this.closable ? '<span class="close">✖</span>' : ''
+    const expnd = v ? '<span class="expand"></span>' : ''
+    const close = this.closable ? '<span class="close"></span>' : ''
     this.ele.querySelector('.widget__top__close').innerHTML = `${expnd} ${close}`
     this._setupTitleBarButtons(true)
   }
@@ -258,9 +258,9 @@ class Widget {
         width: this.width,
         height: this.height
       }
-      const w = window.innerWidth - 40
-      const h = window.innerHeight - 40
-      this.update({ left: 20, top: 20, width: w, height: h }, 500)
+      const w = window.innerWidth - 20
+      const h = window.innerHeight - 20
+      this.update({ left: 10, top: 10, width: w, height: h }, 500)
       setTimeout(() => this.emit('resize', { width: w, height: h }), 500)
     }
 
@@ -268,6 +268,18 @@ class Widget {
   }
 
   update (opts, time) {
+    if (!this._expandable && !this._prevSize) {
+      // _prevSize used by expand() logic, but if not expandable use it to
+      // identify the initial size/position of widget on first call to upadte()
+      // refer to nonExpandableWidgetCheck() in keepInFrame() to see why.
+      this._prevSize = {
+        left: this.ele.style.left.length > 0 ? parseInt(this.ele.style.left) : '',
+        top: this.ele.style.top.length > 0 ? parseInt(this.ele.style.top) : '',
+        width: this.ele.style.width.length > 0 ? parseInt(this.ele.style.width) : '',
+        height: this.ele.style.height.length > 0 ? parseInt(this.ele.style.height) : ''
+      }
+    }
+
     time = time || 0
     const t = `${time}ms`
     this.ele.style.transition = `all ${t} var(--sarah-ease)`
@@ -291,11 +303,20 @@ class Widget {
   }
 
   keepInFrame () {
+    // use this function below to check if a widget has had a resize issue
+    // if so, readjust, see https://github.com/netizenorg/netnet.studio/issues/57
+    const sizeCheck = () => !this._expandable && !this._resizable && this._prevSize
+
     if (this.width >= window.innerWidth - 20) {
       this.width = window.innerWidth - 20
+    } else if (sizeCheck() && this.width !== this._prevSize.width) {
+      this.width = this._prevSize.width
     }
+
     if (this.height >= window.innerHeight - 20) {
       this.height = window.innerHeight - 20
+    } else if (sizeCheck() && this.height !== this._prevSize.height) {
+      this.height = this._prevSize.height
     }
 
     const o = this.ele.offsetTop + this.ele.offsetHeight
@@ -418,8 +439,8 @@ class Widget {
           <span class="hdr-md widget__top__title__txt">${this._title}</span>
         </div>
         <span class="widget__top__close">
-          ${this.expandable ? '<span class="expand">⇱</span>' : ''}
-          ${this.closable ? '<span class="close">✖</span>' : ''}
+          ${this.expandable ? '<span class="expand"></span>' : ''}
+          ${this.closable ? '<span class="close"></span>' : ''}
         </span>
       </div>
       <div class="widget__inner-html">${this.innerHTML}</div>
