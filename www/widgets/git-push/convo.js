@@ -111,7 +111,7 @@ window.CONVOS['git-push'] = (self) => {
     options: { 'got it': (e) => e.hide() }
   }, {
     id: 'git-updated',
-    content: `Your <a href="${gh.url}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now part of your project's <a href="${gh.url}/network" target="_blank">version hisotry</a>.`,
+    content: `Your <a href="${gh.url}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now part of your project's <a href="${gh.url}/network" target="_blank">version history</a>.`,
     options: {
       'great!': (e) => e.hide(),
       'can I download it?': (e) => e.goTo('explain-download'),
