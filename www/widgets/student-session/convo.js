@@ -4,16 +4,16 @@ window.CONVOS['student-session'] = (self) => {
 
   const firstOpts = (ai) => {
     const o = {
-      'let\'s code': (e) => {
+      'let\'s code!': (e) => {
         NNW.menu.switchFace('default')
         self.checkForSavePoint()
-      },
-      'let\'s learn': (e) => {
-        NNW.menu.switchFace('default')
-        // WIDGETS['student-session'].clearProjectData()
-        WIDGETS.open('learning-guide')
-        e.hide()
       }
+      // 'let\'s learn': (e) => {
+      //   NNW.menu.switchFace('default')
+      //   // WIDGETS['student-session'].clearProjectData()
+      //   WIDGETS.open('learning-guide')
+      //   e.hide()
+      // }
     }
     if (ai) o['classical AI?'] = (e) => e.goTo('classical-ai')
     else o['that\'s not my name?'] = (e) => e.goTo('diff-user')
@@ -23,11 +23,11 @@ window.CONVOS['student-session'] = (self) => {
   const coreConvo = [{
     id: 'returning-student',
     before: () => NNW.menu.switchFace('happy'),
-    content: self.greeted ? `Hi ${self.getData('username')}! What would you like to do?` : `Welcome back ${self.getData('username')}! What would you like to do?`,
+    content: self.greeted ? `Hi ${self.getData('username')}!` : `Hey! Welcome back ${self.getData('username')}!`,
     options: firstOpts()
   }, {
     id: 'return-student-no-greet',
-    content: 'What would you like to do?',
+    content: 'Shall we get started?',
     options: firstOpts('ai')
   },
   // {
@@ -112,7 +112,7 @@ window.CONVOS['student-session'] = (self) => {
   }, {
     id: 'name-entered',
     before: () => NNW.menu.switchFace('happy'),
-    content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Where'd you like to start?`,
+    content: `Nice to e-meet you ${self.getData('username')}! Like i said, I'm netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Shall we get started?`,
     options: firstOpts('ai')
   }, {
     id: 'diff-user',
@@ -135,7 +135,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'blank-canvas-ready',
-    content: 'Great! Here\'s a blank canvas. Click on my face if you need me, or double click on any piece of code if you want me to explain it to you. You might also check out the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget for inspiration!',
+    content: 'Great! Here\'s a blank canvas. Click on my face when you need something, or double click on any piece of code if you want me to explain it to you.<br><br>Check out the <span class="link" onclick="WIDGETS.open(\'learning-guide\')">Guide</span> to get oriented or the <span class="link" onclick="WIDGETS.open(\'code-examples\')">Code Examples</span> widget for inspiration!',
     options: {
       'will do, thanks!': (e) => e.hide()
     }
@@ -160,7 +160,7 @@ window.CONVOS['student-session'] = (self) => {
     after: () => NNW.menu.switchFace('default')
   }, {
     id: 'made-up-name-entered',
-    content: 'Like i said, I\'m netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Where\'d you like to start?',
+    content: 'Like i said, I\'m netnet! a classical AI-TA (artificial intelligence teaching assistant) and educational code playground! Shall we get started?',
     options: firstOpts('ai')
   }, {
     id: 'explain-made-up-name',
@@ -174,7 +174,7 @@ window.CONVOS['student-session'] = (self) => {
     })(),
     options: {
       'I get it': (e) => e.goTo('made-up-name-entered'),
-      'wtf? how did you know all that?': (e) => e.goTo('explain-data')
+      'what!? how did you know all that?': (e) => e.goTo('explain-data')
     }
   }, {
     id: 'explain-data',
