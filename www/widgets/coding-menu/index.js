@@ -472,7 +472,9 @@ class CodingMenu extends Widget {
 
     this.themesSel = this.$('#func-menu-themes-select')
     if (this.themesSel.children.length < Object.keys(NNE.themes).length) {
-      Object.keys(NNE.themes).forEach(l => this._creatOption(l, this.themesSel))
+      Object.keys(NNE.themes)
+        .filter(t => Object.keys(NNW.themeConfig).includes(t))
+        .forEach(l => this._creatOption(l, this.themesSel))
     }
     this.themesSel.value = NNW.theme
 
