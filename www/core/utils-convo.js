@@ -1,5 +1,7 @@
 /* global utils, WIDGETS, NNW */
 window.CONVOS['utils-misc'] = (self) => {
+  // TODO: consider moving these all into Widget convos
+  // Maybe mostly to new Project Files (&& others, ex: HyperVideoPlayer, StudentSession)
   const a = (() => {
     let c = window.localStorage.getItem('gh-auth-temp-code')
     const gh = window.utils.url.github

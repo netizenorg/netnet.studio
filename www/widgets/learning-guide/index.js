@@ -2,7 +2,7 @@
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide (BETA-3.0)'
+    this.title = 'Learning Guide <span style="opacity:0.5;padding-left:10px;">(BETA 4.0)</span>'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
@@ -57,8 +57,6 @@ class LearningGuide extends Widget {
 
       // initial HTML
       this._createHTML()
-      const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
-      this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
     WIDGETS['coding-menu'].on('theme-change', () => {

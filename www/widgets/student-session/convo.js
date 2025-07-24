@@ -30,21 +30,6 @@ window.CONVOS['student-session'] = (self) => {
     content: 'Shall we get started?',
     options: firstOpts('ai')
   },
-  // {
-  //   id: 'returning-student',
-  //   content: self.greeted ? `Hi ${self.getData('username')}!` : `Welcome back ${self.getData('username')}!`,
-  //   options: {
-  //     'hi netnet!': (e) => e.goTo('what-to-do'),
-  //     'that\'s not my name?': (e) => e.goTo('diff-user')
-  //     'submit to BrowserFest': (e) => {
-  //       WIDGETS['coding-menu'].BrowserFest()
-  //     }
-  //   },
-  //   after: () => {
-  //     document.querySelector('.text-bubble-options > button:nth-child(3)')
-  //       .classList.add('opt-rainbow-bg')
-  //   }
-  // },
   {
     id: 'prior-opened-project',
     content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
