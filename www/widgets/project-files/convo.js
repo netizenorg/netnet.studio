@@ -118,10 +118,18 @@ window.CONVOS['project-files'] = (self) => {
     return convos[c]
   }
 
-  const titleBarOpts = () => {
-    const opts = { 'I see': (e) => e.hide() }
+  const titleBarOpts = (type) => {
+    const opts = {
+      'I see': (e) => e.hide(),
+      'file path?': (e) => e.goTo('file-path')
+    }
     if (NNW.title.dataset.unsaved) {
       opts['what does the circle mean?'] = (e) => e.goTo('netnet-title-save')
+    }
+    if (type === 'index') {
+      opts['index.html?'] = (e) => e.goTo('netnet-title-ex-index')
+    } else if (type === 'readme') {
+      opts['README.md?'] = (e) => e.goTo('netnet-title-ex-readme')
     }
     return opts
   }
@@ -129,7 +137,7 @@ window.CONVOS['project-files'] = (self) => {
   // ...
   return [{
     id: 'explain',
-    content: 'The <b>Project Files</b> let\'s you manage all the individual files in your project.',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project.',
     options: {
       cool: (e) => e.hide(),
       'how?': (e) => e.goTo('explain2')
@@ -144,19 +152,27 @@ window.CONVOS['project-files'] = (self) => {
   // ------------- explain title bar
   {
     id: 'netnet-title-bar-index',
-    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code> (this main folder is also known as your project's "root directory"), the first HTML file we always create in that folder is called <code>index.html</code>, the file you're working on right now. The other files in your project's root directory can be accessed in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget. But remember, I won't be saving these files on my server, instead you'll push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
-    options: titleBarOpts()
+    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.<br><br>The title bar displays the path to the file you currently have open, which at the moment is your project's main HTML file <code>${NNW.title.textContent}</code>.`,
+    options: titleBarOpts('index')
   }, {
     id: 'netnet-title-bar-readme',
-    content: `When you create a versioned code project on GitHub (aka a "repository" or "repo" for short) it's customary to include a file called <code>README.md</code> in your project's "root directory" (your project's main folder <code>${gh.p}</code>), this file is "metadata", meaning it's information <i>about</i> your project. You can write whatever you want here using a simple markup language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown</a>, this is the first thing someone will see when they checkout your code on <a href="${gh.url}" target="_blank">GitHub</a>.`,
-    options: titleBarOpts()
+    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.<br><br>The title bar displays the path to the file you currently have open, which at the moment is your project's README.`,
+    options: titleBarOpts('readme')
   }, {
     id: 'netnet-title-bar-misc',
-    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code>. A project's main folder is also called its "root directory", you can access all the files in your project using the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget. But remember, I won't be saving these files on my server, instead you'll push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.`,
+    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.<br><br>The title bar displays the path to the file you currently have open, which at the moment is <code>${NNW.title.textContent}</code>.`,
+    options: titleBarOpts()
+  }, {
+    id: 'netnet-title-ex-index',
+    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code> (this main folder is also known as your project's "root directory"), the first HTML file we always create in that folder must be called <code>index.html</code>, this is a convention that lets most server's know which file to open first when someone visits your website's URL.`,
+    options: titleBarOpts()
+  }, {
+    id: 'netnet-title-ex-readme',
+    content: `When you create and version a project on GitHub (aka a "repository" or "repo" for short) it's customary to include a file called <code>README.md</code> in your project's "root directory" (your project's main folder <code>${gh.p}</code>), this file is "metadata", meaning it's information <i>about</i> your project. You can write whatever you want here using a simple markup language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown</a>, this is the first thing someone will see when they checkout your code's repo on <a href="${gh.url}" target="_blank">GitHub</a>`,
     options: titleBarOpts()
   }, {
     id: 'netnet-title-save',
-    content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code>`,
+    content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code><br><br>Now remember, these changes are only being saved temporarily in your browser. To save changes permanently you'll also need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.`,
     options: {
       'got it': (e) => e.hide(),
       'save changes': (e) => {
@@ -166,7 +182,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'netnet-title-save2',
-    content: 'I\'ve saved your changes locally, but this is only temporary while you\'re working on the project. You\'ll need to <b>"push"</b> (aka upload) your updates to your GitHub using the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget in order to save them permanently.',
+    content: 'I\'ve saved your changes locally, but this is only temporary while you\'re working on the project. You\'ll need to <b>"push"</b> (aka upload) your updates to your GitHub using the <span class="link" onclick="WIDGETS.open(\'git-push\')">Version Control</span> widget in order to save them permanently.',
     options: {
       ok: (e) => e.hide()
     }
@@ -303,7 +319,7 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'project-opened',
-    content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (images, fonts, etc) to use in your project. Don\'t forget to save your progress as you work!',
+    content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (images, fonts, etc) to use in your project. Don\'t forget to save your progress as you work! Feel free to close this widget and re-open it anytime by clicking the "Files" button in the title bar.',
     options: {
       ok: (e) => e.hide()
       // 'submit to BrowserFest': (e) => {
@@ -660,7 +676,7 @@ window.CONVOS['project-files'] = (self) => {
   // -------------------------- misc ----------
   {
     id: 'git-push-not-ready',
-    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">GitHub repo</a>.`,
+    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">GitHub repo</a>. Try saving your changes locally first.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }
