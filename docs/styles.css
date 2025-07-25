@@ -42,6 +42,23 @@ body {
   overflow-x: hidden;
 }
 
+/* inline link overwrites */
+.inline-link,
+p > a:not(.pill-btn):not(.highlight),
+div > a:not(.pill-btn):not(.highlight),
+.text-bubble-content > a:not(.pill-btn):not(.highlight) {
+  color: var(--netizen-hint-color);
+
+  text-shadow: none;
+}
+
+.inline-link:hover,
+p > a:not(.pill-btn):not(.highlight):hover,
+div > a:not(.pill-btn):not(.highlight):hover,
+.text-bubble-content > a:not(.pill-btn):not(.highlight):hover {
+  color: var(--netizen-comment);
+}
+
 .docs {
   width: 100%;
   height: 100%;
@@ -64,7 +81,7 @@ body {
 	max-width: 450px;
 	height: calc(100vh - (var(--doc-padding) * 2));
 
-	padding: var(--doc-padding) calc(var(--doc-padding) * 2);
+	padding: var(--doc-padding);
 	border-radius: 25px;
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
@@ -162,19 +179,25 @@ body {
 	left: -20px;
 
 	font-size: 22px;
+  font-family: 'fira-mono-regular', monospace;
 }
 
 .docs__viewer {
 	position: absolute;
   display: block;
-	top: var(--doc-padding);
+	top: var(--doc-padding) * 2;
   left: calc(var(--doc-padding) + 30vw);
 
 	padding: var(--doc-padding) calc(var(--doc-padding) * 2);
 
 	overflow-y: auto;
 
-	height: calc(100vh - (var(--doc-padding) * 2));
+	height: calc(100vh - var(--doc-padding));
+}
+
+.docs__viewer > *:first-child {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .docs__viewer img {

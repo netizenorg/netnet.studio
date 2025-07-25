@@ -1,4 +1,10 @@
-/* primary button */
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   BUTTONS & LINKS!
+                ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
+
+/* primary pill button */
 
 .pill-btn {
   position: relative;
@@ -6,7 +12,6 @@
   padding: 5px 15px;
   border: none;
   border-radius: 25px;
-  margin-right: 0 5px 0 0;
 
   color: var(--bg-color);
   background: var(--fg-color);
@@ -25,38 +30,20 @@
   transition: box-shadow var(--element-transition-time) ease, transform var(--element-transition-time) ease;
 }
 
-.pill-btn:after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-
-  opacity: 0;
-
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-
-  border-radius: 25px;
-  border: 1px solid var(--fg-color);
-}
-
 .pill-btn:hover {
   box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
 
   transform: translate(1px, 1px);
 }
 
-.pill-btn:focus {
-  outline: none;
+.pill-btn:focus-visible {
+  outline: 1px solid var(--fg-color);
+  outline-offset: 2px;
   box-shadow: 1px 1px 3px var(--netizen-hint-shadow);
 }
 
-.pill-btn:focus:after {
-  opacity: 1;
-}
 
-
-/* secondary button */
+/* secondary pill button */
 
 .pill-btn--secondary {
   display: inline-block;
@@ -85,18 +72,18 @@
   transform: none;
 }
 
-.pill-btn--secondary:focus {
+.pill-btn--secondary:focus-visible {
   outline:none;
   outline-offset: none;
   box-shadow: none;
 }
 
-.pill-btn--secondary:focus:after {
+.pill-btn--secondary:focus-visible:after {
   opacity: 1;
 }
 
 
-/* inline link (underline) */
+/* inline link styling (underline) */
 
 .inline-link,
 p > a:not(.pill-btn):not(.highlight),
@@ -107,13 +94,13 @@ div > a:not(.pill-btn):not(.highlight),
   border-bottom: none;
 
   color: var(--fg-color);
-  
+
   text-decoration: underline;
   text-underline-position: under;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
   text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
-  
+
   transition: color var(--element-transition-time) ease, border var(--element-transition-time) ease;
   cursor: pointer;
 }
@@ -132,7 +119,9 @@ div > a:not(.pill-btn):not(.highlight):active,
   text-shadow: none;
 }
 
-/* secondary link color */
+
+/* secondary inline link */
+
 .inline-link--secondary {
   color: var(--netizen-meta);
 
@@ -149,14 +138,16 @@ div > a:not(.pill-btn):not(.highlight):active,
   text-shadow: none;
 }
 
+
 /* attribute link color */
+
 .inline-link--attr {
   display: inline-block;
 
   margin: 0px 5px;
-  
+
   color: var(--netizen-attribute);
-  
+
   text-decoration: underline;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
@@ -229,6 +220,6 @@ div > a:not(.pill-btn):not(.highlight):active,
   right: calc(100% + 2px);
 
   height: 95%;
-  
+
   animation: hdrCursorBlink 1.5s infinite linear;
 }

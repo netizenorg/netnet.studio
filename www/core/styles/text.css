@@ -1,5 +1,7 @@
-/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
-/* general text styles */
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   GENERAL TEXT STYLES!
+                    ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
 
 .body-copy,
 p,
@@ -127,7 +129,7 @@ i {
   border: none;
 
   background-color: transparent;
-  
+
   font-size: 20px;
   line-height: 1.2em;
 
@@ -139,9 +141,9 @@ i {
   position: relative;
 
   width: auto;
-  
+
   color: var(--fg-color);
-  
+
   text-decoration: none;
 
   transition: color .2s ease;
@@ -149,7 +151,7 @@ i {
   /* resets */
   border-bottom: none;
   padding-bottom: 0;
-  
+
   background: transparent;
 
   text-shadow: none;
@@ -166,7 +168,7 @@ i {
 .hdr-highlight > a:hover {
   /* resets */
   border-bottom: none;
-  
+
   color: inherit;
   background-image: none;
 }
