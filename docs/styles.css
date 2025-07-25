@@ -65,23 +65,23 @@ div > a:not(.pill-btn):not(.highlight):hover,
   min-height: 100vh;
   background: linear-gradient(180deg, var(--netizen-def) 80%, var(--netizen-comment) 160%);
 
-  padding: var(--doc-padding);
+  padding: 0;
 
   display: grid;
-  grid-template-columns: 0.25fr 0.75fr;
+  grid-template-columns: 0.35fr 1fr;
 }
 
 .docs__panel {
-  position: fixed;
-	top: var(--doc-padding);
-	left: var(--doc-padding);
+  display: block;
+  position: relative;
 
-	width: 30vw;
-	min-width: 230px;
-	max-width: 450px;
-	height: calc(100vh - (var(--doc-padding) * 2));
+  min-width: 300px;
+  max-width: 430px;
+  height: calc(100vh - calc(var(--doc-padding) * 2));
 
 	padding: var(--doc-padding);
+  margin-top: var(--doc-padding);
+  margin-left: var(--doc-padding);
 	border-radius: 25px;
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
@@ -114,7 +114,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
 .docs__panel__intro a {
   position: relative;
 
-	margin: 0 0 15px;
+	margin: 0 0 var(--doc-padding);
 
   color: var(--netizen-def);
 
@@ -140,13 +140,21 @@ div > a:not(.pill-btn):not(.highlight):hover,
   transition: left 0.5s ease, opacity 0.3s ease;
 }
 
+.docs__panel > .docs__panel__list {
+  margin: var(--doc-padding) 0;
+}
+
+.docs__panel > .docs__panel__list > .docs__panel__list-item {
+  margin: 0 0 var(--doc-padding);
+}
+
 .docs__panel__list {
 	list-style: none;
 	padding: 0 0 0 var(--doc-padding);
 }
 
 .docs__panel__list-item {
-	margin: 0.5em 0;
+  margin: 8px 0;
 }
 
 .docs__panel__list-item a {
@@ -159,47 +167,120 @@ div > a:not(.pill-btn):not(.highlight):hover,
 }
 
 .docs__panel__list-item a:before {
-  content: '>';
+  content: '*';
 	position: absolute;
   top: 2px;
 	left: -20px;
 
+  font-size: 22px;
   font-family: 'fira-mono-regular', monospace;
-  font-size: 20px;
+
+  transition: transform .4s ease-in-out;
 }
 
 .docs__panel__list-item a:hover {
-	text-decoration: underline;
+  color: var(--netizen-text);
+}
+
+.docs__panel__list-item a:hover:before {
+  transform: rotate(60deg);
+}
+
+.docs__panel__list-item a.active {
+  color: var(--netizen-text);
+  text-decoration: underline;
+  text-underline-offset: 1px;
+  text-decoration-thickness: 1px;
+}
+
+.docs__panel__list-item > .docs__panel__list {
+  padding-left: 0;
+  margin-top: 9px;
+  margin-left: -16px;
 }
 
 .docs__panel__list-item > .docs__panel__list a:before {
-  content: '*';
-	position: absolute;
-	top: 5px;
-	left: -20px;
-
-	font-size: 22px;
-  font-family: 'fira-mono-regular', monospace;
+  content: '';
+  display: none;
 }
 
 .docs__viewer {
-	position: absolute;
   display: block;
-	top: var(--doc-padding) * 2;
-  left: calc(var(--doc-padding) + 30vw);
+  position: relative;
 
-	padding: var(--doc-padding) calc(var(--doc-padding) * 2);
+  padding: calc(var(--doc-padding) * 2.5) var(--doc-padding);
 
 	overflow-y: auto;
 
-	height: calc(100vh - var(--doc-padding));
+	height: 100vh;
+  width: 100%;
 }
 
-.docs__viewer > *:first-child {
+.docs__viewer-inner {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.docs__viewer-inner > *:first-child {
   margin-top: 0;
   padding-top: 0;
 }
 
-.docs__viewer img {
+.docs__viewer-inner img {
   max-width: 100%;
+}
+
+.docs__viewer-inner h1, h2, h3, h4, h5 {
+  font-weight: 300;
+  margin: 1.75em 0 .75em;
+}
+
+.docs__viewer-inner h1 {
+  font-size: 38px;
+  line-height: 1.1em;
+}
+
+.docs__viewer-inner h2 {
+  font-size: 30px;
+  line-height: 1.05em;
+}
+
+.docs__viewer-inner h3 {
+  font-size: 24px;
+}
+
+.docs__viewer-inner ul {
+  padding-left: calc(var(--doc-padding) * 2);
+}
+
+.docs__viewer-inner ul li {
+  position: relative;
+
+  margin: 5px;
+  margin: 0.5em 0;
+
+  list-style: none;
+}
+
+.docs__viewer-inner ul li:before {
+  content: '*';
+	position: absolute;
+  top: 0;
+	left: -20px;
+
+  font-size: 22px;
+  font-family: 'fira-mono-regular', monospace;
+}
+
+.docs__viewer-inner ul li a {
+  color: var(--netizen-hint-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+
+  text-shadow: none;
+}
+
+.docs__viewer-inner ul li a:hover {
+  color: var(--netizen-comment);
 }

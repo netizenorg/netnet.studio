@@ -46,6 +46,9 @@ marked.setOptions({ renderer })
 function generateNav (directory, basePath = '') {
   const items = fs.readdirSync(directory, { withFileTypes: true })
   let nav = '<ul class="docs__panel__list">'
+  if (/\/docs\/?$/.test(directory) && /\/docs\/?$/.test(directory)) {
+    nav += '<li class="docs__panel__list-item"><a class="inline-link" href="/docs/">introduction</a></li>'
+  }
   items.forEach(item => {
     const itemPath = path.join(directory, item.name)
     const relativePath = path.join(basePath, item.name)
