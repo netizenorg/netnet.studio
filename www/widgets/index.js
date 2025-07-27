@@ -88,6 +88,7 @@ class Widget {
     this._resizable = (typeof opts.resizable === 'boolean') ? opts.resizable : true
     this._closable = (typeof opts.closable === 'boolean') ? opts.closable : true
     this._expandable = (typeof opts.expandable === 'boolean') ? opts.expandable : false
+    this._hidden = opts.hidden || false
 
     this.mousedown = false
 
@@ -205,6 +206,12 @@ class Widget {
 
   get height () { return this.ele.offsetHeight }
   set height (v) { this._css('height', v) }
+
+  get hidden () { return this._hidden }
+  set hidden (v) {
+    this._hidden = !!v // Ensure it's a boolean
+    this.ele.style.visibility = this._hidden ? 'hidden' : 'visible'
+  }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
@@ -494,6 +501,7 @@ class Widget {
   }
 
   _display (value, callback) {
+    if (this._hidden) return
     if (value === 'visible') {
       this.ele.style.animation = 'openBounce 0.3s ease forwards'
     } else {

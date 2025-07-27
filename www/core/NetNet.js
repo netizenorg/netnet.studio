@@ -645,6 +645,8 @@ class NetNet {
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
+      delete this.title.dataset.unsaved
+      delete this.title.dataset.project
     }
   }
 
@@ -661,7 +663,7 @@ class NetNet {
     title.style.zIndex = '2'
     title.style.padding = '15px 15px 15px 80px'
     title.style.color = 'var(--netizen-meta)'
-    title.style.textDecoration = 'underline'
+    // title.style.textDecoration = 'underline'
     title.style.textAlign = 'center'
     this.win.prepend(title)
     return title

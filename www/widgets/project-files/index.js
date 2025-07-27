@@ -91,7 +91,9 @@ class ProjectFiles extends Widget {
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
-      this.update({ right: 20, bottom: 20 }, 500)
+      const { x, y } = this._openSpot()
+      // this.update({ right: 20, bottom: 20 }, 500)
+      this.update({ left: x, top: y }, 500)
     })
 
     const CM = NNE.cm.constructor
@@ -179,7 +181,8 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
       this._agreed2beta = true
       this._showHideDivs()
-      this.update({ right: 20, bottom: 20 }, 500)
+      const { x, y } = this._openSpot()
+      this.update({ left: x, top: y }, 500)
     })
   }
 
@@ -588,6 +591,7 @@ class ProjectFiles extends Widget {
   }
 
   openFile (filepath, skipSave) {
+    window.convo.hide()
     this._opening = filepath
     this._openingCode = this.files[filepath].code
     this.convos = window.CONVOS[this.key](this)
@@ -642,6 +646,7 @@ class ProjectFiles extends Widget {
 
     const repo = WIDGETS['student-session'].getData('opened-project')
     NNW.updateTitleBar(`${repo}/${filepath}`)
+    NNW.title.dataset.project = true
 
     // update netitor
     NNE.code = this.files[filepath].code
@@ -876,7 +881,20 @@ class ProjectFiles extends Widget {
     } else {
       window.convo = new Convo(this.convos, 'netnet-title-bar-misc')
     }
-    if (!this.opened) this.open()
+    if (!this.opened) {
+      this.open()
+      const { x, y } = this._openSpot()
+      this.update({ left: x, top: y }, 500)
+    }
+  }
+
+  _openSpot () {
+    const pt = nn.get('#proj-title')
+    const pad = pt.style.padding.split(' ').map(v => parseInt(v))
+    const cx = pt.x + ((pt.width - (pad[1] + pad[3])) / 2) + pad[3]
+    const x = cx - this.width / 2
+    const y = pt.y + pt.height
+    return { x, y }
   }
 
   async resetChanges () {

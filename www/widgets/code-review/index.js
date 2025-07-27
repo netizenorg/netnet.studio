@@ -22,20 +22,19 @@ class CodeReview extends Widget {
   }
 
   review (obj = {}) {
-    this.updateIssues(obj.issues)
-    this.updateError(obj.error)
-    // update code review widget view
-    this._reviewIssues()
-  }
-
-  updateIssues (issues) {
-    // issues array from netnet 'lint-errors'
-    if (issues) this.issues = issues
-    // mark editor
+    // update issues passed to .review({ issues }) from main.js
+    if (obj.issues) this.issues = obj.issues
+    // check for any custom issues
+    this._checkForMixedContent()
+    // mark all linted issues
     const c = WIDGETS['student-session']
       ? WIDGETS['student-session'].getData('chattiness') : null
     if (c && c !== 'low') this._markIssues(this.issues, true)
     else NNE.marker(null)
+    // update errors passed to .review({ error }) from main.js
+    this._updateError(obj.error)
+    // update this code review widget's view
+    this._reviewIssues()
   }
 
   appendIssue (issue) {
@@ -43,7 +42,18 @@ class CodeReview extends Widget {
     this.review()
   }
 
-  updateError (event) {
+  undoTidy () {
+    if (this.tempCode) NNE.code = this.tempCode
+  }
+
+  addIssueMarkers () { // used after green annoted example markers are added
+    this._markIssues(this.issues, false)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _updateError (event) {
     const pf = WIDGETS['project-files']
     const ss = WIDGETS['student-session']
     // check chattiness level
@@ -76,17 +86,6 @@ class CodeReview extends Widget {
       m.dataset.err = JSON.stringify({ message, line, file })
     }
   }
-
-  undoTidy () {
-    if (this.tempCode) NNE.code = this.tempCode
-  }
-
-  addIssueMarkers () { // used after green annoted example markers are added
-    this._markIssues(this.issues, false)
-  }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _findErrors () { // list console error objects
     return Array.from(nn.getAll('.netitor-gutter-marker'))
@@ -156,6 +155,31 @@ class CodeReview extends Widget {
       this._textBubble('could-indent')
     } else {
       this._textBubble('error-free')
+    }
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ CUSTOM ERRORS
+
+  _checkForMixedContent () {
+    if (NNE.language !== 'html') return
+    const before = ['src="', 'href="']
+    const tags = ['<link', '<a', '<iframe', '<script']
+    const lines = NNE.code.split(/\r?\n/)
+    for (let i = 0; i < lines.length; i++) {
+      const LINE = lines[i]
+      for (const prefix of before) {
+        const hasTag = tags.some(tag => LINE.includes(tag))
+        if (LINE.includes(prefix + 'http:') && hasTag) {
+          const type = 'warning'
+          const line = i + 1
+          const col = LINE.indexOf('http:')
+          const language = 'html'
+          const message = 'Blocked loading mixed active content'
+          const friendly = 'it seems you\'re referencing a URL which begins with <code>http</code>, this usually creates a <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_blank">mixed content</a> error when the site you\'re writing this code in is <code>https</code>. Your browser may block this because loading unsecure content (http) into a secure page (https) can cause security issues.'
+          const obj = { type, language, message, friendly, line, col }
+          this.issues.push(obj)
+        }
+      }
     }
   }
 
