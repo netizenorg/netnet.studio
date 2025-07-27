@@ -203,8 +203,9 @@ html, body {
   align-items: center;
 }
 
-#editor > .nav > .close {
-  font-size: 1.5em;
+#editor > .nav .close {
+  font-size: 28px;
+  margin-left: 10px;
   cursor: pointer;
 }
 

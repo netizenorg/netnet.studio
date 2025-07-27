@@ -1,4 +1,4 @@
-/* global Widget, NNE, nn, utils */
+/* global WIDGETS, Widget, Convo, NNE, nn, utils */
 class ConvoMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -9,11 +9,13 @@ class ConvoMaker extends Widget {
     this.title = 'Convo Maker'
     this.hidden = true
 
+    this.widgets = []
+
     this.state = {
-      globals: null, // global variables of eslint comment
+      globals: [], // global variables of eslint comment
       name: null, // name of convo
-      variables: null, // custom JS code for convo
-      data: null // array of passage objects
+      variables: '', // custom JS code for convo
+      data: [] // array of passage objects
     }
 
     nn.on('beforeunload', () => {
@@ -25,7 +27,10 @@ class ConvoMaker extends Widget {
       // console.log(e.data)
       if (e.origin !== window.location.origin) return // for security
       if (e.data.type === 'cnvmkr-opened') {
-        utils.get('/api/convos', (res) => this._msgCnvMkr('widgets-list', res))
+        utils.get('/api/convos', (res) => {
+          this.widgets = res.map(w => w.key)
+          this._msgCnvMkr('widgets-list', res)
+        })
         if (this.state.name) {
           // if cnvmkr popup is closed by accident && then re-opened
           // then load previously saved data
@@ -49,11 +54,14 @@ class ConvoMaker extends Widget {
         // ......
       } else if (e.data.type === 'cnvmkr-new-file') {
         // when pop up wants to create a new convo file
-        this.state.globals = null
+        this.state.globals = []
         this.state.name = e.data.payload
-        this.state.variables = null
-        this.state.data = null
+        this.state.variables = ''
+        this.state.data = []
         // ......
+      } else if (e.data.type === 'cnvmkr-preview-passage') {
+        const obj = JSON.parse(e.data.payload)
+        this.previewConvo(obj)
       } else if (e.data.type === 'cnvmkr-name-update') {
         // when pop up updates name of convo
         this.state.name = e.data.payload
@@ -93,6 +101,31 @@ class ConvoMaker extends Widget {
   _msgCnvMkr (type, payload) {
     if (!this.cnvmkr) return
     this.cnvmkr.postMessage({ type, payload }, window.origin)
+  }
+
+  previewConvo (obj) {
+    /* eslint no-eval: "off" */
+    const code = this.getConvoFuncStr()
+    const func = eval(`((self) => {\n${code}\n})`)
+
+    const preview = (w) => {
+      window.CONVOS[this.state.name] = func
+      w.convos = window.CONVOS[this.state.name](w)
+      window.convo = new Convo(w.convos, obj.name)
+    }
+
+    if (this.widgets.includes(this.state.name)) {
+      if (WIDGETS.instantiated.includes(this.state.name)) {
+        const w = WIDGETS[this.state.name]
+        if (!w.opened) w.open(preview)
+        else preview(w)
+      } else {
+        WIDGETS.open(this.state.name, preview)
+      }
+    } else {
+      const w = {}
+      preview(w)
+    }
   }
 
   // ⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖
@@ -530,8 +563,7 @@ class ConvoMaker extends Widget {
   }
 
   // ---------------------------------------------------------------------- SAVE
-  saveConvosToFile () {
-    const name = this.state.name
+  _globalsToStr () {
     let globals = `/* global ${this.state.globals.join(', ')} */`
     if (this.state.data.filter(o => o.code).length > 0) {
       globals += '\n/* eslint no-template-curly-in-string: "off" */'
@@ -542,7 +574,25 @@ class ConvoMaker extends Widget {
       .join('\n')
     varLines = NNE.tidy(varLines, 'js')
     if (varLines === '  ') varLines = null
+    return { globals, varLines }
+  }
 
+  _textToContentStr (text, addQuotes) {
+    const raw = text.replace(/\[\[.*?\]\]/g, '').trim()
+    const isTpl = /\$\{.*?\}/.test(raw)
+    const isExpr = /^[A-Za-z_$][\w$]*(?:\([\s\S]*\))$/.test(raw)
+
+    let contentLiteral = raw
+    if (addQuotes) {
+      if (isTpl) contentLiteral = `\`${raw}\``
+      else if (isExpr) contentLiteral = raw
+      else contentLiteral = `'${raw.replace(/'/g, "\\'")}'`
+    }
+
+    return contentLiteral
+  }
+
+  _dataArrayToStr () {
     const pushProp = (lines, key, val, formatter) => {
       if (val == null || (typeof val === 'string' && val === '')) return
       const out = formatter
@@ -552,14 +602,7 @@ class ConvoMaker extends Widget {
     }
 
     const items = this.state.data.map(item => {
-      const raw = item.text.replace(/\[\[.*?\]\]/g, '').trim()
-      const isTpl = /\$\{.*?\}/.test(raw)
-      const isExpr = /^[A-Za-z_$][\w$]*(?:\([\s\S]*\))$/.test(raw)
-
-      let contentLiteral
-      if (isTpl) contentLiteral = `\`${raw}\``
-      else if (isExpr) contentLiteral = raw
-      else contentLiteral = `'${raw.replace(/'/g, "\\'")}'`
+      const contentLiteral = this._textToContentStr(item.text, true)
 
       let optsText
       if (typeof item.options === 'string') {
@@ -613,6 +656,29 @@ class ConvoMaker extends Widget {
       return lines.join('\n')
     }).join(',\n')
 
+    return items
+  }
+
+  getConvoFuncStr () {
+    const code = []
+
+    const { varLines } = this._globalsToStr()
+    if (varLines) {
+      code.push(varLines)
+      code.push('')
+    } else code.push('')
+
+    const items = this._dataArrayToStr()
+    code.push('  return [', items, '  ]')
+
+    return code.join('\n')
+  }
+
+  getConvoFileStr () {
+    const name = this.state.name
+    const { globals, varLines } = this._globalsToStr()
+    const items = this._dataArrayToStr()
+
     let code = [globals, `window.CONVOS['${name}'] = (self) => {`]
     if (varLines) {
       code.push(varLines)
@@ -621,6 +687,11 @@ class ConvoMaker extends Widget {
     code.push('  return [', items, '  ]', '}\n')
     code = code.join('\n')
 
+    return code
+  }
+
+  saveConvosToFile () {
+    const code = this.getConvoFileStr()
     const blob = new window.Blob([code], { type: 'application/javascript' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')

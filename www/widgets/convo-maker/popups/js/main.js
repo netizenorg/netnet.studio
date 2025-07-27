@@ -178,7 +178,13 @@ function createMissingLinkedPassages () {
   if (before === after) window.alert('This passage has no missing links')
 }
 
+function previewPassage () {
+  MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
+}
+
 nn.get('.make-links').on('click', createMissingLinkedPassages)
+
+nn.get('.preview').on('click', previewPassage)
 
 nn.get('.close').on('click', closeClearEditor)
 

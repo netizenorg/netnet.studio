@@ -46,6 +46,7 @@ filemenu.openNewFile = () => {
 }
 
 filemenu.loadNewFile = (file) => {
+  closeClearEditor()
   nn.getAll('.quilt-card').forEach(e => e.remove())
   filemenu.updateDisplayFilename(file.name)
   graph.data = file.data ? file.data : []
