@@ -1,4 +1,4 @@
-/* global Widget, NNE, nn */
+/* global Widget, NNE, nn, utils */
 class ConvoMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -7,32 +7,33 @@ class ConvoMaker extends Widget {
     this.listed = true
     this.keywords = ['convo', 'conversation', 'dialogue', 'bubble', 'maker', 'story', 'narrative']
     this.title = 'Convo Maker'
-
-    // TODO: once Chloe's tutorial widget updates are in
-    // this.hidden = true
+    this.hidden = true
 
     this.state = {
       globals: null, // global variables of eslint comment
       name: null, // name of convo
       variables: null, // custom JS code for convo
-      data: null // array of quilt objects
+      data: null // array of passage objects
     }
 
     nn.on('beforeunload', () => {
-      if (this.quilter && !this.quilter.closed) this.quilter.close()
+      if (this.cnvmkr && !this.cnvmkr.closed) this.cnvmkr.close()
     })
 
     // listen for messages from popups
     nn.on('message', e => {
       // console.log(e.data)
       if (e.origin !== window.location.origin) return // for security
-      if (e.data.type === 'quilt-opened' && this.state.name) {
-        // if quilt is closed by accident && then re-opened
-        // then load previously saved data
-        const { globals, name, variables, data } = this.state
-        this._messageQuilter('new-file-data', { name, data, variables, globals })
+      if (e.data.type === 'cnvmkr-opened') {
+        utils.get('/api/convos', (res) => this._msgCnvMkr('widgets-list', res))
+        if (this.state.name) {
+          // if cnvmkr popup is closed by accident && then re-opened
+          // then load previously saved data
+          const { globals, name, variables, data } = this.state
+          this._msgCnvMkr('new-file-data', { name, data, variables, globals })
+        }
         // ......
-      } else if (e.data.type === 'quilt-open-file') {
+      } else if (e.data.type === 'cnvmkr-open-file') {
         // when pop up uploads a new convo file, parse it
         const result = this.parseConvosCode(e.data.payload)
         const { globals, name, variables, data } = result
@@ -40,67 +41,58 @@ class ConvoMaker extends Widget {
         this.state.name = name // key value  for window.CONVOS (widget name)
         this.state.variables = variables // variables/functions defined in convo's global scope
         this.state.data = data // array of convo objects
-        this._messageQuilter('new-file-data', { name, data, variables, globals })
+        this._msgCnvMkr('new-file-data', { name, data, variables, globals })
         // ......
-      } else if (e.data.type === 'quilt-save-file') {
+      } else if (e.data.type === 'cnvmkr-save-file') {
         // when pop up wants to save/download the file
         this.saveConvosToFile()
         // ......
-      } else if (e.data.type === 'quilt-new-file') {
+      } else if (e.data.type === 'cnvmkr-new-file') {
         // when pop up wants to create a new convo file
         this.state.globals = null
         this.state.name = e.data.payload
         this.state.variables = null
         this.state.data = null
         // ......
-      } else if (e.data.type === 'quilt-name-update') {
+      } else if (e.data.type === 'cnvmkr-name-update') {
         // when pop up updates name of convo
         this.state.name = e.data.payload
         // ......
-      } else if (e.data.type === 'quilt-globals-update') {
+      } else if (e.data.type === 'cnvmkr-globals-update') {
         // when pop up updates globals && JS code (variables) for the convo file
         const { globals, code } = e.data.payload
         this.state.globals = globals
         this.state.variables = code
         // ......
-      } else if (e.data.type === 'quilt-data-update') {
+      } else if (e.data.type === 'cnvmkr-data-update') {
         // when popup updates a convo object (data)
         const arr = JSON.parse(e.data.payload)
         this.state.data = arr
         // ......
       }
-      // ----
-      // NOTE: everything below can be handled by "quilt-data-update"
-      // -----
-      // else if (e.data.type === 'quilt-func-update') {
-      //   // recieved a new function definition for a specific option in a specific passage
-      //   const { name, optname, code } = e.data.payload
-      //   const obj = this.state.data.find(o => o.name === name)
-      //   obj.options[optname] = code
-      // }
     })
 
     this.on('open', () => {
-      if (!this.quilter) this._openQuilter()
+      if (!this.cnvmkr) this._openCnvMkr()
     })
   }
 
-  _openQuilter (type, payload) {
+  _openCnvMkr (type, payload) {
     // create pop up
-    const url = 'widgets/convo-maker/quilter/index.html'
-    this.quilter = window.open(url, 'convo-maker', 'width=1000,height=620')
+    const url = 'widgets/convo-maker/popups/index.html'
+    this.cnvmkr = window.open(url, 'convo-maker', 'width=1000,height=620')
     // keep an eye on the pop up to see if it closed
-    this.quiltWatcher = setInterval(() => {
-      if (this.quilter && this.quilter.closed) {
-        clearInterval(this.quiltWatcher)
-        this.quilter = null
+    this.cnvmkrWatcher = setInterval(() => {
+      if (this.cnvmkr && this.cnvmkr.closed) {
+        clearInterval(this.cnvmkrWatcher)
+        this.cnvmkr = null
       }
     }, 500)
   }
 
-  _messageQuilter (type, payload) {
-    if (!this.quilter) return
-    this.quilter.postMessage({ type, payload }, window.origin)
+  _msgCnvMkr (type, payload) {
+    if (!this.cnvmkr) return
+    this.cnvmkr.postMessage({ type, payload }, window.origin)
   }
 
   // ⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖
@@ -108,12 +100,16 @@ class ConvoMaker extends Widget {
   // ⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖⁖
 
   parseConvosCode (code) {
-    const globals = this._extractGlobals(code)
-    const name = this._extractConvoName(code)
-    const variables = this._extractVariables(code)
-    const arrayText = this._extractArrayContent(code)
-    const data = this._parseConvoItems(arrayText)
-    return { name, data, variables, globals }
+    try {
+      const globals = this._extractGlobals(code)
+      const name = this._extractConvoName(code)
+      const variables = this._extractVariables(code)
+      const arrayText = this._extractArrayContent(code)
+      const data = this._parseConvoItems(arrayText)
+      return { name, data, variables, globals }
+    } catch (err) {
+      return err
+    }
   }
 
   // ———————————————————————————————————————————————————————————————————————————
@@ -134,79 +130,6 @@ class ConvoMaker extends Widget {
     if (!m) throw new Error('Invalid convo file: no window.CONVOS[...]')
     return m[1]
   }
-
-  /* FIRST VERSION: would return all global convo variables as an array */
-  // _extractVariables (code) {
-  //   // 1) locate the start of the function body
-  //   const baseIdx = code.indexOf('window.CONVOS')
-  //   const arrowIdx = code.indexOf('=>', baseIdx)
-  //   const bodyStart = code.indexOf('{', arrowIdx)
-  //
-  //   // 2) only match the top-level "return [ {" line
-  //   const returnRe = /return\s*\[\s*{/
-  //   const returnM = returnRe.exec(code)
-  //   if (!returnM) return []
-  //
-  //   // 3) slice everything between "{ ... }" and return [ {
-  //   const preReturn = code.slice(bodyStart + 1, returnM.index)
-  //   const vars = []
-  //   let pos = 0
-  //
-  //   while (pos < preReturn.length) {
-  //     // skip whitespace/newlines
-  //     while (pos < preReturn.length && /\s/.test(preReturn[pos])) pos++
-  //     if (pos >= preReturn.length) break
-  //
-  //     // look for "let" or "const" at top-level
-  //     const rest = preReturn.slice(pos)
-  //     if (!/^(let|const)\b/.test(rest)) {
-  //       // not a declaration → skip to end of line
-  //       while (pos < preReturn.length && preReturn[pos] !== '\n') pos++
-  //       continue
-  //     }
-  //
-  //     // we have a decl here
-  //     const start = pos
-  //     let sawEq = false
-  //     let dParen = 0
-  //     let dBrace = 0
-  //
-  //     // consume until we've seen "=" and all nesting is closed
-  //     while (pos < preReturn.length) {
-  //       const ch = preReturn[pos]
-  //       if (ch === '(') dParen++
-  //       else if (ch === ')') dParen = Math.max(0, dParen - 1)
-  //
-  //       else if (ch === '{') dBrace++
-  //       else if (ch === '}') dBrace = Math.max(0, dBrace - 1)
-  //
-  //       else if (ch === '=' && dParen === 0 && dBrace === 0) {
-  //         sawEq = true
-  //       }
-  //
-  //       // finish only after "=" and both depths return to zero
-  //       if (sawEq && dParen === 0 && dBrace === 0) {
-  //         // semicolon ends simple decl
-  //         if (ch === ';') {
-  //           pos++
-  //           break
-  //         }
-  //         // or newline before another let/const/return
-  //         if (ch === '\n') {
-  //           const ahead = preReturn.slice(pos + 1)
-  //           if (/^\s*(let|const|return)\b/.test(ahead)) break
-  //         }
-  //       }
-  //
-  //       pos++
-  //     }
-  //
-  //     const decl = preReturn.slice(start, pos).trim()
-  //     if (decl) vars.push(decl)
-  //   }
-  //
-  //   return vars
-  // }
 
   _extractVariables (code) {
     // 1) find the convo fn body start
@@ -230,8 +153,8 @@ class ConvoMaker extends Widget {
   /** 3) isolate everything between return [ … ] */
   _extractArrayContent (code) {
     // 1) find the start of the main function body
-    const baseIdx   = code.indexOf('window.CONVOS')
-    const arrowIdx  = code.indexOf('=>', baseIdx)
+    const baseIdx = code.indexOf('window.CONVOS')
+    const arrowIdx = code.indexOf('=>', baseIdx)
     const bodyStart = code.indexOf('{', arrowIdx)
     if (bodyStart < 0) throw new Error('Invalid convo file: no function body')
 
@@ -310,7 +233,7 @@ class ConvoMaker extends Widget {
 
   _parseConvoObject (objText, state) {
     const name = this._parseName(objText)
-    const { id, x, y } = this._parseQuilt(objText, state)
+    const { id, x, y } = this._parseCnvMkr(objText, state)
 
     const before = this._parseFunctionProperty(objText, 'before')
     const after = this._parseFunctionProperty(objText, 'after')
@@ -407,9 +330,9 @@ class ConvoMaker extends Widget {
   }
 
   /** helper for _parseConvoObject */
-  _parseQuilt (objText, state) {
+  _parseCnvMkr (objText, state) {
     const m = objText.match(
-      /quilt\s*:\s*{\s*id\s*:\s*(\d+),\s*x\s*:\s*(\d+),\s*y\s*:\s*(\d+)\s*}/
+      /graph\s*:\s*{\s*id\s*:\s*(\d+),\s*x\s*:\s*(\d+),\s*y\s*:\s*(\d+)\s*}/
     )
     if (m) {
       return { id: +m[1], x: +m[2], y: +m[3] }
@@ -618,6 +541,7 @@ class ConvoMaker extends Widget {
       .map(v => `  ${v.trim()}`)
       .join('\n')
     varLines = NNE.tidy(varLines, 'js')
+    if (varLines === '  ') varLines = null
 
     const pushProp = (lines, key, val, formatter) => {
       if (val == null || (typeof val === 'string' && val === '')) return
@@ -660,34 +584,42 @@ class ConvoMaker extends Widget {
 
       const lines = ['    {']
       lines.push(`      id: '${item.name}',`)
-      lines.push(`      quilt: { id: ${item.id}, x: ${item.x}, y: ${item.y} },`)
+      lines.push(`      graph: { id: ${item.id}, x: ${item.x}, y: ${item.y} },`)
       pushProp(lines, 'layout', item.layout, val =>
         `layout: '${val.replace(/'/g, "\\'")}'`
       )
-      pushProp(lines, 'before', item.before)
-      pushProp(lines, 'after', item.after)
+      // pushProp(lines, 'before', item.before)
+      // pushProp(lines, 'after', item.after)
+      const ba = ['before', 'after']
+      ba.forEach(propName => {
+        pushProp(lines, propName, item[propName], val => {
+          const tidyFn = NNE.tidy(val, 'js')
+          const [first, ...rest] = tidyFn.split('\n')
+          const ind = [first].concat(rest.map(l => '      ' + l))
+          return `${propName}: ${ind.join('\n')}`
+        })
+      })
       pushProp(lines, 'code', item.code, val =>
-        `code: ${JSON.stringify(val)}`
+        `code: '${val.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, '\\n')}'`
       )
       pushProp(lines, 'edit', item.edit)
       pushProp(lines, 'highlight', item.highlight)
-      pushProp(lines, 'spotlight', item.spotlight)
+      pushProp(lines, 'spotlight', item.spotlight, val =>
+        `spotlight: [${val.join(', ')}]`
+      )
       lines.push(`      content: ${contentLiteral},`)
       lines.push(`      options: ${optsText}`)
       lines.push('    }')
       return lines.join('\n')
     }).join(',\n')
 
-    const code = [
-      globals,
-      `window.CONVOS['${name}'] = (self) => {`,
-      varLines,
-      '',
-      '  return [',
-      items,
-      '  ]',
-      '}'
-    ].join('\n') + '\n'
+    let code = [globals, `window.CONVOS['${name}'] = (self) => {`]
+    if (varLines) {
+      code.push(varLines)
+      code.push('')
+    } else code.push('')
+    code.push('  return [', items, '  ]', '}\n')
+    code = code.join('\n')
 
     const blob = new window.Blob([code], { type: 'application/javascript' })
     const url = URL.createObjectURL(blob)

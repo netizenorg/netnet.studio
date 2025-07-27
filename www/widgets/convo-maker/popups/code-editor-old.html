@@ -57,15 +57,23 @@
     </p>`,
     CODE: `<p>
       Here you can write code that you'd like injected into netnet's editor when netnet speaks this passage. You can specify if you want this code to be editable <select id="editable"><option value="true">true</option><option value="false">false</option></select>, and whether any specific lines should be "spotlight" <input id="spotlight"> (ex: "1-10" or "4,8,16")
+    </p>`,
+    B4: `<p>
+      Here you can write a JavaScript function which will be executed just before this link's passage is displayed. Do not change the name of the <code>BEFORE</code> variable, only edit the contents of it's function. When using new global variables, make sure to list them in the global comment of the main "Custom Code" editor (not this one).
+    </p>`,
+    AF: `<p>
+      Here you can write a JavaScript function which will be executed after a choice is made in this passage (ie. after the user clicks one of the links). Do not change the name of the <code>AFTER</code> variable, only edit the contents of it's function. When using new global variables, make sure to list them in the global comment of the main "Custom Code" editor (not this one).
     </p>`
   }
 
   let type = 'globals'
+  let state = {}
 
   function reset () {
     nn.get('#nfo').content(msg[type])
     nn.get('#nfo').set({ class: '' })
     ne.spotlight('clear')
+    updateCodeListeners(state, 100)
   }
 
   function markErrors (eve) {
@@ -97,26 +105,49 @@
       .filter(Boolean)
   }
 
-  function updateCodeListeners (obj) {
-    // obj.edit
-    // obj.spotlight
-    // TODO, listen for changes to #editable && #spotlight
-    console.log('payload', obj);
-    setTimeout(() => { // HACK: doesn't seem to work for about at least a second
+  function translateSpotlight (str) {
+    if (!str || str === '') return null
+    return str.split(',').flatMap(f => {
+      if (f.includes('-')) {
+        const [start, end] = f.split('-').map(n => Number(n))
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+      } else {
+        return Number(f)
+      }
+    })
+  }
+
+  function translatePayload (o) {
+    if (!o.code || o.code === 'undefined') o.code = ''
+    if (!o.edit || o.edit === 'undefined') o.edit = null
+    if (!o.spotlight || o.spotlight === 'undefined') o.spotlight = null
+    state = o
+    return o
+  }
+
+  function updateCodeListeners (obj, delay) {
+    // HACK: doesn't seem to work for about at least a second
+    setTimeout(() => {
+      if (!document.querySelector('#editable')) return
       nn.get('#editable')
-        .set({ value: obj.edit || "true" })
-        .on('change', (e) => console.log(e.target.value))
+        .set({ value: obj.edit })
+        .on('change', (e) => {
+          console.log(e.target.value);
+          state.edit = e.target.value === 'true'
+          console.log(state);
+          sendUpdate()
+        })
       nn.get('#spotlight')
         .set({ value: obj.spotlight || '' })
         .on('input', (e) => {
-          console.log(e.target.value);
+          state.spotlight = translateSpotlight(e.target.value)
+          sendUpdate()
         })
-    }, 1000)
+    }, delay || 1000)
   }
 
   function sendUpdate () {
     const obj = {}
-
     if (type === 'globals') {
       const idx = ne.code.indexOf(ne.code.match(/\/\*\s*global\s+([^*]+)\*\//)[0])
       const globals = (idx === 0) ? extractGlobals() : []
@@ -129,13 +160,20 @@
       obj.type = 'netitor-func-update'
       obj.payload = { code: ne.code.replace('const LINK = ', '') }
     } else if (type === 'CODE') {
-      // TODO edit && spotlight
       obj.type = 'netitor-code-update'
-      obj.payload = { code: ne.code }
+      const edit = state.edit
+      const spotlight = state.spotlight
+      obj.payload = { code: ne.code, edit, spotlight }
     } else if (type === 'B4') {
-      // TODO
+      obj.type = 'netitor-before-update'
+      if (ne.code === 'const BEFORE = () => {\n  \n}') {
+        obj.payload = { code: null }
+      } else obj.payload = { code: ne.code.replace('const BEFORE = ', '') }
     } else if (type === 'AF') {
-      // TODO
+      obj.type = 'netitor-after-update'
+      if (ne.code === 'const AFTER = () => {\n  \n}') {
+        obj.payload = { code: null }
+      } else obj.payload = { code: ne.code.replace('const AFTER = ', '') }
     }
 
     window.opener.postMessage(obj, window.origin)
@@ -156,6 +194,7 @@
   ne.on('lint-error', (eve) => {
     // console.log('lint-error', eve)
     eve = eve
+      .map(e => { if (!e.jshint) e.jshint = {}; return e })
       .filter(e => e.jshint.code !== 'W098') // defining var but not using
       .filter(e => e.jshint.code !== 'W117') // using var not previously defined
     markErrors(eve)
@@ -180,15 +219,18 @@
     } else if (type === 'FUNC') {
       ne.code = 'const LINK = ' + e.data.payload.code
     } else if (type === 'CODE') {
-      console.log(e.data.payload);
-      ne.code = e.data.payload.code && e.data.payload.code !== 'undefined'
-        ? e.data.payload.code : ''
+      const obj = translatePayload(e.data.payload)
+      ne.code = obj.code
       ne.language = 'html'
-      updateCodeListeners(e.data.payload)
+      updateCodeListeners(obj)
     } else if (type === 'B4') {
-      // TODO e.data.payload.before
+      if (!e.data.payload.before) {
+        ne.code = 'const BEFORE = () => {\n  \n}'
+      } else ne.code = 'const BEFORE = ' + e.data.payload.before
     } else if (type === 'AF') {
-      // TODO e.data.payload.after
+      if (!e.data.payload.after) {
+        ne.code = 'const AFTER = () => {\n  \n}'
+      } else ne.code = 'const AFTER = ' + e.data.payload.after
     }
     ne.tidy()
   })

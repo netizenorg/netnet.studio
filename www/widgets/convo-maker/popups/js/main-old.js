@@ -97,8 +97,77 @@ function updateEditor (obj) {
 function createEditorMenu (obj) {
   const funcLnks = nn.get('#FUNC-links')
   funcLnks.content('')
-  createCodeEditBtn(obj, funcLnks)
-  createOptFuncBtns(obj, funcLnks)
+  const opts = createFuncOptions(obj)
+  createCodeSelectUI(obj, opts, funcLnks)
+}
+
+function createFuncOptions (obj) {
+  const links = graph.parsePassageLinks(obj)
+  // create/update options
+  const funcs = {} // collection previous funcs
+  Object.entries(obj.options).forEach(([key, code]) => { funcs[key] = code })
+  obj.options = {} // clear options && recreate
+  links.forEach(l => {
+    if (l.label === l.target) {
+      obj.options = l.target
+    } if (l.target === 'HIDE') {
+      obj.options[l.label] = '(e) => e.hide()'
+    } else if (l.target === 'FUNC') {
+      if (funcs[l.label]) obj.options[l.label] = funcs[l.label]
+      else obj.options[l.label] = '(e) => {\n\n}'
+    } else if (l.target !== 'HIDE' && l.target !== 'FUNC') {
+      obj.options[l.label] = `(e) => e.goTo('${l.target}')`
+    }
+  })
+  graph.updatePassage(obj.id, obj)
+  nn.get(`#card${obj.id}`).classList.add('selected')
+  return { links, options: obj.options }
+}
+
+function createCodeSelectUI (obj, opts, menu) {
+  const dict = {
+    code: obj.code,
+    before: obj.before,
+    after: obj.after
+  }
+
+  opts.links
+    .filter(l => l.target === 'FUNC')
+    .forEach(l => { dict[`OPT: ${l.label}`] = opts.options[l.label] })
+
+  const sel = nn.create('select').set({ options: Object.keys(dict) })
+  if (neState.type === 'B4') sel.value = 'before'
+  else if (neState.type === 'AF') sel.value = 'after'
+  else if (neState.type === 'FUNC') {
+    sel.value = `OPT: ${neState.funcName}`
+  }
+
+  nn.create('button')
+    .content('edit')
+    .set({ class: 'func-btn' })
+    .addTo(menu)
+    .on('click', (e) => {
+      const payload = {}
+      if (sel.value === 'before') {
+        payload.type = 'B4'
+        payload.before = dict.before
+      } else if (sel.value === 'after') {
+        payload.type = 'AF'
+        payload.after = dict.after
+      } else if (sel.value === 'code') {
+        payload.type = 'CODE'
+        payload.code = dict.code
+        payload.edit = obj.edit
+        payload.spotlight = obj.spotlight
+      } else if (sel.value.indexOf('OPT: ') === 0) {
+        payload.type = 'FUNC'
+        payload.func = dict[sel.value]
+        payload.funcName = sel.value.split('OPT: ')[1]
+      }
+      openNetitor(payload)
+    })
+
+  sel.addTo(menu)
 }
 
 function updatePassageName (e) {
@@ -126,73 +195,6 @@ function createMissingLinkedPassages () {
     .forEach(p => graph.deletePassage(p.id))
   const after = graph.data.length
   if (before === after) window.alert('This passage has no missing links')
-}
-
-function createCodeEditBtn (obj, menu) {
-  nn.create('button')
-    .content('&lt;/&gt;')
-    .set({
-      class: 'func-btn',
-      id: 'psg-code',
-      'data-code': obj.code,
-      'data-edit': obj.edit,
-      'data-spotlight': obj.spotlight
-    })
-    .css({
-      border: '1px solid var(--fg-color)',
-      color: 'var(--fg-color)'
-    })
-    .addTo(menu)
-    .on('click', (e) => {
-      openNetitor({
-        type: 'CODE',
-        code: e.target.dataset.code,
-        edit: e.target.dataset.edit,
-        spotlight: e.target.dataset.spotlight
-      })
-    })
-}
-
-function createOptFuncBtns (obj, menu) {
-  const links = graph.parsePassageLinks(obj)
-  // create/update options
-  const funcs = {} // collection previous funcs
-  Object.entries(obj.options).forEach(([key, code]) => { funcs[key] = code })
-  obj.options = {} // clear options && recreate
-  links.forEach(l => {
-    if (l.label === l.target) {
-      obj.options = l.target
-    } if (l.target === 'HIDE') {
-      obj.options[l.label] = '(e) => e.hide()'
-    } else if (l.target === 'FUNC') {
-      if (funcs[l.label]) obj.options[l.label] = funcs[l.label]
-      else obj.options[l.label] = '(e) => {\n\n}'
-    } else if (l.target !== 'HIDE' && l.target !== 'FUNC') {
-      obj.options[l.label] = `(e) => e.goTo('${l.target}')`
-    }
-  })
-  graph.updatePassage(obj.id, obj)
-  nn.get(`#card${obj.id}`).classList.add('selected')
-
-  // create FUNC buttons
-  links.filter(lnk => lnk.target === 'FUNC')
-    .forEach(lnk => {
-      nn.create('button')
-        .set({
-          class: 'func-btn',
-          'data-name': lnk.label,
-          'data-code': obj.options[lnk.label]
-        })
-        .on('click', (e) => {
-          openNetitor({
-            type: 'FUNC',
-            funcName: e.target.dataset.name,
-            func: e.target.dataset.code
-          })
-        })
-        .content(lnk.label)
-        .addTo(menu)
-    })
 }
 
 // --------------------------- File Menu Functions .............................
@@ -243,7 +245,7 @@ function readyForNewFile (t) {
 }
 
 // -----------------------------------------------------------------------------
-// ------------------------------- FILE && CONVO MENU (Main UI Setup -----------
+// ------------------------------- FILE && CONVO MENU (Main UI Setup) ----------
 // -----------------------------------------------------------------------------
 
 nn.get('#new-file').on('click', () => {
@@ -416,30 +418,35 @@ window.addEventListener('message', (e) => {
     const obj = graph.getPassageById(currentPassageId)
     obj.options[neState.funcName] = neState.func
     graph.updatePassage(obj.id, obj)
-    nn.get(`button[data-name="${neState.funcName}"]`)
-      .set({ 'data-code': neState.func })
-    // const payload = { name: obj.name, optname: neState.funcName, code: neState.func }
-    // MSG({ type: 'quilt-func-update', payload })
+    createEditorMenu(obj)
     updateWidget()
     // ...
   } else if (e.data.type === 'netitor-code-update') {
-    // TODO
-    console.log(e.data.payload);
+    // netitor has updated a passage's code property
     const obj = graph.getPassageById(currentPassageId)
     obj.code = neState.code = e.data.payload.code
     obj.edit = neState.edit = e.data.payload.edit
     obj.spotlight = neState.spotlight = e.data.payload.spotlight
     graph.updatePassage(obj.id, obj)
-    nn.get('#psg-code').set({
-      'data-code': neState.code,
-      'data-edit': neState.edit,
-      'data-spotlight': neState.spotlight
-    })
+    createEditorMenu(obj)
     updateWidget()
+    // ...
   } else if (e.data.type === 'netitor-before-update') {
-    // TODO
+    // netitor has updated a passage's before function
+    const obj = graph.getPassageById(currentPassageId)
+    obj.before = neState.before = e.data.payload.code
+    graph.updatePassage(obj.id, obj)
+    createEditorMenu(obj)
+    updateWidget()
+    // ...
   } else if (e.data.type === 'netitor-after-update') {
-    // TODO
+    // netitor has updated a passage's after function
+    const obj = graph.getPassageById(currentPassageId)
+    obj.after = neState.after = e.data.payload.code
+    graph.updatePassage(obj.id, obj)
+    createEditorMenu(obj)
+    updateWidget()
+    // ...
   }
 })
 

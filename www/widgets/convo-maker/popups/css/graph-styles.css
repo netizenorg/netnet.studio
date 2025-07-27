@@ -39,20 +39,12 @@
     --corner-round: 5px;
   }
 
-@font-face {
-  font-family: 'SF Mono Regular';
-  src: url('sf-mono-regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
 
-  font-family: 'SF Mono Regular', monospace;
+  font-family: fira-mono-regular, monospace;
 }
 
 .menu-bar {
@@ -86,6 +78,32 @@ html, body {
 .menu-bar > * > * {
   margin: 0px 10px;
 }
+
+/* MODAL */
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(28, 28, 54, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#modal > div {
+  background: var(--bg-color);
+  color: var(--netizen-meta);
+  padding: 20px;
+  border: 3px solid var(--fg-color);
+  border-radius: 5px;
+}
+
+
+/* GRAPH EDITOR */
 
 #graph-wrapper {
   position: absolute;
@@ -153,6 +171,7 @@ html, body {
   top: 34px;
   font-style: italic;
 }
+
 /* PASSAGE EDITOR */
 
 #editor {

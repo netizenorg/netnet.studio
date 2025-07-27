@@ -238,6 +238,7 @@ class Widget {
   }
 
   open (func) {
+    if (this._hidden) this.events.open.forEach(func => func())
     this._display('visible', () => {
       this.keepInFrame()
       this.events.open.forEach(func => func())
