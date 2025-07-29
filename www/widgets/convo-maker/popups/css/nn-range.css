@@ -1,0 +1,71 @@
+/* ─── Block ─── */
+.range-slider {
+  width: 100%;
+  padding: 1rem 0;
+}
+
+/* ─── Element: the <input> ─── */
+.range-slider__input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #ddd;                  /* fallback track color */
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  /* use --fg-color for everything below 👇 */
+}
+
+/* ─── Thumb (all engines) ─── */
+.range-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--fg-color);
+  border: none;
+  margin-top: -6px;                  /* center on 4px track */
+  cursor: pointer;
+}
+.range-slider__input::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--fg-color);
+  border: none;
+  cursor: pointer;
+}
+.range-slider__input::-ms-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--fg-color);
+  border: none;
+  cursor: pointer;
+}
+
+/* ─── Firefox: real two-part track ─── */
+.range-slider__input::-moz-range-track {
+  background: #ddd;
+  height: 4px;
+  border-radius: 2px;
+}
+.range-slider__input::-moz-range-progress {
+  background: var(--fg-color);
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* ─── IE/Edge: two-part track ─── */
+.range-slider__input::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;                /* hide ticks */
+  height: 4px;
+}
+.range-slider__input::-ms-fill-lower {
+  background: var(--fg-color);
+  border-radius: 2px;
+}
+.range-slider__input::-ms-fill-upper {
+  background: #ddd;
+  border-radius: 2px;
+}

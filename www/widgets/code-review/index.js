@@ -16,7 +16,7 @@ class CodeReview extends Widget {
     this._createHTML()
 
     this.on('open', () => this._opened())
-    NNW.on('theme-change', () => this.updateIssues())
+    NNW.on('theme-change', () => this.review())
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }

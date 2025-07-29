@@ -16,7 +16,8 @@ class NetNet {
       light: { background: true, shadow: false },
       monokai: { background: true, shadow: false },
       'moz-dark': { background: true, shadow: false },
-      'moz-light': { background: true, shadow: false }
+      'moz-light': { background: true, shadow: false },
+      sonnenzimmer: { background: true, shadow: false }
     }
 
     this.rndr = document.querySelector('#nn-output')

@@ -6,7 +6,7 @@ class ShareWidget extends Widget {
     this.key = 'share-widget'
     this.keywords = ['share', 'link', 'url', 'save']
     this.title = 'Share Sketch'
-    this.width = 547
+    this.width = 582
 
     this.shortCode = null
     this.layoutsSel = null
