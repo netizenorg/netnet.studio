@@ -1,4 +1,4 @@
-/* global Netitor, NetNet, utils, WIDGETS */
+/* global nn, Netitor, NetNet, utils, WIDGETS */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -50,12 +50,12 @@ NNE.on('edu-info', (e, eve) => {
   }
 })
 
-window.addEventListener('resize', (e) => {
+nn.on('resize', (e) => {
   utils.windowResize()
   utils.keepWidgetsInFrame()
 })
 
-window.addEventListener('load', () => {
+nn.on('load', () => {
   utils.get('/api/custom-elements', (elements) => {
     elements.forEach(obj => {
       utils.loadFile(`/custom-elements/${obj.path}/index.js`)
@@ -73,11 +73,13 @@ window.addEventListener('load', () => {
 
 // the <iframe> messanger is injected into the rendered html pages, handled in:
 // setCustomRenderer or files-db-service-worker.js (when working on projects)
-window.addEventListener('message', e => WIDGETS['code-review'].review({ error: e }))
+nn.on('message', (e) => {
+  if (e.data.type === 'iframe-error') WIDGETS['code-review'].review({ error: e })
+})
 
 // warn the user about accidental navigation attempts
-window.addEventListener('beforeunload', (event) => {
-  event.preventDefault(); event.returnValue = ''
+nn.on('beforeunload', (e) => {
+  e.preDefault(); e.returnValue = ''
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
