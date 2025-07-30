@@ -79,7 +79,7 @@ nn.on('message', (e) => {
 
 // warn the user about accidental navigation attempts
 nn.on('beforeunload', (e) => {
-  e.preDefault(); e.returnValue = ''
+  e.preventDefault(); e.returnValue = ''
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
