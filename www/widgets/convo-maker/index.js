@@ -109,6 +109,8 @@ class ConvoMaker extends Widget {
     const func = eval(`((self) => {\n${code}\n})`)
 
     const preview = (w) => {
+      console.log('CONVO MAKER: previewing...')
+      console.log(w.convos, obj)
       window.CONVOS[this.state.name] = func
       w.convos = window.CONVOS[this.state.name](w)
       window.convo = new Convo(w.convos, obj.name)
@@ -601,6 +603,12 @@ class ConvoMaker extends Widget {
       lines.push(`      ${out},`)
     }
 
+    const hasSpecialChars = (str) => {
+      // this one flags anything _not_ A–Z, a–z or 0–9
+      const specialRe = /[^A-Za-z0-9]/
+      return specialRe.test(str)
+    }
+
     const items = this.state.data.map(item => {
       const contentLiteral = this._textToContentStr(item.text, true)
 
@@ -613,7 +621,7 @@ class ConvoMaker extends Widget {
         const entries = Object.entries(item.options)
           .map(([key, fnBody]) => {
             // quote only if needed
-            const keyName = key.includes(' ')
+            const keyName = hasSpecialChars(key)
               ? `'${key.replace(/'/g, "\\'")}'` : key
             const formattedFn = NNE.tidy(fnBody, 'js')
               .split('\n')

@@ -129,11 +129,18 @@
   outline-offset: 2px;
 }
 
+/* .......................................................................... */
+/* .........................................................   LISTED DEMOS   */
+
 .demos-list {
   position: absolute;
   z-index: 2;
   top: 138px;
-  overflow-y: scroll;
+
+  overflow-y: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+
   height: 70%;
   width: 100%;
   margin-bottom: 40px;
@@ -152,15 +159,110 @@
 }
 
 .demos-list  span {
-  display: block;
-  height: 27px;
+  display: list-item;
+  list-style-position: inside;
+  list-style-type: circle;
+
   font-size: 18px;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  height: 27px;
+  overflow: hidden;
   user-select: none;
+}
+
+.demos-list  span.annotated {
+  list-style-type: disc;
 }
 
 .demos-list span.demo--hide {
   display: none;
+}
+
+/* .......................................................................... */
+/* .........................................................     VIWING DEMO  */
+
+.demo-sec {
+  width 100%;
+}
+
+.demo-sec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 29px;
+  padding-bottom: 30px;
+}
+
+.demo-sec-title {
+  font-size: 24px;
+  text-decoration: underline;
+}
+
+.demo-sec-tips {
+  padding-right: 20px;
+}
+.demo-sec-tips p {
+  font-style: italic;
+  text-align: end;
+  margin: 0;
+}
+
+.demo-sec-tips p:nth-child(2) i {
+   font-style: normal;
+ }
+
+.demo-fs-icon {
+  border: 3px dashed var(--netizen-meta);
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  transform: translateY(2px);
+  margin: 0 4px;
+}
+
+#demo-preview {
+  border: 1px solid var(--fg-color);
+  border-radius: 0 5px 5px 5px;
+  position: relative;
+  overflow: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+}
+
+.demo-preview--toggle {
+  position: absolute;
+  left: 0;
+  width: 100px;
+  padding: 3px 8px 0 8px;
+  border-radius: 5px 5px 0 0;
+  border: 1px solid var(--fg-color);
+  background: var(--fg-color);
+  color: var(--bg-color);
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.demo-preview--toggle:hover {
+  border: 1px solid var(--netizen-meta);
+  background: transparent;
+  color: var(--netizen-meta);
+}
+
+.demo-preview--render {
+  position: fixed;
+  width: calc(100% - 43px);
+  background: white;
+  border-radius: 0 5px 5px 5px;
+}
+
+.demo-preview--editor {
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+  border-radius: 0 5px 5px 5px;
 }

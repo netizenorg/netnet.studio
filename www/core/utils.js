@@ -186,7 +186,8 @@ window.utils = {
     window.history.pushState(null, null, `${p}//${h}/${path}`)
     window.utils.url = {
       shortCode: new URL(window.location).searchParams.get('c'),
-      example: new URL(window.location).searchParams.get('ex'),
+      example: new URL(window.location).searchParams.get('ex'), // legacy
+      demo: new URL(window.location).searchParams.get('demo'),
       tutorial: new URL(window.location).searchParams.get('tutorial'),
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
@@ -198,7 +199,8 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
-    example: new URL(window.location).searchParams.get('ex'),
+    example: new URL(window.location).searchParams.get('ex'), // legacy
+    demo: new URL(window.location).searchParams.get('demo'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
@@ -258,11 +260,12 @@ window.utils = {
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
-    } else if (url.example) {
-      if (!WIDGETS['code-examples']) {
-        WIDGETS.load('code-examples', w => w.loadExample(url.example, 'url'))
-      } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
+    } else if (url.example) { // legacy
+      window.utils.loadDemo(url.example)
       return 'example'
+    } else if (url.demo) {
+      window.utils.loadDemo(url.demo)
+      return 'demo'
     } else {
       return 'none'
     }
@@ -535,6 +538,20 @@ window.utils = {
       NNE.cm.setSelection(from, from)
       NNE.spotlight(null)
     }
+  },
+
+  loadDemo: (key) => {
+    const urlCheck = () => {
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
+    }
+
+    if (!WIDGETS['demo-toc']) {
+      WIDGETS.load('demo-toc', w => {
+        w.load(key); urlCheck()
+      })
+    } else { WIDGETS['demo-toc'].load(key); urlCheck() }
   },
 
   // dev testing utilities

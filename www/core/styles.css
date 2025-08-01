@@ -128,6 +128,22 @@
   opacity: 1;
 }
 
+#nn-window  #proj-title[data-demo]::before {
+  content: "Notes For ⭢";
+  border: 1px solid var(--netizen-meta);
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: -30px;
+  margin-right: 20px;
+  opacity: 0.25;
+  cursor: pointer;
+}
+
+#nn-window  #proj-title[data-demo]:hover::before {
+  opacity: 1;
+}
+
 #nn-window > #nn-menu {
   display: flex;
   align-items: flex-end;
