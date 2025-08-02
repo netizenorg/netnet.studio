@@ -316,8 +316,10 @@ router.get('/api/demos', (req, res) => {
   const exPath = path.join(__dirname, '../data/demos')
   const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
-    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
-    dict[obj.key] = obj
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    dict[d.key] = {
+      key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+    }
   })
   res.set({
     'Access-Control-Allow-Origin': '*',

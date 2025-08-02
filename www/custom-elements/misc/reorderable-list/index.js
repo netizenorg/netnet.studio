@@ -1,8 +1,7 @@
-/* global HTMLElement WIDGETS */
+/* global HTMLElement CustomEvent */
 class ReorderableList extends HTMLElement {
-  constructor (widget) {
+  constructor () {
     super()
-    this.widget = widget || null
     this.isActivated = false
   }
 
@@ -18,11 +17,13 @@ class ReorderableList extends HTMLElement {
                 <p><i class="rl-arrow rl-down"></i></p>
             </div>
             <ul class="rl-list">
-            </ul
+            </ul>
         `
     const arrowDown = div.querySelector('.rl-highlight')
     arrowDown.addEventListener('click', () => {
       this.dropdownActivated()
+      if (this.isActivated) this.emit('closed')
+      else this.emit('opened')
     })
 
     div.querySelector('.rl-list').addEventListener('dragover', this.initList)
@@ -33,10 +34,15 @@ class ReorderableList extends HTMLElement {
     this.appendChild(div)
   }
 
-  initList = (e) => {
+  emit (type, detail) {
+    const ev = new CustomEvent(type, { detail, bubbles: true, composed: true })
+    this.dispatchEvent(ev)
+  }
+
+  initList (e) {
     e.preventDefault()
     const selectedStep = document.querySelector('.dragging')
-    const list = this.querySelector('.rl-list')
+    const list = this
 
     const placeholder = document.createElement('li')
     placeholder.className = 'placeholder'
@@ -134,12 +140,12 @@ class ReorderableList extends HTMLElement {
 
     step.querySelector('.rl-trash-can').addEventListener('click', (e) => {
       e.stopPropagation()
-      WIDGETS[this.widget]._updateStep(Number(step.dataset.id), 'remove')
+      this.emit('remove', { id: Number(step.dataset.id) })
     })
 
     step.addEventListener('click', () => {
       this.selectStep(step, this.querySelector('.rl-h-text'))
-      WIDGETS[this.widget]._selectStep(Number(step.dataset.id))
+      this.emit('selected', { id: Number(step.dataset.id) })
     })
 
     step.addEventListener('dragstart', () => step.classList.add('dragging'))
@@ -150,9 +156,9 @@ class ReorderableList extends HTMLElement {
         (node) => node.nodeType === 1 && node.classList.contains('rl-step')
       )
       const index = nodes.indexOf(step)
-      WIDGETS[this.widget]._updateStep({
-        oldIdx: Number(step.dataset.id),
-        newIdx: index
+      this.emit('reordered', {
+        oldid: Number(step.dataset.id),
+        newid: index
       })
       this.updateList()
       this.selectStep(step, this.querySelector('.rl-h-text'))
@@ -186,6 +192,7 @@ class ReorderableList extends HTMLElement {
           ? data.title.substring(0, 40) + ' ...'
           : data.title
       const step = this.querySelector(`li[data-id="${data.id}"]`)
+      console.log(step);
       step.querySelector('.rl-s-i').textContent = data.id
       step.dataset.id = data.id
       step.querySelector('.rl-s-t').textContent = data.title
@@ -197,25 +204,22 @@ class ReorderableList extends HTMLElement {
 
   updateLastStep (steps = [...this.querySelectorAll('.rl-step')]) {
     const previousLastStep = document.querySelector('.rl-last-step')
-    previousLastStep?.classList.remove('rl-last-step')
-    steps[steps.length - 1]?.classList.add('rl-last-step')
+    if (previousLastStep) previousLastStep.classList.remove('rl-last-step')
+    if (steps[steps.length - 1]) steps[steps.length - 1].classList.add('rl-last-step')
   }
 
   selectStep (step, container) {
-    if (step === 0) {
-      step = document.querySelector('.rl-step:nth-of-type(1)')
-      this.querySelector('.rl-h-text').querySelector('.rl-s-i').textContent =
-        step.dataset.id
-      this.querySelector('.rl-h-text').querySelector('.rl-s-t').textContent =
-        step.dataset.title || ''
+    if (typeof step === 'number' && !isNaN(step)) {
+      step = this.querySelector(`.rl-step:nth-of-type(${step + 1})`)
+    }
+    if (!container) container = this.querySelector('.rl-h-text')
+    if (!step) return
+    container.querySelector('.rl-s-i').textContent = step.dataset.id
+    if (step.dataset.title === 'null') {
+      container.querySelector('.rl-s-t').textContent = ''
     } else {
-      container.querySelector('.rl-s-i').textContent = step.dataset.id
-      if (step.dataset.title === 'null') {
-        container.querySelector('.rl-s-t').textContent = ''
-      } else {
-        container.querySelector('.rl-s-t').textContent =
-          step.dataset.title || ''
-      }
+      container.querySelector('.rl-s-t').textContent =
+        step.dataset.title || ''
     }
   }
 
@@ -241,9 +245,9 @@ class ReorderableList extends HTMLElement {
     step.dataset.id = newIndex
     targetStep.dataset.id = currentIndex
 
-    WIDGETS[this.widget]._updateStep({
-      oldIdx: currentIndex,
-      newIdx: newIndex
+    this.emit('reordered', {
+      oldid: currentIndex,
+      newid: newIndex
     })
     this.updateList()
     this.selectStep(step, this.querySelector('.rl-h-text'))

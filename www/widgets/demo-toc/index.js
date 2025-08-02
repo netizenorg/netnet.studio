@@ -36,14 +36,14 @@ class DemoToc extends Widget {
     })
   }
 
-  load (code) {
+  load (code, type) {
     const num = Number(code)
     const isNum = (typeof code === 'number' || (typeof num === 'number' && !isNaN(num)))
 
     if (isNum) {
       utils.get(`./api/demo/${num}`, json => this._load(json))
     } else if (typeof code === 'object' && typeof code.code === 'string') {
-      this._load(code)
+      this._load(code, type)
     }
   }
 
@@ -66,8 +66,10 @@ class DemoToc extends Widget {
 
   // ---------------------------------------------------------------------------
 
-  _load (obj) {
-    this.demoName = obj.name
+  _load (obj, type) {
+    console.log('loading', obj);
+    this.demoType = type
+    this.demoName = obj.name || 'untitled demo'
     this.demoKey = obj.key
     this.code = NNE._decode(obj.code.substr(6))
     this.codeLength = this.code.split('\n').length
@@ -83,14 +85,7 @@ class DemoToc extends Widget {
       return
     }
 
-    let userCodeIsDemo = typeof utils.url.example === 'string' // TODO update to "demo"
-    const userCode = NNE.generateHash()
-    if (WIDGETS['demo-sketches']) {
-      const demos = WIDGETS['demo-sketches'].demos
-      for (let i = 0; i < demos.length; i++) {
-        if (demos[i].code === userCode) { userCodeIsDemo = true; break }
-      }
-    }
+    const userCodeIsDemo = typeof utils.url.demo === 'string'
     if (userCodeIsDemo) return this._displayDemo()
 
     // TODO: test out what happens if we try to load a demo during a tutorial
@@ -124,7 +119,7 @@ class DemoToc extends Widget {
     }
 
     utils.setCustomRenderer(null)
-    utils.updateURL(`?demo=${this.demoKey}`)
+    if (this.demoType !== 'custom') utils.updateURL(`?demo=${this.demoKey}`)
     NNW.updateTitleBar(this.demoName)
 
     NNE.update()
@@ -132,6 +127,7 @@ class DemoToc extends Widget {
     let startDemo // start function
 
     if (this.info) {
+      this.$('.demo-toc--ex-parts').innerHTML = ''
       // add "Nots" button in title bar
       NNW.title.dataset.demo = true
       // populate table of contents
@@ -161,6 +157,8 @@ class DemoToc extends Widget {
         window.convo = new Convo(this.convos, 'loaded-annotated-demo')
       }
     } else { // if this isn't an annoted demo
+      this.$('.demo-toc--ex-parts').innerHTML = ''
+      if (this.opened) this.close()
       startDemo = () => { window.convo = new Convo(this.convos, 'loaded-demo') }
     }
 
@@ -208,7 +206,17 @@ class DemoToc extends Widget {
     this.$('.demo-toc--ex-edit1').style.display = B
     this.$('.demo-toc--ex-edit2').style.display = C
     this.$('.demo-toc--ex-parts').style.display = D
-    if (window.convo && diffL) window.convo.hide()
+    // reset URL && title bar
+    if (diffL) {
+      if (window.convo) window.convo.hide()
+      utils.updateURL(null)
+      NNW.updateTitleBar(null)
+      NNW.title.dataset.demo = false
+    } else if (this.demoName) {
+      if (this.demoType !== 'custom') utils.updateURL(`?demo=${this.demoKey}`)
+      NNW.updateTitleBar(this.demoName)
+      if (this.info) NNW.title.dataset.demo = true
+    }
   }
 
   _openSpot () {

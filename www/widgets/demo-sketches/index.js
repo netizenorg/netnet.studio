@@ -19,15 +19,6 @@ class DemoSketches extends Widget {
       Object.entries(this.demos).forEach(a => this._createDemoItem(a))
     })
 
-    utils.get(`./widgets/${this.key}/demoscene/index.html`, html => {
-      this.demoscene = WIDGETS.create({
-        key: 'the-demoscene',
-        listed: true,
-        title: 'the demoscene',
-        innerHTML: html
-      })
-    }, true)
-
     this._createHTML()
 
     this.on('open', () => {
@@ -130,7 +121,7 @@ class DemoSketches extends Widget {
 
   _createDemoEle (o) {
     const ele = nn.create('div')
-    const a = o.info instanceof Array ? 'block' : 'none'
+    const a = o.info ? 'block' : 'none'
     const f = this.width <= 612 ? 'block' : 'none'
     ele.innerHTML = `
       <div class="demo-sec-header">
@@ -229,7 +220,7 @@ class DemoSketches extends Widget {
     } else tags = o.tags
     tags = tags.filter(t => t !== '').map(t => t.toLowerCase())
 
-    const css = o.info instanceof Array ? 'highlight annotated' : 'highlight'
+    const css = o.info ? 'highlight annotated' : 'highlight'
 
     nn.create('span')
       .content(o.name)
@@ -261,7 +252,10 @@ class DemoSketches extends Widget {
       this.viewingDemo = true
       setTimeout(() => {
         this._resizePreview()
-        this._updateEditor(o.code)
+        this._updateEditor('#code/eJzT09PLyU9MycxL19PTAwAbtAPz') // loading text
+        utils.get(`api/demo/${o.key}`, (demo) => {
+          this.editor.code = NNE._decode(demo.code.substr(6))
+        })
       }, 500)
     }
     this.demoSlideOpts = {

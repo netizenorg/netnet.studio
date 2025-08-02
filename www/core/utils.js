@@ -247,10 +247,12 @@ window.utils = {
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
-    } else if (window.location.hash.includes('#example')) {
-      if (url.dem) window.utils.loadCustomExample(url.layout, true)
-      else window.utils.loadCustomExample(url.layout)
+    } else if (window.location.hash.includes('#example')) { // legacy
+      window.utils.loadCustomExample(url.layout)
       return 'sketch'
+    } else if (window.location.hash.includes('#demo')) { // legacy
+      window.utils.loadCustomDemo(url.layout)
+      return 'annoted-sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
@@ -328,7 +330,7 @@ window.utils = {
     })
   },
 
-  loadCustomExample: (layout, dem) => {
+  loadCustomExample: (layout, dem) => { // legacy version
     // an example created by anyone saved in the URL hash
     const hash = window.location.hash.split('#example/')[1]
     const json = JSON.parse(NNE._decode(hash))
@@ -341,6 +343,27 @@ window.utils = {
     }
     if (dem) WIDGETS.open('code-examples', w => w.loadExample(data, 'url', true))
     else WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
+  },
+
+  loadCustomDemo: (layout) => {
+    // an example created by anyone saved in the URL hash
+    const hash = window.location.hash.split('#demo/')[1]
+    const json = JSON.parse(NNE._decode(hash))
+    window.utils.loadDemo(json, 'custom')
+  },
+
+  loadDemo: (key, type) => {
+    const urlCheck = () => {
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
+    }
+
+    if (!WIDGETS['demo-toc']) {
+      WIDGETS.load('demo-toc', w => {
+        w.load(key, type); urlCheck()
+      })
+    } else { WIDGETS['demo-toc'].load(key, type); urlCheck() }
   },
 
   loadGithub: (github, layout, callback) => {
@@ -538,20 +561,6 @@ window.utils = {
       NNE.cm.setSelection(from, from)
       NNE.spotlight(null)
     }
-  },
-
-  loadDemo: (key) => {
-    const urlCheck = () => {
-      if (nn.get('#loader').style.opacity === '0') return
-      // if loaded from the URL, make sure to fadeout loader when done
-      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
-    }
-
-    if (!WIDGETS['demo-toc']) {
-      WIDGETS.load('demo-toc', w => {
-        w.load(key); urlCheck()
-      })
-    } else { WIDGETS['demo-toc'].load(key); urlCheck() }
   },
 
   // dev testing utilities

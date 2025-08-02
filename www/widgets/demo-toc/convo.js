@@ -39,7 +39,7 @@ window.CONVOS['demo-toc'] = (self) => {
       id: 'loaded-demo',
       graph: { id: 2, x: 675, y: 400 },
       before: () => WIDGETS['student-session'].clearProjectData(),
-      content: 'Check out this example! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
+      content: 'Check out this demo! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
       options: {
         ok: (e) => e.hide()
       }
