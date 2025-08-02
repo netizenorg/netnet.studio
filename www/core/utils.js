@@ -248,7 +248,7 @@ window.utils = {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
     } else if (window.location.hash.includes('#example')) { // legacy
-      window.utils.loadCustomExample(url.layout)
+      window.utils.loadCustomDemo(url.layout)
       return 'sketch'
     } else if (window.location.hash.includes('#demo')) { // legacy
       window.utils.loadCustomDemo(url.layout)
@@ -328,21 +328,6 @@ window.utils = {
       window.location.hash = json.hash
       window.utils.loadFromCodeHash(layout)
     })
-  },
-
-  loadCustomExample: (layout, dem) => { // legacy version
-    // an example created by anyone saved in the URL hash
-    const hash = window.location.hash.split('#example/')[1]
-    const json = JSON.parse(NNE._decode(hash))
-    const data = {
-      name: json.name,
-      hash: json.code,
-      code: json.code,
-      info: json.info,
-      key: json.key
-    }
-    if (dem) WIDGETS.open('code-examples', w => w.loadExample(data, 'url', true))
-    else WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
   },
 
   loadCustomDemo: (layout) => {

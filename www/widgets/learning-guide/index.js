@@ -24,10 +24,6 @@ class LearningGuide extends Widget {
     this.data = null
     this.loaded = null
 
-    if (!WIDGETS.loaded.includes('code-examples')) {
-      WIDGETS.load('code-examples')
-    }
-
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this._createPage('mainOpts', 'main-slide.html', null, (div) => {
