@@ -91,10 +91,6 @@ class DemoSketches extends Widget {
   }
 
   _createMainEle () {
-    // TODO:
-    //   text-shadow: -4px -2px 3px rgba(0,0,0,0.8);
-    // generate shadows for icon && title dynamically
-    // const c = nn.hex2rgb(utils.getVal('--bg-color'))
     const ele = nn.create('div')
     ele.innerHTML = `
       <div class="demo-scene">
@@ -116,6 +112,9 @@ class DemoSketches extends Widget {
         <!-- demos listed here -->
       </div>
     `
+    const c = nn.hex2rgb(utils.getVal('--bg-color'))
+    const ts = `-4px -2px 3px rgba(${c.r},${c.g},${c.b},0.8)`
+    ele.querySelector('.demo-title').style.textShadow = ts
     return ele
   }
 
@@ -149,11 +148,7 @@ class DemoSketches extends Widget {
       .addEventListener('click', () => {
         const type = ele.querySelector('.demo-sec-header select').value
         if (type === 'same') utils.loadDemo(o.key)
-        else {
-          const l = window.location
-          const url = `${l.protocol}//${l.host}?demo=${o.key}`
-          window.open(url, '_blank', 'noopener,noreferrer')
-        }
+        else this._openInNewTab(o)
       })
 
     ele.querySelector('.demo-preview--toggle').addEventListener('click', (e) => {
@@ -208,6 +203,23 @@ class DemoSketches extends Widget {
     preview.style.height = this.height - n - h - t - p + 'px'
     render.style.height = this.height - n - h - t - p - 2 + 'px'
     toggle.style.top = preview.offsetTop - 27 + 'px'
+  }
+
+  _openInNewTab (o) {
+    if (!o) o = this._tempObj
+    const openProj = WIDGETS['student-session'].getData('opened-project')
+    if (openProj) {
+      this._tempObj = o
+      this.convos = window.CONVOS[this.key](this)
+      const unSaved = WIDGETS['project-files'].changes.length > 0
+      if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
+      else window.convo = new Convo(this.convos, 'working-on-project')
+      return
+    }
+
+    const l = window.location
+    const url = `${l.protocol}//${l.host}?demo=${o.key}`
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   // -------------------------------------------------------------- LIST RESULTS

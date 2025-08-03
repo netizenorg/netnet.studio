@@ -651,6 +651,7 @@ class NetNet {
       this.title.style.display = 'none'
       delete this.title.dataset.unsaved
       delete this.title.dataset.project
+      delete this.title.dataset.demo
     }
   }
 

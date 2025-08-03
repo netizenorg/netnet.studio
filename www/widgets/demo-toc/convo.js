@@ -1,9 +1,9 @@
-/* global  WIDGETS */
+/* global WIDGETS */
 window.CONVOS['demo-toc'] = (self) => {
   return [
     {
       id: 'working-on-something',
-      graph: { id: 1, x: 100, y: 225 },
+      graph: { id: 1, x: 350, y: 100 },
       content: 'Would you like me to get rid of the code currently in my editor and open this demo here, or would you prefer I open it up in a new tab?',
       options: {
         'open it here': (e) => {
@@ -21,23 +21,33 @@ window.CONVOS['demo-toc'] = (self) => {
     {
       id: 'working-on-project',
       graph: { id: 4, x: 100, y: 100 },
-      content: 'It looks like you\'re working on a project, I can open this demo in my editor but you\'ll loose any unsaved changes. Alternatively I could open this demo in a new tab and leave your project open on this one?',
+      content: 'It looks like you\'re working on a project. I\'ll need to close the project you\'re working on before I open any demos.',
       options: {
-        'open it here': (e) => {
+        'oh, never mind then': (e) => e.hide(),
+        'ok, close it and open the demo': (e) => {
+          WIDGETS['student-session'].clearProjectData()
+          WIDGETS['project-files'].close()
+          self._displayDemo()
+        }
+      }
+    },
+    {
+      id: 'working-on-unsaved-project',
+      graph: { id: 5, x: 225, y: 100 },
+      content: 'It looks like you\'re working on a project with unsaved changes. I\'ll need to close the project you\'re working on before opening this demo. I\'d recommend that you "git push" the changes you made before opening this demo.',
+      options: {
+        'let\'s save it first': (e) => WIDGETS.open('git-push'),
+        'I know, open the demo anyway': (e) => {
+          WIDGETS['student-session'].clearProjectData()
+          WIDGETS['project-files'].close()
           self._displayDemo()
         },
-        'open it in a new tab': (e) => {
-          const proto = window.location.protocol
-          const host = window.location.host
-          const url = `${proto}//${host}?demo=${self.demoKey}`
-          window.open(url, '_blank', 'noopener,noreferrer')
-        },
-        'oh, never mind': (e) => e.hide()
+        'ok thanks': (e) => e.hide()
       }
     },
     {
       id: 'loaded-demo',
-      graph: { id: 2, x: 675, y: 400 },
+      graph: { id: 2, x: 100, y: 250 },
       before: () => WIDGETS['student-session'].clearProjectData(),
       content: 'Check out this demo! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
       options: {
@@ -46,7 +56,7 @@ window.CONVOS['demo-toc'] = (self) => {
     },
     {
       id: 'loaded-annotated-demo',
-      graph: { id: 3, x: 825, y: 250 },
+      graph: { id: 3, x: 225, y: 250 },
       content: 'I can walk you through this demo if you\'d like me to explain the different parts, just click on the green dots or the links in the Annotations widget.<br><br>Otherwise feel free to edit and experiment with the code yourself. You can also double click any piece of code you don\'t understand and I\'ll do my best to explain that bit to you.',
       options: {
         'great thanks!': (e) => e.hide(),

@@ -34,7 +34,7 @@
   font-size: 60px;
   font-family: 'Press Start 2P', monospace;
   font-style: italic;
-  text-shadow: -4px -2px 3px rgba(0,0,0,0.8);
+  /* text-shadow: -4px -2px 3px rgba(0,0,0,0.8); */
   transition: opacity var(--demo-screen-tt) var(--sarah-ease);
 }
 

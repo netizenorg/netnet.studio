@@ -6,8 +6,6 @@ class DemoToc extends Widget {
     this.key = 'demo-toc'
     this.listed = false
     this.title = 'Annotations'
-    // this.width = 455
-    // this.height = 330
     this.left = 150
     this.top = 50
 
@@ -41,7 +39,7 @@ class DemoToc extends Widget {
     const isNum = (typeof code === 'number' || (typeof num === 'number' && !isNaN(num)))
 
     if (isNum) {
-      utils.get(`./api/demo/${num}`, json => this._load(json))
+      utils.get(`./api/demo/${num}`, json => this._load(json, type))
     } else if (typeof code === 'object' && typeof code.code === 'string') {
       this._load(code, type)
     }
@@ -49,9 +47,18 @@ class DemoToc extends Widget {
 
   cancel () {
     if (this.opened) {
-      this.close()
+      this.code = null
+      this.codeLength = 0
+      this.demoKey = null
+      this.layout = null
+      this.info = null
+
+      if (utils.url.demo) utils.updateURL(null)
+      NNW.updateTitleBar(null)
       NNE.spotlight(null)
       NNE.marker(null)
+
+      this.close()
     }
   }
 
@@ -67,7 +74,13 @@ class DemoToc extends Widget {
   // ---------------------------------------------------------------------------
 
   _load (obj, type) {
-    console.log('loading', obj);
+    if (typeof window.CONVOS[this.key] !== 'function') {
+      setTimeout(() => this._load(obj, type), 250)
+      return
+    }
+
+    this.convos = window.CONVOS[this.key](this)
+
     this.demoType = type
     this.demoName = obj.name || 'untitled demo'
     this.demoKey = obj.key
@@ -76,19 +89,25 @@ class DemoToc extends Widget {
     this.layout = obj.layout
     this.info = obj.info
 
+    const hvp = WIDGETS['hyper-video-player']
+    if (utils.tutorialOpen() || (hvp && hvp.opened)) {
+      hvp.close()
+      setTimeout(() => WIDGETS['learning-guide'].close(), 100)
+    }
+
     const isStarterCode = NNE.code === utils.starterCode()
     if (isStarterCode) return this._displayDemo()
 
     const openProj = WIDGETS['student-session'].getData('opened-project')
     if (openProj) {
-      window.convo = new Convo(this.convos, 'working-on-project')
+      const unSaved = WIDGETS['project-files'].changes.length > 0
+      if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
+      else window.convo = new Convo(this.convos, 'working-on-project')
       return
     }
 
     const userCodeIsDemo = typeof utils.url.demo === 'string'
     if (userCodeIsDemo) return this._displayDemo()
-
-    // TODO: test out what happens if we try to load a demo during a tutorial
 
     if (NNW.layout !== 'welcome') {
       window.convo = new Convo(this.convos, 'working-on-something') // too cautious?
@@ -194,6 +213,7 @@ class DemoToc extends Widget {
   }
 
   _editorChange () {
+    if (!this.demoKey) return
     const diffC = NNE.code !== this.code // false
     const len = NNE.cm.lineCount()
     const diffL = len !== this.codeLength
