@@ -1,12 +1,17 @@
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   FORM FIELDS!
+            ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
 .dropdown {
   padding: 3px 6px 4px;
   border: 0;
   border-radius: 5px;
   margin: 0;
-	
+
   color: var(--netizen-meta);
   background: var(--bg-color);
-  
+
   font-family: inconsolata, monospace;
   font-size: 15px;
   line-height: 1.2em;
@@ -49,8 +54,8 @@
   background-color: var(--netizen-hint-shadow);
 
   font-family: 'fira-mono-regular', monospace;
-  font-size: inherit;
-  
+  font-size: 0.9em;
+
   appearance: none;
 }
 

@@ -1,3 +1,9 @@
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   BASE STYLING!
+              ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
+
 /* vars */
 
 :root {
@@ -31,7 +37,7 @@ body {
   overflow: hidden;
 }
 
-* { 
+* {
   box-sizing: border-box;
 }
 
@@ -63,4 +69,3 @@ code::selection {
   color: var(--fg-color);
   background-color: var(--bg-color);
 }
-
