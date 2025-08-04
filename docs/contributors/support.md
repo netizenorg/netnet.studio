@@ -2,7 +2,7 @@
 
 netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and developed by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with help from a handful of [other contributors](https://github.com/netizenorg/netnet.studio/graphs/contributors). The current <BETA-3.0> version of netnet was made possible thanks to financial support from the <a href="http://clinicopensourcearts.com/" target="_blank">Clinic for Open Source Arts</a>, the <a href="https://www.saic.edu/academics/departments/contemporary-practices" target="_blank">Contemporary Practices Department at the School of the Art Institute of Chicago</a> and <a href="https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design" target="_blank">Media Arts and Design at the University of Chicago</a>.
 
-| [![cosa](cosa.png)](http://clinicopensourcearts.com/) | [![saic](saic.png)](https://www.saic.edu/academics/departments/contemporary-practices) | [![uchicago](uchicago.png)](https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design) |
+| [![cosa](images/cosa.png)](http://clinicopensourcearts.com/) | [![saic](images/saic.png)](https://www.saic.edu/academics/departments/contemporary-practices) | [![uchicago](images/uchicago.png)](https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design) |
 |:---:|:---:|:---:|
 
 netnet.studio is constantly evolving and is currently seeking financial support from individuals and institutions who benefit from open access to this platform and who support our mission to reclaim creative agency on the Internet and to nurture and grow the hand-crafted expressive parts of the World Wide Web.
@@ -23,10 +23,9 @@ netnet.studio is a non-profit open-source project and needs all the help it can 
 
 - netizen.org is a 501(c)3 tax deductible organization, so you might consider making a donation! We're working on setting up multiple avenues for financial contributions alongside our official launch this summer 2025, but for now you can make donations to the org using our [donorbox](https://donorbox.org/netizen) account or get in touch if you'd like to help support netnet.studio directly: h<span></span>i@net<span></span>izen.org
 
-
 ### Testimonials
 
-For almost 5 years, netnet.studio has been in beta, meaning we’ve been developing it iteratively alongside creative coding educators and students using it in the classroom. It’s been used by hundreds of students across multiple universities including, The School of the Art Institute of Chicago, the University of Chicago and the University of Waterloo among others. Professors like Greg Smith (University of Waterloo) have noted the difference using netnet in their classroom’s have made.
+For the past 5 years (2020-2025), netnet.studio has been in beta, meaning we’ve been developing it iteratively alongside creative coding educators and students using it in the classroom. It’s been used by hundreds of students across multiple universities including, The School of the Art Institute of Chicago, the University of Chicago and the University of Waterloo among others. Professors like Greg Smith (University of Waterloo) have noted the difference using netnet in their classroom’s have made.
 
 > I'm once again using netnet in my web design class! I've had 120 Uwaterloo students happily working with it this semester and 60 more slated for the winter. It's going really well, and I can't stress enough how netnet makes my life a little easier! 🙂 [...] THANK YOU AGAIN FOR MAKING THIS GREAT TOOL! Please pass my gratitude on to your team.
 

@@ -117,7 +117,7 @@ const homeTemplate = path.join(baseDir, 'template.html')
 convertMarkdownToHtml(homeInput, homeOutput, homeTemplate, nav)
 
 // Create sub-pages
-const folders = ['advocates', 'developers']
+const folders = ['students', 'educators', 'contributors']
 folders.forEach(folder => {
   const folderPath = path.join(baseDir, folder)
   fs.readdir(folderPath, (err, files) => {
