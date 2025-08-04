@@ -100,7 +100,7 @@ class DemoToc extends Widget {
 
     const openProj = WIDGETS['student-session'].getData('opened-project')
     if (openProj) {
-      const unSaved = WIDGETS['project-files'].changes.length > 0
+      const unSaved = WIDGETS['project-files'] && WIDGETS['project-files'].changes.length > 0
       if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
       else window.convo = new Convo(this.convos, 'working-on-project')
       return
