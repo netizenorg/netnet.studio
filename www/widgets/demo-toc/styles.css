@@ -1,0 +1,42 @@
+.demo-toc {
+  overflow-y: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+  max-height: 250px;
+  max-width: 455px;
+  scrollbar-gutter: stable;
+}
+
+.demo-toc code {
+  position: relative;
+  top: -0.1em;
+  padding: .1em 0.3em 0.2em;
+  border-radius: 6px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: 700;
+  cursor: text;
+}
+
+.demo-toc--ex-intro,
+.demo-toc--ex-edit1,
+.demo-toc--ex-edit2 {
+  padding-bottom: 10px;
+}
+
+.demo-toc--ex-parts {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-toc--ex-parts > li {
+  padding: 2px 0px;
+}
+
+.demo-toc--ex-edit1,
+.demo-toc--ex-edit2 {
+  display: none;
+}

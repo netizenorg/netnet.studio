@@ -95,7 +95,9 @@ class Widget {
     this.events = {
       open: [],
       close: [],
-      resize: []
+      resize: [],
+      movestart: [],
+      moveend: []
     }
 
     this._createWindow()
@@ -578,6 +580,7 @@ class Widget {
       this.mousedown = e.target.className
       if (e.target.className === 'widget__top') {
         this.ele.querySelector('.widget__top').style.cursor = 'move'
+        this.emit('movestart', { x: e.clientX, y: e.clientY })
       }
       this._updateResizeBlocker('create')
       // if it wasn't clicked on bottom right, then we shouldn't resize
@@ -594,6 +597,9 @@ class Widget {
     this.mousedown = false
     this._updateResizeBlocker('remove')
     this.winOff = null
+    if (this.ele.querySelector('.widget__top').style.cursor === 'move') {
+      this.emit('moveend', { x: e.clientX, y: e.clientY })
+    }
     this.ele.querySelector('.widget__top').style.cursor = 'grab'
     this.keepInFrame()
     utils.selecting(true)

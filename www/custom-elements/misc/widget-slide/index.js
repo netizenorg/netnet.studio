@@ -7,6 +7,7 @@ class WidgetSlide extends HTMLElement {
         widget: wigInstance,  // the instance of the parent Widget
         back: prevOptsObject, // the options object of the slide to "return" to
         ele: htmlElement,     // an html element w/the slide's content
+        class: className      // CSS class name for parent elemenet
         cb: function,         // optinal callback
         // ...or, a list of objects to create an index page from
         list: [
@@ -16,7 +17,8 @@ class WidgetSlide extends HTMLElement {
       })
     */
     this._widget = opts.widget
-    this.className = 'reference-widget'
+    this.className = opts.class || 'reference-widget'
+    this.setAttribute('name', opts.name)
 
     if (opts.list) {
       if (this._currentSlide) {
@@ -45,6 +47,10 @@ class WidgetSlide extends HTMLElement {
     if (opts.cb) opts.cb()
 
     this.scrollTop = 0
+  }
+
+  getName () {
+    return this.getAttribute('name')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS

@@ -639,14 +639,19 @@ class NetNet {
       else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
       this.title.onclick = () => {
+        let wig = false
+        if (this.title.dataset.project) wig = 'project-files'
+        else if (this.title.dataset.demo) wig = 'demo-toc'
+        if (!wig) return
         const path = this.title.textContent
-        WIDGETS['project-files'].explainTitleBar(path)
+        WIDGETS[wig].explainTitleBar(path)
       }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
       delete this.title.dataset.unsaved
       delete this.title.dataset.project
+      delete this.title.dataset.demo
     }
   }
 

@@ -109,7 +109,7 @@ class CodingMenu extends Widget {
   }
 
   save () {
-    if (WIDGETS['code-examples']) WIDGETS['code-examples'].cancelExample()
+    if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
     this.convos = window.CONVOS[this.key](this)
 
     if (WIDGETS['project-files'] && WIDGETS['student-session'].getData('opened-project')) {

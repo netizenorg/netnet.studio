@@ -186,7 +186,8 @@ window.utils = {
     window.history.pushState(null, null, `${p}//${h}/${path}`)
     window.utils.url = {
       shortCode: new URL(window.location).searchParams.get('c'),
-      example: new URL(window.location).searchParams.get('ex'),
+      example: new URL(window.location).searchParams.get('ex'), // legacy
+      demo: new URL(window.location).searchParams.get('demo'),
       tutorial: new URL(window.location).searchParams.get('tutorial'),
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
@@ -198,7 +199,8 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
-    example: new URL(window.location).searchParams.get('ex'),
+    example: new URL(window.location).searchParams.get('ex'), // legacy
+    demo: new URL(window.location).searchParams.get('demo'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
@@ -245,10 +247,12 @@ window.utils = {
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
-    } else if (window.location.hash.includes('#example')) {
-      if (url.dem) window.utils.loadCustomExample(url.layout, true)
-      else window.utils.loadCustomExample(url.layout)
+    } else if (window.location.hash.includes('#example')) { // legacy
+      window.utils.loadCustomDemo(url.layout)
       return 'sketch'
+    } else if (window.location.hash.includes('#demo')) { // legacy
+      window.utils.loadCustomDemo(url.layout)
+      return 'annoted-sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
@@ -258,11 +262,12 @@ window.utils = {
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
-    } else if (url.example) {
-      if (!WIDGETS['code-examples']) {
-        WIDGETS.load('code-examples', w => w.loadExample(url.example, 'url'))
-      } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
+    } else if (url.example) { // legacy
+      window.utils.loadDemo(url.example)
       return 'example'
+    } else if (url.demo) {
+      window.utils.loadDemo(url.demo)
+      return 'demo'
     } else {
       return 'none'
     }
@@ -325,19 +330,25 @@ window.utils = {
     })
   },
 
-  loadCustomExample: (layout, dem) => {
+  loadCustomDemo: (layout) => {
     // an example created by anyone saved in the URL hash
-    const hash = window.location.hash.split('#example/')[1]
+    const hash = window.location.hash.split('#demo/')[1]
     const json = JSON.parse(NNE._decode(hash))
-    const data = {
-      name: json.name,
-      hash: json.code,
-      code: json.code,
-      info: json.info,
-      key: json.key
+    window.utils.loadDemo(json, 'custom')
+  },
+
+  loadDemo: (key, type) => {
+    const urlCheck = () => {
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
     }
-    if (dem) WIDGETS.open('code-examples', w => w.loadExample(data, 'url', true))
-    else WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
+
+    if (!WIDGETS['demo-toc']) {
+      WIDGETS.load('demo-toc', w => {
+        w.load(key, type); urlCheck()
+      })
+    } else { WIDGETS['demo-toc'].load(key, type); urlCheck() }
   },
 
   loadGithub: (github, layout, callback) => {

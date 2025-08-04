@@ -644,6 +644,8 @@ class ProjectFiles extends Widget {
     this._opening = null
     this._openingCode = null
 
+    if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
+
     const repo = WIDGETS['student-session'].getData('opened-project')
     NNW.updateTitleBar(`${repo}/${filepath}`)
     NNW.title.dataset.project = true

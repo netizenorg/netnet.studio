@@ -21,7 +21,7 @@ class SearchBar extends HTMLElement {
       'Coding Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
       Tutorials: 'var(--netizen-string)',
-      Examples: 'var(--netizen-string)',
+      Demos: 'var(--netizen-string)',
       netnet: 'var(--netizen-number)'
     }
   }
@@ -238,7 +238,7 @@ class SearchBar extends HTMLElement {
       }
     })
 
-    utils.get('api/examples', (json) => {
+    utils.get('api/demos', (json) => {
       const arr = []
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
@@ -255,14 +255,10 @@ class SearchBar extends HTMLElement {
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({
-          type: 'Examples',
+          type: 'Demos',
           word: ex.name,
           alts: keywords,
-          clck: () => {
-            if (!WIDGETS['code-examples']) {
-              WIDGETS.load('code-examples', w => w.loadExample(i, 'search'))
-            } else { WIDGETS['code-examples'].loadExample(i, 'search') }
-          }
+          clck: () => utils.loadDemo(i)
         })
         update()
       }

@@ -19,7 +19,6 @@ const aliasRoutes = [
   { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
   { url: '/nn.min.js', loc: '../www/core/netnet-standard-library/build/nn.min.js' },
-  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' },
   { url: '/images/*', loc: '../www/assets/images/' },
   { url: '/audios/*', loc: '../www/assets/audios/' },
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
@@ -300,50 +299,33 @@ router.post('/api/expand-url', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
-function createExamplesDict () {
-  const dict = {
-    examples: {}, // examples by key
-    map: [] // sections in order
-  }
-  const exPath = path.join(__dirname, '../data/examples')
+router.get('/api/demo/:num', (req, res) => {
+  const num = req.params.num
+  const exPath = path.join(__dirname, '../data/demos')
+  const files = fs.readdirSync(exPath)
+  const file = files.filter(f => f.indexOf(`${num}--`) === 0)[0]
+  const str = fs.readFileSync(`${exPath}/${file}`)
+  const obj = JSON.parse(str)
+  obj.success = 'success'
+  if (typeof obj.code === 'string') res.json(obj)
+  else res.json({ error: `demo ${num} is not in the database.` })
+})
+
+router.get('/api/demos', (req, res) => {
+  const dict = {}
+  const exPath = path.join(__dirname, '../data/demos')
   const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
-    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
-    dict.examples[obj.key] = obj
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    dict[d.key] = {
+      key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+    }
   })
-  const mapPath = path.join(__dirname, '../data/examples-map.json')
-  dict.map = JSON.parse(fs.readFileSync(mapPath))
-  return dict
-}
-
-router.get('/api/examples', (req, res) => {
-  const dict = createExamplesDict()
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET'
   })
-  if (typeof dict === 'object' && typeof dict.examples === 'object') {
-    res.json({ success: 'success', data: dict.examples, sections: dict.map })
-  } else {
-    res.json({ error: 'there was an issue loading the database', data: dict })
-  }
-})
-
-router.post('/api/example-data', (req, res) => {
-  const exPath = path.join(__dirname, '../data/examples')
-  const files = fs.readdirSync(exPath)
-  const file = files.filter(f => f.indexOf(`${req.body.key}--`) === 0)[0]
-  const str = fs.readFileSync(`${exPath}/${file}`)
-  const obj = JSON.parse(str)
-  const name = obj.name
-  const hash = obj.code
-  const info = obj.info
-  const layout = obj.layout
-  if (typeof hash === 'string') {
-    res.json({ success: 'success', name, hash, info, layout })
-  } else {
-    res.json({ error: `${req.body.key} is not in the database.` })
-  }
+  res.json({ success: 'success', data: dict })
 })
 
 // ************************
