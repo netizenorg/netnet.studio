@@ -11,20 +11,44 @@
   <body class="docs">
     <div class="docs__panel">
       <span class="docs__panel__intro"><a href="/">( ◕ ◞ ◕ )</a></span>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">introduction</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/contributors/index.html">contributors</a><ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/contributors/contributor-workflow.html">contributor workflow</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/contributors/manual-setup.html">manual setup</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/contributors/support.html">support</a></li></ul></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/educators/index.html">educators</a><ul class="docs__panel__list"></ul></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/#">images</a><ul class="docs__panel__list"></ul></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/students/index.html">students</a><ul class="docs__panel__list"></ul></li></ul>
+      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li></ul>
+              </li></ul>
     </div>
 
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
         <h1>Dear Contributors,</h1>
-<p>If you want to donate some time to helping improve netnet.studio, whether that be something small like editing a type-o in these docs or something &quot;low-level&quot; like modifying netnet&#39;s core functionality, then these are the docs for you!</p>
-<p>Contributing to open source can feel intimidating, even for experienced developers. netnet.studio’s docs break it down into manageable steps, starting with small changes (like correcting a spelling error in one of netnet&#39;s conversation passages) and gradually moving into more complex contributions (like creating your own widget). Each stage guides you through our codebase and the wider open source contribution process on GitHub.</p>
-<p>If this is your first time contributing to an open source project you&#39;ll need to start by <a href="https://github.com/signup" target="_blank">creating a GitHub account</a>, if you&#39;ve already got one make sure you&#39;re <a href="https://github.com/login" target="_blank">logged in</a> before staring section 1 below. If you&#39;re a seasoned open source contributor and want to dive right in check out our <a href="contributor-workflow.html">contributor workflow doc</a>.</p>
+<p>If you want to donate some time to helping improve netnet.studio, whether that be something large or small, then these are the docs for you!</p>
+<p>Contributing to open source can feel intimidating, even for experienced developers. netnet.studio’s docs break it down into manageable steps, starting with small changes (like correcting a type-o) and gradually moving into more complex contributions (like creating your own widget). Each stage guides you through our codebase and the wider open source contribution process on GitHub.</p>
+<ul>
+<li><strong>If this is your first time contributing to an open source project</strong> you&#39;ll need to start by <a href="https://github.com/signup" target="_blank">creating a GitHub account</a>, if you&#39;ve already got one make sure you&#39;re <a href="https://github.com/login" target="_blank">logged in</a> before staring section 1 below.</li>
+<li><strong>If you&#39;re a seasoned open source contributor</strong> and want to dive right in check out our <a href="contributor-workflow.html">contributor workflow doc</a> and then review our <a href="core-functionality.html">core functionality</a> docs for a general orientation of the project architecture.</li>
+</ul>
 <h3>1. The Docs</h3>
 <p>netnet is constantly changing, which means our docs always need lots of editing to keep up! Making an edit to these docs is something you can do entirely on GitHub and is a great way to get familiar with the basics of contributing to an open source project.</p>
-<h3>2. <a href="editing-convo">Convos and Passages</a></h3>
+<h3>2. <a href="editing-convos.html">Convos and Passages</a></h3>
 <p>Central to netnet&#39;s &quot;hypermedia&quot; navigation system are the conversation passages that appear in netnet&#39;s speech bubbles. In these docs we&#39;ll explain how this system works as well as how to use netnet&#39;s &quot;Convo Widget&quot; to either edit a passage in an existing conversation file or create your own.</p>
-<h3>3. <a href="code-demos">Code Demos</a></h3>
+<h3>3. <a href="code-demos.html">Code Demos</a></h3>
 <p>Anyone can create and share &quot;sketches&quot; (single file web sites) in netnet by writing some code in netnet&#39;s editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become &quot;demos&quot;, with annotations explaining how different parts of the code works, and added to netnet&#39;s &quot;Code Demos&quot; widget.</p>
 <h3>4. Interactive Tutorials</h3>
 <p>One of netnet.studio&#39;s most dynamic educational components are the interactive tutorials, like this one made by Nick Briz for example. You can create your own interactive tutorials using our &quot;Tutorial Maker&quot; widget.</p>
@@ -53,6 +77,8 @@
       </div>
     </div>
 
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>
