@@ -4,13 +4,30 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
     <link rel="icon" type="image/png" href="/images/eye.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro"><a href="/">( ◕ ◞ ◕ )</a></span>
+      <span class="docs__panel__intro">
+        <a href="/">( ◕ ◞ ◕ )</a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <div class="docs__panel__search">
+        <!-- <button id="search-btn" class="search-btn">
+        </button> -->
+        <img src="./../../images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-bar" placeholder="search" type="text" class="search-input">
+      </div>
       <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">introduction</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/advocates/index.html">advocates</a><ul class="docs__panel__list"></ul></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/index.html">developers</a><ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/contributor-workflow.html">contributor workflow</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/manual-setup.html">manual setup</a></li></ul></li></ul>
     </div>
 
@@ -79,6 +96,10 @@
       </div>
     </div>
 
+    <!-- search -->
+    <script src="./../../core/libs/fuse.js"></script>
+    <!-- main -->
     <script src="/docs/scripts.js"></script>
+    <script src="/docs/search.js"></script>
   </body>
 </html>
