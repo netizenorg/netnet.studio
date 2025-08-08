@@ -2,69 +2,101 @@ const fs = require('fs')
 const path = require('path')
 const { marked } = require('marked')
 
+const fldrDict = {
+  students: 'Dear Students',
+  educators: 'Dear Educators',
+  contributors: 'Dear Contributors'
+}
+const skipFldrs = ['images']
+
 // update some of the "marked" library's rendering behavior
 // ........................................................
 const renderer = new marked.Renderer()
 
 renderer.link = function (obj) {
   let { href, text } = obj
-
+  // format links
   if (typeof href !== 'string') href = '#'
-
-  // Replace .md with .html for local links
-  if (href.endsWith('.md')) {
-    href = href.replace(/\.md$/, '.html')
-  }
-
-  // Add target="_blank" for external links
+  if (href.endsWith('.md')) href = href.replace(/\.md$/, '.html')
+  if (href.includes('README')) href = href.replace('README', 'index')
+  // add target="_blank" for external links
   const isExternal = href.startsWith('http') || href.startsWith('//')
   const targetAttr = isExternal ? ' target="_blank"' : ''
-
-  // Check if the text contains an image using basic Markdown syntax for images
+  // check for linked images
   const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/
   const match = text.match(imageRegex)
-
   if (match) {
-    // Extract the alt text and image source
     const alt = match[1]
     const src = match[2]
-
-    // Construct the <a> tag with the nested <img> tag
     return `<a href="${href}"${targetAttr}><img src="${src}" alt="${alt}" /></a>`
   }
 
-  // Return a standard <a> tag for regular links
   return `<a href="${href}"${targetAttr}>${text}</a>`
 }
 
+renderer.code = function (token) {
+  // add custom class to js, html && css blocks so that we can nn.getAll
+  // in scripts.js && style correctly when converted into a Netitor instance
+  const lang = token.lang || ''
+  const cls = lang === 'js' ? 'javascript' : lang
+  const classAttr = cls ? ` class="${cls}"` : ''
+  const content = this.options.highlight
+    ? this.options.highlight(token.text, lang)
+    : token.text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+  return `<pre><code${classAttr}>${content}</code></pre>\n`
+}
 
 marked.setOptions({ renderer })
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ~~~~~~~~~~~ MD to HTML function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~ create side-panel navigation <ul> ~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function generateNav (directory, basePath = '') {
-  const items = fs.readdirSync(directory, { withFileTypes: true })
+  const folders = Object.keys(fldrDict)
+  let items = fs.readdirSync(directory, { withFileTypes: true })
+  // sort by order in folder array (rather than alphabetically)
+  items = items.sort((a, b) => {
+    if (a.isDirectory() && b.isDirectory()) {
+      const ai = folders.indexOf(a.name)
+      const bi = folders.indexOf(b.name)
+      if (ai !== -1 || bi !== -1) {
+        if (ai === -1) return 1
+        if (bi === -1) return -1
+        return ai - bi
+      }
+      return a.name.localeCompare(b.name)
+    }
+    return 0
+  })
+  // create nav's <ul> element
   let nav = '<ul class="docs__panel__list">'
-  if (/\/docs\/?$/.test(directory) && /\/docs\/?$/.test(directory)) {
-    nav += '<li class="docs__panel__list-item"><a class="inline-link" href="/docs/">introduction</a></li>'
+  if (/\/docs\/?$/.test(directory)) {
+    nav += '<li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li>'
   }
   items.forEach(item => {
     const itemPath = path.join(directory, item.name)
-    const relativePath = path.join(basePath, item.name)
-    if (item.isDirectory()) {
-      // Check if the directory contains a README.md
-      const readmePath = path.join(itemPath, 'README.md')
-      const hasReadme = fs.existsSync(readmePath)
-      const link = hasReadme ? path.join(relativePath, 'index.html').replace(/\\/g, '/') : '#'
-      const text = item.name
-      nav += `<li class="docs__panel__list-item"><a class="inline-link" href="/docs/${link}">${text}</a>${generateNav(itemPath, relativePath)}</li>`
-    } else if (path.extname(item.name) === '.md') {
-      if (path.basename(item.name).toLowerCase() !== 'readme.md') {
-        const outputFileName = `${path.basename(item.name, '.md')}.html`
-        const link = path.join(basePath, outputFileName).replace(/\\/g, '/')
-        const text = path.basename(item.name, '.md').replace(/-/g, ' ')
-        nav += `<li class="docs__panel__list-item"><a class="inline-link" href="/docs/${link}">${text}</a></li>`
+    const relative = path.join(basePath, item.name)
+    if (item.isDirectory() && !skipFldrs.includes(item.name)) { // Folder Links
+      const readme = path.join(itemPath, 'README.md')
+      const hasReadme = fs.existsSync(readme)
+      const link = hasReadme
+        ? path.join(relative, 'index.html').replace(/\\/g, '/')
+        : '#'
+      nav += `<li class="docs__panel__list-item">
+                <a class="inline-link" href="/docs/${link}">${fldrDict[item.name]}</a>
+                ${generateNav(itemPath, relative)}
+              </li>`
+    } else if (path.extname(item.name) === '.md') { // Markdown File Links
+      if (item.name.toLowerCase() !== 'readme.md') {
+        const name = path.basename(item.name, '.md')
+        const link = path.join(basePath, `${name}.html`).replace(/\\/g, '/')
+        nav += `<li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/${link}">
+                  ${name.replace(/-/g, ' ')}
+                </a></li>`
       }
     }
   })
@@ -72,6 +104,9 @@ function generateNav (directory, basePath = '') {
   return nav
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~ MD to HTML function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav) {
   fs.readFile(inputFile, 'utf8', (err, markdown) => {
     if (err) {
@@ -117,18 +152,15 @@ const homeTemplate = path.join(baseDir, 'template.html')
 convertMarkdownToHtml(homeInput, homeOutput, homeTemplate, nav)
 
 // Create sub-pages
-const folders = ['advocates', 'developers']
-folders.forEach(folder => {
+Object.keys(fldrDict).forEach(folder => {
   const folderPath = path.join(baseDir, folder)
   fs.readdir(folderPath, (err, files) => {
-    if (err) {
-      console.error(` ✖ ᴖ ✖ ) Error reading folder ${folder}:`, err)
-      return
-    }
+    if (err) return console.error(` ✖ ᴖ ✖ ) Error reading folder ${folder}:`, err)
     files.forEach(file => {
       const filePath = path.join(folderPath, file)
       if (path.extname(file) === '.md') {
-        const outputFileName = path.basename(file).toLowerCase() === 'readme.md' ? 'index.html' : `${path.basename(file, '.md')}.html`
+        const outputFileName = path.basename(file).toLowerCase() === 'readme.md'
+          ? 'index.html' : `${path.basename(file, '.md')}.html`
         const outputFilePath = path.join(folderPath, outputFileName)
         const templatePath = path.join(baseDir, 'template.html')
         convertMarkdownToHtml(filePath, outputFilePath, templatePath, nav)
