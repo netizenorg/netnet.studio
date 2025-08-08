@@ -110,9 +110,9 @@ window.utils = {
   forkRepo: () => {
     NNW.menu.switchFace('processing')
     const a = window.utils.url.github.split('/')
-    const data = { owner: a[0], repo: a[1] }
+    const data = { owner: a[0], repo: a[1], branch: a[2] }
     window.utils.post('./api/github/fork', data, (json) => {
-      WIDGETS['functions-menu']._openProject(json.data.name)
+      WIDGETS.open('project-files', (w) => w.openProject(json.data.name))
     })
   },
 
@@ -186,7 +186,8 @@ window.utils = {
     window.history.pushState(null, null, `${p}//${h}/${path}`)
     window.utils.url = {
       shortCode: new URL(window.location).searchParams.get('c'),
-      example: new URL(window.location).searchParams.get('ex'),
+      example: new URL(window.location).searchParams.get('ex'), // legacy
+      demo: new URL(window.location).searchParams.get('demo'),
       tutorial: new URL(window.location).searchParams.get('tutorial'),
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
@@ -198,7 +199,8 @@ window.utils = {
 
   url: {
     shortCode: new URL(window.location).searchParams.get('c'),
-    example: new URL(window.location).searchParams.get('ex'),
+    example: new URL(window.location).searchParams.get('ex'), // legacy
+    demo: new URL(window.location).searchParams.get('demo'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
@@ -230,18 +232,6 @@ window.utils = {
     }
   },
 
-  checkForDiffRoot: () => {
-    if (typeof window.utils.url.github === 'string') {
-      WIDGETS['student-session'].clearProjectData()
-      const a = window.utils.url.github.split('/')
-      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      NNE.addCustomRoot({ base, proxy })
-    }
-  },
-
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
@@ -257,10 +247,12 @@ window.utils = {
     } else if (window.location.hash.includes('#code/')) {
       window.utils.loadFromCodeHash(url.layout)
       return 'code'
-    } else if (window.location.hash.includes('#example')) {
-      if (url.dem) window.utils.loadCustomExample(url.layout, true)
-      else window.utils.loadCustomExample(url.layout)
+    } else if (window.location.hash.includes('#example')) { // legacy
+      window.utils.loadCustomDemo(url.layout)
       return 'sketch'
+    } else if (window.location.hash.includes('#demo')) { // legacy
+      window.utils.loadCustomDemo(url.layout)
+      return 'annoted-sketch'
     } else if (window.location.hash.includes('#sketch')) {
       window.utils.loadBlankSketch()
       return 'sketch'
@@ -270,11 +262,12 @@ window.utils = {
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode, url.layout)
       return 'code'
-    } else if (url.example) {
-      if (!WIDGETS['code-examples']) {
-        WIDGETS.load('code-examples', w => w.loadExample(url.example, 'url'))
-      } else { WIDGETS['code-examples'].loadExample(url.example, 'url') }
+    } else if (url.example) { // legacy
+      window.utils.loadDemo(url.example)
       return 'example'
+    } else if (url.demo) {
+      window.utils.loadDemo(url.demo)
+      return 'demo'
     } else {
       return 'none'
     }
@@ -319,51 +312,43 @@ window.utils = {
   },
 
   loadFromCodeHash: (layout) => {
-    window.utils.checkForDiffRoot()
     NNE.code = ''
+    WIDGETS['student-session'].clearProjectData()
+    if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()
       setTimeout(() => NNE.cm.refresh(), 10)
       if (!NNE.autoUpdate) NNE.update()
+      window.utils.fadeOutLoader(!layout)
     })
-    if (layout) {
-      NNW.layout = layout
-      window.utils.fadeOutLoader(false)
-    } else window.utils.fadeOutLoader(true)
-  },
-
-  loadCustomExample: (layout, dem) => {
-    // an example created by anyone saved in the URL hash
-    const hash = window.location.hash.split('#example/')[1]
-    const json = JSON.parse(NNE._decode(hash))
-    const data = {
-      name: json.name,
-      hash: json.code,
-      code: json.code,
-      info: json.info,
-      key: json.key
-    }
-    if (dem) WIDGETS.open('code-examples', w => w.loadExample(data, 'url', true))
-    else WIDGETS.open('code-examples', w => w.loadExample(data, 'url'))
   },
 
   loadShortCode: (code, layout) => {
     window.utils.post('./api/expand-url', { key: code }, (json) => {
-      window.utils.checkForDiffRoot()
       window.location.hash = json.hash
-      NNE.code = ''
-      window.utils.afterLayoutTransition(() => {
-        NNE.loadFromHash()
-        setTimeout(() => {
-          NNE.cm.refresh()
-          if (!NNE.autoUpdate) NNE.update()
-        }, 10)
-      })
-      if (layout) {
-        NNW.layout = layout
-        window.utils.fadeOutLoader(false)
-      } else window.utils.fadeOutLoader(true)
+      window.utils.loadFromCodeHash(layout)
     })
+  },
+
+  loadCustomDemo: (layout) => {
+    // an example created by anyone saved in the URL hash
+    const hash = window.location.hash.split('#demo/')[1]
+    const json = JSON.parse(NNE._decode(hash))
+    window.utils.loadDemo(json, 'custom')
+  },
+
+  loadDemo: (key, type) => {
+    const urlCheck = () => {
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
+    }
+
+    if (!WIDGETS['demo-toc']) {
+      WIDGETS.load('demo-toc', w => {
+        w.load(key, type); urlCheck()
+      })
+    } else { WIDGETS['demo-toc'].load(key, type); urlCheck() }
   },
 
   loadGithub: (github, layout, callback) => {
@@ -375,7 +360,8 @@ window.utils = {
     const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
     const rawHTML = `${proxy}index.html`
     window.utils.get(rawHTML, (html) => {
-      NNE.addCustomRoot({ base, proxy })
+      window.utils.setCustomRenderer(base, proxy)
+
       NNE.code = ''
       if (layout) { NNW.layout = layout } else { NNW.layout = 'dock-left' }
       window.utils.afterLayoutTransition(() => {
@@ -398,38 +384,17 @@ window.utils = {
 
   loadGHRedirect: () => {
     // code set by WIDGETS['student-session'].authGitHubSession()
-    const code = window.localStorage.getItem('gh-auth-temp-code')
+    let code = window.localStorage.getItem('gh-auth-temp-code')
     // code might be an encoded hash, or a gh root URL
-    if (code.includes('raw.githubusercontent.com')) {
-      // if they were looking at someone else's GitHub poroject
-      // before they got redirected over to GitHub for auth...
-      const a = code.split('.com/')[1].split('/')
-      const base = `https://raw.githubusercontent.com/${a[0]}/${a[1]}/${a[2]}/`
-      const proto = window.location.protocol
-      const host = window.location.host
-      const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
-      const rawHTML = `${proxy}index.html`
-      window.utils.get(rawHTML, (html) => {
-        NNE.addCustomRoot({ base, proxy })
-        NNE.code = ''
-        NNW.layout = 'dock-left'
-        window.utils.afterLayoutTransition(() => {
-          NNE.code = html
-          setTimeout(() => {
-            NNE.cm.refresh()
-            if (!NNE.autoUpdate) NNE.update()
-          }, 10)
-          window.utils.fadeOutLoader(false)
-          window.utils.updateURL(`?gh=${a[0]}/${a[1]}/${a[2]}`)
-          window.utils._Convo('remix-github-project-auth-redirect')
-          // removeItem('gh-auth-temp-code') called in Convo data
-        })
-      }, true)
+    if (code.includes('__TEMP__')) {
+      // TODO: need a better way to check if code has gh in it...
+      code = code.replace('__TEMP__', '')
+      window.utils.loadGithub(code, window.utils.url.layout)
     } else {
       // if they had some code they were working on in the editor
       // before they got redirected over to GitHub to auth...
       const decoded = NNE._decode(code.substr(6))
-      NNE.addCustomRoot(null)
+      window.utils.setCustomRenderer(null)
       NNE.code = decoded
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
@@ -511,11 +476,29 @@ window.utils = {
   // netitor stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  // main.js listens for these errors + sends them to 'code-review' widget
+  setCustomRenderer: (base, proxy) => {
+    const errMsgr = `<script>
+      window.onerror = function (message, source, lineno) {
+        window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
+      }
+    </script>`
+    if (!base) {
+      NNE.customRender = function (event) { event.update(errMsgr + event.code) }
+    } else {
+      NNE.customRender = function (event) {
+        let newCode = `<base href="${base}">` + errMsgr + event.code
+        if (proxy) newCode = NNE.prependProxyURL(newCode, proxy)
+        event.update(newCode)
+      }
+    }
+  },
+
   netitorInput: (e) => {
     if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
   },
 
-  hideConvoIf: () => {
+  hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
     const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
@@ -589,6 +572,7 @@ window.utils = {
 
 /*
   handle messaging from iframe, for ex:
+  NOTE: keep in mind iframe error messanger (see setCustomRenderer, customRenderError)
 
   window.top.postMessage({
     type: 'dialogue',
@@ -601,12 +585,12 @@ window.utils = {
   https://netnet.studio/?layout=dock-left#code/eJxtj8EKgzAQRM/NV+wtCqJ3UfsFPfVYekiTxUrTrE02iIj/3lBz7FyGmX2wTPeIzOQGxsBdk4PogvbTzIMQJ0M6vtFx/Yno1yta1Ey+kAcqy5qctpN+QQ9FCf0Am4CkZXKGlppprmcKfMEQ1IjFcQTgdcYWpJmUpTGirHJvFKsWbjkBbKDJcXqf4CdaS7CQt0bCXv1naAHlEeI5IZm4/3wvk+1CdE3e9gVLy0qk
 
 */
-window.onmessage = function (e) {
-  const obj = e.data
-  if (!obj) return
-  if (obj.type === 'dialogue') {
-    new Convo(obj.data)
-  } else if (obj.type === 'widget') {
-    WIDGETS.open(obj.data)
-  }
-}
+// window.onmessage = function (e) {
+//   const obj = e.data
+//   if (!obj) return
+//   if (obj.type === 'dialogue') {
+//     new Convo(obj.data)
+//   } else if (obj.type === 'widget') {
+//     WIDGETS.open(obj.data)
+//   }
+// }

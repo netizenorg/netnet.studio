@@ -31,7 +31,7 @@ class HyperVideoPlayer extends Widget {
 
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
 
-    WIDGETS['functions-menu'].on('open', () => pause())
+    WIDGETS['coding-menu'].on('open', () => pause())
     WIDGETS['learning-guide'].on('open', () => pause())
     NNW.menu.search.on('open', () => pause())
 
@@ -108,7 +108,7 @@ class HyperVideoPlayer extends Widget {
             },
             'yes, please download': (e) => {
               e.hide()
-              WIDGETS['functions-menu'].downloadCode()
+              WIDGETS['coding-menu'].downloadCode()
               if (this._tempCode !== NNE.code) this._updateCode(this._tempCode)
             }
           }

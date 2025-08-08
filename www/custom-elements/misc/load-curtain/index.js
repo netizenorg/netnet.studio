@@ -15,6 +15,14 @@ class LoadCurtain extends HTMLElement {
   hide () {
     this.innerHTML = ''
   }
+
+  set showing (val) {
+    console.warn('LoadCurtain: "showing" is read-only, use .show(filename, opts)')
+  }
+
+  get showing () {
+    return this.innerHTML !== ''
+  }
 }
 
 window.customElements.define('load-curtain', LoadCurtain)

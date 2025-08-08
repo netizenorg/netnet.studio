@@ -1,4 +1,4 @@
-/* global NetNetFaceMenu, NNE, nn, utils */
+/* global NetNetFaceMenu, NNE, WIDGETS, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -16,7 +16,8 @@ class NetNet {
       light: { background: true, shadow: false },
       monokai: { background: true, shadow: false },
       'moz-dark': { background: true, shadow: false },
-      'moz-light': { background: true, shadow: false }
+      'moz-light': { background: true, shadow: false },
+      sonnenzimmer: { background: true, shadow: false }
     }
 
     this.rndr = document.querySelector('#nn-output')
@@ -631,16 +632,26 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
-    // const gh = WIDGETS['student-session'].data.github
-    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+  updateTitleBar (text, unsaved) {
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        let wig = false
+        if (this.title.dataset.project) wig = 'project-files'
+        else if (this.title.dataset.demo) wig = 'demo-toc'
+        if (!wig) return
+        const path = this.title.textContent
+        WIDGETS[wig].explainTitleBar(path)
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
+      delete this.title.dataset.unsaved
+      delete this.title.dataset.project
+      delete this.title.dataset.demo
     }
   }
 
@@ -657,7 +668,7 @@ class NetNet {
     title.style.zIndex = '2'
     title.style.padding = '15px 15px 15px 80px'
     title.style.color = 'var(--netizen-meta)'
-    title.style.textDecoration = 'underline'
+    // title.style.textDecoration = 'underline'
     title.style.textAlign = 'center'
     this.win.prepend(title)
     return title
@@ -735,25 +746,18 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
 
   _preventAccidentalExit () {
-    // NOTE: students on mace would often double-finger swipe back on their
+    // NOTE: students on mac would often double-finger swipe back on their
     // trackpads (when trying to move their scroll bars) and this would trigger
-    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
-    // if they accidentally refresh, they loos all their progress. This code
-    // prevents both from happening (refresh tirggers confirmation box)
+    // Mac's "back" button, and thus they'd loose all their progress. Similarly,
+    // if they accidentally refresh, they loose all their progress. This code,
+    // along with the 'unload' event in main.js, prevents both from happening.
 
     // Prevent backward/forward navigation
     window.addEventListener('popstate', (event) => {
       window.history.pushState(null, '', window.location.href)
     })
-
     // Initialize history state to disable navigation
     window.history.pushState(null, '', window.location.href)
-
-    // Optionally warn the user about navigation attempts
-    window.addEventListener('beforeunload', (event) => {
-      event.preventDefault()
-      event.returnValue = '' // Required for Chrome to show the warning dialog
-    })
   }
 }
 

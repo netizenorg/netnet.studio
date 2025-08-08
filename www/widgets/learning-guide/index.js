@@ -2,7 +2,7 @@
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide (BETA-3.0)'
+    this.title = 'Learning Guide <span style="opacity:0.5;padding-left:10px;">(BETA 4.0)</span>'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
@@ -24,15 +24,11 @@ class LearningGuide extends Widget {
     this.data = null
     this.loaded = null
 
-    if (!WIDGETS.loaded.includes('code-examples')) {
-      WIDGETS.load('code-examples')
-    }
-
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this._createPage('mainOpts', 'main-slide.html', null, (div) => {
       // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['functions-menu'].BrowserFest()
+      //   WIDGETS['coding-menu'].BrowserFest()
       // })
 
       // create sub pages
@@ -57,11 +53,9 @@ class LearningGuide extends Widget {
 
       // initial HTML
       this._createHTML()
-      const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
-      this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
-    WIDGETS['functions-menu'].on('theme-change', () => {
+    WIDGETS['coding-menu'].on('theme-change', () => {
       const src = this.ele.querySelector('iframe').src
       this.ele.querySelector('iframe').src = src
     })
@@ -79,7 +73,7 @@ class LearningGuide extends Widget {
       if (WIDGETS['student-session'].getData('opened-project')) {
         WIDGETS['student-session'].clearProjectData()
       }
-      NNE.addCustomRoot(`tutorials/${name}/`)
+      utils.setCustomRenderer(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json
         this._loadTutorial(name, time)
@@ -119,7 +113,7 @@ class LearningGuide extends Widget {
       window.convo = new Convo(this.convos, 'toc')
       NNW.menu.switchFace('happy')
     } else {
-      window.convo.hide()
+      if (window.convo) window.convo.hide()
       NNW.menu.switchFace('default')
     }
   }

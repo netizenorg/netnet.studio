@@ -16,10 +16,10 @@ class NetNetFaceMenu {
         }
       },
       functions: {
-        path: 'images/menu/functions.png',
+        path: 'images/menu/code.png',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('functions-menu')
+          WIDGETS.open('coding-menu')
         }
       },
       search: {

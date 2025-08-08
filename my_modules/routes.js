@@ -19,7 +19,6 @@ const aliasRoutes = [
   { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
   { url: '/nn.min.js', loc: '../www/core/netnet-standard-library/build/nn.min.js' },
-  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' },
   { url: '/images/*', loc: '../www/assets/images/' },
   { url: '/audios/*', loc: '../www/assets/audios/' },
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
@@ -42,7 +41,6 @@ otherAssets.forEach(dir => {
   files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/${dir}/${f}` }))
 })
 
-
 aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
@@ -56,21 +54,44 @@ aliasRoutes.forEach(dep => {
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 
+// router.get('/tutorials/*', (req, res, next) => {
+//   if (req.headers.host.includes(':1337')) { // for dev server
+//     const file = `../../netnet.studio/www/${req.originalUrl}`
+//     res.sendFile(path.join(__dirname, file))
+//   } else if (req.originalUrl.includes('/list.json')) {
+//     // if asking for tutorials that don't exist (ex: in local dev)
+//     const list = path.join(__dirname, '../www/tutorials/list.json')
+//     const file = fs.readFileSync(list)
+//     const json = JSON.parse(file)
+//     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
+//     for (const sec in json) {
+//       json[sec] = json[sec].filter(t => dirs.includes(t))
+//     }
+//     res.json(json)
+//   } else next()
+// })
+
 router.get('/tutorials/*', (req, res, next) => {
-  if (req.headers.host.includes(':1337')) { // for dev server
-    const file = `../../netnet.studio/www/${req.originalUrl}`
-    res.sendFile(path.join(__dirname, file))
-  } else if (req.originalUrl.includes('/list.json')) {
-    // if asking for tutorials that don't exist (ex: in local dev)
-    const list = path.join(__dirname, '../www/tutorials/list.json')
-    const file = fs.readFileSync(list)
+  const host = req.hostname
+  // any subdomains (ex dev.netnet) should load tutorials from production server
+  if (host.endsWith('.netnet.studio')) {
+    const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
+    return res.sendFile(filePath)
+  }
+
+  // if asking for tutorials that don't exist (ex: in local dev)
+  if (req.originalUrl.endsWith('/list.json')) {
+    const listPath = path.join(__dirname, '../www/tutorials/list.json')
+    const file = fs.readFileSync(listPath, 'utf8')
     const json = JSON.parse(file)
-    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    for (const sec in json) {
-      json[sec] = json[sec].filter(t => dirs.includes(t))
-    }
-    res.json(json)
-  } else next()
+    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials'))
+    Object.keys(json).forEach(section => {
+      json[section] = json[section].filter(t => dirs.includes(t))
+    })
+    return res.json(json)
+  }
+
+  next()
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -151,7 +172,6 @@ router.get('/api/custom-elements', async (req, res) => {
         return dirInfo
       })
     res.json(filteredDirectoriesInfo)
-
   } catch (error) { console.error(error); res.json([]) }
 })
 
@@ -174,6 +194,7 @@ router.get('/api/widgets', (req, res) => {
         const data = { title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
           if (line.includes('this.title =') && !data.title) {
+            line = line.replace(/<[^>]+>/g, '')
             data.title = line.split('=')[1].trim()
             data.title = data.title.substr(1, data.title.length - 2)
           }
@@ -189,6 +210,36 @@ router.get('/api/widgets', (req, res) => {
           }
         })
         wigs.push(data)
+      }
+    })
+    res.json(wigs)
+  })
+})
+
+router.get('/api/convos', (req, res) => {
+  fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
+    if (err) return console.log(err)
+    const wigs = []
+    list.filter(f => f !== 'index.js' && f !== 'styles.css').forEach(dirname => {
+      const filepath = path.join(__dirname, `../www/widgets/${dirname}/index.js`)
+      const convpath = path.join(__dirname, `../www/widgets/${dirname}/convo.js`)
+      const opts = { encoding: 'utf8' }
+      const code = fs.readFileSync(filepath, opts)
+      if (fs.existsSync(convpath)) {
+        const convo = fs.readFileSync(convpath, opts)
+        const data = { title: null, key: null, code: convo }
+        code.split('\n').forEach(line => {
+          if (line.includes('this.title =') && !data.title) {
+            line = line.replace(/<[^>]+>/g, '')
+            data.title = line.split('=')[1].trim()
+            data.title = data.title.substr(1, data.title.length - 2)
+          }
+          if (line.includes('this.key =') && !data.key) {
+            data.key = line.split('=')[1].trim()
+            data.key = data.key.substr(1, data.key.length - 2)
+          }
+        })
+        if (data.key !== 'example-widget') wigs.push(data)
       }
     })
     res.json(wigs)
@@ -248,50 +299,33 @@ router.post('/api/expand-url', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
-function createExamplesDict () {
-  const dict = {
-    examples: {}, // examples by key
-    map: [] // sections in order
-  }
-  const exPath = path.join(__dirname, '../data/examples')
+router.get('/api/demo/:num', (req, res) => {
+  const num = req.params.num
+  const exPath = path.join(__dirname, '../data/demos')
+  const files = fs.readdirSync(exPath)
+  const file = files.filter(f => f.indexOf(`${num}--`) === 0)[0]
+  const str = fs.readFileSync(`${exPath}/${file}`)
+  const obj = JSON.parse(str)
+  obj.success = 'success'
+  if (typeof obj.code === 'string') res.json(obj)
+  else res.json({ error: `demo ${num} is not in the database.` })
+})
+
+router.get('/api/demos', (req, res) => {
+  const dict = {}
+  const exPath = path.join(__dirname, '../data/demos')
   const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
-    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
-    dict.examples[obj.key] = obj
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    dict[d.key] = {
+      key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+    }
   })
-  const mapPath = path.join(__dirname, '../data/examples-map.json')
-  dict.map = JSON.parse(fs.readFileSync(mapPath))
-  return dict
-}
-
-router.get('/api/examples', (req, res) => {
-  const dict = createExamplesDict()
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET'
   })
-  if (typeof dict === 'object' && typeof dict.examples === 'object') {
-    res.json({ success: 'success', data: dict.examples, sections: dict.map })
-  } else {
-    res.json({ error: 'there was an issue loading the database', data: dict })
-  }
-})
-
-router.post('/api/example-data', (req, res) => {
-  const exPath = path.join(__dirname, '../data/examples')
-  const files = fs.readdirSync(exPath)
-  const file = files.filter(f => f.indexOf(`${req.body.key}--`) === 0)[0]
-  const str = fs.readFileSync(`${exPath}/${file}`)
-  const obj = JSON.parse(str)
-  const name = obj.name
-  const hash = obj.code
-  const info = obj.info
-  const layout = obj.layout
-  if (typeof hash === 'string') {
-    res.json({ success: 'success', name, hash, info, layout })
-  } else {
-    res.json({ error: `${req.body.key} is not in the database.` })
-  }
+  res.json({ success: 'success', data: dict })
 })
 
 // ************************

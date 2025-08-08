@@ -1,15 +1,35 @@
 .code-review {
   max-height: 66vh;
-
+  margin-top: 20px;
+  padding-right: 5px;
   overflow-y: scroll;
 }
+
+.code-review__tabs {
+  border-bottom: 1px solid var(--netizen-meta);
+  margin-bottom: 10px;
+  margin-top: 2px
+}
+
+.code-review__tab {
+  border: 1px solid var(--netizen-meta);
+  border-bottom: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 4px;
+  cursor: pointer;
+  margin-right: 4px;
+  display: inline-block;
+
+}
+
 .code-review__issue {
   border: 1px solid var(--bg-color);
   border-radius: 5px;
   margin-bottom: 5px;
 
   color: var(--bg-color);
-  
+
   font-family: "fira-code", inconsolata, monospace;
   cursor: pointer;
 }
@@ -20,7 +40,7 @@
 
 .code-review__issue__head {
   display: flex;
-  
+
   justify-content: space-between;
 
   border-bottom: 1px solid var(--bg-color);

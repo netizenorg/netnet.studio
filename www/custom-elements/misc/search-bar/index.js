@@ -18,10 +18,10 @@ class SearchBar extends HTMLElement {
     }
 
     this.type2color = {
-      'Functions Menu': 'var(--netizen-variable)',
+      'Coding Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
       Tutorials: 'var(--netizen-string)',
-      Examples: 'var(--netizen-string)',
+      Demos: 'var(--netizen-string)',
       netnet: 'var(--netizen-number)'
     }
   }
@@ -47,6 +47,7 @@ class SearchBar extends HTMLElement {
     this._loadMiscData()
     this._loadWidgetsData()
     this._loadTutorialsData()
+    this._loadCodingMenuData()
     this._setupSearchBar()
   }
 
@@ -144,52 +145,50 @@ class SearchBar extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _loadFunctionsMenuData () {
-    if (!WIDGETS['functions-menu']) {
-      setTimeout(() => this._loadFunctionsMenuData(), 250)
+  _loadCodingMenuData () {
+    if (!WIDGETS['coding-menu']) {
+      setTimeout(() => this._loadCodingMenuData(), 250)
       return
     }
 
     // remove previously created items if we login/logout
-    this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
-    this.updateDict()
+    // this.dict = this.dict.filter(o => !o.type.includes('Coding Menu'))
+    // this.updateDict()
     const loggedIn = window.localStorage.getItem('owner')
 
     const arr = []
     arr.push({
-      type: 'Functions Menu',
+      type: 'Coding Menu',
       word: loggedIn ? 'logout' : 'login',
       alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
-      clck: () => { WIDGETS['functions-menu'].open() }
+      clck: () => { WIDGETS['coding-menu'].open() }
     })
-    for (const submenu in WIDGETS['functions-menu'].subs) {
-      const funcs = WIDGETS['functions-menu'].subs[submenu]
+    for (const submenu in WIDGETS['coding-menu'].subs) {
+      const funcs = WIDGETS['coding-menu'].subs[submenu]
       arr.push({
-        type: 'Functions Menu',
+        type: 'Coding Menu',
         word: submenu,
         alts: funcs.map(f => f.click),
         clck: () => {
-          WIDGETS['functions-menu'].open()
+          WIDGETS['coding-menu'].open()
           const id = `func-menu-${submenu.replace(/ /g, '-')}`
-          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+          WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
         }
       })
       funcs.forEach(func => {
-        const hidden = WIDGETS['functions-menu'].checkIfHidden(func.click)
-        if (!hidden) { // only add to search if it's currently in the menu
-          arr.push({
-            type: `Functions Menu.${submenu}`,
-            word: `${func.click}()`,
-            alts: func.alts,
-            clck: () => {
-              if (func.select) {
-                WIDGETS['functions-menu'].open()
-                const id = `func-menu-${submenu.replace(/ /g, '-')}`
-                WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-              } else WIDGETS['functions-menu'][func.click]()
-            }
-          })
-        }
+        const callFunc = func.func || WIDGETS['coding-menu']._toCamelCase(func.key)
+        arr.push({
+          type: `Coding Menu.${submenu}`,
+          word: func.key,
+          alts: func.alts,
+          clck: () => {
+            if (func.select) {
+              WIDGETS['coding-menu'].open()
+              const id = `func-menu-${submenu.replace(/ /g, '-')}`
+              WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
+            } else WIDGETS['coding-menu'][callFunc]()
+          }
+        })
       })
     }
 
@@ -239,7 +238,7 @@ class SearchBar extends HTMLElement {
       }
     })
 
-    utils.get('api/examples', (json) => {
+    utils.get('api/demos', (json) => {
       const arr = []
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
@@ -256,14 +255,10 @@ class SearchBar extends HTMLElement {
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({
-          type: 'Examples',
+          type: 'Demos',
           word: ex.name,
           alts: keywords,
-          clck: () => {
-            if (!WIDGETS['code-examples']) {
-              WIDGETS.load('code-examples', w => w.loadExample(i, 'search'))
-            } else { WIDGETS['code-examples'].loadExample(i, 'search') }
-          }
+          clck: () => utils.loadDemo(i)
         })
         update()
       }

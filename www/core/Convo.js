@@ -95,6 +95,7 @@ class Convo {
         setTimeout(() => { NNE.cm.refresh() }, 10)
       }
 
+      // TODO: might need to update these cm calls into NNE calls
       if (typeof obj.edit === 'boolean') {
         if (obj.edit) NNE.cm.setOption('readOnly', false)
         else NNE.cm.setOption('readOnly', true)

@@ -1,4 +1,4 @@
-/* global Netitor, NetNet, utils, WIDGETS */
+/* global nn, Netitor, NetNet, utils, WIDGETS */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -12,7 +12,7 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 const initWidgets = [
-  'functions-menu',
+  'coding-menu',
   'student-session',
   'html-reference',
   'css-reference',
@@ -33,7 +33,7 @@ NNE.on('cursor-activity', (e) => {
 })
 
 NNE.on('lint-error', (e) => {
-  WIDGETS['code-review'].updateIssues(e)
+  WIDGETS['code-review'].review({ issues: e })
 })
 
 NNE.cm.on('keydown', (cm, e) => {
@@ -50,12 +50,12 @@ NNE.on('edu-info', (e, eve) => {
   }
 })
 
-window.addEventListener('resize', (e) => {
+nn.on('resize', (e) => {
   utils.windowResize()
   utils.keepWidgetsInFrame()
 })
 
-window.addEventListener('load', () => {
+nn.on('load', () => {
   utils.get('/api/custom-elements', (elements) => {
     elements.forEach(obj => {
       utils.loadFile(`/custom-elements/${obj.path}/index.js`)
@@ -63,15 +63,23 @@ window.addEventListener('load', () => {
     })
     // when everythings loaded...
     utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
-      WIDGETS['student-session'].clearProjectData()
+      // setup custom renderer to catch errors (see on "message" below)
+      utils.setCustomRenderer(null)
       // ...check URL for params, && fade out load screen when ready
       if (utils.checkURL() === 'none') utils.loadDefault()
     })
   })
 })
 
-window.addEventListener('beforeunload', () => {
-  WIDGETS['student-session'].clearProjectData()
+// the <iframe> messanger is injected into the rendered html pages, handled in:
+// setCustomRenderer or files-db-service-worker.js (when working on projects)
+nn.on('message', (e) => {
+  if (e.data.type === 'iframe-error') WIDGETS['code-review'].review({ error: e })
+})
+
+// warn the user about accidental navigation attempts
+nn.on('beforeunload', (e) => {
+  e.preventDefault(); e.returnValue = ''
 })
 
 // NOTE: KeyboardShortcuts Widget sets up keyboard event listeners

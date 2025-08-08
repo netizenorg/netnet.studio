@@ -4,8 +4,6 @@ window.CONVOS['example-widget'] = (self) => {
   const newTheme = NNW.theme === 'dark' ? 'light' : 'dark'
   const oldTheme = NNW.theme
 
-  NNW.layout = 'welcome'
-
   // return the actual array of conversation objects
   return [{
     id: 'start',
