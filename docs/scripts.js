@@ -47,7 +47,6 @@ function setupNetitors () {
 }
 
 function setupSearch () {
-  const initButton = document.querySelector('#search-btn')
   const searchWrapper = document.querySelector('.docs__panel__search')
   const searchBar = document.querySelector('#search-bar')
   const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list > li')
@@ -84,21 +83,21 @@ function setupSearch () {
   const fuse = new Fuse(navArray, searchOpts)
 }
 
-nn.on('load', () => {
-  findActive()
-  setupNetitors()
-  setupSearch()
-})
-
-searchBar.addEventListener('keydown', (e) => {
-  let searchResult = fuse.search(searchBar.value);
-
-  filterNav(searchResult)
-})
-
-const filterNav = (result) => {
+function filterNav(result) {
   result.forEach(res => {
     console.log(res.item.parent)
     console.log(res.item.children)
   })
 }
+
+nn.on('load', () => {
+  findActive()
+  setupNetitors()
+  setupSearch()
+
+  searchBar.addEventListener('keydown', (e) => {
+    let searchResult = fuse.search(searchBar.value);
+
+    filterNav(searchResult)
+  })
+})
