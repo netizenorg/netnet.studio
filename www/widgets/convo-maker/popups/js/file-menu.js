@@ -104,6 +104,12 @@ filemenu.prompt = (type) => {
     nn.get('#modal select').set({
       options: filemenu.widgets.map(w => w.title)
     })
+
+    nn.getAll('#modal select option').forEach(ele => {
+      const w = filemenu.widgets.find(o => o.title === ele.value)
+      ele.textContent = `[${w.key}] ${ele.value}`
+    })
+
     nn.get('#modal #e').on('click', (e) => {
       const sel = nn.get('#modal select').value
       const wig = filemenu.widgets.find(w => w.title === sel)
