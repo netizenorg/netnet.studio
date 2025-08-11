@@ -179,7 +179,8 @@ function createMissingLinkedPassages () {
 }
 
 function previewPassage () {
-  MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
+  const hasIssues = filemenu.projHasIssues()
+  if (!hasIssues) MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
 }
 
 nn.get('.make-links').on('click', createMissingLinkedPassages)

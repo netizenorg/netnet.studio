@@ -310,8 +310,11 @@ class QuiltGraph {
         const master = this.getPassageById(masterId)
         master.x = mx
         master.y = my
-        el.style.left = mx + 'px'
-        el.style.top = my + 'px'
+
+        if (mx !== 0 && my !== 0) {
+          el.style.left = mx + 'px'
+          el.style.top = my + 'px'
+        }
 
         // update others data + DOM
         groupInfo.others.forEach(item => {

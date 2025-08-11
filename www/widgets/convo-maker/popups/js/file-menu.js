@@ -63,7 +63,24 @@ filemenu.updateDisplayFilename = (name) => {
   nn.get('#graph-wrapper').css({ top: 82 })
 }
 
-filemenu.prompt = (type) => {
+filemenu.projHasIssues = () => {
+  const test = graph.evaluate()
+  if (test.badNames.length > 0) {
+    filemenu.prompt('error', 'some of your passages have bad names, make sure none where left untitled.')
+    return true
+  } else if (test.deadends.length > 0) {
+    const de = test.deadends.join(', ')
+    filemenu.prompt('error', `The following passages contain links to dead-ends: ${de}`)
+    return true
+  } else if (test.empty.length > 0) {
+    const es = test.empty.map(o => o.name).join(', ')
+    filemenu.prompt('error', `The following passages where left empty: ${es}`)
+    return true
+  }
+  return false
+}
+
+filemenu.prompt = (type, data) => {
   nn.get('#modal').css({ display: 'flex' })
   const close = () => nn.get('#modal').css({ display: 'none' })
 
@@ -117,6 +134,13 @@ filemenu.prompt = (type) => {
       close()
     })
     nn.get('#modal #c').on('click', close)
+  } else if (type === 'error') { // ................................
+    nn.get('#modal > div').innerHTML = `
+      <h2>Error</h2>
+      <p style=" margin-top: 0;">${data}</p>
+      <button class="pill-btn pill-btn--secondary" id="c">ok</button>
+    `
+    nn.get('#modal #c').on('click', close)
   }
 }
 
@@ -140,6 +164,9 @@ nn.get('#open-file').on('click', () => {
 })
 
 nn.get('#save-file').on('click', () => {
+  const hasIssues = filemenu.projHasIssues()
+  if (hasIssues) return
+
   const cards = graph.data.length
   if (filemenu.convoname && cards > 0) {
     if (netitor) netitor.close()

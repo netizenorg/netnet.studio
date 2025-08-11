@@ -121,8 +121,8 @@ class ConvoMaker extends Widget {
     const func = eval(`((self) => {\n${code}\n})`)
 
     const preview = (w) => {
-      console.log('CONVO MAKER: previewing...')
-      console.log(w.convos, obj)
+      // console.log('CONVO MAKER: previewing...')
+      // console.log(w.convos, obj)
       window.CONVOS[this.state.name] = func
       w.convos = window.CONVOS[this.state.name](w)
       window.convo = new Convo(w.convos, obj.name)
@@ -645,7 +645,8 @@ class ConvoMaker extends Widget {
     return { globals, varLines }
   }
 
-  _textToContentStr (text = '', addQuotes) {
+  _textToContentStr (text, addQuotes) {
+    if (!text) text = ''
     const raw = text.replace(/\[\[.*?\]\]/g, '').trim()
     const isTpl = /\$\{.*?\}/.test(raw)
     const isExpr = /^[A-Za-z_$][\w$]*(?:\([\s\S]*\))$/.test(raw)
