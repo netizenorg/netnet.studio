@@ -757,7 +757,7 @@ class ConvoMaker extends Widget {
     if (varLines) {
       code.push(varLines)
       code.push('')
-    } else code.push('')
+    }
     code.push('  return [', items, '  ]', '}\n')
     code = code.join('\n')
 

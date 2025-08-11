@@ -272,14 +272,14 @@ nn.on('message', (e) => {
     // ...
   } else if (e.data.type === 'netitor-before-update') {
     // netitor has updated a passage's before function
-    curPsg.before = e.data.code
+    curPsg.before = e.data.code === '() => {\n\n}' ? null : e.data.code
     createEditorMenu()
     nn.get('#edit-sel').value = 'before run function'
     updateWidget()
     // ...
   } else if (e.data.type === 'netitor-after-update') {
     // netitor has updated a passage's after function
-    curPsg.after = e.data.code
+    curPsg.after = e.data.code === '() => {\n\n}' ? null : e.data.code
     createEditorMenu()
     nn.get('#edit-sel').value = 'after run function'
     updateWidget()
