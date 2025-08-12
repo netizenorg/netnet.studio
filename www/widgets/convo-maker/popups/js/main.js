@@ -33,7 +33,8 @@ graph.on('delete', (obj) => {
 
 graph.on('selected', (obj) => {
   nn.get('#delete').css({ opacity: 1 })
-  if (nn.get('#editor').style.display === 'block') {
+  const sels = graph.getSelectedPassages()
+  if (sels.length === 1 && nn.get('#editor').style.display === 'block') {
     curPsg = obj
     if (netitor) netitor.close()
     updateEditor()
@@ -179,6 +180,7 @@ function createMissingLinkedPassages () {
 }
 
 function previewPassage () {
+  updateWidget()
   const hasIssues = filemenu.projHasIssues()
   if (!hasIssues) MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
 }

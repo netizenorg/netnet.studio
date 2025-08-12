@@ -69,8 +69,11 @@ filemenu.projHasIssues = () => {
     filemenu.prompt('error', 'some of your passages have bad names, make sure none where left untitled.')
     return true
   } else if (test.deadends.length > 0) {
-    const de = test.deadends.join(', ')
-    filemenu.prompt('error', `The following passages contain links to dead-ends: ${de}`)
+    let str = 'Some passages are linking to another which does not exist: '
+    test.deadendPassages.forEach((p, i) => {
+      str += `${p.name} is linking to ${test.deadends[i]}; `
+    })
+    filemenu.prompt('error', str)
     return true
   } else if (test.empty.length > 0) {
     const es = test.empty.map(o => o.name).join(', ')

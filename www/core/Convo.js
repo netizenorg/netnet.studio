@@ -73,6 +73,11 @@ class Convo {
     const time = utils.getVal('--menu-fades-time')
     const obj = this.data[this.id]
 
+    if (typeof obj === 'undefined') {
+      console.error('Convo: tried to load undefined convo object:', id)
+      return
+    }
+
     // pre hoook
     if (typeof obj.before === 'function') obj.before(this, obj.scope)
 

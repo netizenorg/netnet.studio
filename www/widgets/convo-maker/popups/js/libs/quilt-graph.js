@@ -234,6 +234,7 @@ class QuiltGraph {
       const baseY = data.y != null ? data.y : this.gridSize * id
       const x = Math.round(baseX / this.gridSize) * this.gridSize
       const y = Math.round(baseY / this.gridSize) * this.gridSize
+      if (x === 0 && y === 0) console.log('n/y === 0');
       el.style.left = `${x}px`
       el.style.top = `${y}px`
 
@@ -324,6 +325,7 @@ class QuiltGraph {
           const ny = Math.min(Math.max(0, item.y + dy), maxY)
           p.x = nx
           p.y = ny
+          if (nx === 0 && ny === 0) console.log('nx/ny === 0');
           item.el.style.left = nx + 'px'
           item.el.style.top = ny + 'px'
         })
@@ -337,8 +339,10 @@ class QuiltGraph {
       const p = this.getPassageById(id)
       p.x = mx
       p.y = my
-      el.style.left = mx + 'px'
-      el.style.top = my + 'px'
+      if (mx !== 0 && my !== 0) {
+        el.style.left = mx + 'px'
+        el.style.top = my + 'px'
+      }
       this.updateConnections()
     }
 
