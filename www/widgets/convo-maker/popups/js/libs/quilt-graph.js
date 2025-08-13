@@ -236,7 +236,6 @@ class QuiltGraph {
       const x = Math.round(baseX / this.gridSize) * this.gridSize
       const y = Math.round(baseY / this.gridSize) * this.gridSize
       if (x !== 0 && y !== 0) {
-        console.log('BUG', x, y);
         el.style.left = `${x}px`
         el.style.top = `${y}px`
       }
@@ -316,7 +315,6 @@ class QuiltGraph {
         master.y = my
 
         if (mx !== 0 && my !== 0) {
-          console.log('BUG', mx, my);
           el.style.left = mx + 'px'
           el.style.top = my + 'px'
           this.emit('moved')
@@ -331,7 +329,6 @@ class QuiltGraph {
           p.x = nx
           p.y = ny
           if (nx !== 0 && ny !== 0) {
-            console.log('BUG', nx, ny);
             item.el.style.left = nx + 'px'
             item.el.style.top = ny + 'px'
             this.emit('moved')
@@ -345,10 +342,9 @@ class QuiltGraph {
       // single-card move
       const id = parseInt(el.id.replace('card', ''))
       const p = this.getPassageById(id)
-      p.x = mx
-      p.y = my
       if (mx !== 0 && my !== 0) {
-        console.log('BUG', mx, my);
+        p.x = mx
+        p.y = my
         el.style.left = mx + 'px'
         el.style.top = my + 'px'
         this.emit('moved')
