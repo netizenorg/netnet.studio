@@ -65,15 +65,13 @@ filemenu.updateDisplayFilename = (name) => {
 
 filemenu.projHasIssues = () => {
   const test = graph.evaluate()
+  test.deadends = test.deadends.filter(p => p !== 'FUNC' && p !== 'HIDE')
   if (test.badNames.length > 0) {
     filemenu.prompt('error', 'some of your passages have bad names, make sure none where left untitled.')
     return true
   } else if (test.deadends.length > 0) {
-    let str = 'Some passages are linking to another which does not exist: '
-    test.deadendPassages.forEach((p, i) => {
-      str += `${p.name} is linking to ${test.deadends[i]}; `
-    })
-    filemenu.prompt('error', str)
+    const s = `Some links to are pointing to the following passages which do not exist: ${test.deadends.join(', ')}`
+    filemenu.prompt('error', s)
     return true
   } else if (test.empty.length > 0) {
     const es = test.empty.map(o => o.name).join(', ')

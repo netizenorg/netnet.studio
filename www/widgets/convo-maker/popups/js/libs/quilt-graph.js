@@ -40,6 +40,7 @@ class QuiltGraph {
       new: [],
       delete: [],
       selected: [],
+      moved: [],
       unselected: [],
       dblclick: []
     }
@@ -234,9 +235,11 @@ class QuiltGraph {
       const baseY = data.y != null ? data.y : this.gridSize * id
       const x = Math.round(baseX / this.gridSize) * this.gridSize
       const y = Math.round(baseY / this.gridSize) * this.gridSize
-      if (x === 0 && y === 0) console.log('n/y === 0');
-      el.style.left = `${x}px`
-      el.style.top = `${y}px`
+      if (x !== 0 && y !== 0) {
+        console.log('BUG', x, y);
+        el.style.left = `${x}px`
+        el.style.top = `${y}px`
+      }
 
       this.content.appendChild(el)
       this.cards[id] = el
@@ -313,8 +316,10 @@ class QuiltGraph {
         master.y = my
 
         if (mx !== 0 && my !== 0) {
+          console.log('BUG', mx, my);
           el.style.left = mx + 'px'
           el.style.top = my + 'px'
+          this.emit('moved')
         }
 
         // update others data + DOM
@@ -325,9 +330,12 @@ class QuiltGraph {
           const ny = Math.min(Math.max(0, item.y + dy), maxY)
           p.x = nx
           p.y = ny
-          if (nx === 0 && ny === 0) console.log('nx/ny === 0');
-          item.el.style.left = nx + 'px'
-          item.el.style.top = ny + 'px'
+          if (nx !== 0 && ny !== 0) {
+            console.log('BUG', nx, ny);
+            item.el.style.left = nx + 'px'
+            item.el.style.top = ny + 'px'
+            this.emit('moved')
+          }
         })
 
         this.updateConnections()
@@ -340,8 +348,10 @@ class QuiltGraph {
       p.x = mx
       p.y = my
       if (mx !== 0 && my !== 0) {
+        console.log('BUG', mx, my);
         el.style.left = mx + 'px'
         el.style.top = my + 'px'
+        this.emit('moved')
       }
       this.updateConnections()
     }
@@ -750,7 +760,7 @@ class QuiltGraph {
     this.events[eve].push(cb)
   }
 
-  emit (eve, data) {
+  emit (eve, data = {}) {
     if (this.events[eve] instanceof Array) {
       this.events[eve].forEach((cb, i) => {
         data.unsubscribe = () => { this.events[eve].splice(i, 1) }

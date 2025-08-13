@@ -47,6 +47,10 @@ graph.on('unselected', (obj) => {
   }
 })
 
+graph.on('moved', () => {
+  updateWidget()
+})
+
 graph.on('dblclick', (obj) => {
   curPsg = obj
   if (netitor) netitor.close()
