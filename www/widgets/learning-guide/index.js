@@ -7,22 +7,17 @@ class LearningGuide extends Widget {
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
-
-    this.update({ left: 40, top: 65 })
-
-    this.on('open', () => {
-      // this._openConvo()
-      if (this.width !== 638 || this.height !== 473) {
-        this.update({ width: 638, height: 473 })
-      }
-      this.update({ left: 40, top: 65 }, 500)
-    })
-
     this.resizable = false
+
     // currently loaded tutorial data
     this.metadata = null
     this.data = null
     this.loaded = null
+
+    // animation related props
+    this._runningStar = false
+    this._raf = 0
+    this._svgTimer = null
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -50,9 +45,19 @@ class LearningGuide extends Widget {
         })
       })
 
-
-      // initial HTML
       this._createHTML()
+
+      this.update({ left: 40, top: 65 })
+
+      this.on('close', () => this._applyVisibility())
+      this.on('open', () => {
+        // this._openConvo()
+        if (this.width !== 638 || this.height !== 473) {
+          this.update({ width: 638, height: 473 })
+        }
+        this.update({ left: 40, top: 65 }, 500)
+        this._applyVisibility()
+      })
     })
 
     WIDGETS['coding-menu'].on('theme-change', () => {
@@ -152,8 +157,8 @@ class LearningGuide extends Widget {
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
         this.mainOpts.cb = () => setTimeout(() => {
-          this._createStarField()
-          // this._animateGlobe()
+          // this._createStarField()
+          // this._svgAnimations()
         }, utils.getVal('--menu-fades-time'))
       }
       if (cb) cb(div)
@@ -168,6 +173,7 @@ class LearningGuide extends Widget {
 
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
+    this.slide.addEventListener('scroll', () => this._applyVisibility())
 
     // this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
@@ -177,14 +183,6 @@ class LearningGuide extends Widget {
 
     this._listTutorials()
     this._enableAppendixLinks()
-
-    // this._globeFrame = 0
-    // this._globeFrameCount = 124
-    // this._globeFrameRate = 1000 / 10
-    // this._animateGlobe()
-
-    this._createStarField()
-
     this._highlightTitles()
 
     this.slide.style.overflowX = 'hidden'
@@ -194,6 +192,14 @@ class LearningGuide extends Widget {
     //     window.convo = new Convo(this.convos, e.textContent)
     //   })
     // })
+  }
+
+  _highlightTitles () {
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+    })
   }
 
   _enableAppendixLinks () {
@@ -375,31 +381,72 @@ class LearningGuide extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸. star field background && other animations
 
-  _animateGlobe () { // NOTE: this is an alternative approach to the "internet-globe.html"
-    // at the moment only frames for "dark" theme exist
-    const img = this.slide.querySelector('#globe-animation-sequence')
-    if (!img) return
-    const f = this._globeFrame % this._globeFrameCount
-    img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
-    this._globeFrame++
-    setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  _applyVisibility () {
+    const visible = utils.isVisible(this.ele)
+    if (visible) {
+      this._startStarField()
+    } else {
+      this._stopStarField()
+      this._stopSvgAnimations() // TODO: update if/when more svgAnim elements
+    }
+
+    // TODO: update if/when more svgAnim elements
+    // will require passing ele into start/stop animations methods
+    const animatedSVGs = ['svg-tag-animated']
+    animatedSVGs.forEach(e => {
+      const ele = this.$(e)
+      const v = utils.isVisible(ele)
+      if (v) this._startSvgAnimations()
+      else this._stopSvgAnimations()
+    })
   }
 
-  _createStarField () {
-    const canvas = document.createElement('canvas')
-    const self = this
+  /*
+    NOTE: this is an alternative approach to the "internet-globe.html"
+    apply this way:
+    // this._globeFrame = 0
+    // this._globeFrameCount = 124
+    // this._globeFrameRate = 1000 / 10
+    // this._animateGlobe()
+  */
+  // _animateGlobe () {
+  //   // at the moment only frames for "dark" theme exist
+  //   const img = this.slide.querySelector('#globe-animation-sequence')
+  //   if (!img) return
+  //   const f = this._globeFrame % this._globeFrameCount
+  //   img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
+  //   this._globeFrame++
+  //   setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  // }
+  _startStarField () {
+    if (!this.slide) { setTimeout(() => this._startStarField(), 250); return }
+    if (this._runningStar) return
+    this._runningStar = true
+    if (!this._canvas) this._initStarField()
+    this._tickStarField()
+  }
 
+  _stopStarField () {
+    if (!this._runningStar) return
+    this._runningStar = false
+    window.cancelAnimationFrame(this._raf)
+  }
+
+  _initStarField () {
+    const canvas = document.createElement('canvas')
     canvas.style.position = 'absolute'
     canvas.style.top = 0
     canvas.style.left = 0
     canvas.style.zIndex = 0
-    canvas.width = self.ele.offsetWidth
-    canvas.height = self.ele.offsetHeight
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    canvas.width = this.ele.offsetWidth
+    canvas.height = this.ele.offsetHeight
+    this._canvas = canvas
+    this._ctx = canvas.getContext('2d')
+    this.slide.appendChild(canvas)
 
+    // your existing star setup
     const mkStar = (star = {}) => {
       const w = canvas.width
       const h = canvas.height
@@ -417,71 +464,87 @@ class LearningGuide extends Widget {
       return star
     }
 
-    // SETUP
-    const stars = []
-    const acc = 1 // acceleration
-    for (let i = 0; i < 100; i++) stars.push(mkStar())
-
-    // DRAW
-    const animate = () => {
-      setTimeout(() => animate(), 1000 / 60)
-      const w = canvas.width
-      const h = canvas.height
-      ctx.clearRect(0, 0, w, h)
-
-      let newStars = 0
-      stars.forEach((star, i) => {
-        ctx.fillStyle = utils.getVal('--netizen-text')
-
-        star.x += star.dx
-        star.y += star.dy
-        star.a++
-
-        const outdX = star.x < 0 || star.x > w
-        const outdY = star.y < 0 || star.y > h
-        if (outdX && outdY) {
-          star.x = w / 2 + star.dx * 2
-          star.y = h / 2 + star.dy * 2
-          star.dx += star.dx / (50 / acc)
-          star.dy += star.dy / (50 / acc)
-          const max = 4
-          if (star.dx < -max) star.dx = -max
-          if (star.dx > max) star.dx = max
-          if (star.dy < -max) star.dy = -max
-          if (star.dy > max) star.dy = max
-        }
-
-        if (star.a === Math.floor(50 / acc) |
-            star.a === Math.floor(150 / acc) |
-            star.a === Math.floor(300 / acc)) {
-          star.w++
-          star.h++
-        }
-
-        if (star.x + star.w < 0 || star.x > w ||
-        star.y + star.h < 0 | star.y > h) {
-          const idx = stars.indexOf(star)
-          stars.splice(idx, 1)
-          newStars++
-        }
-
-        if (isNaN(star.x)) console.log('nan', stars.indexOf(star))
-        ctx.fillRect(star.x, star.y, 1, 1)
-      })
-
-      for (let i = 0; i < newStars; i++) stars.push(mkStar())
-    }
-
-    this.slide.appendChild(canvas)
-    animate()
+    this._stars = []
+    this._acc = 1
+    for (let i = 0; i < 100; i++) this._stars.push(mkStar())
+    this._mkStar = mkStar
   }
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+  _tickStarField () {
+    if (!this._runningStar) return
+    const { _canvas: canvas, _ctx: ctx } = this
+    const w = canvas.width
+    const h = canvas.height
+
+    ctx.clearRect(0, 0, w, h)
+    ctx.fillStyle = utils.getVal('--netizen-text') // set once per frame
+
+    let newStars = 0
+    this._stars.forEach(star => {
+      star.x += star.dx
+      star.y += star.dy
+      star.a++
+
+      const outX = star.x < 0 || star.x > w
+      const outY = star.y < 0 || star.y > h
+      if (outX && outY) {
+        star.x = w / 2 + star.dx * 2
+        star.y = h / 2 + star.dy * 2
+        star.dx += star.dx / (50 / this._acc)
+        star.dy += star.dy / (50 / this._acc)
+        const max = 4
+        if (star.dx < -max) star.dx = -max
+        if (star.dx > max) star.dx = max
+        if (star.dy < -max) star.dy = -max
+        if (star.dy > max) star.dy = max
+      }
+
+      if (
+        star.a === Math.floor(50 / this._acc) ||
+        star.a === Math.floor(150 / this._acc) ||
+        star.a === Math.floor(300 / this._acc)
+      ) {
+        star.w++
+        star.h++
+      }
+
+      if (
+        star.x + star.w < 0 || star.x > w ||
+        star.y + star.h < 0 || star.y > h
+      ) {
+        const idx = this._stars.indexOf(star)
+        this._stars.splice(idx, 1)
+        newStars++
+      }
+
+      ctx.fillRect(star.x, star.y, 1, 1)
     })
+
+    for (let i = 0; i < newStars; i++) this._stars.push(this._mkStar())
+
+    this._raf = window.requestAnimationFrame(() => this._tickStarField())
+  }
+
+  //
+
+  _startSvgAnimations () {
+    if (this._svgTimer) return
+    const steps = [11, 12, 13, 15, 16, 17, 18]
+    const durs = [2.25, 2.5, 1.5, 1.5, 1, 4, 6]
+    let i = 0
+    const tick = () => {
+      const el = this.$('svg-tag-animated')
+      if (el) el.updateHTML(steps[i])
+      const ms = durs[i] * 1000 + 1000
+      i = (i + 1) % steps.length
+      this._svgTimer = setTimeout(tick, ms)
+    }
+    tick()
+  }
+
+  _stopSvgAnimations () {
+    clearTimeout(this._svgTimer)
+    this._svgTimer = null
   }
 }
 

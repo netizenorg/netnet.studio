@@ -1,4 +1,4 @@
-/* global Widget, Convo, NNE, NNW, utils */
+/* global Widget Convo NNE NNW utils nn WIDGETS */
 class HtmlReference extends Widget {
   constructor (opts) {
     super(opts)
@@ -7,9 +7,14 @@ class HtmlReference extends Widget {
     this.keywords = ['html', 'elements', 'attributes', 'reference']
     this.resizable = false
 
-    this.title = 'HTML Reference'
+    this.width = 638
+    this.height = 483
+
+    this.title = 'HTML Reference Docs'
 
     this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
+
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     utils.get('./widgets/html-reference/data/edu-supplement.json', (json) => { this.data = json })
 
@@ -92,6 +97,57 @@ class HtmlReference extends Widget {
     window.convo = new Convo({ content, options }, null, true)
   }
 
+  async toggleIntroPresentation () {
+    const div = this.slide.querySelector('div')
+    const ntro = div.querySelector('.html-reference-widget--guided-intro')
+    const btn = div.querySelector('.html-reference-widget--intro-btn')
+    const p = div.querySelector('.html-reference-widget--intro-p')
+    const svg = div.querySelector('svg-tag-animated')
+
+    if (this.slide.style.overflowY === 'hidden') { // displaying presentation
+      // toggle into regular HTML Reference page
+      NNE.code = utils.starterCode()
+      NNE.update()
+      if (typeof this._prevUpdateState === 'boolean') {
+        WIDGETS['coding-menu'].autoUpdate(this._prevUpdateState)
+      }
+      svg.clearTimers()
+      window.convo.hide()
+      ntro.style.opacity = 0
+      await nn.sleep(1000)
+      ntro.style.display = 'none'
+      btn.style.display = 'block'
+      p.style.display = 'block'
+      svg.updateHTML(0)
+      this.update({ height: 483 }, 500)
+      this._prevSize.height = 483
+      this.slide.style.overflowY = 'auto'
+      await nn.sleep(100)
+      ntro.style.height = '0px'
+      btn.style.opacity = 1
+      p.style.opacity = 1
+    } else { // displaying ref (toggle into presentation)
+      if (WIDGETS['learning-guide']?.opened) WIDGETS['learning-guide'].close()
+      this.slide.style.overflowY = 'hidden'
+      svg.style.cursor = 'pointer'
+      btn.style.opacity = 0
+      p.style.opacity = 0
+      ntro.style.display = 'flex'
+      this.update({ height: 290, bottom: 20, right: 20 }, 500)
+      this._prevSize.height = 290
+      await nn.sleep(100)
+      ntro.style.height = '222px'
+      this._prevUpdateState = NNE.autoUpdate
+      WIDGETS['coding-menu'].autoUpdate(true)
+      window.convo = new Convo(this.convos, 'start-guide')
+      await nn.sleep(1000)
+      btn.style.display = 'none'
+      p.style.display = 'none'
+      await nn.sleep(100)
+      ntro.style.opacity = 1
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -119,6 +175,21 @@ class HtmlReference extends Widget {
 
     div.querySelector('.html-reference-widget--sec-link[name="attributes"]')
       .addEventListener('click', () => this.slide.updateSlide(this.attrListOpts))
+
+    div.querySelector('.html-reference-widget--intro-btn')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('.html-reference-widget--guided-intro span.link')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('svg-tag-animated').addEventListener('svg-click', e => {
+      window.convo = new Convo(this.convos, this._lastConvo)
+    })
+    div.querySelector('svg-tag-animated').addEventListener('svg-update', e => {
+      if (window.convo?.id && this.convos.map(c => c.id).includes(window.convo.id)) {
+        this._lastConvo = window.convo.id
+      }
+    })
 
     return div
   }

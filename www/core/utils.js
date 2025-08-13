@@ -64,6 +64,20 @@ window.utils = {
     })
   },
 
+  isVisible: (el) => {
+    const s = window.getComputedStyle(el)
+    if (s.display === 'none' || s.visibility === 'hidden') return false
+    if (el.offsetParent === null && s.position !== 'fixed') return false
+    const isDisplayed = el.getClientRects().length > 0
+
+    const r = el.getBoundingClientRect()
+    const vw = window.innerWidth || document.documentElement.clientWidth
+    const vh = window.innerHeight || document.documentElement.clientHeight
+    const isVis = r.bottom > 0 && r.right > 0 && r.left < vw && r.top < vh
+
+    return isVis && isDisplayed
+  },
+
   windowResize: () => {
     NNW._resizeWindow({
       clientX: window.NNW.win.offsetWidth,
@@ -503,6 +517,25 @@ window.utils = {
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
+  },
+
+  autoType: (code, template, speed = 60) => {
+    const type = () => {
+      const str = chars.slice(0, idx).join('')
+      NNE.code = template ? template.replace('{{code}}', str) : str
+      idx++
+      if (idx <= chars.length) {
+        window.utils._autoTypeTimer = setTimeout(type, speed)
+      }
+    }
+
+    let idx = 0
+    const chars = code.split('')
+    type()
+  },
+
+  cancelAutoType: () => {
+    if (window.utils._autoTypeTimer) clearTimeout(window.utils._autoTypeTimer)
   },
 
   scrollToLines: (arr, ch) => {

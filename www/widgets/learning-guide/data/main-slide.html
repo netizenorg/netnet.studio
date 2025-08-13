@@ -1,7 +1,7 @@
 <header class="learning-guide__header" style="position:relative;z-index:2">
   <div class="bg"></div>
   <div>The</div>
-  <h2>Netizen's Guide</h2>
+  <h2>Net Artisan's Guide</h2>
   <div style="font-size: 19px;">to Creative Agency on the World Wide Web</div>
   <!-- <div>to wwweb histories, critical theory, && the craft of creative coding</div> -->
 </header>
@@ -31,7 +31,7 @@
   <!--                  <<<        -          >>>                              -->
 
   <div>
-    <h3>TABLE OF CONTENTS</h3>
+    <h3>HYPERLINKS</h3>
     <br>
     1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span><br>
     2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span><br>
@@ -51,7 +51,7 @@
   <!--                  <<<      -       >>>                              -->
 
   <div class="learning-guide__main__item">
-    <h3 style="cursor: default;">&lt;the platform&gt;</h3>
+    <h3 style="cursor: default;">THE PLATFORM</h3>
 
     <div class="learning-guide__tc">
       <div>
@@ -85,7 +85,7 @@
   <!--                  <<<      -       >>>                              -->
 
   <div class="learning-guide__main__item">
-    <h3 id="lg_craft" style="cursor: default;">&lt;the craft&gt;</h3>
+    <h3 id="lg_craft" style="cursor: default;">THE CRAFT</h3>
 
     <div class="learning-guide__tut-code">
       <!-- What is Code tutorials here -->
@@ -106,14 +106,17 @@
   <!--                      <<< HTML >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['html-reference'].open()">&lt;HTML&gt;</h3>
+    <h3 onclick="WIDGETS['html-reference'].open()">HTML</h3>
+    <br>
+    <!-- <svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag> -->
+    <svg-tag-animated colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text),var(--netizen-attribute),var(--netizen-string)" onclick="WIDGETS.open('html-reference')" style="cursor:pointer;"></svg-tag-animated>
     <br>
     <div>
       <div class="learning-guide__ex-start">
         <span><b>Hypertext Markup Language</b></span>
         <button class="pill-btn pill-btn--secondary"
-                onclick="utils.loadDemo(48)">
-          review core concepts
+                onclick="WIDGETS.open('html-reference', (w) => {w.toggleIntroPresentation(); WIDGETS['learning-guide'].close()})">
+          Start Intro to HTML
         </button>
       </div>
       <p>
@@ -121,16 +124,7 @@
       </p>
     </div>
 
-    <svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag>
-
-    <div class="learning-guide__ex-row">
-      <div style="width: 100%">
-        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
-        <div class="learning-guide__tut-html">
-          <!-- HTML tutorials here -->
-        </div>
-      </div>
-    </div>
+    <br><br>
 
     <div class="learning-guide__apx">
       <div class="learning-guide__apx-list3">
@@ -166,6 +160,16 @@
         </div>
       </div>
     </div>
+
+    <div class="learning-guide__ex-row">
+      <div style="width: 100%">
+        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
+        <div class="learning-guide__tut-html">
+          <!-- HTML tutorials here -->
+        </div>
+      </div>
+    </div>
+
     <br><br><br>
     <div class="learning-guide__ex-divider"></div>
   </div>
@@ -174,7 +178,7 @@
   <!--                      <<< CSS >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['css-reference'].open()">&lt;CSS&gt;</h3>
+    <h3 onclick="WIDGETS['css-reference'].open()">CSS</h3>
     <br>
     <div>
       <div class="learning-guide__ex-start">
@@ -290,7 +294,7 @@
   <!--                      <<<  JS  >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['css-reference'].open()">&lt;JS&gt;</h3>
+    <h3 onclick="WIDGETS['css-reference'].open()">JS</h3>
     <br>
     <div>
       <div class="learning-guide__ex-start">

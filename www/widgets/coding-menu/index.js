@@ -245,6 +245,12 @@ class CodingMenu extends Widget {
     } else if (!gotVal && window.convo && window.convo.id.startsWith('need-to-update')) {
       window.convo.hide()
     }
+
+    if (NNE.autoUpdate && this.$('#func-menu-update-select').value !== 'true') {
+      this.$('#func-menu-update-select').value = 'true'
+    } else if (!NNE.autoUpdate && this.$('#func-menu-update-select').value !== 'false') {
+      this.$('#func-menu-update-select').value = 'false'
+    }
   }
 
   layout () {
