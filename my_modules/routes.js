@@ -321,11 +321,29 @@ router.get('/api/demos', (req, res) => {
       key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
     }
   })
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
   res.json({ success: 'success', data: dict })
+})
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES
+
+router.get('/api/templates', async (req, res) => {
+  try {
+    const base = path.join(__dirname, '../www/widgets/template-projects/templates')
+    const entries = await fs.promises.readdir(base, { withFileTypes: true })
+    const dirs = entries.filter(d => d.isDirectory()).map(d => d.name)
+    const data = {}
+    await Promise.all(dirs.map(async name => {
+      try {
+        const file = path.join(base, name, 'data.json')
+        const text = await fs.promises.readFile(file, 'utf8')
+        data[name] = JSON.parse(text)
+      } catch (err) { /* folders missing data.json fail silently */ }
+    }))
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('Failed to list templates:', err)
+    res.status(500).json({ success: false, error: 'Failed to load templates' })
+  }
 })
 
 // ************************
@@ -372,10 +390,11 @@ router.use(express.static(path.join(__dirname, '../data/browserfest-thumbnails')
 router.get('/api/browserfest/submissions', (req, res) => {
   const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
   const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
+  // NOTE: this will overwrite our "utils.corsGate" (leaving here for future ref)
+  // res.set({
+  //   'Access-Control-Allow-Origin': '*',
+  //   'Access-Control-Allow-Methods': 'GET'
+  // })
   const msg = 'welcome h4x0r! to BrowserFest\'s API, here\'s that R4W data!'
   if (bfsubs) res.json({ success: msg, data: bfsubs })
   else res.json({ error: 'there was an error with the database.' })

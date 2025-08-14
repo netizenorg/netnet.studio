@@ -1,11 +1,11 @@
 require('dotenv').config()
 
-const path = require('path')
 const express = require('express')
 const app = express()
 const http = require('http')
 const SocketsServer = require('socket.io')
 const ANALYTICS = require('stats-not-tracks')
+const utils = require('./my_modules/utils.js')
 const ROUTES = require('./my_modules/routes.js')
 const GITHUB = require('./my_modules/github.js')
 const SOCKETS = require('./my_modules/sockets.js')
@@ -27,6 +27,7 @@ ANALYTICS.setup(app, {
   }
 })
 
+app.use('/api', utils.corsGate)
 app.use(ROUTES)
 app.use(GITHUB)
 app.use(express.static(`${__dirname}/www`))
@@ -37,7 +38,7 @@ io.on('connection', (socket) => SOCKETS(socket, io))
 
 const httpServer = http.createServer(app)
 const msg = `
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 /                                    '.
 | hi there! the local server is up and |
 | running, open a browser and visit:   |

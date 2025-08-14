@@ -1,0 +1,76 @@
+{
+  "name": "html-basic",
+  "description": "A basic HTML page, as plain and simple as it gets while keeping the correct semantic structure. This template is a solid starting point for any HTML document.",
+  "vars": {
+    "title": ""
+  },
+  "lines": {
+    "doctype": {
+      "code": "<!DOCTYPE html>"
+    },
+    "html-ele": {
+      "template": "<!DOCTYPE html>\n{{code}}",
+      "code": "<html></html>"
+    },
+    "lang-attr": {
+      "template": "<!DOCTYPE html>\n<html {{code}}></html>",
+      "code": "lang=\"en-US\""
+    },
+    "head-and-body": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n{{code}}\n</html>",
+      "code": "\t<head></head>\n\t<body></body>"
+    },
+    "head-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<!-- your metadata goes here in the \"head\" -->"
+    },
+    "title-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<title>Your Page Title</title>"
+    },
+    "temp-title'": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{code}}</title>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "{{title}}"
+    },
+    "your-title": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{code}}</title>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "{{title}}"
+    },
+    "meta-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<meta name=\"author\" content=\"Your Name\">\n\t\t<meta name=\"description\" content=\"What's this page about?\">"
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    },
+    "xxx": {
+      "template": "",
+      "code": ""
+    }
+  }
+}

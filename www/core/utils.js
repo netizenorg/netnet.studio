@@ -520,17 +520,33 @@ window.utils = {
   },
 
   autoType: (code, template, speed = 60) => {
+    const normalize = s => (s || '')
+      .replace(/\\t/g, '\t')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+
+    // turn escaped sequences into real chars
+    let src = normalize(code)
+    let tpl = normalize(template)
+
+    // b/c the netitor does not indent with tabs
+    // -> NNE.cm.getOption('indentWithTabs') === fasle
+    const i = NNE.cm.getOption('indentUnit') || 2
+    const tab = ' '.repeat(i)
+    src = src.replace(/\t/g, tab)
+    tpl = tpl.replace(/\t/g, tab)
+
+    let idx = 0
+    const chars = Array.from(src)
     const type = () => {
       const str = chars.slice(0, idx).join('')
-      NNE.code = template ? template.replace('{{code}}', str) : str
+      NNE.code = tpl ? tpl.replace('{{code}}', str) : str
       idx++
       if (idx <= chars.length) {
         window.utils._autoTypeTimer = setTimeout(type, speed)
       }
     }
 
-    let idx = 0
-    const chars = code.split('')
     type()
   },
 

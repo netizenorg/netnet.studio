@@ -1,0 +1,9 @@
+.template-proj__btns {
+  display: flex;
+  justify-content: end;
+  margin: 10px 0 20px 0;
+}
+
+.template-proj__btns > button {
+  margin-right: 5px;
+}
