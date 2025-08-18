@@ -164,7 +164,6 @@ class TemplateProjects extends Widget {
     }
 
     if (NNE.code !== utils.starterCode() && NNE.code.length > 0) {
-      console.log(NNE.code !== utils.starterCode(), NNE.code.length > 0);
       window.convo = new Convo(this.convos, 'clear-code')
       return
     }
