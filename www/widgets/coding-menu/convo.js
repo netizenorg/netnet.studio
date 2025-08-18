@@ -19,6 +19,11 @@ window.CONVOS['coding-menu'] = (self) => {
     } else return []
   })()
 
+  /*
+
+  This was the old save options for when netnet used to say:
+  I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.
+
   const sessionSaveOpts = () => {
     const opts = {
       'ok thanks!': (e) => e.hide(),
@@ -32,6 +37,22 @@ window.CONVOS['coding-menu'] = (self) => {
       opts['can I create a new project?'] = () => self._newProject()
     }
     opts['session data?'] = () => WIDGETS.open('student-session')
+    return opts
+  }
+  */
+
+  const sessionSaveOpts = () => {
+    const opts = {
+      'download sketch as HTML file': (e) => {
+        e.hide()
+        self.downloadCode()
+      },
+      'share sketch as a netnet URL': (e) => WIDGETS.open('share-widget')
+    }
+    if (window.localStorage.getItem('owner')) {
+      opts['create a new GitHub project'] = () => self._newProject()
+    }
+    opts['never mind'] = (e) => e.hide()
     return opts
   }
 
@@ -54,7 +75,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'session-saved',
-    content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.',
+    content: 'I can save this code for you a few different ways, which would you prefer?',
     options: sessionSaveOpts()
   }, {
     id: 'chatty-level-low',
