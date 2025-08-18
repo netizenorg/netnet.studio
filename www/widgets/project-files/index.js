@@ -538,6 +538,9 @@ class ProjectFiles extends Widget {
     this.rendering = null
     this.lastCommitFiles = {}
     NNE.customRender = null
+    NNE.code = ''
+    NNW.updateTitleBar()
+    this.close()
   }
 
   publishProject () {

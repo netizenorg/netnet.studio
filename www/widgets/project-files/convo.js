@@ -230,7 +230,8 @@ window.CONVOS['project-files'] = (self) => {
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
-      }
+      },
+      'never mind': (e) => e.hide()
     }
   }, {
     id: 'create-new-project',
