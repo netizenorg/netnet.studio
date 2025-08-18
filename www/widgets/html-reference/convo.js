@@ -1,4 +1,4 @@
-/* global nn NNW utils */
+/* global nn NNW NNE utils WIDGETS */
 /* eslint no-template-curly-in-string: "off" */
 window.CONVOS['html-reference'] = (self) => {
   return [
@@ -8,6 +8,9 @@ window.CONVOS['html-reference'] = (self) => {
       layout: 'welcome',
       before: () => {
         NNW.menu.switchFace('default')
+      },
+      after: () => {
+        NNW.update({ top: nn.height / 2 - NNW.height / 2, left: 200 }, 500)
       },
       code: '<!DOCTYPE html>\n<style>\n  /* netnet default bg */\n  body {\n    margin: 0;\n    background-image: linear-gradient(#515199a8 2px, transparent 1px),\n      linear-gradient(90deg, #515199a8 2px, transparent 1px);\n    background-size: 50px 50px;\n    position: relative;\n    z-index: 1;\n    overflow: hidden;\n    transition: background 2s ease;\n  }\n\n  body::before {\n    content: "";\n    position: absolute;\n    z-index: -1;\n    width: 100vw;\n    height: 100vh;\n    background: linear-gradient(0deg, #c76ebca8, #515199a8);\n    transition: opacity 2s ease; /* fade effect */\n  }\n\n  /* When faded */\n  body.fade-white {\n    background: white;\n  }\n  body.fade-white::before {\n    opacity: 0;\n  }\n</style>\n\n<script>\n  setTimeout(() => {\n    document.body.classList.add(\'fade-white\')\n  }, 1000)\n</script>\n',
       edit: true,
@@ -282,39 +285,20 @@ window.CONVOS['html-reference'] = (self) => {
     {
       id: 'end',
       graph: { id: 22, x: 775, y: 1225 },
-      before: () => {
-        NNW.layout = 'welcome'
-        self.$('svg-tag-animated').updateHTML(18)
-      },
-      after: () => {
-        utils.afterLayoutTransition(() => {
-          const left = nn.width / 2 - 211
-          const top = nn.height / 2 - 287
-          NNW.update({
-            left,
-            top
-          }, 500)
-        })
-      },
       code: '<a href="https://netizen.org">my web site</a>',
       edit: true,
       content: 'While there are plenty more HTML <i>elements</i> as well as plenty more <i>attributes</i> we can apply to those <i>elements</i>, there isn\'t really much more to know about HTML syntax. The rest is all about how we piece them together.',
       options: {
-        'ok, let\'s write some code!': (e) => e.goTo('write-code'),
+        'ok, let\'s write some code!': (e) => {
+          e.hide()
+          NNE.code = ''
+          NNW.layout = 'dock-left'
+          self.close()
+          utils.afterLayoutTransition(() => {
+            WIDGETS.load('template-projects', w => w.startGuide('html-basic'))
+          })
+        },
         'go back': (e) => e.goTo('href')
-      }
-    },
-    {
-      id: 'write-code',
-      graph: { id: 23, x: 200, y: 1200 },
-      after: () => {
-        NNW.layout = 'dock-left'
-        self.$('svg-tag-animated').updateHTML(19)
-      },
-      edit: false,
-      content: 'NOTE: launch template widget',
-      options: {
-        ok: (e) => e.hide()
       }
     }
   ]

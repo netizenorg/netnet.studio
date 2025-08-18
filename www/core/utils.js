@@ -26,6 +26,25 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
+  getSync: async (url, text = false) => {
+    const res = await window.fetch(url, { method: 'GET' })
+    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`)
+    return text ? res.text() : res.json()
+  },
+
+  postSync: async (url, data, text = false) => {
+    const res = await window.fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: data != null ? JSON.stringify(data) : undefined
+    })
+    if (!res.ok) throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`)
+    return text ? res.text() : res.json()
+  },
+
   btoa: (str) => {
     return window.btoa(unescape(encodeURIComponent(str)))
   },
@@ -202,12 +221,12 @@ window.utils = {
       shortCode: new URL(window.location).searchParams.get('c'),
       example: new URL(window.location).searchParams.get('ex'), // legacy
       demo: new URL(window.location).searchParams.get('demo'),
+      template: new URL(window.location).searchParams.get('template'),
       tutorial: new URL(window.location).searchParams.get('tutorial'),
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
       github: new URL(window.location).searchParams.get('gh'),
-      widget: new URL(window.location).searchParams.get('w'),
-      dem: new URL(window.location).searchParams.get('dem')
+      widget: new URL(window.location).searchParams.get('w')
     }
   },
 
@@ -215,12 +234,12 @@ window.utils = {
     shortCode: new URL(window.location).searchParams.get('c'),
     example: new URL(window.location).searchParams.get('ex'), // legacy
     demo: new URL(window.location).searchParams.get('demo'),
+    template: new URL(window.location).searchParams.get('template'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh'),
-    widget: new URL(window.location).searchParams.get('w'),
-    dem: new URL(window.location).searchParams.get('dem')
+    widget: new URL(window.location).searchParams.get('w')
   },
 
   mobile: () => {
@@ -281,6 +300,9 @@ window.utils = {
       return 'example'
     } else if (url.demo) {
       window.utils.loadDemo(url.demo)
+      return 'demo'
+    } else if (url.template) {
+      window.utils.loadTemplate(url.template)
       return 'demo'
     } else {
       return 'none'
@@ -352,17 +374,26 @@ window.utils = {
   },
 
   loadDemo: (key, type) => {
-    const urlCheck = () => {
+    const openProj = WIDGETS['student-session'].getData('opened-project')
+    if (openProj) WIDGETS['student-session'].clearProjectData()
+    WIDGETS.load('demo-toc', w => {
+      w.load(key, type)
       if (nn.get('#loader').style.opacity === '0') return
       // if loaded from the URL, make sure to fadeout loader when done
       window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
-    }
+    })
+  },
 
-    if (!WIDGETS['demo-toc']) {
-      WIDGETS.load('demo-toc', w => {
-        w.load(key, type); urlCheck()
-      })
-    } else { WIDGETS['demo-toc'].load(key, type); urlCheck() }
+  loadTemplate: (name) => {
+    const openProj = WIDGETS['student-session'].getData('opened-project')
+    if (openProj) WIDGETS['student-session'].clearProjectData()
+    NNE.code = window.utils.starterCode()
+    WIDGETS.load('template-projects', w => {
+      w.loadTemplate(name)
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
+    })
   },
 
   loadGithub: (github, layout, callback) => {
@@ -536,15 +567,39 @@ window.utils = {
     src = src.replace(/\t/g, tab)
     tpl = tpl.replace(/\t/g, tab)
 
+    // ensure typing code is always visible
+    const startLine = tpl.split('\n').findIndex(str => str.includes('{{code}}'))
+    const jumpToLine = (line) => {
+      const coords = NNE.cm.charCoords({ line, ch: 0 }, 'local')
+      NNE.cm.getScrollerElement().scrollTop = coords.top
+    }
+
+    // instead of using "NNE.coe = ..." b/c it clashes with jumpToLine()
+    const setValuePreserveView = value => {
+      const info = NNE.cm.getScrollInfo()
+      const sels = NNE.cm.listSelections()
+      NNE.cm.operation(() => {
+        NNE.cm.setValue(value)
+        NNE.cm.setSelections(sels)
+        NNE.cm.scrollTo(info.left, info.top)
+      })
+    }
+
     let idx = 0
     const chars = Array.from(src)
     const type = () => {
-      const str = chars.slice(0, idx).join('')
-      NNE.code = tpl ? tpl.replace('{{code}}', str) : str
-      idx++
+      const cstr = chars.slice(0, idx).join('')
+      const newVal = tpl ? tpl.replace('{{code}}', cstr) : cstr
+      setValuePreserveView(newVal)
+      // if line is not visible
+      const lastLine = startLine + src.split('\n').length
+      if (lastLine >= NNE.getVisibleRange().bottom) jumpToLine(lastLine)
+      // if we've got more chars, set timer for next key stroke
       if (idx <= chars.length) {
+        window.utils.cancelAutoType()
         window.utils._autoTypeTimer = setTimeout(type, speed)
       }
+      idx++
     }
 
     type()

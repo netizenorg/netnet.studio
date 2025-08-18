@@ -105,7 +105,7 @@ class HtmlReference extends Widget {
     const svg = div.querySelector('svg-tag-animated')
 
     if (this.slide.style.overflowY === 'hidden') { // displaying presentation
-      // toggle into regular HTML Reference page
+      //                             (toggle into regular HTML Reference page)
       NNE.code = utils.starterCode()
       NNE.update()
       if (typeof this._prevUpdateState === 'boolean') {

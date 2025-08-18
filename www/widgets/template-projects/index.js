@@ -1,4 +1,4 @@
-/* global Widget Convo NNW NNE utils nn */
+/* global Widget Convo NNW NNE utils nn WIDGETS */
 class TemplateProjects extends Widget {
   constructor (opts) {
     super(opts)
@@ -21,8 +21,7 @@ class TemplateProjects extends Widget {
   }
 
   explainTitleBar () {
-    const s = this.state
-    window.convo = new Convo(s.convos, s.curPassage)
+    window.convo = new Convo(this.convos, 'notes-click')
   }
 
   cancel () {
@@ -33,15 +32,30 @@ class TemplateProjects extends Widget {
     NNE.marker(null)
   }
 
+  loadTemplate (name) {
+    this.state = { name }
+    this._tempName = name
+    if (typeof window.CONVOS[this.key] !== 'function') {
+      Convo.load(this.key, () => {
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'load-template')
+      })
+    } else {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'load-template')
+    }
+  }
+
   async startGuide (name) {
     this.cancel()
     this.close()
 
+    const template = await utils.getSync(`/api/template/${name}`)
     this.state = { // also used for convo's "self" object
       name: name,
       curPassage: null,
-      vars: this.list[name].vars,
-      lines: this.list[name].lines
+      vars: template.data.vars,
+      lines: template.data.lines
     }
 
     NNE.code = ''
@@ -53,49 +67,71 @@ class TemplateProjects extends Widget {
     }
 
     // load the template's convo file
-    Convo.load(`template-projects/templates/${this.state.name}`, () => {
+    Convo.load(`/templates/${this.state.name}/convo.js`, () => {
+      // setup guide convo
       const cn = `template-${this.state.name}`
       this.state.convos = window.CONVOS[cn](this.state)
-      const first = window.CONVOS[cn]()[0].id
-      window.convo = new Convo(this.state.convos, first)
-      window.convo.on('update', (c) => this._typeTemplateCode(c.id))
-      this._typeTemplateCode(first)
+      // pre-guide convo passage
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'start-guide')
       // update title bar
       utils.setCustomRenderer(null)
       // TODO consider adding template to URL
       // if (this.demoType !== 'custom') utils.updateURL(`?demo=${this.demoKey}`)
-      NNW.updateTitleBar(this.state.name)
+      const t = `${this._getTemplateName(this.state.name)} Template`
+      NNW.updateTitleBar(t)
+      // TODO: maybe _getTemplateName() for title bar? maybe show path (for multi file templates?)
       NNW.title.dataset.template = true
     })
   }
 
-  displayTemplate (name) {
+  async displayTemplate (name) {
+    if (!name && this.state.name) name = this.state.name
     // TODO: might need to update this when a template is a "project"
     // so that we can open the necessary directories
     // maybe there's an alt convo to "remix"
-    const path = `/widgets/template-projects/templates/${name}/index.html`
-    utils.get(path, async (html) => {
-      window.convo.hide()
-      this.cancel()
-      this.close()
-      this.state = { name: name }
 
-      NNE.code = html
-      NNE.update()
+    window.convo.hide()
+    this.cancel()
+    this.close()
 
-      if (NNW.layout !== 'dock-left') {
-        NNW.layout = 'dock-left'
-        await nn.sleep(utils.getVal('--layout-transition-time'))
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'remix')
-      }
-    }, true)
+    const data = await utils.getSync(`/api/template/${name}`)
+    this.state = { // also used for convo's "self" object
+      name: name,
+      files: data.files
+    }
+
+    const index = await utils.getSync(`/templates/${name}/files/index.html`, true)
+    NNE.code = index
+    NNE.update()
+
+    if (NNW.layout !== 'dock-left') {
+      NNW.layout = 'dock-left'
+      await nn.sleep(utils.getVal('--layout-transition-time'))
+    }
+
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'remix')
   }
 
   // --------------------------------------------------- PRIVATE METHODS -------
 
   _getTemplateName () {
     return this._transformName(this.state.name || 'untitled')
+  }
+
+  _templateConvo (first) {
+    const cnv = `template-${this.state.name}`
+    const psg = first ? window.CONVOS[cnv]()[0].id : this.state.curPassage
+    window.convo = new Convo(this.state.convos, psg)
+    window.convo.on('update', (c) => this._typeTemplateCode(c.id))
+    if (first) this._typeTemplateCode(psg)
+  }
+
+  _continueGuide () {
+    const s = this.state
+    window.convo = new Convo(s.convos, s.curPassage)
+    window.convo.on('update', (c) => this._typeTemplateCode(c.id))
   }
 
   _typeTemplateCode (id) {
@@ -105,6 +141,36 @@ class TemplateProjects extends Widget {
     line = this._transformLine(line)
     if (line.template) utils.autoType(line.code, line.template)
     else utils.autoType(line.code)
+  }
+
+  _preCodeCheckConvo (name, type) {
+    this._tempName = name
+    this._tempType = type
+    this.convos = window.CONVOS[this.key](this)
+
+    // close an open tutorial
+    const hvp = WIDGETS['hyper-video-player']
+    if (utils.tutorialOpen() || (hvp && hvp.opened)) {
+      hvp.close()
+      setTimeout(() => WIDGETS['learning-guide'].close(), 100)
+    }
+    // check for an open project
+    const openProj = WIDGETS['student-session'].getData('opened-project')
+    if (openProj && WIDGETS['project-files']) {
+      const unSaved = WIDGETS['project-files'] && WIDGETS['project-files'].changes.length > 0
+      if (unSaved) window.convo = new Convo(this.convos, 'clear-code-unsaved-proj')
+      else window.convo = new Convo(this.convos, 'clear-code-opened-proj')
+      return
+    }
+
+    if (NNE.code !== utils.starterCode() && NNE.code.length > 0) {
+      console.log(NNE.code !== utils.starterCode(), NNE.code.length > 0);
+      window.convo = new Convo(this.convos, 'clear-code')
+      return
+    }
+
+    if (type === 'guide') this.startGuide(name)
+    else if (type === 'skip-guide') this.displayTemplate(name)
   }
 
   _transformName (str) {
@@ -157,20 +223,14 @@ class TemplateProjects extends Widget {
           </div>
         `
         div.querySelector('button[name="guide"]')
-          .addEventListener('click', () => this.startGuide(name))
+          .addEventListener('click', () => this._preCodeCheckConvo(name, 'guide'))
         div.querySelector('button[name="skip"]')
-          .addEventListener('click', () => this.displayTemplate(name))
+          .addEventListener('click', () => this._preCodeCheckConvo(name, 'skip-guide'))
         div.querySelector('button[name="explain"]')
           .addEventListener('click', () => { window.convo = new Convo(this.convos, 'buttons') })
         this.$('.template-proj').appendChild(div)
       })
     }
-  }
-
-  // here's an example of a "private" method
-  _startConvo () {
-    // this is referencing a convo key from the convo.js file
-    window.convo = new Convo(this.convos, 'start')
   }
 }
 

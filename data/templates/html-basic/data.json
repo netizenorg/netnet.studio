@@ -1,0 +1,100 @@
+{
+  "name": "html-basic",
+  "description": "A basic HTML page, as plain and simple as it gets while keeping the correct semantic structure. This template is a solid starting point for any HTML document.",
+  "vars": {
+    "title": "",
+    "author": "",
+    "description": "",
+    "h1": "",
+    "p": ""
+  },
+  "lines": {
+    "doctype": {
+      "code": "<!DOCTYPE html>"
+    },
+    "html-ele": {
+      "template": "<!DOCTYPE html>\n{{code}}",
+      "code": "<html></html>"
+    },
+    "lang-attr": {
+      "template": "<!DOCTYPE html>\n<html {{code}}></html>",
+      "code": "lang=\"en-US\""
+    },
+    "head-and-body": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n{{code}}\n</html>",
+      "code": "\t<head></head>\n\t<body></body>"
+    },
+    "head-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<!-- your metadata goes here in the \"head\" -->"
+    },
+    "title-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<title>Your Page Title</title>"
+    },
+    "temp-title'": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{code}}</title>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "{{title}}"
+    },
+    "your-title": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{code}}</title>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "{{title}}"
+    },
+    "meta-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t{{code}}\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<meta>\n\t\t<meta>"
+    },
+    "author": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta {{code}}>\n\t\t<meta>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "name=\"author\""
+    },
+    "temp-author": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" {{code}}>\n\t\t<meta>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "content=\"{{author}}\""
+    },
+    "your-author": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" {{code}}>\n\t\t<meta>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "content=\"{{author}}\""
+    },
+    "description": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta {{code}}>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "name=\"description\""
+    },
+    "temp-description": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\"  {{code}}>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "content=\"{{description}}\""
+    },
+    "your-description": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\"  {{code}}>\n\t</head>\n\t<body></body>\n</html>",
+      "code": "content=\"{{description}}\""
+    },
+    "viewport": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t{{code}}\n\n\t</head>\n\t<body></body>\n</html>",
+      "code": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+    },
+    "body-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t{{code}}\n\t</body>\n</html>",
+      "code": "<!-- you page's content goes here in the body -->"
+    },
+    "h1-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t<!-- you page's content goes here in the body -->\n\t\t{{code}}\n\t</body>\n</html>",
+      "code": "<h1></h1>"
+    },
+    "p-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t<!-- you page's content goes here in the body -->\n\t\t{{code}}\n\t</body>\n</html>",
+      "code": "<h1>{{h1}}</h1>\n\n\t\t<p></p>"
+    },
+    "indentation-bad": {
+      "template": "<!DOCTYPE html><html lang=\"en-US\"><head><!-- your metadata goes here in the \"head\" --><title>{{title}}</title><meta name=\"author\" content=\"{{author}}\"><meta name=\"description\" content=\"{{description}}\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body><!-- you page's content goes here in the body --><h1>{{h1}}</h1><p>{{p}}</p></body></html>",
+      "code": ""
+    },
+    "indentation-good": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t<!-- you page's content goes here in the body -->\n\t\t<h1>{{h1}}</h1>\n\n\t\t<p>\n\t\t\t{{p}}\n\t\t</p>\n\t</body>\n</html>",
+      "code": ""
+    },
+    "nav-ele": {
+      "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t<!-- you page's content goes here in the body -->\n\t\t<h1>{{h1}}</h1>\n\n\t\t<p>\n\t\t\t{{p}}\n\t\t</p>\n\n\t\t{{code}}\n\t</body>\n</html>",
+      "code": "<nav>\n\t\t\t<a href=\"https://netizen.org\">some other page</a>\n\t\t\t<a href=\"https://developer.mozilla.org\">yet another page</a>\n\t\t</nav>"
+    }
+  }
+}

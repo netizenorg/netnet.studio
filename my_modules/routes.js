@@ -24,7 +24,8 @@ const aliasRoutes = [
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
   { url: '/videos/*', loc: '../www/assets/videos/' },
   { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' },
-  { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' }
+  { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' },
+  { url: '/templates/*', loc: '../data/templates/' }
 ]
 
 const images = fs.readdirSync(path.join(__dirname, '../www/assets/images'))
@@ -328,7 +329,7 @@ router.get('/api/demos', (req, res) => {
 
 router.get('/api/templates', async (req, res) => {
   try {
-    const base = path.join(__dirname, '../www/widgets/template-projects/templates')
+    const base = path.join(__dirname, '../data/templates')
     const entries = await fs.promises.readdir(base, { withFileTypes: true })
     const dirs = entries.filter(d => d.isDirectory()).map(d => d.name)
     const data = {}
@@ -336,9 +337,25 @@ router.get('/api/templates', async (req, res) => {
       try {
         const file = path.join(base, name, 'data.json')
         const text = await fs.promises.readFile(file, 'utf8')
-        data[name] = JSON.parse(text)
+        const json = JSON.parse(text)
+        data[name] = { description: json.description }
       } catch (err) { /* folders missing data.json fail silently */ }
     }))
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('Failed to list templates:', err)
+    res.status(500).json({ success: false, error: 'Failed to load templates' })
+  }
+})
+
+router.get('/api/template/:template', async (req, res) => {
+  const name = req.params.template
+  try {
+    const base = path.join(__dirname, `../data/templates/${name}`)
+    const files = await fs.promises.readdir(`${base}/files`, { withFileTypes: true })
+    const text = await fs.promises.readFile(path.join(base, '/data.json'), 'utf8')
+    const data = JSON.parse(text)
+    data.files = files.map(f => f.name)
     res.json({ success: true, data })
   } catch (err) {
     console.error('Failed to list templates:', err)
