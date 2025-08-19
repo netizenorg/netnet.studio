@@ -10,14 +10,20 @@ class TemplateProjects extends Widget {
     this.width = 550
 
     this.list = {} // dict of tempaltes
+    this.bld = {} // dict of which templates build on others
     this.state = {} // details of opened template
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     utils.get('/api/templates', (res) => {
-      if (res.success) this.list = res.data
+      if (res.success) {
+        this.list = res.data.list
+        this.bld = res.data.buildOn
+      }
       this._createHTML()
     })
+
+    this.codeEdit = null // runs on code update when template is open
   }
 
   explainTitleBar () {
@@ -25,16 +31,19 @@ class TemplateProjects extends Widget {
   }
 
   cancel () {
-    // TODO consider adding template to URL
-    // if (utils.url.demo) utils.updateURL(null)
+    if (utils.url.template) utils.updateURL(null)
     NNW.updateTitleBar(null)
     NNE.spotlight(null)
     NNE.marker(null)
+    this.state = {}
+    const i = NNE.events['code-update'].indexOf(this.codeEdit)
+    if (i !== -1) NNE.events['code-update'].splice(i, 1)
   }
 
   loadTemplate (name) {
     this.state = { name }
     this._tempName = name
+    if (!this.codeEdit) this._setupCodeUpdateListener()
     if (typeof window.CONVOS[this.key] !== 'function') {
       Convo.load(this.key, () => {
         this.convos = window.CONVOS[this.key](this)
@@ -49,17 +58,32 @@ class TemplateProjects extends Widget {
   async startGuide (name) {
     this.cancel()
     this.close()
+    if (!this.codeEdit) this._setupCodeUpdateListener()
 
     const template = await utils.getSync(`/api/template/${name}`)
+    const prevName = this.state.name
+    const preVars = this.state.vars
+      ? JSON.parse(JSON.stringify(this.state.vars)) : null
+
     this.state = { // also used for convo's "self" object
       name: name,
       curPassage: null,
-      vars: template.data.vars,
+      files: Object.fromEntries(template.data.files.map(k => [k, null])),
       lines: template.data.lines
     }
 
-    NNE.code = ''
-    NNE.update()
+    if (this.bld[name]?.includes(prevName)) {
+      // if building off a previous template, transfer vars over
+      this.state.vars = preVars
+    } else {
+      // if not, use the template's default vars
+      this.state.vars = template.data.vars
+      // && clear code from netitor
+      NNE.code = ''
+      NNE.update()
+    }
+
+    this.state.files['index.html'] = NNE.code
 
     if (NNW.layout !== 'dock-left') {
       NNW.layout = 'dock-left'
@@ -74,13 +98,12 @@ class TemplateProjects extends Widget {
       // pre-guide convo passage
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'start-guide')
-      // update title bar
+      // update title bar && URL
       utils.setCustomRenderer(null)
-      // TODO consider adding template to URL
-      // if (this.demoType !== 'custom') utils.updateURL(`?demo=${this.demoKey}`)
+      utils.updateURL(`?template=${this.state.name}`)
       const t = `${this._getTemplateName(this.state.name)} Template`
       NNW.updateTitleBar(t)
-      // TODO: maybe _getTemplateName() for title bar? maybe show path (for multi file templates?)
+      // TODO: maybe show path (for multi file templates?)
       NNW.title.dataset.template = true
     })
   }
@@ -91,18 +114,23 @@ class TemplateProjects extends Widget {
     // so that we can open the necessary directories
     // maybe there's an alt convo to "remix"
 
+    // TODO: in case of "mutli-file" would need to let them know somehow
+    // "this template has multiple files, create new project to view them"
+
     window.convo.hide()
     this.cancel()
     this.close()
 
-    const data = await utils.getSync(`/api/template/${name}`)
+    if (!this.codeEdit) this._setupCodeUpdateListener()
+
+    const res = await utils.getSync(`/api/template/${name}`)
     this.state = { // also used for convo's "self" object
       name: name,
-      files: data.files
+      files: Object.fromEntries(res.data.files.map(k => [k, null]))
     }
 
     const index = await utils.getSync(`/templates/${name}/files/index.html`, true)
-    NNE.code = index
+    NNE.code = this.state.files['index.html'] = index
     NNE.update()
 
     if (NNW.layout !== 'dock-left') {
@@ -118,6 +146,17 @@ class TemplateProjects extends Widget {
 
   _getTemplateName () {
     return this._transformName(this.state.name || 'untitled')
+  }
+
+  _setupCodeUpdateListener () {
+    const codeEdit = () => {
+      const selected = 'index.html' // TODO switch when swapping diff files
+      this.state.files[selected] = NNE.code
+    }
+
+    this.codeEdit = codeEdit
+
+    NNE.on('code-update', codeEdit)
   }
 
   _templateConvo (first) {
@@ -172,6 +211,79 @@ class TemplateProjects extends Widget {
     else if (type === 'skip-guide') this.displayTemplate(name)
   }
 
+  _postGuideConvo () {
+    // TODO: start new project with files?
+    window.convo = new Convo(this.convos, 'end-guide')
+  }
+
+  async _pathToBase64 (relPath) {
+    const fullPath = `/templates/${this.state.name}/files/${relPath}`
+
+    const res = await window.fetch(fullPath)
+    if (!res.ok) throw new Error(`Failed to fetch ${fullPath}: ${res.status} ${res.statusText}`)
+
+    const blob = await res.blob()
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new window.FileReader()
+      reader.onerror = reject
+      reader.onloadend = () => {
+        const dataUrl = reader.result
+        resolve(String(dataUrl).split(',')[1])
+      }
+      reader.readAsDataURL(blob)
+    })
+
+    return base64
+  }
+
+  async _newRepoFromTemplate () { // TODO: ... finished
+    try {
+      const changes = []
+      const paths = Object.keys(this.state.files)
+      for (let i = 0; i < paths.length; i++) {
+        const path = paths[i]
+        const obj = { action: 'create', path }
+        if (typeof this.state.files[path] === 'string') {
+          obj.content = this.state.files[path]
+        } else {
+          obj.content = await this._pathToBase64(path)
+          obj.isBinary = true
+        }
+        changes.push(obj)
+      }
+
+      console.log(changes);
+
+      // TODO: create a readme for each template? maybe using some basic tempalte && their description?
+      // TODO: then send to ...
+
+      const res = await utils.postSync('/api/github/push', {
+        owner, repo, branch,
+        commitMessage: 'add image',
+        changes: [{ action: 'create', path: 'images/pic.png', content: png64, isBinary: true }]
+      })
+
+      console.log(res);
+
+      // const resp = await utils.postSync('/api/github/new-repo-from-files', {
+      //   name: 'my-new-project',
+      //   user: 'your-github-username',
+      //   files,
+      //   commitMessage: 'initial import'
+      // })
+
+      // if (resp.success) {
+      //   console.log('Repo created:', resp.url)
+      //   console.log('Branch:', resp.branch)
+      //   console.log('Files:', resp.files)
+      // } else {
+      //   console.error('Failed:', resp.message, resp.error)
+      // }
+    } catch (err) {
+      console.error('Request error:', err.message)
+    }
+  }
+
   _transformName (str) {
     return str
       .split('-')
@@ -210,11 +322,11 @@ class TemplateProjects extends Widget {
       this.innerHTML = '<p>ERROR LOADING TEMPLATES ŏ︵ŏ</p>'
     } else {
       this.innerHTML = '<div class="template-proj"></div>'
-      Object.entries(this.list).forEach(([name, obj]) => {
+      Object.entries(this.list).forEach(([name, desc]) => {
         const div = nn.create('div')
         div.innerHTML = `
           <h3>${this._transformName(name)}</h3>
-          <p>${obj.description}</p>
+          <p>${desc}</p>
           <div class="template-proj__btns">
             <button name="guide" class="pill-btn pill-btn--secondary">Begin Guide</button>
             <button name="skip" class="pill-btn pill-btn--secondary">Jump to Template</button>

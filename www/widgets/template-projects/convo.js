@@ -25,7 +25,7 @@ window.CONVOS['template-projects'] = (self) => {
     }
   }, {
     id: 'start-guide',
-    content: `I'm going to walk you through creating the <i>${self._getTemplateName()} Template</i>. Feel free to experiment with the code at anytime, you can always click the <b>Notes</b> button at the top of the editor to reset the code and return to the guided tour.`,
+    content: `I'm going to walk you through creating the <i>${self._getTemplateName()} Template</i>. Feel free to experiment with the code at anytime, you can always click the <b>Notes</b> button at the top of the editor which will reset the code and return to the guided tour.`,
     options: {
       ok: (e) => {
         self._templateConvo(true) // first template convo
@@ -81,6 +81,12 @@ window.CONVOS['template-projects'] = (self) => {
         else self.displayTemplate(self._tempName)
       },
       'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'end-guide',
+    content: 'Great, that ends the guide to this template. Would you like to continue working on this as a single page <i>sketch</i> or would you like to create a multi-file <i>project</i> hosted on GitHub?',
+    options: {
+      ok: (e) => e.hide()
     }
   }, {
     id: 'remix',

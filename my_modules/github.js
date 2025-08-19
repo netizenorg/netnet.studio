@@ -422,4 +422,46 @@ router.post('/api/github/gh-pages', (req, res) => {
   })
 })
 
+// CREATE NEW REPO FROM TEMPLATE DATA
+// router.post('/api/github/new-repo-from-template', (req, res) => {
+//   const { name, user, files, commitMessage } = req.body
+//   if (typeof name !== 'string' || typeof user !== 'string' || typeof files !== 'object' || !files) {
+//     return res.json({ success: false, message: 'Missing or invalid name, user, or files' })
+//   }
+//
+//   decryptToken(req, res, async octokit => {
+//     try {
+//       // 1) create empty repo
+//       const repoRes = await octokit.request('POST /user/repos', {
+//         name,
+//         description: '◕ ◞ ◕ This project was made using https://netnet.studio',
+//         auto_init: false
+//       })
+//
+//       const owner = repoRes.data.owner.login
+//       const repo = repoRes.data.name
+//       const branch = repoRes.data.default_branch || 'main'
+//
+//       // 2) commit each file (creates initial commit on first PUT)
+//       const entries = Object.entries(files) // [[path, content], ...]
+//       // optional: keep deterministic order
+//       entries.sort((a, b) => a[0].localeCompare(b[0]))
+//
+//       for (const [pathRel, contentStr] of entries) {
+//         const content = Buffer.from(String(contentStr), 'utf8').toString('base64')
+//         const message = commitMessage || `add ${pathRel}`
+//         await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+//           owner, repo, path: pathRel, message, content, branch
+//         })
+//       }
+//
+//       res.json({
+//         success: true, owner, repo, branch, url: repoRes.data.html_url, files: Object.keys(files)
+//       })
+//     } catch (err) {
+//       res.json({ success: false, message: 'error creating repo from files', error: err.response?.data || err })
+//     }
+//   })
+// })
+
 module.exports = router

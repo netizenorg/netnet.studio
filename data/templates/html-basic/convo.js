@@ -288,9 +288,17 @@ window.CONVOS['template-html-basic'] = (self) => {
     {
       id: 'closer',
       graph: { id: 32, x: 100, y: 1750 },
-      content: 'There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. Would you like to build on this template by adding some CSS or shall I leave you with this to start your own project or sketch?',
+      content: 'We could add a bit more metadata to this if you\'d like to learn more about that? There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. <br><br>Would you like to build on this template by adding some CSS or should we add some more metadata first? Or, if you prefer, I can just leave you with this?',
       options: {
-
+        'Let\'s add some more metadata': (e) => {
+          WIDGETS['template-projects'].startGuide('html-meta-tags')
+        },
+        'Let\'s add some CSS': (e) => {
+          window.alert('WORKING ON IT')
+        },
+        'I\'ll take it from here': (e) => {
+          WIDGETS['template-projects']._postGuideConvo()
+        }
       }
     }
   ]

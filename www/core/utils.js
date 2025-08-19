@@ -550,6 +550,27 @@ window.utils = {
     }
   },
 
+  netitorToString: () => {
+    const html = NNE.code
+    const lines = String(html).replace(/\r\n?/g, '\n').split('\n')
+
+    const escaped = lines.map(line => {
+      // turn leading spaces into \t per two spaces
+      const m = line.match(/^ +/)
+      let head = ''
+      if (m) {
+        const n = m[0].length
+        head = '\\t'.repeat(Math.floor(n / 2)) + (n % 2 ? ' ' : '')
+        line = line.slice(n)
+      }
+      // escape only double quotes; leave backslashes alone
+      return head + line.replace(/"/g, '\\"')
+    })
+
+    // join with literal \n between lines
+    console.log(escaped.join('\\n'))
+  },
+
   autoType: (code, template, speed = 60) => {
     const normalize = s => (s || '')
       .replace(/\\t/g, '\t')
