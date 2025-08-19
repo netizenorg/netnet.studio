@@ -30,8 +30,8 @@
   <!--                  <<< TABLE OF CONTENTS >>>                              -->
   <!--                  <<<        -          >>>                              -->
 
-  <div>
-    <h3>HYPERLINKS</h3>
+  <div id="learning-guide-toc">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('toc')">HYPERLINKS</h3>
     <br>
     1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span><br>
     2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span><br>
@@ -50,11 +50,13 @@
   <!--                  <<< THE INTERNET >>>                              -->
   <!--                  <<<      -       >>>                              -->
 
-  <div class="learning-guide__main__item">
-    <h3 style="cursor: default;">THE PLATFORM</h3>
+  <div class="learning-guide__main__item" id="learning-guide-the-net">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-net')">THE PLATFORM</h3>
 
     <div class="learning-guide__tc">
-      <div>
+      <br><br>
+      <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+      <!-- <div>
         <div id="lg_platform">
           <h2>the Internet</h2>
           <b>a network of networks</b>
@@ -77,21 +79,23 @@
           <button class="pill-btn pill-btn--secondary" id="page-theWebOpts">enter</button>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!--                  <<<      -       >>>                              -->
   <!--                  <<<     CODE     >>>                              -->
   <!--                  <<<      -       >>>                              -->
 
-  <div class="learning-guide__main__item">
-    <h3 id="lg_craft" style="cursor: default;">THE CRAFT</h3>
+  <div class="learning-guide__main__item" id="learning-guide-the-craft">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">THE CRAFT</h3>
+    <br><br>
+    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
 
-    <div class="learning-guide__tut-code">
+    <!-- <div class="learning-guide__tut-code"> -->
       <!-- What is Code tutorials here -->
-    </div>
+    <!-- </div> -->
 
-    <div class="learning-guide__tc">
+    <!-- <div class="learning-guide__tc">
       <div style="display: flex; justify-content: center; align-items: center;">
         <div onclick="WIDGETS.open('demo-sketches')" class="learning-guide__code-example-btn">
           &lt;/&gt;
@@ -99,14 +103,14 @@
         <p style="padding: 20px; width: 331px;">← A collection of code examples and annotated demos created especially for internet artists. If you're new to creative coding, you may want to start with the interactive tutorial above.</p>
       </div>
       <br>
-    </div>
+    </div> -->
   </div>
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<< HTML >>>                              -->
   <!--                      <<<  -   >>>                              -->
-  <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['html-reference'].open()">HTML</h3>
+  <div class="learning-guide__main__item" id="learning-guide-html">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('html'); WIDGETS['html-reference'].open()">HTML</h3>
     <br>
     <!-- <svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag> -->
     <svg-tag-animated colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text),var(--netizen-attribute),var(--netizen-string)" onclick="WIDGETS.open('html-reference')" style="cursor:pointer;"></svg-tag-animated>
@@ -128,11 +132,11 @@
       <div class="learning-guide__apx-list3">
         <div>
           <h2>Templates</h2>
-          <span class="highlight" onclick="utils.loadDemo(67)">
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('html-basic')">
             HTML5 (basic)
           </span>
           <br>
-          <span class="highlight" onclick="utils.loadDemo(68)">
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('html-meta-tags')">
             social &lt;meta&gt; tags
           </span>
         </div>
@@ -175,10 +179,12 @@
   <!--                      <<<  -   >>>                              -->
   <!--                      <<< CSS >>>                              -->
   <!--                      <<<  -   >>>                              -->
-  <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['css-reference'].open()">CSS</h3>
+  <div class="learning-guide__main__item" id="learning-guide-css">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('css'); WIDGETS['css-reference'].open()">CSS</h3>
     <br>
-    <div>
+    <br>
+    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+    <!-- <div>
       <div class="learning-guide__ex-start">
         <span><b>Cascading Style Sheets</b></span>
         <button class="pill-btn pill-btn--secondary"
@@ -199,7 +205,7 @@
       <div style="width: 100%">
         <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
         <div class="learning-guide__tut-css">
-          <!-- CSS tutorials here -->
+          CSS TUTORIALS GO HERE
         </div>
       </div>
     </div>
@@ -285,16 +291,18 @@
       </div>
     </div>
     <br><br>
-    <div class="learning-guide__ex-divider"></div>
+    <div class="learning-guide__ex-divider"></div> -->
   </div>
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<<  JS  >>>                              -->
   <!--                      <<<  -   >>>                              -->
-  <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['css-reference'].open()">JS</h3>
+  <div class="learning-guide__main__item" id="learning-guide-js">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('js'); WIDGETS['css-reference'].open()">JS</h3>
     <br>
-    <div>
+    <br>
+    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+    <!-- <div>
       <div class="learning-guide__ex-start">
         <span><b>JavaScript</b></span>
         <button class="pill-btn pill-btn--secondary"
@@ -306,108 +314,15 @@
         JavasScript is the Web's defacto programming language, although you can use it in other contexts (robotics, AI, games, etc) it was first invented to add interactive and dynamic capabilities to the Web, converting our hypertext "documents" into hypermedia "applications".
       </p>
     </div>
-
-    <br>
-
-    <svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
-    </svg-js-variable>
-
-    <div class="learning-guide__apx">
-      <div>
-        <h2>Coming Soon!</h2>
-        <p style="/*! margin-top: 40px; */">JavaScript docs, templates, examples and interactive video tutorials coming soon! You can help make that happen <a href="https://github.com/netizenorg/netnet.studio/blob/main/docs/advocates" target="_blank">sooner!</a></p>
-      </div>
-    </div>
-
-    <!-- <div class="learning-guide__ex-row"> -->
-      <!-- <div style="width: 100%"> -->
-        <!-- <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2> -->
-        <!-- <div class="learning-guide__tut-js"> -->
-          <!-- JS tutorials here -->
-        <!-- </div> -->
-      <!-- </div> -->
-    <!-- </div> -->
-
-<!--
-    <div class="learning-guide__apx">
-      <div class="learning-guide__apx-list2">
-        <div>
-          <h2>Docs</h2>
-          <span class="highlight" name="ref:js:mainOpts">JS Reference</span><br>
-          <span class="highlight" name="ref:js:webAPIsOpts">Web APIs</span><br>
-          <span class="highlight" name="ref:js:libsOpts">Libraries</span><br>
-        </div>
-        <div>
-          <h2>Templates</h2>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-        </div>
-      </div>
-      <br>
-      <div class="learning-guide__apx-list3">
-        <div>
-          <h2>Examples</h2>
-          <span class="highlight" onclick="utils.loadDemo(12)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(13)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-        </div>
-        <div>
-          <h2>&nbsp;</h2>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-        </div>
-        <div>
-          <h2>&nbsp;</h2>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(XX)">
-            ...
-          </span>
-        </div>
-      </div>
-    </div>
-  -->
     <br><br>
-    <div class="learning-guide__ex-divider"></div>
+    <div class="learning-guide__ex-divider"></div> -->
   </div>
 
   <!--                      <<<     -    >>>                              -->
   <!--                      <<< APPENDIX >>>                              -->
   <!--                      <<<     -    >>>                              -->
-  <div class="learning-guide__main__item">
-    <h3 onclick="WIDGETS['html-reference'].open()">APPENDIX</h3>
+  <div class="learning-guide__main__item" id="learning-guide-refs">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('refs')">APPENDIX</h3>
     <br>
 
     <div class="learning-guide__apx-list2">

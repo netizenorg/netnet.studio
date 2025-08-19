@@ -35,7 +35,7 @@ class MenuItem extends HTMLElement {
     const img = document.createElement('img')
     img.setAttribute('src', this.icon)
     img.setAttribute('alt', this.title)
-    img.style.width = '50%'
+    img.style.width = this.w ? this.w : '50%'
     div.appendChild(img)
 
     const tri = document.createElement('div')
@@ -48,7 +48,7 @@ class MenuItem extends HTMLElement {
       height: '15px',
       borderStyle: 'solid',
       borderWidth: '0px 10px 15px',
-      borderColor: 'transparent transparent var(--fg-color) transparent',
+      borderColor: 'transparent transparent var(--fg-color) transparent'
     })
 
     this.appendChild(div)
@@ -161,7 +161,7 @@ class MenuItem extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   static get observedAttributes () {
-    return ['title', 'icon', 'offset']
+    return ['title', 'icon', 'offset', 'w']
   }
 
   syncProps2Attr () {

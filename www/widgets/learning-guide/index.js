@@ -2,14 +2,14 @@
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide <span style="opacity:0.5;padding-left:10px;">(BETA 4.0)</span>'
+    this.title = 'Learning Guide'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
     this.resizable = false
 
-    // currently loaded tutorial data
+    // currently loaded tutorial data // TODO: REMOVE [MOVE TO HVP]
     this.metadata = null
     this.data = null
     this.loaded = null
@@ -29,15 +29,15 @@ class LearningGuide extends Widget {
       // create sub pages
       this.subpages = [
         { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
-        {
-          id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
-          subs: [
-            { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-            { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-            { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-          ]
-        },
-        { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+        // {
+        //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+        //   subs: [
+        //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
+        //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
+        //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
+        //   ]
+        // },
+        // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
       ]
       this.subpages.forEach(p => {
         this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
@@ -51,7 +51,6 @@ class LearningGuide extends Widget {
 
       this.on('close', () => this._applyVisibility())
       this.on('open', () => {
-        // this._openConvo()
         if (this.width !== 638 || this.height !== 473) {
           this.update({ width: 638, height: 473 })
         }
@@ -66,7 +65,14 @@ class LearningGuide extends Widget {
     })
   }
 
-  load (name, time) {
+  loadTemplate (name) {
+    WIDGETS.load('template-projects', w => {
+      if (this.opened) this.close()
+      w.loadTemplate(name)
+    })
+  }
+
+  load (name, time) { // TODO: REMOVE [MOVE TO HVP]
     setTimeout(() => {
       document.querySelector('load-curtain').show('tutorial.html')
     }, 100)
@@ -86,7 +92,7 @@ class LearningGuide extends Widget {
     })
   }
 
-  quit () { // quit tutorial
+  quit () { // quit tutorial // TODO: REMOVE [MOVE TO HVP]
     WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
     this.metadata = null
     this.data = null
@@ -99,20 +105,10 @@ class LearningGuide extends Widget {
       return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
     }
 
-    const toc = {
-      'top': 0,
-      'toc': 624,
-      'the-net': 1042,
-      'the-craft': 1309,
-      'html': 1690,
-      'css': 2842,
-      'js': 4154,
-      'refs': 4634
-    }
-
-    const y = toc[sec]
-    const slide = this.ele.querySelector('widget-slide')
-    if (slide) slide.scrollTo({ top: y, behavior: 'smooth' })
+    const el = this.slide.querySelector(`#learning-guide-${sec}`)
+    const offset = 50
+    const top = el.getBoundingClientRect().top - this.slide.getBoundingClientRect().top + this.slide.scrollTop - offset
+    this.slide.scrollTo({ top, behavior: 'smooth' })
 
     if (sec === 'toc') {
       window.convo = new Convo(this.convos, 'toc')
@@ -125,14 +121,6 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-
-  _openConvo () {
-    if (!this.convos) {
-      setTimeout(() => this._openConvo(), 100)
-      return
-    }
-    window.convo = new Convo(this.convos, 'guide-open')
-  }
 
   _createPage (type, page, b, cb) {
     utils.get(`./widgets/learning-guide/data/${page}`, (html) => {
@@ -186,12 +174,6 @@ class LearningGuide extends Widget {
     this._highlightTitles()
 
     this.slide.style.overflowX = 'hidden'
-
-    // this.ele.querySelectorAll('h3').forEach(e => {
-    //   e.addEventListener('click', () => {
-    //     window.convo = new Convo(this.convos, e.textContent)
-    //   })
-    // })
   }
 
   _highlightTitles () {
@@ -344,7 +326,7 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
 
-  _loadTutorial (name, time) {
+  _loadTutorial (name, time) { // TODO: REMOVE [MOVE TO HVP]
     WIDGETS.open('hyper-video-player', () => {
       WIDGETS['hyper-video-player'].video.oncanplay = () => {
         this.convos = window.CONVOS[this.key](this)
