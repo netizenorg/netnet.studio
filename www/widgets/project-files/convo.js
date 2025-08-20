@@ -76,7 +76,8 @@ window.CONVOS['project-files'] = (self) => {
 
   let tempName = null
   const validateFName = (c, t, f, rename) => {
-    const v = tempName = t.$('input').value
+    const v = t.$('input').value
+    tempName = v
     const a = v.split('.')
     const e = a[a.length - 1]
     const validExt = Object.keys(self.mimeTypes).includes(e)
