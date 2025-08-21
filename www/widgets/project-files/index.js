@@ -572,11 +572,11 @@ class ProjectFiles extends Widget {
   _openMediaViewer (filepath, type) { // TODO: make sure widget fits (might need to scale image down)
     const urlBlob = this.files[filepath].code
 
-    let html = `<div style="text-align:right">
+    let html = `<div style="align-self: flex-end; margin-bottom: 13px;">
       <a href="${urlBlob}" target="_blank">open file in new tab</a>
     </div>`
     if (type === 'image') {
-      html += `<img src="${urlBlob}" style="max-height: ${nn.height / 2}px">`
+      html += `<img src="${urlBlob}" style="max-height: ${nn.height / 2}px; background: repeating-conic-gradient(#ccc 0 25%,#fff 0 50%) 0 / 10px 10px;">`
     } else if (type === 'video') {
       html += `<video src="${urlBlob}" controls style="max-height: ${nn.height / 2}px"></video`
     } else if (type === 'audio') {
@@ -587,9 +587,14 @@ class ProjectFiles extends Widget {
       WIDGETS[`VIEW-${filepath}`].innerHTML = html
       return WIDGETS[`VIEW-${filepath}`].open()
     } else {
-      return WIDGETS.create({
-        key: `VIEW-${filepath}`, title: 'Media File Viewer', innerHTML: html
-      }).open()
+      const o = { key: `VIEW-${filepath}`, title: 'Media File Viewer', innerHTML: html }
+      const w = WIDGETS.create(o)
+      const inner = w.ele.querySelector('.widget__inner-html')
+      inner.style.display = 'flex'
+      inner.style.flexDirection = 'column'
+      inner.style.alignItems = 'center'
+      w.open()
+      return w
     }
   }
 
