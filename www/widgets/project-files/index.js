@@ -753,7 +753,10 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'unsaved-changes-b4-new-proj')
     } else {
       if (NNW.layout !== 'welcome' && NNE.code !== '') {
-        window.convo = new Convo(this.convos, 'clear-code?')
+        const tpw = WIDGETS['template-projects'] // if code is from a template
+        if (typeof tpw.state.name === 'string' && typeof tpw.state.files === 'object') {
+          tpw.preNewRepoFromTemplate()
+        } else window.convo = new Convo(this.convos, 'clear-code?')
       } else { window.convo = new Convo(this.convos, 'create-new-project') }
     }
   }
