@@ -430,11 +430,15 @@ window.utils = {
   loadGHRedirect: () => {
     // code set by WIDGETS['student-session'].authGitHubSession()
     let code = window.localStorage.getItem('gh-auth-temp-code')
-    // code might be an encoded hash, or a gh root URL
+    // code might be an encoded hash, or a template or a gh root URL
     if (code.includes('__TEMP__')) {
-      // TODO: need a better way to check if code has gh in it...
       code = code.replace('__TEMP__', '')
+      window.utils.loadTemplate(code)
+      window.localStorage.removeItem('gh-auth-temp-code')
+    } else if (code.includes('__GH__')) {
+      code = code.replace('__GH__', '')
       window.utils.loadGithub(code, window.utils.url.layout)
+      window.localStorage.removeItem('gh-auth-temp-code')
     } else {
       // if they had some code they were working on in the editor
       // before they got redirected over to GitHub to auth...

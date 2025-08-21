@@ -7,7 +7,7 @@ window.CONVOS['utils-misc'] = (self) => {
     const gh = window.utils.url.github
     if (c) {
       window.localStorage.removeItem('gh-auth-temp-code')
-      c = c.replace('__TEMP__', '')
+      c = c.replace('__GH__', '')
       return c.split('/')
     } else if (gh) return window.utils.url.github.split('/')
     else return []

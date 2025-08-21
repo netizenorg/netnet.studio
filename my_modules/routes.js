@@ -364,11 +364,11 @@ router.get('/api/templates', async (req, res) => {
         const file = path.join(base, name, 'data.json')
         const text = await fs.promises.readFile(file, 'utf8')
         const json = JSON.parse(text)
-        list[name] = json.description
+        list[name] = { description: json.description, multifile: json.multifile }
       } catch (err) { /* skip missing/invalid data.json */ }
     }
 
-    res.json({ success: true, data: { order, list, buildOn } })
+    res.json({ success: true, data: { list, buildOn } })
   } catch (err) {
     console.error('Failed to list templates:', err)
     res.status(500).json({ success: false, error: 'Failed to load templates' })

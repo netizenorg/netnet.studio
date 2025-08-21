@@ -650,6 +650,7 @@ class NetNet {
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
+      delete this.title.dataset.template
       delete this.title.dataset.unsaved
       delete this.title.dataset.project
       delete this.title.dataset.demo

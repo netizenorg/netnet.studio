@@ -327,6 +327,7 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
 
   _loadTutorial (name, time) { // TODO: REMOVE [MOVE TO HVP]
+    // TODO: clear custom renderer: utils.setCustomRenderer(null)
     WIDGETS.open('hyper-video-player', () => {
       WIDGETS['hyper-video-player'].video.oncanplay = () => {
         this.convos = window.CONVOS[this.key](this)

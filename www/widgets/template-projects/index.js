@@ -8,12 +8,17 @@ class TemplateProjects extends Widget {
 
     this.title = 'Template Starter Projects'
     this.width = 550
+    this.height = 400
+    this.resizable = false
 
     this.list = {} // dict of tempaltes
     this.bld = {} // dict of which templates build on others
     this.state = {} // details of opened template
 
-    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+    Convo.load(this.key, () => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'start')
+    })
 
     utils.get('/api/templates', (res) => {
       if (res.success) {
@@ -27,10 +32,15 @@ class TemplateProjects extends Widget {
   }
 
   explainTitleBar () {
-    window.convo = new Convo(this.convos, 'notes-click')
+    if (this.state.curPassage) {
+      window.convo = new Convo(this.convos, 'notes-click')
+    } else {
+      window.convo = new Convo(this.convos, 'title-click-from-template')
+    }
   }
 
   cancel () {
+    utils.setCustomRenderer(null)
     if (utils.url.template) utils.updateURL(null)
     NNW.updateTitleBar(null)
     NNE.spotlight(null)
@@ -43,6 +53,7 @@ class TemplateProjects extends Widget {
   loadTemplate (name) {
     this.state = { name }
     this._tempName = name
+
     if (!this.codeEdit) this._setupCodeUpdateListener()
     if (typeof window.CONVOS[this.key] !== 'function') {
       Convo.load(this.key, () => {
@@ -80,7 +91,6 @@ class TemplateProjects extends Widget {
       this.state.vars = template.data.vars
       // && clear code from netitor
       NNE.code = ''
-      NNE.update()
     }
 
     this.state.files['index.html'] = NNE.code
@@ -98,8 +108,10 @@ class TemplateProjects extends Widget {
       // pre-guide convo passage
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'start-guide')
+      // setup base path
+      if (!template.data.multifile) utils.setCustomRenderer(null)
+      else utils.setCustomRenderer(`/templates/${name}/files/`)
       // update title bar && URL
-      utils.setCustomRenderer(null)
       utils.updateURL(`?template=${this.state.name}`)
       const t = `${this._getTemplateName(this.state.name)} Template`
       NNW.updateTitleBar(t)
@@ -110,12 +122,6 @@ class TemplateProjects extends Widget {
 
   async displayTemplate (name) {
     if (!name && this.state.name) name = this.state.name
-    // TODO: might need to update this when a template is a "project"
-    // so that we can open the necessary directories
-    // maybe there's an alt convo to "remix"
-
-    // TODO: in case of "mutli-file" would need to let them know somehow
-    // "this template has multiple files, create new project to view them"
 
     window.convo.hide()
     this.cancel()
@@ -129,9 +135,20 @@ class TemplateProjects extends Widget {
       files: Object.fromEntries(res.data.files.map(k => [k, null]))
     }
 
+    // setup base path
+    if (!res.data.multifile) utils.setCustomRenderer(null)
+    else utils.setCustomRenderer(`/templates/${name}/files/`)
+
+    // update title bar && URL
+    utils.updateURL(`?template=${this.state.name}`)
+    const t = `${this._getTemplateName(this.state.name)} Template`
+    NNW.updateTitleBar(t)
+    NNW.title.dataset.template = true
+
+    // load code
     const index = await utils.getSync(`/templates/${name}/files/index.html`, true)
     NNE.code = this.state.files['index.html'] = index
-    NNE.update()
+    if (!NNE.autoUpdate) NNE.update()
 
     if (NNW.layout !== 'dock-left') {
       NNW.layout = 'dock-left'
@@ -139,7 +156,15 @@ class TemplateProjects extends Widget {
     }
 
     this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'remix')
+    const owner = WIDGETS['student-session'].getData('owner')
+
+    if (res.data.multifile) {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
+      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
+    } else {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
+      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
+    }
   }
 
   // --------------------------------------------------- PRIVATE METHODS -------
@@ -236,51 +261,63 @@ class TemplateProjects extends Widget {
     return base64
   }
 
-  async _newRepoFromTemplate () { // TODO: ... finished
+  async _preNewRepoFromTemplate () {
+    // when choosing "start new project" after clicking title bar on a fully loaded template
+    const name = this.state.name
+    const res = await utils.getSync(`/api/template/${name}`)
+    const owner = WIDGETS['student-session'].getData('owner')
+
+    if (res.data.multifile) {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
+      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
+    } else {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
+      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
+    }
+  }
+
+  async _newRepoFromTemplate (name) { // TODO: ... finish
+    const user = WIDGETS['student-session'].getData('owner')
+    const message = `stared new repo from netnet ${this.state.name} template`
+    nn.get('load-curtain').show('github.html', { filename: `${user}/${name}` })
+
     try {
-      const changes = []
+      // create files object
+      const files = {}
       const paths = Object.keys(this.state.files)
       for (let i = 0; i < paths.length; i++) {
         const path = paths[i]
-        const obj = { action: 'create', path }
         if (typeof this.state.files[path] === 'string') {
-          obj.content = this.state.files[path]
+          files[path] = this.state.files[path]
         } else {
-          obj.content = await this._pathToBase64(path)
-          obj.isBinary = true
+          files[path] = { base64: await this._pathToBase64(path) }
         }
-        changes.push(obj)
       }
 
-      console.log(changes);
+      let README = await utils.getSync('api/github/readme-template')
+      README = README.message
+        .replace(/\[project-title\]/g, name)
+        .replace(/\[user-name\]/g, user)
+      files['README.md'] = README
 
-      // TODO: create a readme for each template? maybe using some basic tempalte && their description?
-      // TODO: then send to ...
-
-      const res = await utils.postSync('/api/github/push', {
-        owner, repo, branch,
-        commitMessage: 'add image',
-        changes: [{ action: 'create', path: 'images/pic.png', content: png64, isBinary: true }]
+      // send to backend
+      const res = await utils.postSync('/api/github/new-repo-from-template', {
+        user, name, message, files
       })
 
-      console.log(res);
-
-      // const resp = await utils.postSync('/api/github/new-repo-from-files', {
-      //   name: 'my-new-project',
-      //   user: 'your-github-username',
-      //   files,
-      //   commitMessage: 'initial import'
-      // })
-
-      // if (resp.success) {
-      //   console.log('Repo created:', resp.url)
-      //   console.log('Branch:', resp.branch)
-      //   console.log('Files:', resp.files)
-      // } else {
-      //   console.error('Failed:', resp.message, resp.error)
-      // }
+      if (res.success) {
+        console.log('Repo created:', res.url)
+        this.cancel()
+        WIDGETS.load('project-files', w => w.openProject(name))
+      } else {
+        window.convo = new Convo(this.convos, 'oh-no-error')
+        console.error('Failed:', res.message, res.error)
+        setTimeout(() => nn.get('load-curtain').hide(), 500)
+      }
     } catch (err) {
+      window.convo = new Convo(this.convos, 'oh-no-error')
       console.error('Request error:', err.message)
+      setTimeout(() => nn.get('load-curtain').hide(), 500)
     }
   }
 
@@ -322,16 +359,21 @@ class TemplateProjects extends Widget {
       this.innerHTML = '<p>ERROR LOADING TEMPLATES ŏ︵ŏ</p>'
     } else {
       this.innerHTML = '<div class="template-proj"></div>'
-      Object.entries(this.list).forEach(([name, desc]) => {
+      Object.entries(this.list).forEach(([name, obj]) => {
         const div = nn.create('div')
+        const type = obj.multifile ? 'multiple files' : 'single file'
         div.innerHTML = `
-          <h3>${this._transformName(name)}</h3>
-          <p>${desc}</p>
+          <h3>
+            ${this._transformName(name)}
+            <span class="template-proj__file-type">${type}</span>
+          </h3>
+          <p>${obj.description}</p>
           <div class="template-proj__btns">
             <button name="guide" class="pill-btn pill-btn--secondary">Begin Guide</button>
-            <button name="skip" class="pill-btn pill-btn--secondary">Jump to Template</button>
+            <button name="skip" class="pill-btn pill-btn--secondary">Open Completed Template</button>
             <button name="explain" class="pill-btn pill-btn--secondary">?</button>
           </div>
+          <br>
         `
         div.querySelector('button[name="guide"]')
           .addEventListener('click', () => this._preCodeCheckConvo(name, 'guide'))
