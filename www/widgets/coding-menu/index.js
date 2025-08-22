@@ -126,6 +126,9 @@ class CodingMenu extends Widget {
       } else {
         window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj-logged-out')
       }
+    } else if (WIDGETS['template-projects']?.state.name) { // working on template
+      const convos = WIDGETS['template-projects'].convos
+      window.convo = new Convo(convos, 'new-project-from-template')
     } else { // working on a sketch
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'session-saved')

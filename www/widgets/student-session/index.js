@@ -30,11 +30,7 @@ class StudentSession extends Widget {
       },
       github: {
         owner: ls.getItem('owner'),
-        repos: ls.getItem('repos'),
-        openedProject: ls.getItem('opened-project'),
-        projectURL: ls.getItem('project-url'),
-        branch: ls.getItem('branch'),
-        ghpages: ls.getItem('ghpages')
+        repos: ls.getItem('repos')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -69,7 +65,7 @@ class StudentSession extends Widget {
 
   setData (type, value) {
     // NOTE: was used to use "sessionStorage" for project data to allow multiple
-    // tabs on diff projects, but no longer possible in new "Project Files" widget
+    // tabs on diff projects, this was before Project Files handled this
     const sesh = [
       // 'opened-project', 'project-url', 'branch', 'ghpages'
     ]
@@ -121,34 +117,6 @@ class StudentSession extends Widget {
         widget.update({ left: w.left, top: w.top, zIndex: w.zIndex }, 500)
       })
     })
-  }
-
-  setProjectData (data) { // TODO: DELETE THIS && THESE PROPS
-    // close tutorial if one is open
-    if (WIDGETS['hyper-video-player']?.opened) WIDGETS['hyper-video-player'].close()
-    // const ss = window.sessionStorage
-    const ls = window.localStorage
-    if (data.name) ls.setItem('opened-project', data.name)
-    if (data.url) ls.setItem('project-url', data.url)
-    if (data.ghpages) ls.setItem('ghpages', data.ghpages)
-    if (data.branch) ls.setItem('branch', data.branch)
-    this._createHTML()
-  }
-
-  clearProjectData () { // TODO: DELETE THIS WHEN READY
-    // const ss = window.sessionStorage
-    const ls = window.localStorage
-    ls.removeItem('opened-project')
-    ls.removeItem('project-url')
-    ls.removeItem('ghpages')
-    ls.removeItem('branch')
-
-    utils.setCustomRenderer(null)
-
-    NNW.updateTitleBar(null)
-    if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
-
-    this._createHTML()
   }
 
   clearAllData (skipDialogue) {
@@ -242,9 +210,13 @@ class StudentSession extends Widget {
   }
 
   checkForSavePoint () {
-    if (this.getData('owner')) {
+    const prevSketch = typeof this.getData('last-saved-sketch') === 'string'
+    const ghuser = this.getData('owner')
+    if (ghuser && prevSketch) {
+      window.convo = new Convo(this.convos, 'prior-github-or-save-state')
+    } else if (ghuser) {
       window.convo = new Convo(this.convos, 'prior-github-login')
-    } else if (typeof this.getData('last-saved-sketch') === 'string') {
+    } else if (prevSketch) {
       window.convo = new Convo(this.convos, 'prior-save-state')
     } else {
       this.newSketch()
@@ -368,22 +340,6 @@ class StudentSession extends Widget {
         <div>
           repositories:
           <input  value="${this.data.github.repos}" readonly="readonly">
-        </div>
-        <div>
-          opened project:
-          <input  value="${this.data.github.openedProject}" readonly="readonly">
-        </div>
-        <div>
-          branch:
-          <input  value="${this.data.github.branch}" readonly="readonly">
-        </div>
-        <div>
-          project url:
-          <input  value="${this.data.github.projectURL}" readonly="readonly">
-        </div>
-        <div>
-          hosted url:
-          <input  value="${this.data.github.ghpages}" readonly="readonly">
         </div>
       </div>
     `

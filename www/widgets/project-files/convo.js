@@ -131,6 +131,11 @@ window.CONVOS['project-files'] = (self) => {
     } else if (type === 'readme') {
       opts['README.md?'] = (e) => e.goTo('netnet-title-ex-readme')
     }
+    opts['quit this project'] = (e) => {
+      if (NNW.title.dataset.unsaved) e.goTo('confirm-quit-unsaved')
+      else if (self.changes.length > 0) e.goTo('confirm-quit-changes')
+      else { self.closeProject(); e.hide() }
+    }
     return opts
   }
 
@@ -185,6 +190,28 @@ window.CONVOS['project-files'] = (self) => {
     content: 'I\'ve saved your changes locally, but this is only temporary while you\'re working on the project. You\'ll need to <b>"push"</b> (aka upload) your updates to your GitHub using the <span class="link" onclick="WIDGETS.open(\'git-push\')">Version Control</span> widget in order to save them permanently.',
     options: {
       ok: (e) => e.hide()
+    }
+  },
+  {
+    id: 'confirm-quit-unsaved',
+    content: 'It looks like you have some unsaved changes in this file, are you sure you want to quit this project? You will loose any unsaved changes.',
+    options: {
+      'oh, never mind': (e) => e.hide(),
+      'yes, quit project anyways': (e) => {
+        self.closeProject()
+        e.hide()
+      }
+    }
+  },
+  {
+    id: 'confirm-quit-changes',
+    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. If you don\'t commit and "git push" those changes before quitting then you\'ll loose that progress.',
+    options: {
+      'oh, never mind': (e) => e.hide(),
+      'yes, quit project anyways': (e) => {
+        self.closeProject()
+        e.hide()
+      }
     }
   },
   // -------------------------- creating a new project -------------------------

@@ -73,12 +73,12 @@ class TemplateProjects extends Widget {
     const res = await utils.getSync(`/api/template/${name}`)
     const owner = WIDGETS['student-session'].getData('owner')
 
-    if (res.data.multifile) {
-      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
-      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
+    if (owner) {
+      window.convo = new Convo(this.convos, 'new-project-from-template')
+    } else if (res.data.multifile) {
+      window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
     } else {
-      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
-      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
+      window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
     }
   }
 

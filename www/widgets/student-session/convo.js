@@ -36,6 +36,18 @@ window.CONVOS['student-session'] = (self) => {
       'no let\'s start something new': (e) => WIDGETS['coding-menu'].new()
     }
   }, {
+    id: 'prior-github-or-save-state',
+    content: 'Looks like you may have been working on a sketch last time you were here. Should we pick back up where you left off? Or would you like to open one of your GitHub projects instead? Or maybe start something new?',
+    options: {
+      'open that sketch': (e) => {
+        e.hide()
+        const delay = utils.getVal('--menu-fades-time')
+        setTimeout(() => self.restoreSavePoint(), delay)
+      },
+      'open a project': (e) => WIDGETS.load('project-files', (w) => w.openProject()),
+      'start something new': (e) => WIDGETS['coding-menu'].new()
+    }
+  }, {
     id: 'prior-save-state',
     content: `Looks like you may have been working on a sketch last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code you or I add to the editor.`,
     options: {
