@@ -89,10 +89,8 @@ class DemoToc extends Widget {
     this.layout = obj.layout
     this.info = obj.info
 
-    const hvp = WIDGETS['hyper-video-player']
-    if (utils.tutorialOpen() || (hvp && hvp.opened)) {
-      hvp.close()
-      setTimeout(() => WIDGETS['learning-guide'].close(), 100)
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
     }
 
     const isStarterCode = NNE.code === utils.starterCode()

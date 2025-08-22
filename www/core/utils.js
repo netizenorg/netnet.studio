@@ -134,12 +134,6 @@ window.utils = {
     return sc
   },
 
-  tutorialOpen: () => {
-    const hvp = WIDGETS['hyper-video-player']
-    const tg = WIDGETS['learning-guide']
-    return (hvp && tg && tg.metadata !== null)
-  },
-
   forkRepo: () => {
     NNW.menu.switchFace('processing')
     const a = window.utils.url.github.split('/')
@@ -331,9 +325,7 @@ window.utils = {
   },
 
   loadTutorial: (tutorial, time) => {
-    const tm = WIDGETS['learning-guide']
-    if (!tm) WIDGETS.load('learning-guide', (w) => w.load(tutorial, time))
-    else tm.load(tutorial, time)
+    WIDGETS.load('hyper-video-player', (w) => w.load(tutorial, time))
     if (!NNE.autoUpdate) window.utils.afterLayoutTransition(() => NNE.update())
     window.utils.fadeOutLoader(false)
   },
@@ -536,10 +528,6 @@ window.utils = {
         event.update(newCode)
       }
     }
-  },
-
-  netitorInput: (e) => {
-    if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
   },
 
   hideConvoIf: () => { // on cursor activity, hide convo if it's one of these

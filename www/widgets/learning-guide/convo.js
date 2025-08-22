@@ -1,8 +1,5 @@
 /* global utils */
 window.CONVOS['learning-guide'] = (self) => {
-  const name = self.metadata ? self.metadata.author.name : ''
-  const title = self.metadata ? self.metadata.title : ''
-
   const menuOpts = () => {
     return {
       'ok!': (e) => e.hide(),
@@ -42,12 +39,6 @@ window.CONVOS['learning-guide'] = (self) => {
     id: 'nfo-sb',
     content: `The <img src="images/menu/search.png" class="learning-guide__d-icons"> <b>Search Bar</b> looks through all of the features, widgets and content in the studio. If you're not sure where to find something you came across earlier, the search bar's here to help. You can also open the Search using the <code>${utils.hotKey()} + '</code> key (<i>${utils.hotKey()} quote</i>).`,
     options: menuOpts()
-  }, {
-    id: 'introducing-tutorial',
-    content: `I've just loaded a tutorial by ${name} called "${title}", press the video players's <i>play</i> button to begin. Press the video player's <i>X</i> button at anytime to quit.`,
-    options: {
-      ok: (e) => e.hide()
-    }
   }, {
     id: '<examples>',
     content: 'This widget contains a collection of interactive code demos you can explore and experiment with. In some cases I can walk you through the example and explain how it works.',

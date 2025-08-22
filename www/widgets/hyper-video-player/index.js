@@ -4,23 +4,36 @@ class HyperVideoPlayer extends Widget {
     super(opts)
     this.key = 'hyper-video-player'
     this.listed = false
+
+    // currently loaded tutorial data // TODO: do we need so many props?
+    this.metadata = null
+    this.data = null
+    this.loaded = null
+
     this.duration = null
 
     this.keyframes = {}
     this.timecodes = []
-    this.sid = null // play session id
+    this.sid = null // play session id TODO what's this for?
 
-    this.on('open', () => {
-      this.sid = Date.now().toString(36) + Math.random().toString(36).substr(2)
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
+    NNE.cm.on('keydown', (cm, e) => {
+      if (this?.opened && NNE.readOnly) {
+        window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
+      }
     })
+
+    // this.on('open', () => {
+    //   this.sid = Date.now().toString(36) + Math.random().toString(36).substr(2)
+    // })
 
     this.on('close', () => {
       if (!this.video.paused) this.pause()
-      const tg = WIDGETS['learning-guide']
       const tm = WIDGETS['tutorial-maker']
       if (tm && tm.opened) tm.close()
-      else if (tg && tg.metadata) {
-        tg.quit(); tg.open()
+      else if (this.metadata) {
+        this.quit()
         // tg.update({ bottom: 20, right: 20 }, 500)
         if (this.logger) this.logger.reset()
       }
@@ -32,7 +45,7 @@ class HyperVideoPlayer extends Widget {
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
 
     WIDGETS['coding-menu'].on('open', () => pause())
-    WIDGETS['learning-guide'].on('open', () => pause())
+    // WIDGETS['learning-guide'].on('open', () => pause())
     NNW.menu.search.on('open', () => pause())
 
     opts = opts || {}
@@ -48,7 +61,36 @@ class HyperVideoPlayer extends Widget {
   get src () { return this.video.src }
   set src (v) { this.video.src = v }
 
-  actObj () {
+  load (name, time) {
+    setTimeout(() => {
+      document.querySelector('load-curtain').show('tutorial.html')
+    }, 100)
+
+    utils.get(`tutorials/${name}/metadata.json`, (json) => {
+      this.metadata = json
+      this.loaded = name
+      utils.updateURL(`?tutorial=${this.metadata.id}`)
+      if (WIDGETS['project-files']?.projectData.name) { // TODO: confirm first
+        WIDGETS['project-files'].closeProject()
+      }
+      utils.setCustomRenderer(`tutorials/${name}/`)
+      utils.get(`tutorials/${name}/data.json`, (json) => {
+        this.data = json
+        this._loadTutorial(name, time)
+      })
+    })
+  }
+
+  quit () {
+    utils.setCustomRenderer(null)
+    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
+    this.metadata = null
+    this.data = null
+    document.querySelector('load-curtain').hide()
+    utils.updateURL()
+  }
+
+  actObj () { // TODO was this to create actions for analytics? if so maybe we don't need it (or .sid) anymore
     const md = WIDGETS['learning-guide'].metadata
     return {
       sid: this.sid,
@@ -77,8 +119,6 @@ class HyperVideoPlayer extends Widget {
   }
 
   play () {
-    const tg = WIDGETS['learning-guide']
-
     if (WIDGETS['student-session'].getData('auto-update') === 'false') {
       NNE.autoUpdate = true
     }
@@ -94,25 +134,12 @@ class HyperVideoPlayer extends Widget {
       this._editable(b)
     }
 
-    const mid = tg && tg.metadata && this.video.currentTime > 0
+    const mid = this.metadata && this.video.currentTime > 0
     if (mid) { // if in the middle of a tutorial
       // const frame = this._mostRecentKeyframe().frame
       if (typeof this._tempCode === 'string' && this._tempCode !== NNE.code) {
-        window.convo = new Convo({
-          id: 'careful-will-loose-code',
-          content: 'It looks like you edited some of the code in my editor, which is great! I\'m glad you\'re experimenting, but don\'t forget that during tutorials your edits will be lost once you continue playing. I can download the current sketch for you if you want to save a copy.',
-          options: {
-            'that\'s ok, let\'s continue': (e) => {
-              if (this._tempCode !== NNE.code) this._updateCode(this._tempCode)
-              play(e)
-            },
-            'yes, please download': (e) => {
-              e.hide()
-              WIDGETS['coding-menu'].downloadCode()
-              if (this._tempCode !== NNE.code) this._updateCode(this._tempCode)
-            }
-          }
-        })
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'careful-will-loose-code')
       } else play()
     } else play()
     // if it's the first time we press play hide netnet's bubble
@@ -255,6 +282,43 @@ class HyperVideoPlayer extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
+
+  _loadTutorial (name, time) { // TODO: REMOVE [MOVE TO HVP]
+    this.video.oncanplay = () => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'introducing-tutorial')
+      this.renderKeyframe()
+      this.open()
+
+      setTimeout(() => {
+        document.querySelector('load-curtain').hide()
+        if (time) this.seek(time)
+        this.video.oncanplay = null
+      }, utils.getVal('--layout-transition-time'))
+    }
+
+    this.title = this.metadata.title
+    this.loadKeyframes(this.data.keyframes)
+    this.updateVideo(this.metadata.videofile, this.metadata.id)
+
+    for (const key in this.data.widgets) {
+      if (!WIDGETS.instantiated.includes(key)) {
+        WIDGETS.create(this.data.widgets[key])
+      }
+    }
+
+    if (this.metadata.duration) { // TODO: why not grab this from video itself?
+      this.duration = Number(this.metadata.duration)
+    }
+
+    if (this.metadata.jsfile) { // TODO: what is this for again?
+      const file = `tutorials/${name}/${this.metadata.jsfile}`
+      utils.loadFile(file, () => window.TUTORIAL.init())
+    }
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
   _createHTML (opts) {
@@ -360,7 +424,7 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-controls').style.opacity = 0
     })
 
-    this.on('open', () => {
+    this.on('open', () => { // TODO move this to constructor
       setTimeout(() => { this.$('.hvp-controls').style.opacity = 0 }, 250)
     })
     this.on('close', () => this.pause())
@@ -426,7 +490,7 @@ class HyperVideoPlayer extends Widget {
     return t
   }
 
-  _updateCode (code) {
+  _updateCode (code) { // TODO: how do i scrollTo these days?
     const top = NNE.cm.getScrollInfo().top
     NNE.code = code
     const s = NNE.cm.getScrollInfo()
@@ -443,7 +507,7 @@ class HyperVideoPlayer extends Widget {
     }
   }
 
-  _updateSpotlight (kf) {
+  _updateSpotlight (kf) { // TODO: does spotlight handle this on it's own now?
     const l = kf.spotlight ? kf.spotlight[0] : null
     if (l) {
       utils.scrollToLines([l])
@@ -517,8 +581,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   _editable (bool) {
-    const tg = WIDGETS['learning-guide']
-    if (tg && tg.metadata) NNE.readOnly = !bool
+    if (this.metadata) NNE.readOnly = !bool
   }
 
   _videoNeedsUpdate (video) {
@@ -640,14 +703,13 @@ class HyperVideoPlayer extends Widget {
   }
 
   _loadKeyLoggerData () {
-    const tg = WIDGETS['learning-guide']
-    if (!tg || !tg.metadata) return
+    if (!this.metadata) return
     // only run code below if we're in a tutorial (not when making them)
     // ...
     // ...Why though?
     // TODO: can't remember why ... might be a problem
-    if (tg.metadata.keylogs) {
-      utils.get(`tutorials/${tg.metadata.id}/keylogs.json`, (json) => {
+    if (this.metadata.keylogs) {
+      utils.get(`tutorials/${this.metadata.id}/keylogs.json`, (json) => {
         this.logger._loadData(json)
         this._mergeKeyLoggerDataWithKeyframes()
       })

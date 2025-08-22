@@ -1,7 +1,7 @@
 /* global utils, WIDGETS, NNW */
 window.CONVOS['utils-misc'] = (self) => {
   // TODO: consider moving these all into Widget convos
-  // Maybe mostly to new Project Files (&& others, ex: HyperVideoPlayer, StudentSession)
+  // Maybe mostly to new Project Files (&& others, ex: Coding Menu, StudentSession)
   const a = (() => {
     let c = window.localStorage.getItem('gh-auth-temp-code')
     const gh = window.utils.url.github
@@ -20,10 +20,6 @@ window.CONVOS['utils-misc'] = (self) => {
   })()
 
   return [{
-    id: 'tutorial-pause-to-edit',
-    content: 'Pause the video before you start editing and experimenting with the code.',
-    options: { ok: (e) => e.hide() }
-  }, {
     id: 'remix-github-project-logged-out',
     content: `Check out this project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a>. If you connect me to your GitHub I can create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you so you can create your own remix from it.`,
     options: {

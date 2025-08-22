@@ -231,10 +231,8 @@ class TemplateProjects extends Widget {
     this.convos = window.CONVOS[this.key](this)
 
     // close an open tutorial
-    const hvp = WIDGETS['hyper-video-player']
-    if (utils.tutorialOpen() || (hvp && hvp.opened)) {
-      hvp.close()
-      setTimeout(() => WIDGETS['learning-guide'].close(), 100)
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
     }
     // check for an open project
     const openProj = WIDGETS['project-files']?.projectData.name

@@ -9,11 +9,6 @@ class LearningGuide extends Widget {
     ]
     this.resizable = false
 
-    // currently loaded tutorial data // TODO: REMOVE [MOVE TO HVP]
-    this.metadata = null
-    this.data = null
-    this.loaded = null
-
     // animation related props
     this._runningStar = false
     this._raf = 0
@@ -56,6 +51,7 @@ class LearningGuide extends Widget {
         }
         this.update({ left: 40, top: 65 }, 500)
         this._applyVisibility()
+        if (WIDGETS['hyper-video-player']) WIDGETS['hyper-video-player'].pause()
       })
     })
 
@@ -70,34 +66,6 @@ class LearningGuide extends Widget {
       if (this.opened) this.close()
       w.loadTemplate(name)
     })
-  }
-
-  load (name, time) { // TODO: REMOVE [MOVE TO HVP]
-    setTimeout(() => {
-      document.querySelector('load-curtain').show('tutorial.html')
-    }, 100)
-
-    utils.get(`tutorials/${name}/metadata.json`, (json) => {
-      this.metadata = json
-      this.loaded = name
-      utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['project-files']?.projectData.name) {
-        WIDGETS['project-files'].closeProject()
-      }
-      utils.setCustomRenderer(`tutorials/${name}/`)
-      utils.get(`tutorials/${name}/data.json`, (json) => {
-        this.data = json
-        this._loadTutorial(name, time)
-      })
-    })
-  }
-
-  quit () { // quit tutorial // TODO: REMOVE [MOVE TO HVP]
-    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
-    this.metadata = null
-    this.data = null
-    document.querySelector('load-curtain').hide()
-    utils.updateURL()
   }
 
   scrollTo (sec) {
@@ -265,7 +233,9 @@ class LearningGuide extends Widget {
     // enable "play" buttons
     this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
       const tut = ele.getAttribute('name').split(':')[1]
-      ele.addEventListener('click', () => this.load(tut))
+      ele.addEventListener('click', () => {
+        WIDGETS.load('hyper-video-player', w => w.load(tut))
+      })
     })
 
     // hover over tutorials
@@ -320,46 +290,6 @@ class LearningGuide extends Widget {
           setTimeout(() => { p.style.display = 'none' }, 1000)
         }
       })
-    })
-  }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
-
-  _loadTutorial (name, time) { // TODO: REMOVE [MOVE TO HVP]
-    // TODO: clear custom renderer: utils.setCustomRenderer(null)
-    WIDGETS.open('hyper-video-player', () => {
-      WIDGETS['hyper-video-player'].video.oncanplay = () => {
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'introducing-tutorial')
-        this.close() // close the tutorials guide && setup first keyframe
-        WIDGETS['hyper-video-player'].renderKeyframe()
-
-        setTimeout(() => {
-          document.querySelector('load-curtain').hide()
-          if (time) WIDGETS['hyper-video-player'].seek(time)
-          WIDGETS['hyper-video-player'].video.oncanplay = null
-        }, utils.getVal('--layout-transition-time'))
-      }
-
-      WIDGETS['hyper-video-player'].title = this.metadata.title
-      WIDGETS['hyper-video-player'].loadKeyframes(this.data.keyframes)
-      WIDGETS['hyper-video-player'].updateVideo(this.metadata.videofile, this.metadata.id)
-
-      for (const key in this.data.widgets) {
-        if (!WIDGETS.instantiated.includes(key)) {
-          WIDGETS.create(this.data.widgets[key])
-        }
-      }
-
-      if (this.metadata.duration) {
-        WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
-      }
-
-      if (this.metadata.jsfile) {
-        const file = `tutorials/${name}/${this.metadata.jsfile}`
-        utils.loadFile(file, () => window.TUTORIAL.init())
-      }
     })
   }
 
