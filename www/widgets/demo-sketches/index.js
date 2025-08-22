@@ -207,7 +207,7 @@ class DemoSketches extends Widget {
 
   _openInNewTab (o) {
     if (!o) o = this._tempObj
-    const openProj = WIDGETS['student-session'].getData('opened-project')
+    const openProj = WIDGETS['project-files']?.projectData.name
     if (openProj) {
       this._tempObj = o
       this.convos = window.CONVOS[this.key](this)

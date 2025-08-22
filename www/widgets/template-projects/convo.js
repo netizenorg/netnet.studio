@@ -93,8 +93,7 @@ window.CONVOS['template-projects'] = (self) => {
           WIDGETS.open('git-push')
         },
         'no, we can discard my changes': (e) => {
-          if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
-          if (WIDGETS['project-files']) WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
           else self.displayTemplate(self._tempName)
         },
@@ -107,8 +106,7 @@ window.CONVOS['template-projects'] = (self) => {
       content: 'It appears you\'re working on a project. Starting a new template will require closing this project, are you ok with that?.',
       options: {
         'yes, let\'s go ahead': (e) => {
-          if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
-          if (WIDGETS['project-files']) WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
           else self.displayTemplate(self._tempName)
         },
@@ -126,7 +124,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'display-template-single-file',
       graph: { id: 10, x: 500, y: 475 },
-      content: `Here's the complete <i>${self._getTemplateName()}</i> template! Would you like to create a new <i>project</i> from it on GitHub or do you just want to experiment with it as a <i>sketch</i>?`,
+      content: `This is the complete <i>${self._getTemplateName()}</i> template! Would you like to create a new <i>project</i> from it on GitHub or do you just want to experiment with it as a <i>sketch</i>?`,
       options: {
         'let\'s create a new project': (e) => e.goTo('new-project-from-template'),
         'just experimenting': (e) => e.hide()
@@ -191,7 +189,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'display-template-single-file-no-auth',
       graph: { id: 17, x: 375, y: 475 },
-      content: `Here's the complete <i>${self._getTemplateName()}</i> template! If you connect me to your GitHub account we can turn this into a new <i>project</i>, otherwise feel free experiment with this as a <i>sketch</i>.`,
+      content: `This is the complete <i>${self._getTemplateName()}</i> template! If you connect me to your GitHub account we can turn this into a new <i>project</i>, otherwise feel free experiment with this as a <i>sketch</i>.`,
       options: {
         'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
         'just experimenting': (e) => e.hide()
@@ -200,7 +198,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'display-template-multi-file',
       graph: { id: 18, x: 250, y: 475 },
-      content: `Here's the complete index.html file for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, would you like to create a new <i>project</i> from it on GitHub so you can access all the files or are you just experimenting?`,
+      content: `This is the complete index.html file for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, would you like to create a new <i>project</i> from it on GitHub so you can access all the files or are you just experimenting?`,
       options: {
         'let\'s create a new project': (e) => e.goTo('new-project-from-template'),
         'just experimenting': (e) => e.goTo('just-experimenting')
@@ -217,7 +215,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'display-template-multi-file-no-auth',
       graph: { id: 20, x: 125, y: 475 },
-      content: `Here's the complete index.html page for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, I could create a <i>project</i> for you from this template, bu you'll first need to connect me to your GitHub.`,
+      content: `This is the complete index.html page for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, I could create a <i>project</i> for you from this template, bu you'll first need to connect me to your GitHub.`,
       options: {
         'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
         'just experimenting': (e) => e.goTo('just-experimenting')
@@ -232,7 +230,7 @@ window.CONVOS['template-projects'] = (self) => {
           self.startGuide(self.state.name)
         },
         'let\'s start a project': (e) => {
-          self._preNewRepoFromTemplate()
+          self.preNewRepoFromTemplate()
         },
         'neither, I\'m just experimenting': (e) => e.hide()
       }

@@ -16,7 +16,7 @@ window.CONVOS['git-push'] = (self) => {
   const gh = (() => {
     const u = WIDGETS['student-session'].getData('username')
     const o = WIDGETS['student-session'].getData('owner')
-    const p = WIDGETS['student-session'].getData('opened-project')
+    const p = WIDGETS['project-files']?.projectData.name
     return { u, o, p, url: `https://github.com/${o}/${p}` }
   })()
 
@@ -119,7 +119,7 @@ window.CONVOS['git-push'] = (self) => {
     }
   }, {
     id: 'explain-publish',
-    content: `Of course! To publish your project on the World Wide Web, click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/actions" target="_blank">view the deployment progress here</a>.`,
+    content: `Of course! To publish your project on the World Wide Web, click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
     options: {
       'got it!': (e) => e.hide()
     }

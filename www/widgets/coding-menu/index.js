@@ -112,7 +112,7 @@ class CodingMenu extends Widget {
     if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
     this.convos = window.CONVOS[this.key](this)
 
-    if (WIDGETS['project-files'] && WIDGETS['student-session'].getData('opened-project')) {
+    if (WIDGETS['project-files']?.projectData.name) {
       // working on an opened github project
       WIDGETS['project-files'].saveCurrentFile()
     } else if (utils.url.github) {
@@ -135,9 +135,8 @@ class CodingMenu extends Widget {
 
   new () {
     this.convos = window.CONVOS[this.key](this)
-    const repo = WIDGETS['student-session'].getData('opened-project')
-    const pf = WIDGETS['project-files']
-    if (repo && pf) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
+    const repo = WIDGETS['project-files']?.projectData.name
+    if (repo) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
     else window.convo = new Convo(this.convos, 'new-proj-or-sketch')
   }
 
@@ -152,7 +151,7 @@ class CodingMenu extends Widget {
 
   share () {
     this.convos = window.CONVOS[this.key](this)
-    if (WIDGETS['student-session'].getData('opened-project')) {
+    if (WIDGETS['project-files']?.projectData.name) {
       // working on an opened github project
       window.convo = new Convo(this.convos, 'share-project')
     } else if (utils.url.github) {
@@ -173,9 +172,13 @@ class CodingMenu extends Widget {
     this.convos = window.CONVOS[this.key](this)
     const loggedIn = WIDGETS['student-session'].getData('owner')
     if (loggedIn) {
-      const op = WIDGETS['student-session'].getData('opened-project')
+      const op = WIDGETS['project-files']?.projectData.name
+      const gh = utils.url.github
       if (op) {
         window.convo = new Convo(this.convos, 'open-logged-in-proj')
+      } else if (gh && gh.split('/')[0] === loggedIn) {
+        const proj = gh.split('/')[1]
+        WIDGETS.load('project-files', (w) => w.openProject(proj))
       } else {
         window.convo = new Convo(this.convos, 'open-logged-in')
       }
@@ -239,7 +242,7 @@ class CodingMenu extends Widget {
     if (this.sesh) this.sesh.setData('auto-update', NNE.autoUpdate.toString())
 
     if (!NNE.autoUpdate && !gotVal) {
-      const repo = WIDGETS['student-session'].getData('opened-project')
+      const repo = WIDGETS['project-files']?.projectData.name
       if (repo) window.convo = new Convo(this.convos, 'need-to-update2')
       else window.convo = new Convo(this.convos, 'need-to-update')
     } else if (!gotVal && window.convo && window.convo.id.startsWith('need-to-update')) {

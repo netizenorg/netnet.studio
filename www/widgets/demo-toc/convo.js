@@ -25,8 +25,7 @@ window.CONVOS['demo-toc'] = (self) => {
       options: {
         'oh, never mind then': (e) => e.hide(),
         'ok, close it and open the demo': (e) => {
-          WIDGETS['student-session'].clearProjectData()
-          WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           self._displayDemo()
         }
       }
@@ -38,8 +37,7 @@ window.CONVOS['demo-toc'] = (self) => {
       options: {
         'let\'s save it first': (e) => WIDGETS.open('git-push'),
         'I know, open the demo anyway': (e) => {
-          WIDGETS['student-session'].clearProjectData()
-          WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           self._displayDemo()
         },
         'ok thanks': (e) => e.hide()
@@ -48,7 +46,9 @@ window.CONVOS['demo-toc'] = (self) => {
     {
       id: 'loaded-demo',
       graph: { id: 2, x: 100, y: 250 },
-      before: () => WIDGETS['student-session'].clearProjectData(),
+      before: () => {
+        if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
+      },
       content: 'Check out this demo! Try editing and experimenting with the code. Double click any piece of code you don\'t understand and I\'ll do my best to explain it to you.',
       options: {
         ok: (e) => e.hide()

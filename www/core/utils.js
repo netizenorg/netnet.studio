@@ -349,7 +349,6 @@ window.utils = {
 
   loadFromCodeHash: (layout) => {
     NNE.code = ''
-    WIDGETS['student-session'].clearProjectData()
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()
@@ -374,8 +373,6 @@ window.utils = {
   },
 
   loadDemo: (key, type) => {
-    const openProj = WIDGETS['student-session'].getData('opened-project')
-    if (openProj) WIDGETS['student-session'].clearProjectData()
     WIDGETS.load('demo-toc', w => {
       w.load(key, type)
       if (nn.get('#loader').style.opacity === '0') return
@@ -385,8 +382,6 @@ window.utils = {
   },
 
   loadTemplate: (name) => {
-    const openProj = WIDGETS['student-session'].getData('opened-project')
-    if (openProj) WIDGETS['student-session'].clearProjectData()
     NNE.code = window.utils.starterCode()
     WIDGETS.load('template-projects', w => {
       w.loadTemplate(name)

@@ -81,8 +81,8 @@ class LearningGuide extends Widget {
       this.metadata = json
       this.loaded = name
       utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['student-session'].getData('opened-project')) {
-        WIDGETS['student-session'].clearProjectData()
+      if (WIDGETS['project-files']?.projectData.name) {
+        WIDGETS['project-files'].closeProject()
       }
       utils.setCustomRenderer(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {

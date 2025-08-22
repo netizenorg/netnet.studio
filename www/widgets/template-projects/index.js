@@ -66,6 +66,24 @@ class TemplateProjects extends Widget {
     }
   }
 
+  async preNewRepoFromTemplate () {
+    // when choosing "start new project" after clicking title bar on a fully loaded template
+    // or when choosing to "save" + "new project" (redirected from project-files)
+    const name = this.state.name
+    const res = await utils.getSync(`/api/template/${name}`)
+    const owner = WIDGETS['student-session'].getData('owner')
+
+    if (res.data.multifile) {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
+      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
+    } else {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
+      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
+    }
+  }
+
+  // .........................................
+
   async startGuide (name) {
     this.cancel()
     this.close()
@@ -219,8 +237,8 @@ class TemplateProjects extends Widget {
       setTimeout(() => WIDGETS['learning-guide'].close(), 100)
     }
     // check for an open project
-    const openProj = WIDGETS['student-session'].getData('opened-project')
-    if (openProj && WIDGETS['project-files']) {
+    const openProj = WIDGETS['project-files']?.projectData.name
+    if (openProj) {
       const unSaved = WIDGETS['project-files'] && WIDGETS['project-files'].changes.length > 0
       if (unSaved) window.convo = new Convo(this.convos, 'clear-code-unsaved-proj')
       else window.convo = new Convo(this.convos, 'clear-code-opened-proj')
@@ -259,21 +277,6 @@ class TemplateProjects extends Widget {
     })
 
     return base64
-  }
-
-  async _preNewRepoFromTemplate () {
-    // when choosing "start new project" after clicking title bar on a fully loaded template
-    const name = this.state.name
-    const res = await utils.getSync(`/api/template/${name}`)
-    const owner = WIDGETS['student-session'].getData('owner')
-
-    if (res.data.multifile) {
-      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
-      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
-    } else {
-      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
-      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
-    }
   }
 
   async _newRepoFromTemplate (name) { // TODO: ... finish

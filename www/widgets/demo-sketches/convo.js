@@ -25,8 +25,7 @@ window.CONVOS['demo-sketches'] = (self) => {
       options: {
         'oh, never mind then': (e) => e.hide(),
         'ok, close it and open the demo': (e) => {
-          WIDGETS['student-session'].clearProjectData()
-          WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           NNE.code = ''
           NNE.update()
           self._openInNewTab()
@@ -40,8 +39,7 @@ window.CONVOS['demo-sketches'] = (self) => {
       options: {
         'let\'s save it first': (e) => WIDGETS.open('git-push'),
         'I know, open the demo anyway': (e) => {
-          WIDGETS['student-session'].clearProjectData()
-          WIDGETS['project-files'].close()
+          WIDGETS['project-files'].closeProject()
           NNE.code = ''
           NNE.update()
           self._openInNewTab()

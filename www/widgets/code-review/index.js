@@ -69,7 +69,7 @@ class CodeReview extends Widget {
       let line = event.data.lineno - diff
 
       // if project, ensure only showing errors on current file
-      if (ss.getData('opened-project') && pf) {
+      if (pf && pf.projectData.name) {
         file = new URL(file).pathname
         if (file !== '/' + pf.viewing) return
         if (!file.endsWith('.html')) line += diff
@@ -265,8 +265,8 @@ class CodeReview extends Widget {
   _back2Issues () { this.review(); NNE.update() }
 
   _fileName () {
-    const op = WIDGETS['student-session'].getData('opened-project')
     const pf = WIDGETS['project-files']
+    const op = pf?.projectData.name
     const file = (op && pf) ? pf.viewing : 'index.html'
     return file
   }

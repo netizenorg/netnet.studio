@@ -31,9 +31,9 @@ class ProjectFiles extends Widget {
     this.storeName = 'filesStore'
     this.objName = 'files'
     this.dbVersion = 1
+    this.projectData = {} // GitHub project data { name, branch, url, ghpags }
     this.files = {} // GitHub info, includes {name, sha, type, etc} + code
     this.db = null // IndexedDB, only { name: code }
-    this.sw = null // service worker
 
     // state
     this.viewing = null
@@ -45,6 +45,8 @@ class ProjectFiles extends Widget {
     this._uploadedFile = {}
     this._agreed2beta = false
     this.changes = [] // "change" objects ("create", "updated", "delete") since last git commit
+
+    this.codeEdit = null // runs on code update when proj is open
 
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
     this.mimeTypes = {
@@ -94,20 +96,6 @@ class ProjectFiles extends Widget {
       const { x, y } = this._openSpot()
       // this.update({ right: 20, bottom: 20 }, 500)
       this.update({ left: x, top: y }, 500)
-    })
-
-    const CM = NNE.cm.constructor
-    CM.commands.nnU = cm => this.undo(cm)
-    CM.commands.nnR = cm => this.redo(cm)
-    CM.keyMap.default['Cmd-Z'] = 'nnU'
-    CM.keyMap.default['Ctrl-Z'] = 'nnU'
-    CM.keyMap.default['Cmd-Y'] = 'nnR'
-    CM.keyMap.default['Ctrl-Y'] = 'nnR'
-
-    NNE.on('code-update', () => {
-      const repo = WIDGETS['student-session'].getData('opened-project')
-      if (!repo) return
-      this._updateViewingFile()
     })
   }
 
@@ -188,7 +176,7 @@ class ProjectFiles extends Widget {
 
   _showHideDivs () {
     const a = this._agreed2beta
-    const op = WIDGETS['student-session'].getData('opened-project')
+    const op = this.projectData.name
 
     this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
 
@@ -249,7 +237,7 @@ class ProjectFiles extends Widget {
   }
 
   _setupTreeView () {
-    const root = WIDGETS['student-session'].getData('opened-project')
+    const root = this.projectData.name
 
     // create "tree" data structure
     // ----------------------------
@@ -415,7 +403,7 @@ class ProjectFiles extends Widget {
     const cp = this.ctxmenu.querySelector('.proj-files__ctx-copy')
     const mv = this.ctxmenu.querySelector('.proj-files__ctx-move')
     const hr = this.ctxmenu.querySelector('hr')
-    const repo = WIDGETS['student-session'].getData('opened-project')
+    const repo = this.projectData.name
     const name = e.target.childNodes[0].nodeValue.trim()
 
     if (!name || name === '' || name === repo) {
@@ -452,15 +440,13 @@ class ProjectFiles extends Widget {
       return setTimeout(() => this.openProject(repo), 100)
     }
 
-    this.convos = window.CONVOS[this.key](this)
     if (!repo) {
+      this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
     } else {
       WIDGETS['student-session'].clearSaveState()
       const owner = WIDGETS['student-session'].getData('owner')
-      if (WIDGETS['student-session'].getData('opened-project')) {
-        WIDGETS['student-session'].clearProjectData()
-      }
+      if (this.projectData.name) this.closeProject()
       nn.get('load-curtain').show('folder.html', { filename: repo })
       this.open()
 
@@ -474,12 +460,20 @@ class ProjectFiles extends Widget {
         if (Object.keys(res.data).includes('index.html')) {
           utils.setCustomRenderer(null)
 
+          this._setupCodeUpdateListener()
+
           // update student session data
           const htmlUrl = res.data['index.html'].html_url
           const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
           const url = (htmlUrl.includes('/blob/master'))
             ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
-          WIDGETS['student-session'].setProjectData({ url, branch, name: repo })
+          this.projectData = { url, branch, name: repo }
+          this.dbName = repo
+
+          await this._initServiceWorker() // setup service worker
+          this.db = await this._initIndexedDB() // setup indexedDB
+          await this._clearIndexedDB() // clear this store for fresh project state
+          await this._saveFilesToIndexedDB()
 
           // update netnet URL
           const ghStr = branch === 'main'
@@ -487,9 +481,6 @@ class ProjectFiles extends Widget {
             : `?gh=${owner}/${repo}/${branch}`
           utils.updateURL(ghStr)
 
-          await this._clearIndexedDB(true) // reset indexedDB && kill service worker
-          this.sw = await this._initServiceWorker() // setup service worker
-          this.db = await this._initIndexedDB() // setup indexedDB
           // setup netitor's custom renderer to work with service worker
           this._setCustomRenderer()
 
@@ -519,11 +510,13 @@ class ProjectFiles extends Widget {
 
           // open the index.html file by default
           this.openFile('index.html')
+          this.convos = window.CONVOS[this.key](this)
           window.convo = new Convo(this.convos, 'project-opened')
           // NOTE: load-curtain is hidden after index.html file is opened
         } else {
           this.files = {}
           nn.get('load-curtain').hide()
+          this.convos = window.CONVOS[this.key](this)
           window.convo = new Convo(this.convos, 'not-a-web-project')
         }
       })
@@ -531,21 +524,38 @@ class ProjectFiles extends Widget {
   }
 
   closeProject () {
-    utils.updateURL() // remove github path from URL
+    // reset this widget
     this._clearIndexedDB(true)
     this._createHTML()
     this.viewing = null
     this.rendering = null
     this.lastCommitFiles = {}
+    this.projectData = {}
+    // remove github path from URL + clear title bar
+    utils.updateURL()
+    NNW.updateTitleBar(null)
+    // remove code update event listener
+    const i = NNE.events['code-update'].indexOf(this.codeEdit)
+    if (i !== -1) NNE.events['code-update'].splice(i, 1)
+    this.codeEdit = null
+    // remove custom shorcuts
+    const CM = NNE.cm.constructor
+    CM.keyMap.default['Cmd-Z'] = 'undo'
+    CM.keyMap.default['Ctrl-Z'] = 'undo'
+    CM.keyMap.default['Cmd-Y'] = 'redo'
+    CM.keyMap.default['Ctrl-Y'] = 'redo'
+    delete CM.commands.nnU
+    delete CM.commands.nnR
+    // clear code
     NNE.customRender = null
     NNE.code = ''
-    NNW.updateTitleBar()
+    // close widget
     this.close()
   }
 
   publishProject () {
     const ur = WIDGETS['student-session'].getData('owner')
-    const op = WIDGETS['student-session'].getData('opened-project')
+    const op = this.projectData.name
     if (!op) {
       window.convo = new Convo(this.convos, 'cant-publish-project')
       return
@@ -554,14 +564,14 @@ class ProjectFiles extends Widget {
     nn.get('load-curtain').show('github.html', { filename: `${ur}/${op}` })
     const data = {
       owner: WIDGETS['student-session'].getData('owner'),
-      repo: WIDGETS['student-session'].getData('opened-project'),
-      branch: WIDGETS['student-session'].getData('branch')
+      repo: this.projectData.name,
+      branch: this.projectData.branch
     }
     utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {
         window.convo = new Convo(this.convos, 'oh-no-error')
       } else {
-        WIDGETS['student-session'].setData('ghpages', res.data.html_url)
+        this.projectData.ghpages = res.data.html_url
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'published-to-ghpages')
       }
@@ -654,7 +664,7 @@ class ProjectFiles extends Widget {
 
     if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
 
-    const repo = WIDGETS['student-session'].getData('opened-project')
+    const repo = this.projectData.name
     NNW.updateTitleBar(`${repo}/${filepath}`)
     NNW.title.dataset.project = true
 
@@ -746,7 +756,7 @@ class ProjectFiles extends Widget {
       setTimeout(() => this.newProject(), 100); return
     }
     // if convo is ready, then continue...
-    const op = WIDGETS['student-session'].getData('opened-project')
+    const op = this.projectData.name
     const owner = WIDGETS['student-session'].getData('owner')
     const urlUser = utils.url.github ? utils.url.github.split('/')[0] : null
     this.convos = window.CONVOS[this.key](this)
@@ -978,13 +988,34 @@ class ProjectFiles extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  _setupCodeUpdateListener () {
+    if (this.codeEdit) return
+
+    // setup code-update event listener
+    const codeEdit = () => {
+      if (!this.projectData.name) return
+      this._updateViewingFile()
+    }
+    this.codeEdit = codeEdit
+    NNE.on('code-update', codeEdit)
+
+    // setup custom keybord shortcuts logic
+    const CM = NNE.cm.constructor
+    CM.commands.nnU = cm => this.undo(cm)
+    CM.commands.nnR = cm => this.redo(cm)
+    CM.keyMap.default['Cmd-Z'] = 'nnU'
+    CM.keyMap.default['Ctrl-Z'] = 'nnU'
+    CM.keyMap.default['Cmd-Y'] = 'nnR'
+    CM.keyMap.default['Ctrl-Y'] = 'nnR'
+  }
+
   _ohNoErr (res) {
     console.log('ProjectFiles:', res)
     window.convo = new Convo(this.convos, 'oh-no-error')
   }
 
   _readyToRender () {
-    return this.sw && this.listAllFiles().length > 0
+    return navigator.serviceWorker.controller && this.listAllFiles().length > 0
   }
 
   _setCustomRenderer () {
@@ -1184,12 +1215,18 @@ class ProjectFiles extends Widget {
         })
 
         // update student session data
-        WIDGETS['student-session'].setProjectData({
+        this.projectData = {
           name: res.repo,
           url: res.url,
           ghpages: null,
           branch: res.branch
-        })
+        }
+        this.dbName = res.repo
+
+        await this._initServiceWorker() // setup service worker
+        this.db = await this._initIndexedDB() // setup indexedDB
+        await this._clearIndexedDB() // clear this store for fresh project state
+        await this._saveFilesToIndexedDB()
 
         // update netnet URL
         const ghStr = res.branch === 'main'
@@ -1197,9 +1234,6 @@ class ProjectFiles extends Widget {
           : `?gh=${res.owner}/${res.repo}/${res.branch}`
         utils.updateURL(ghStr)
 
-        await this._clearIndexedDB(true) // reset indexedDB && kill service worker
-        this.sw = await this._initServiceWorker() // setup service worker
-        this.db = await this._initIndexedDB() // setup indexedDB
         // setup netitor's custom renderer to work with service worker
         this._setCustomRenderer()
 
@@ -1406,24 +1440,25 @@ class ProjectFiles extends Widget {
         scope: '/'
       })
 
-      const sw = reg.installing || reg.waiting || reg.active
-      if (this.log) console.log('ProjectFiles: service worker is registered')
-
-      if (sw) {
-        sw.postMessage({
-          dbName: this.dbName,
-          dbVersion: this.dbVersion,
-          storeName: this.storeName,
-          objName: this.objName,
-          log: this.log
-        })
+      // ensure this page is controlled, then send this tab's config
+      const sendCfg = () => {
+        const ctrl = navigator.serviceWorker.controller
+        if (ctrl) {
+          ctrl.postMessage({
+            dbName: this.dbName,
+            dbVersion: this.dbVersion,
+            storeName: this.storeName,
+            objName: this.objName,
+            log: this.log
+          })
+        }
       }
 
-      if (this.log && navigator.serviceWorker.controller) {
-        console.log('ProjectFiles: we have a service worker installed')
-      }
+      // once ready (or immediately if already controlled)
+      if (navigator.serviceWorker.controller) sendCfg()
+      else navigator.serviceWorker.addEventListener('controllerchange', sendCfg)
 
-      return sw
+      return reg.active || reg.waiting || reg.installing
     } catch (error) {
       console.error('ProjectFiles: error registering service worker', error)
     }
@@ -1454,17 +1489,11 @@ class ProjectFiles extends Widget {
     }
   }
 
-  async _disableServiceWorker () {
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.getRegistration('/files-db-service-worker.js')
-      if (registration) {
-        await registration.unregister()
-        this.sw = null
-        if (this.log) console.log('ProjectFiles: Service worker unregistered successfully')
-      } else {
-        if (this.log) console.log('ProjectFiles: No service worker found to unregister')
-      }
-    }
+  // NOTE: FOR DEV PURPOSES ONLY
+  async _forceUnregisterServiceWorker () {
+    if (!('serviceWorker' in navigator)) return
+    const reg = await navigator.serviceWorker.getRegistration('/files-db-service-worker.js')
+    if (reg) await reg.unregister()
   }
 
   // .....................
@@ -1500,31 +1529,35 @@ class ProjectFiles extends Widget {
     }
   }
 
-  async _clearIndexedDB (disableServiceWorker) {
+  async _clearIndexedDB () {
     if (!this.db) {
-      if (disableServiceWorker) await this._disableServiceWorker()
       if (this.log) console.log('ProjectFiles: IndexedDB hasn\'t been not initialized yet.')
       return
     }
 
     try {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
-      const objectStore = transaction.objectStore(this.storeName)
-      const request = objectStore.clear()
+      if (!this.db.objectStoreNames.contains(this.storeName)) {
+        if (this.log) console.log('ProjectFiles: store not found, nothing to clear.')
+        this.files = {}
+        return
+      }
+
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.clear()
 
       await new Promise((resolve, reject) => {
-        request.onerror = event => {
-          console.error('ProjectFiles: IndexedDB clear error:', event.target.error)
-          reject(event.target.error)
+        req.onerror = e => {
+          console.error('ProjectFiles: IndexedDB clear error:', e.target.error)
+          reject(e.target.error)
         }
-        request.onsuccess = () => resolve()
+        tx.oncomplete = () => resolve()
+        tx.onerror = e => reject(e.target.error)
+        tx.onabort = e => reject(e.target.error)
       })
 
       if (this.log) console.log('ProjectFiles: All data cleared from IndexedDB successfully.')
-      // Clear the in-memory files object as well
       this.files = {}
-      // disable the service worker
-      if (disableServiceWorker) await this._disableServiceWorker()
     } catch (error) {
       console.error('ProjectFiles: Error while clearing IndexedDB:', error)
     }
@@ -1548,7 +1581,7 @@ class ProjectFiles extends Widget {
       }
 
       request.onsuccess = () => {
-        if (this.log) console.log('ProjectFiles: Files saved to IndexedDB successfully.')
+        if (this.log) console.log('ProjectFiles: Files saved to IndexedDB successfully.', this.dbName)
         resolve()
       }
     })

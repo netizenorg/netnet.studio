@@ -98,7 +98,7 @@ class DemoToc extends Widget {
     const isStarterCode = NNE.code === utils.starterCode()
     if (isStarterCode) return this._displayDemo()
 
-    const openProj = WIDGETS['student-session'].getData('opened-project')
+    const openProj = WIDGETS['project-files']?.projectData.name
     if (openProj) {
       const unSaved = WIDGETS['project-files'] && WIDGETS['project-files'].changes.length > 0
       if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
@@ -133,8 +133,8 @@ class DemoToc extends Widget {
       WIDGETS['learning-guide'].close()
     }
 
-    if (WIDGETS['student-session'].getData('opened-project')) {
-      WIDGETS['student-session'].clearProjectData()
+    if (WIDGETS['project-files']?.projectData.name) {
+      WIDGETS['project-files'].closeProject()
     }
 
     utils.setCustomRenderer(null)

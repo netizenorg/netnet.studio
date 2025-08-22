@@ -16,8 +16,7 @@ window.CONVOS['utils-misc'] = (self) => {
   const gh = (() => {
     const u = WIDGETS['student-session'].getData('username')
     const o = WIDGETS['student-session'].getData('owner')
-    const p = WIDGETS['student-session'].getData('opened-project')
-    return { u, o, p, url: `https://github.com/${o}/${p}` }
+    return { u, o }
   })()
 
   return [{
@@ -49,7 +48,6 @@ window.CONVOS['utils-misc'] = (self) => {
       },
       'something looks off...': (e) => e.goTo('remix-github-path-issues'),
       'I\'m just experimenting': (e) => {
-        WIDGETS['student-session'].clearProjectData()
         e.hide()
       }
     }

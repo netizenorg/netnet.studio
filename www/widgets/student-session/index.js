@@ -123,7 +123,7 @@ class StudentSession extends Widget {
     })
   }
 
-  setProjectData (data) {
+  setProjectData (data) { // TODO: DELETE THIS && THESE PROPS
     // close tutorial if one is open
     if (WIDGETS['hyper-video-player']?.opened) WIDGETS['hyper-video-player'].close()
     // const ss = window.sessionStorage
@@ -135,16 +135,19 @@ class StudentSession extends Widget {
     this._createHTML()
   }
 
-  clearProjectData () {
+  clearProjectData () { // TODO: DELETE THIS WHEN READY
     // const ss = window.sessionStorage
     const ls = window.localStorage
     ls.removeItem('opened-project')
     ls.removeItem('project-url')
     ls.removeItem('ghpages')
     ls.removeItem('branch')
+
     utils.setCustomRenderer(null)
+
     NNW.updateTitleBar(null)
     if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
+
     this._createHTML()
   }
 
@@ -162,11 +165,9 @@ class StudentSession extends Widget {
   deleteGitHubSession (skipDialogue) {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
-      if (this.getData('opened-project')) {
-        NNE.code = ''
-        NNW.updateTitleBar(null)
+      if (WIDGETS['project-files']?.projectData.name) {
+        WIDGETS['project-files'].closeProject()
       }
-      this.clearProjectData()
       this.setData('owner', null)
       this.setData('repos', null)
       this._createHTML()
@@ -241,10 +242,7 @@ class StudentSession extends Widget {
   }
 
   checkForSavePoint () {
-    if (typeof this.getData('opened-project') === 'string') {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'prior-opened-project')
-    } else if (this.getData('owner')) {
+    if (this.getData('owner')) {
       window.convo = new Convo(this.convos, 'prior-github-login')
     } else if (typeof this.getData('last-saved-sketch') === 'string') {
       window.convo = new Convo(this.convos, 'prior-save-state')
