@@ -254,9 +254,18 @@ class TemplateProjects extends Widget {
     else if (type === 'skip-guide') this.displayTemplate(name)
   }
 
-  _postGuideConvo () {
-    // TODO: start new project with files?
-    window.convo = new Convo(this.convos, 'end-guide')
+  async _postGuideConvo () {
+    const name = this.state.name
+    const res = await utils.getSync(`/api/template/${name}`)
+    const owner = WIDGETS['student-session'].getData('owner')
+
+    if (res.data.multifile) {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
+      else window.convo = new Convo(this.convos, 'display-template-multi-file-no-auth')
+    } else {
+      if (owner) window.convo = new Convo(this.convos, 'display-template-single-file')
+      else window.convo = new Convo(this.convos, 'display-template-single-file-no-auth')
+    }
   }
 
   async _pathToBase64 (relPath) {
@@ -279,7 +288,7 @@ class TemplateProjects extends Widget {
     return base64
   }
 
-  async _newRepoFromTemplate (name) { // TODO: ... finish
+  async _newRepoFromTemplate (name) {
     const user = WIDGETS['student-session'].getData('owner')
     const message = `stared new repo from netnet ${this.state.name} template`
     nn.get('load-curtain').show('github.html', { filename: `${user}/${name}` })
