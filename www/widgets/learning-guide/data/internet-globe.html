@@ -86,7 +86,13 @@
     // })
   }
 
+
   function draw () {
+    // skip drawing if parent iframe is not visible
+    const frameEl = window.frameElement
+    const visible = window.parent.utils.isVisible(frameEl)
+    if (!visible) return setTimeout(draw, 1000/12)
+
     // requestAnimationFrame(draw)
     setTimeout(draw, 1000/12)
 
