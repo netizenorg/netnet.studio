@@ -10,7 +10,6 @@ window.CONVOS['student-session'] = (self) => {
       }
       // 'let\'s learn': (e) => {
       //   NNW.menu.switchFace('default')
-      //   // WIDGETS['student-session'].clearProjectData()
       //   WIDGETS.open('learning-guide')
       //   e.hide()
       // }
@@ -29,23 +28,6 @@ window.CONVOS['student-session'] = (self) => {
     id: 'return-student-no-greet',
     content: 'Shall we get started?',
     options: firstOpts('ai')
-  },
-  {
-    id: 'prior-opened-project',
-    content: `Looks like you had one of your GitHub projects opened last time you were here called "${self.getData('opened-project')}". Do you want me to open it back up?`,
-    options: {
-      'yes please': (e) => {
-        WIDGETS.load('project-files', (w) => w.openProject(self.getData('opened-project')))
-      },
-      'no, open a different project': (e) => {
-        self.clearProjectData()
-        WIDGETS.load('project-files', (w) => w.openProject())
-      },
-      'no, let\'s start something new': (e) => {
-        self.clearProjectData()
-        WIDGETS['coding-menu'].new()
-      }
-    }
   }, {
     id: 'prior-github-login',
     content: 'Would you like to open one of your GitHub projects or do you want to start something new?',
@@ -54,8 +36,20 @@ window.CONVOS['student-session'] = (self) => {
       'no let\'s start something new': (e) => WIDGETS['coding-menu'].new()
     }
   }, {
+    id: 'prior-github-or-save-state',
+    content: 'Looks like you may have been working on a sketch last time you were here. Should we pick back up where you left off? Or would you like to open one of your GitHub projects instead? Or maybe start something new?',
+    options: {
+      'open that sketch': (e) => {
+        e.hide()
+        const delay = utils.getVal('--menu-fades-time')
+        setTimeout(() => self.restoreSavePoint(), delay)
+      },
+      'open a project': (e) => WIDGETS.load('project-files', (w) => w.openProject()),
+      'start something new': (e) => WIDGETS['coding-menu'].new()
+    }
+  }, {
     id: 'prior-save-state',
-    content: `Looks like you saved the state of the studio last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code you or I add to the editor.`,
+    content: `Looks like you may have been working on a sketch last time you were here. Should we pick back up where you left off? You can always use <b>${hotkey}+Z</b> in my editor to "undo" any code you or I add to the editor.`,
     options: {
       'yes please': (e) => {
         e.hide()

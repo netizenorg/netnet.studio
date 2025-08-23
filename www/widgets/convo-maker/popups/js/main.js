@@ -33,7 +33,8 @@ graph.on('delete', (obj) => {
 
 graph.on('selected', (obj) => {
   nn.get('#delete').css({ opacity: 1 })
-  if (nn.get('#editor').style.display === 'block') {
+  const sels = graph.getSelectedPassages()
+  if (sels.length === 1 && nn.get('#editor').style.display === 'block') {
     curPsg = obj
     if (netitor) netitor.close()
     updateEditor()
@@ -44,6 +45,10 @@ graph.on('unselected', (obj) => {
   if (!graph.getSelectedPassages()) {
     nn.get('#delete').css({ opacity: 0.5 })
   }
+})
+
+graph.on('moved', () => {
+  updateWidget()
 })
 
 graph.on('dblclick', (obj) => {
@@ -179,7 +184,9 @@ function createMissingLinkedPassages () {
 }
 
 function previewPassage () {
-  MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
+  updateWidget()
+  const hasIssues = filemenu.projHasIssues()
+  if (!hasIssues) MSG({ type: 'cnvmkr-preview-passage', payload: JSON.stringify(curPsg) })
 }
 
 nn.get('.make-links').on('click', createMissingLinkedPassages)
@@ -272,14 +279,14 @@ nn.on('message', (e) => {
     // ...
   } else if (e.data.type === 'netitor-before-update') {
     // netitor has updated a passage's before function
-    curPsg.before = e.data.code
+    curPsg.before = e.data.code === '() => {\n\n}' ? null : e.data.code
     createEditorMenu()
     nn.get('#edit-sel').value = 'before run function'
     updateWidget()
     // ...
   } else if (e.data.type === 'netitor-after-update') {
     // netitor has updated a passage's after function
-    curPsg.after = e.data.code
+    curPsg.after = e.data.code === '() => {\n\n}' ? null : e.data.code
     createEditorMenu()
     nn.get('#edit-sel').value = 'after run function'
     updateWidget()

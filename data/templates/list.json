@@ -1,0 +1,9 @@
+{
+  "published": [
+    "html-basic",
+    "html-meta-tags"
+  ],
+  "build-on": {
+    "html-meta-tags": ["html-basic"]
+  }
+}

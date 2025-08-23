@@ -1,58 +1,63 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn */
+/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide <span style="opacity:0.5;padding-left:10px;">(BETA 4.0)</span>'
+    this.title = 'Learning Guide'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
-
-    this.update({ left: 40, top: 65 })
-
-    this.on('open', () => {
-      // this._openConvo()
-      if (this.width !== 638 || this.height !== 473) {
-        this.update({ width: 638, height: 473 })
-      }
-      this.update({ left: 40, top: 65 }, 500)
-    })
-
     this.resizable = false
-    // currently loaded tutorial data
-    this.metadata = null
-    this.data = null
-    this.loaded = null
+
+    // animation related props
+    this._runningStar = false
+    this._raf = 0
+    this._svgTimer = null
+
+    this.cards = [] // collect WidgetCards
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    this._createPage('mainOpts', 'main-slide.html', null, (div) => {
-      // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['coding-menu'].BrowserFest()
-      // })
+    // load widget card class
+    utils.loadFile('widgets/learning-guide/data/widget-card.js', () => {
+      this._createPage('mainOpts', 'main-slide.html', null, (div) => {
+        // div.querySelector('#bf-submission').addEventListener('click', () => {
+        //   WIDGETS['coding-menu'].BrowserFest()
+        // })
 
-      // create sub pages
-      this.subpages = [
-        { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
-        {
-          id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
-          subs: [
-            { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-            { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-            { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-          ]
-        },
-        { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
-      ]
-      this.subpages.forEach(p => {
-        this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
-          if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+        // create sub pages
+        this.subpages = [
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          // {
+          //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+          //   subs: [
+          //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
+          //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
+          //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
+          //   ]
+          // },
+          // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+        ]
+        this.subpages.forEach(p => {
+          this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
+            if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+          })
+        })
+
+        this._createHTML()
+
+        this.update({ left: 40, top: 65 })
+
+        this.on('close', () => this._applyVisibility())
+        this.on('open', () => {
+          if (this.width !== 638 || this.height !== 473) {
+            this.update({ width: 638, height: 473 })
+          }
+          this.update({ left: 40, top: 65 }, 500)
+          this._applyVisibility()
+          if (WIDGETS['hyper-video-player']) WIDGETS['hyper-video-player'].pause()
         })
       })
-
-
-      // initial HTML
-      this._createHTML()
     })
 
     WIDGETS['coding-menu'].on('theme-change', () => {
@@ -61,32 +66,11 @@ class LearningGuide extends Widget {
     })
   }
 
-  load (name, time) {
-    setTimeout(() => {
-      document.querySelector('load-curtain').show('tutorial.html')
-    }, 100)
-
-    utils.get(`tutorials/${name}/metadata.json`, (json) => {
-      this.metadata = json
-      this.loaded = name
-      utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['student-session'].getData('opened-project')) {
-        WIDGETS['student-session'].clearProjectData()
-      }
-      utils.setCustomRenderer(`tutorials/${name}/`)
-      utils.get(`tutorials/${name}/data.json`, (json) => {
-        this.data = json
-        this._loadTutorial(name, time)
-      })
+  loadTemplate (name) {
+    WIDGETS.load('template-projects', w => {
+      if (this.opened) this.close()
+      w.loadTemplate(name)
     })
-  }
-
-  quit () { // quit tutorial
-    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
-    this.metadata = null
-    this.data = null
-    document.querySelector('load-curtain').hide()
-    utils.updateURL()
   }
 
   scrollTo (sec) {
@@ -94,20 +78,10 @@ class LearningGuide extends Widget {
       return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
     }
 
-    const toc = {
-      'top': 0,
-      'toc': 624,
-      'the-net': 1042,
-      'the-craft': 1309,
-      'html': 1690,
-      'css': 2842,
-      'js': 4154,
-      'refs': 4634
-    }
-
-    const y = toc[sec]
-    const slide = this.ele.querySelector('widget-slide')
-    if (slide) slide.scrollTo({ top: y, behavior: 'smooth' })
+    const el = this.slide.querySelector(`#learning-guide-${sec}`)
+    const offset = 50
+    const top = el.getBoundingClientRect().top - this.slide.getBoundingClientRect().top + this.slide.scrollTop - offset
+    this.slide.scrollTo({ top, behavior: 'smooth' })
 
     if (sec === 'toc') {
       window.convo = new Convo(this.convos, 'toc')
@@ -120,14 +94,6 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-
-  _openConvo () {
-    if (!this.convos) {
-      setTimeout(() => this._openConvo(), 100)
-      return
-    }
-    window.convo = new Convo(this.convos, 'guide-open')
-  }
 
   _createPage (type, page, b, cb) {
     utils.get(`./widgets/learning-guide/data/${page}`, (html) => {
@@ -152,8 +118,8 @@ class LearningGuide extends Widget {
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
         this.mainOpts.cb = () => setTimeout(() => {
-          this._createStarField()
-          // this._animateGlobe()
+          // this._createStarField()
+          // this._svgAnimations()
         }, utils.getVal('--menu-fades-time'))
       }
       if (cb) cb(div)
@@ -168,6 +134,7 @@ class LearningGuide extends Widget {
 
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
+    this.slide.addEventListener('scroll', () => this._applyVisibility())
 
     // this.ele.style.padding = '8px 5px 10px'
     this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
@@ -177,23 +144,40 @@ class LearningGuide extends Widget {
 
     this._listTutorials()
     this._enableAppendixLinks()
-
-    // this._globeFrame = 0
-    // this._globeFrameCount = 124
-    // this._globeFrameRate = 1000 / 10
-    // this._animateGlobe()
-
-    this._createStarField()
-
     this._highlightTitles()
 
-    this.slide.style.overflowX = 'hidden'
+    // enable WidgetCards
+    const cards = [
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 140, x: 0, y: 40 },
+        content: `<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">DEMOS<div>
+        </div>`,
+        click: () => WIDGETS.open('demo-sketches')
+      },
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 150, x: 270, y: 209 },
+        content: `<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">TEMPLATES<div>
+        </div>`,
+        click: () => WIDGETS.open('template-projects')
+      }
+    ]
+    cards.forEach(card => this.cards.push(new WidgetCard(card)))
 
-    // this.ele.querySelectorAll('h3').forEach(e => {
-    //   e.addEventListener('click', () => {
-    //     window.convo = new Convo(this.convos, e.textContent)
-    //   })
-    // })
+    this.slide.style.overflowX = 'hidden'
+  }
+
+  _highlightTitles () {
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+    })
   }
 
   _enableAppendixLinks () {
@@ -277,7 +261,9 @@ class LearningGuide extends Widget {
     // enable "play" buttons
     this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
       const tut = ele.getAttribute('name').split(':')[1]
-      ele.addEventListener('click', () => this.load(tut))
+      ele.addEventListener('click', () => {
+        WIDGETS.load('hyper-video-player', w => w.load(tut))
+      })
     })
 
     // hover over tutorials
@@ -336,70 +322,72 @@ class LearningGuide extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸. star field background && other animations
 
-  _loadTutorial (name, time) {
-    WIDGETS.open('hyper-video-player', () => {
-      WIDGETS['hyper-video-player'].video.oncanplay = () => {
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'introducing-tutorial')
-        this.close() // close the tutorials guide && setup first keyframe
-        WIDGETS['hyper-video-player'].renderKeyframe()
+  _applyVisibility () {
+    const visible = utils.isVisible(this.ele)
+    if (visible) {
+      this._startStarField()
+    } else {
+      this._stopStarField()
+      this._stopSvgAnimations() // TODO: update if/when more svgAnim elements
+    }
 
-        setTimeout(() => {
-          document.querySelector('load-curtain').hide()
-          if (time) WIDGETS['hyper-video-player'].seek(time)
-          WIDGETS['hyper-video-player'].video.oncanplay = null
-        }, utils.getVal('--layout-transition-time'))
-      }
-
-      WIDGETS['hyper-video-player'].title = this.metadata.title
-      WIDGETS['hyper-video-player'].loadKeyframes(this.data.keyframes)
-      WIDGETS['hyper-video-player'].updateVideo(this.metadata.videofile, this.metadata.id)
-
-      for (const key in this.data.widgets) {
-        if (!WIDGETS.instantiated.includes(key)) {
-          WIDGETS.create(this.data.widgets[key])
-        }
-      }
-
-      if (this.metadata.duration) {
-        WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
-      }
-
-      if (this.metadata.jsfile) {
-        const file = `tutorials/${name}/${this.metadata.jsfile}`
-        utils.loadFile(file, () => window.TUTORIAL.init())
-      }
+    // TODO: update if/when more svgAnim elements
+    // will require passing ele into start/stop animations methods
+    const animatedSVGs = ['svg-tag-animated']
+    animatedSVGs.forEach(e => {
+      const ele = this.$(e)
+      const v = utils.isVisible(ele)
+      if (v) this._startSvgAnimations()
+      else this._stopSvgAnimations()
     })
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
-
-  _animateGlobe () { // NOTE: this is an alternative approach to the "internet-globe.html"
-    // at the moment only frames for "dark" theme exist
-    const img = this.slide.querySelector('#globe-animation-sequence')
-    if (!img) return
-    const f = this._globeFrame % this._globeFrameCount
-    img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
-    this._globeFrame++
-    setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  /*
+    NOTE: this is an alternative approach to the "internet-globe.html"
+    apply this way:
+    // this._globeFrame = 0
+    // this._globeFrameCount = 124
+    // this._globeFrameRate = 1000 / 10
+    // this._animateGlobe()
+  */
+  // _animateGlobe () {
+  //   // at the moment only frames for "dark" theme exist
+  //   const img = this.slide.querySelector('#globe-animation-sequence')
+  //   if (!img) return
+  //   const f = this._globeFrame % this._globeFrameCount
+  //   img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
+  //   this._globeFrame++
+  //   setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  // }
+  _startStarField () {
+    if (!this.slide) { setTimeout(() => this._startStarField(), 250); return }
+    if (this._runningStar) return
+    this._runningStar = true
+    if (!this._canvas) this._initStarField()
+    this._tickStarField()
   }
 
-  _createStarField () {
-    const canvas = document.createElement('canvas')
-    const self = this
+  _stopStarField () {
+    if (!this._runningStar) return
+    this._runningStar = false
+    window.cancelAnimationFrame(this._raf)
+  }
 
+  _initStarField () {
+    const canvas = document.createElement('canvas')
     canvas.style.position = 'absolute'
     canvas.style.top = 0
     canvas.style.left = 0
     canvas.style.zIndex = 0
-    canvas.width = self.ele.offsetWidth
-    canvas.height = self.ele.offsetHeight
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    canvas.width = this.ele.offsetWidth
+    canvas.height = this.ele.offsetHeight
+    this._canvas = canvas
+    this._ctx = canvas.getContext('2d')
+    this.slide.appendChild(canvas)
 
+    // your existing star setup
     const mkStar = (star = {}) => {
       const w = canvas.width
       const h = canvas.height
@@ -417,71 +405,87 @@ class LearningGuide extends Widget {
       return star
     }
 
-    // SETUP
-    const stars = []
-    const acc = 1 // acceleration
-    for (let i = 0; i < 100; i++) stars.push(mkStar())
-
-    // DRAW
-    const animate = () => {
-      setTimeout(() => animate(), 1000 / 60)
-      const w = canvas.width
-      const h = canvas.height
-      ctx.clearRect(0, 0, w, h)
-
-      let newStars = 0
-      stars.forEach((star, i) => {
-        ctx.fillStyle = utils.getVal('--netizen-text')
-
-        star.x += star.dx
-        star.y += star.dy
-        star.a++
-
-        const outdX = star.x < 0 || star.x > w
-        const outdY = star.y < 0 || star.y > h
-        if (outdX && outdY) {
-          star.x = w / 2 + star.dx * 2
-          star.y = h / 2 + star.dy * 2
-          star.dx += star.dx / (50 / acc)
-          star.dy += star.dy / (50 / acc)
-          const max = 4
-          if (star.dx < -max) star.dx = -max
-          if (star.dx > max) star.dx = max
-          if (star.dy < -max) star.dy = -max
-          if (star.dy > max) star.dy = max
-        }
-
-        if (star.a === Math.floor(50 / acc) |
-            star.a === Math.floor(150 / acc) |
-            star.a === Math.floor(300 / acc)) {
-          star.w++
-          star.h++
-        }
-
-        if (star.x + star.w < 0 || star.x > w ||
-        star.y + star.h < 0 | star.y > h) {
-          const idx = stars.indexOf(star)
-          stars.splice(idx, 1)
-          newStars++
-        }
-
-        if (isNaN(star.x)) console.log('nan', stars.indexOf(star))
-        ctx.fillRect(star.x, star.y, 1, 1)
-      })
-
-      for (let i = 0; i < newStars; i++) stars.push(mkStar())
-    }
-
-    this.slide.appendChild(canvas)
-    animate()
+    this._stars = []
+    this._acc = 1
+    for (let i = 0; i < 100; i++) this._stars.push(mkStar())
+    this._mkStar = mkStar
   }
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+  _tickStarField () {
+    if (!this._runningStar) return
+    const { _canvas: canvas, _ctx: ctx } = this
+    const w = canvas.width
+    const h = canvas.height
+
+    ctx.clearRect(0, 0, w, h)
+    ctx.fillStyle = utils.getVal('--netizen-text') // set once per frame
+
+    let newStars = 0
+    this._stars.forEach(star => {
+      star.x += star.dx
+      star.y += star.dy
+      star.a++
+
+      const outX = star.x < 0 || star.x > w
+      const outY = star.y < 0 || star.y > h
+      if (outX && outY) {
+        star.x = w / 2 + star.dx * 2
+        star.y = h / 2 + star.dy * 2
+        star.dx += star.dx / (50 / this._acc)
+        star.dy += star.dy / (50 / this._acc)
+        const max = 4
+        if (star.dx < -max) star.dx = -max
+        if (star.dx > max) star.dx = max
+        if (star.dy < -max) star.dy = -max
+        if (star.dy > max) star.dy = max
+      }
+
+      if (
+        star.a === Math.floor(50 / this._acc) ||
+        star.a === Math.floor(150 / this._acc) ||
+        star.a === Math.floor(300 / this._acc)
+      ) {
+        star.w++
+        star.h++
+      }
+
+      if (
+        star.x + star.w < 0 || star.x > w ||
+        star.y + star.h < 0 || star.y > h
+      ) {
+        const idx = this._stars.indexOf(star)
+        this._stars.splice(idx, 1)
+        newStars++
+      }
+
+      ctx.fillRect(star.x, star.y, 1, 1)
     })
+
+    for (let i = 0; i < newStars; i++) this._stars.push(this._mkStar())
+
+    this._raf = window.requestAnimationFrame(() => this._tickStarField())
+  }
+
+  //
+
+  _startSvgAnimations () {
+    if (this._svgTimer) return
+    const steps = [11, 12, 13, 15, 16, 17, 18]
+    const durs = [2.25, 2.5, 1.5, 1.5, 1, 4, 6]
+    let i = 0
+    const tick = () => {
+      const el = this.$('svg-tag-animated')
+      if (el) el.updateHTML(steps[i])
+      const ms = durs[i] * 1000 + 1000
+      i = (i + 1) % steps.length
+      this._svgTimer = setTimeout(tick, ms)
+    }
+    tick()
+  }
+
+  _stopSvgAnimations () {
+    clearTimeout(this._svgTimer)
+    this._svgTimer = null
   }
 }
 

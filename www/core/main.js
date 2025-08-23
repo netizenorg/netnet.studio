@@ -37,7 +37,6 @@ NNE.on('lint-error', (e) => {
 })
 
 NNE.cm.on('keydown', (cm, e) => {
-  utils.netitorInput(e)
   utils.numChange(e)
 })
 

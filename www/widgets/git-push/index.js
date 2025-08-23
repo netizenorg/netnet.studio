@@ -12,7 +12,7 @@ class GitPush extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.on('open', () => {
-      const op = WIDGETS['student-session'].getData('opened-project')
+      const op = WIDGETS['project-files']?.projectData.name
       const ch = WIDGETS['project-files']?.changes
       if (op && ch.length > 0) window.convo = new Convo(this.convos, 'start-ready')
       else if (op) window.convo = new Convo(this.convos, 'start-not-ready2')
@@ -29,7 +29,7 @@ class GitPush extends Widget {
   _createHTML () {
     const chgs = WIDGETS['project-files']?.changes
     const user = WIDGETS['student-session'].getData('owner')
-    const proj = WIDGETS['student-session'].getData('opened-project')
+    const proj = WIDGETS['project-files']?.projectData.name
 
     if (!proj) {
       this.innerHTML = `
@@ -154,8 +154,8 @@ class GitPush extends Widget {
         convo: 'git-push',
         next: () => {
           const owner = WIDGETS['student-session'].getData('owner')
-          const repo = WIDGETS['student-session'].getData('opened-project')
-          const branch = WIDGETS['student-session'].getData('branch')
+          const repo = WIDGETS['project-files']?.projectData.name
+          const branch = WIDGETS['project-files']?.projectData.branch
           const commitMessage = this._commitMessage
           const changes = this.include
           nn.get('load-curtain').show('github.html', { filename: repo })
@@ -192,9 +192,9 @@ class GitPush extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   downloadProject () {
-    const p = WIDGETS['student-session'].getData('opened-project')
+    const p = WIDGETS['project-files']?.projectData.name
     const o = WIDGETS['student-session'].getData('owner')
-    const b = WIDGETS['student-session'].getData('branch')
+    const b = WIDGETS['project-files']?.projectData.branch
     const url = `https://github.com/${o}/${p}/archive/refs/heads/${b}.zip`
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')

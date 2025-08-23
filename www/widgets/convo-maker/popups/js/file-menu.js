@@ -63,7 +63,25 @@ filemenu.updateDisplayFilename = (name) => {
   nn.get('#graph-wrapper').css({ top: 82 })
 }
 
-filemenu.prompt = (type) => {
+filemenu.projHasIssues = () => {
+  const test = graph.evaluate()
+  test.deadends = test.deadends.filter(p => p !== 'FUNC' && p !== 'HIDE')
+  if (test.badNames.length > 0) {
+    filemenu.prompt('error', 'some of your passages have bad names, make sure none where left untitled.')
+    return true
+  } else if (test.deadends.length > 0) {
+    const s = `Some links to are pointing to the following passages which do not exist: ${test.deadends.join(', ')}`
+    filemenu.prompt('error', s)
+    return true
+  } else if (test.empty.length > 0) {
+    const es = test.empty.map(o => o.name).join(', ')
+    filemenu.prompt('error', `The following passages where left empty: ${es}`)
+    return true
+  }
+  return false
+}
+
+filemenu.prompt = (type, data) => {
   nn.get('#modal').css({ display: 'flex' })
   const close = () => nn.get('#modal').css({ display: 'none' })
 
@@ -104,12 +122,25 @@ filemenu.prompt = (type) => {
     nn.get('#modal select').set({
       options: filemenu.widgets.map(w => w.title)
     })
+
+    nn.getAll('#modal select option').forEach(ele => {
+      const w = filemenu.widgets.find(o => o.title === ele.value)
+      ele.textContent = `[${w.key}] ${ele.value}`
+    })
+
     nn.get('#modal #e').on('click', (e) => {
       const sel = nn.get('#modal select').value
       const wig = filemenu.widgets.find(w => w.title === sel)
       MSG({ type: 'cnvmkr-open-file', payload: wig.code })
       close()
     })
+    nn.get('#modal #c').on('click', close)
+  } else if (type === 'error') { // ................................
+    nn.get('#modal > div').innerHTML = `
+      <h2>Error</h2>
+      <p style=" margin-top: 0;">${data}</p>
+      <button class="pill-btn pill-btn--secondary" id="c">ok</button>
+    `
     nn.get('#modal #c').on('click', close)
   }
 }
@@ -134,6 +165,9 @@ nn.get('#open-file').on('click', () => {
 })
 
 nn.get('#save-file').on('click', () => {
+  const hasIssues = filemenu.projHasIssues()
+  if (hasIssues) return
+
   const cards = graph.data.length
   if (filemenu.convoname && cards > 0) {
     if (netitor) netitor.close()

@@ -45,8 +45,8 @@ class DemoToc extends Widget {
     }
   }
 
-  cancel () {
-    if (this.opened) {
+  cancel (force) {
+    if (this.opened || force) {
       this.code = null
       this.codeLength = 0
       this.demoKey = null
@@ -89,16 +89,10 @@ class DemoToc extends Widget {
     this.layout = obj.layout
     this.info = obj.info
 
-    const hvp = WIDGETS['hyper-video-player']
-    if (utils.tutorialOpen() || (hvp && hvp.opened)) {
-      hvp.close()
-      setTimeout(() => WIDGETS['learning-guide'].close(), 100)
-    }
-
     const isStarterCode = NNE.code === utils.starterCode()
     if (isStarterCode) return this._displayDemo()
 
-    const openProj = WIDGETS['student-session'].getData('opened-project')
+    const openProj = WIDGETS['project-files']?.projectData.name
     if (openProj) {
       const unSaved = WIDGETS['project-files'] && WIDGETS['project-files'].changes.length > 0
       if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
@@ -117,6 +111,8 @@ class DemoToc extends Widget {
   }
 
   _displayDemo () {
+    utils.cancelAllNetitorUses('demo-toc')
+
     NNE.code = this.code
 
     const needsTransition = (this.layout && NNW.layout !== this.layout) ||
@@ -127,14 +123,6 @@ class DemoToc extends Widget {
 
     if (WIDGETS['demo-sketches'] && WIDGETS['demo-sketches'].opened) {
       WIDGETS['demo-sketches'].close()
-    }
-
-    if (WIDGETS['learning-guide'] && WIDGETS['learning-guide'].opened) {
-      WIDGETS['learning-guide'].close()
-    }
-
-    if (WIDGETS['student-session'].getData('opened-project')) {
-      WIDGETS['student-session'].clearProjectData()
     }
 
     utils.setCustomRenderer(null)

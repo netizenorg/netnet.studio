@@ -116,7 +116,8 @@ class KeyboardShortcuts extends Widget {
         nfo: 'play/pause tutorial',
         condition: (e) => !NNE.cm.hasFocus() && e.key === ' ',
         callback: (e) => {
-          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].toggle()
+          const hvp = WIDGETS['hyper-video-player']
+          if (hvp?.opened && !NNE.cm.hasFocus()) hvp.toggle()
         }
       },
       {
@@ -124,7 +125,8 @@ class KeyboardShortcuts extends Widget {
         nfo: 'skip ahead 5s in tutorial',
         condition: (e) => e.key === 'ArrowRight',
         callback: (e) => {
-          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(5)
+          const hvp = WIDGETS['hyper-video-player']
+          if (hvp?.opened && !NNE.cm.hasFocus()) hvp.skip(5)
         }
       },
       {
@@ -132,7 +134,8 @@ class KeyboardShortcuts extends Widget {
         nfo: 'jump back 5s in tutorial',
         condition: (e) => e.key === 'ArrowLeft',
         callback: (e) => {
-          if (utils.tutorialOpen() && !NNE.cm.hasFocus()) WIDGETS['hyper-video-player'].skip(-5)
+          const hvp = WIDGETS['hyper-video-player']
+          if (hvp?.opened && !NNE.cm.hasFocus()) hvp.skip(-5)
         }
       },
       {

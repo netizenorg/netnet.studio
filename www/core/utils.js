@@ -26,6 +26,25 @@ window.utils = {
       .catch(err => console.error(err))
   },
 
+  getSync: async (url, text = false) => {
+    const res = await window.fetch(url, { method: 'GET' })
+    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`)
+    return text ? res.text() : res.json()
+  },
+
+  postSync: async (url, data, text = false) => {
+    const res = await window.fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: data != null ? JSON.stringify(data) : undefined
+    })
+    if (!res.ok) throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`)
+    return text ? res.text() : res.json()
+  },
+
   btoa: (str) => {
     return window.btoa(unescape(encodeURIComponent(str)))
   },
@@ -64,6 +83,20 @@ window.utils = {
     })
   },
 
+  isVisible: (el) => {
+    const s = window.getComputedStyle(el)
+    if (s.display === 'none' || s.visibility === 'hidden') return false
+    if (el.offsetParent === null && s.position !== 'fixed') return false
+    const isDisplayed = el.getClientRects().length > 0
+
+    const r = el.getBoundingClientRect()
+    const vw = window.innerWidth || document.documentElement.clientWidth
+    const vh = window.innerHeight || document.documentElement.clientHeight
+    const isVis = r.bottom > 0 && r.right > 0 && r.left < vw && r.top < vh
+
+    return isVis && isDisplayed
+  },
+
   windowResize: () => {
     NNW._resizeWindow({
       clientX: window.NNW.win.offsetWidth,
@@ -99,12 +132,6 @@ window.utils = {
     `
     window.utils.starterCodeB64 = window.utils.btoa(sc)
     return sc
-  },
-
-  tutorialOpen: () => {
-    const hvp = WIDGETS['hyper-video-player']
-    const tg = WIDGETS['learning-guide']
-    return (hvp && tg && tg.metadata !== null)
   },
 
   forkRepo: () => {
@@ -188,12 +215,12 @@ window.utils = {
       shortCode: new URL(window.location).searchParams.get('c'),
       example: new URL(window.location).searchParams.get('ex'), // legacy
       demo: new URL(window.location).searchParams.get('demo'),
+      template: new URL(window.location).searchParams.get('template'),
       tutorial: new URL(window.location).searchParams.get('tutorial'),
       time: new URL(window.location).searchParams.get('t'),
       layout: new URL(window.location).searchParams.get('layout'),
       github: new URL(window.location).searchParams.get('gh'),
-      widget: new URL(window.location).searchParams.get('w'),
-      dem: new URL(window.location).searchParams.get('dem')
+      widget: new URL(window.location).searchParams.get('w')
     }
   },
 
@@ -201,12 +228,12 @@ window.utils = {
     shortCode: new URL(window.location).searchParams.get('c'),
     example: new URL(window.location).searchParams.get('ex'), // legacy
     demo: new URL(window.location).searchParams.get('demo'),
+    template: new URL(window.location).searchParams.get('template'),
     tutorial: new URL(window.location).searchParams.get('tutorial'),
     time: new URL(window.location).searchParams.get('t'),
     layout: new URL(window.location).searchParams.get('layout'),
     github: new URL(window.location).searchParams.get('gh'),
-    widget: new URL(window.location).searchParams.get('w'),
-    dem: new URL(window.location).searchParams.get('dem')
+    widget: new URL(window.location).searchParams.get('w')
   },
 
   mobile: () => {
@@ -268,6 +295,9 @@ window.utils = {
     } else if (url.demo) {
       window.utils.loadDemo(url.demo)
       return 'demo'
+    } else if (url.template) {
+      window.utils.loadTemplate(url.template)
+      return 'demo'
     } else {
       return 'none'
     }
@@ -295,9 +325,7 @@ window.utils = {
   },
 
   loadTutorial: (tutorial, time) => {
-    const tm = WIDGETS['learning-guide']
-    if (!tm) WIDGETS.load('learning-guide', (w) => w.load(tutorial, time))
-    else tm.load(tutorial, time)
+    WIDGETS.load('hyper-video-player', (w) => w.load(tutorial, time))
     if (!NNE.autoUpdate) window.utils.afterLayoutTransition(() => NNE.update())
     window.utils.fadeOutLoader(false)
   },
@@ -313,7 +341,6 @@ window.utils = {
 
   loadFromCodeHash: (layout) => {
     NNE.code = ''
-    WIDGETS['student-session'].clearProjectData()
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
       NNE.loadFromHash()
@@ -338,17 +365,22 @@ window.utils = {
   },
 
   loadDemo: (key, type) => {
-    const urlCheck = () => {
+    WIDGETS.load('demo-toc', w => {
+      w.load(key, type)
       if (nn.get('#loader').style.opacity === '0') return
       // if loaded from the URL, make sure to fadeout loader when done
       window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
-    }
+    })
+  },
 
-    if (!WIDGETS['demo-toc']) {
-      WIDGETS.load('demo-toc', w => {
-        w.load(key, type); urlCheck()
-      })
-    } else { WIDGETS['demo-toc'].load(key, type); urlCheck() }
+  loadTemplate: (name) => {
+    NNE.code = window.utils.starterCode()
+    WIDGETS.load('template-projects', w => {
+      w.loadTemplate(name)
+      if (nn.get('#loader').style.opacity === '0') return
+      // if loaded from the URL, make sure to fadeout loader when done
+      window.utils.afterLayoutTransition(() => window.utils.fadeOutLoader(false))
+    })
   },
 
   loadGithub: (github, layout, callback) => {
@@ -385,11 +417,15 @@ window.utils = {
   loadGHRedirect: () => {
     // code set by WIDGETS['student-session'].authGitHubSession()
     let code = window.localStorage.getItem('gh-auth-temp-code')
-    // code might be an encoded hash, or a gh root URL
+    // code might be an encoded hash, or a template or a gh root URL
     if (code.includes('__TEMP__')) {
-      // TODO: need a better way to check if code has gh in it...
       code = code.replace('__TEMP__', '')
+      window.utils.loadTemplate(code)
+      window.localStorage.removeItem('gh-auth-temp-code')
+    } else if (code.includes('__GH__')) {
+      code = code.replace('__GH__', '')
       window.utils.loadGithub(code, window.utils.url.layout)
+      window.localStorage.removeItem('gh-auth-temp-code')
     } else {
       // if they had some code they were working on in the editor
       // before they got redirected over to GitHub to auth...
@@ -476,6 +512,51 @@ window.utils = {
   // netitor stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  cancelAllNetitorUses: (exception) => {
+    const hasException = (s) => {
+      if (exception instanceof Array) {
+        return exception.includes(s)
+      } else if (typeof exception === 'string') {
+        return s === exception
+      } else return false
+    }
+
+    // cancel everything below (unless it's in the exception list)
+
+    if (!hasException('demo-toc')) {
+      if (WIDGETS['demo-toc']?.demoKey) WIDGETS['demo-toc'].cancel(true)
+    }
+
+    if (!hasException('template-projects')) {
+      if (WIDGETS['template-projects']) WIDGETS['template-projects'].cancel()
+    }
+
+    if (!hasException('hyper-video-player')) {
+      if (WIDGETS['hyper-video-player']?.opened) {
+        WIDGETS['hyper-video-player'].close()
+      }
+    }
+
+    if (!hasException('learning-guide')) {
+      if (WIDGETS['learning-guide'] && WIDGETS['learning-guide'].opened) {
+        WIDGETS['learning-guide'].close()
+      }
+    }
+
+    const introGuides = ['html-reference']
+    introGuides.forEach(guide => {
+      if (!hasException(guide)) {
+        if (WIDGETS[guide]?.opened) WIDGETS[guide].close()
+      }
+    })
+
+    if (!hasException('project-files')) {
+      if (WIDGETS['project-files']?.projectData.name) {
+        WIDGETS['project-files'].closeProject()
+      }
+    }
+  },
+
   // main.js listens for these errors + sends them to 'code-review' widget
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
@@ -494,15 +575,91 @@ window.utils = {
     }
   },
 
-  netitorInput: (e) => {
-    if (NNE.cm.isReadOnly()) window.utils._Convo('tutorial-pause-to-edit')
-  },
-
   hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
     const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
+  },
+
+  netitorToString: () => {
+    const html = NNE.code
+    const lines = String(html).replace(/\r\n?/g, '\n').split('\n')
+
+    const escaped = lines.map(line => {
+      // turn leading spaces into \t per two spaces
+      const m = line.match(/^ +/)
+      let head = ''
+      if (m) {
+        const n = m[0].length
+        head = '\\t'.repeat(Math.floor(n / 2)) + (n % 2 ? ' ' : '')
+        line = line.slice(n)
+      }
+      // escape only double quotes; leave backslashes alone
+      return head + line.replace(/"/g, '\\"')
+    })
+
+    // join with literal \n between lines
+    console.log(escaped.join('\\n'))
+  },
+
+  autoType: (code, template, speed = 60) => {
+    const normalize = s => (s || '')
+      .replace(/\\t/g, '\t')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+
+    // turn escaped sequences into real chars
+    let src = normalize(code)
+    let tpl = normalize(template)
+
+    // b/c the netitor does not indent with tabs
+    // -> NNE.cm.getOption('indentWithTabs') === fasle
+    const i = NNE.cm.getOption('indentUnit') || 2
+    const tab = ' '.repeat(i)
+    src = src.replace(/\t/g, tab)
+    tpl = tpl.replace(/\t/g, tab)
+
+    // ensure typing code is always visible
+    const startLine = tpl.split('\n').findIndex(str => str.includes('{{code}}'))
+    const jumpToLine = (line) => {
+      const coords = NNE.cm.charCoords({ line, ch: 0 }, 'local')
+      NNE.cm.getScrollerElement().scrollTop = coords.top
+    }
+
+    // instead of using "NNE.coe = ..." b/c it clashes with jumpToLine()
+    const setValuePreserveView = value => {
+      const info = NNE.cm.getScrollInfo()
+      const sels = NNE.cm.listSelections()
+      NNE.cm.operation(() => {
+        NNE.cm.setValue(value)
+        NNE.cm.setSelections(sels)
+        NNE.cm.scrollTo(info.left, info.top)
+      })
+    }
+
+    let idx = 0
+    const chars = Array.from(src)
+    const type = () => {
+      const cstr = chars.slice(0, idx).join('')
+      const newVal = tpl ? tpl.replace('{{code}}', cstr) : cstr
+      setValuePreserveView(newVal)
+      // if line is not visible
+      const lastLine = startLine + src.split('\n').length
+      if (lastLine >= NNE.getVisibleRange().bottom) jumpToLine(lastLine)
+      // if we've got more chars, set timer for next key stroke
+      if (idx <= chars.length) {
+        window.utils.cancelAutoType()
+        window.utils._autoTypeTimer = setTimeout(type, speed)
+      }
+      idx++
+    }
+
+    type()
+  },
+
+  cancelAutoType: () => {
+    if (window.utils._autoTypeTimer) clearTimeout(window.utils._autoTypeTimer)
   },
 
   scrollToLines: (arr, ch) => {

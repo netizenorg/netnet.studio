@@ -229,7 +229,7 @@ class SearchBar extends HTMLElement {
               word: tut.title,
               alts: tut.keywords,
               clck: () => {
-                WIDGETS.open('learning-guide', w => w.load(name))
+                WIDGETS.load('hyper-video-player', w => w.load(name))
               }
             })
             update()

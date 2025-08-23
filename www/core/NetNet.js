@@ -642,6 +642,7 @@ class NetNet {
         let wig = false
         if (this.title.dataset.project) wig = 'project-files'
         else if (this.title.dataset.demo) wig = 'demo-toc'
+        else if (this.title.dataset.template) wig = 'template-projects'
         if (!wig) return
         const path = this.title.textContent
         WIDGETS[wig].explainTitleBar(path)
@@ -649,6 +650,7 @@ class NetNet {
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
+      delete this.title.dataset.template
       delete this.title.dataset.unsaved
       delete this.title.dataset.project
       delete this.title.dataset.demo
