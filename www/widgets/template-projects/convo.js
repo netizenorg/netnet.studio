@@ -18,7 +18,7 @@ window.CONVOS['template-projects'] = (self) => {
 
   return [
     {
-      id: 'start',
+      id: 'template-widget-open',
       graph: { id: 1, x: 25, y: 25 },
       content: 'This widget contains a collection of templates which serve as starting points for new web projects. Some contain only a single HTML file while others contain multiple files. Click "Begin Guide" if you\'d like me to explain it to you, or click "Open Completed Template" if you simply want to use it as the basis of a new project.',
       options: {

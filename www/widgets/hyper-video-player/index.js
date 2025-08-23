@@ -14,7 +14,7 @@ class HyperVideoPlayer extends Widget {
 
     this.keyframes = {}
     this.timecodes = []
-    this.sid = null // play session id TODO what's this for?
+    this.sid = null // play session id TODO what's this for? just old analytics?
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -24,7 +24,7 @@ class HyperVideoPlayer extends Widget {
       }
     })
 
-    // this.on('open', () => {
+    // this.on('open', () => { // TODO: can probably remove, just old analytics
     //   this.sid = Date.now().toString(36) + Math.random().toString(36).substr(2)
     // })
 
@@ -70,9 +70,10 @@ class HyperVideoPlayer extends Widget {
       this.metadata = json
       this.loaded = name
       utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['project-files']?.projectData.name) { // TODO: confirm first
-        WIDGETS['project-files'].closeProject()
+      if (WIDGETS['project-files']?.projectData.name) {
+        // TODO: confirm first that we want to close project
       }
+      utils.cancelAllNetitorUses('hyper-video-player')
       utils.setCustomRenderer(`tutorials/${name}/`)
       utils.get(`tutorials/${name}/data.json`, (json) => {
         this.data = json

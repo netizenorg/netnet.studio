@@ -17,7 +17,8 @@ class TemplateProjects extends Widget {
 
     Convo.load(this.key, () => {
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'start')
+      if (window.convo?.id === 'load-template') return
+      window.convo = new Convo(this.convos, 'template-widget-open')
     })
 
     utils.get('/api/templates', (res) => {
@@ -54,7 +55,7 @@ class TemplateProjects extends Widget {
     this.state = { name }
     this._tempName = name
 
-    if (!this.codeEdit) this._setupCodeUpdateListener()
+    // if (!this.codeEdit) this._setupCodeUpdateListener()
     if (typeof window.CONVOS[this.key] !== 'function') {
       Convo.load(this.key, () => {
         this.convos = window.CONVOS[this.key](this)
@@ -88,6 +89,7 @@ class TemplateProjects extends Widget {
     this.cancel()
     this.close()
     if (!this.codeEdit) this._setupCodeUpdateListener()
+    utils.cancelAllNetitorUses('template-projects')
 
     const template = await utils.getSync(`/api/template/${name}`)
     const prevName = this.state.name
@@ -140,6 +142,7 @@ class TemplateProjects extends Widget {
 
   async displayTemplate (name) {
     if (!name && this.state.name) name = this.state.name
+    utils.cancelAllNetitorUses('template-projects')
 
     window.convo.hide()
     this.cancel()
@@ -193,6 +196,7 @@ class TemplateProjects extends Widget {
 
   _setupCodeUpdateListener () {
     const codeEdit = () => {
+      if (Object.keys(this.state).length < 0) return this.cancel()
       const selected = 'index.html' // TODO switch when swapping diff files
       this.state.files[selected] = NNE.code
     }

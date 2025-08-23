@@ -444,6 +444,7 @@ class ProjectFiles extends Widget {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
     } else {
+      utils.cancelAllNetitorUses('project-files')
       WIDGETS['student-session'].clearSaveState()
       const owner = WIDGETS['student-session'].getData('owner')
       if (this.projectData.name) this.closeProject()
@@ -1185,6 +1186,7 @@ class ProjectFiles extends Widget {
   // ------- functions which run after user dialogue with context menu functions
 
   _postNewRepo (c, t, v) {
+    utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
     const user = WIDGETS['student-session'].getData('owner')
     const indexData = utils.starterCode() === NNE.code || NNE.code === ''

@@ -97,14 +97,44 @@ class HtmlReference extends Widget {
     window.convo = new Convo({ content, options }, null, true)
   }
 
-  async toggleIntroPresentation () {
+  inPresentation () {
+    return this.slide.style.overflowY === 'hidden'
+  }
+
+  toggleIntroPresentation () {
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
+    }
+
+    const isStarterCode = NNE.code === utils.starterCode()
+    if (isStarterCode) return this._toggleIntroPresentation()
+
+    if (WIDGETS['project-files']?.projectData.name) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    const workingOnDemoOrTemplate = typeof utils.url.demo === 'string' ||
+      typeof utils.url.template === 'string'
+    if (workingOnDemoOrTemplate) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    this._toggleIntroPresentation()
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  async _toggleIntroPresentation () {
     const div = this.slide.querySelector('div')
     const ntro = div.querySelector('.html-reference-widget--guided-intro')
     const btn = div.querySelector('.html-reference-widget--intro-btn')
     const p = div.querySelector('.html-reference-widget--intro-p')
     const svg = div.querySelector('svg-tag-animated')
 
-    if (this.slide.style.overflowY === 'hidden') { // displaying presentation
+    if (this.inPresentation()) { // displaying presentation
       //                             (toggle into regular HTML Reference page)
       NNE.code = utils.starterCode()
       NNE.update()
@@ -127,7 +157,7 @@ class HtmlReference extends Widget {
       btn.style.opacity = 1
       p.style.opacity = 1
     } else { // displaying ref (toggle into presentation)
-      if (WIDGETS['learning-guide']?.opened) WIDGETS['learning-guide'].close()
+      utils.cancelAllNetitorUses('html-reference')
       this.slide.style.overflowY = 'hidden'
       svg.style.cursor = 'pointer'
       btn.style.opacity = 0
@@ -147,9 +177,6 @@ class HtmlReference extends Widget {
       ntro.style.opacity = 1
     }
   }
-
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createHTML () {
     if (!utils.customElementReady('widget-slide')) {

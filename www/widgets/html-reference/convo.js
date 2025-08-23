@@ -4,13 +4,18 @@ window.CONVOS['html-reference'] = (self) => {
   return [
     {
       id: 'start-guide',
-      graph: { id: 1, x: 100, y: 25 },
+      graph: { id: 1, x: 200, y: 25 },
       layout: 'welcome',
       before: () => {
         NNW.menu.switchFace('default')
       },
       after: () => {
-        NNW.update({ top: nn.height / 2 - NNW.height / 2, left: 200 }, 500)
+        utils.afterLayoutTransition(() => {
+          NNW.update({
+            top: nn.height / 2 - NNW.height / 2,
+            left: nn.width / 2 - NNW.width
+          }, 500)
+        })
       },
       code: '<!DOCTYPE html>\n<style>\n  /* netnet default bg */\n  body {\n    margin: 0;\n    background-image: linear-gradient(#515199a8 2px, transparent 1px),\n      linear-gradient(90deg, #515199a8 2px, transparent 1px);\n    background-size: 50px 50px;\n    position: relative;\n    z-index: 1;\n    overflow: hidden;\n    transition: background 2s ease;\n  }\n\n  body::before {\n    content: "";\n    position: absolute;\n    z-index: -1;\n    width: 100vw;\n    height: 100vh;\n    background: linear-gradient(0deg, #c76ebca8, #515199a8);\n    transition: opacity 2s ease; /* fade effect */\n  }\n\n  /* When faded */\n  body.fade-white {\n    background: white;\n  }\n  body.fade-white::before {\n    opacity: 0;\n  }\n</style>\n\n<script>\n  setTimeout(() => {\n    document.body.classList.add(\'fade-white\')\n  }, 1000)\n</script>\n',
       edit: true,
@@ -22,7 +27,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'other-markup',
-      graph: { id: 3, x: 25, y: 150 },
+      graph: { id: 3, x: 125, y: 150 },
       content: 'Yes, for example <a href="https://developer.mozilla.org/en-US/docs/Web/MathML" target="_blank">MathML</a> and <a href="https://svg-tutorial.com/" target="_blank">SVG</a> which you\'ll surely run into at some point in your journey. There are even artist made markup languages like <a href="https://en.wikipedia.org/wiki/Graffiti_Markup_Language" target="_blank">GML</a> (Graffiti Markup Language) by the <a href="https://www.evan-roth.com/~/works/graffiti-research-lab-g-r-l/#hemisphere=west&ratio=0.177&strand=106" target="_blank">Graffiti Research Lab</a>',
       options: {
         'I see': (e) => e.goTo('syntax')
@@ -30,7 +35,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'syntax',
-      graph: { id: 2, x: 175, y: 150 },
+      graph: { id: 2, x: 275, y: 150 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(0)
       },
@@ -43,7 +48,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'syntax2',
-      graph: { id: 6, x: 325, y: 150 },
+      graph: { id: 6, x: 425, y: 150 },
       content: 'In code, <i>syntax</i> is like the grammar and punctuation rules of a programming language. It’s the specific way you have to write code so the computer can understand and run it.',
       options: {
         'I see': (e) => e.goTo('names')
@@ -51,7 +56,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'hr',
-      graph: { id: 4, x: 175, y: 450 },
+      graph: { id: 4, x: 275, y: 450 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(1)
       },
@@ -65,7 +70,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'names',
-      graph: { id: 5, x: 175, y: 300 },
+      graph: { id: 5, x: 275, y: 300 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(0)
       },
@@ -79,7 +84,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'meta',
-      graph: { id: 7, x: 175, y: 600 },
+      graph: { id: 7, x: 275, y: 600 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(2)
       },
@@ -93,7 +98,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'input',
-      graph: { id: 8, x: 375, y: 300 },
+      graph: { id: 8, x: 475, y: 300 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(3)
       },
@@ -107,7 +112,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'input-default',
-      graph: { id: 9, x: 375, y: 450 },
+      graph: { id: 9, x: 475, y: 450 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(4)
         setTimeout(() => self.$('svg-tag-animated').updateHTML(5), 1000)
@@ -123,7 +128,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'attr-intro',
-      graph: { id: 10, x: 375, y: 600 },
+      graph: { id: 10, x: 475, y: 600 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(7)
       },
@@ -137,7 +142,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'attr2',
-      graph: { id: 11, x: 575, y: 300 },
+      graph: { id: 11, x: 675, y: 300 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(8)
       },
@@ -151,7 +156,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'other-types',
-      graph: { id: 12, x: 575, y: 450 },
+      graph: { id: 12, x: 675, y: 450 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(9)
         setTimeout(() => self.$('svg-tag-animated').updateHTML(10), 1000)
@@ -166,7 +171,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'singleton',
-      graph: { id: 13, x: 575, y: 600 },
+      graph: { id: 13, x: 675, y: 600 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(11)
       },
@@ -180,7 +185,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'tags',
-      graph: { id: 14, x: 775, y: 300 },
+      graph: { id: 14, x: 875, y: 300 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(12)
       },
@@ -192,7 +197,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'element-parts',
-      graph: { id: 15, x: 775, y: 450 },
+      graph: { id: 15, x: 875, y: 450 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(13)
       },
@@ -206,7 +211,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'h1-ele',
-      graph: { id: 16, x: 775, y: 600 },
+      graph: { id: 16, x: 875, y: 600 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(14)
       },
@@ -220,7 +225,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'p-ele',
-      graph: { id: 17, x: 775, y: 750 },
+      graph: { id: 17, x: 875, y: 750 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(15)
       },
@@ -234,7 +239,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'a-ele',
-      graph: { id: 18, x: 775, y: 900 },
+      graph: { id: 18, x: 875, y: 900 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(16)
       },
@@ -248,7 +253,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'href',
-      graph: { id: 19, x: 775, y: 1075 },
+      graph: { id: 19, x: 875, y: 1075 },
       before: () => {
         self.$('svg-tag-animated').updateHTML(17)
       },
@@ -263,7 +268,7 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'anchor',
-      graph: { id: 20, x: 1000, y: 1125 },
+      graph: { id: 20, x: 1100, y: 1125 },
       code: '<a href="https://netizen.org">my web site</a>',
       edit: true,
       content: 'It\'s called "anchor" because, although it\'s most common use is to jump to another web page, it can also be used to jump to a specific <i>anchored</i> section of the same web page. The <code>a</code> element could be used to create a hyperlink to other files, email addresses and phone numbers as well.',
@@ -273,18 +278,18 @@ window.CONVOS['html-reference'] = (self) => {
     },
     {
       id: 'anchor2',
-      graph: { id: 21, x: 1025, y: 975 },
+      graph: { id: 21, x: 1100, y: 975 },
       code: '<a href="https://netizen.org">my web site</a>',
       edit: true,
       content: 'That\'s a bit too in the weeds for now. We\'ll cover that in another tutorial once we start writing our own code. Speaking of which, now that you know the basics of HTML shall we try writing our first web page?',
       options: {
-        'let\'s do it!': (e) => e.goTo('write-code'),
+        'let\'s do it!': (e) => WIDGETS.load('template-projects', w => w.loadTemplate('html-basic')),
         'go back': (e) => e.goTo('href')
       }
     },
     {
       id: 'end',
-      graph: { id: 22, x: 775, y: 1225 },
+      graph: { id: 22, x: 875, y: 1225 },
       code: '<a href="https://netizen.org">my web site</a>',
       edit: true,
       content: 'While there are plenty more HTML <i>elements</i> as well as plenty more <i>attributes</i> we can apply to those <i>elements</i>, there isn\'t really much more to know about HTML syntax. The rest is all about how we piece them together.',
@@ -299,6 +304,17 @@ window.CONVOS['html-reference'] = (self) => {
           })
         },
         'go back': (e) => e.goTo('href')
+      }
+    },
+    {
+      id: 'confirm-start',
+      graph: { id: 23, x: 50, y: 25 },
+      content: 'Seems like you might be working on some code, I\'ll be replacing the code in my editor once we start this guide, are you sure you want to do that?',
+      options: {
+        'yes, go ahead': (e) => {
+          self._toggleIntroPresentation()
+        },
+        'oh, never mind': (e) => e.hide()
       }
     }
   ]

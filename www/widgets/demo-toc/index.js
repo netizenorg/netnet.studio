@@ -45,8 +45,8 @@ class DemoToc extends Widget {
     }
   }
 
-  cancel () {
-    if (this.opened) {
+  cancel (force) {
+    if (this.opened || force) {
       this.code = null
       this.codeLength = 0
       this.demoKey = null
@@ -89,10 +89,6 @@ class DemoToc extends Widget {
     this.layout = obj.layout
     this.info = obj.info
 
-    if (WIDGETS['hyper-video-player']?.opened) {
-      WIDGETS['hyper-video-player'].close()
-    }
-
     const isStarterCode = NNE.code === utils.starterCode()
     if (isStarterCode) return this._displayDemo()
 
@@ -115,6 +111,8 @@ class DemoToc extends Widget {
   }
 
   _displayDemo () {
+    utils.cancelAllNetitorUses('demo-toc')
+
     NNE.code = this.code
 
     const needsTransition = (this.layout && NNW.layout !== this.layout) ||
@@ -125,14 +123,6 @@ class DemoToc extends Widget {
 
     if (WIDGETS['demo-sketches'] && WIDGETS['demo-sketches'].opened) {
       WIDGETS['demo-sketches'].close()
-    }
-
-    if (WIDGETS['learning-guide'] && WIDGETS['learning-guide'].opened) {
-      WIDGETS['learning-guide'].close()
-    }
-
-    if (WIDGETS['project-files']?.projectData.name) {
-      WIDGETS['project-files'].closeProject()
     }
 
     utils.setCustomRenderer(null)

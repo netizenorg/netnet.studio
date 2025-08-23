@@ -512,6 +512,51 @@ window.utils = {
   // netitor stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
+  cancelAllNetitorUses: (exception) => {
+    const hasException = (s) => {
+      if (exception instanceof Array) {
+        return exception.includes(s)
+      } else if (typeof exception === 'string') {
+        return s === exception
+      } else return false
+    }
+
+    // cancel everything below (unless it's in the exception list)
+
+    if (!hasException('demo-toc')) {
+      if (WIDGETS['demo-toc']?.demoKey) WIDGETS['demo-toc'].cancel(true)
+    }
+
+    if (!hasException('template-projects')) {
+      if (WIDGETS['template-projects']) WIDGETS['template-projects'].cancel()
+    }
+
+    if (!hasException('hyper-video-player')) {
+      if (WIDGETS['hyper-video-player']?.opened) {
+        WIDGETS['hyper-video-player'].close()
+      }
+    }
+
+    if (!hasException('learning-guide')) {
+      if (WIDGETS['learning-guide'] && WIDGETS['learning-guide'].opened) {
+        WIDGETS['learning-guide'].close()
+      }
+    }
+
+    const introGuides = ['html-reference']
+    introGuides.forEach(guide => {
+      if (!hasException(guide)) {
+        if (WIDGETS[guide]?.opened) WIDGETS[guide].close()
+      }
+    })
+
+    if (!hasException('project-files')) {
+      if (WIDGETS['project-files']?.projectData.name) {
+        WIDGETS['project-files'].closeProject()
+      }
+    }
+  },
+
   // main.js listens for these errors + sends them to 'code-review' widget
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
