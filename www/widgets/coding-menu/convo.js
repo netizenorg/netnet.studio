@@ -3,21 +3,27 @@ window.CONVOS['coding-menu'] = (self) => {
   const hotkey = nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   const shareGhURL = (opts) => {
     opts = opts || {}
-    const repo = WIDGETS['student-session'].getData('opened-project')
     const owner = WIDGETS['student-session'].getData('owner')
-    const branch = WIDGETS['student-session'].getData('branch')
+    const repo = WIDGETS['project-files']?.projectData.name
+    const branch = WIDGETS['project-files']?.projectData.branch
     const root = window.location.protocol + '//' + window.location.host
     return `${root}/?gh=${owner}/${repo}/${branch}`
   }
 
   const a = (() => {
-    const ss = WIDGETS['student-session']
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
     if (utils.url.github) {
       return utils.url.github.split('/')
-    } else if (ss.getData('opened-project')) {
-      return [ss.getData('owner'), ss.getData('opened-project')]
+    } else if (repo) {
+      return [owner, repo]
     } else return []
   })()
+
+  /*
+
+  This was the old save options for when netnet used to say:
+  I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.
 
   const sessionSaveOpts = () => {
     const opts = {
@@ -32,6 +38,22 @@ window.CONVOS['coding-menu'] = (self) => {
       opts['can I create a new project?'] = () => self._newProject()
     }
     opts['session data?'] = () => WIDGETS.open('student-session')
+    return opts
+  }
+  */
+
+  const sessionSaveOpts = () => {
+    const opts = {
+      'download sketch as HTML file': (e) => {
+        e.hide()
+        self.downloadCode()
+      },
+      'share sketch as a netnet URL': (e) => WIDGETS.open('share-widget')
+    }
+    if (window.localStorage.getItem('owner')) {
+      opts['create a new GitHub project'] = () => self._newProject()
+    }
+    opts['never mind'] = (e) => e.hide()
     return opts
   }
 
@@ -54,7 +76,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'session-saved',
-    content: 'I\'ve saved the current state of the studio to <b>Your Session Data</b>. If you quit now and come back later to sketch, I\'ll give you the option to pick back up where you left off.',
+    content: 'I can save this code for you a few different ways, which would you prefer?',
     options: sessionSaveOpts()
   }, {
     id: 'chatty-level-low',
@@ -79,13 +101,11 @@ window.CONVOS['coding-menu'] = (self) => {
     options: {
       'new sketch': (e) => {
         if (WIDGETS['project-files']?.changes.length > 0) return e.goTo('save-reminder-b4-sketch')
-        WIDGETS['student-session'].clearProjectData()
         if (NNE.code === '') e.goTo('already-blank-sketch')
         else self._newSketch()
       },
       'new project': (e) => {
         if (WIDGETS['project-files']?.changes.length > 0) return e.goTo('save-reminder-b4-proj')
-        WIDGETS['student-session'].clearProjectData()
         self._newProject()
       },
       'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew')
@@ -96,13 +116,13 @@ window.CONVOS['coding-menu'] = (self) => {
     options: {
       'new sketch': (e) => {
         if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-sketch')
-        WIDGETS['student-session'].clearProjectData()
+        WIDGETS['project-files'].closeProject()
         if (NNE.code === '') e.goTo('already-blank-sketch')
         else self._newSketch()
       },
       'new project': (e) => {
         if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-proj')
-        WIDGETS['student-session'].clearProjectData()
+        WIDGETS['project-files'].closeProject()
         self._newProject()
       },
       'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew')
@@ -113,7 +133,7 @@ window.CONVOS['coding-menu'] = (self) => {
     options: {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {
-        WIDGETS['student-session'].clearProjectData()
+        WIDGETS['project-files'].closeProject()
         if (NNE.code === '') e.goTo('already-blank-sketch')
         else self._newSketch()
       }
@@ -124,7 +144,7 @@ window.CONVOS['coding-menu'] = (self) => {
     options: {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {
-        WIDGETS['student-session'].clearProjectData()
+        if (WIDGETS['project-files']) WIDGETS['project-files'].closeProject()
         self._newProject()
       }
     }
@@ -225,7 +245,7 @@ window.CONVOS['coding-menu'] = (self) => {
   },
   {
     id: 'open-logged-in-proj',
-    content: `You currently have your project "${WIDGETS['student-session'].getData('opened-project')}" open, do you want to close it and open a new one? Remember, you can only work on 1 project at a time (if you have project opened on another tab, there will be bugs).`,
+    content: `You currently have your project "${WIDGETS['project-files']?.projectData.name}" open, do you want to close it and open a new one? Remember, you can only work on 1 project at a time (if you have project opened on another tab, there will be bugs).`,
     options: {
       'no, never mind': (e) => e.hide(),
       'yes, open a new one': (e) => {
@@ -274,9 +294,18 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'publish-to-web?',
-    content: `You could always <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/${WIDGETS['student-session'].getData('branch')}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved on your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
+    content: `You could always <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/archive/refs/heads/${WIDGETS['project-files']?.projectData.branch}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved on your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
     options: {
-      'yes please!': (e) => WIDGETS['project-files'].publishProject(),
+      'yes, publish it!': (e) => WIDGETS['project-files'].publishProject(),
+      'download it instead': (e) => {
+        const owner = WIDGETS['student-session'].getData('owner')
+        const repo = WIDGETS['project-files']?.projectData.name
+        const branch = WIDGETS['project-files']?.projectData.branch || 'main'
+        const zip = `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`
+        const a = nn.create('a').set({ href: zip, target: '_blank' }).addTo('body')
+        a.click()
+        a.remove()
+      },
       'oh, no thanks': (e) => e.hide()
     }
   }, {

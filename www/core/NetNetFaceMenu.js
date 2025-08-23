@@ -32,9 +32,10 @@ class NetNetFaceMenu {
       },
       guide: {
         path: 'images/menu/tutorials.png',
+        width: '73%',
         click: () => {
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('learning-guide', w => w.scrollTo('top'))
+          WIDGETS.open('learning-guide', w => w.scrollTo(0))
         }
       }
     }
@@ -187,10 +188,12 @@ class NetNetFaceMenu {
         return
       }
       for (const key in this.itemOpts) {
+        const o = this.itemOpts[key]
         const item = document.createElement('menu-item')
         item.setAttribute('title', key)
-        item.setAttribute('icon', this.itemOpts[key].path)
-        item.addEventListener('click', () => this.itemOpts[key].click())
+        item.setAttribute('icon', o.path)
+        item.addEventListener('click', () => o.click())
+        if (o.width) item.setAttribute('w', o.width)
         this.items.appendChild(item)
       }
     }

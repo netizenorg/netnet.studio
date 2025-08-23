@@ -24,7 +24,8 @@ const aliasRoutes = [
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
   { url: '/videos/*', loc: '../www/assets/videos/' },
   { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' },
-  { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' }
+  { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' },
+  { url: '/templates/*', loc: '../data/templates/' }
 ]
 
 const images = fs.readdirSync(path.join(__dirname, '../www/assets/images'))
@@ -321,11 +322,77 @@ router.get('/api/demos', (req, res) => {
       key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
     }
   })
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
   res.json({ success: 'success', data: dict })
+})
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES
+
+async function listFilesRecursive (dir, root = dir) {
+  const out = []
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true })
+  for (const e of entries) {
+    if (e.name === '.DS_Store') continue
+    const full = path.join(dir, e.name)
+    if (e.isDirectory()) {
+      out.push(...await listFilesRecursive(full, root))
+    } else if (e.isFile()) {
+      // make it relative to `root` and normalize to forward slashes
+      const rel = path.relative(root, full).replace(/\\/g, '/')
+      out.push(rel)
+    }
+  }
+  return out
+}
+
+router.get('/api/templates', async (req, res) => {
+  try {
+    const base = path.join(__dirname, '../data/templates')
+    let order = []
+    let buildOn = {}
+    try {
+      const text = await fs.promises.readFile(path.join(base, 'list.json'), 'utf8')
+      const dict = JSON.parse(text)
+      order = Array.isArray(dict.published) ? dict.published : []
+      buildOn = dict['build-on'] || {}
+    } catch (err) {
+      console.log('Failed to find template list.json')
+    }
+
+    const list = {}
+    for (const name of order) {
+      try {
+        const file = path.join(base, name, 'data.json')
+        const text = await fs.promises.readFile(file, 'utf8')
+        const json = JSON.parse(text)
+        list[name] = { description: json.description, multifile: json.multifile }
+      } catch (err) { /* skip missing/invalid data.json */ }
+    }
+
+    res.json({ success: true, data: { list, buildOn } })
+  } catch (err) {
+    console.error('Failed to list templates:', err)
+    res.status(500).json({ success: false, error: 'Failed to load templates' })
+  }
+})
+
+router.get('/api/template/:template', async (req, res) => {
+  const name = req.params.template
+  try {
+    const base = path.join(__dirname, '../data/templates', name)
+    const text = await fs.promises.readFile(path.join(base, 'data.json'), 'utf8')
+    const data = JSON.parse(text)
+    const filesDir = path.join(base, 'files')
+    let files = []
+    try {
+      files = await listFilesRecursive(filesDir)
+    } catch (e) { /* folders missing "files" fail silently */ }
+
+    data.files = files
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('Failed to load template:', err)
+    res.status(500).json({ success: false, error: 'Failed to load templates' })
+  }
 })
 
 // ************************
@@ -372,10 +439,11 @@ router.use(express.static(path.join(__dirname, '../data/browserfest-thumbnails')
 router.get('/api/browserfest/submissions', (req, res) => {
   const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
   const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
+  // NOTE: this will overwrite our "utils.corsGate" (leaving here for future ref)
+  // res.set({
+  //   'Access-Control-Allow-Origin': '*',
+  //   'Access-Control-Allow-Methods': 'GET'
+  // })
   const msg = 'welcome h4x0r! to BrowserFest\'s API, here\'s that R4W data!'
   if (bfsubs) res.json({ success: msg, data: bfsubs })
   else res.json({ error: 'there was an error with the database.' })

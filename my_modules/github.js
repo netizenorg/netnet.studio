@@ -204,6 +204,10 @@ router.get('/api/github/username', (req, res) => {
   makeRequest(req, res, 'get-username', {})
 })
 
+router.get('/api/github/readme-template', (req, res) => {
+  res.json({ success: true, message: README_TEMPLATE })
+})
+
 router.get('/api/github/saved-projects', (req, res) => {
   // 100 is the max... TODO: we'll have to paginate for larger lists
   const obj = { type: 'owner', sort: 'created', per_page: 100 }
@@ -419,6 +423,55 @@ router.post('/api/github/gh-pages', (req, res) => {
     }).catch(err => {
       res.json({ success: false, message: 'error updating ghpages', error: err })
     })
+  })
+})
+
+// CREATE NEW REPO FROM TEMPLATE DATA
+router.post('/api/github/new-repo-from-template', (req, res) => {
+  const { name, user, files, message } = req.body
+  if (typeof name !== 'string' || typeof user !== 'string' || typeof files !== 'object' || !files) {
+    return res.json({ success: false, message: 'Missing or invalid name, user, or files' })
+  }
+
+  decryptToken(req, res, async octokit => {
+    try {
+      // 1) create empty repo
+      const repoRes = await octokit.request('POST /user/repos', {
+        name,
+        description: '◕ ◞ ◕ This project was made using https://netnet.studio',
+        auto_init: false
+      })
+
+      const owner = repoRes.data.owner.login
+      const repo = repoRes.data.name
+      const branch = repoRes.data.default_branch || 'main'
+
+      // 2) commit each file (creates initial commit on first PUT)
+      const entries = Object.entries(files) // [[path, content], ...]
+      // optional: keep deterministic order
+      entries.sort((a, b) => a[0].localeCompare(b[0]))
+
+      for (const [pathRel, contentVal] of entries) {
+        let base64
+        if (contentVal && typeof contentVal === 'object' && contentVal.base64) {
+          // binary provided by client, already base64
+          base64 = contentVal.base64
+        } else {
+          // plain text -> encode here
+          base64 = Buffer.from(String(contentVal), 'utf8').toString('base64')
+        }
+
+        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+          owner, repo, path: pathRel, message, content: base64, branch
+        })
+      }
+
+      res.json({
+        success: true, owner, repo, branch, url: repoRes.data.html_url, files: Object.keys(files)
+      })
+    } catch (err) {
+      res.json({ success: false, message: 'error creating repo from files', error: err.response?.data || err })
+    }
   })
 })
 

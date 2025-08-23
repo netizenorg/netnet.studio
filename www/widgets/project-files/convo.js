@@ -11,18 +11,17 @@ window.CONVOS['project-files'] = (self) => {
   }
 
   const a = (() => {
-    const ss = WIDGETS['student-session']
     if (utils.url.github) {
       return utils.url.github.split('/')
-    } else if (ss.getData('opened-project')) {
-      return [ss.getData('owner'), ss.getData('opened-project')]
+    } else if (self.projectData.name) {
+      return [WIDGETS['student-session'].getData('owner'), self.projectData.name]
     } else return []
   })()
 
   const gh = (() => {
     const u = WIDGETS['student-session'].getData('username')
     const o = WIDGETS['student-session'].getData('owner')
-    const p = WIDGETS['student-session'].getData('opened-project')
+    const p = self.projectData.name
     return { u, o, p, url: `https://github.com/${o}/${p}` }
   })()
 
@@ -76,7 +75,8 @@ window.CONVOS['project-files'] = (self) => {
 
   let tempName = null
   const validateFName = (c, t, f, rename) => {
-    const v = tempName = t.$('input').value
+    const v = t.$('input').value
+    tempName = v
     const a = v.split('.')
     const e = a[a.length - 1]
     const validExt = Object.keys(self.mimeTypes).includes(e)
@@ -130,6 +130,11 @@ window.CONVOS['project-files'] = (self) => {
       opts['index.html?'] = (e) => e.goTo('netnet-title-ex-index')
     } else if (type === 'readme') {
       opts['README.md?'] = (e) => e.goTo('netnet-title-ex-readme')
+    }
+    opts['quit this project'] = (e) => {
+      if (NNW.title.dataset.unsaved) e.goTo('confirm-quit-unsaved')
+      else if (self.changes.length > 0) e.goTo('confirm-quit-changes')
+      else { self.closeProject(); e.hide() }
     }
     return opts
   }
@@ -187,6 +192,28 @@ window.CONVOS['project-files'] = (self) => {
       ok: (e) => e.hide()
     }
   },
+  {
+    id: 'confirm-quit-unsaved',
+    content: 'It looks like you have some unsaved changes in this file, are you sure you want to quit this project? You will loose any unsaved changes.',
+    options: {
+      'oh, never mind': (e) => e.hide(),
+      'yes, quit project anyways': (e) => {
+        self.closeProject()
+        e.hide()
+      }
+    }
+  },
+  {
+    id: 'confirm-quit-changes',
+    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. If you don\'t commit and "git push" those changes before quitting then you\'ll loose that progress.',
+    options: {
+      'oh, never mind': (e) => e.hide(),
+      'yes, quit project anyways': (e) => {
+        self.closeProject()
+        e.hide()
+      }
+    }
+  },
   // -------------------------- creating a new project -------------------------
   {
     id: 'unsaved-changes-b4-fork-proj',
@@ -216,7 +243,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You've saved changes to your current project "${WIDGETS['student-session'].getData('opened-project')}" which have not been backed up to GitHub. You should commit and "git push" those first.`,
+    content: `You've saved changes to your current project "${self.projectData.name}" which have not been backed up to GitHub. You should commit and "git push" those first.`,
     options: {
       ok: (e) => WIDGETS.open('git-push'),
       'no, I\'ll discard the changes': (e) => e.goTo('create-new-project'),
@@ -230,12 +257,13 @@ window.CONVOS['project-files'] = (self) => {
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
-      }
+      },
+      'never mind': (e) => e.hide()
     }
   }, {
     id: 'create-new-project',
     before: () => {
-      WIDGETS['student-session'].clearProjectData()
+      self.closeProject()
       NNW.menu.switchFace('default')
     },
     content: 'What would you like this new project to be called? <input placeholder="project-name">',
@@ -260,13 +288,13 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'new-project-created',
-    content: `Your project "<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">${WIDGETS['student-session'].getData('opened-project')}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. You can now upload and create additional files as a part of this project.`,
+    content: `Your project "<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">${self.projectData.name}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. You can now upload and create additional files as a part of this project.`,
     options: {
       'cool!': (e) => e.hide()
     }
   }, {
     id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${WIDGETS['student-session'].getData('ghpages')}" target="_blank">${WIDGETS['student-session'].getData('ghpages')}</a>. From now on everytime you "push" updates to your GitHub repo it will automatically update your published site as well. It usually takes a few minutes before the updates show up on the live site, you can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/actions" target="_blank">view the deployment progress here</a>.`,
+    content: `Your project is live at <a href="${self.projectData.ghpages}" target="_blank">${self.projectData.ghpages}</a>. From now on everytime you "push" updates to your GitHub repo it will automatically update your published site as well. It usually takes a few minutes before the updates show up on the live site, you can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
     options: {
       'great!': (e) => e.hide(),
       'can I create a custom URL?': (e) => e.goTo('custom-url')
@@ -676,7 +704,7 @@ window.CONVOS['project-files'] = (self) => {
   // -------------------------- misc ----------
   {
     id: 'git-push-not-ready',
-    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['student-session'].getData('opened-project')}" target="_blank">GitHub repo</a>. Try saving your changes locally first.`,
+    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">GitHub repo</a>. Try saving your changes locally first.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }

@@ -1,0 +1,24 @@
+
+.template-proj {
+  overflow-y: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+  max-height: 319px;
+}
+
+.template-proj__file-type {
+  font-style: italic;
+  font-size: 14px;
+  font-weight: normal;
+  float: right;
+}
+
+.template-proj__btns {
+  display: flex;
+  justify-content: end;
+  margin: 10px 0 20px 0;
+}
+
+.template-proj__btns > button {
+  margin-right: 5px;
+}

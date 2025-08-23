@@ -11,8 +11,11 @@ class BrowserFest extends Widget {
 
     this.on('open', () => {
       this.owner = WIDGETS['student-session'].getData('owner')
-      this.repo = WIDGETS['student-session'].getData('opened-project')
-      this.branch = WIDGETS['student-session'].getData('branch')
+      // NOTE: this used to query for 'opened-project' in student-session
+      // but that has since been removed, this has been replaced with
+      // 'project-files' data (but has not been tested)
+      this.repo = WIDGETS['project-files']?.projectData.name
+      this.branch = WIDGETS['project-files']?.projectData.branch
       this._createHTML()
     })
 
@@ -22,7 +25,7 @@ class BrowserFest extends Widget {
   submit () {
     if (this.convos) {
       const owner = WIDGETS['student-session'].getData('owner')
-      const repo = WIDGETS['student-session'].getData('opened-project')
+      const repo = WIDGETS['project-files']?.projectData.name
       if (!owner) {
         window.convo = new Convo(this.convos, 'bf-no-login')
       } else if (!repo) {

@@ -16,40 +16,80 @@ in indexedDB via the project-files widget.
 // NOTE: for debug console visit "about:debugging" in Firefox
 */
 
-// NOTE: these must match values in FilesDB constructor
-// these get overridden on message below (to ensure they are in sync)
-let DB_NAME = 'netnetDB'
-let DB_VERSION = 1
-let STORE_NAME = 'filesStore'
-let OBJ_NAME = 'files'
-let LOG = false
+const DEFAULT_CFG = {
+  dbName: 'netnetDB',
+  dbVersion: 1,
+  storeName: 'filesStore',
+  objName: 'files',
+  log: false
+}
 
-function openDB () {
+// one SW controls all tabs (if multiple projs open); track a config per client
+const clientConfigs = new Map() // clientId -> cfg
+
+async function getCfgForClientAsync (clientId, requestUrl, preferId) {
+  // 1) exact hit
+  if (clientId && clientConfigs.has(clientId)) return clientConfigs.get(clientId)
+
+  // 2) try to “inherit” from a top-level window with same origin
+  const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+  const reqOrigin = new URL(requestUrl).origin
+
+  // If we know which client id we prefer (e.g. resultingClientId for navigations), try that one’s origin first
+  let candidateTop = null
+  if (preferId) {
+    const prefer = await self.clients.get(preferId)
+    if (prefer) {
+      const topWithCfgSameOrigin = all.find(c =>
+        c.frameType === 'top-level' &&
+        new URL(c.url).origin === reqOrigin &&
+        clientConfigs.has(c.id)
+      )
+      candidateTop = topWithCfgSameOrigin || null
+    }
+  }
+  // Otherwise just pick any top-level same-origin client that already registered a cfg
+  if (!candidateTop) {
+    candidateTop = all.find(c =>
+      c.frameType === 'top-level' &&
+      new URL(c.url).origin === reqOrigin &&
+      clientConfigs.has(c.id)
+    ) || null
+  }
+
+  if (candidateTop) {
+    const cfg = clientConfigs.get(candidateTop.id)
+    // cache it for this nested client so future subresource fetches don’t have to search again
+    if (clientId) clientConfigs.set(clientId, cfg)
+    return cfg
+  }
+
+  // 3) no config known → signal “no project” so you fall through to network
+  return null
+}
+
+// prune configs for closed clients
+async function pruneDeadClients () {
+  const alive = new Set((await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).map(c => c.id))
+  for (const id of clientConfigs.keys()) {
+    if (!alive.has(id)) clientConfigs.delete(id)
+  }
+}
+
+function openDB (cfg) {
+  if (cfg?.log) console.log('[SW] openDB', cfg.dbName)
   return new Promise((resolve, reject) => {
-    // Open a database, specifying the name and version
-    const request = indexedDB.open(DB_NAME, DB_VERSION)
-
+    // Open a database, specifying the name and version of specific tab (ie. cfg)
+    const req = indexedDB.open(cfg.dbName, cfg.dbVersion)
     // Handle database upgrades
-    request.onupgradeneeded = function (event) {
-      const db = event.target.result
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME)
-        if (LOG) console.log(`Created object store ${STORE_NAME}`)
-      }
+    req.onupgradeneeded = e => {
+      const db = e.target.result
+      if (!db.objectStoreNames.contains(cfg.storeName)) db.createObjectStore(cfg.storeName)
     }
-
     // Handle successful database opening
-    request.onsuccess = function (event) {
-      const db = event.target.result
-      if (LOG) console.log(`Successfully opened database ${DB_NAME}`)
-      resolve(db)
-    }
-
+    req.onsuccess = e => resolve(e.target.result)
     // Handle errors in opening the database
-    request.onerror = function (event) {
-      console.error(`Failed to open database ${DB_NAME}: ${event.target.errorCode}`)
-      reject(new Error(`Failed to open database ${DB_NAME}: ${event.target.errorCode}`))
-    }
+    req.onerror = e => reject(new Error('Failed to open DB: ' + e.target.error))
   })
 }
 
@@ -94,57 +134,26 @@ function getMimeType (filePath) {
   return mimeTypes[extension]
 }
 
-async function getFileFromIndexedDB (filePath) {
-  try {
-    const db = await openDB()
-    const transaction = db.transaction([STORE_NAME], 'readonly')
-    const store = transaction.objectStore(STORE_NAME)
-    const getRequest = store.get(OBJ_NAME)
-
-    return new Promise((resolve, reject) => {
-      getRequest.onsuccess = (event) => {
-        if (getRequest.result && getRequest.result[filePath]) {
-          resolve(getRequest.result[filePath]) // File exists
-        } else {
-          resolve(false) // File does not exist
-        }
-      }
-
-      getRequest.onerror = (event) => {
-        reject(new Error('Error checking file in IndexedDB'))
-      }
-    })
-  } catch (error) {
-    console.error('Error accessing the database', error)
-    throw new Error('Error accessing the database')
-  }
+async function getKVFromDB (key, cfg) {
+  const db = await openDB(cfg)
+  const tx = db.transaction([cfg.storeName], 'readonly')
+  const store = tx.objectStore(cfg.storeName)
+  return new Promise((resolve, reject) => {
+    const getReq = store.get(key)
+    getReq.onsuccess = () => resolve(getReq.result || false)
+    getReq.onerror = () => reject(new Error('IndexedDB read error'))
+  })
 }
 
-async function getAllFilesFromIndexedDB () {
-  try {
-    const db = await openDB()
-    const transaction = db.transaction([STORE_NAME], 'readonly')
-    const store = transaction.objectStore(STORE_NAME)
-    const getRequest = store.get(OBJ_NAME)
+const getFileFromIndexedDB = async (filePath, cfg) => {
+  const dict = await getKVFromDB(cfg.objName, cfg)
+  if (dict && dict[filePath]) return dict[filePath]
+  return false
+}
 
-    return new Promise((resolve, reject) => {
-      getRequest.onsuccess = () => {
-        if (getRequest.result) {
-          // An object whose keys are file paths and values are your files
-          resolve(getRequest.result)
-        } else {
-          // No files stored yet
-          resolve(false)
-        }
-      }
-      getRequest.onerror = () => {
-        reject(new Error('Error retrieving files from IndexedDB'))
-      }
-    })
-  } catch (error) {
-    console.error('Error accessing the database', error)
-    throw new Error('Error accessing the database')
-  }
+const getAllFilesFromIndexedDB = async (cfg) => {
+  const dict = await getKVFromDB(cfg.objName, cfg)
+  return dict || false
 }
 
 async function generateResponse (filePath, data) {
@@ -247,8 +256,8 @@ function markdownToHtml (md) {
   return md.trim()
 }
 
-async function findFileReferences (filePath) {
-  const files = await getAllFilesFromIndexedDB()
+async function findFileReferences (filePath, cfg) {
+  const files = await getAllFilesFromIndexedDB(cfg)
   const before = ['src="', 'href="', 'url(', 'poster="']
   const result = {}
   if (!files) return result
@@ -275,14 +284,9 @@ async function findFileReferences (filePath) {
 }
 
 // send a message to the client (see _handleServiceWorkerMessage in project-files widget)
-async function postMessage (type, data) {
-  // Get all clients that are currently controlled by the service worker
-  const clients = await self.clients.matchAll({
-    type: 'window',
-    includeUncontrolled: true
-  })
-  // Iterate through clients and send messages
-  for (const client of clients) client.postMessage({ type, data })
+async function postMessageToClient (clientId, type, data) {
+  const c = await self.clients.get(clientId)
+  if (c) c.postMessage({ type, data })
 }
 
 self.addEventListener('install', (event) => {
@@ -295,68 +299,87 @@ self.addEventListener('activate', (event) => {
 
 // receiving messages from the client
 self.addEventListener('message', event => {
-  DB_NAME = event.data.dbName ? event.data.dbName : 'netnetDB'
-  DB_VERSION = event.data.dbVersion ? event.data.dbVersion : 1
-  STORE_NAME = event.data.storeName ? event.data.storeName : 'filesStore'
-  OBJ_NAME = event.data.objName ? event.data.objName : 'files'
-  LOG = event.data.log ? event.data.log : false
-  if (LOG) console.log('message', event.data)
+  const id = event?.source?.id
+  if (!id) return
+  const data = event.data || {}
+  const cfg = {
+    dbName: data.dbName || DEFAULT_CFG.dbName,
+    dbVersion: data.dbVersion || DEFAULT_CFG.dbVersion,
+    storeName: data.storeName || DEFAULT_CFG.storeName,
+    objName: data.objName || DEFAULT_CFG.objName,
+    log: !!data.log
+  }
+  clientConfigs.set(id, cfg)
+  if (cfg.log) console.log('[SW] config set for client', id, cfg)
+  pruneDeadClients()
 })
 
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url)
-  const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
-  if (LOG) console.log('checking for file:', filePath)
+self.addEventListener('fetch', event => {
+  event.respondWith((async () => {
+    try {
+      const request = event.request
+      const url = new URL(request.url)
+      const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
 
-  const comingFromNetnet = () => {
-    const hosts = ['localhost', 'netnet.studio', 'dev.netnet.studio']
-    return hosts.includes(url.hostname)
-  }
+      // prefer resultingClientId for navigations, otherwise use clientId
+      const clientId = event.resultingClientId || event.clientId
+      const cfg = await getCfgForClientAsync(clientId, url)
 
-  event.respondWith(
-    (async () => {
-      try {
-        let fileData = await getFileFromIndexedDB(filePath)
-
-        if (!fileData) {
-          // check if they clicked on a link in their page to navigate to a new directory (with an index file in it)
-          fileData = await getFileFromIndexedDB(filePath + '/index.html')
-          if (fileData) {
-            fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, instead of navigating directly to that file. While this will work once published on the web, in order for me to render a preview here, you\'ll need to link directly to the index.html file in this folder. Make sure to add index.html to the end of the path you navigated to in your code.'
-          }
-          // check if they're trying to link (src, href, ) to a local file that does not exist
-          const obj = await findFileReferences(filePath)
-          if (Object.keys(obj).length > 0) postMessage('BAD_PATHS', obj)
-        }
-
-        if (fileData && fileData.startsWith('http') && comingFromNetnet()) {
-          // assume absolute path in student project's code (whether from their actual code or localStorage like gitHub raw url)
-          if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)
-          else return fetch(fileData, { cache: 'no-store' })
-        } else if (fileData) {
-          if (LOG) console.log('...fetching from IndexedDB:', filePath)
-          if (filePath.endsWith('.html')) {
-            // main.js listens for these errors + sends them to 'code-review' widget
-            fileData = `<script>
-              window.onerror = function (message, source, lineno) {
-                window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
-              }
-            </script>` + fileData
-          } else if (filePath.endsWith('.md')) {
-            fileData = markdownToHtml(fileData)
-          }
-          const response = await generateResponse(filePath, fileData)
-          // if (LOG) console.log('DATA:', filePath, fileData)
-          if (LOG) console.log('...RES:', response)
-          return response
-        } else {
-          console.warn('...file not found in IndexedDB, fetching from network:', filePath)
-          return fetch(event.request, { cache: 'no-store' })
-        }
-      } catch (err) {
-        console.error('Error handling IndexedDB fetch:', err)
-        return new Response('File not found or failed to load', { status: 404 })
+      if (request.mode === 'navigate' && cfg?.log) {
+        console.log('[SW] NAV', { path: url.pathname, clientId })
       }
-    })()
-  )
+      if (cfg?.log) console.log('[SW] fetch', { clientId, filePath, cfg })
+
+      // not a project/iframe request? let it hit the network
+      const hasProjectCfg = cfg && cfg.dbName && cfg.storeName
+      if (!hasProjectCfg) {
+        return fetch(request, { cache: 'no-store' })
+      }
+
+      const hosts = ['localhost', 'netnet.studio', 'dev.netnet.studio']
+      const comingFromNetnet = hosts.includes(url.hostname)
+
+      let fileData = await getFileFromIndexedDB(filePath, cfg)
+      if (cfg?.log) console.warn('[SW] fileData:', fileData)
+
+      if (!fileData) {
+        // folder nav with an index.html inside?
+        const indexData = await getFileFromIndexedDB(filePath + '/index.html', cfg)
+        if (indexData) {
+          fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file... add index.html to the end of the path you navigated to.'
+        }
+        // bad local references? ex: trying to link (src, href, ) to a local file that does not exist
+        const bads = await findFileReferences(filePath, cfg)
+        if (bads && Object.keys(bads).length > 0 && clientId) {
+          await postMessageToClient(clientId, 'BAD_PATHS', bads)
+        }
+      }
+
+      if (fileData && typeof fileData === 'string' && fileData.startsWith('http') && comingFromNetnet) {
+        if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)
+        return fetch(fileData, { cache: 'no-store' })
+      }
+
+      if (fileData) {
+        if (cfg?.log) console.log('[SW] serving from IDB:', filePath)
+        let body = fileData
+        if (filePath.endsWith('.html')) {
+          body = `<script>
+            window.onerror = function (message, source, lineno) {
+              window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
+            }
+          </script>` + body
+        } else if (filePath.endsWith('.md')) {
+          body = markdownToHtml(body)
+        }
+        return generateResponse(filePath, body)
+      }
+
+      if (cfg?.log) console.warn('[SW] miss; falling back to network:', filePath)
+      return fetch(request, { cache: 'no-store' })
+    } catch (err) {
+      console.error('[SW] fetch error:', err)
+      return new Response('File not found or failed to load', { status: 404 })
+    }
+  })())
 })

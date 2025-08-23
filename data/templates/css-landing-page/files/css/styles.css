@@ -1,0 +1,95 @@
+@keyframes fadeIn {
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+:root {
+  --text-color: #eee;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-image: radial-gradient(ellipse, #62a0ea 0%, #1a5fb4 100%);
+  height: 100vh;
+  margin: 0;
+}
+
+/*
+  -------------------
+  main section styles
+  -------------------
+*/
+
+main {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 5vw;
+  color: hsl(166, 72%, 89%);
+  margin: 20px;
+  text-align: center;
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: fadeIn 1s;
+  animation-fill-mode: forwards;
+}
+
+p {
+  font-family: "Cardo", serif;
+  font-size: 18px;
+  max-width: 600px;
+  color: var(--text-color);
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: fadeIn 1s;
+  animation-fill-mode: forwards;
+  animation-delay: 1s;
+}
+
+a {
+  color: var(--text-color);
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 415px) {
+  h1 {
+    font-size: 28px;
+  }
+  p {
+    font-size: 12px;
+  }
+}
+
+/*
+  ----------------------------
+  social media nav bar styles
+  ----------------------------
+*/
+
+nav {
+  position: fixed;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-around;
+  width: 100vw;
+}
+
+nav img {
+  filter: hue-rotate(190deg) brightness(2) contrast(2) grayscale(0.75);
+}

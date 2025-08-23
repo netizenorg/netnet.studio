@@ -112,8 +112,9 @@
   transform: translateX(5px);
 }
 
-#nn-window  #proj-title[data-project]::before {
-  content: "Files";
+#nn-window  #proj-title[data-project]::before,
+#nn-window  #proj-title[data-demo]::before,
+#nn-window  #proj-title[data-template]::before {
   border: 1px solid var(--netizen-meta);
   padding: 3px 8px;
   border-radius: 20px;
@@ -124,23 +125,21 @@
   cursor: pointer;
 }
 
-#nn-window  #proj-title[data-project]:hover::before {
-  opacity: 1;
+#nn-window  #proj-title[data-project]::before {
+  content: "Files";
 }
 
 #nn-window  #proj-title[data-demo]::before {
-  content: "Notes For ⭢";
-  border: 1px solid var(--netizen-meta);
-  padding: 3px 8px;
-  border-radius: 20px;
-  display: inline-block;
-  margin-bottom: -30px;
-  margin-right: 20px;
-  opacity: 0.25;
-  cursor: pointer;
+  content: "Notes for →";
 }
 
-#nn-window  #proj-title[data-demo]:hover::before {
+#nn-window  #proj-title[data-template]::before {
+  content: "Notes for →";
+}
+
+#nn-window  #proj-title[data-project]:hover::before,
+#nn-window  #proj-title[data-demo]:hover::before,
+#nn-window  #proj-title[data-template]:hover::before {
   opacity: 1;
 }
 

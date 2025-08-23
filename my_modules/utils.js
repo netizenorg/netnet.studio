@@ -52,4 +52,28 @@ function checkForJSONArrayFile (req, res, dbPath, callback) {
   })
 }
 
-module.exports = { b10tob64, b64tob10, checkForJSONFile, checkForJSONArrayFile }
+const allowedOrigins = [
+  'https://netnet.studio',
+  'https://dev.netnet.studio',
+  'https://v1.netnet.studio',
+  'https://v2.netnet.studio',
+  'https://v3.netnet.studio',
+  'http://localhost:' + process.env.PORT
+]
+
+function corsGate (req, res, next) {
+  const origin = req.headers.origin
+  if (origin && allowedOrigins.includes(origin)) {
+    res.set('Access-Control-Allow-Origin', origin)
+    res.set('Vary', 'Origin')
+  }
+  res.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  // NOTE: if we decide to send custom headers/credentials later via frontend
+  // res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  // res.set('Access-Control-Allow-Credentials', 'true')
+  if (req.method === 'OPTIONS') return res.sendStatus(204)
+  next()
+}
+
+module.exports = { b10tob64, b64tob10, checkForJSONFile, checkForJSONArrayFile, corsGate }

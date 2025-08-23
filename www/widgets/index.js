@@ -292,7 +292,13 @@ class Widget {
 
     time = time || 0
     const t = `${time}ms`
-    this.ele.style.transition = `all ${t} var(--sarah-ease)`
+    this.ele.style.transition = `width ${t} var(--sarah-ease),
+      height ${t} var(--sarah-ease),
+      top ${t} var(--sarah-ease),
+      left ${t} var(--sarah-ease),
+      bottom ${t} var(--sarah-ease),
+      right ${t} var(--sarah-ease)`
+
     // trigger transition
     setTimeout(() => {
       // NOTE: width && height should alwasy be set before left, top, etc

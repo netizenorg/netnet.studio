@@ -18,6 +18,8 @@ class ConvoMaker extends Widget {
       data: [] // array of passage objects
     }
 
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
     nn.on('beforeunload', () => {
       if (this.cnvmkr && !this.cnvmkr.closed) this.cnvmkr.close()
     })
@@ -81,11 +83,21 @@ class ConvoMaker extends Widget {
     })
 
     this.on('open', () => {
-      if (!this.cnvmkr) this._openCnvMkr()
+      const askAboutWidgetType = () => {
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'start')
+        this._openCnvMkr()
+      }
+
+      if (!this.cnvmkr) {
+        if (!window.CONVOS[this.key]) {
+          setTimeout(askAboutWidgetType, 250)
+        } else askAboutWidgetType()
+      }
     })
   }
 
-  _openCnvMkr (type, payload) {
+  _openCnvMkr (type) {
     // create pop up
     const url = 'widgets/convo-maker/popups/index.html'
     this.cnvmkr = window.open(url, 'convo-maker', 'width=1000,height=620')
@@ -109,8 +121,8 @@ class ConvoMaker extends Widget {
     const func = eval(`((self) => {\n${code}\n})`)
 
     const preview = (w) => {
-      console.log('CONVO MAKER: previewing...')
-      console.log(w.convos, obj)
+      // console.log('CONVO MAKER: previewing...')
+      // console.log(w.convos, obj)
       window.CONVOS[this.state.name] = func
       w.convos = window.CONVOS[this.state.name](w)
       window.convo = new Convo(w.convos, obj.name)
@@ -257,7 +269,8 @@ class ConvoMaker extends Widget {
           i++
         }
         const objText = arrayContent.slice(start, i)
-        items.push(this._parseConvoObject(objText, state))
+        const item = this._parseConvoObject(objText, state)
+        items.push(item)
         continue
       }
       i++
@@ -283,7 +296,6 @@ class ConvoMaker extends Widget {
     // update positioning state for “old” convos
     state.lastConvoHides = (links.length === 1 && links[0].includes('HIDE'))
     const text = contentRaw + '\n\n' + links.join('\n')
-
     return {
       id, name, x, y, before, after, code, edit, highlight, spotlight, layout, options, text
     }
@@ -334,14 +346,29 @@ class ConvoMaker extends Widget {
     return i
   }
 
+  _unescapeJsString (s) {
+    // handle common escapes produced when saving
+    return s
+      .replace(/\\\\/g, '\\') // \\ -> \
+      .replace(/\\n/g, '\n') // \n -> newline
+      .replace(/\\r/g, '\r') // \r -> carriage return
+      .replace(/\\t/g, '\t') // \t -> tab
+      .replace(/\\b/g, '\b') // \b -> backspace (optional)
+      .replace(/\\f/g, '\f') // \f -> form feed (optional)
+      .replace(/\\"/g, '"') // \" -> "
+      .replace(/\\'/g, "'") // \' -> '
+  }
+
   // new helper: parse quoted or backtick string for propName
   _parseStringProperty (str, propName) {
     const re = new RegExp(`${propName}\\s*:\\s*('(?:\\\\'|[^'])*'|\`[\\s\\S]*?\`)`)
     const m = re.exec(str)
     if (!m) return undefined
     const lit = m[1]
-    if (lit.startsWith('`')) return lit.slice(1, -1)
-    return lit.slice(1, -1).replace(/\\'/g, "'")
+    if (lit.startsWith('`')) return lit.slice(1, -1) // template literal: already real newlines
+    // single or double-quoted: strip quotes, then unescape
+    const raw = lit.slice(1, -1)
+    return this._unescapeJsString(raw)
   }
 
   // new helper: parse boolean literal
@@ -386,26 +413,64 @@ class ConvoMaker extends Widget {
     return { id: newId, x, y }
   }
 
+  // helper for _parseContentLiteral (replaces former regext, see method below)
+  _findPropValueStart (str, propName) {
+    let i = 0
+    let depth = 0
+    let inSQ = false
+    let inDQ = false
+    let inBT = false
+    let esc = false
+
+    while (i < str.length) {
+      const ch = str[i]
+
+      if (esc) { esc = false; i++; continue }
+      if (inSQ) { if (ch === '\\') esc = true; else if (ch === "'") inSQ = false; i++; continue }
+      if (inDQ) { if (ch === '\\') esc = true; else if (ch === '"') inDQ = false; i++; continue }
+      if (inBT) { if (ch === '\\') esc = true; else if (ch === '`') inBT = false; i++; continue }
+
+      if (ch === "'") { inSQ = true; i++; continue }
+      if (ch === '"') { inDQ = true; i++; continue }
+      if (ch === '`') { inBT = true; i++; continue }
+
+      if (ch === '{') { depth++; i++; continue }
+      if (ch === '}') { depth--; i++; continue }
+
+      // only match prop at top level of this object (depth === 1)
+      if (depth === 1 && str.startsWith(propName, i)) {
+        let j = i + propName.length
+        while (/\s/.test(str[j])) j++
+        if (str[j] === ':') {
+          j++
+          while (/\s/.test(str[j])) j++
+          return j
+        }
+      }
+
+      i++
+    }
+    return -1
+  }
+
   /** helper for _parseConvoObject */
   _parseContentLiteral (str) {
-    // 1) locate "content:"
-    const reKey = /content\s*:\s*/g
-    const mKey = reKey.exec(str)
-    if (!mKey) return ''
+    // this regex was catching "content" strings from within "code" blocks
+    // const reKey = /content\s*:\s*/g
+    // const mKey = reKey.exec(str)
+    // if (!mKey) return ''
 
-    // 2) find start of the value
-    let pos = mKey.index + mKey[0].length
-    while (/\s/.test(str[pos])) pos++
+    const pos0 = this._findPropValueStart(str, 'content')
+    if (pos0 < 0) return ''
 
-    // 3a) backtick‐delimited template
+    const pos = pos0
+    // backtick template
     if (str[pos] === '`') {
-      // match /`([\s\S]*?)`/ from pos
-      const litRe = /`([\s\S]*?)`/
-      const litM = litRe.exec(str.slice(pos))
-      return litM ? litM[1] : ''
+      const m = /`([\s\S]*?)`/.exec(str.slice(pos))
+      return m ? m[1] : ''
     }
 
-    // 3b) single‐ or double‐quoted string
+    // single or double quote
     if (str[pos] === "'" || str[pos] === '"') {
       const quote = str[pos]
       let i = pos + 1
@@ -415,11 +480,12 @@ class ConvoMaker extends Widget {
         else i++
       }
       const raw = str.slice(pos + 1, i)
-      return quote === '`' ? raw : raw.replace(/\\'/g, "'").replace(/\\"/g, '"')
+      return quote === "'"
+        ? raw.replace(/\\'/g, "'")
+        : raw.replace(/\\"/g, '"')
     }
 
-    // 3c) expression (e.g. returningStudent())
-    // use your _skipUntil helper to stop at the next ',' or '}' at depth-0
+    // expression (e.g. returningStudent())
     const end = this._skipUntil(str, pos, [',', '}'])
     return str.slice(pos, end).trim()
   }
@@ -580,6 +646,7 @@ class ConvoMaker extends Widget {
   }
 
   _textToContentStr (text, addQuotes) {
+    if (!text) text = ''
     const raw = text.replace(/\[\[.*?\]\]/g, '').trim()
     const isTpl = /\$\{.*?\}/.test(raw)
     const isExpr = /^[A-Za-z_$][\w$]*(?:\([\s\S]*\))$/.test(raw)
@@ -691,7 +758,7 @@ class ConvoMaker extends Widget {
     if (varLines) {
       code.push(varLines)
       code.push('')
-    } else code.push('')
+    }
     code.push('  return [', items, '  ]', '}\n')
     code = code.join('\n')
 
