@@ -36,15 +36,28 @@
   <div id="learning-guide-toc">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('toc')">HYPERLINKS</h3>
     <br>
-    1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span><br>
-    2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span><br>
-    3. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">HTML (Hypertext Markup Language)</span><br>
-    4. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">CSS (Cascading Style Sheets)</span><br>
-    5. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">JS (JavaScript)</span><br>
-    6. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span><br>
+    1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span>
+    <i class="lg-v-spacer"></i>
+    2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span>
+    <i class="lg-v-spacer"></i>
+    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
+      HTML <span style="font-size: 14px;">(Hypertext Markup Language)</span>
+    </span>
+    <i class="lg-v-spacer"></i>
+    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
+      CSS <span style="font-size: 14px;">(Cascading Style Sheets)</span>
+    </span>
+    <i class="lg-v-spacer"></i>
+    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
+      JS <span style="font-size: 14px;">(JavaScript)</span>
+    </span>
+    <i class="lg-v-spacer"></i>
+    3. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
+    <i class="lg-v-spacer"></i>
+    4. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
+    <i class="lg-v-spacer"></i>
   </div>
-
-  <br><br><br>
+  <i class="lg-v-spacer"></i>
 
   <div class="learning-guide__ex-divider"></div>
 
@@ -301,7 +314,7 @@
   <!--                      <<<  JS  >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item" id="learning-guide-js">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('js'); WIDGETS['css-reference'].open()">JS</h3>
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('js'); WIDGETS['js-reference'].open()">JS</h3>
     <br>
     <br>
     <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
@@ -320,6 +333,30 @@
     <br><br>
     <div class="learning-guide__ex-divider"></div> -->
   </div>
+
+
+  <!--                      <<<      -      >>>                              -->
+  <!--                      <<<  MORE CODE  >>>                              -->
+  <!--                      <<<      -      >>>                              -->
+  <div class="learning-guide__main__item" id="learning-guide-more-code">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('more-code')">DEMOS + TEMPLATES</h3>
+
+    <div id="learning-guide-demos">
+      <p style="margin-top: 20px">
+        These widgets contian code exaples you can remix and experiment with.
+      </p>
+      <p style="position: absolute; right: 0px; width: 50%; top: 43px;">
+        The <span class="link" onclick="WIDGETS.open('demo-sketches')">Code Demos</span> widget contains a variety of creative code "demos" which single file sketches which showcase the generative, interactive, expressive and otherwise poetic possibilities of the Web.
+      </p>
+      <p style="position: absolute; left: 0px; width: 47%; top: 224px;">
+        The <span class="link" onclick="WIDGETS.open('template-projects')">Template Starter Projects</span> widget contains a few different project structures you can use as starting points for your own projects.
+      </p>
+    </div>
+  </div>
+
+
+
+
 
   <!--                      <<<     -    >>>                              -->
   <!--                      <<< APPENDIX >>>                              -->

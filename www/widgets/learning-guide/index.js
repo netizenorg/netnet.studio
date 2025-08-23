@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn */
+/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -14,44 +14,49 @@ class LearningGuide extends Widget {
     this._raf = 0
     this._svgTimer = null
 
+    this.cards = [] // collect WidgetCards
+
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    this._createPage('mainOpts', 'main-slide.html', null, (div) => {
-      // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['coding-menu'].BrowserFest()
-      // })
+    // load widget card class
+    utils.loadFile('widgets/learning-guide/data/widget-card.js', () => {
+      this._createPage('mainOpts', 'main-slide.html', null, (div) => {
+        // div.querySelector('#bf-submission').addEventListener('click', () => {
+        //   WIDGETS['coding-menu'].BrowserFest()
+        // })
 
-      // create sub pages
-      this.subpages = [
-        { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
-        // {
-        //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
-        //   subs: [
-        //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-        //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-        //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-        //   ]
-        // },
-        // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
-      ]
-      this.subpages.forEach(p => {
-        this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
-          if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+        // create sub pages
+        this.subpages = [
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          // {
+          //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+          //   subs: [
+          //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
+          //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
+          //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
+          //   ]
+          // },
+          // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+        ]
+        this.subpages.forEach(p => {
+          this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
+            if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+          })
         })
-      })
 
-      this._createHTML()
+        this._createHTML()
 
-      this.update({ left: 40, top: 65 })
+        this.update({ left: 40, top: 65 })
 
-      this.on('close', () => this._applyVisibility())
-      this.on('open', () => {
-        if (this.width !== 638 || this.height !== 473) {
-          this.update({ width: 638, height: 473 })
-        }
-        this.update({ left: 40, top: 65 }, 500)
-        this._applyVisibility()
-        if (WIDGETS['hyper-video-player']) WIDGETS['hyper-video-player'].pause()
+        this.on('close', () => this._applyVisibility())
+        this.on('open', () => {
+          if (this.width !== 638 || this.height !== 473) {
+            this.update({ width: 638, height: 473 })
+          }
+          this.update({ left: 40, top: 65 }, 500)
+          this._applyVisibility()
+          if (WIDGETS['hyper-video-player']) WIDGETS['hyper-video-player'].pause()
+        })
       })
     })
 
@@ -140,6 +145,29 @@ class LearningGuide extends Widget {
     this._listTutorials()
     this._enableAppendixLinks()
     this._highlightTitles()
+
+    // enable WidgetCards
+    const cards = [
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 140, x: 0, y: 40 },
+        content: `<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">DEMOS<div>
+        </div>`,
+        click: () => WIDGETS.open('demo-sketches')
+      },
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 150, x: 270, y: 209 },
+        content: `<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">TEMPLATES<div>
+        </div>`,
+        click: () => WIDGETS.open('template-projects')
+      }
+    ]
+    cards.forEach(card => this.cards.push(new WidgetCard(card)))
 
     this.slide.style.overflowX = 'hidden'
   }

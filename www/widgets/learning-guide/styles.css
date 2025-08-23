@@ -275,6 +275,71 @@
   background-color: var(--netizen-text);
 }
 
+.lg-v-spacer {
+  display: block;
+  height: 10px;
+}
+.lg-h-spacer {
+  display: inline-block;
+  width: 2px;
+}
+
+/* WIDGET CARDS CSS */
+
+:root {
+  --lgwc-shine-x: 0;
+  --lgwc-shine-y: 0;
+}
+
+.lg-widget-card-stage {
+  position: relative;
+  inset: 0;
+  perspective: 1000px;
+  perspective-origin: 50% 50%;
+  min-height: 360px;
+}
+
+.lg-widget-card {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    /* background: linear-gradient(160deg, var(--lgwc-card), #121621 60%); */
+    background: var(--bg-color);
+    /* background: var(--netizen-meta); */
+
+    border-radius: 10px;
+    border: 2px solid var(--netizen-meta);
+    border-top-width: 16px;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+    transition: box-shadow 0.2s ease;
+    will-change: transform, box-shadow;
+
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* a sheen that moves with the tilt to sell the 3D effect */
+  .lg-widget-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background:
+      radial-gradient(200px 120px at var(--lgwc-shine-x, 50%) var(--lgwc-shine-y, 20%),
+        rgba(255, 255, 255, 0.16), transparent 60%) ,
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent 30%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    transform: translateZ(1px);
+  }
+
+
 
 /* BROWSERFEST BUTTON */
 .rainbow-bg {
