@@ -1,5 +1,4 @@
-
-/* global nn, Netitor, Fuse */
+/* global nn, Netitor, NNE, utils, Fuse */
 
 const netitors = [] // netitor instances
 
@@ -48,7 +47,7 @@ function setupNetitors () {
 
 function setupSearch () {
   const searchWrapper = document.querySelector('.docs__panel__search')
-  const searchBar = document.querySelector('#search-bar')
+  const searchBtn = document.querySelector('#search-button')
   const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list > li')
   let navArray = [];
   let children = []
@@ -81,6 +80,18 @@ function setupSearch () {
   };
 
   const fuse = new Fuse(navArray, searchOpts)
+
+  searchBtn.addEventListener('click', (e) => {
+    const createSearchBar = () => {
+      if (!utils.customElementReady('search-bar')) {
+        setTimeout(() => createSearchBar(), 100)
+        return
+      }
+      let search = document.createElement('search-bar')
+      document.body.appendChild(search)
+    }
+    createSearchBar()
+  })
 }
 
 function filterNav(result) {
@@ -94,10 +105,4 @@ nn.on('load', () => {
   findActive()
   setupNetitors()
   setupSearch()
-
-  searchBar.addEventListener('keydown', (e) => {
-    let searchResult = fuse.search(searchBar.value);
-
-    filterNav(searchResult)
-  })
 })

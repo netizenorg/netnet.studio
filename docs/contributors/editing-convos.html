@@ -15,6 +15,7 @@
     <link rel="icon" type="image/png" href="/images/eye.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
@@ -23,8 +24,8 @@
         <span class="ver">vBETA 3.0</span>
       </span>
       <div class="docs__panel__search">
-        <img src="./../../images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-bar" placeholder="search" type="text" class="search-input">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <button id="search-button" class="search-button">search</button>
       </div>
       <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="inline-link" href="/docs/students/index.html">Dear Students</a>
@@ -79,7 +80,8 @@
 
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
-    <script src="./../../core/libs/fuse.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>
