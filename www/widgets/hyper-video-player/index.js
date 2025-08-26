@@ -403,9 +403,11 @@ class HyperVideoPlayer extends Widget {
   // ................................................ HVP HTML .................
 
   _createHTML (opts) {
+    this.ele.querySelector('.widget__inner-html').style.padding = '14px 0 0'
+
     this.video = nn.create('video')
       .set('preload', 'auto')
-      .css({ display: 'block', width: '100%' })
+      .css({ display: 'block', width: '100%', borderRadius: 10 })
       .on('loadeddata', () => {
         this.keepInFrame()
         this._generatePauseScreen()
@@ -414,15 +416,9 @@ class HyperVideoPlayer extends Widget {
     if (typeof opts.video === 'string') this.updateVideo(opts.video)
     else this.updateVideo('screen-saver')
 
-    const pauseScreen = nn.create('div').set('class', 'hvp-pause-screen')
-    pauseScreen.innerHTML = `
-      <span>PAUSED</span>
-      <span>PAUSED</span>
-      <span>PAUSED</span>
-      <span>00:00:00</span>
-      <span>00:00:00</span>
-      <span>00:00:00</span>
-    `
+    const pauseScreen = nn.create('div')
+      .set('class', 'hvp-pause-screen')
+      .content('<span>PAUSED</span><span>00:00:00</span>')
 
     this.controls = nn.create('div').set('class', 'hvp-controls')
     this.controls.innerHTML = `
@@ -547,18 +543,14 @@ class HyperVideoPlayer extends Widget {
   }
 
   _updatePauseClock () {
-    const c1 = this.$('.hvp-pause-screen > span:nth-child(4)')
-    const c2 = this.$('.hvp-pause-screen > span:nth-child(5)')
-    const c3 = this.$('.hvp-pause-screen > span:nth-child(6)')
+    const c = this.$('.hvp-pause-screen > span:nth-child(2)')
     const h = '00'
     let m = Math.floor(this.currentTime / 60)
     let s = Math.round(this.currentTime % 60)
     if (m < 10) m = '0' + m
     if (s < 10) s = '0' + s
     const dur = Math.round((this.duration / 60) * 10) / 10
-    c1.textContent = `${h}:${m}:${s} / ${dur} mins`
-    c2.textContent = `${h}:${m}:${s} / ${dur} mins`
-    c3.textContent = `${h}:${m}:${s} / ${dur} mins`
+    c.textContent = `${h}:${m}:${s} / ${dur} mins`
     return this.currentTime
   }
 
@@ -578,9 +570,9 @@ class HyperVideoPlayer extends Widget {
         const idx = i + 24 // few bytes into the huffman codes
         const huf = (bytes[i + 21] === 0) ? 'DC' : 'AC'
         const len = (huf === 'DC') ? 16 : 255
-        let ran = Math.floor(Math.random() * len)
-        if (ran === bytes[idx]) ran = Math.floor(Math.random() * len)
-        if (ran === bytes[idx]) ran = Math.floor(Math.random() * len)
+        let ran = Math.floor(this.random(0, len))
+        if (ran === bytes[idx]) ran = Math.floor(this.random(0, len))
+        if (ran === bytes[idx]) ran = Math.floor(this.random(0, len))
         bytes[idx] = ran
         break
       }
@@ -599,11 +591,17 @@ class HyperVideoPlayer extends Widget {
   }
 
   _generatePauseScreen (type) {
-    if (!this.canvas) this.canvas = document.createElement('canvas')
+    // while most values glitch on Firefox/Mac,
+    // only these values seem to create glitches on Chrome/Mac
+    const gvals = [7, 19, 35, 45, 46, 79, 86, 87, 90, 96]
+    this.updateSeed(nn.random(gvals))
+
+    if (!this.canvas) this.canvas = nn.create('canvas')
     this.canvas.width = this.video.offsetWidth
     this.canvas.height = this.video.offsetHeight
     if (!this.ctx) this.ctx = this.canvas.getContext('2d')
     this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height)
+
     const data = this.canvas.toDataURL('image/jpeg')
     const bytes = this._glitchIt(data)
     const b64 = window.btoa(this._Uint8ToString(bytes))
@@ -618,6 +616,35 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-pause-screen').style.backgroundImage = `url(${url})`
     }
     img.src = url
+  }
+
+  // ........................... seeded random used for glitchy pause above ....
+  // mulberry32 generator factory
+  _mulberry32 (a) {
+    return () => {
+      a |= 0
+      a = (a + 0x6D2B79F5) | 0
+      let t = Math.imul(a ^ (a >>> 15), 1 | a)
+      t = (t + Math.imul(t ^ (t >>> 7), t | 61)) ^ t
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+    }
+  }
+
+  // exactly the same API as nn: random(), random(max), random(min, max)
+  random (min, max) {
+    const r = this._rand()
+    if (min === undefined) {
+      return r
+    } else if (max === undefined) {
+      max = min
+      min = 0
+    }
+    return r * (max - min) + min
+  }
+
+  updateSeed (seed) {
+    this._seed = seed
+    this._rand = this._mulberry32(this._seed)
   }
 }
 
