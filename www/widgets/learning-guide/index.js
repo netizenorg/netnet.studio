@@ -142,10 +142,83 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._listTutorials()
-    this._enableAppendixLinks()
     this._highlightTitles()
+    this._createTutorialCards()
+    this._createDemoTemplateCards()
+    this._enableSubPagesLinks()
+    this._enableAppendixLinks()
 
+    this.slide.style.overflowX = 'hidden'
+  }
+
+  _highlightTitles () {
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+    })
+  }
+
+  _createTutThumb (sec, name) {
+    const data = this.tutorials[sec].find(o => o.title === name)
+    const click = () => WIDGETS.load('hyper-video-player', w => w.load(data.id))
+    const ele = `.learning-guide__tut-${sec}`
+    nn.get(ele).innerHTML = ''
+
+    const cards = []
+    const w = 549 // width of card stage (in leaerning guide)
+    const h = 270 // should match min-height of card-stage
+    const pos = [
+      { x: nn.random(0, w * 0.25), y: nn.random(0, h * 0.25) }, // top left
+      { x: nn.random(w / 2 + 100, w - 150), y: nn.random(0, h * 0.25) }, // top right
+      { x: nn.random(0, w * 0.25), y: nn.random(h / 2 + 75, h - 100) }, // bottom left
+      { x: nn.random(w / 2 + 100, w - 150), y: nn.random(h / 2 + 75, h - 100) } // bottom right
+    ]
+    for (let i = 0; i < 4; i++) {
+      const t = data.thumbnails[i]
+      if (t) {
+        const box = { w: 150, h: 100, x: pos[i].x, y: pos[i].y }
+        const thumbnail = `/tutorials/${data.id}/${t}`
+        cards.push({ ele, box, thumbnail, click })
+      }
+    }
+    cards.forEach(c => new WidgetCard(c)) // create thumbnail cards
+
+    const thumbnail = `/tutorials/${data.id}/${data.id}.png`
+    const vidCard = { ele, box: { w: 220, h: 140 }, thumbnail, click }
+    return new WidgetCard(vidCard) // create main video card
+  }
+
+  _createTutorialCards () {
+    this.tutorials = {}
+    const promises = []
+    // when all the data below is loaded, create first set of thumbnail cards
+    const ready = () => {
+      Object.entries(this.tutorials).forEach(([s, tut]) => {
+        if (tut[0]) this._createTutThumb(s, tut[0].title)
+      })
+    }
+    // Load all the Tutorial Data the Learning Guide needs
+    utils.get('tutorials/list.json', (json) => {
+      Object.entries(json).forEach(([key, val]) => {
+        this.tutorials[key] = []
+        val.forEach(n => {
+          promises.push(new Promise(resolve => {
+            utils.get(`tutorials/${n}/tutorial.json`, t => {
+              this.tutorials[key].push(t.metadata); resolve()
+            })
+          }))
+        })
+      })
+      Promise.all(promises).then(ready)
+    })
+
+    // enable the prev/next controls
+    // TODO: `.learning-guide__tut-cntrl[name="${sec}"]`
+    // TODO: also make span[class="highlight"] linkable to tutorial load
+  }
+
+  _createDemoTemplateCards () {
     // enable WidgetCards
     const cards = [
       {
@@ -161,91 +234,17 @@ class LearningGuide extends Widget {
         ele: '#learning-guide-demos',
         box: { w: 220, h: 150, x: 270, y: 209 },
         content: `<div>
-          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div class="lg-widget-folder-icon"></div>
           <div style="text-align: center; font-size:24px; margin-top: 20px;">TEMPLATES<div>
         </div>`,
         click: () => WIDGETS.open('template-projects')
       }
     ]
+
     cards.forEach(card => this.cards.push(new WidgetCard(card)))
-
-    this.slide.style.overflowX = 'hidden'
   }
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
-    })
-  }
-
-  _enableAppendixLinks () {
-    this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
-      const arr = ele.getAttribute('name').split(':')
-      const widget = `${arr[1]}-reference`
-      ele.addEventListener('click', () => {
-        window.convo.hide()
-        WIDGETS.open(widget, w => w.slide.updateSlide(w[arr[2]]))
-      })
-    })
-  }
-
-  _listTutorials () {
-    const tutHTML = (t, i) => {
-      const div = document.createElement('div')
-      div.className = 'learning-guide__tut'
-      div.dataset.id = t.id
-      div.innerHTML = `
-        <div>
-          <div>
-            <h2>${t.title}</h2>
-            <b>${t.subtitle}</b>
-          </div>
-          <div class="learning-guide__dotted-line"></div>
-          <div>
-            <button class="pill-btn pill-btn--secondary" name="tut:${t.id}">play</button>
-            <button class="pill-btn pill-btn--secondary" name="i:${t.id}">i</button>
-          </div>
-        </div>
-        <p name="nfo:${t.id}">${t.description}</p>
-      `
-      return div
-    }
-
-    const tutorials = {}
-    const tutzReady = () => {
-      for (const sec in tutorials) {
-        tutorials[sec] // when all are loaded, append tutorial <div> to guide
-          .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
-          .forEach(obj => {
-            const div = document.querySelector(`.learning-guide__tut-${sec}`)
-            if (div) div.appendChild(obj.html)
-          })
-      }
-      this._enableLearningGuideEventListeners()
-    }
-
-    utils.get('tutorials/list.json', (json) => {
-      let count = 0
-      let total = 0
-      for (const sec in json) { total += json[sec].length }
-      for (const sec in json) {
-        tutorials[sec] = []
-        json[sec].forEach((name, i) => {
-          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-            tutorials[sec].push({
-              index: json[sec].indexOf(name), html: tutHTML(tut, i)
-            })
-            count++
-            if (count === total) tutzReady()
-          })
-        })
-      }
-    })
-  }
-
-  _enableLearningGuideEventListeners () {
+  _enableSubPagesLinks () {
     this.subpages.forEach(p => {
       // this is what happens when we click a <button> with a #page-* id
       // assuming it's also been defined in this.subpages above
@@ -257,66 +256,15 @@ class LearningGuide extends Widget {
         window.convo.hide()
       })
     })
+  }
 
-    // enable "play" buttons
-    this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
-      const tut = ele.getAttribute('name').split(':')[1]
+  _enableAppendixLinks () {
+    this.slide.querySelectorAll('[name^="ref"]').forEach(ele => {
+      const arr = ele.getAttribute('name').split(':')
+      const widget = `${arr[1]}-reference`
       ele.addEventListener('click', () => {
-        WIDGETS.load('hyper-video-player', w => w.load(tut))
-      })
-    })
-
-    // hover over tutorials
-    this.ele.querySelectorAll('.learning-guide__tut')
-      .forEach(div => {
-        div.addEventListener('mouseover', () => {
-          const vid = document.createElement('video')
-          vid.id = 'tut-preview-video'
-          vid.src = `/tutorials/${div.dataset.id}/preview.mp4`
-          vid.style.position = 'absolute'
-          vid.style.left = 0
-          vid.style.top = 0
-          vid.style.zIndex = 1
-          vid.style.border = 'none'
-          vid.style.width = '600px'
-          vid.style.height = '440px'
-          vid.style.opacity = 0.15
-          this.slide.appendChild(vid)
-          vid.muted = true
-          vid.play()
-        })
-
-        div.addEventListener('mouseout', () => {
-          const vid = this.slide.querySelector('#tut-preview-video')
-          if (vid) vid.remove()
-        })
-      })
-
-    // calc <p> heights && hide them
-    this.ele.querySelectorAll('[name^="nfo"]').forEach(p => {
-      p.dataset.height = p.offsetHeight
-      p.style.height = '0px'
-      p.style.display = 'none'
-    })
-
-    // enable "info" buttons
-    this.ele.querySelectorAll('[name^="i"]').forEach(ele => {
-      const t = ele.getAttribute('name').split(':')[1]
-      ele.addEventListener('click', () => {
-        const p = this.ele.querySelector(`[name="nfo:${t}"]`)
-        if (ele.textContent === 'i') {
-          p.style.display = 'block'
-          ele.textContent = 'x'
-          setTimeout(() => {
-            p.style.height = p.dataset.height + 'px'
-            p.style.paddingTop = '8px'
-          }, 10)
-        } else {
-          p.style.height = '0px'
-          p.style.paddingTop = '0px'
-          ele.textContent = 'i'
-          setTimeout(() => { p.style.display = 'none' }, 1000)
-        }
+        window.convo.hide()
+        WIDGETS.open(widget, w => w.slide.updateSlide(w[arr[2]]))
       })
     })
   }

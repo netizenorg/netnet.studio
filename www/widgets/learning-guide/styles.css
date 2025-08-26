@@ -148,12 +148,10 @@
   background: linear-gradient(90deg, var(--netizen-number) 0%, var(--netizen-string) 50%, var(--netizen-comment) 100%);
 }
 
-.learning-guide__tut,
 .learning-guide__tc {
   margin-bottom: 18px;
 }
 
-.learning-guide__tut > div,
 .learning-guide__tc > div {
   display: flex;
 
@@ -161,14 +159,18 @@
   align-items: center;
 }
 
-.learning-guide__tut > div:hover .learning-guide__dotted-line,
 .learning-guide__tc > div:hover .learning-guide__dotted-line {
   width: 170px;
 }
 
-.learning-guide__tut > div:hover .learning-guide__dotted-line::after,
 .learning-guide__tc > div:hover .learning-guide__dotted-line::after {
   opacity: 1;
+}
+
+.learning-guide__tut-cntrl {
+  display: flex;
+  justify-content: space-around;
+  user-select: none;
 }
 
 .learning-guide__dotted-line {
@@ -192,22 +194,18 @@
   transition: opacity 0.25s;
 }
 
-.learning-guide__tut > div > div:nth-child(1),
 .learning-guide__tc > div > div:nth-child(1) {
   margin: 10px 0;
 }
 
-.learning-guide__tut h2,
 .learning-guide__tc h2 {
   margin: 4px 0;
 }
 
-.learning-guide__tut b,
 .learning-guide__tc b {
   font-weight: bold;
 }
 
-.learning-guide__tut > p,
 .learning-guide__tc > p {
   /* display: none; */
   /* height: auto; */
@@ -291,12 +289,17 @@
   --lgwc-shine-y: 0;
 }
 
+
+#learning-guide-demos {
+  min-height: 360px;
+}
+
 .lg-widget-card-stage {
   position: relative;
   inset: 0;
   perspective: 1000px;
   perspective-origin: 50% 50%;
-  min-height: 360px;
+  min-height: 270px;
 }
 
 .lg-widget-card {
@@ -337,6 +340,33 @@
     pointer-events: none;
     mix-blend-mode: screen;
     transform: translateZ(1px);
+  }
+
+
+  .lg-widget-folder-icon {
+    width: 70px;
+    height: 42px;
+    position: relative;
+    border: 3px solid var(--netizen-meta);
+    border-radius: 4px;
+    background: none;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+
+  .lg-widget-folder-icon::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 1px;
+    width: 28px;
+    height: 12px;
+    border: 3px solid var(--netizen-meta);
+    border-bottom: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background: none;
+    box-sizing: border-box;
   }
 
 

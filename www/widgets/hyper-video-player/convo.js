@@ -9,12 +9,42 @@ window.CONVOS['hyper-video-player'] = (self) => {
     self.$('.hvp-toggle > span').classList.remove('play')
     self.$('.hvp-toggle > span').classList.add('pause')
     self.video.play()
-    const kf = self._mostRecentKeyframe()
-    const b = kf ? self.keyframes[kf.timecode].editable : false
-    self._editable(b)
+    if (!self.making) NNE.readOnly = true
   }
 
   return [{
+    id: 'clear-code',
+    graph: { id: 6, x: 25, y: 150 },
+    content: 'It appears you\'ve got some code in the editor, I\'ll have to remove that code before I can load this tutorial, is that ok?',
+    options: {
+      'yes, that\'s ok': (e) => {
+        self._loadTutorial()
+      },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'working-on-project',
+    content: 'It looks like you\'re working on a project. I\'ll need to close the project you\'re working on before I can load this tutorial.',
+    options: {
+      'oh, never mind then': (e) => e.hide(),
+      'ok, close it and load the tutorial': (e) => {
+        WIDGETS['project-files'].closeProject()
+        self._loadTutorial()
+      }
+    }
+  },
+  {
+    id: 'working-on-unsaved-project',
+    content: 'It looks like you\'re working on a project with unsaved changes. I\'ll need to close the project you\'re working on before opening this demo. I\'d recommend that you "git push" the changes you made before opening this demo.',
+    options: {
+      'let\'s save it first': (e) => WIDGETS.open('git-push'),
+      'I know, load the tutorial anyway': (e) => {
+        WIDGETS['project-files'].closeProject()
+        self._loadTutorial()
+      },
+      'ok thanks': (e) => e.hide()
+    }
+  }, {
     id: 'introducing-tutorial',
     content: `I've just loaded a tutorial by ${name} called "${title}", press the video players's <i>play</i> button to begin. Press the video player's <i>X</i> button at anytime to quit.`,
     options: {
