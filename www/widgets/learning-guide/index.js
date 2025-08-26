@@ -167,12 +167,12 @@ class LearningGuide extends Widget {
 
     const cards = []
     const w = 549 // width of card stage (in leaerning guide)
-    const h = 270 // should match min-height of card-stage
+    const h = 300 // should match min-height of card-stage
     const pos = [
       { x: nn.random(0, w * 0.25), y: nn.random(0, h * 0.25) }, // top left
-      { x: nn.random(w / 2 + 100, w - 150), y: nn.random(0, h * 0.25) }, // top right
-      { x: nn.random(0, w * 0.25), y: nn.random(h / 2 + 75, h - 100) }, // bottom left
-      { x: nn.random(w / 2 + 100, w - 150), y: nn.random(h / 2 + 75, h - 100) } // bottom right
+      { x: nn.random(w / 2, w - 220), y: nn.random(0, h * 0.25) }, // top right
+      { x: nn.random(0, w * 0.25), y: nn.random(h / 2, h - 140) }, // bottom left
+      { x: nn.random(w / 2, w - 220), y: nn.random(h / 2, h - 140) } // bottom right
     ]
     for (let i = 0; i < 4; i++) {
       const t = data.thumbnails[i]
@@ -184,7 +184,7 @@ class LearningGuide extends Widget {
     }
     cards.forEach(c => new WidgetCard(c)) // create thumbnail cards
 
-    const thumbnail = `/tutorials/${data.id}/${data.id}.png`
+    const thumbnail = `/tutorials/${data.id}/${data.id}.jpg`
     const vidCard = { ele, box: { w: 220, h: 140 }, thumbnail, click }
     return new WidgetCard(vidCard) // create main video card
   }

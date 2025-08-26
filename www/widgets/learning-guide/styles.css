@@ -299,7 +299,7 @@
   inset: 0;
   perspective: 1000px;
   perspective-origin: 50% 50%;
-  min-height: 270px;
+  min-height: 300px;
 }
 
 .lg-widget-card {
