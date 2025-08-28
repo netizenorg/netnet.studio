@@ -223,7 +223,7 @@ class SearchBar extends HTMLElement {
 
       for (const sec in json) {
         json[sec].forEach(name => {
-          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+          utils.get(`tutorials/${name}/tutorial.json`, (tut) => {
             arr.push({
               type: 'Tutorials',
               word: tut.title,

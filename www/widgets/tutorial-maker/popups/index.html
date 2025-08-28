@@ -1,0 +1,71 @@
+<link rel="stylesheet" href="/core/styles/fonts.css">
+<link rel="stylesheet" href="/core/styles/buttons.css">
+<link rel="stylesheet" href="/core/styles/form-fields.css">
+<link rel="stylesheet" href="/custom-elements/misc/reorderable-list/styles.css">
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="timeline.css">
+
+
+<section id="start" class="overlay">
+  <button id="new" class="pill-btn pill-btn--secondary">new</button>
+  <button id="open" class="pill-btn pill-btn--secondary">open</button>
+</section>
+
+
+<section id="metadata" class="overlay" style="display: none;">
+  <input name="id" placeholder="tutorial id (lower case, no spaces)">
+  <input name="title" placeholder="title">
+  <input name="subtitle" placeholder="sub-title">
+  <input name="author" placeholder="author's name">
+  <input name="authorURL" placeholder="author's website">
+  <input name="description" placeholder="description of tutorial">
+  <input name="keywords" placeholder="search terms (comma separated)">
+  <br>
+  <button id="close-metadata" class="pill-btn pill-btn--secondary">done</button>
+</section>
+
+
+<section id="video-recorder" class="overlay" style="display: none;">
+  <h1>Video Recorder</h1>
+  <!-- TODO: video element && UI for start/stop recording + checkbox to include keylogger or not -->
+  <br>
+  <button id="close-recorder" class="pill-btn pill-btn--secondary">done</button>
+</section>
+
+
+<nav>
+  <button id="open-metadata" class="pill-btn pill-btn--secondary">settings</button>
+  <button id="update-keyframe" class="pill-btn pill-btn--secondary">update keyframe</button>
+  <button name="nav-infos" class="pill-btn pill-btn--secondary">?</button>
+</nav>
+
+<div class="labels">
+  <div>keyframes</div>
+  <div>keylogs</div>
+</div>
+
+<div id="playhead-marker"></div>
+<svg viewBox="0 0 100 100" preserveAspectRatio="none"  xmlns="http://www.w3.org/2000/svg">
+  <line x1="0" y1="30" x2="100" y2="30" stroke="var(--netizen-tag)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+  <line x1="0" y1="70" x2="100" y2="70" stroke="var(--netizen-attribute)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+
+  <line id="playhead" x1="0" y1="0" x2="0" y2="100" stroke="var(--netizen-meta)" stroke-width="2" vector-effect="non-scaling-stroke" marker-start="url(#tri-down)"/>
+
+  <defs>
+    <g id="keyframe-marker">
+      <rect x="-0.5" y="-0.5" width="1" height="1" stroke-width="0.25" stroke="var(--netizen-tag)"/>
+    </g>
+    <g id="keylog-marker">
+      <rect x="-0.5" y="-0.5" width="1" height="1" stroke-width="0.25" stroke="var(--netizen-attribute)"/>
+    </g>
+  </defs>
+</svg>
+
+<script src="/nn.min.js"></script>
+<script src="/custom-elements/misc/reorderable-list/index.js"></script>
+<script src="jszip.min.js"></script>
+<script src="file-manager.js"></script>
+<script src="zip-tools.js"></script>
+<script src="timeline.js"></script>
+<script src="recorder.js"></script>
+<script src="main.js"></script>

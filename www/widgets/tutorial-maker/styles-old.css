@@ -1,0 +1,24 @@
+.tut-maker-row {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+  
+  margin-top: 0px !important;
+}
+.tut-maker-label {
+  font-size: 12px;
+}
+.tut-maker-row > input {
+  width: 70px !important;
+}
+.tut-maker-row > span {
+  cursor: pointer;
+}
+.tut-maker-btn {
+  display: block;
+  margin: 5px 0px;
+}
+.tut-maker-row > input.ti {
+  width: 34px !important;
+}

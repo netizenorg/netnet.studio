@@ -24,14 +24,15 @@ class WidgetCard {
     this.parent.classList.add('lg-widget-card-stage')
 
     this.card = nn.create('div').set('class', 'lg-widget-card')
-      .css({
-        width: this.w,
-        height: this.h,
-        left: this.x,
-        top: this.y
-      })
       .content(o.content || '')
       .addTo(this.parent)
+
+    const css = { width: this.w, height: this.h, left: this.x, top: this.y }
+    if (o.thumbnail) {
+      css.background = `url(${o.thumbnail}) no-repeat center center`
+      css.backgroundSize = 'cover'
+    }
+    this.card.css(css)
 
     if (o.click) this.card.on('click', () => o.click())
 

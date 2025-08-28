@@ -4,14 +4,18 @@
 this class is used to intercept requests coming from the website (specifically
 the iframe rendering the output) and resolve those by returning the data stored
 in indexedDB via the project-files widget.
- __________                                           ________________
-|    www   |                                         | service-worker |
-| <iframe> | <--------- send res to -----------------|________________|
-|_ netitor_|                                                      |
+ ___________________                                  ________________
+|        www         |                               | service-worker |
+| netitor | <iframe> |<------ send res to -----------|________________|
+|____\_______________|                                           |
       \__                 _______________                        /
-         \__ save to --> | project-files | <--- get data from __/
+         \__ save to --> | project-files | ->>- pass data to ___/
                          |   IndexedDB   |
                          |_______________|
+
+ this is also now being used by the Tutorial Maker widget, so any local tutorial
+ files (which will eventually be in www/tutorials) which get loaded from a zip
+ can be stored in indexedDB while working on tutorials and resolved correctly.
 
 // NOTE: for debug console visit "about:debugging" in Firefox
 */
@@ -24,8 +28,18 @@ const DEFAULT_CFG = {
   log: false
 }
 
+const TUTORIAL_MAKER_PATH = 'TUTORIAL_MAKER'
+const TUTORIAL_MAKER_CFG = {
+  dbName: 'tutorialMakerDB',
+  dbVersion: 1,
+  storeName: 'filesStore',
+  objName: 'files',
+  log: false
+}
+
 // one SW controls all tabs (if multiple projs open); track a config per client
 const clientConfigs = new Map() // clientId -> cfg
+const parentOf = new Map() // childId -> topId
 
 async function getCfgForClientAsync (clientId, requestUrl, preferId) {
   // 1) exact hit
@@ -60,7 +74,10 @@ async function getCfgForClientAsync (clientId, requestUrl, preferId) {
   if (candidateTop) {
     const cfg = clientConfigs.get(candidateTop.id)
     // cache it for this nested client so future subresource fetches don’t have to search again
-    if (clientId) clientConfigs.set(clientId, cfg)
+    if (clientId) {
+      clientConfigs.set(clientId, cfg)
+      parentOf.set(clientId, candidateTop.id)
+    }
     return cfg
   }
 
@@ -154,6 +171,19 @@ const getFileFromIndexedDB = async (filePath, cfg) => {
 const getAllFilesFromIndexedDB = async (cfg) => {
   const dict = await getKVFromDB(cfg.objName, cfg)
   return dict || false
+}
+
+const tryGetFromIDB = async (path, cfg, isIframe) => {
+  // if in tutorial mode and this is an iframe, try prefixed path first
+  if (cfg?.prefix && isIframe) {
+    const prefixed = cfg.prefix + path
+    const hit = await getFileFromIndexedDB(prefixed, cfg)
+    if (hit) return { data: hit, path: prefixed }
+  }
+  // otherwise (or if prefix miss), try the raw path
+  const hit = await getFileFromIndexedDB(path, cfg)
+  if (hit) return { data: hit, path }
+  return { data: null, path }
 }
 
 async function generateResponse (filePath, data) {
@@ -302,16 +332,46 @@ self.addEventListener('message', event => {
   const id = event?.source?.id
   if (!id) return
   const data = event.data || {}
-  const cfg = {
-    dbName: data.dbName || DEFAULT_CFG.dbName,
-    dbVersion: data.dbVersion || DEFAULT_CFG.dbVersion,
-    storeName: data.storeName || DEFAULT_CFG.storeName,
-    objName: data.objName || DEFAULT_CFG.objName,
-    log: !!data.log
+
+  // ...................... tutorial mode iframe routing ......................
+  if (data.type === 'SET_TUTORIAL_MODE') {
+    if (data.enabled) {
+      const slug = String(data.slug || '').trim()
+      const prefix = slug ? `TUTORIAL_MAKER/${slug}/` : ''
+      clientConfigs.set(id, { ...TUTORIAL_MAKER_CFG, prefix })
+      if (TUTORIAL_MAKER_CFG.log) console.log('[SW] tutorial ON', id, prefix)
+    } else {
+      // turn OFF: remove this tab's cfg and any inherited child mappings
+      clientConfigs.delete(id)
+      if (typeof parentOf !== 'undefined') {
+        for (const [childId, topId] of parentOf.entries()) {
+          if (topId === id) {
+            parentOf.delete(childId)
+            clientConfigs.delete(childId)
+          }
+        }
+      }
+      if (DEFAULT_CFG.log) console.log('[SW] tutorial OFF', id)
+    }
+    pruneDeadClients()
+    return
   }
-  clientConfigs.set(id, cfg)
-  if (cfg.log) console.log('[SW] config set for client', id, cfg)
-  pruneDeadClients()
+
+  // ...................... project-files mode cfg's ......................
+  if (
+    data.dbName || data.dbVersion || data.storeName || data.objName || typeof data.log === 'boolean'
+  ) {
+    const cfg = {
+      dbName: data.dbName || DEFAULT_CFG.dbName,
+      dbVersion: data.dbVersion || DEFAULT_CFG.dbVersion,
+      storeName: data.storeName || DEFAULT_CFG.storeName,
+      objName: data.objName || DEFAULT_CFG.objName,
+      log: !!data.log
+    }
+    clientConfigs.set(id, cfg)
+    if (cfg.log) console.log('[SW] config set for client', id, cfg)
+    pruneDeadClients()
+  }
 })
 
 self.addEventListener('fetch', event => {
@@ -321,16 +381,24 @@ self.addEventListener('fetch', event => {
       const url = new URL(request.url)
       const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
 
-      // prefer resultingClientId for navigations, otherwise use clientId
       const clientId = event.resultingClientId || event.clientId
-      const cfg = await getCfgForClientAsync(clientId, url)
+      const cfg = filePath.startsWith(TUTORIAL_MAKER_PATH + '/')
+        ? TUTORIAL_MAKER_CFG : await getCfgForClientAsync(clientId, url)
+
+      let isIframe = false // is req coming from iframe or main netnet
+      try {
+        if (clientId) {
+          const cli = await self.clients.get(clientId)
+          isIframe = !!cli && cli.frameType !== 'top-level'
+        }
+      } catch (_) {}
 
       if (request.mode === 'navigate' && cfg?.log) {
         console.log('[SW] NAV', { path: url.pathname, clientId })
       }
       if (cfg?.log) console.log('[SW] fetch', { clientId, filePath, cfg })
 
-      // not a project/iframe request? let it hit the network
+      // not an iframe request, then let it pass through
       const hasProjectCfg = cfg && cfg.dbName && cfg.storeName
       if (!hasProjectCfg) {
         return fetch(request, { cache: 'no-store' })
@@ -339,29 +407,39 @@ self.addEventListener('fetch', event => {
       const hosts = ['localhost', 'netnet.studio', 'dev.netnet.studio']
       const comingFromNetnet = hosts.includes(url.hostname)
 
-      let fileData = await getFileFromIndexedDB(filePath, cfg)
-      if (cfg?.log) console.warn('[SW] fileData:', fileData)
+      // ----------------------------------------------------- MAIN file lookup
+      // let fileData = await getFileFromIndexedDB(filePath, cfg)
+      // if (cfg?.log) console.warn('[SW] fileData:', fileData)
+      let { data: fileData, path: lookedUpPath } = await tryGetFromIDB(filePath, cfg, isIframe)
+      if (cfg?.log) console.warn('[SW] lookup', { requestPath: filePath, lookedUpPath, hit: !!fileData })
 
+      // ------------------------------------------- FOLDER index.html fallback
       if (!fileData) {
-        // folder nav with an index.html inside?
-        const indexData = await getFileFromIndexedDB(filePath + '/index.html', cfg)
-        if (indexData) {
+        const idx = await tryGetFromIDB(filePath + '/index.html', cfg, isIframe)
+        if (idx.data) {
           fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file... add index.html to the end of the path you navigated to.'
+          lookedUpPath = idx.path
         }
-        // bad local references? ex: trying to link (src, href, ) to a local file that does not exist
+      }
+
+      // ----------------------------------------------------- BAD PATHS helper
+      // ex: trying to link (src, href, ) to a local file that does not exist
+      if (!fileData) {
         const bads = await findFileReferences(filePath, cfg)
         if (bads && Object.keys(bads).length > 0 && clientId) {
           await postMessageToClient(clientId, 'BAD_PATHS', bads)
         }
       }
 
+      // ---------------------------- ABSOLUTE URL passthrough (ex: raw GitHub)
       if (fileData && typeof fileData === 'string' && fileData.startsWith('http') && comingFromNetnet) {
         if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)
         return fetch(fileData, { cache: 'no-store' })
       }
 
+      // ------------------------------------------------- SERVE FROM IndexedDB
       if (fileData) {
-        if (cfg?.log) console.log('[SW] serving from IDB:', filePath)
+        if (cfg?.log) console.log('[SW] serving from IDB:', lookedUpPath || filePath)
         let body = fileData
         if (filePath.endsWith('.html')) {
           body = `<script>
@@ -375,6 +453,7 @@ self.addEventListener('fetch', event => {
         return generateResponse(filePath, body)
       }
 
+      // ------------------------------------------- else, pass request through
       if (cfg?.log) console.warn('[SW] miss; falling back to network:', filePath)
       return fetch(request, { cache: 'no-store' })
     } catch (err) {

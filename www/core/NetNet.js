@@ -467,16 +467,112 @@ class NetNet {
   }
 
   _adjustLayout (v) {
-    if (v === this._layout) return
-    const old = this._layout
-    this._toggleTransition(true)
-    this._layout = v
-    this.menu.updateFace()
-    this.menu.toggleMenu(false)
-    // this.opacity = STORE.state.opacity
+    // layout dictionary object
+    const wf = nn.width / 2
+    const eh = NNE.code.split('\n').length * 25
+    const hf = nn.height / 2 < eh + 75 ? nn.height / 2 : eh + 75
+    const layouts = {
+      welcome: {
+        tite: 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: '430px',
+          height: '295px',
+          left: 'calc(-170px + 50vw)',
+          top: 'calc(-135px + 50vh)',
+          bottom: null,
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: false
+      },
+      'dock-bottom': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: nn.height / 2 + 'px', left: '0px', top: '0px'
+        },
+        win: {
+          width: '100%',
+          height: nn.height / 2 + 'px',
+          left: '0px',
+          top: null,
+          bottom: '0px',
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: true
+      },
+      'dock-left': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: nn.width / 2 + 'px', height: '100%', left: nn.width / 2 + 'px', top: '0px'
+        },
+        win: {
+          width: nn.width / 2 + 'px',
+          height: '100%',
+          left: '0px',
+          top: '0px',
+          bottom: null,
+          borderRadius: '1px 25px 25px 1px'
+        },
+        canv: '1px 15px 15px 1px',
+        editor: true
+      },
+      'full-screen': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: '100%',
+          height: '100%',
+          left: '0px',
+          top: '0px',
+          bottom: null,
+          borderRadius: '1px 1px 1px 1px'
+        },
+        canv: '1px 1px 1px 1px',
+        editor: true
+      },
+      'separate-window': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: wf + 'px',
+          height: hf + 'px',
+          left: nn.width / 2 - wf / 2 + 'px',
+          top: nn.height / 2 - hf / 2 + 'px',
+          bottom: null,
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: true
+      }
+    }
 
-    const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
-    if (tbWasOpened) this.menu.textBubble.fadeOut(10)
+    const confirm = (l) => {
+      let c = true
+      const o = layouts[l]
+      if (this.title.style.display !== o.title) { c = false }
+      if (this.rndr.style.width !== o.rndr.width) { c = false }
+      if (this.rndr.style.height !== o.rndr.height) { c = false }
+      if (this.rndr.style.left !== o.rndr.left) { c = false }
+      if (this.rndr.style.top !== o.rndr.top) { c = false }
+      if (this.win.style.width !== o.win.width) { c = false }
+      if (this.win.style.height !== o.win.height) { c = false }
+      if (this.win.style.left !== o.win.left) { c = false }
+      if (this.win.style.top !== o.win.top) { c = false }
+      if (this.win.style.bottom !== o.win.bottom) { c = false }
+      if (this.win.style.borderRadius !== o.win.borderRadius) { c = false }
+      if (this.canv.style.borderRadius !== o.canv) { c = false }
+      if ((o.editor === false && this.edtr.style.display !== 'none') ||
+        (o.editor === true && this.edtr.style.display !== 'block')) { c = false }
+      return c
+    }
 
     const after = () => {
       this._toggleTransition(false)
@@ -487,94 +583,35 @@ class NetNet {
       this.emit('layout-change', { old, new: v })
     }
 
-    if (v === 'welcome') {
-      this.title.style.display = 'none'
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '430px'
-      this.win.style.height = '295px'
-      this.win.style.left = 'calc(-170px + 50vw)'
-      this.win.style.top = 'calc(-135px + 50vh)'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      this._showEditor(false)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'dock-bottom') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = window.innerHeight / 2 + 'px'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '100%'
-      this.win.style.height = window.innerHeight / 2 + 'px'
-      this.win.style.left = '0px'
-      this.win.style.top = null
-      this.win.style.bottom = '0px'
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'dock-left') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = window.innerWidth / 2 + 'px'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = window.innerWidth / 2 + 'px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = window.innerWidth / 2 + 'px'
-      this.win.style.height = '100%'
-      this.win.style.left = '0px'
-      this.win.style.top = '0px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '1px 25px 25px 1px'
-      this.canv.style.borderRadius = '1px 15px 15px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'full-screen') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '100%'
-      this.win.style.height = '100%'
-      this.win.style.left = '0px'
-      this.win.style.top = '0px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '1px 1px 1px 1px'
-      this.canv.style.borderRadius = '1px 1px 1px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'separate-window') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this._showEditor(true)
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      const wf = window.innerWidth / 2
-      const eh = NNE.code.split('\n').length * 25
-      const hf = window.innerHeight / 2 < eh + 75
-        ? window.innerHeight / 2 : eh + 75
-      this.win.style.width = wf + 'px'
-      this.win.style.height = hf + 'px'
-      this.win.style.left = window.innerWidth / 2 - wf / 2 + 'px'
-      this.win.style.top = window.innerHeight / 2 - hf / 2 + 'px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      utils.afterLayoutTransition(() => after())
-    }
+    // -------------- do we need to run re-orientation of layout? --------------
+    if (v === this._layout && confirm(v)) return
+
+    // -------------- if so, re-run the layout logic ---------------------------
+
+    const old = this._layout
+    this._toggleTransition(true)
+    this._layout = v
+    this.menu.updateFace()
+    this.menu.toggleMenu(false)
+
+    const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
+    if (tbWasOpened) this.menu.textBubble.fadeOut(10)
+
+    const o = layouts[v]
+    this.title.style.display = o.title
+    this.rndr.style.width = o.rndr.width
+    this.rndr.style.height = o.rndr.height
+    this.rndr.style.left = o.rndr.left
+    this.rndr.style.top = o.rndr.top
+    this.win.style.width = o.win.width
+    this.win.style.height = o.win.height
+    this.win.style.left = o.win.left
+    this.win.style.top = o.win.top
+    this.win.style.bottom = o.win.bottom
+    this.win.style.borderRadius = o.win.borderRadius
+    this.canv.style.borderRadius = o.canv
+    this._showEditor(o.editor)
+    utils.afterLayoutTransition(() => after())
   }
 
   // + + + + NETITOR STUFF + + + +
