@@ -12,13 +12,8 @@ class HyperVideoPlayer extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    const editWatcher = () => {
-      if (this?.opened && NNE.readOnly) {
-        window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
-      }
-    }
-
-    NNE.cm.on('keydown', () => editWatcher)
+    this._boundEditWatcher = this._editWatcher.bind(this)
+    NNE.cm.on('keydown', this._boundEditWatcher)
 
     this.on('open', () => {
       setTimeout(() => {
@@ -33,7 +28,7 @@ class HyperVideoPlayer extends Widget {
         // TODO: call some logic for quitting the tutorial marker
       } else if (this.data) {
         this.quit()
-        NNE.cm.off('keydown', () => editWatcher)
+        NNE.cm.off('keydown', this._boundEditWatcher)
       }
       NNE.readOnly = false
     })
@@ -104,7 +99,19 @@ class HyperVideoPlayer extends Widget {
   // ----------------------------- video controls ------------------------------
 
   updateVideo (name, folder) {
-    const path = folder ? `tutorials/${folder}` : 'videos'
+    const tutRoot = this.making ? 'TUTORIAL_MAKER' : 'tutorials'
+    const path = folder ? `${tutRoot}/${folder}` : 'videos'
+
+    const updateMetadata = () => {
+      this._videoMetaDataListener = true
+      if (this.data?.metadata) {
+        this.data.metadata.duration = this.video.duration
+      } else setTimeout(() => updateMetadata(), 100)
+    }
+    if (path !== 'videos' && !this._videoMetaDataListener) {
+      this.video.on('loadeddata', updateMetadata)
+    }
+
     if (this.video.canPlayType('video/mp4') !== '') {
       this.video.setAttribute('src', `${path}/${name}.mp4`)
     } else if (this.video.canPlayType('video/webm') !== '') {
@@ -212,6 +219,9 @@ class HyperVideoPlayer extends Widget {
   renderKeyframe () {
     const kf = this.getMostRecentKeyframe()
     const kl = this.getMostRecentKeylog()
+    this._tt = 500 // transition time
+    this._do = 100 // delay open for first widget
+    this._da = 200 // amount to add to delay for subsequant widget
 
     if (kl && !kl.ran) {
       if (kl.code !== NNE.code) {
@@ -225,32 +235,27 @@ class HyperVideoPlayer extends Widget {
       // POSITION HYPER VIDEO PLAYER
       if (this._vidPositionNeedsUpdate(kf.video)) {
         const obj = JSON.parse(JSON.stringify(kf.video))
-        const t = obj.transition || 500
-        if (obj.transition) delete obj.transition
-        this.update(obj, t)
+        this.update(obj, this._tt)
       }
 
       // 2.
       // UPDATE WIDGETS (OPEN + CLOSE + POSITION)
       const opened = kf.widgets.map(obj => obj.key) // keep these opened
       opened.push('hyper-video-player')
-      let delayOpen = 100
       kf.widgets.forEach(obj => {
         obj = JSON.parse(JSON.stringify(obj))
         const key = obj.key
-        const t = obj.transition || 500
         delete obj.key // delete so wig.update doesn't bugout w/unexpected props
-        if (obj.transition) delete obj.transition
         const wig = WIDGETS[key]
-        if (!wig) WIDGETS.open(key, wig => wig.update(obj, t))
+        if (!wig) WIDGETS.open(key, wig => wig.update(obj, this._tt))
         else {
           wig.update(obj)
           if (!wig.opened) {
             setTimeout(() => {
               wig.update(obj)
-              setTimeout(() => wig.open(), delayOpen + 50)
-            }, delayOpen)
-            delayOpen += 200
+              setTimeout(() => wig.open(), this._do + 50)
+            }, this._do)
+            this._do += this._da
           }
         }
       })
@@ -273,13 +278,14 @@ class HyperVideoPlayer extends Widget {
       const newLayout = kf.netitor.layout
       const posLayouts = ['welcome', 'separate-window']
       if (posLayouts.includes(newLayout)) {
-        const t = kf.video.transition || 500
         if (newLayout && newLayout !== prevLayout) {
           NNW.layout = newLayout
-          utils.afterLayoutTransition(() => NNW.update(kf.netnet, t))
-        } else NNW.update(kf.netnet, t)
+          utils.afterLayoutTransition(() => NNW.update(kf.netnet, this._tt))
+        } else NNW.update(kf.netnet, this._tt)
       } else if (newLayout && newLayout !== prevLayout) {
         NNW.layout = newLayout
+        // correct for scrubbing (if delayed call to update from prev frame)
+        utils.afterLayoutTransition(() => { NNW.layout = newLayout })
       }
       this._updateScrollBar() // TODO check if working correctly
       // ...spotlight
@@ -305,15 +311,20 @@ class HyperVideoPlayer extends Widget {
     this.title = this.data.metadata.title
 
     utils.cancelAllNetitorUses('hyper-video-player')
-    utils.updateURL(`?tutorial=${this.data.id}`)
-    utils.setCustomRenderer(`tutorials/${name}/`)
+
+    if (!this.making) {
+      utils.updateURL(`?tutorial=${this.data.id}`)
+      utils.setCustomRenderer(`tutorials/${name}/`)
+    }
 
     this._instantiateMissingWidgets()
 
     this._resetKeyframes(true)
 
     if (this.data.metadata.jsfile) {
-      const file = `tutorials/${name}/init.js`
+      const file = this.making
+        ? `TUTORIAL_MAKER/${name}/init.js`
+        : `tutorials/${name}/init.js`
       utils.loadFile(file, () => window.TUTORIAL.init())
     }
 
@@ -398,6 +409,12 @@ class HyperVideoPlayer extends Widget {
     if (video.right && video.right !== this.right) { update = true }
     if (video.zIndex && video.zIndex !== this.zIndex) { update = true }
     return update
+  }
+
+  _editWatcher () {
+    if (this?.opened && NNE.readOnly) {
+      window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
+    }
   }
 
   // ................................................ HVP HTML .................

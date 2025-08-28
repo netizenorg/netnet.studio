@@ -1,0 +1,72 @@
+:root {
+  --netizen-text: #e7e5c9;
+  --netizen-background: #1c1c3600;
+  --netizen-meta: #c3c3db;
+  --netizen-tag: #c76ebc;
+  --netizen-tag-bracket: #c3c3db;
+  --netizen-attribute: #81c994;
+  --netizen-qualifier: #81c994;
+  --netizen-comment: #515199;
+  --netizen-variable: #d5805e;
+  --netizen-variable-2: #82ccd7;
+  --netizen-variable-3: #c3c3db;
+  --netizen-variable-callee: #82ccd7;
+  --netizen-def: #c3c3db;
+  --netizen-builtin: #81c994;
+  --netizen-property: #c3c3db;
+  --netizen-keyword: #81c994;
+  --netizen-string: #82ccd7;
+  --netizen-string-2: #82ccd7;
+  --netizen-number: #E6DB6F;
+  --netizen-atom: #c3c3db;
+  --netizen-operator: #c76ebc;
+  --netizen-line-numbers: #9885a6;
+  --netizen-active-line-bg: #c3c3db;
+  --netizen-selected: #c8c8fa19;
+  --netizen-match-color: #e7e5c9;
+  --netizen-match-border: #515199;
+  --netizen-hint-color: #1c1c36;
+  --netizen-hint-bg: #dacb8e;
+  --netizen-hint-shadow: #515199BF;
+  --fg-color: #c76ebc;
+  --bg-color: #1c1c36;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-color);
+}
+
+
+nav {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bg-color);
+  padding: 10px;
+}
+
+/* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Overlay Panels ~ ~  ~ ~ ~ ~  ~ ~ */
+
+.overlay {
+  position: fixed;
+  z-index: 100;
+  background: var(--netizen-meta);
+  inset: 0;
+  padding: 20px;
+}
+
+.overlay button {
+  color: var(--bg-color);
+  background: var(--netizen-meta);
+  border-color: var(--bg-color);
+}
+
+.overlay button:hover {
+  background: var(--netizen-text);
+}
