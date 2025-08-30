@@ -15,6 +15,7 @@ class LearningGuide extends Widget {
     this._svgTimer = null
 
     this.cards = [] // collect WidgetCards
+    this.tutCards = {} // collect current tutorial thumbnail cards
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -94,6 +95,7 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createPage (type, page, b, cb) {
     utils.get(`./widgets/learning-guide/data/${page}`, (html) => {
@@ -148,8 +150,22 @@ class LearningGuide extends Widget {
     this._enableSubPagesLinks()
     this._enableAppendixLinks()
 
+    this.slide.addEventListener('scroll', () => {
+      const t = this.slide.scrollTop
+      let select = null
+      this.slide.querySelectorAll('[id^="learning-guide-"]').forEach(el => {
+        const top = el.getBoundingClientRect().top - // 50 === scrollTo "offset"
+          this.slide.getBoundingClientRect().top + this.slide.scrollTop - 50
+        if (Math.abs(t - top) <= 25) { select = el }
+        el.classList.remove('is-hover')
+      })
+      if (select) select.classList.add('is-hover')
+    })
+
     this.slide.style.overflowX = 'hidden'
   }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _highlightTitles () {
     const c = nn.hex2rgb(utils.getVal('--netizen-number'))
@@ -159,11 +175,14 @@ class LearningGuide extends Widget {
     })
   }
 
-  _createTutThumb (sec, name) {
-    const data = this.tutorials[sec].find(o => o.title === name)
+  _createTutThumb (sec, id, appear) {
+    const data = this.tutorials[sec].find(o => o.id === id)
     const click = () => WIDGETS.load('hyper-video-player', w => w.load(data.id))
-    const ele = `.learning-guide__tut-${sec}`
-    nn.get(ele).innerHTML = ''
+    const ele = `.learning-guide__tut-thumbs-${sec}`
+    nn.get(ele).set('name', id).innerHTML = ''
+
+    this.tutCards[sec] = []
+    let delay = 0
 
     const cards = []
     const w = 549 // width of card stage (in leaerning guide)
@@ -179,26 +198,113 @@ class LearningGuide extends Widget {
       if (t) {
         const box = { w: 150, h: 100, x: pos[i].x, y: pos[i].y }
         const thumbnail = `/tutorials/${data.id}/${t}`
-        cards.push({ ele, box, thumbnail, click })
+        cards.push({ ele, box, thumbnail, click, appear })
       }
     }
-    cards.forEach(c => new WidgetCard(c)) // create thumbnail cards
+    cards.forEach(c => { // create thumbnail cards
+      setTimeout(() => this.tutCards[sec].push(new WidgetCard(c)), delay)
+      delay += 100
+    })
 
     const thumbnail = `/tutorials/${data.id}/${data.id}.jpg`
-    const vidCard = { ele, box: { w: 220, h: 140 }, thumbnail, click }
-    return new WidgetCard(vidCard) // create main video card
+    const vidCard = {
+      ele, box: { w: 220, h: 140 }, thumbnail, click, appear, main: true
+    } // create main video card
+    setTimeout(() => this.tutCards[sec].push(new WidgetCard(vidCard)), delay)
   }
 
   _createTutorialCards () {
     this.tutorials = {}
     const promises = []
-    // when all the data below is loaded, create first set of thumbnail cards
+
+    // ........................
+    // next|title|prev control functions
+    // ........................
+
+    const getTut = (sec) => {
+      const sel = `.learning-guide__tut-thumbs-${sec}`
+      const id = nn.get(sel).getAttribute('name')
+      return WIDGETS['learning-guide'].tutorials[sec].find(t => t.id === id)
+    }
+
+    const updateTitle = (sec) => {
+      const tut = getTut(sec)
+      let title = tut.title
+      if (tut.subtitle) title += ` <div style="font-size: 18px;">${tut.subtitle}</div>`
+      if (tut.author) title += ` <div style="font-size: 14px;">by ${tut.author}</div>`
+      nn.get(`.learning-guide__tut-cntrl[name="${sec}"] span.highlight`)
+        .content(title)
+    }
+
+    const hoverOver = (sec) => {
+      if (this._descTO) clearTimeout(this._descTO)
+      const tut = getTut(sec)
+      const desc = tut.description
+        .replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\A')
+      utils.setVal('--tut-desc', `"${desc}"`)
+      utils.setVal('--tut-desc-display', 'block')
+      this._descTO = setTimeout(() => utils.setVal('--tut-desc-opac', 1), 100)
+    }
+
+    const hoverOut = (sec) => {
+      if (this._descTO) clearTimeout(this._descTO)
+      utils.setVal('--tut-desc-opac', 0)
+      this._descTO = setTimeout(() => {
+        utils.setVal('--tut-desc-display', 'none')
+        utils.setVal('--tut-desc', '')
+      }, 500)
+    }
+
+    const selectTut = (sec) => {
+      const tut = getTut(sec)
+      WIDGETS.load('hyper-video-player', w => w.load(tut.id))
+    }
+
+    const stepTut = async (sec, dir = 1) => {
+      const list = this.tutorials[sec]
+      const curIdx = list.indexOf(getTut(sec))
+      const nextIdx = (curIdx + dir + list.length) % list.length
+      const target = list[nextIdx]
+      // stagger-hide current cards
+      for (const card of this.tutCards[sec]) {
+        card.hide()
+        await nn.sleep(100)
+      }
+      // small pause before bringing in the new one
+      await nn.sleep(500)
+      this._createTutThumb(sec, target.id, true)
+      updateTitle(sec)
+    }
+
+    // ........................
+    // when all the data below is loaded...
+    // ........................
     const ready = () => {
+      // ...create first set of thumbnail cards
       Object.entries(this.tutorials).forEach(([s, tut]) => {
-        if (tut[0]) this._createTutThumb(s, tut[0].title)
+        if (tut[0]) this._createTutThumb(s, tut[0].id)
+      })
+
+      // ...and setup controls
+      Object.entries(this.tutorials).forEach(([s, tut]) => {
+        if (tut.length > 1) {
+          const sec = `.learning-guide__tut-cntrl[name="${s}"] span`
+          nn.getAll(sec).forEach((span, i) => {
+            if (i === 0) span.addEventListener('click', () => stepTut(s, -1))
+            else if (i === 1) {
+              updateTitle(s)
+              span.addEventListener('click', () => selectTut(s))
+              span.addEventListener('mouseover', () => hoverOver(s))
+              span.addEventListener('mouseout', () => hoverOut(s))
+            } else if (i === 2) span.addEventListener('click', () => stepTut(s, +1))
+          })
+        }
       })
     }
+
+    // ........................
     // Load all the Tutorial Data the Learning Guide needs
+    // ........................
     utils.get('tutorials/list.json', (json) => {
       Object.entries(json).forEach(([key, val]) => {
         this.tutorials[key] = []
@@ -212,10 +318,6 @@ class LearningGuide extends Widget {
       })
       Promise.all(promises).then(ready)
     })
-
-    // enable the prev/next controls
-    // TODO: `.learning-guide__tut-cntrl[name="${sec}"]`
-    // TODO: also make span[class="highlight"] linkable to tutorial load
   }
 
   _createDemoTemplateCards () {
@@ -271,6 +373,7 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸. star field background && other animations
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _applyVisibility () {
     const visible = utils.isVisible(this.ele)

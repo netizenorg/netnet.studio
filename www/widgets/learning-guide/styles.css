@@ -1,3 +1,9 @@
+:root {
+  --tut-desc: "";
+  --tut-desc-opac: 0;
+  --tut-desc-display: none;
+}
+
 .learning-guide__header {
   display: flex;
   position: relative;
@@ -78,12 +84,14 @@
     text-shadow 0.5s var(--sarah-ease);
 }
 
-.learning-guide__main h3[onclick]:hover {
+.learning-guide__main h3[onclick]:hover,
+[id^="learning-guide-"].is-hover h3[onclick] {
   cursor: pointer;
   text-shadow: 0px 2px 2px var(--bg-color) !important;
 }
 
-.learning-guide__main h3[onclick]:hover::after {
+.learning-guide__main h3[onclick]:hover::after,
+[id^="learning-guide-"].is-hover h3[onclick]::after {
   top: -17px;
   height: 53px;
   opacity: 0.5;
@@ -167,10 +175,33 @@
   opacity: 1;
 }
 
+[class^="learning-guide__tut-thumbs-"]:after {
+  content: var(--tut-desc);
+  /* background: var(--netizen-hint-shadow); */
+  background: var(--netizen-meta);
+  color: var(--bg-color);
+  /* opacity: 0.9; */
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  margin: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  display: var(--tut-desc-display);
+  opacity: var(--tut-desc-opac);
+  transition: opacity 0.5s;
+}
+
 .learning-guide__tut-cntrl {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   user-select: none;
+}
+
+.learning-guide__tut-cntrl .highlight {
+  text-align: center;
 }
 
 .learning-guide__dotted-line {
@@ -317,7 +348,7 @@
       0 10px 30px rgba(0, 0, 0, 0.15),
       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
     transform-style: preserve-3d;
-    transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+    transform: rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1);
     transition: box-shadow 0.2s ease;
     will-change: transform, box-shadow;
 
@@ -325,6 +356,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .lg-widget-card.main {
+    border-color: var(--fg-color);
+  }
+
+  .lg-widget-card.main::after {
+    content: "▶";
+    font-size: 70px;
+    text-shadow: 4px 2px 6px var(--bg-color);
+    color: var(--fg-color);
+    opacity: 0.9;
   }
 
   /* a sheen that moves with the tilt to sell the 3D effect */
