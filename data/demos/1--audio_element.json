@@ -1,6 +1,72 @@
 {
-  "tags": "HTML CSS basics",
+  "key": "1",
   "name": "audio element",
-  "code": "#code/eJxVks1u2zAQhO9+iqkvsgFLdJEgCBzZt16K3vIEtLiWCNMkS65sCEXfvSSlJu2NPzM7ux/ZRp4MnVbA2akJv3CTodf2gP0bBtL9wAd83e/vwxt+r1qxqFftl7rG5EZ00laMSAQeCHJU2u2gGd7IKULbcnyW3bUPbrQKdX2azeeRoS+5RqVg9JV24DBBKqVtf0DnLAdn4nHNYaT17CvlEUN3XJdlFGSoS7raO9/c/NMaxjm/eE6tKKolkEPqAucJlyDtdbx9tjIw+3gQ4hKIYu6ycaEXnpw3JBa1KBdRPL0+P7+8imJetbEL2nOmJ8Q8PGQa8q4VuTkw/iXEMsxU0ngYLWszuzKfu6YHBQwyE2NKPiaFh+ahXHvZU/Op/i7v8r0EJ0oq0SXjHgvwj0dAInMjy5h9ifQ/QZ3RuTNpp8dAgeDsfzmJfeSF1xHKdWOu1PwcKUzvhbgLm6rEVNuk/1DkL9SkF/x2T7sfOjJZSsoSV+2w2eJ4mus2ud3Ndpu/1MzwDwp01tw=",
-  "key": "1"
+  "tags": [
+    "HTML",
+    "CSS",
+    "basics"
+  ],
+  "layout": "dock-bottom",
+  "code": "#code/eJxtzTEOwyAMBdCdU1jsJENXwl2QgwgKybeADLl9W6IMVTrafv/b+mNOoFp40iEHbiWxkeR3GF5Q5jps8tLOjt05pewjACOQzoixf+ZcKQPyDN1np4hsxVE4XEWrb+fV0E4Jk+583CRE/d8ixl/7XTh1f3wD/AlIxg==",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "The HTML <code>audio</code> element is used to embed sound on our page. We use the <code>src</code> <i>attribute</i> to specify the file we want loaded into this element, just as we do with other media elements like <code>img</code> and <code>video</code>.",
+      "title": "getting started"
+    },
+    {
+      "title": "controls",
+      "focus": null,
+      "text": "Our page contains three <code>audio</code> elements, but only two appear visible because only those two have the <code>controls</code> attribute set. Adding <code>controls</code> tells the browser to render its default UI (user interface), omitting it lets us hide the default controls and manage playback with JavaScript—whether we build custom buttons, use the element for background music, sound effects, or any other purpose."
+    },
+    {
+      "title": "loop",
+      "focus": [
+        3
+      ],
+      "text": "This second <code>audio</code> element has a third attribute defined. The <code>loop</code> attribute is set when we want the audio file to keep looping over and over again, until we explicitly tell it to stop, either using the controls or via JavaScript."
+    },
+    {
+      "title": "boolean attributes",
+      "focus": [
+        3
+      ],
+      "text": "Unlike the <code>src</code> attribute, <code>controls</code> and <code>loop</code> don't have any values assigned. That's because these are \"boolean attributes\", which means that their value can either be \"true\" or \"false\". Simply writing the attribute's name states that you want it set, where as leaving it absent means you do not."
+    },
+    {
+      "title": "source element",
+      "focus": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "text": "Unlike the <code>img</code> element, the <code>audio</code> element has both an opening tag and a closing tag. This is because it can contain a set of optional <code>source</code> elements within them. Notice how this <code>audio</code> element has two <code>source</code> elements each with their own <code>src</code> <i>attributes</i>."
+    },
+    {
+      "title": "media types",
+      "focus": [
+        6,
+        7
+      ],
+      "text": "Both elements refer to the same Katy Perry acapella recording, but they use different file formats. The first element points to an <b>.mp3</b> file and declares its <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types\" target=\"_blank\">MIME type</a> as <b>audio/mpeg</b> using the <code>type</code>  attribute. The second element points to an <b>.ogg</b> file and declares its MIME type as <b>audio/ogg</b>."
+    },
+    {
+      "title": "old browsers",
+      "focus": null,
+      "text": "It use to be the case that some browsers could only play specific audio formats, for this reason the web standard created the <code>source</code> element, this way developers could create a single page capable of working across different browsers, as long as they included all the necessary media types to cover comparability with all browsers."
+    },
+    {
+      "title": "can i use...?",
+      "focus": null,
+      "text": "Today virtually every modern browser can play <a href=\"https://en.wikipedia.org/wiki/MP3\" target=\"_blank\">MP3</a> files (audio/mpeg), so you often don’t need multiple <code>source</code> elements. However, if you ever doubt whether a particular format is supported, check the compatibility tables on <a href=\"https://caniuse.com/\" target=\"_blank\">caniuse.com</a>, the go‑to resource web developers use for up‑to‑date browser support information.\n"
+    },
+    {
+      "title": "next media element",
+      "focus": null,
+      "text": "Feel free to experiment with this demo, when you're ready for the next one click on the \"Notes\" button at the top to open up this guide again and we can move onto the the <span class=\"link\" onclick=\"utils.loadDemo(2)\">video</span> element. If you experiment too much, the \"Notes\" button may disappear, but you could always press <code>${utils.hotKey()}+Z</code> to undo your changes and return to the original demo with the \"Notes\" button."
+    }
+  ]
 }

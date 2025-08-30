@@ -1,6 +1,64 @@
 {
-  "tags": "HTML CSS basics",
+  "key": "2",
   "name": "video element",
-  "code": "#code/eJxVUs1SgzAQvvcpdrhQOhbqjKcKvXlxvPUJ0mQL0ZBgskAZx3c3P4zW2yb7/ey3Se1oUXjaAFyMWODLFwA9s63URzg8x2OHsu3oCI+Hw9Slq2oHo5O6havCm6fegAxw1IQWJinQwK6KQCHdoNhyjMDEfR8dyeuy58bDtddNvNRkSrZ6Lwl7d9/43tTVOummTgbO8iaLpasct4h679iEtuyHpwzYSCYYNxnZETNQxgxrfaqrSAtSnigHCvGrynOENMC0WCOQZfzDAWc6J3DELEGQDLFHTVIlFnXo8Tj75B1zIMPIjBMKmCV1sT2wFss/9Cub2DkaAzcC4YLKzFHarWrBHRX2Pj8knrzeG3Elw2RML3OHFsHofz5+s46CDDQgDB+DTvk5ol3OXpWTsds8muSFR/8iwg8omRAvkz+9SedfBz0ymuUPsC2gOQXVMoy6LYrwJml/P+96v2w=",
-  "key": "2"
+  "tags": [
+    "HTML",
+    "CSS",
+    "basics"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyFzjEKgDAMBdC9pwjd1cWx9i5aQxG0KYlWvL1YUXBQ15//wjdp6JFA2DVaHCOGQtqEXE6x1uAozEyjwEgUraly2SplTnWdrQIwQgs7fPs0bxEbnVl1BN+EfHoS8v6HrNhNT5MTq+7VO4ITUG0=",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "As the name implies, the HTML <code>video</code> element embeds videos on our page. Like the <code>img</code> and <code>audio</code> elements, you supply the file to load with the <code>src</code> attribute.",
+      "title": "getting started"
+    },
+    {
+      "title": "controls and loop",
+      "focus": [
+        1
+      ],
+      "text": "In addition to the <code>src</code> attribute, this first <code>video</code> element also contains the <code>controls</code> attribute, so the browser renders its default playback UI (user interface). It also has the <code>loop</code> attribute set, which makes a video restart automatically when it reaches the end."
+    },
+    {
+      "title": "boolean attributes",
+      "focus": [
+        1
+      ],
+      "text": "Unlike the <code>src</code> attribute, <code>controls</code> and <code>loop</code> don't have any values assigned. That's because these are \"boolean attributes\", which means that their value can either be \"true\" or \"false\". Simply writing the attribute's name states that you want it set, where as leaving it absent means you do not."
+    },
+    {
+      "title": "source element",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "text": "Unlike the <code>img</code> element, the <code>video</code> element has both an opening tag and a closing tag. This is because it can contain a set of optional <code>source</code> elements within them. Notice how this <code>video</code> element has three <code>source</code> elements each with their own <code>src</code> and <code>type</code> attributes."
+    },
+    {
+      "title": "media types",
+      "focus": [
+        4,
+        5,
+        6
+      ],
+      "text": "Each <code>source</code> points to the same visual content encoded in a different format, denoted by their different file extensions and <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types\" target=\"_blank\">MIME</a> type. The browser scans the list and picks the first format it knows how to decode. The first option is an <b>.mp4</b> which uses <a href=\"https://en.wikipedia.org/wiki/Advanced_Video_Coding\" target=\"_blank\">H.264</a> compression, the <b>.ogv</b> which uses <a href=\"https://en.wikipedia.org/wiki/Theora\" target=\"_blank\">Theora</a>, <b>.webm</b> which uses <a href=\"https://en.wikipedia.org/wiki/VP9\" target=\"_blank\">VP9</a>."
+    },
+    {
+      "title": "Web Standards",
+      "focus": null,
+      "text": "As we've discussed in our lesson on <i>The Platform</i>, the Web itself is built on open standards rather than owned by any single company. These standards, like HTML, are developed by the <a href=\"https://www.w3.org/\" target=\"_blank\">W3C</a>, a group where anyone can participate and help shape the language. This process is open and democratic, sometimes slow or messy, but it’s what ensures the Web belongs to everyone."
+    },
+    {
+      "title": "historical trace",
+      "focus": null,
+      "text": "The <code>source</code> element is a historical reminder of how messy, but also democratic, the process of making web standards can be. In the early days of HTML5 video, <a href=\"https://arstechnica.com/gadgets/2009/07/decoding-the-html-5-video-codec-debate/?utm_source=chatgpt.com\" target=\"_blank\">browser vendors couldn’t agree on a single codec</a>, so web developers were told to provide multiple sources in different formats. That way, each browser could pick the format it supported. Today MP4 is nearly universal (consult the compatibility tables on <a href=\"https://caniuse.com/\" target=\"_blank\">caniuse.com</a> to confirm this) but <code>source</code> remains as a trace of those debates and of the compromises that move the open web forward.\n"
+    }
+  ]
 }
