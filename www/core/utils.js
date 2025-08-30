@@ -543,7 +543,7 @@ window.utils = {
       }
     }
 
-    const introGuides = ['html-reference']
+    const introGuides = ['html-reference', 'css-reference']
     introGuides.forEach(guide => {
       if (!hasException(guide)) {
         if (WIDGETS[guide]?.opened) WIDGETS[guide].close()

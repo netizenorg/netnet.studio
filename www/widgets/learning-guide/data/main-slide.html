@@ -110,16 +110,6 @@
     <div class="learning-guide__tut-cntrl" name="code">
       <span class="highlight">How/Why/Where/What is Code</span>
     </div>
-
-    <!-- <div class="learning-guide__tc">
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <div onclick="WIDGETS.open('demo-sketches')" class="learning-guide__code-example-btn">
-          &lt;/&gt;
-        </div>
-        <p style="padding: 20px; width: 331px;">← A collection of code examples and annotated demos created especially for internet artists. If you're new to creative coding, you may want to start with the interactive tutorial above.</p>
-      </div>
-      <br>
-    </div> -->
   </div>
 
   <!--                      <<<  -   >>>                              -->
@@ -128,7 +118,6 @@
   <div class="learning-guide__main__item" id="learning-guide-html">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('html')">HTML</h3>
     <br>
-    <!-- <svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag> -->
     <svg-tag-animated colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text),var(--netizen-attribute),var(--netizen-string)" onclick="WIDGETS.open('html-reference')" style="cursor:pointer;"></svg-tag-animated>
     <br>
     <div>
@@ -203,8 +192,20 @@
   <div class="learning-guide__main__item" id="learning-guide-css">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('css')">CSS</h3>
     <br>
+    <svg-css-animated colors="var(--netizen-meta), var(--netizen-tag),var(--netizen-text),var(--netizen-property),var(--netizen-number),var(--netizen-tag-bracket)" onclick="WIDGETS.open('css-reference')" style="cursor:pointer;"></svg-css-animated>
     <br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+    <div>
+      <div class="learning-guide__ex-start">
+        <span><b>Cascading Style Sheets</b></span>
+        <button class="pill-btn pill-btn--secondary"
+                onclick="WIDGETS.open('css-reference', (w) => {w.toggleIntroPresentation(); WIDGETS['learning-guide'].close()})">
+          Start Intro to CSS
+        </button>
+      </div>
+      <p>
+        Cascading Style Sheets, or CSS, was a language introduced to the Web in the mid 90s for the purpose of separating a webpage's "form" or "presentation" from it's "structure" and "content". Initially it handled things like layout, color and fonts, but today, it has evolved to become a much more expressive language capable of creating interactive effects and animations.
+      </p>
+    </div>
     <!-- <div>
       <div class="learning-guide__ex-start">
         <span><b>Cascading Style Sheets</b></span>
