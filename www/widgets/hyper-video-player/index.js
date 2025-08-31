@@ -1,55 +1,44 @@
-/* global Widget, WIDGETS, NNE, NNW, Convo, utils */
+/* global Widget, WIDGETS, NNE, NNW, Convo, utils, nn */
 class HyperVideoPlayer extends Widget {
   constructor (opts) {
     super(opts)
+    opts = opts || {}
+    this.title = opts.title || 'Hyper-Video Player'
     this.key = 'hyper-video-player'
     this.listed = false
 
-    // currently loaded tutorial data // TODO: do we need so many props?
-    this.metadata = null
     this.data = null
-    this.loaded = null
-
-    this.duration = null
-
-    this.keyframes = {}
-    this.timecodes = []
-    this.sid = null // play session id TODO what's this for? just old analytics?
+    this.making = false // set to true when using Tutorial Maker
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    NNE.cm.on('keydown', (cm, e) => {
-      if (this?.opened && NNE.readOnly) {
-        window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
-      }
-    })
+    this._boundEditWatcher = this._editWatcher.bind(this)
+    NNE.cm.on('keydown', this._boundEditWatcher)
 
-    // this.on('open', () => { // TODO: can probably remove, just old analytics
-    //   this.sid = Date.now().toString(36) + Math.random().toString(36).substr(2)
-    // })
+    this.on('open', () => {
+      setTimeout(() => {
+        if (this.controls) this.controls.css({ opacity: 0 })
+      }, 250)
+    })
 
     this.on('close', () => {
       if (!this.video.paused) this.pause()
-      const tm = WIDGETS['tutorial-maker']
-      if (tm && tm.opened) tm.close()
-      else if (this.metadata) {
+      // TODO: will need to check if "pop up is opened" not maker widget itself
+      if (WIDGETS['tutorial-maker']?.opened) {
+        // TODO: call some logic for quitting the tutorial marker
+      } else if (this.data) {
         this.quit()
-        // tg.update({ bottom: 20, right: 20 }, 500)
-        if (this.logger) this.logger.reset()
+        NNE.cm.off('keydown', this._boundEditWatcher)
       }
       NNE.readOnly = false
-      if (window.convo.id === 'introducing-tutorial') window.convo.hide()
-      this.sid = null
     })
 
     const pause = () => { if (this.video && !this.video.paused) this.pause() }
 
     WIDGETS['coding-menu'].on('open', () => pause())
-    // WIDGETS['learning-guide'].on('open', () => pause())
     NNW.menu.search.on('open', () => pause())
+    // if learning-guide is opened, also pauses (handled in learning-guide)
 
-    opts = opts || {}
-    this.title = opts.title || 'HyperVideo Player'
     this._createHTML(opts)
   }
 
@@ -61,48 +50,68 @@ class HyperVideoPlayer extends Widget {
   get src () { return this.video.src }
   set src (v) { this.video.src = v }
 
-  load (name, time) {
-    setTimeout(() => {
-      document.querySelector('load-curtain').show('tutorial.html')
-    }, 100)
+  get duration () { return this.video.duration }
+  set duration (v) { console.error('HyperVideoPlayer: duration is read-only') }
 
-    utils.get(`tutorials/${name}/metadata.json`, (json) => {
-      this.metadata = json
-      this.loaded = name
-      utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['project-files']?.projectData.name) {
-        // TODO: confirm first that we want to close project
+  get currentTime () { return this.video.currentTime }
+  set currentTime (v) { console.error('HyperVideoPlayer: use seek() to set time') }
+
+  load (name, time) {
+    nn.get('load-curtain').show('tutorial.html')
+    utils.get(`tutorials/${name}/tutorial.json`, (json) => {
+      this.data = json
+      this._startTime = time || 0
+
+      const openProj = WIDGETS['project-files']?.projectData.name
+      if (openProj) {
+        const unSaved = WIDGETS['project-files'].changes.length > 0
+        if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
+        else window.convo = new Convo(this.convos, 'working-on-project')
+        setTimeout(() => nn.get('load-curtain').hide(), 250)
+        return
       }
-      utils.cancelAllNetitorUses('hyper-video-player')
-      utils.setCustomRenderer(`tutorials/${name}/`)
-      utils.get(`tutorials/${name}/data.json`, (json) => {
-        this.data = json
-        this._loadTutorial(name, time)
-      })
+
+      if (NNE.code !== utils.starterCode() && NNE.code.length > 0) {
+        window.convo = new Convo(this.convos, 'clear-code')
+        setTimeout(() => nn.get('load-curtain').hide(), 250)
+        return
+      }
+
+      this._loadTutorial(name, time)
     })
   }
 
   quit () {
-    utils.setCustomRenderer(null)
-    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
-    this.metadata = null
     this.data = null
-    document.querySelector('load-curtain').hide()
     utils.updateURL()
+    utils.setCustomRenderer(null)
+
+    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
+
+    if (WIDGETS['student-session'].getData('auto-update') === 'false') {
+      NNE.autoUpdate = false
+    }
+
+    nn.get('load-curtain').hide()
+    if (window.convo.id === 'introducing-tutorial') window.convo.hide()
   }
 
-  actObj () { // TODO was this to create actions for analytics? if so maybe we don't need it (or .sid) anymore
-    const md = WIDGETS['learning-guide'].metadata
-    return {
-      sid: this.sid,
-      tutorial: md ? md.id : null,
-      time: this.video.currentTime,
-      duration: this.video.duration
-    }
-  }
+  // ----------------------------- video controls ------------------------------
 
   updateVideo (name, folder) {
-    const path = folder ? `tutorials/${folder}` : 'videos'
+    const tutRoot = this.making ? 'TUTORIAL_MAKER' : 'tutorials'
+    const path = folder ? `${tutRoot}/${folder}` : 'videos'
+
+    const updateMetadata = () => {
+      this._videoMetaDataListener = true
+      if (this.data?.metadata) {
+        this.data.metadata.duration = this.video.duration
+      } else setTimeout(() => updateMetadata(), 100)
+    }
+    if (path !== 'videos' && !this._videoMetaDataListener) {
+      this.video.on('loadeddata', updateMetadata)
+    }
+
     if (this.video.canPlayType('video/mp4') !== '') {
       this.video.setAttribute('src', `${path}/${name}.mp4`)
     } else if (this.video.canPlayType('video/webm') !== '') {
@@ -130,19 +139,17 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-toggle > span').classList.remove('play')
       this.$('.hvp-toggle > span').classList.add('pause')
       this.video.play()
-      const kf = this._mostRecentKeyframe()
-      const b = kf ? this.keyframes[kf.timecode].editable : false
-      this._editable(b)
+      if (!this.making) NNE.readOnly = true
     }
 
-    const mid = this.metadata && this.video.currentTime > 0
-    if (mid) { // if in the middle of a tutorial
-      // const frame = this._mostRecentKeyframe().frame
+    // if we're in the middle of a tutorial
+    if (!this.making && this.currentTime > 0) {
       if (typeof this._tempCode === 'string' && this._tempCode !== NNE.code) {
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'careful-will-loose-code')
       } else play()
     } else play()
+
     // if it's the first time we press play hide netnet's bubble
     if (window.convo && window.convo.id === 'introducing-tutorial') {
       window.convo.hide()
@@ -162,11 +169,9 @@ class HyperVideoPlayer extends Widget {
     this.video.pause()
 
     this._tempCode = NNE.code
-    setTimeout(() => {
-      this._tempCode = NNE.code
-    }, NNE.updateDelay)
+    setTimeout(() => { this._tempCode = NNE.code }, NNE.updateDelay)
 
-    this._editable(true)
+    NNE.readOnly = false
     this._generatePauseScreen()
   }
 
@@ -180,7 +185,7 @@ class HyperVideoPlayer extends Widget {
     if (!p) this.pause()
     this.video.currentTime = Number(time)
     this._updateProgressBar()
-    this._resetKeyframeStatus()
+    this._resetKeyframes()
     this._tempCode = NNE.code
     this.play()
     if (p) this.pause()
@@ -191,57 +196,66 @@ class HyperVideoPlayer extends Widget {
     this.seek(newTime)
   }
 
-  // .....  .....   .....   .....  .....  .....   .....   .....  .....
-  // ..... RENDER KEYFRAME  .....  ..... RENDER KEYFRAME  .....  .....
-  // .....  .....   .....   .....  .....  .....   .....   .....  .....
+  // ----------------------------- public keyframe/log methods -----------------
 
-  loadKeyframes (frames, postKeyLog) {
-    this.keyframes = frames
-    this.timecodes = Object.keys(frames).sort((a, b) => a - b)
-    for (const tc in this.keyframes) this.keyframes[tc].ran = false
-    if (postKeyLog) return
-    // load keylogger data && add them to keyframes
-    if (!WIDGETS.loaded.includes('netitor-logger')) {
-      WIDGETS.load('netitor-logger', (logger) => {
-        this.logger = logger
-        this._loadKeyLoggerData()
-      })
-    } else this._loadKeyLoggerData()
+  getKeyframeByTC (timecode) { // TODO: move this to Tutorial Maker (not needed here)
+    return this.data.keyframes.find(kf => kf.timecode === timecode)
+  }
+
+  getMostRecentKeyframe (time) {
+    const ct = time || this.currentTime
+    return this.data.keyframes
+      .filter(kf => ct >= kf.timecode)
+      .sort((a, b) => a.timecode - b.timecode).reverse()[0]
+  }
+
+  getMostRecentKeylog (time) {
+    const ct = time || this.currentTime
+    return this.data.keylogs
+      .filter(kl => ct >= kl.timecode)
+      .sort((a, b) => a.timecode - b.timecode).reverse()[0]
   }
 
   renderKeyframe () {
-    const mrkf = this._mostRecentKeyframe()
-    const kf = mrkf ? mrkf.frame : null
-    if (kf && !kf.ran) { // render it if it hasn't yet
-      // POSITOIN HYPER VIDEO PLAYER
-      if (this._videoNeedsUpdate(kf.video)) {
-        const obj = JSON.parse(JSON.stringify(kf.video))
-        const t = obj.transition || 500
-        if (obj.transition) delete obj.transition
-        this.update(obj, t)
+    const kf = this.getMostRecentKeyframe()
+    const kl = this.getMostRecentKeylog()
+    this._tt = 500 // transition time
+    this._do = 100 // delay open for first widget
+    this._da = 200 // amount to add to delay for subsequant widget
+
+    if (kl && !kl.ran) {
+      if (kl.code !== NNE.code) {
+        this._updateCode(kl.code) // TODO check if working correctly
+        this._updateScrollBar() // TODO check if working correctly
       }
-      // POSITION WIDGETS
+    }
+
+    if (kf && !kf.ran) { // render it if it hasn't yet
+      // 1.
+      // POSITION HYPER VIDEO PLAYER
+      if (this._vidPositionNeedsUpdate(kf.video)) {
+        const obj = JSON.parse(JSON.stringify(kf.video))
+        this.update(obj, this._tt)
+      }
+
+      // 2.
+      // UPDATE WIDGETS (OPEN + CLOSE + POSITION)
       const opened = kf.widgets.map(obj => obj.key) // keep these opened
       opened.push('hyper-video-player')
-      if (WIDGETS['tutorial-maker']) opened.push('tutorial-maker')
-      // open missing widgets ++ position widgets
-      let delayOpen = 100
       kf.widgets.forEach(obj => {
         obj = JSON.parse(JSON.stringify(obj))
         const key = obj.key
-        const t = obj.transition || 500
         delete obj.key // delete so wig.update doesn't bugout w/unexpected props
-        if (obj.transition) delete obj.transition
         const wig = WIDGETS[key]
-        if (!wig) WIDGETS.open(key, wig => wig.update(obj, t))
+        if (!wig) WIDGETS.open(key, wig => wig.update(obj, this._tt))
         else {
           wig.update(obj)
           if (!wig.opened) {
             setTimeout(() => {
               wig.update(obj)
-              setTimeout(() => wig.open(), delayOpen + 50)
-            }, delayOpen)
-            delayOpen += 200
+              setTimeout(() => wig.open(), this._do + 50)
+            }, this._do)
+            this._do += this._da
           }
         }
       })
@@ -249,43 +263,71 @@ class HyperVideoPlayer extends Widget {
       WIDGETS.list().filter(w => w.opened)
         .filter(w => !opened.includes(w.key))
         .forEach(w => w.close())
-      const c = kf.code === 'DEFAULT' ? utils.starterCode() : kf.code
+
+      // 3.
+      // UPDATE NETITOR
+      // ...code
+      const c = kf.netitor.code === 'DEFAULT'
+        ? utils.starterCode() : kf.netitor.code
       if (c && c !== NNE.code) {
-        this._updateCode(c)
-        this._updateScrollBar(kf.scrollTo)
+        this._updateCode(c) // TODO check if working correctly
+        this._updateScrollBar(kf.scrollTo) // TODO check if working correctly
       }
-
-      if (!this.video.paused) this._editable(kf.editable)
-
-      // UPDATE NETNET'S LAYOUT
+      // ...layout
       const prevLayout = NNW.layout
+      const newLayout = kf.netitor.layout
       const posLayouts = ['welcome', 'separate-window']
-      if (posLayouts.includes(kf.layout)) {
-        const t = kf.video.transition || 500
-        if (kf.layout && kf.layout !== prevLayout) {
-          NNW.layout = kf.layout
-          utils.afterLayoutTransition(() => NNW.update(kf.netnet, t))
-        } else NNW.update(kf.netnet, t)
-      } else if (kf.layout && kf.layout !== prevLayout) {
-        NNW.layout = kf.layout
+      if (posLayouts.includes(newLayout)) {
+        if (newLayout && newLayout !== prevLayout) {
+          NNW.layout = newLayout
+          utils.afterLayoutTransition(() => NNW.update(kf.netnet, this._tt))
+        } else NNW.update(kf.netnet, this._tt)
+      } else if (newLayout && newLayout !== prevLayout) {
+        NNW.layout = newLayout
+        // correct for scrubbing (if delayed call to update from prev frame)
+        utils.afterLayoutTransition(() => { NNW.layout = newLayout })
       }
-      this._updateScrollBar()
-
-      // UPDATE NETNET'S SPOT/HIGHLIGHT
+      this._updateScrollBar() // TODO check if working correctly
+      // ...spotlight
       const lines = NNE.code.split('\n')
       const hasCode = lines.length > 1 || lines[0] !== ''
-      if (kf.layout !== 'welcome' && hasCode) {
-        this._updateSpotlight(kf)
+      if (newLayout !== 'welcome' && hasCode) {
+        NNE.spotlight(kf.netitor.spotlight)
       }
+
+      // 4.
       // ... COMPLETED RENDER ...
       kf.ran = true
     }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
-  _loadTutorial (name, time) { // TODO: REMOVE [MOVE TO HVP]
+  _loadTutorial () {
+    const name = this.data.id
+    const time = this._startTime
+
+    this.title = this.data.metadata.title
+
+    utils.cancelAllNetitorUses('hyper-video-player')
+
+    if (!this.making) {
+      utils.updateURL(`?tutorial=${this.data.id}`)
+      utils.setCustomRenderer(`tutorials/${name}/`)
+    }
+
+    this._instantiateMissingWidgets()
+
+    this._resetKeyframes(true)
+
+    if (this.data.metadata.jsfile) {
+      const file = this.making
+        ? `TUTORIAL_MAKER/${name}/init.js`
+        : `tutorials/${name}/init.js`
+      utils.loadFile(file, () => window.TUTORIAL.init())
+    }
+
     this.video.oncanplay = () => {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'introducing-tutorial')
@@ -293,59 +335,109 @@ class HyperVideoPlayer extends Widget {
       this.open()
 
       setTimeout(() => {
-        document.querySelector('load-curtain').hide()
         if (time) this.seek(time)
         this.video.oncanplay = null
+        nn.get('load-curtain').hide()
       }, utils.getVal('--layout-transition-time'))
     }
 
-    this.title = this.metadata.title
-    this.loadKeyframes(this.data.keyframes)
-    this.updateVideo(this.metadata.videofile, this.metadata.id)
+    this.updateVideo(this.data.id, this.data.id)
+  }
 
+  _instantiateMissingWidgets () {
     for (const key in this.data.widgets) {
       if (!WIDGETS.instantiated.includes(key)) {
         WIDGETS.create(this.data.widgets[key])
       }
     }
+  }
 
-    if (this.metadata.duration) { // TODO: why not grab this from video itself?
-      this.duration = Number(this.metadata.duration)
-    }
+  // ................................................ keyframe helpers .........
 
-    if (this.metadata.jsfile) { // TODO: what is this for again?
-      const file = `tutorials/${name}/${this.metadata.jsfile}`
-      utils.loadFile(file, () => window.TUTORIAL.init())
+  _resetKeyframes (skipRender) {
+    this.data.keyframes.forEach(kf => { kf.ran = false })
+    this.data.keylogs.forEach(kl => { kl.ran = false })
+    if (!skipRender) this.renderKeyframe()
+  }
+
+  _updateCode (code) {
+    const top = NNE.cm.getScrollInfo().top
+    NNE.code = code // TODO: maybe type it out? using utils.autoType
+    const s = NNE.cm.getScrollInfo()
+    if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+  }
+
+  _updateScrollBar (obj) {
+    const update = this._scrollNeedsUpdate(obj)
+    if (typeof update.y !== 'undefined') {
+      NNE.cm.scrollTo(update.x, update.y)
+    } else if (typeof update === 'number') {
+      const n = update + 1 > NNE.cm.lineCount() ? update : update + 1
+      utils.scrollToLines([n])
     }
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+  _scrollNeedsUpdate (o) {
+    let update = false
+    if (o) {
+      const s = NNE.cm.getScrollInfo()
+      update = (o.x && o.x !== s.left) || (o.y && o.y !== s.top) ? o : false
+    } else {
+      const kf = this.getMostRecentKeyframe()
+      const idx = this.data.keyframes[kf]
+      if (idx > 0) {
+        const pf = this.data.keyframes[idx - 1] // previous keyframe
+        if (kf.netitor.code && pf.netitor.code) {
+          const codeArrA = pf.netitor.code.split('\n')
+          const codeArrB = kf.netitor.code.split('\n')
+          const diffs = codeArrA.filter(c => !codeArrB.includes(c))
+          const line = codeArrA.indexOf(diffs[0])
+          if (line >= 0) { update = line }
+        }
+      }
+    }
+    return update
+  }
+
+  _vidPositionNeedsUpdate (video) {
+    let update = false
+    if (video.width && video.width !== this.width) { update = true }
+    if (video.height && video.height !== this.height) { update = true }
+    if (video.top && video.top !== this.top) { update = true }
+    if (video.bottom && video.bottom !== this.bottom) { update = true }
+    if (video.left && video.left !== this.left) { update = true }
+    if (video.right && video.right !== this.right) { update = true }
+    if (video.zIndex && video.zIndex !== this.zIndex) { update = true }
+    return update
+  }
+
+  _editWatcher () {
+    if (this?.opened && NNE.readOnly) {
+      window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
+    }
+  }
+
+  // ................................................ HVP HTML .................
 
   _createHTML (opts) {
-    this.video = document.createElement('video')
-    this.video.setAttribute('preload', 'auto')
-    this.video.style.display = 'block'
-    this.video.style.width = '100%'
-    this.video.addEventListener('loadeddata', () => {
-      this.keepInFrame()
-      this._generatePauseScreen()
-    })
-    const name = (typeof opts.video === 'string') ? opts.video : 'screen-saver'
-    this.updateVideo(name)
+    this.ele.querySelector('.widget__inner-html').style.padding = '14px 0 0'
 
-    const pauseScreen = document.createElement('div')
-    pauseScreen.className = 'hvp-pause-screen'
-    pauseScreen.innerHTML = `
-      <span>PAUSED</span>
-      <span>PAUSED</span>
-      <span>PAUSED</span>
-      <span>00:00:00</span>
-      <span>00:00:00</span>
-      <span>00:00:00</span>`
+    this.video = nn.create('video')
+      .set('preload', 'auto')
+      .css({ display: 'block', width: '100%', borderRadius: 10 })
+      .on('loadeddata', () => {
+        this.keepInFrame()
+        this._generatePauseScreen()
+      })
 
-    this.controls = document.createElement('div')
-    this.controls.className = 'hvp-controls'
+    if (typeof opts.video === 'string') this.updateVideo(opts.video)
+    else this.updateVideo('screen-saver')
+
+    const pauseScreen = nn.create('div')
+      .set('class', 'hvp-pause-screen')
+      .content('<span>PAUSED</span><span>00:00:00</span>')
+
+    this.controls = nn.create('div').set('class', 'hvp-controls')
     this.controls.innerHTML = `
       <div class="hvp-toggle">
         <span class="pause"></span>
@@ -360,8 +452,7 @@ class HyperVideoPlayer extends Widget {
         <input type="range" min="0" max="1" step="0.1" value="1" class="hvp-vol">
       </div>`
 
-    const buffer = document.createElement('div')
-    buffer.className = 'hvp-buffer'
+    const buffer = nn.create('div').set('class', 'hvp-buffer')
     buffer.innerHTML = `
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    viewBox="0 0 58.7 58.7" style="enable-background:new 0 0 58.7 58.7;" xml:space="preserve">
@@ -389,8 +480,7 @@ class HyperVideoPlayer extends Widget {
       </svg>
     `
 
-    const wrap = document.createElement('div')
-    wrap.className = 'hvp-wrap'
+    const wrap = nn.create('div').set('class', 'hvp-wrap')
     wrap.appendChild(pauseScreen)
     wrap.appendChild(buffer)
     this._generatePauseScreen()
@@ -425,14 +515,8 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-controls').style.opacity = 0
     })
 
-    this.on('open', () => { // TODO move this to constructor
-      setTimeout(() => { this.$('.hvp-controls').style.opacity = 0 }, 250)
-    })
-    this.on('close', () => this.pause())
-
     this.video.addEventListener('ended', () => {
-      // this.video.currentTime = 0
-      this._resetKeyframeStatus(true)
+      this._resetKeyframes(true)
       this.pause()
     })
     this.video.addEventListener('timeupdate', () => {
@@ -442,7 +526,8 @@ class HyperVideoPlayer extends Widget {
     })
 
     this.video.addEventListener('loadedmetadata', () => {
-      this.duration = this.video.duration
+      this._updateProgressBar()
+      this._updatePauseClock()
     })
 
     this.video.addEventListener('waiting', () => {
@@ -456,7 +541,7 @@ class HyperVideoPlayer extends Widget {
       this.video.currentTime = pos * this.duration
       this.pause()
       this._updateProgressBar()
-      this._resetKeyframeStatus()
+      this._resetKeyframes()
       if (window.convo.id === 'introducing-tutorial') {
         utils.afterLayoutTransition(() => window.convo.hide())
       }
@@ -467,7 +552,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   _updateProgressBar () {
-    const ct = this.video.currentTime
+    const ct = this.currentTime
     const percentage = Math.round((100 / this.duration) * ct)
     if (typeof percentage !== 'number' || isNaN(percentage)) return
     this.$('.progress').value = percentage
@@ -475,55 +560,18 @@ class HyperVideoPlayer extends Widget {
   }
 
   _updatePauseClock () {
-    const c1 = this.$('.hvp-pause-screen > span:nth-child(4)')
-    const c2 = this.$('.hvp-pause-screen > span:nth-child(5)')
-    const c3 = this.$('.hvp-pause-screen > span:nth-child(6)')
-    const t = this.video.currentTime
+    const c = this.$('.hvp-pause-screen > span:nth-child(2)')
     const h = '00'
-    let m = Math.floor(t / 60)
-    let s = Math.round(t % 60)
+    let m = Math.floor(this.currentTime / 60)
+    let s = Math.round(this.currentTime % 60)
     if (m < 10) m = '0' + m
     if (s < 10) s = '0' + s
     const dur = Math.round((this.duration / 60) * 10) / 10
-    c1.textContent = `${h}:${m}:${s} / ${dur} mins`
-    c2.textContent = `${h}:${m}:${s} / ${dur} mins`
-    c3.textContent = `${h}:${m}:${s} / ${dur} mins`
-    return t
+    c.textContent = `${h}:${m}:${s} / ${dur} mins`
+    return this.currentTime
   }
 
-  _updateCode (code) { // TODO: how do i scrollTo these days?
-    const top = NNE.cm.getScrollInfo().top
-    NNE.code = code
-    const s = NNE.cm.getScrollInfo()
-    if (s.top !== top) NNE.cm.scrollTo(s.left, top)
-  }
-
-  _updateScrollBar (obj) {
-    const update = this._scrollNeedsUpdate(obj)
-    if (typeof update.y !== 'undefined') {
-      NNE.cm.scrollTo(update.x, update.y)
-    } else if (typeof update === 'number') {
-      const n = update + 1 > NNE.cm.lineCount() ? update : update + 1
-      utils.scrollToLines([n])
-    }
-  }
-
-  _updateSpotlight (kf) { // TODO: does spotlight handle this on it's own now?
-    const l = kf.spotlight ? kf.spotlight[0] : null
-    if (l) {
-      utils.scrollToLines([l])
-      setTimeout(() => {
-        NNE.spotlight(kf.spotlight)
-        NNE.highlight(null)
-        NNE.highlight(kf.highlight)
-      }, 250)
-    } else {
-      NNE.spotlight(kf.spotlight)
-      NNE.highlight(null)
-      NNE.highlight(kf.highlight)
-    }
-  }
-
+  // ................................... glitchy pause screen ..................
   _glitchIt (base64) {
     const jpg = 'data:image/jpeg;base64,'
     base64 = base64.substr(jpg.length)
@@ -539,9 +587,9 @@ class HyperVideoPlayer extends Widget {
         const idx = i + 24 // few bytes into the huffman codes
         const huf = (bytes[i + 21] === 0) ? 'DC' : 'AC'
         const len = (huf === 'DC') ? 16 : 255
-        let ran = Math.floor(Math.random() * len)
-        if (ran === bytes[idx]) ran = Math.floor(Math.random() * len)
-        if (ran === bytes[idx]) ran = Math.floor(Math.random() * len)
+        let ran = Math.floor(this.random(0, len))
+        if (ran === bytes[idx]) ran = Math.floor(this.random(0, len))
+        if (ran === bytes[idx]) ran = Math.floor(this.random(0, len))
         bytes[idx] = ran
         break
       }
@@ -560,11 +608,17 @@ class HyperVideoPlayer extends Widget {
   }
 
   _generatePauseScreen (type) {
-    if (!this.canvas) this.canvas = document.createElement('canvas')
+    // while most values glitch on Firefox/Mac,
+    // only these values seem to create glitches on Chrome/Mac
+    const gvals = [7, 19, 35, 45, 46, 79, 86, 87, 90, 96]
+    this.updateSeed(nn.random(gvals))
+
+    if (!this.canvas) this.canvas = nn.create('canvas')
     this.canvas.width = this.video.offsetWidth
     this.canvas.height = this.video.offsetHeight
     if (!this.ctx) this.ctx = this.canvas.getContext('2d')
     this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height)
+
     const data = this.canvas.toDataURL('image/jpeg')
     const bytes = this._glitchIt(data)
     const b64 = window.btoa(this._Uint8ToString(bytes))
@@ -581,140 +635,33 @@ class HyperVideoPlayer extends Widget {
     img.src = url
   }
 
-  _editable (bool) {
-    if (this.metadata) NNE.readOnly = !bool
-  }
-
-  _videoNeedsUpdate (video) {
-    let update = false
-    if (video.width && video.width !== this.width) { update = true }
-    if (video.height && video.height !== this.height) { update = true }
-    if (video.top && video.top !== this.top) { update = true }
-    if (video.bottom && video.bottom !== this.bottom) { update = true }
-    if (video.left && video.left !== this.left) { update = true }
-    if (video.right && video.right !== this.right) { update = true }
-    if (video.zIndex && video.zIndex !== this.zIndex) { update = true }
-    return update
-  }
-
-  _scrollNeedsUpdate (obj) {
-    let update = false
-    if (obj) {
-      const s = NNE.cm.getScrollInfo()
-      const n = (obj.x && obj.x !== s.left) || (obj.y && obj.y !== s.top)
-      if (n) { update = obj }
-    } else {
-      const mrf = this._mostRecentKeyframe()
-      if (mrf.index > 0) {
-        const pc = this.timecodes[mrf.index - 1]
-        const kf = mrf.frame // most recent keyframe
-        const pf = this.keyframes[pc] // previous keyframe
-        if (kf.code && pf.code) {
-          const codeArrA = pf.code.split('\n')
-          const codeArrB = kf.code.split('\n')
-          const diffs = codeArrA.filter(c => !codeArrB.includes(c))
-          const line = codeArrA.indexOf(diffs[0])
-          if (line >= 0) { update = line }
-        }
-      }
-    }
-    return update
-  }
-
-  _mostRecentKeyframe (time) {
-    const ct = time || this.video.currentTime
-    const tc = this.timecodes.filter(tc => ct >= tc)
-      .sort((a, b) => a - b).reverse()[0]
-    const kf = this.keyframes[tc]
-    if (kf) {
-      return { frame: kf, timecode: tc, index: this.timecodes.indexOf(tc) }
-    } else return null
-  }
-
-  _mostRecentKeylog () {
-    const keyframe = this._mostRecentKeyframe() // last keyframe
-    const priorKeyframe = this.timecodes // first keyframe w/same log script
-      .map(tc => { return { timecode: tc, frame: this.keyframes[tc] } })
-      .find(kf => kf.frame.keylog === this.logger.running)
-
-    const key = this.logger.running || keyframe.frame.keylog
-    const tc = this.logger.running ? priorKeyframe.timecode : keyframe.timecode
-
-    const rec = this.logger.recordings[key]
-    if (key && rec) {
-      const vidDelta = this.video.currentTime - tc
-      let logDelta = 0
-      let index = 0
-      for (let i = 0; i < rec.length; i++) {
-        const d = (rec[i].time - rec[0].time) / 1000
-        if (d > vidDelta) break
-        logDelta = d
-        index = i
-      }
-      const delta = (vidDelta - logDelta) * 1000
-      return { code: rec[index].code, time: rec[index].time, index, delta }
+  // ........................... seeded random used for glitchy pause above ....
+  // mulberry32 generator factory
+  _mulberry32 (a) {
+    return () => {
+      a |= 0
+      a = (a + 0x6D2B79F5) | 0
+      let t = Math.imul(a ^ (a >>> 15), 1 | a)
+      t = (t + Math.imul(t ^ (t >>> 7), t | 61)) ^ t
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296
     }
   }
 
-  _resetKeyframeStatus (skipRender) {
-    for (const tc in this.keyframes) this.keyframes[tc].ran = false
-    if (!skipRender) this.renderKeyframe()
+  // exactly the same API as nn: random(), random(max), random(min, max)
+  random (min, max) {
+    const r = this._rand()
+    if (min === undefined) {
+      return r
+    } else if (max === undefined) {
+      max = min
+      min = 0
+    }
+    return r * (max - min) + min
   }
 
-  _mergeKeyLoggerDataWithKeyframes () {
-    if (Object.keys(this.logger.recordings).length === 0) {
-      // console.log('again')
-      setTimeout(() => this._mergeKeyLoggerFrames(), 100)
-    } else {
-      const newKF = []
-      this.timecodes // keyframes with logs
-        .filter(tc => this.keyframes[tc].keylog)
-        .map(tc => { return { timecode: tc, frame: this.keyframes[tc] } })
-        .forEach(obj => {
-          const kl = obj.frame.keylog
-          const logs = this.logger.recordings[kl]
-          const start = logs[0].time
-          logs.forEach(log => {
-            const newTC = ((log.time - start) / 1000) + Number(obj.timecode)
-            if (this.keyframes[newTC]) {
-              this.keyframes[newTC].code = log.code
-            } else {
-              const kf = this._mostRecentKeyframe(newTC)
-              const st = kf.frame.scrollTo
-                ? JSON.parse(JSON.stringify(kf.frame.scrollTo)) : null
-              newKF.push({
-                tc: newTC,
-                netnet: JSON.parse(JSON.stringify(kf.frame.netnet)),
-                video: JSON.parse(JSON.stringify(kf.frame.video)),
-                widgets: JSON.parse(JSON.stringify(kf.frame.widgets)),
-                layout: kf.frame.layout,
-                scrollTo: st,
-                code: log.code,
-                ran: false
-              })
-            }
-          })
-        })
-      newKF.forEach(kf => { this.keyframes[kf.tc] = kf })
-      this.loadKeyframes(this.keyframes, true)
-      // ...
-      this._resetKeyframeStatus()
-      this.renderKeyframe()
-    }
-  }
-
-  _loadKeyLoggerData () {
-    if (!this.metadata) return
-    // only run code below if we're in a tutorial (not when making them)
-    // ...
-    // ...Why though?
-    // TODO: can't remember why ... might be a problem
-    if (this.metadata.keylogs) {
-      utils.get(`tutorials/${this.metadata.id}/keylogs.json`, (json) => {
-        this.logger._loadData(json)
-        this._mergeKeyLoggerDataWithKeyframes()
-      })
-    }
+  updateSeed (seed) {
+    this._seed = seed
+    this._rand = this._mulberry32(this._seed)
   }
 }
 
