@@ -1,0 +1,84 @@
+.input--lg {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+#metadata h1 {
+  margin: 0;
+  text-align: center;
+  color: var(--netizen-meta);
+  margin-bottom: 10px;
+}
+
+#metadata > div > p {
+  color: var(--netizen-meta);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+#metadata > div > p.required::before {
+  content: '*';
+  color: red;
+  margin-right: 5px;
+}
+
+#metadata > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#metadata > div > div {
+  position: relative;
+}
+
+.metadata-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.metadata-bottom button {
+  font-size: 1.1rem;
+}
+
+.pill-btn.tooltip > button {
+  line-height: 16px
+}
+
+.tooltip-content {
+  position: absolute;
+  top: 35;
+  right: 0;
+  width: 365px;
+  padding: 13px;
+  border: 1px solid var(--bg-color);
+  border-radius: 5px;
+  background-color: var(--netizen-meta);
+  box-shadow: 0px 4px 10.5px 0px #23223D;
+  z-index: 101;
+}
+
+.tooltip-content.closed {
+  display: none;
+}
+.tooltip-cotent.opened {
+  display: block;
+}
+
+.tooltip-content > p {
+  color: color: var(--bg-color);
+  margin: 0;
+  font-weight: 500;
+}
+
+textarea[name="description"] {
+  height: 99px;
+  text-align: start;
+  overflow-y: auto;
+  vertical-align: top;
+
+  font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 16px;
+  line-height: 1.45em;
+}

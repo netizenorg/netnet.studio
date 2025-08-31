@@ -1,8 +1,12 @@
 <link rel="stylesheet" href="/core/styles/fonts.css">
 <link rel="stylesheet" href="/core/styles/buttons.css">
 <link rel="stylesheet" href="/core/styles/form-fields.css">
+<link rel="stylesheet" href="/core/styles/base.css">
+<link rel="stylesheet" href="/core/styles/text.css">
 <link rel="stylesheet" href="/custom-elements/misc/reorderable-list/styles.css">
 <link rel="stylesheet" href="main.css">
+<!-- <link rel="stylesheet" href="www/core/netitor/src/css/main.css"> -->
+<link rel="stylesheet" href="metadata.css">
 <link rel="stylesheet" href="timeline.css">
 
 
@@ -12,16 +16,19 @@
 </section>
 
 
-<section id="metadata" class="overlay" style="display: none;">
-  <input name="id" placeholder="tutorial id (lower case, no spaces)">
-  <input name="title" placeholder="title">
-  <input name="subtitle" placeholder="sub-title">
-  <input name="author" placeholder="author's name">
-  <input name="authorURL" placeholder="author's website">
-  <input name="description" placeholder="description of tutorial">
-  <input name="keywords" placeholder="search terms (comma separated)">
-  <br>
-  <button id="close-metadata" class="pill-btn pill-btn--secondary">done</button>
+<section id="metadata" class="overlay-dark" style="display: none;">
+  <h1>Tutorial Metadata</h1>
+  <input name="id" placeholder="tutorial id (lower case, no spaces)" class="input--lg">
+  <input name="title" placeholder="title" class="input--lg">
+  <input name="subtitle" placeholder="sub-title" class="input--lg">
+  <input name="author" placeholder="author's name" class="input--lg">
+  <input name="authorURL" placeholder="author's website" class="input--lg">
+  <textarea name="description" placeholder="description of tutorial" class="input--lg"></textarea>
+  <input name="keywords" placeholder="search terms (comma separated)" class="input--lg">
+  <div class='metadata-bottom'>
+    <button id="metadata-close" class="pill-btn pill-btn--secondary">go back</button>
+    <button id="metadata-submit" class="pill-btn pill-btn--secondary">submit</button>
+  </div>
 </section>
 
 
@@ -68,4 +75,5 @@
 <script src="zip-tools.js"></script>
 <script src="timeline.js"></script>
 <script src="recorder.js"></script>
+<script src="metadata.js"></script>
 <script src="main.js"></script>

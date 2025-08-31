@@ -70,3 +70,12 @@ nav {
 .overlay button:hover {
   background: var(--netizen-text);
 }
+
+.overlay-dark {
+  position: fixed;
+  z-index: 100;
+  background: var(--bg-color);
+  inset: 0;
+  padding: 20px;
+  overflow-y: auto;
+}

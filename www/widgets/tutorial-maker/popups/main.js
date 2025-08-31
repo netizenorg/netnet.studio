@@ -1,4 +1,4 @@
-/* global nn timeline zipper recorder FILES */
+/* global nn timeline zipper recorder FILES metadata */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TUT_ID = null
@@ -14,8 +14,13 @@ const msg = (type, payload) => {
 function overlay (ele) {
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
-  if (ele) window.resizeTo(800, 600)
+  if (ele) window.resizeTo(436, 731)
   else window.resizeTo(1000, 300)
+
+  if (ele === '#metadata') {
+    window.resizeTo(420, 850)
+    metadata.init()
+  }
 }
 
 function openTutorial () {
@@ -121,7 +126,6 @@ function openMetadata (metadata) {
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
-nn.get('#close-metadata').on('click', updateMetadata)
 nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', TIMECODE))
