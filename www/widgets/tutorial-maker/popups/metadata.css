@@ -18,7 +18,7 @@
 
 #metadata > div > p.required::before {
   content: '*';
-  color: red;
+  color: #ff4545;
   margin-right: 5px;
 }
 
@@ -81,4 +81,14 @@ textarea[name="description"] {
   font-family: "fira-sans-regular", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 16px;
   line-height: 1.45em;
+}
+
+#metadata > input.missing-value {
+  margin-bottom: 5px;
+  border: 3px solid #ff4545;
+}
+
+.metadata-error-msg {
+  margin: 0;
+  color: #ff4545;
 }

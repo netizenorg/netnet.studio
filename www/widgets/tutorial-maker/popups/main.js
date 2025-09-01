@@ -12,6 +12,7 @@ const msg = (type, payload) => {
 }
 
 function overlay (ele) {
+  console.log("here")
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
   if (ele) window.resizeTo(436, 731)
@@ -59,23 +60,10 @@ function openTutorial () {
   })
 }
 
-function updateMetadata () {
-  const except = ['id', 'thumbnails', 'duration', 'jsfile'] // upated elsewhere
+function updateMetadata (data) {
+  TUT_ID = data.id
 
-  TUT_ID = nn.get('#metadata input[name="id"]').value
-  const metadata = { id: TUT_ID }
-  nn.getAll('#metadata input').forEach(ele => {
-    const name = ele.getAttribute('name')
-    if (!except.includes(name)) {
-      metadata[name] = ele.value
-    }
-  })
-  metadata.thumbnails = THUMBNAILS
-  metadata.duration = DUR
-
-  // TODO: likely need some validation here,
-  // all required props need to be filled before moving forward
-  msg('tut-mkr-update-metadata', metadata)
+  msg('tut-mkr-update-metadata', data)
 
   const hasVid = FILES.readFile(`${TUT_ID}.mp4`) || FILES.readFile(`${TUT_ID}.webm`)
   if (hasVid) overlay(null)
@@ -95,6 +83,7 @@ function updateVideo () {
   // NOTE: this should only run once per tutorial
   // if they want to re-record the video, they should make a new tutorial
 }
+window.updateMetadata = updateMetadata
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   TIMECODE = obj.time

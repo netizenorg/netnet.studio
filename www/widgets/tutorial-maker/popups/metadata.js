@@ -11,12 +11,14 @@ const metadata = {
   authorURL: '',
   description: '',
   keywords: '',
+  duration: 0,
+  thumbnails: [],
 
   init: () => {
     if (metadata.initialized) return
 
     metadata.generateToolTips()
-    nn.get('#metadata-submit').on('click', updateMetadata)
+    nn.get('#metadata-submit').on('click', metadata.submit)
     nn.get('#metadata-close').on('click', metadata.close)
     metadata.initialized = true
   },
@@ -26,19 +28,61 @@ const metadata = {
     nn.get('#start').css('display', 'block')
   },
 
+  submit: () => {
+    // check for any missing required values
+    const requiredInputs = nn.getAll('#metadata > input[required]')
+    // remove any previous error UI
+    requiredInputs.forEach((i) => i.classList.remove('missing-value'))
+    const errorMsgs = nn.getAll('.metadata-error-msg')
+    if (errorMsgs) errorMsgs.forEach((e) => e.remove())
+
+    const missingValues = []
+    requiredInputs.forEach((input, i) => {
+      if (!input.value) {
+        missingValues.push(input.name)
+      }
+    })
+    // if any missing values display error messages
+    if (missingValues.length > 0) {
+      metadata.displayError(missingValues)
+      return
+    }
+    metadata.updateMetadata()
+  },
+
+  updateMetadata: () => {
+    nn.getAll('#metadata > input, #metadata > textarea').forEach((input) => {
+      metadata[input.name] = input.value
+    })
+    const { id, title, subtitle, author, authorURL, description, keywords, duration, thumbnails } = metadata
+    updateMetadata({ id, title, subtitle, author, authorURL, description, keywords, duration, thumbnails })
+  },
+
+  displayError: (values) => {
+    values.forEach((value) => {
+      const errorMsg = document.createElement('p')
+      errorMsg.className = 'metadata-error-msg'
+      errorMsg.textContent = `
+        please provide
+        ${metadata.startsWithVowel(value) ? 'an' : 'a'}
+        ${value}`
+      const input = nn.get(`#metadata > input[name="${value}"]`)
+      input.classList.add('missing-value')
+      input.after(errorMsg)
+    })
+  },
+
   generateToolTips: () => {
     const tooltips = {
       id: {
         label: 'Tutorial ID:',
         tip: `The <b>Tutorial ID</b> must match the video's filename.<br><br>
         - If creating a new video, enter the filename you’d like to use.<br>
-        - If uploading an existing video, enter its current filename.`,
-        required: true
+        - If uploading an existing video, enter its current filename.`
       },
       title: {
         label: 'Title:',
-        tip: "The <b>Title</b> is the main name of your tutorial. It will be displayed in the Net Artisan's Guide.",
-        required: true
+        tip: "The <b>Title</b> is the main name of your tutorial. It will be displayed in the Net Artisan's Guide."
       },
       subtitle: {
         label: 'Subtitle:',
@@ -62,12 +106,12 @@ const metadata = {
       }
     }
 
-    nn.getAll('#metadata > input, #metadata > textarea').forEach((input, i) => {
+    nn.getAll('#metadata > input, #metadata > textarea').forEach((input) => {
       // create input's label
       const div = document.createElement('div')
       const label = document.createElement('p')
       label.textContent = tooltips[input.name].label
-      if (tooltips[input.name].required) label.className = 'required'
+      if (input.required) label.className = 'required'
       div.appendChild(label)
 
       // create input's tooltip
@@ -100,7 +144,9 @@ const metadata = {
       div.appendChild(subDiv)
       nn.get('#metadata').insertBefore(div, input)
     })
-  }
+  },
+
+  startsWithVowel: (str) => /^[aeiou]/i.test(str)
 }
 
 window.metadata = metadata

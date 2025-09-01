@@ -71,7 +71,7 @@ nav {
   background: var(--netizen-text);
 }
 
-.overlay-dark {
+.overlay.dark {
   position: fixed;
   z-index: 100;
   background: var(--bg-color);
