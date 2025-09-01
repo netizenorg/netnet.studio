@@ -56,9 +56,10 @@ nav {
 .overlay {
   position: fixed;
   z-index: 100;
-  background: var(--netizen-meta);
+  background: var(--bg-color);
   inset: 0;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .overlay button {
@@ -69,13 +70,4 @@ nav {
 
 .overlay button:hover {
   background: var(--netizen-text);
-}
-
-.overlay.dark {
-  position: fixed;
-  z-index: 100;
-  background: var(--bg-color);
-  inset: 0;
-  padding: 20px;
-  overflow-y: auto;
 }

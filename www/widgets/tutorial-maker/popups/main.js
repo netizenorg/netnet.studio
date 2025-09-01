@@ -12,7 +12,6 @@ const msg = (type, payload) => {
 }
 
 function overlay (ele) {
-  console.log("here")
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
   if (ele) window.resizeTo(436, 731)
@@ -21,6 +20,9 @@ function overlay (ele) {
   if (ele === '#metadata') {
     window.resizeTo(420, 850)
     metadata.init()
+  } else if (ele === '#video-recorder') {
+    window.resizeTo(913, 657)
+    recorder.createRecorder()
   }
 }
 
