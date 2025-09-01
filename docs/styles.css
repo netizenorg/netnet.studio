@@ -158,22 +158,13 @@ div > a:not(.pill-btn):not(.highlight):hover,
   font-size: 20px;
   text-decoration: none;
   text-transform: uppercase;
-	text-shadow: rgba(230, 219, 111, 0.6) -1px -1px 6px, rgba(195, 195, 219, 0.6) 1px 1px 6px;
+  text-shadow: 0px 2px 2px var(--bg-color);
+
+  transition: text-shadow 0.3s ease;
 }
 
-.docs__panel__intro a:after {
-    content: '>>';
-    position: relative;
-    left: -1.2rem;
-    opacity: 0;
-    transition: left 0.5s ease, opacity 0.3s ease;
-}
-
-.docs__panel__intro a:hover:after {
-  content: ">>";
-  left: .2rem;
-  opacity: 1;
-  transition: left 0.5s ease, opacity 0.3s ease;
+.docs__panel__intro a:hover {
+  text-shadow: rgba(230, 219, 111, 0.6) -1px -1px 6px, rgba(195, 195, 219, 0.6) 1px 1px 6px;
 }
 
 .docs__panel__intro .ver {
@@ -253,7 +244,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
   transition: opacity var(--element-transition-time) ease-in-out;
 }
 
-.docs__panel__search .search-button {
+.docs__panel__search .search-input {
   display: block;
   position: absolute;
 
@@ -270,7 +261,6 @@ div > a:not(.pill-btn):not(.highlight):hover,
   background: transparent;
 
   font-family: 'fira-mono-regular', monospace;
-  font-style: italic;
   text-align: left;
 
   opacity: 0.5;
@@ -279,15 +269,24 @@ div > a:not(.pill-btn):not(.highlight):hover,
   transition: opacity var(--element-transition-time) ease-in-out;
 }
 
-.docs__panel__search:hover .search-button {
+.docs__panel__search .search-input:placeholder {
+  color: var(--netizen-def);
+  font-family: 'fira-mono-regular', monospace;
+  font-style: italic;
+}
+
+.docs__panel__search:hover .search-input,
+.search-input:focus {
   opacity: 1;
 }
 
-.docs__panel__search:hover .search-icon {
+.docs__panel__search:hover .search-icon,
+.docs__panel__search:focus-within .search-icon {
   opacity: 0.75;
 }
 
-.docs__panel__search:hover:before {
+.docs__panel__search:hover:before,
+.docs__panel__search:focus-within:before {
   opacity: 0.35;
 }
 
@@ -338,7 +337,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
   color: var(--netizen-text);
 }
 
-.docs__panel__list-item a:hover:before {
+.docs__panel__list-item a:hover:before,
+.docs__panel__list-item a.active:before {
   transform: rotate(60deg);
 }
 
@@ -347,6 +347,10 @@ div > a:not(.pill-btn):not(.highlight):hover,
   text-decoration: underline;
   text-underline-offset: 0;
   text-decoration-thickness: 1px;
+}
+
+.docs__panel__list-item a.hide {
+  display: none;
 }
 
 .docs__panel__list-item > .docs__panel__list {
@@ -389,7 +393,11 @@ div > a:not(.pill-btn):not(.highlight):hover,
   max-width: 100%;
 }
 
-.docs__viewer-inner h1, h2, h3, h4, h5 {
+.docs__viewer-inner h1,
+.docs__viewer-inner h2,
+.docs__viewer-inner h3,
+.docs__viewer-inner h4,
+.docs__viewer-inner h5 {
   font-weight: 300;
   margin: 1.75em 0 .75em;
 }
@@ -406,6 +414,11 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
 .docs__viewer-inner h3 {
   font-size: 24px;
+}
+
+.docs__viewer-inner h4 {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .docs__viewer-inner ul {
@@ -431,7 +444,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
   font-family: 'fira-mono-regular', monospace;
 }
 
-.docs__viewer-inner ul li a {
+.docs__viewer-inner ul a,
+.docs__viewer-inner ol a {
   color: var(--netizen-hint-color);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -442,15 +456,40 @@ div > a:not(.pill-btn):not(.highlight):hover,
   transition: color var(--element-transition-time) ease, border var(--element-transition-time) ease;
 }
 
-.docs__viewer-inner ul li a:hover {
+.docs__viewer-inner ul a:hover,
+.docs__viewer-inner ol a:hover {
+  color: var(--netizen-comment);
+}
+
+.docs__viewer-inner h1 a,
+.docs__viewer-inner h2 a,
+.docs__viewer-inner h3 a,
+.docs__viewer-inner h4 a,
+.docs__viewer-inner h5 a {
+  color: var(--netizen-hint-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+
+  transition: color var(--element-transition-time) ease, border var(--element-transition-time) ease;
+}
+
+.docs__viewer-inner h1 a:hover,
+.docs__viewer-inner h2 a:hover,
+.docs__viewer-inner h3 a:hover,
+.docs__viewer-inner h4 a:hover,
+.docs__viewer-inner h5 a:hover {
   color: var(--netizen-comment);
 }
 
 .docs__viewer-inner hr {
-  height: 1px;
-  border: none;
   width: 100%;
-  background: linear-gradient(90deg, var(--bg-color) 0%, var(--netizen-string) 50%, var(--netizen-comment) 100%);
+  height: 1px;
+
+  margin-top: 20px;
+  border: none;
+
+  background: linear-gradient(90deg, var(--bg-color) 0%, var(--netizen-comment) 50%, var(--netizen-comment) 100%);
 }
 
 /*

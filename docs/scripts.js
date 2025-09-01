@@ -45,60 +45,38 @@ function setupNetitors () {
     })
 }
 
-function setupSearch () {
-  const searchWrapper = document.querySelector('.docs__panel__search')
-  const searchBtn = document.querySelector('#search-button')
-  const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list > li')
-  let navArray = [];
-  let children = []
+function filterResults (e) {
+  const v = e.target.value.toLowerCase()
+  const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list .inline-link')
+  navItems.forEach(ele => {
+    if (v === '') ele.classList.remove('hide')
+    else {
+      let pass = false
+      let parent = false
+      let eleText = ele.textContent.toLowerCase()
+      let parentEle = ele.parentElement.parentElement.previousElementSibling
 
-  navItems.forEach(navItem => {
-    navItem.querySelectorAll('li').forEach(child => {
-      children.push({
-        'text': child.textContent,
-        'el': child
-      })
-    })
-
-    const navItemObj = {
-        'parent': {
-          'text': navItem.querySelector('a').textContent.trim(),
-          'el': navItem.querySelector('a'),
-        },
-        children
-    };
-    navArray.push(navItemObj);
-  });
-
-  console.log(navArray)
-
-  const searchOpts = {
-  	keys: [
-      'parent.text',
-      'children.text'
-  	]
-  };
-
-  const fuse = new Fuse(navArray, searchOpts)
-
-  searchBtn.addEventListener('click', (e) => {
-    const createSearchBar = () => {
-      if (!utils.customElementReady('search-bar')) {
-        setTimeout(() => createSearchBar(), 100)
-        return
+      if (eleText.trim().includes(v)) pass = true
+      if (pass) {
+        ele.classList.remove('hide')
+        if (parentEle.classList.contains('header')) parent = true
+        if (parent) {
+          parentEle.classList.remove('hide')
+        } else {
+          parentEle.classList.add('hide')
+        }
+      } else {
+        ele.classList.add('hide')
       }
-      let search = document.createElement('search-bar')
-      document.body.appendChild(search)
+
     }
-    createSearchBar()
   })
 }
 
-function filterNav(result) {
-  result.forEach(res => {
-    console.log(res.item.parent)
-    console.log(res.item.children)
-  })
+function setupSearch () {
+  const searchInput = document.querySelector('#search-input')
+
+  searchInput.addEventListener('input', (e) => filterResults(e))
 }
 
 nn.on('load', () => {

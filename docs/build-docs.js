@@ -86,7 +86,7 @@ function generateNav (directory, basePath = '') {
         ? path.join(relative, 'index.html').replace(/\\/g, '/')
         : '#'
       nav += `<li class="docs__panel__list-item">
-                <a class="inline-link" href="/docs/${link}">${fldrDict[item.name]}</a>
+                <a class="header inline-link" href="/docs/${link}">${fldrDict[item.name]}</a>
                 ${generateNav(itemPath, relative)}
               </li>`
     } else if (path.extname(item.name) === '.md') { // Markdown File Links
