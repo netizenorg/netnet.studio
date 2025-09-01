@@ -603,6 +603,47 @@ window.utils = {
     console.log(escaped.join('\\n'))
   },
 
+  diff: (a, b) => {
+    const aLines = a.split('\n')
+    const bLines = b.split('\n')
+    // ---------- LCS matrix ----------
+    const m = aLines.length
+    const n = bLines.length
+    const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1))
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (aLines[i - 1] === bLines[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1] + 1
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+        }
+      }
+    }
+    // ---------- Backtrack to find diff ----------
+    const removed = []
+    const added = []
+    let i = m
+    let j = n
+    while (i > 0 && j > 0) {
+      if (aLines[i - 1] === bLines[j - 1]) { // Same line – move diagonally
+        i--; j--
+      } else if (dp[i - 1][j] >= dp[i][j - 1]) { // Line i in A was removed
+        removed.push({ line: i, text: aLines[i - 1] }); i--
+      } else { // Line j in B was added
+        added.push({ line: j, text: bLines[j - 1] }); j--
+      }
+    }
+    while (i > 0) { // Anything left at the start of either str is also a diff
+      removed.push({ line: i, text: aLines[i - 1] }); i--
+    }
+    while (j > 0) { // Reverse because we built the arrays backwards
+      added.push({ line: j, text: bLines[j - 1] }); j--
+    }
+    removed.reverse()
+    added.reverse()
+    return { removed, added }
+  },
+
   autoType: (code, template, speed = 60) => {
     const normalize = s => (s || '')
       .replace(/\\t/g, '\t')
