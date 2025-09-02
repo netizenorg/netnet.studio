@@ -124,6 +124,16 @@ class HtmlReference extends Widget {
     this._toggleIntroPresentation()
   }
 
+  togglePresentationConvo () {
+    const id = window.convo?.id
+    if (!id || id === '0' || !this.convos.map(c => c.id).includes(id)) {
+      window.convo = new Convo(this.convos, this._lastConvo)
+    } else {
+      this._lastConvo = window.convo.id
+      window.convo.hide(); window.convo = null
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -132,7 +142,7 @@ class HtmlReference extends Widget {
     const ntro = div.querySelector('.html-reference-widget--guided-intro')
     const btn = div.querySelector('.html-reference-widget--intro-btn')
     const p = div.querySelector('.html-reference-widget--intro-p')
-    const svg = div.querySelector('svg-tag-animated')
+    const svg = div.querySelector('svg-tag-presentation')
 
     if (this.inPresentation()) { // displaying presentation
       //                             (toggle into regular HTML Reference page)
@@ -209,10 +219,10 @@ class HtmlReference extends Widget {
     div.querySelector('.html-reference-widget--guided-intro span.link')
       .addEventListener('click', () => this.toggleIntroPresentation())
 
-    div.querySelector('svg-tag-animated').addEventListener('svg-click', e => {
-      window.convo = new Convo(this.convos, this._lastConvo)
-    })
-    div.querySelector('svg-tag-animated').addEventListener('svg-update', e => {
+    div.querySelector('svg-tag-presentation')
+      .addEventListener('svg-click', e => this.togglePresentationConvo())
+
+    div.querySelector('svg-tag-presentation').addEventListener('svg-update', e => {
       if (window.convo?.id && this.convos.map(c => c.id).includes(window.convo.id)) {
         this._lastConvo = window.convo.id
       }

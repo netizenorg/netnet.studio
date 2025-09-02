@@ -381,18 +381,26 @@ class LearningGuide extends Widget {
       this._startStarField()
     } else {
       this._stopStarField()
-      this._stopSvgAnimations() // TODO: update if/when more svgAnim elements
+      this._stopSvgAnimations()
     }
 
-    // TODO: update if/when more svgAnim elements
-    // will require passing ele into start/stop animations methods
-    const animatedSVGs = ['svg-tag-animated']
-    animatedSVGs.forEach(e => {
-      const ele = this.$(e)
-      const v = utils.isVisible(ele)
-      if (v) this._startSvgAnimations()
-      else this._stopSvgAnimations()
+    const animatedSvgs = [
+      'svg-tag-animated', 'svg-css-animated'
+    ]
+
+    animatedSvgs.forEach(eleStr => {
+      const svg = this.$(eleStr)
+      const v = utils.isVisible(svg)
+      if (v && !svg.looping) svg.start()
+      else if (!v) svg.stop()
     })
+  }
+
+  _stopSvgAnimations () {
+    const animatedSvgs = [
+      'svg-tag-animated', 'svg-css-animated'
+    ]
+    animatedSvgs.forEach(svg => this.$(svg).stop())
   }
 
   /*
@@ -515,28 +523,6 @@ class LearningGuide extends Widget {
     for (let i = 0; i < newStars; i++) this._stars.push(this._mkStar())
 
     this._raf = window.requestAnimationFrame(() => this._tickStarField())
-  }
-
-  //
-
-  _startSvgAnimations () {
-    if (this._svgTimer) return
-    const steps = [11, 12, 13, 15, 16, 17, 18]
-    const durs = [2.25, 2.5, 1.5, 1.5, 1, 4, 6]
-    let i = 0
-    const tick = () => {
-      const el = this.$('svg-tag-animated')
-      if (el) el.updateHTML(steps[i])
-      const ms = durs[i] * 1000 + 1000
-      i = (i + 1) % steps.length
-      this._svgTimer = setTimeout(tick, ms)
-    }
-    tick()
-  }
-
-  _stopSvgAnimations () {
-    clearTimeout(this._svgTimer)
-    this._svgTimer = null
   }
 }
 

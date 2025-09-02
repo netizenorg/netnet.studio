@@ -1,3 +1,7 @@
+:root {
+  --css-ref-toggle-message: "click diagram to toggle guide";
+}
+
 .css-reference-widget--sec-link {
   display: inline-block;
   color: var(--netizen-meta);
@@ -56,9 +60,11 @@
   left: 0px;
 }
 
-.css-reference-widget--guided-intro > svg-tag-animated::before {
-  content: "resume guide";
+.css-reference-widget--guided-intro > svg-css-animated::before {
+  content: var(--css-ref-toggle-message);
+  font-style: italic;
   position: absolute;
   right: 0px;
   top: 0px;
+  opacity: 0.5;
 }

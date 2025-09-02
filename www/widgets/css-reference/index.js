@@ -54,6 +54,11 @@ class CssReference extends Widget {
       NNW.on('theme-change', () => { this._createHTML() })
     }
 
+    this._boundEditWatcher = this._editWatcher.bind(this)
+    this.on('close', () => {
+      NNE.cm.off('keydown', this._boundEditWatcher)
+    })
+
     utils.get('./widgets/css-reference/data/edu-supplement.json', (json) => { this.data = json })
     utils.get('./widgets/css-reference/data/main-slide.html', (html) => init(html), true)
   }
@@ -156,6 +161,16 @@ class CssReference extends Widget {
     this._toggleIntroPresentation()
   }
 
+  togglePresentationConvo () {
+    const id = window.convo?.id
+    if (!id || id === '0' || !this.convos.map(c => c.id).includes(id)) {
+      window.convo = new Convo(this.convos, this._lastConvo)
+    } else {
+      this._lastConvo = window.convo.id
+      window.convo.hide(); window.convo = null
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -164,15 +179,18 @@ class CssReference extends Widget {
     const ntro = div.querySelector('.css-reference-widget--guided-intro')
     const btn = div.querySelector('.css-reference-widget--intro-btn')
     const p = div.querySelector('.css-reference-widget--intro-p')
-    const svg = div.querySelector('svg-css-animated')
+    const svg = div.querySelector('svg-css-presentation')
 
     if (this.inPresentation()) { // displaying presentation
-      //                             (toggle into regular HTML Reference page)
+      //                             (toggle into regular CSS Reference page)
       NNE.code = utils.starterCode()
       NNE.update()
       if (typeof this._prevUpdateState === 'boolean') {
         WIDGETS['coding-menu'].autoUpdate(this._prevUpdateState)
       }
+      NNE.readOnly = false
+      NNE.cm.off('keydown', this._boundEditWatcher)
+      console.log('stopped it', NNE.readOnly);
       svg.clearTimers()
       window.convo.hide()
       ntro.style.opacity = 0
@@ -190,6 +208,9 @@ class CssReference extends Widget {
       p.style.opacity = 1
     } else { // displaying ref (toggle into presentation)
       utils.cancelAllNetitorUses('css-reference')
+      NNE.readOnly = true
+      NNE.cm.on('keydown', this._boundEditWatcher)
+      console.log('ran it', NNE.readOnly);
       this.slide.style.overflowY = 'hidden'
       svg.style.cursor = 'pointer'
       btn.style.opacity = 0
@@ -207,6 +228,12 @@ class CssReference extends Widget {
       p.style.display = 'none'
       await nn.sleep(100)
       ntro.style.opacity = 1
+    }
+  }
+
+  _editWatcher () {
+    if (this?.opened && NNE.readOnly) {
+      window.convo = new Convo(this.convos, 'no-edit')
     }
   }
 
@@ -378,10 +405,10 @@ class CssReference extends Widget {
     div.querySelector('.css-reference-widget--guided-intro span.link')
       .addEventListener('click', () => this.toggleIntroPresentation())
 
-    div.querySelector('svg-css-animated').addEventListener('svg-click', e => {
-      window.convo = new Convo(this.convos, this._lastConvo)
-    })
-    div.querySelector('svg-css-animated').addEventListener('svg-update', e => {
+    div.querySelector('svg-css-presentation')
+      .addEventListener('svg-click', e => this.togglePresentationConvo())
+
+    div.querySelector('svg-css-presentation').addEventListener('svg-update', e => {
       if (window.convo?.id && this.convos.map(c => c.id).includes(window.convo.id)) {
         this._lastConvo = window.convo.id
       }
