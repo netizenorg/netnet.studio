@@ -81,9 +81,6 @@
 #video-recorder video {
   border-radius: 5px;
 }
-#video-recorder video.flipped {
-  border-radius: 5px;
-}
 #video-recorder > div {
   display: flex;
   flex-direction: column;

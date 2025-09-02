@@ -66,7 +66,6 @@ const recorder = {
     // TODO: add handling for keylogger
     nn.get('[name="vr-start-rec"]').addEventListener('click', () => recorder.changeState())
     nn.get('[name="vr-go-back"]').addEventListener('click', () => recorder.goBack())
-    nn.get('[name="fc-checkbox"]').addEventListener('change', (e) => recorder.flipCamera(e))
     // nn.get('[name="dl-kl"]').addEventListener('click', () => {
     //   recorder.download()
     //   // const k = nn.get('[name="av-keylog-sync"]').checked
@@ -123,15 +122,6 @@ const recorder = {
   goBack: () => {
     nn.get('#video-recorder').style.display = 'none'
     nn.get('#video-menu').style.display = 'block'
-  },
-
-  flipCamera: (e) => {
-    if (e.target.checked) {
-
-    } else {
-
-    }
-    // TODO: add logic here
   },
 
   includeKeylogs: () => {
