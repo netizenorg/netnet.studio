@@ -20,9 +20,9 @@ function overlay (ele) {
   if (ele === '#metadata') {
     window.resizeTo(420, 850)
     metadata.init()
-  } else if (ele === '#video-recorder') {
-    window.resizeTo(913, 657)
-    recorder.createRecorder()
+  } else if (ele === '#video-menu') {
+    window.resizeTo(420, 850)
+    recorder.initMenu()
   }
 }
 
@@ -69,7 +69,7 @@ function updateMetadata (data) {
 
   const hasVid = FILES.readFile(`${TUT_ID}.mp4`) || FILES.readFile(`${TUT_ID}.webm`)
   if (hasVid) overlay(null)
-  else overlay('#video-recorder')
+  else overlay('#video-menu')
 
   // NOTE: the TUT_ID is used all over the place && works best if only set once
   // but we may want to allow the user to change it, so we'll need to make sure
@@ -117,7 +117,7 @@ function openMetadata (metadata) {
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
-nn.get('#close-recorder').on('click', updateVideo)
+// nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', TIMECODE))
 

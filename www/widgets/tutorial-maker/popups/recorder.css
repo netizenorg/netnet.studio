@@ -9,11 +9,6 @@
   justify-content: space-around;
 }
 
-.av-strm-controls {
-  display: none;
-  justify-content: space-around;
-}
-
 .av-str-post-msg {
   display: none;
 }
@@ -61,4 +56,114 @@
   text-align: center;
   font-weight: 200;
   text-wrap: wrap;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  /* width: 100%; */
+}
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+.icon-btn p {
+  margin: 0;
+}
+
+/* video recorder styles */
+#video-recorder {
+  padding-bottom: 0;
+}
+#video-recorder video {
+  border-radius: 5px;
+}
+#video-recorder video.flipped {
+  border-radius: 5px;
+}
+#video-recorder > div {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+#video-recorder h1 {
+  color: var(--netizen-meta);
+  margin: 0;
+}
+#video-recorder .v-r-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 20px;
+}
+#video-recorder .v-r-header .icon-btn {
+  padding: 7px;
+}
+#video-recorder .v-r-header svg {
+  width: 15px;
+  height: 15px;
+  padding-bottom: 1px;
+  padding-right: 1px;
+}
+
+.av-strm-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: left;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background: var(--bg-color);
+  padding: 20px 0;
+}
+.av-strm-controls div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: left;
+}
+
+/* Hide the default checkbox */
+.vr-checkbox input {
+  display: none;
+}
+.vr-checkbox {
+  color: var(--netizen-meta);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.vr-checkbox .vr-checkmark {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--netizen-meta);
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
+}
+.vr-checkbox input:checked + .vr-checkmark {
+  background-color: var(--netizen-tag);
+  border-color: var(--netizen-tag);
+}
+.vr-checkbox input:checked + .vr-checkmark::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }

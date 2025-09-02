@@ -10,10 +10,6 @@ const recorder = {
   data: [],
   recorder: null,
 
-    // if (!WIDGETS.loaded.includes('netitor-logger')) {
-    //   WIDGETS.load('netitor-logger')
-    // }
-
   close: () => {
     if (window.stream) window.stream.getTracks().forEach(t => t.stop())
     recorder.reset()
@@ -66,66 +62,93 @@ const recorder = {
 
   // -------------------------- [ view ] ---------------------------------------
 
-  createRecorder: (opts) => {
-    const html = `
-      <video name="vid-stream" style="width: 100%;display:none;" autoplay playsinline muted></video>
-      <div class="rec-opts av-strm-row">
-        <button class="pill-btn" name="stream">stream only</button>
-        <button class="pill-btn" name="record">stream + record</button>
-      </div>
-      <div class="recorded-videos av-strm-row">
-        <!-- <div style="margin-top: 15px; text-align: center;">
-          <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
-          <p>(mute your audio or use headphones)</p>
-        </div> -->
-      </div>
-      <div class="av-strm-controls">
-        <button class="pill-btn pill-btn--secondary" name="start-rec">start recording</button>
-        <div>
-          <input type="checkbox" name="av-keylog-sync"> include keylogger
-        </div>
-      </div>
-      <div class="av-str-post-msg" style="margin-top: 15px">
-        <button name="dl-kl">download</button>
-      </div>
-    `
-    nn.get('#video-recorder').innerHTML = html
+  createRecorder: async (opts) => {
+    // TODO: add handling for keylogger
+    nn.get('[name="vr-start-rec"]').addEventListener('click', () => recorder.changeState())
+    nn.get('[name="vr-go-back"]').addEventListener('click', () => recorder.goBack())
+    nn.get('[name="fc-checkbox"]').addEventListener('change', (e) => recorder.flipCamera(e))
+    // nn.get('[name="dl-kl"]').addEventListener('click', () => {
+    //   recorder.download()
+    //   // const k = nn.get('[name="av-keylog-sync"]').checked
+    //   // if (k) WIDGETS['netitor-logger'].download()
+    // })
 
-    nn.get('[name="stream"]').addEventListener('click', (e) => recorder.init(e))
-    nn.get('[name="record"]').addEventListener('click', (e) => recorder.init(e, true))
-    nn.get('[name="start-rec"]').addEventListener('click', (e) => {
-      if (e.target.textContent === 'start recording') {
-        e.target.textContent = 'stop'
-        const k = nn.get('[name="av-keylog-sync"]').checked
-        e.target.style.animation = 'av-strm-rec 1s infinite'
-        recorder.startRecording(k)
-      } else {
-        e.target.textContent = 'start recording'
-        e.target.style.animation = 'none'
-        recorder.stopRecording()
-      }
-    })
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(recorder.rtcOpts)
+      recorder.handleSuccess(stream)
+      nn.get('[name="vid-stream"]').style.display = 'inline'
+      // nn.get('.recorded-videos').innerHTML = ''
+      nn.get('.av-strm-controls').style.display = 'flex'
+    } catch (e) {
+      recorder.handleError(e)
+    }
+  },
 
-    nn.get('[name="dl-kl"]').addEventListener('click', () => {
-      recorder.download()
-      // const k = nn.get('[name="av-keylog-sync"]').checked
-      // if (k) WIDGETS['netitor-logger'].download()
-    })
+  initMenu: () => {
+    nn.get('#record-video').addEventListener('click', (e) => recorder.init(e, true))
+    // TODO add handling for uploading a video
   },
 
   // -------------------------- [ WebRTC ] ------------------------------------
+
+  changeState: () => {
+    const btn = nn.get('[name="vr-start-rec"]')
+    const text = nn.get('[name="vr-start-rec"] > p')
+    const icon = nn.get('[name="vr-start-rec"] > svg')
+
+    if (text.textContent === 'record video') {
+      // change "record video" to "stop" button
+      text.textContent = 'stop'
+      icon.width = '19'
+      icon.height = '19'
+      icon.viewBox = '0 0 19 19'
+      icon.innerHTML = '<rect width="19" height="19" rx="3" fill="#FF4545"/>'
+
+      const k = nn.get('[name="av-keylog-sync"]').checked
+      btn.style.animation = 'av-strm-rec 1s infinite'
+      nn.get('.v-r-header').style.display = 'none'
+      recorder.startRecording(k)
+    } else if (text.textContent === 'stop') {
+      recorder.stopRecording()
+      btn.textContent = 'create tutorial'
+      btn.style.animation = 'none'
+      // TODO: do we add a download option?
+      // TODO: maybe add a discard and re-record option
+    } else if (text.textContent === 'create tutorial') {
+      // TODO: open tutorial maker editing UI
+      // TODO: store video with files
+    }
+  },
+
+  goBack: () => {
+    nn.get('#video-recorder').style.display = 'none'
+    nn.get('#video-menu').style.display = 'block'
+  },
+
+  flipCamera: (e) => {
+    if (e.target.checked) {
+
+    } else {
+
+    }
+    // TODO: add logic here
+  },
+
+  includeKeylogs: () => {
+    // TODO: add logic here
+  },
 
   reset: () => {
     nn.get('.av-str-post-msg').style.display = 'none'
     nn.get('[name="vid-stream"]').style.display = 'none'
     nn.get('.av-strm-controls').style.display = 'none'
     nn.get('.rec-opts').style.display = 'flex'
-    nn.get('.recorded-videos').innerHTML = `
-    <div style="margin-top: 15px; text-align: center;">
-      <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
-      <p>(mute your audio or use headphones)</p>
-    </div>
-    `
+    // nn.get('.recorded-videos').innerHTML = `
+    // <div style="margin-top: 15px; text-align: center;">
+    //   <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
+    //   <p>(mute your audio or use headphones)</p>
+    // </div>
+    // `
   },
 
   displayRecording: () => {
@@ -134,21 +157,21 @@ const recorder = {
     video.controls = true
     const blob = new window.Blob(recorder.data, { type: 'video/webm' })
     video.src = window.URL.createObjectURL(blob)
-    nn.get('.recorded-videos').appendChild(video)
+    // nn.get('.recorded-videos').appendChild(video)
     nn.get('.av-strm-controls').style.display = 'none'
     nn.get('.av-str-post-msg').style.display = 'block'
   },
 
-  init: async (e, rec) => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(recorder.rtcOpts)
-      recorder.handleSuccess(stream)
-      // e.target.disabled = true
-      nn.get('[name="vid-stream"]').style.display = 'inline'
-      nn.get('.rec-opts').style.display = 'none'
-      nn.get('.recorded-videos').innerHTML = ''
-      if (rec) nn.get('.av-strm-controls').style.display = 'flex'
-    } catch (e) { recorder.handleError(e) }
+  init: async (e) => {
+    // hide video menu & display video recorder
+    nn.get('#video-menu').style.display = 'none'
+    nn.get('#video-recorder').style.display = 'block'
+
+    const widthDiff = window.outerWidth - window.innerWidth;
+    const heightDiff = window.outerHeight - window.innerHeight;
+    window.resizeTo(802 + widthDiff, 700 + heightDiff)
+
+    recorder.createRecorder()
   },
 
   handleSuccess: (stream) => {

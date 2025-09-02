@@ -33,22 +33,72 @@
 </section>
 
 
-<!-- <section id="video-menu" class="overlay">
+<section id="video-menu" class="overlay" style="display: none;">
   <div>
-    <button id="record-video" class="pill-btn pill-btn--secondary">record video</button>
+    <div id="record-video" class="icon-btn pill-btn pill-btn--secondary">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="11" fill="#FF4545"/>
+        <circle cx="16" cy="16" r="15" stroke="#FF4545" stroke-width="2"/>
+      </svg>
+      <p>record video</p>
+    </div>
     <div class="or-divider">
       <hr><p>or</p><hr>
     </div>
     <button id="upload-video" class="pill-btn pil-btn--secondary">upload video</button>
   </div>
-</section> -->
+</section>
 
 
 <section id="video-recorder" class="overlay" style="display: none;">
-  <h1>Video Recorder</h1>
-  <!-- TODO: video element && UI for start/stop recording + checkbox to include keylogger or not -->
-  <br>
-  <button id="close-recorder" class="pill-btn pill-btn--secondary">done</button>
+  <div>
+    <div class="v-r-header">
+      <div name="vr-go-back" class="icon-btn pill-btn pill-btn--secondary">
+        <svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L2.41714 8.38621C1.77309 8.77486 1.7726 9.70871 2.41624 10.098L13 16.5" stroke="#C3C3DA" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <!-- <p>go back</p> -->
+      </div>
+      <h1>Video Recorder</h1>
+    </div>
+    <video name="vid-stream" style="width: 100%;display:none;" autoplay playsinline muted></video>
+    <!-- <div class="recorded-videos av-strm-row"> -->
+      <!-- <div style="margin-top: 15px; text-align: center;">
+        <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
+        <p>(mute your audio or use headphones)</p>
+      </div> -->
+    <!-- </div> -->
+    <!-- video recording controls -->
+    <div class="av-strm-controls">
+      <div id="start-recording" name="vr-start-rec" class="icon-btn pill-btn pill-btn--secondary">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="11" fill="#FF4545"/>
+          <circle cx="16" cy="16" r="15" stroke="#FF4545" stroke-width="2"/>
+        </svg>
+        <p >record video</p>
+      </div>
+      <div>
+        <label class="kl-checkbox">
+          <input name="av-keylog-sync" type="checkbox">
+          <span class="kl-checkmark"></span>
+          include keylogs
+        </label>
+        <div class="tooltip-content closed">
+          <p>Keylogs capture every keystroke made while the video is being recorded.</p>
+        </div>
+        <div class="pill-btn pill-btn--secondary">?</div>
+      </div>
+      <label class="vr-checkbox">
+        <input name="fc-checkbox" type="checkbox">
+        <span class="vr-checkmark"></span>
+        flip camera
+      </label>
+    </div>
+    <!-- <div class="av-str-post-msg" style="margin-top: 15px">
+      <button name="dl-kl">download</button>
+    </div> -->
+  <!-- <button id="close-recorder" class="pill-btn pill-btn--secondary">done</button> -->
+  </div>
 </section>
 
 
