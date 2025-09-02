@@ -79,8 +79,23 @@ function setupSearch () {
   searchInput.addEventListener('input', (e) => filterResults(e))
 }
 
+function mobileMenu () {
+  const hamburger = document.querySelector('#hamburger')
+  const docsPanel = document.querySelector('.docs__panel')
+
+  hamburger.addEventListener('click', (e) => {
+    docsPanel.classList.toggle('open')
+    if (docsPanel.classList.contains('open')) {
+      hamburger.setAttribute('aria-expanded', 'true')
+    } else {
+      hamburger.setAttribute('aria-expanded', 'false')
+    }
+  })
+}
+
 nn.on('load', () => {
   findActive()
   setupNetitors()
   setupSearch()
+  mobileMenu()
 })
