@@ -23,7 +23,7 @@ const recorder = {
     // 'video/webm;codecs=vp9,opus'
     // 'video/webm;codecs=vp8,opus'
     // TODO if firefox record webm and display conversion message afterwards
-    const opts = { mimeType: 'video/mp4' }
+    const opts = { mimeType: 'video/webm' }
     recorder.recorder = new window.MediaRecorder(window.stream, opts)
     recorder.recorder.ondataavailable = (e) => {
       if (e.data && e.data.size > 0) recorder.data.push(e.data)
@@ -109,13 +109,9 @@ const recorder = {
       recorder.startRecording(k)
     } else if (text.textContent === 'stop') {
       recorder.stopRecording()
-      btn.textContent = 'create tutorial'
       btn.style.animation = 'none'
       // TODO: do we add a download option?
       // TODO: maybe add a discard and re-record option
-    } else if (text.textContent === 'create tutorial') {
-      // TODO: open tutorial maker editing UI
-      // TODO: store video with files
     }
   },
 
@@ -129,7 +125,7 @@ const recorder = {
   },
 
   reset: () => {
-    nn.get('.av-str-post-msg').style.display = 'none'
+    // nn.get('.av-str-post-msg').style.display = 'none'
     nn.get('[name="vid-stream"]').style.display = 'none'
     nn.get('.av-strm-controls').style.display = 'none'
     nn.get('.rec-opts').style.display = 'flex'
@@ -147,8 +143,8 @@ const recorder = {
     video.controls = true
     const blob = new window.Blob(recorder.data, { type: 'video/webm' })
     video.src = window.URL.createObjectURL(blob)
-    // nn.get('.recorded-videos').appendChild(video)
-    nn.get('.av-strm-controls').style.display = 'none'
+    nn.get('.recorded-videos').appendChild(video)
+
     nn.get('.av-str-post-msg').style.display = 'block'
   },
 
@@ -157,8 +153,8 @@ const recorder = {
     nn.get('#video-menu').style.display = 'none'
     nn.get('#video-recorder').style.display = 'block'
 
-    const widthDiff = window.outerWidth - window.innerWidth;
-    const heightDiff = window.outerHeight - window.innerHeight;
+    const widthDiff = window.outerWidth - window.innerWidth
+    const heightDiff = window.outerHeight - window.innerHeight
     window.resizeTo(802 + widthDiff, 700 + heightDiff)
 
     recorder.createRecorder()

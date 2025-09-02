@@ -8,6 +8,9 @@
   display: flex;
   justify-content: space-around;
 }
+.recorded-videos video {
+  width: 100%;
+}
 
 .av-str-post-msg {
   display: none;
@@ -106,7 +109,7 @@
   padding-right: 1px;
 }
 
-.av-strm-controls {
+.av-strm-controls > div {
   display: flex;
   gap: 20px;
   align-items: center;
@@ -117,7 +120,7 @@
   background: var(--bg-color);
   padding: 20px 0;
 }
-.av-strm-controls div {
+.av-strm-controls > div > div {
   display: flex;
   gap: 10px;
   align-items: center;
