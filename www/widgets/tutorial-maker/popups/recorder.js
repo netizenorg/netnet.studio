@@ -93,7 +93,7 @@ const recorder = {
 
   initMenu: () => {
     nn.get('#record-video').addEventListener('click', (e) => recorder.init(e, true))
-    // TODO add handling for uploading a video
+    nn.get('#video-menu file-drop').addEventListener('files-changed', (e) => recorder.onFileChanged(e))
   },
 
   // -------------------------- [ WebRTC ] ------------------------------------
@@ -191,6 +191,14 @@ const recorder = {
   handleError: (e) => {
     window.alert('error! see console')
     console.error(e)
+  },
+
+  onFileChanged: (e) => {
+    if (nn.get('#video-menu').style.display === 'none') return
+    const submit = nn.get('[name="file-drop-submit"]')
+    const fileDrop = nn.get('#video-menu file-drop')
+    if (fileDrop.files.length > 0) submit.style.display = 'block'
+    else if (fileDrop.files.length <= 0) submit.style.display = 'none'
   }
 }
 

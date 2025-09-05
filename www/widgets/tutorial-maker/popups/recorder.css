@@ -25,10 +25,13 @@
   height: 100%
 }
 
-#video-menu button {
-  font-size: 1.1rem;
-  width: 170px;
-  padding: 8px 15px
+#video-menu .file-drop-cont {
+  width: 100%;
+  max-width: 330px;
+}
+
+#video-menu file-drop {
+  padding: 10px;
 }
 
 .or-divider {
@@ -44,11 +47,16 @@
 .or-divider p {
   color: var(--netizen-meta)
 }
+.file-drop-cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 #upload-video {
   position: relative;
 }
-
 #upload-video::after {
   content: '* video format must be .mp4';
   color: var(--netizen-meta);

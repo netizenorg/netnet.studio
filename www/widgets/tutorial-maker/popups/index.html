@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="/core/styles/base.css">
 <link rel="stylesheet" href="/core/styles/text.css">
 <link rel="stylesheet" href="/custom-elements/misc/reorderable-list/styles.css">
+<link rel="stylesheet" href="/custom-elements/misc/file-drop/styles.css">
 <link rel="stylesheet" href="main.css">
 <!-- <link rel="stylesheet" href="www/core/netitor/src/css/main.css"> -->
 <link rel="stylesheet" href="metadata.css">
@@ -45,7 +46,10 @@
     <div class="or-divider">
       <hr><p>or</p><hr>
     </div>
-    <button id="upload-video" class="pill-btn pil-btn--secondary">upload video</button>
+    <div class="file-drop-cont">
+      <file-drop accept=".mp4" maxFiles="1" maxSize="1GB"></file-drop>
+      <button name="file-drop-submit" class="pill-btn pill-btn--secondary" style="display: none;">submit</button>
+    </div>
   </div>
 </section>
 
@@ -147,6 +151,7 @@
 
 <script src="/nn.min.js"></script>
 <script src="/custom-elements/misc/reorderable-list/index.js"></script>
+<script src="/custom-elements/misc/file-drop/index.js"></script>
 <script src="jszip.min.js"></script>
 <script src="file-manager.js"></script>
 <script src="zip-tools.js"></script>

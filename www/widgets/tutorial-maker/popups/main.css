@@ -62,7 +62,7 @@ nav {
   overflow-y: auto;
 }
 
-.overlay button {
+.overlay > button {
   color: var(--bg-color);
   background: var(--netizen-meta);
   border-color: var(--bg-color);
