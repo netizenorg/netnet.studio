@@ -67,8 +67,17 @@ class FileDrop extends HTMLElement {
 
   addFiles (e) {
     e.preventDefault()
-    const { accept, maxFiles } = this.config
     this.classList.remove('dragover')
+
+    const { accept, maxFiles } = this.config
+    const files =
+      e?.dataTransfer?.files ||
+      e?.currentTarget?.files ||
+      e?.target?.files ||
+      (e instanceof FileList ? e : null)
+    if (!files || files.length === 0) return
+    const incoming = Array.from(files)
+
     // remove any previous error messages
     this.displayMsg({
       text: `* accepted file formats: ${accept}`
@@ -84,14 +93,6 @@ class FileDrop extends HTMLElement {
       // TODO: if a user uploads a new file, prompt them with the option to replace the already uploaded files with the new uploads
     }
 
-    const files =
-      e?.dataTransfer?.files ||
-      e?.currentTarget?.files ||
-      e?.target?.files ||
-      (e instanceof FileList ? e : null)
-    if (!files || files.length === 0) return
-    const incoming = Array.from(files)
-
     // filter new files uploaded
     const nameSet = new Set(this.files.map(f => f.name.toLowerCase()))
     const newFiles = incoming.filter(f => !nameSet.has(f.name.toLowerCase()))
@@ -103,7 +104,7 @@ class FileDrop extends HTMLElement {
     this.files.push(...add)
     this.renderFileItems()
 
-    this.dispatchEvent(new CustomEvent('files-dropped', {
+    this.dispatchEvent(new CustomEvent('files-changed', {
       detail: { added: add, rejected, all: this.files.slice() },
       bubbles: true,
       composed: true
