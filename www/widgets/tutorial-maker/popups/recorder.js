@@ -1,6 +1,5 @@
 /* global nn metadata */
 const recorder = {
-  // TODO: methdos for recording video (migrate + refactor from stream-video widget)
   // TODO: methods for recording keystrokes (migrate + refactor from netitor-logger)
   key: 'stream-video',
   rtcOpts: {
@@ -13,6 +12,14 @@ const recorder = {
   close: () => {
     if (window.stream) window.stream.getTracks().forEach(t => t.stop())
     recorder.reset()
+  },
+
+  displayRecordingSettings: (show) => {
+    const settings = nn.getAll('.b-recording')
+    settings.forEach((s) => {
+      if (show) s.style.removeProperty('display')
+      else s.style.display = 'none'
+    })
   },
 
   startRecording: (keylogger) => {
@@ -66,6 +73,7 @@ const recorder = {
     // TODO: add handling for keylogger
     nn.get('[name="vr-start-rec"]').addEventListener('click', () => recorder.changeState())
     nn.get('[name="vr-go-back"]').addEventListener('click', () => recorder.goBack())
+    nn.get('[name="vr-edit-tut"]').addEventListener('click', () => recorder.editTutorial())
     // nn.get('[name="dl-kl"]').addEventListener('click', () => {
     //   recorder.download()
     //   // const k = nn.get('[name="av-keylog-sync"]').checked
@@ -96,11 +104,14 @@ const recorder = {
     const icon = nn.get('[name="vr-start-rec"] > svg')
 
     if (text.textContent === 'record video') {
+      recorder.displayRecordingSettings(false)
       // change "record video" to "stop" button
       text.textContent = 'stop'
-      icon.width = '19'
-      icon.height = '19'
-      icon.viewBox = '0 0 19 19'
+      icon.setAttribute('width', '19')
+      icon.setAttribute('height', '19')
+      icon.setAttribute('viewBox', '0 0 19 19')
+      icon.style.width = '19px'
+      icon.style.height = '19px'
       icon.innerHTML = '<rect width="19" height="19" rx="3" fill="#FF4545"/>'
 
       const k = nn.get('[name="av-keylog-sync"]').checked
@@ -113,6 +124,12 @@ const recorder = {
       // TODO: do we add a download option?
       // TODO: maybe add a discard and re-record option
     }
+  },
+
+  editTutorial: () => {
+    nn.get('#video-recorder').style.display = 'none'
+    // TODO: set data for tutorial maker to edit new video
+    // TODO: for users who recorded webm, display overlay that they must convert their video to mp4 and re-upload it. Show upload UI (drop box UI idea)
   },
 
   goBack: () => {
@@ -145,7 +162,9 @@ const recorder = {
     video.src = window.URL.createObjectURL(blob)
     nn.get('.recorded-videos').appendChild(video)
 
-    nn.get('.av-str-post-msg').style.display = 'block'
+    // nn.get('.av-str-post-msg').style.display = 'block'
+    nn.get('.recording-controls').style.display = 'none'
+    nn.get('.playback-controls').style.removeProperty('display')
   },
 
   init: async (e) => {

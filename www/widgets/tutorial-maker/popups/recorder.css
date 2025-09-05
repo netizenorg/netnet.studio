@@ -67,7 +67,7 @@
   justify-content: center;
   gap: 8px;
   padding: 8px 15px;
-  /* width: 100%; */
+  width: fit-content;
 }
 .icon-btn svg {
   width: 22px;
@@ -166,4 +166,8 @@
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.av-strm-controls .playback-controls {
+  justify-content: space-between;
 }
