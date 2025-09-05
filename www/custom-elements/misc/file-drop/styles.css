@@ -1,3 +1,9 @@
+file-drop {
+  display: block;
+  width: 100%;
+  height: fit-content;
+}
+
 file-drop.dragover .fldp-drop-area {
   background: #3F3D53;
 }
@@ -10,7 +16,7 @@ file-drop.dragover .fldp-drop-area {
   align-items: center;
   border: 2px dashed var(--netizen-meta);
   border-radius: 8px;
-  padding: 28px 16px;
+  padding: 35px;
 }
 .fldp-drop-area p {
   margin: 0;

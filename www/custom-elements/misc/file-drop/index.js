@@ -1,4 +1,4 @@
-/* global HTMLElement CustomEvent */
+/* global HTMLElement CustomEvent FileList */
 class FileDrop extends HTMLElement {
   static get observedAttributes () { return ['accept', 'max-size', 'max-files', 'multiple'] }
 
@@ -66,7 +66,14 @@ class FileDrop extends HTMLElement {
   addFiles (e) {
     e.preventDefault()
     this.classList.remove('dragover')
-    const incoming = Array.from(e.dataTransfer.files)
+
+    const files =
+      e?.dataTransfer?.files ||
+      e?.currentTarget?.files ||
+      e?.target?.files ||
+      (e instanceof FileList ? e : null)
+    if (!files || files.length === 0) return
+    const incoming = Array.from(files)
 
     // filter new files uploaded
     const nameSet = new Set(this.files.map(f => f.name.toLowerCase()))
