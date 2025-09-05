@@ -1,0 +1,74 @@
+file-drop.dragover .fldp-drop-area {
+  background: #3F3D53;
+}
+
+.fldp-drop-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed var(--netizen-meta);
+  border-radius: 8px;
+  padding: 28px 16px;
+}
+.fldp-drop-area p {
+  margin: 0;
+  color: var(--netizen-meta);
+}
+.fldp-drop-area svg {
+  width: 50px;
+  height: 50px;
+}
+
+.fldp-dd-text {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.fldp-or-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.fldp-or-divider hr {
+  width: 50px;
+  margin: 0;
+}
+.fldp-or-divider p {
+  color: var(--netizen-meta)
+}
+
+.fldp-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.fldp-file-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  background: var(--netizen-meta);
+  padding: 6px 9px;
+  border-radius: 6px;
+}
+.fldp-file-item p {
+  color: var(--bg-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+.fldp-file-item svg {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+.fldp-file-item svg:hover path {
+  stroke: #FF4545;
+}
