@@ -78,3 +78,8 @@ file-drop.dragover .fldp-drop-area {
 .fldp-file-item svg:hover path {
   stroke: #FF4545;
 }
+
+.fldp-msg {
+  color: var(--netizen-meta);
+  text-align: center;
+}

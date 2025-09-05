@@ -5,7 +5,7 @@ class FileDrop extends HTMLElement {
   constructor (opts) {
     super()
     this.config = {
-      accept: '.pdf,.jpg,.png',
+      accept: '.pdf, .jpg, .png',
       maxSize: '5MB',
       maxFiles: '1',
       multiple: false
@@ -14,6 +14,8 @@ class FileDrop extends HTMLElement {
   }
 
   connectedCallback () {
+    this.applyAttributes()
+
     this.innerHTML = `
       <div class="fldp-drop-area" role="button" tabindex="0" aria-label="Upload files">
         <svg width="28" height="31" viewBox="0 0 28 31" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,6 +29,7 @@ class FileDrop extends HTMLElement {
         </div>
         <button class="fldp-dd-btn icon-btn pill-btn pill-btn--secondary">Browse Files</button>
         <input class="fldp-file-input" type="file" hidden>
+        <p class="fldp-msg">* accepted file formats: ${this.config.accept}</p>
       </div>
       <div class="fldp-file-list"></div>
     `
@@ -36,7 +39,6 @@ class FileDrop extends HTMLElement {
     this.fileList = this.querySelector('.fldp-file-list')
 
     this.applyListeners()
-    this.applyAttributes()
 
     this.fileInput.setAttribute('accept', this.config.accept)
     this.fileInput.multiple = this.config.multiple
@@ -65,7 +67,22 @@ class FileDrop extends HTMLElement {
 
   addFiles (e) {
     e.preventDefault()
+    const { accept, maxFiles } = this.config
     this.classList.remove('dragover')
+    // remove any previous error messages
+    this.displayMsg({
+      text: `* accepted file formats: ${accept}`
+    })
+
+    // return if maxFiles amount is already met
+    if (this.files.length >= maxFiles) {
+      this.displayMsg({
+        text: `Max amount of files (${maxFiles}) has already been uploaded. Please remove previously uploaded files and re-upload.`,
+        type: 'error'
+      })
+      return
+      // TODO: if a user uploads a new file, prompt them with the option to replace the already uploaded files with the new uploads
+    }
 
     const files =
       e?.dataTransfer?.files ||
@@ -77,22 +94,51 @@ class FileDrop extends HTMLElement {
 
     // filter new files uploaded
     const nameSet = new Set(this.files.map(f => f.name.toLowerCase()))
-    const fresh = incoming.filter(f => !nameSet.has(f.name.toLowerCase()))
-
+    const newFiles = incoming.filter(f => !nameSet.has(f.name.toLowerCase()))
+    // filter non-accepted file formats
+    const acceptedFiles = this.filterAcceptedFiles(newFiles)
     // only allow maxFiles
-    const max = Number.isFinite(this.maxFiles) ? this.maxFiles : 1
-    const room = Math.max(0, max - this.files.length)
-    const toAdd = fresh.slice(0, room)
-    const overflow = fresh.slice(room)
+    const { add, rejected } = this.filterMaxFilesAmount(acceptedFiles)
 
-    this.files.push(...toAdd)
+    this.files.push(...add)
     this.renderFileItems()
 
     this.dispatchEvent(new CustomEvent('files-dropped', {
-      detail: { added: toAdd, rejected: overflow, all: this.files.slice() },
+      detail: { added: add, rejected, all: this.files.slice() },
       bubbles: true,
       composed: true
     }))
+  }
+
+  filterAcceptedFiles (files) {
+    const acceptedTypes = this.config.accept.split(',').map(x => x.trim()).filter(Boolean)
+    const acceptedFiles = files.filter(f => {
+      const dot = f.name.lastIndexOf('.')
+      const ext = f.name.slice(dot).toLowerCase()
+      return acceptedTypes.includes(ext)
+    })
+    return acceptedFiles
+    // TODO: return non-accepted files and show error message for all rejected files. Users can only upload the incorrect file type if they drag and dropped it.
+  }
+
+  filterMaxFilesAmount (files) {
+    const maxFiles = this.config.maxFiles
+    const max = Number.isFinite(maxFiles) ? maxFiles : 1
+    const room = Math.max(0, max - this.files.length)
+    const add = files.slice(0, room)
+    const rejected = files.slice(room)
+
+    // if maxFile is exceeded, show error message
+    if (Array.isArray(rejected) && rejected.length > 0) {
+      this.displayMsg({
+        text: `
+          Max amount of files accepted is
+          ${maxFiles}. ${rejected.length}
+          ${rejected.length > 1 ? 'files were' : 'file was'} rejected.`,
+        type: 'error'
+      })
+    }
+    return { add, rejected }
   }
 
   renderFileItems () {
@@ -144,6 +190,14 @@ class FileDrop extends HTMLElement {
     this.dispatchEvent(new CustomEvent('files-changed', {
       detail: { files: this.files.slice() }, bubbles: true, composed: true
     }))
+  }
+
+  displayMsg (data) {
+    const { text, type } = data
+    const msg = this.querySelector('.fldp-msg')
+    msg.textContent = text
+    if (type === 'error') msg.style.color = '#FF4545'
+    else msg.style.color = 'var(--netizen-meta)'
   }
 }
 
