@@ -179,3 +179,18 @@
 .av-strm-controls .playback-controls {
   justify-content: space-between;
 }
+
+.vid-stream-loading {
+  width: 100%;
+  aspect-ratio: 3/2;
+  border: 2px solid var(--netizen-meta);
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  flex-direction: column;
+  border-radius: 5px;
+}
+.vid-stream-loading  > p {
+  color: var(--netizen-meta);
+  margin: auto;
+}

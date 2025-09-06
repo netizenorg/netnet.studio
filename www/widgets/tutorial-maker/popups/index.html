@@ -65,6 +65,9 @@
       </div>
       <h1>Video Recorder</h1>
     </div>
+    <div class="vid-stream-loading">
+      <p>loading recorder...</p>
+    </div>
     <video name="vid-stream" style="width: 100%;display:none;" autoplay playsinline muted></video>
     <div class="recorded-videos av-strm-row">
       <!-- <div style="margin-top: 15px; text-align: center;">
@@ -72,7 +75,7 @@
         <p>(mute your audio or use headphones)</p>
       </div> -->
     </div>
-    <div class="av-strm-controls">
+    <div class="av-strm-controls" style="display:none;">
       <!-- video recording controls -->
       <div class="recording-controls">
         <div id="start-recording" name="vr-start-rec" class="icon-btn pill-btn pill-btn--secondary">

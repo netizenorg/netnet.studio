@@ -83,8 +83,9 @@ const recorder = {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(recorder.rtcOpts)
       recorder.handleSuccess(stream)
+      nn.get('.recorded-videos').innerHTML = ''
+      nn.get('.vid-stream-loading').style.display = 'none'
       nn.get('[name="vid-stream"]').style.display = 'inline'
-      // nn.get('.recorded-videos').innerHTML = ''
       nn.get('.av-strm-controls').style.display = 'flex'
     } catch (e) {
       recorder.handleError(e)
