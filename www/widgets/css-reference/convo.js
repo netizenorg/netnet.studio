@@ -326,7 +326,7 @@ window.CONVOS['css-reference'] = (self) => {
       before: () => {
         self.$('svg-css-presentation').updateHTML(16)
       },
-      content: 'That\'s all the CSS properties we\'ll cover in this lesson. After you finish, you can consult the complete list linked at the bottom of the CSS Reference widget whenever you need a refresher. Because there are far more properties than anyone could memorize, most developers focus on memorizing the ones they use most often and simply look up the rest as needed.',
+      content: 'That\'s all the CSS properties we\'ll cover in this lesson. After you finish, you can consult the complete list linked in the CSS section of the Learning Guide whenever you need a refresher. Because there are far more properties than anyone could memorize, most developers focus on memorizing the ones they use most often and simply look up the rest as needed.',
       options: {
         'go on': (e) => e.goTo('css-comments'),
         'go back': (e) => e.goTo('padding')

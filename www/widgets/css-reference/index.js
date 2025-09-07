@@ -190,7 +190,6 @@ class CssReference extends Widget {
       }
       NNE.readOnly = false
       NNE.cm.off('keydown', this._boundEditWatcher)
-      console.log('stopped it', NNE.readOnly);
       svg.clearTimers()
       window.convo.hide()
       ntro.style.opacity = 0
@@ -210,7 +209,6 @@ class CssReference extends Widget {
       utils.cancelAllNetitorUses('css-reference')
       NNE.readOnly = true
       NNE.cm.on('keydown', this._boundEditWatcher)
-      console.log('ran it', NNE.readOnly);
       this.slide.style.overflowY = 'hidden'
       svg.style.cursor = 'pointer'
       btn.style.opacity = 0
