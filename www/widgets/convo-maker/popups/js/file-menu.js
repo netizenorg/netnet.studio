@@ -9,12 +9,14 @@ filemenu.validateName = (name, type) => {
   if (name === '') {
     window.alert(`A ${type} name can not be left blank`)
     return false
-  } else if (/^[a-z-]+$/.test(name) === false) {
-    window.alert(`A ${type} name can not contain spaces, underscores or capital letters.`)
-    return false
-  } else {
-    return true
   }
+  const validPattern = /^[a-z-]+[0-9]*$/
+
+  if (!validPattern.test(name)) {
+    window.alert(`A ${type} name can not contain spaces, underscores, capital letters, or symbols. Numbers are allowed only at the end of the name.`)
+    return false
+  }
+  return true
 }
 
 filemenu.readyForNewFile = (t) => {

@@ -22,6 +22,8 @@ class ColorWidget extends Widget {
 
     this._createHTML()
 
+    this.events['update-color'] = []
+
     this.on('open', () => {
       window.convo = new Convo({
         content: 'The color widget helps you create color codes to inject into your project. It will insert code wherever your cursor is placed, or replace code you currently have highlighted/selected.'
@@ -101,6 +103,7 @@ class ColorWidget extends Widget {
       if (this._SubWin === 'hsl') this._updateHSL()
       else this._updateRGB()
     }
+    this.emit('update-color', { r: this.red, g: this.green, b: this.blue, a: this.alpha })
   }
 
   _updateHSL () {
