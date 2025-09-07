@@ -148,9 +148,9 @@ class Convo {
 
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)
-    }, time)
 
-    this.emit('update', { id, ignoreFocus })
+      this.emit('update', { id, ignoreFocus })
+    }, time)
   }
 
   _mapData (steps) {
