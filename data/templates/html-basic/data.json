@@ -94,7 +94,7 @@
     },
     "nav-ele": {
       "template": "<!DOCTYPE html>\n<html lang=\"en-US\">\n\t<head>\n\t\t<!-- your metadata goes here in the \"head\" -->\n\t\t<title>{{title}}</title>\n\t\t<meta name=\"author\" content=\"{{author}}\">\n\t\t<meta name=\"description\" content=\"{{description}}\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t</head>\n\t<body>\n\t\t<!-- you page's content goes here in the body -->\n\t\t<h1>{{h1}}</h1>\n\n\t\t<p>\n\t\t\t{{p}}\n\t\t</p>\n\n\t\t{{code}}\n\t</body>\n</html>",
-      "code": "<nav>\n\t\t\t<a href=\"https://netizen.org\">some other page</a>\n\t\t\t<a href=\"https://developer.mozilla.org\">yet another page</a>\n\t\t</nav>"
+      "code": "<nav>\n\t\t\t<a href=\"https://netnet.studio/docs\">working on this</a>\n\t\t\t<a href=\"https://developer.mozilla.org\">really into this</a>\n\t\t</nav>"
     }
   }
 }

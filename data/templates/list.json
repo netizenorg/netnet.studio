@@ -1,9 +1,11 @@
 {
   "published": [
     "html-basic",
-    "html-meta-tags"
+    "html-meta-tags",
+    "css-landing-page"
   ],
   "build-on": {
-    "html-meta-tags": ["html-basic"]
+    "html-meta-tags": ["html-basic"],
+    "css-landing-page": ["html-meta-tags"]
   }
 }

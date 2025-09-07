@@ -4,7 +4,6 @@ window.CONVOS['template-html-basic'] = (self) => {
     {
       id: 'doctype',
       graph: { id: 1, x: 25, y: 25 },
-      edit: true,
       content: 'While not <i>technically</i> necessary, it\'s always a good idea to start every HTML file with a <code>DOCTYPE</code>',
       options: {
         'go on': (e) => e.goTo('html-ele'),
@@ -24,7 +23,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 3, x: 25, y: 150 },
       content: 'The <code>html</code> element</strong> represents the outer most or "top-level" element of an HTML document, so it is also referred to as the <em>root element</em>. All other elements must be descendants of this element.',
       options: {
-        'go on': (e) => e.goTo('lang-attr')
+        'go on': (e) => e.goTo('lang-attr'),
+        'go back': (e) => e.goTo('doctype')
       }
     },
     {
@@ -33,7 +33,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       content: 'The <code>lang</code> attribute tells the browser (and assistive technologies like screen readers) what language the text on your page is written in. This helps improve accessibility by allowing screen readers to use the correct pronunciation rules, and it also helps search engines understand and index your content more accurately.',
       options: {
         'go on': (e) => e.goTo('head-and-body'),
-        'what if I\'ve got many langauges?': (e) => e.goTo('lang-attr2')
+        'what if I\'ve got many langauges?': (e) => e.goTo('lang-attr2'),
+        'go back': (e) => e.goTo('html-ele')
       }
     },
     {
@@ -50,7 +51,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       content: 'Inside the <code>html</code> you should always have two elements, the <code>head</code> and the <code>body</code>. Another way of saying this is that the <i>html element</i> should only ever contain these two <i>child elements</i>.',
       options: {
         'go on': (e) => e.goTo('head-ele'),
-        'child elements?': (e) => e.goTo('children')
+        'child elements?': (e) => e.goTo('children'),
+        'go back': (e) => e.goTo('lang-attr2')
       }
     },
     {
@@ -59,7 +61,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       content: 'The <code>head</code> is where our "metadata" goes. This is information about your page, rather than the page\'s content itself. I\'ve left a comment in there so you don\'t forget.',
       options: {
         'go on': (e) => e.goTo('title-ele'),
-        'a comment?': (e) => e.goTo('comment')
+        'a comment?': (e) => e.goTo('comment'),
+        'go back': (e) => e.goTo('head-and-body')
       }
     },
     {
@@ -80,7 +83,8 @@ window.CONVOS['template-html-basic'] = (self) => {
           self.vars.title = v || 'Your Page Title'
           if (!v) e.goTo('temp-title')
           else e.goTo('your-title')
-        }
+        },
+        'go back': (e) => e.goTo('head-ele')
       }
     },
     {
@@ -96,7 +100,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 11, x: 400, y: 200 },
       content: 'Ok, I\'ll just leave it as "Your Page Title" for now and you can change it later.',
       options: {
-        'go on': (e) => e.goTo('meta-ele')
+        'go on': (e) => e.goTo('meta-ele'),
+        'go back': (e) => e.goTo('title-ele')
       }
     },
     {
@@ -104,7 +109,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 12, x: 550, y: 200 },
       content: 'Great, I\'ve added that as the <code>title</code> element\'s content.',
       options: {
-        'go on': (e) => e.goTo('meta-ele')
+        'go on': (e) => e.goTo('meta-ele'),
+        'go back': (e) => e.goTo('title-ele')
       }
     },
     {
@@ -112,7 +118,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 13, x: 475, y: 325 },
       content: 'Let\'s add a couple of <code>meta</code> tags. These can store additional information about your page which, like the <i>title</i>, doesn\'t appear in the page\'s content, but instead show up in other places like search results and social media previews.',
       options: {
-        'go on': (e) => e.goTo('author')
+        'go on': (e) => e.goTo('author'),
+        'go back': (e) => e.goTo('title-ele')
       }
     },
     {
@@ -120,7 +127,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 14, x: 475, y: 975 },
       content: 'The last meta tag we\'ll add is for mobile devices. Without it your page would look teeny-tiny on their smaller screens. Check out this <a href="https://stackoverflow.com/questions/10892463/how-is-the-meta-viewport-tag-used-and-what-does-it-do" target="_blank">stackoverflow conversation</a> to learn more about it.',
       options: {
-        'go on': (e) => e.goTo('body-ele')
+        'go on': (e) => e.goTo('body-ele'),
+        'go back': (e) => e.goTo('meta-ele')
       }
     },
     {
@@ -133,7 +141,8 @@ window.CONVOS['template-html-basic'] = (self) => {
           self.vars.author = v || 'netnet'
           if (!v) e.goTo('temp-author')
           else e.goTo('your-author')
-        }
+        },
+        'go back': (e) => e.goTo('viewport')
       }
     },
     {
@@ -141,7 +150,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 16, x: 400, y: 575 },
       content: 'Ok, I\'ll just credit myself for now and you can change it later.',
       options: {
-        'go on': (e) => e.goTo('description')
+        'go on': (e) => e.goTo('description'),
+        'go back': (e) => e.goTo('author')
       }
     },
     {
@@ -154,7 +164,8 @@ window.CONVOS['template-html-basic'] = (self) => {
           self.vars.description = v || 'my first web page!'
           if (!v) e.goTo('temp-description')
           else e.goTo('your-description')
-        }
+        },
+        'go back': (e) => e.goTo('author')
       }
     },
     {
@@ -162,7 +173,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 18, x: 550, y: 575 },
       content: 'Great, I\'ve added that to the <code>content</code> attribute for this meta tag.',
       options: {
-        'go on': (e) => e.goTo('description')
+        'go on': (e) => e.goTo('description'),
+        'go back': (e) => e.goTo('author')
       }
     },
     {
@@ -170,7 +182,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 19, x: 400, y: 825 },
       content: 'Ok, I\'ll just write this short description for now and you can change it later.',
       options: {
-        'go on': (e) => e.goTo('viewport')
+        'go on': (e) => e.goTo('viewport'),
+        'go back': (e) => e.goTo('description')
       }
     },
     {
@@ -178,7 +191,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 20, x: 550, y: 825 },
       content: 'Great, I\'ve added your description to the <code>content</code> attribute for this meta tag.',
       options: {
-        'go on': (e) => e.goTo('viewport')
+        'go on': (e) => e.goTo('viewport'),
+        'go back': (e) => e.goTo('description')
       }
     },
     {
@@ -186,7 +200,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 21, x: 475, y: 1100 },
       content: 'Now that our metadata is set up, let’s move on to the actual content. I’ve left a comment inside the <code>body</code> to remind you that this is where all the elements go that will actually get rendered (be displayed) on the page.',
       options: {
-        'go on': (e) => e.goTo('h1-ele')
+        'go on': (e) => e.goTo('h1-ele'),
+        'go back': (e) => e.goTo('description')
       }
     },
     {
@@ -203,7 +218,8 @@ window.CONVOS['template-html-basic'] = (self) => {
           const v = t.$('input').value
           self.vars.h1 = v || 'Welcome to My Page!'
           e.goTo('guided-intro')
-        }
+        },
+        'go back': (e) => e.goTo('body-ele')
       }
     },
     {
@@ -225,9 +241,10 @@ window.CONVOS['template-html-basic'] = (self) => {
       options: {
         'go on': (e, t) => {
           const v = t.$('input').value
-          self.vars.p = v || 'I\'m so glad you\'re here!'
+          self.vars.p = v || 'Welcome to my page! Take a look at my recent projects and interests below.'
           e.goTo('indentation-bad')
-        }
+        },
+        'go back': (e) => e.goTo('h1-ele')
       }
     },
     {
@@ -235,7 +252,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 26, x: 100, y: 1125 },
       content: 'You may have noticed that every time I create a new child element (an element inside another element) I\'ve added some spaces before the parent element\'s content, this is called <i>indentation</i>. In HTML, indentation isn’t technically required by the browser for your code to work. If I were to remove all the indentation and line breaks, you\'ll notice that the rendered page looks exactly the same, but the code is now much harder to read.',
       options: {
-        'go on': (e) => e.goTo('indentation-good')
+        'go on': (e) => e.goTo('indentation-good'),
+        'go back': (e) => e.goTo('p-ele')
       }
     },
     {
@@ -244,7 +262,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       content: 'Keeping good indentation makes the structure of our HTML much clearer. A good rule of thumb: if an element’s opening and closing tags are on separate lines, everything between them should be indented the same amount. While I\'ll do my best to automatically indent things as you write new lines of code, it\'s natural for things to get messy after a while. You can ask me to "tidy" your code at any time.',
       options: {
         'go on': (e) => e.goTo('nav-ele'),
-        'how do I ask you to tidy?': (e) => e.goTo('tidy-code')
+        'how do I ask you to tidy?': (e) => e.goTo('tidy-code'),
+        'go back': (e) => e.goTo('indentation-bad')
       }
     },
     {
@@ -255,7 +274,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       },
       content: 'The <code>nav</code> element is used to group navigation links, in this case, links to other pages. You don’t need <code>nav</code> for every single link, but when you have a set of links that help people move around your site, wrapping them in <code>nav</code> gives that group clear meaning. It’s not required for the code to work, but it’s good <a href="https://en.wikipedia.org/wiki/Semantic_Web" target="_blank">semantic</a> practice that helps with accessibility and search engines.',
       options: {
-        'go on': (e) => e.goTo('a-ele')
+        'go on': (e) => e.goTo('a-ele'),
+        'go back': (e) => e.goTo('indentation-good')
       }
     },
     {
@@ -274,7 +294,8 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 30, x: 100, y: 1500 },
       content: 'You may recall the <code>a</code> element from my <b>Guided Intro to HTML</b>, a simple piece of code with some powerful implications. The <i>h</i> in its <code>href</code> stands for <a href="https://en.wikipedia.org/wiki/Hypertext" target="_blank">hypertext</a>, the breakthrough idea that made the Web different from older, linear media. The <i>ref</i> means "reference", in this case to a URL, another defining feature of the Web that lets any page connect directly to any other.',
       options: {
-        'go on': (e) => e.goTo('a-modify')
+        'go on': (e) => e.goTo('a-modify'),
+        'go back': (e) => e.goTo('nav-ele')
       }
     },
     {
@@ -282,23 +303,22 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 31, x: 100, y: 1625 },
       content: 'The <code>href</code> attribute controls where the link points to, and the text between the opening and closing tag is what people see and click on. Feel free to edit either of these and add others.',
       options: {
-        'go on': (e) => e.goTo('closer')
+        'go on': (e) => e.goTo('closer'),
+        'go back': (e) => e.goTo('a-ele')
       }
     },
     {
       id: 'closer',
       graph: { id: 32, x: 100, y: 1750 },
-      content: 'We could add a bit more metadata to this if you\'d like to learn more about that? There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. <br><br>Would you like to build on this template by adding some CSS or should we add some more metadata first? Or, if you prefer, I can just leave you with this?',
+      content: 'That\'s all there is to a basic HTML5 template. We could add a bit more metadata though, to improve how our page appears in differernt context. Would you like to learn more about that? Or, if you prefer, I can just leave you with this to experiment with yourself?',
       options: {
-        'Let\'s add some more metadata': (e) => {
+        'Let\'s add some metadata first': (e) => {
           WIDGETS['template-projects'].startGuide('html-meta-tags')
-        },
-        'Let\'s add some CSS': (e) => {
-          window.alert('WORKING ON IT')
         },
         'I\'ll take it from here': (e) => {
           WIDGETS['template-projects']._postGuideConvo()
-        }
+        },
+        'go back': (e) => e.goTo('a-modify')
       }
     }
   ]
