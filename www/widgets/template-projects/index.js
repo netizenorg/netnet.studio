@@ -29,6 +29,11 @@ class TemplateProjects extends Widget {
       this._createHTML()
     })
 
+    this._boundEditWatcher = this._editWatcher.bind(this)
+    this.on('close', () => {
+      NNE.cm.off('keydown', this._boundEditWatcher)
+    })
+
     this.codeEdit = null // runs on code update when template is open
   }
 
@@ -47,15 +52,49 @@ class TemplateProjects extends Widget {
     NNE.spotlight(null)
     NNE.marker(null)
     this.state = {}
+    NNE.update(NNE.code)
     const i = NNE.events['code-update'].indexOf(this.codeEdit)
     if (i !== -1) NNE.events['code-update'].splice(i, 1)
+    NNE.readOnly = false
+    NNE.cm.off('keydown', this._boundEditWatcher)
+  }
+
+  updateEditor (opts = {}) {
+    const info = NNE.cm.getScrollInfo()
+    const sel = this.state.editor.selected
+
+    const readStatus = NNE.readOnly
+    if (opts.selected) {
+      this.state.editor.selected = opts.selected
+      this._updateTitleBar()
+    }
+
+    if (opts.language) {
+      this.state.editor.language = opts.language
+      NNE.language = opts.language
+      NNE.cm.on('keydown', this._boundEditWatcher)
+      NNE.readOnly = readStatus
+    }
+
+    if (opts.renderer) this.state.editor.renderer = opts.renderer
+    else if (opts.renderer === null) {
+      this.state.editor.renderer = null
+      NNE.update(NNE.code)
+    }
+
+    if (typeof opts.readOnly === 'boolean') {
+      NNE.readOnly = opts.readOnly
+    }
+
+    if (sel === this.state.editor.selected) {
+      NNE.cm.scrollTo(info.left, info.top)
+    }
   }
 
   loadTemplate (name) {
     this.state = { name }
     this._tempName = name
 
-    // if (!this.codeEdit) this._setupCodeUpdateListener()
     if (typeof window.CONVOS[this.key] !== 'function') {
       Convo.load(this.key, () => {
         this.convos = window.CONVOS[this.key](this)
@@ -86,21 +125,36 @@ class TemplateProjects extends Widget {
   // .........................................
 
   async startGuide (name) {
-    this.cancel()
-    this.close()
-    if (!this.codeEdit) this._setupCodeUpdateListener()
     utils.cancelAllNetitorUses('template-projects')
 
+    if (!name) name = this.state.name
     const template = await utils.getSync(`/api/template/${name}`)
     const prevName = this.state.name
     const preVars = this.state.vars
       ? JSON.parse(JSON.stringify(this.state.vars)) : null
 
+    this.cancel()
+    this.close()
+
+    if (!this.codeEdit || !NNE.events['code-update'].includes(this.codeEdit)) {
+      this._setupCodeUpdateListener()
+    }
+
+    NNE.readOnly = true
+    NNE.cm.on('keydown', this._boundEditWatcher)
+
     this.state = { // also used for convo's "self" object
       name: name,
+      title: template.data.title,
       curPassage: null,
+      editor: {
+        selected: 'index.html',
+        language: 'html',
+        renderer: null // render template from data.renderers
+      },
       files: Object.fromEntries(template.data.files.map(k => [k, null])),
-      lines: template.data.lines
+      lines: template.data.lines,
+      renderers: template.data.renderers
     }
 
     if (this.bld[name]?.includes(prevName)) {
@@ -112,6 +166,8 @@ class TemplateProjects extends Widget {
       // && clear code from netitor
       NNE.code = ''
     }
+
+    this._transformRenderers() // populate vars
 
     this.state.files['index.html'] = NNE.code
 
@@ -131,12 +187,10 @@ class TemplateProjects extends Widget {
       // setup base path
       if (!template.data.multifile) utils.setCustomRenderer(null)
       else utils.setCustomRenderer(`/templates/${name}/files/`)
+
       // update title bar && URL
       utils.updateURL(`?template=${this.state.name}`)
-      const t = `${this._getTemplateName(this.state.name)} Template`
-      NNW.updateTitleBar(t)
-      // TODO: maybe show path (for multi file templates?)
-      NNW.title.dataset.template = true
+      this._updateTitleBar()
     })
   }
 
@@ -153,6 +207,7 @@ class TemplateProjects extends Widget {
     const res = await utils.getSync(`/api/template/${name}`)
     this.state = { // also used for convo's "self" object
       name: name,
+      title: res.data.title,
       files: Object.fromEntries(res.data.files.map(k => [k, null]))
     }
 
@@ -162,9 +217,7 @@ class TemplateProjects extends Widget {
 
     // update title bar && URL
     utils.updateURL(`?template=${this.state.name}`)
-    const t = `${this._getTemplateName(this.state.name)} Template`
-    NNW.updateTitleBar(t)
-    NNW.title.dataset.template = true
+    this._updateTitleBar()
 
     // load code
     const index = await utils.getSync(`/templates/${name}/files/index.html`, true)
@@ -190,15 +243,32 @@ class TemplateProjects extends Widget {
 
   // --------------------------------------------------- PRIVATE METHODS -------
 
+  _editWatcher () {
+    if (NNE.readOnly) {
+      if (window.convo.id !== 'can-not-edit') {
+        this._lastConvo = window.convo.id
+      }
+      window.convo = new Convo(this.convos, 'can-not-edit')
+    }
+  }
+
   _getTemplateName () {
-    return this._transformName(this.state.name || 'untitled')
+    return this.state.title || this._transformName(this.state.name || 'untitled')
+  }
+
+  _updateTitleBar () {
+    const sel = this.state.editor?.selected || 'index.html'
+    const tname = this._getTemplateName()
+    const t = `${tname}: ${sel}`
+    NNW.updateTitleBar(t)
+    NNW.title.dataset.template = true
   }
 
   _setupCodeUpdateListener () {
     const codeEdit = () => {
       if (Object.keys(this.state).length < 0) return this.cancel()
-      const selected = 'index.html' // TODO switch when swapping diff files
-      this.state.files[selected] = NNE.code
+      const s = this.state.editor?.selected || 'index.html'
+      this.state.files[s] = NNE.code
     }
 
     this.codeEdit = codeEdit
@@ -211,7 +281,7 @@ class TemplateProjects extends Widget {
     const psg = first ? window.CONVOS[cnv]()[0].id : this.state.curPassage
     window.convo = new Convo(this.state.convos, psg)
     window.convo.on('update', (c) => this._typeTemplateCode(c.id))
-    if (first) this._typeTemplateCode(psg)
+    // if (first) this._typeTemplateCode(psg) // TODO: check if we still need this?
   }
 
   _continueGuide () {
@@ -221,12 +291,61 @@ class TemplateProjects extends Widget {
   }
 
   _typeTemplateCode (id) {
+    // this runs on convo update
+    NNE.spotlight(null)
     this.state.curPassage = id
-    let line = this.state.lines[id]
+
+    const getLine = () => {
+      const line = this.state.lines[this.state.curPassage]
+      if (!line) return null
+      else return this._transformLine(line)
+    }
+
+    const injectTemplate = (opts) => {
+      utils.cancelAutoType()
+      const info = NNE.cm.getScrollInfo()
+      NNE.code = opts.template
+      NNE.cm.scrollTo(info.left, info.top)
+      if (opts.callback) opts.callback(opts.id)
+    }
+
+    // ............................................
+    // if this convo has a {template, code} line...
+    // ............................................
+    const line = getLine()
     if (!line) return
-    line = this._transformLine(line)
-    if (line.template) utils.autoType(line.code, line.template)
-    else utils.autoType(line.code)
+
+    const opts = { id }
+    opts.buffer = 4 // padded lines above target "code" (when scroll is needed)
+    if (line.template) opts.template = line.template
+    if (line.code) opts.code = line.code
+
+    // setup callback: if line has spotlight (or needs custom renderer)
+    opts.callback = (id) => { // only run callback if it's for the current id
+      if (this.state.curPassage !== id) return
+      const line = getLine()
+      if (!line) return
+
+      const rndr = this.state.editor?.renderer
+      if (rndr) {
+        const template = this.state.renderers[rndr]
+        NNE.update(template)
+      }
+      if (line.spotlight) {
+        this._spotTO = setTimeout(() => NNE.spotlight(line.spotlight), 500)
+      }
+    }
+
+    // if there's a "template" but no "code" to type,
+    if (opts.template && !opts.code) { // then simply inject template
+      injectTemplate(opts)
+    } else { // ...otherwise, scroll to "code" area && begin autoType
+      utils.autoType(opts)
+      // NOTE: don't think we need this now that autotype also "smooth" scrolls
+      // if (this._scrollToNextCode(opts)) {
+      //   setTimeout(() => utils.autoType(opts), 500)
+      // } else utils.autoType(opts)
+    }
   }
 
   _preCodeCheckConvo (name, type) {
@@ -260,6 +379,14 @@ class TemplateProjects extends Widget {
     const name = this.state.name
     const res = await utils.getSync(`/api/template/${name}`)
     const owner = WIDGETS['student-session'].getData('owner')
+
+    this.updateEditor({ selected: 'index.html' })
+    NNE.code = this.state.files['index.html']
+    this.updateEditor({
+      language: 'html',
+      readOnly: false,
+      renderer: null
+    })
 
     if (res.data.multifile) {
       if (owner) window.convo = new Convo(this.convos, 'display-template-multi-file')
@@ -348,6 +475,17 @@ class TemplateProjects extends Widget {
       .join(' ')
   }
 
+  _transformRenderers () {
+    const obj = this.state.renderers
+    for (const rndr in obj) {
+      let str = obj[rndr]
+      Object.entries(this.state.vars).forEach(([key, val]) => {
+        str = str.replaceAll(`{{${key}}}`, val)
+      })
+      this.state.renderers[rndr] = str
+    }
+  }
+
   _transformLine (line) { // replace any "vars" with their values
     const normalize = s => (s || '')
       .replace(/\\t/g, '\t')
@@ -362,11 +500,30 @@ class TemplateProjects extends Widget {
     c = c.replace(/\t/g, tab)
     t = t.replace(/\t/g, tab)
     Object.entries(this.state.vars).forEach(([key, val]) => {
-      c = c.replace(`{{${key}}}`, val)
-      t = t.replace(`{{${key}}}`, val)
+      c = c.replaceAll(`{{${key}}}`, val)
+      t = t.replaceAll(`{{${key}}}`, val)
     })
-    return { code: c, template: t }
+    return { code: c, template: t, spotlight: line.spotlight }
   }
+
+  // NOTE: don't think we need this now that autoType also "smooth" scrolls
+  // _scrollToNextCode (opts) {
+  //   const lines = opts.template.split('\n')
+  //   const idx = lines.indexOf(lines.find(l => l.includes('{{code}}')))
+  //   const v = NNE.getVisibleRange()
+  //   if (idx <= v.top || idx >= v.bottom) {
+  //     const buffer = opts.buffer || 0 // extra buffer lines above target line
+  //     const lineHeight = NNE.cm.defaultTextHeight()
+  //     const coords = NNE.cm.charCoords({ line: idx, ch: 0 }, 'local')
+  //     NNE.cm.getScrollerElement().scrollTo({
+  //       top: coords.top - (buffer * lineHeight),
+  //       behavior: 'smooth'
+  //     })
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   _createHTML () {
     if (this.list.length === 0) {

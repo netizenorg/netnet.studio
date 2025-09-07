@@ -65,7 +65,7 @@ window.CONVOS['template-projects'] = (self) => {
           self._continueGuide()
         },
         'restart guide': (e) => {
-          self.startGuide(true) // first template convo
+          self.startGuide()
         },
         'skip to the end': (e) => {
           self.displayTemplate()
@@ -265,6 +265,16 @@ window.CONVOS['template-projects'] = (self) => {
       before: () => NNW.menu.switchFace('default'),
       content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and you could <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on the netizen.org GitHub to let us know what you found!`,
       options: { ok: (e) => e.hide() }
+    },
+    {
+      id: 'can-not-edit',
+      content: 'Occasionally I might ask you for content which I\'ll include in the code, but you can\'t edit the code directly while I build out the template. You\'ll have to wait till I\'m finished, or click on the "Notes" button at the top to skip to the end.',
+      options: {
+        ok: (e) => {
+          if (self._lastConvo === 'start-guide') e.goTo('start-guide')
+          else self._templateConvo()
+        }
+      }
     }
   ]
 }
