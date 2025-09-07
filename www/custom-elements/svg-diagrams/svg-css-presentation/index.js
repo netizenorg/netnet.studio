@@ -336,7 +336,8 @@ class SvgCssPresentation extends HTMLElement {
     const na = diff.added[0].line
     const nb = diff.added[diff.added.length - 1].line + 1
     const code = hydrateTemplate(nextTemp).split('\n').slice(na, nb).join('\n')
-    utils.autoType(code, newTemp)
+    // utils.autoType(code, newTemp)
+    utils.autoType({ code, template: newTemp })
   }
 
   _setupGUI (s) {
