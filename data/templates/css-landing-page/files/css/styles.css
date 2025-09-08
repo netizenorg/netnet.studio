@@ -16,7 +16,7 @@ a {
 p {
   max-width: 50ch;
   margin: 0 auto;
-  /* border: 1px solid; */
+  /* border: 1px dashed; */
 
   font-weight: 100;
   font-size: 1.3rem;
@@ -29,7 +29,7 @@ nav {
   justify-content: center;
 
   margin-top: 17px;
-  /* border: 1px solid; */
+  /* border: 1px dashed; */
 }
 
 @media (max-width: 450px) {
@@ -47,7 +47,7 @@ footer {
   justify-content: space-around;
 
   width: 100vw;
-  /* border: 1px solid; */
+  /* border: 1px dashed; */
 }
 
 footer img {
@@ -78,7 +78,7 @@ footer img {
 
 #main-title {
   margin-top: 150px;
-  /* border: 1px solid; */
+  /* border: 1px dashed; */
 
   font-family: 'Playfair Display';
   font-weight: 900;

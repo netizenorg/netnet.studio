@@ -2,42 +2,52 @@
 window.CONVOS['template-css-landing-page'] = (self) => {
   let colorWheel = WIDGETS['css-template-color-wheel']
 
+  const widthUpdate = (width) => {
+    NNW.menu.textBubble.fadeOut(null, () => {
+      NNW.update({ width }, 1000)
+      setTimeout(() => {
+        NNW.menu.updatePosition()
+        NNW.menu.textBubble.fadeIn(null, () => NNW.menu.textBubble.focusOption())
+      }, 1000)
+    })
+  }
+
   if (!colorWheel) {
     colorWheel = WIDGETS.create({
       key: 'css-template-color-wheel',
       title: 'Color Wheel',
       innerHTML: `
-      <div style="display:flex;justify-content:center;align-items:center;height:100vh">
-        <div style="
-              position:absolute;
-              top: 26px;
-              width:200px;height:200px;
-              border-radius:50%;
-              background:conic-gradient(red,orange,yellow,lime,cyan,blue,violet,magenta,red);
-              font-family:sans-serif;
-              font-size:14px;
-              text-align:center;
-              line-height:1;
-              color: var(--netizen-meta);
-            ">
-          <!-- 0° (top) -->
+        <div style="display:flex;justify-content:center;align-items:center;height:100vh">
           <div style="
-                position:absolute;top:-1.4em;left:50%;transform:translateX(-50%);
-              ">0°</div>
-          <!-- 180° (bottom) -->
-          <div style="
-                position:absolute;bottom:-1.4em;left:50%;transform:translateX(-50%);
-              ">180°</div>
-          <!-- 90° (right) -->
-          <div style="
-                position:absolute;right:-2.2em;top:50%;transform:translateY(-50%);
-              ">90°</div>
-          <!-- 270° (left) -->
-          <div style="
-                position:absolute;left:-2.2em;top:50%;transform:translateY(-50%);
-              ">270°</div>
-        </div>
-      </div>`
+                position:absolute;
+                top: 26px;
+                width:200px;height:200px;
+                border-radius:50%;
+                background:conic-gradient(red,orange,yellow,lime,cyan,blue,violet,magenta,red);
+                font-family:sans-serif;
+                font-size:14px;
+                text-align:center;
+                line-height:1;
+                color: var(--netizen-meta);
+              ">
+            <!-- 0° (top) -->
+            <div style="
+                  position:absolute;top:-1.4em;left:50%;transform:translateX(-50%);
+                ">0°</div>
+            <!-- 180° (bottom) -->
+            <div style="
+                  position:absolute;bottom:-1.4em;left:50%;transform:translateX(-50%);
+                ">180°</div>
+            <!-- 90° (right) -->
+            <div style="
+                  position:absolute;right:-2.2em;top:50%;transform:translateY(-50%);
+                ">90°</div>
+            <!-- 270° (left) -->
+            <div style="
+                  position:absolute;left:-2.2em;top:50%;transform:translateY(-50%);
+                ">270°</div>
+          </div>
+        </div>`
     })
 
     /*
@@ -529,10 +539,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       id: 'margin-left',
       graph: { id: 41, x: 500, y: 2475 },
       after: () => {
-        NNW.update({
-          width: nn.width / 2
-        }, 1000)
-        setTimeout(() => NNW.menu.updatePosition(), 1000)
+        widthUpdate(nn.width / 2)
       },
       content: 'We could try adding a left margin to push the <code>p</code> toward the center, and at first it seems to work...',
       options: {
@@ -545,11 +552,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       graph: { id: 42, x: 500, y: 2600 },
       layout: 'dock-left',
       after: () => {
-        WIDGETS['template-projects']._preRWDinfo = NNE.cm.getScrollInfo()
-        NNW.update({
-          width: nn.width - 460
-        }, 1000)
-        setTimeout(() => NNW.menu.updatePosition(), 1000)
+        widthUpdate(nn.width - 460)
       },
       content: '...but because we never know how wide the visitor\'s browser will be, fixed pixel values can cause problems on different screen sizes.',
       options: {
@@ -562,14 +565,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       graph: { id: 43, x: 500, y: 2725 },
       layout: 'dock-left',
       after: () => {
-        NNW.update({
-          width: nn.width / 2.25
-        }, 1000)
-        setTimeout(() => {
-          // const coords = NNE.cm.charCoords({ line: 35, ch: 0 }, 'local')
-          // NNE.cm.scrollTo(coords.left, coords.top)
-          NNW.menu.updatePosition()
-        }, 1000)
+        widthUpdate(nn.width / 2.25)
       },
       content: 'Instead, we can make the layout more responsive by using <code>auto</code> for the left and right margins. This tells the browser to fill the extra space evenly on both sides, keeping the element centered as the page resizes.',
       options: {
@@ -833,7 +829,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
           })
         }
       },
-      content: 'I\'ll relocate the margin and border declarations to this new class, but by default this rule won\'t be applied to any elements. I have to specify which I want to apply this to using an HTML <code>class</code> attribute.',
+      content: 'I\'ll relocate the margin and border declarations to this new class, but by default this rule won\'t be applied to any elements, which is why our links have lost their margins and borders. I have to specify which I want to apply this to using an HTML <code>class</code> attribute.',
       options: {
         'go on': (e) => e.goTo('class-attr1'),
         'go back': (e) => e.goTo('class-sel2')
@@ -849,7 +845,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
           renderer: 'boxy-link'
         })
       },
-      content: 'Returning back to our HTML page, I\'ll add this new "boxy-link" class to our two text links by assigning the class name (just the name, without the dot) to their individual <code>class</code> attributes. They now have their margins and borders back. ',
+      content: 'Returning back to our HTML page, I\'ll add this new "boxy-link" class to our two text links by assigning the class name (just the name, without the dot) to their individual <code>class</code> attributes. They now have their margins and borders back.',
       options: {
         'go on': (e) => e.goTo('class-attr2'),
         'go back': (e) => e.goTo('class-sel3')
@@ -919,7 +915,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'vars2',
       graph: { id: 74, x: 2750, y: 3025 },
-      content: 'To avoid repetition, we can assign these color values to <b>variables</b>. A core concept in coding, variables are names you define and assign values to. You can choose any name as long as it doesn\'t contain spaces, and in CSS variable names must start with two dashes <code>--</code>.',
+      content: 'To avoid repetition, we can assign these color values to <b>variables</b>. A core concept in coding, variables are names you define and assign values to. You can choose any name as long as it doesn\'t contain spaces, and in CSS a variable name must start with two dashes <code>--</code>.',
       options: {
         'go on': (e) => e.goTo('vars-root'),
         'go back': (e) => e.goTo('vars1')
@@ -937,7 +933,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'var-func',
       graph: { id: 76, x: 2750, y: 3275 },
-      content: 'To use a variable\'s value in another CSS property, we call the <code>var()</code> function. This function takes the variable name as its argument inside the parentheses. I\'ve replaced every instance of both color codes with this function, scroll through the code and take note of where these variables are now being used.',
+      content: 'To use a variable\'s value in another CSS property, we call the <code>var()</code> function. This function takes the variable name as its argument inside the parentheses. I\'ve replaced every instance of both color codes with this function, look at the code and take note of where and how these variables are now being used.',
       options: {
         'go on': (e) => e.goTo('var-change'),
         'function?': (e) => e.goTo('var-func-ex'),
@@ -945,17 +941,8 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
-      id: 'var-change',
-      graph: { id: 77, x: 2750, y: 3400 },
-      content: 'Now, if we want to change one of these colors, we only need to update the single line at the top of the page, and every property using that variable will update automatically. Variables can store any CSS value, not just colors, so if you find yourself reusing a value in multiple places, it\'s a good idea to assign it to a variable for easier large-scale changes later.',
-      options: {
-        'go on': (e) => e.goTo('transform1'),
-        'go back': (e) => e.goTo('var-func')
-      }
-    },
-    {
       id: 'var-func-ex',
-      graph: { id: 78, x: 2950, y: 3350 },
+      graph: { id: 77, x: 2950, y: 3350 },
       content: 'In programming, a <b>function</b> is like a small reusable command that performs a specific task. It has a name, followed by parentheses <code>()</code>, where you pass in information called “arguments.” When the <code>var()</code> function runs with a given argument, it\'s as if the variable\'s value were written directly into that spot in the CSS.',
       options: {
         'go on': (e) => e.goTo('var-change'),
@@ -963,9 +950,18 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
+      id: 'var-change',
+      graph: { id: 78, x: 2750, y: 3400 },
+      content: 'Now, if we want to change one of these colors, we only need to update the single line at the top of the page, and every property using that variable will update automatically. Variables can store any CSS value, not just colors, so if you find yourself reusing a value in multiple places, it\'s a good idea to assign it to a variable for easier large-scale changes later.',
+      options: {
+        'go on': (e) => e.goTo('transform1'),
+        'go back': (e) => e.goTo('var-func')
+      }
+    },
+    {
       id: 'transform1',
       graph: { id: 79, x: 2750, y: 3525 },
-      content: 'Let\'s make things more interesting by adding the <code>transform</code> property. This powerful CSS property can change elements in many ways using different CSS functions. Here, we\'ll use the <code>translateY()</code> function to shift our <code>a</code> tags up by 3 pixels on the Y-axis.',
+      content: 'Let\'s make things more interesting by adding the <code>transform</code> property. This powerful CSS property can change elements in many ways using different CSS functions. Here, we\'ll use the <code>translateY()</code> function to shift our <code>boxy-link</code> tags up by 3 pixels on the Y-axis.',
       options: {
         'go on': (e) => e.goTo('transform2'),
         'transform? functions?': (e) => e.goTo('transform-func'),
@@ -973,18 +969,8 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
-      id: 'transform2',
-      graph: { id: 80, x: 2750, y: 3650 },
-      content: 'Because our transform shift is so small (3 pixels) and happens instantly when we hover, it isn\'t as noticeable as the color changes. We can make it stand out more by adding a <i>transition</i> to smooth out the movement.',
-      options: {
-        'go on': (e) => e.goTo('media-queries'),
-        'transition?': (e) => e.goTo('transition-hover'),
-        'go back': (e) => e.goTo('transform1')
-      }
-    },
-    {
       id: 'transform-func',
-      graph: { id: 81, x: 2950, y: 3525 },
+      graph: { id: 80, x: 2950, y: 3525 },
       content: 'In code, <b>functions</b> are like little programs built into CSS keywords, usually followed by parentheses <code>()</code>. The parentheses hold "arguments" that tell the function exactly how to run. In this case, <code>translateY()</code> shifts an element up or down by the number of pixels we give it, positive numbers move it down the Y-axis, and negative numbers move it up.',
       options: {
         'go on': (e) => e.goTo('transform-level'),
@@ -993,7 +979,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transform-level',
-      graph: { id: 82, x: 3100, y: 3525 },
+      graph: { id: 81, x: 3100, y: 3525 },
       content: 'One important detail is that transforms only work on block-level elements, not on inline ones like our links. Normally we\'d need to change the links to <code>display: block;</code> or <code>inline-block</code> to make the transform apply. But in this case, because our links are already inside a Flexbox layout, the browser treats them as flex items, which behave like blocks so it works just fine.',
       options: {
         'go on': (e) => e.goTo('transform-func-other'),
@@ -1002,27 +988,27 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transform-func-other',
-      graph: { id: 83, x: 3100, y: 3650 },
-      content: '<code>translateY()</code> is just one of many transform functions. Others let us move elements horizontally (<code>translateX()</code>), rotate them (<code>rotate()</code>), make them bigger or smaller (<code>scale()</code>), or even slant their shape (<code>skew()</code>). We\'ll explore these more in other demos in the <b>Learning Guide</b>',
+      graph: { id: 82, x: 3100, y: 3650 },
+      content: '<code>translateY()</code> is just one of many transform functions. Others let us move elements horizontally <code>translateX()</code>, rotate them <code>rotate()</code>, make them bigger or smaller <code>scale()</code>, or even slant their shape <code>skew()</code>. We\'ll explore these more in other demos in the <b>Learning Guide</b>',
       options: {
         'go on': (e) => e.goTo('transform2'),
         'go back': (e) => e.goTo('transform-level')
       }
     },
     {
-      id: 'media-queries',
-      graph: { id: 84, x: 2750, y: 3875 },
-      content: 'Just like we can update property values on hover, we can also adjust them based on screen size using media queries. In this example, I\'ve added a media query that changes the <code>nav</code> Flexbox properties so the items appear in a centered column instead of the default row.',
+      id: 'transform2',
+      graph: { id: 83, x: 2750, y: 3650 },
+      content: 'Because our transform shift is so small (3 pixels) and happens instantly when we hover, it isn\'t as noticeable as the color changes. We can make it stand out more by adding a <i>transition</i> to smooth out the movement.',
       options: {
-        'go on': (e) => e.goTo('id-sel'),
-        'media query?': (e) => e.goTo('mq-explain'),
-        'go back': (e) => e.goTo('transition-final')
+        'go on': (e) => e.goTo('media-queries'),
+        'transition?': (e) => e.goTo('transition-hover'),
+        'go back': (e) => e.goTo('transform1')
       }
     },
     {
       id: 'transition-hover',
-      graph: { id: 85, x: 2950, y: 3775 },
-      content: 'There are many ways to change the value of a CSS property, on <code>:hover</code> is just one of them. Typically these changes happen instantly, but we can <code>transform</code> property to have these changes happen slowly over a fixed period of time.',
+      graph: { id: 84, x: 2950, y: 3775 },
+      content: 'There are many ways to change the value of a CSS property, on <code>:hover</code> is just one of them. Typically these changes happen instantly, but we can <code>transition</code> the property to have these changes happen slowly over a fixed period of time.',
       options: {
         'go on': (e) => e.goTo('transition-props1'),
         'go back': (e) => e.goTo('transform2')
@@ -1030,7 +1016,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transition-props1',
-      graph: { id: 86, x: 3100, y: 3775 },
+      graph: { id: 85, x: 3100, y: 3775 },
       content: 'We start by setting two values: <code>transition-property</code> and <code>transition-duration</code>. The first tells the browser which CSS property should change slowly, and the second sets how long that change should take, usually in seconds.',
       options: {
         'go on': (e) => e.goTo('transition-props2'),
@@ -1039,7 +1025,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transition-props2',
-      graph: { id: 87, x: 3250, y: 3775 },
+      graph: { id: 86, x: 3250, y: 3775 },
       content: 'There are a couple of other transition settings worth knowing. <code>transition-delay</code> lets you wait before the change begins, and <code>transition-timing-function</code> controls the speed of change over time with a <a href="https://htmldog.com/examples/transitions3.html" target="_blank">CSS timing function</a>.',
       options: {
         'go on': (e) => e.goTo('transition-shorthand'),
@@ -1048,7 +1034,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transition-shorthand',
-      graph: { id: 88, x: 3400, y: 3775 },
+      graph: { id: 87, x: 3400, y: 3775 },
       content: 'Because these are used together so often, CSS also gives us a shorthand. The <code>transition</code> property can hold the property name, the duration, and even timing and delay all in one line.',
       options: {
         'go on': (e) => e.goTo('transition-all'),
@@ -1057,7 +1043,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transition-all',
-      graph: { id: 89, x: 3400, y: 3925 },
+      graph: { id: 88, x: 3400, y: 3925 },
       content: 'If we set <code>transition-property</code> to <code>all</code>, then every style change on hover will transition smoothly over 0.3 seconds instead of switching instantly. Try hovering over the links now to see the difference.',
       options: {
         'go on': (e) => e.goTo('transition-final'),
@@ -1066,25 +1052,34 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'transition-final',
-      graph: { id: 90, x: 3250, y: 3925 },
-      content: 'In this case I only want to transition the <code>transform</code> property, since I prefer the colors to change right away. I\'ll also use the transition shorthand to set both the property and duration on a single line. There are other transition options we can adjust, but we\'ll save those for another lesson.',
+      graph: { id: 89, x: 3250, y: 3925 },
+      content: 'In this case I only want to transition the <code>transform</code> property, since I prefer the colors to change right away. I\'ll also use the transition shorthand to set both the property and duration on a single line.',
       options: {
         'go on': (e) => e.goTo('media-queries'),
         'go back': (e) => e.goTo('transition-all')
       }
     },
     {
-      id: 'id-sel',
-      graph: { id: 91, x: 2750, y: 4125 },
-      content: 'Now I\'m going replace the <code>h1</code> type selector in this rule with a name, I\'ll call it <i>main-title</i>. This is called an ID selector, and it\'s very similar to my class selector, except it starts with a <code>#</code> instead of a <code>.</code>, and is used a little differently.',
+      id: 'media-queries',
+      graph: { id: 90, x: 2750, y: 3875 },
+      after: () => {
+        if (NNW.win.offsetWidth !== nn.width / 2) {
+          widthUpdate(nn.width / 2)
+        }
+      },
+      content: 'Just like we can update property values on hover, we can also adjust them based on screen size using media queries. In this example, I\'ve added a media query that changes the <code>nav</code> Flexbox properties so the items appear in a centered column instead of the default row.',
       options: {
-        'go on': (e) => e.goTo('id-specific'),
-        'go back': (e) => e.goTo('media-queries')
+        'go on': (e) => e.goTo('id-sel'),
+        'media query?': (e) => e.goTo('mq-explain'),
+        'go back': (e) => e.goTo('transform2')
       }
     },
     {
       id: 'mq-explain',
-      graph: { id: 92, x: 3050, y: 4075 },
+      graph: { id: 91, x: 3050, y: 4075 },
+      after: () => {
+        widthUpdate(nn.width - 460)
+      },
       content: 'Right now, our <code>nav</code> is set to <code>display: flex;</code> with <code>justify-content: center;</code>. That means all the links inside line up in a row, and the browser centers the row horizontally. This looks good on desktop, but might feel tight on a mobile screen, especially if we add another link or two later.',
       options: {
         'go on': (e) => e.goTo('mq-condition'),
@@ -1093,8 +1088,8 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'mq-condition',
-      graph: { id: 93, x: 3200, y: 4075 },
-      content: 'The new code I\'ve added is called a media query. The line <code>@media (max-width: 450px)</code> tells the browser: “Only apply the following rules if the screen is 450 pixels wide or smaller.” In programming this is called conditional logic—rules that run only when certain conditions are true.',
+      graph: { id: 92, x: 3200, y: 4075 },
+      content: 'The new code I\'ve added is called a media query. The line <code>@media (max-width: 450px)</code> tells the browser: “Only apply the following rules if the screen is 450 pixels wide or smaller.” In programming this is called conditional logic: rules that run only when certain conditions are true.',
       options: {
         'go on': (e) => e.goTo('mq-child-rule'),
         'go back': (e) => e.goTo('mq-explain')
@@ -1102,7 +1097,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'mq-child-rule',
-      graph: { id: 94, x: 3350, y: 4075 },
+      graph: { id: 93, x: 3350, y: 4075 },
       content: 'Inside the media query we have another <code>nav</code> rule which only applies in this condition. The first change is <code>flex-direction: column;</code>, which tells Flexbox to stack the links vertically instead of placing them side by side.',
       options: {
         'go on': (e) => e.goTo('mq-align-items'),
@@ -1111,7 +1106,12 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'mq-align-items',
-      graph: { id: 95, x: 3350, y: 4225 },
+      graph: { id: 94, x: 3350, y: 4225 },
+      after: () => {
+        if (NNW.win.offsetWidth !== nn.width - 450) {
+          widthUpdate(nn.width - 450)
+        }
+      },
       content: 'The second change is <code>align-items: center;</code>. When Flexbox is in column mode, this centers the items horizontally within the nav, so the stacked links are neatly centered on the page.',
       options: {
         'go on': (e) => e.goTo('mq-final'),
@@ -1120,7 +1120,10 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'mq-final',
-      graph: { id: 96, x: 3200, y: 4225 },
+      graph: { id: 95, x: 3200, y: 4225 },
+      after: () => {
+        widthUpdate(nn.width / 2)
+      },
       content: 'Together, these adjustments make the navigation responsive. On larger screens the links appear in a centered row, but on small screens, like mobile devices, they switch to a centered column that fit nicer and avoids introducing a horizontal scroll.',
       options: {
         'go on': (e) => e.goTo('id-sel'),
@@ -1128,8 +1131,28 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
+      id: 'id-sel',
+      graph: { id: 96, x: 2750, y: 4125 },
+      layout: 'dock-left',
+      content: 'Now I\'m going replace the <code>h1</code> type selector in this rule with a name, I\'ll call it <i>main-title</i>. This is called an ID selector, and it\'s very similar to my class selector, except it starts with a <code>#</code> instead of a <code>.</code>, and is used a little differently.',
+      options: {
+        'go on': (e) => e.goTo('id-specific'),
+        'go back': (e) => e.goTo('media-queries')
+      }
+    },
+    {
       id: 'id-specific',
       graph: { id: 97, x: 2750, y: 4250 },
+      layout: 'dock-bottom',
+      before: () => {
+        if (WIDGETS['template-projects'].state.editor.selected !== 'css/styles.css') {
+          WIDGETS['template-projects'].updateEditor({
+            selected: 'css/styles.css',
+            language: 'css',
+            renderer: 'post-boxy'
+          })
+        }
+      },
       content: 'An ID is a way to give one specific element on the page a unique name. Unlike a class, which you can reuse on many elements, an ID should only be used once in the whole page. That makes it perfect for styling something like the main title in our <code>h1</code>, since we may add other <code>h1</code> later but only this first one deserves its own unique style.',
       options: {
         'go on': (e) => e.goTo('id-attr'),
@@ -1139,6 +1162,14 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'id-attr',
       graph: { id: 98, x: 2750, y: 4375 },
+      layout: 'dock-bottom',
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'index.html',
+          language: 'html',
+          renderer: 'main-title'
+        })
+      },
       content: 'Just like our classes, ID selectors will only apply to the element you assign them to in your HTML. Back in our HTML page, we can do this with the <code>id</code> attribute, written inside the opening tag of our <code>h1</code> element. That attribute gives the element its unique name, which we can then target in your CSS with <code>#main-title</code>.',
       options: {
         'go on': (e) => e.goTo('css-rule-order'),
@@ -1148,7 +1179,15 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'css-rule-order',
       graph: { id: 99, x: 2750, y: 4500 },
-      content: 'Before we add anymore to our rule, I\'m going to move my <code>#main-title</code> and <code>.boxy-link</code> rules to the bottom of our CSS file. It\'s a good practice to keep type selectors like <code>p</code> and <code>h1</code> near the top, and put class and ID rules below them. This way the stylesheet is organized from general rules to more specific ones, making it easier to read and ensuring the right styles take priority.',
+      layout: 'dock-left',
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'css/styles.css',
+          language: 'css',
+          renderer: 'post-main-title'
+        })
+      },
+      content: 'Before we add anymore to our rule, I\'m going to move my <code>#main-title</code> and <code>.boxy-link</code> rules to the bottom of our CSS file. It\'s a good practice to keep type selectors like <code>body</code> and <code>a</code> near the top, and put class and ID rules below them. This way the stylesheet is organized from general rules to more specific ones, making it easier to read and ensuring the right styles take priority.',
       options: {
         'go on': (e) => e.goTo('rmv-border'),
         'go back': (e) => e.goTo('id-attr')
@@ -1175,6 +1214,15 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'custom-font1',
       graph: { id: 102, x: 2750, y: 4875 },
+      before: () => {
+        if (WIDGETS['template-projects'].state.editor.selected !== 'css/styles.css') {
+          WIDGETS['template-projects'].updateEditor({
+            selected: 'css/styles.css',
+            language: 'css',
+            renderer: 'post-main-title'
+          })
+        }
+      },
       content: 'Now I\'m going to add a few more properties to change the color, style, size and weight of my text. I\'ve also added a <code>font-family</code> with the value set to <a href="https://forthehearts.net/playfair/" target="_blank">Playfair Display</a>, an open source font by typeface designer <a href="https://forthehearts.net/about/" target="_blank">Claus Eggers Sørensen</a>.',
       options: {
         'go on': (e) => e.goTo('custom-font2'),
@@ -1184,6 +1232,13 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     {
       id: 'custom-font2',
       graph: { id: 103, x: 2750, y: 5000 },
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'index.html',
+          language: 'html',
+          renderer: 'custom-font'
+        })
+      },
       content: 'This is a custom font that we\'ll need to add to our project, I\'ve uploaded the actual font <code>.woff2</code> files to the project, those will be available to you when you create your own project from this template. We\'ll need to load those files into our page by adding another stylesheet to our HTML page. I\'ve called this one <code>fonts.css</code> and placed it in the same <b>css</b> folder as our <b>styles.css</b> file.',
       options: {
         'go on': (e) => e.goTo('title-mq'),
@@ -1192,18 +1247,16 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
-      id: 'title-mq',
-      graph: { id: 104, x: 2750, y: 5275 },
-      content: 'Our <code>#main-title</code> now has much nicer and custom typography, our layout is looking pretty good too, at least on Desktop. On mobile devices that top margin might be a little too much. Here again we can create a <i>media query</i>, just like we did for our <code>nav</code>.',
-      options: {
-        'go on': (e) => e.goTo('title-mq-margin'),
-        'go back': (e) => e.goTo('custom-font2')
-      }
-    },
-    {
       id: 'cf-intro',
-      graph: { id: 105, x: 2900, y: 5000 },
-      content: 'When you want a specific font, you can declare a <code>font-stack</code> like we did for our <code>p</code> element, but that doesn\'t guarantee our top choice gets rendered, it depends on what the user has installed on their computer.',
+      graph: { id: 104, x: 2900, y: 5000 },
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'css/styles.css',
+          language: 'css',
+          renderer: 'post-main-title'
+        })
+      },
+      content: 'When you want a specific font, you can declare a <code>font-stack</code> like we did for our <code>body</code> element, but that doesn\'t guarantee our top choice gets rendered, it depends on what the user has installed on their computer.',
       options: {
         'go on': (e) => e.goTo('cf-import'),
         'go back': (e) => e.goTo('custom-font2')
@@ -1211,7 +1264,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-import',
-      graph: { id: 106, x: 3050, y: 5000 },
+      graph: { id: 105, x: 3050, y: 5000 },
       content: 'If we want a font the user probably doesn\'t have, we need to load it explicitly. One common way is to use the CSS <code>@import</code> rule with a <code>url()</code> function that pulls in a stylesheet from a font service like <a href="https://fonts.google.com/" target="_blank">Google Fonts</a>.',
       options: {
         'go on': (e) => e.goTo('cf-privacy'),
@@ -1220,7 +1273,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-privacy',
-      graph: { id: 107, x: 3200, y: 5000 },
+      graph: { id: 106, x: 3200, y: 5000 },
       content: 'The downside is that this makes your site dependent on that service and its policies, which can change at any time. Surveillance capitalism services like Google also collect data such as the IP address and browser of everyone who visits your site if you use their hosted fonts.',
       options: {
         'go on': (e) => e.goTo('cf-file'),
@@ -1229,18 +1282,34 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-file',
-      graph: { id: 108, x: 3200, y: 5125 },
+      graph: { id: 107, x: 3200, y: 5125 },
+      before: () => {
+        if (WIDGETS['template-projects'].state.editor.selected !== 'css/styles.css') {
+          WIDGETS['template-projects'].updateEditor({
+            selected: 'css/styles.css',
+            language: 'css',
+            renderer: 'post-main-title'
+          })
+        }
+      },
       content: 'Some developers are fine with that trade-off, but I prefer protecting my visitors\' privacy. That\'s why I\'ve included Sørensen\'s font files directly in my project\'s assets and written my own <code>fonts.css</code> to import them. Would you like me to show you how that CSS works?',
       options: {
         'Yes please, show me fonts.css': (e) => e.goTo('cf-font-face'),
-        'That\'s ok, let\'s get back to our styles.css': (e) => e.goTo('title-mq'),
+        'no, let\'s get back to our styles.css': (e) => e.goTo('title-mq'),
         'go back': (e) => e.goTo('cf-privacy')
       }
     },
     {
       id: 'cf-font-face',
-      graph: { id: 109, x: 3350, y: 5125 },
-      content: 'We start with an <code>@font-face</code> rule which lets us load our own font files into a webpage. In this example, we give the font a name with <code>font-family: \'Playfair Display\';</code>, this is the name we\'ll use later when referencing it in our other CSS rules.',
+      graph: { id: 108, x: 3350, y: 5125 },
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'css/fonts.css',
+          language: 'css',
+          renderer: 'fonts-file'
+        })
+      },
+      content: 'We start with an <code>@font-face</code> rule which lets us load our own font files into a webpage. In this example, we give the font the name <i>\'Playfair Display\'</i> with <code>font-family</code>, this is the name we\'ll use later when referencing it in our other CSS rules.',
       options: {
         'go on': (e) => e.goTo('cf-src'),
         'go back': (e) => e.goTo('cf-file')
@@ -1248,7 +1317,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-src',
-      graph: { id: 110, x: 3500, y: 5125 },
+      graph: { id: 109, x: 3500, y: 5125 },
       content: 'The <code>src</code> property tells the browser where to find the file. Here it\'s looking inside a folder called <code>fonts</code> for <code>playfair-display-v39-latin-regular.woff2</code>. The <code>format(\'woff2\')</code> part tells the browser what kind of file it is, so it knows how to read it.',
       options: {
         'go on': (e) => e.goTo('cf-basic'),
@@ -1257,7 +1326,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-basic',
-      graph: { id: 111, x: 3650, y: 5125 },
+      graph: { id: 110, x: 3650, y: 5125 },
       content: 'This is technically all you need to load a font and start using it on your site! But we can go a little further with this one because Sørensen didn\'t just design one version of Playfair Display, he created custom drawings for each weight and each italic. Take a look at his font <a href="https://fonts.google.com/specimen/Playfair+Display" target="_blank">Playfair Display on Google Fonts</a> to see the different versions.',
       options: {
         'go on': (e) => e.goTo('cf-weight-style1'),
@@ -1266,34 +1335,25 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-weight-style1',
-      graph: { id: 112, x: 3800, y: 5125 },
-      content: 'I\'ve only included the regular one here, so we can be more explicit about that with our rule. I\'ve now added declarations for <code>font-weight</code> and <code>font-style</code> which tells the browser it should use the regular version of the font for any elements that set their properties to match these. I\'ve also added <code>font-display: swap;</code>. This tells the browser to show a fallback font immediately and then swap in "Playfair Display" once it\'s loaded, so visitors don\'t see a blank gap where text should be.',
+      graph: { id: 111, x: 3800, y: 5125 },
+      content: 'I\'ve only included the regular version here, so I\'ve now added declarations for <code>font-weight</code> and <code>font-style</code> to make that explicit. These tell the browser to use this regular font file whenever an element\'s CSS asks for this font with that combination of style and weight.',
       options: {
-        'go on': (e) => e.goTo('cf-weight-style2'),
+        'go on': (e) => e.goTo('cf-swap'),
         'go back': (e) => e.goTo('cf-basic')
       }
     },
     {
-      id: 'cf-weight-style2',
-      graph: { id: 113, x: 3950, y: 5125 },
-      content: 'I\'ve only included the regular version here, so I\'ve added declarations for <code>font-weight</code> and <code>font-style</code> to make that explicit. These tell the browser to use this regular font file whenever an element\'s CSS asks for that combination.',
+      id: 'cf-swap',
+      graph: { id: 112, x: 3800, y: 5300 },
+      content: 'I\'ve also added <code>font-display: swap;</code>, which tells the browser to show a fallback font right away and then swap in Playfair Display once it\'s loaded, so visitors don\'t see a blank gap where text should be.',
       options: {
-        'go on': (e) => e.goTo('cf-swap'),
+        'go on': (e) => e.goTo('cf-other-ff'),
         'go back': (e) => e.goTo('cf-weight-style1')
       }
     },
     {
-      id: 'cf-swap',
-      graph: { id: 114, x: 3950, y: 5300 },
-      content: 'I\'ve also added <code>font-display: swap;</code>, which tells the browser to show a fallback font right away and then swap in Playfair Display once it\'s loaded, so visitors don\'t see a blank gap where text should be.',
-      options: {
-        'go on': (e) => e.goTo('cf-other-ff'),
-        'go back': (e) => e.goTo('cf-weight-style2')
-      }
-    },
-    {
       id: 'cf-other-ff',
-      graph: { id: 115, x: 3800, y: 5300 },
+      graph: { id: 113, x: 3650, y: 5300 },
       content: 'Next, I\'ll create additional <code>@font-face</code> rules for the other versions of Playfair Display Sørensen designed, each setting the corresponding weights and style which match that particular font file.',
       options: {
         'go on': (e) => e.goTo('cf-code'),
@@ -1302,7 +1362,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-code',
-      graph: { id: 116, x: 3650, y: 5300 },
+      graph: { id: 114, x: 3500, y: 5300 },
       content: 'It\'s a lot of code, but you\'ll notice each block is very similar: they load a specific font file and set its weight and style so the browser knows exactly which version of Playfair Display to apply when those values are requested in CSS.',
       options: {
         'go on': (e) => e.goTo('cf-helper'),
@@ -1311,7 +1371,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'cf-helper',
-      graph: { id: 117, x: 3500, y: 5300 },
+      graph: { id: 115, x: 3350, y: 5300 },
       content: 'And just to be clear, I didn\'t actually write all of these by hand. I used an open-source tool by <a href="https://mranftl.com/" target="_blank">Mario Ranftl</a> called <a href="https://gwfh.mranftl.com/fonts" target="_blank">Google Web Fonts Helper</a> to download the font files and generate the CSS automatically. It saves a lot of time and makes sure everything is written correctly.',
       options: {
         'go on': (e) => e.goTo('title-mq'),
@@ -1319,8 +1379,24 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
+      id: 'title-mq',
+      graph: { id: 116, x: 2750, y: 5275 },
+      before: () => {
+        WIDGETS['template-projects'].updateEditor({
+          selected: 'css/styles.css',
+          language: 'css',
+          renderer: 'post-font'
+        })
+      },
+      content: 'Our <code>#main-title</code> now has much nicer and custom typography, our layout is looking pretty good too, at least on Desktop. On mobile devices that top margin might be a little too much. Here again we can create a <i>media query</i>, just like we did for our <code>nav</code>.',
+      options: {
+        'go on': (e) => e.goTo('title-mq-margin'),
+        'go back': (e) => e.goTo('custom-font2')
+      }
+    },
+    {
       id: 'title-mq-margin',
-      graph: { id: 118, x: 2750, y: 5400 },
+      graph: { id: 117, x: 2750, y: 5400 },
       content: 'This new media query will adjust the <code>margin-top</code> of our <code>#main-title</code> to 50px on screens that are less than 450px wide, and keep it at 150px for screens larger than 450px.',
       options: {
         'go on': (e) => e.goTo('animation'),
@@ -1329,8 +1405,26 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
+      id: 'mq-recap1',
+      graph: { id: 118, x: 2900, y: 5400 },
+      content: 'The new code I\'ve added is called a media query. The line <code>@media (max-width: 450px)</code> tells the browser: “Only apply the following rules if the screen is 450 pixels wide or smaller.” In programming this is called conditional logic: rules that run only when certain conditions are true.',
+      options: {
+        'go on': (e) => e.goTo('mq-recap2'),
+        'go back': (e) => e.goTo('title-mq-margin')
+      }
+    },
+    {
+      id: 'mq-recap2',
+      graph: { id: 119, x: 2900, y: 5550 },
+      content: 'Inside the media query we have another <code>#main-title</code> rule which only applies in this condition which makes our design more "responsive" or "adaptive". Larger screens will see the larger margin of 150px, but on small screens, like mobile devices, will render the smaller 50px margin.',
+      options: {
+        'go on': (e) => e.goTo('animation'),
+        'go back': (e) => e.goTo('mq-recap1')
+      }
+    },
+    {
       id: 'animation',
-      graph: { id: 119, x: 2750, y: 5550 },
+      graph: { id: 120, x: 2750, y: 5550 },
       content: 'Lastly, I\'m going to create a CSS animation to our <code>#main-title</code> to give the page a tiny bit more flare. My goal is a subtle upward motion for the title that echoes the same upward motif we used on the links, and it should run right when the page loads.',
       options: {
         'go on': (e) => e.goTo('css-end'),
@@ -1339,27 +1433,9 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       }
     },
     {
-      id: 'mq-recap1',
-      graph: { id: 120, x: 2900, y: 5400 },
-      content: 'The new code I\'ve added is called a media query. The line <code>@media (max-width: 450px)</code> tells the browser: “Only apply the following rules if the screen is 450 pixels wide or smaller.” In programming this is called conditional logic—rules that run only when certain conditions are true.',
-      options: {
-        'go on': (e) => e.goTo('mq-recap2'),
-        'go back': (e) => e.goTo('title-mq-margin')
-      }
-    },
-    {
-      id: 'mq-recap2',
-      graph: { id: 121, x: 2900, y: 5550 },
-      content: 'Inside the media query we have another <code>#main-title</code> rule which only applies in this condition which makes our design more "responsive" or "adaptive". Larger screens will see the larger margin of 150px, but on small screens, like mobile devices, will render the smaller 50px margin.',
-      options: {
-        'go on': (e) => e.goTo('animation'),
-        'go back': (e) => e.goTo('mq-recap1')
-      }
-    },
-    {
       id: 'anim-pre',
-      graph: { id: 123, x: 2900, y: 5700 },
-      content: 'I added <code>transform: translateY(10px)</code> and <code>opacity: 0</code> to my <code>#main-title</code> so that it would slightly shifted downwards and be transparent by default.',
+      graph: { id: 121, x: 2900, y: 5700 },
+      content: 'I added <code>transform: translateY(10px)</code> and <code>opacity: 0</code> to my <code>#main-title</code> so that it would slightly shifted downwards and be transparent to start when the page first loads.',
       options: {
         'go on': (e) => e.goTo('anim-keyframes'),
         'go back': (e) => e.goTo('animation')
@@ -1367,7 +1443,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-keyframes',
-      graph: { id: 124, x: 3050, y: 5700 },
+      graph: { id: 122, x: 3050, y: 5700 },
       content: 'We can create CSS animations with the <code>@keyframes</code> rule which defines how a property changes over time. I\'ve named this one <code>fadeIn</code> and included only a single keyframe <code>100%</code> with <code>translateY(0)</code> and <code>opacity: 1</code>, so the title rises into place and fades in.',
       options: {
         'go on': (e) => e.goTo('anim-100'),
@@ -1376,7 +1452,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-100',
-      graph: { id: 125, x: 3200, y: 5700 },
+      graph: { id: 123, x: 3200, y: 5700 },
       content: 'The <code>100%</code> in a <code>@keyframes</code> rule means “the end of the animation.” In our <code>fadeIn</code> example, that\'s the point when the title has fully moved into place and become visible. If we only define <code>100%</code>, the browser assumes the starting point is whatever styles the element already has.',
       options: {
         'go on': (e) => e.goTo('anim-other-kf'),
@@ -1385,7 +1461,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-other-kf',
-      graph: { id: 126, x: 3350, y: 5700 },
+      graph: { id: 124, x: 3350, y: 5700 },
       content: 'But we can add more steps if we want. Here, <code>0%</code> marks the start, <code>50%</code> is the middle, and <code>100%</code> is the end. This gives us a little bounce before the element settles into place.',
       options: {
         'go on': (e) => e.goTo('anim-props1'),
@@ -1394,7 +1470,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-props1',
-      graph: { id: 127, x: 3500, y: 5700 },
+      graph: { id: 125, x: 3500, y: 5700 },
       content: 'To apply a keyframes animation, we must first set <code>animation-name</code> of the keyframes we want to apply to this element as well as how long we want that animation to take with <code>animation-duration</code>.',
       options: {
         'go on': (e) => e.goTo('anim-props2'),
@@ -1403,7 +1479,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-props2',
-      graph: { id: 128, x: 3650, y: 5700 },
+      graph: { id: 126, x: 3650, y: 5700 },
       content: 'Two optional settings make this feel better. <code>animation-fill-mode: forwards</code> tells the browser to keep the final style after the animation finishes, without this it would return to it\'s initial transparent state. Then <code>animation-delay: 0.25s</code> adds a brief pause before it runs when the page loads.',
       options: {
         'go on': (e) => e.goTo('anim-shorthand'),
@@ -1412,7 +1488,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'anim-shorthand',
-      graph: { id: 129, x: 3650, y: 5825 },
+      graph: { id: 127, x: 3650, y: 5825 },
       content: 'Once that\'s working, we can combine everything into the shorthand <code>animation</code> property. Writing <code>animation: fadeIn 1s forwards 0.25s</code> sets the name, duration, fill mode, and delay in one line, keeping the CSS tidy while producing the same effect.',
       options: {
         'go on': (e) => e.goTo('css-end'),
@@ -1421,13 +1497,22 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     },
     {
       id: 'css-end',
-      graph: { id: 122, x: 2750, y: 5925 },
+      graph: { id: 128, x: 2750, y: 5925 },
+      before: () => {
+        if (WIDGETS['template-projects'].state.editor.selected !== 'css/styles.css') {
+          WIDGETS['template-projects'].updateEditor({
+            selected: 'css/fonts.css',
+            language: 'css',
+            renderer: 'fonts-file'
+          })
+        }
+      },
       content: 'With that our template is complete. Our CSS code is less than 100 lines but takes advantage of many of the language\'s powerful features, from adaptive layouts using Flexbox and media queries to interactive transitions on link hovers and even a bit of animation. But you can obviously take these principles much further, this is just a starting point!',
       options: {
         'great, I\'ll take it from here!': (e) => {
           WIDGETS['template-projects']._postGuideConvo()
         },
-        'go back': (e) => e.goTo('anim-shorthand')
+        'go back': (e) => e.goTo('animation')
       }
     }
   ]

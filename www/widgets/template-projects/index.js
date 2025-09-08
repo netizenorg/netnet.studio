@@ -152,6 +152,7 @@ class TemplateProjects extends Widget {
         language: 'html',
         renderer: null // render template from data.renderers
       },
+      templates: template.data.templates,
       files: Object.fromEntries(template.data.files.map(k => [k, null])),
       lines: template.data.lines,
       renderers: template.data.renderers
@@ -167,7 +168,7 @@ class TemplateProjects extends Widget {
       NNE.code = ''
     }
 
-    this._transformRenderers() // populate vars
+    this._hydrateTemplateFiles('renderers') // populate renderer vars
 
     this.state.files['index.html'] = NNE.code
 
@@ -195,6 +196,10 @@ class TemplateProjects extends Widget {
   }
 
   async displayTemplate (name) {
+    const prevName = this.state.name
+    const preVars = this.state.vars
+      ? JSON.parse(JSON.stringify(this.state.vars)) : null
+
     if (!name && this.state.name) name = this.state.name
     utils.cancelAllNetitorUses('template-projects')
 
@@ -208,7 +213,18 @@ class TemplateProjects extends Widget {
     this.state = { // also used for convo's "self" object
       name: name,
       title: res.data.title,
+      templates: res.data.templates,
       files: Object.fromEntries(res.data.files.map(k => [k, null]))
+    }
+
+    if (this.bld[name]?.includes(prevName)) {
+      // if building off a previous template, transfer vars over
+      this.state.vars = preVars
+    } else {
+      // if not, use the template's default vars
+      this.state.vars = res.data.vars
+      // && clear code from netitor
+      NNE.code = ''
     }
 
     // setup base path
@@ -381,7 +397,8 @@ class TemplateProjects extends Widget {
     const owner = WIDGETS['student-session'].getData('owner')
 
     this.updateEditor({ selected: 'index.html' })
-    NNE.code = this.state.files['index.html']
+    this._hydrateTemplateFiles('templates')
+    NNE.code = this.state.templates['index.html']
     this.updateEditor({
       language: 'html',
       readOnly: false,
@@ -426,10 +443,11 @@ class TemplateProjects extends Widget {
       // create files object
       const files = {}
       const paths = Object.keys(this.state.files)
+      this._hydrateTemplateFiles('templates')
       for (let i = 0; i < paths.length; i++) {
         const path = paths[i]
-        if (typeof this.state.files[path] === 'string') {
-          files[path] = this.state.files[path]
+        if (typeof this.state.templates[path] === 'string') {
+          files[path] = this.state.templates[path]
         } else {
           files[path] = { base64: await this._pathToBase64(path) }
         }
@@ -475,14 +493,14 @@ class TemplateProjects extends Widget {
       .join(' ')
   }
 
-  _transformRenderers () {
-    const obj = this.state.renderers
-    for (const rndr in obj) {
-      let str = obj[rndr]
+  _hydrateTemplateFiles (type) {
+    const obj = this.state[type]
+    for (const tmp in obj) {
+      let str = obj[tmp]
       Object.entries(this.state.vars).forEach(([key, val]) => {
         str = str.replaceAll(`{{${key}}}`, val)
       })
-      this.state.renderers[rndr] = str
+      this.state[type][tmp] = str
     }
   }
 

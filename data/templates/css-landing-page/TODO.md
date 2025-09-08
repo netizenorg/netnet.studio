@@ -1,3 +1,0 @@
-- replace SVG images with png
-- update code
-- create guided lesson
