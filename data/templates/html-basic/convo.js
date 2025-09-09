@@ -303,20 +303,20 @@ window.CONVOS['template-html-basic'] = (self) => {
       graph: { id: 31, x: 100, y: 1625 },
       content: 'The <code>href</code> attribute controls where the link points to, and the text between the opening and closing tag is what people see and click on. Feel free to edit either of these and add others.',
       options: {
-        'go on': (e) => e.goTo('closer'),
+        'go on': (e) => e.goTo('end-guide'),
         'go back': (e) => e.goTo('a-ele')
       }
     },
     {
-      id: 'closer',
+      id: 'end-guide',
       graph: { id: 32, x: 100, y: 1750 },
-      content: 'That\'s all there is to a basic HTML5 template. We could add a bit more metadata though, to improve how our page appears in differernt context. Would you like to learn more about that? Or, if you prefer, I can just leave you with this to experiment with yourself?',
+      content: 'That\'s all there is to a basic HTML5 template. We could add a bit more metadata though, to improve how our page appears in differernt context. Would you like to learn more about that? Or, if you prefer, I\'ll let you take it from here',
       options: {
         'Let\'s add some metadata first': (e) => {
           WIDGETS['template-projects'].startGuide('html-meta-tags')
         },
         'I\'ll take it from here': (e) => {
-          WIDGETS['template-projects']._postGuideConvo()
+          WIDGETS['template-projects'].preNewRepoFromTemplate()
         },
         'go back': (e) => e.goTo('a-modify')
       }

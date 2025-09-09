@@ -1427,7 +1427,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       graph: { id: 120, x: 2750, y: 5550 },
       content: 'Lastly, I\'m going to create a CSS animation to our <code>#main-title</code> to give the page a tiny bit more flare. My goal is a subtle upward motion for the title that echoes the same upward motif we used on the links, and it should run right when the page loads.',
       options: {
-        'go on': (e) => e.goTo('css-end'),
+        'go on': (e) => e.goTo('end-guide'),
         'CSS animation?': (e) => e.goTo('anim-pre'),
         'go back': (e) => e.goTo('title-mq-margin')
       }
@@ -1491,26 +1491,36 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       graph: { id: 127, x: 3650, y: 5825 },
       content: 'Once that\'s working, we can combine everything into the shorthand <code>animation</code> property. Writing <code>animation: fadeIn 1s forwards 0.25s</code> sets the name, duration, fill mode, and delay in one line, keeping the CSS tidy while producing the same effect.',
       options: {
-        'go on': (e) => e.goTo('css-end'),
+        'go on': (e) => e.goTo('end-guide'),
         'go back': (e) => e.goTo('anim-props2')
       }
     },
     {
-      id: 'css-end',
+      id: 'end-guide',
       graph: { id: 128, x: 2750, y: 5925 },
+      layout: 'dock-left',
       before: () => {
         if (WIDGETS['template-projects'].state.editor.selected !== 'css/styles.css') {
           WIDGETS['template-projects'].updateEditor({
-            selected: 'css/fonts.css',
+            selected: 'css/styles.css',
             language: 'css',
-            renderer: 'fonts-file'
+            renderer: 'post-font'
           })
         }
+
+        const clrWig = WIDGETS['color-widget']
+        clrWig.events['update-color'] = clrWig.events['update-color'].filter(e => e.name !== 'colorUpdateListener')
+        clrWig.events.close = clrWig.events.close.filter(e => e.name !== 'colorCloseListener')
+        clrWig.events.open = clrWig.events.open.filter(e => e.name !== 'colorWigConvo')
       },
-      content: 'With that our template is complete. Our CSS code is less than 100 lines but takes advantage of many of the language\'s powerful features, from adaptive layouts using Flexbox and media queries to interactive transitions on link hovers and even a bit of animation. But you can obviously take these principles much further, this is just a starting point!',
+      content: 'Now that our template is complete. Our CSS code is less than 100 lines but takes advantage of many of the language\'s powerful features, from adaptive layouts using Flexbox and media queries to interactive transitions on link hovers and even a bit of animation. But you can obviously take these principles much further, this is just a starting point!',
       options: {
-        'great, I\'ll take it from here!': (e) => {
-          WIDGETS['template-projects']._postGuideConvo()
+        'great, let\'s start a new project': (e) => {
+          WIDGETS['template-projects'].preNewRepoFromTemplate()
+        },
+        'I\'ll experiment a bit first': (e) => {
+          NNE.readyOnly = false
+          e.hide()
         },
         'go back': (e) => e.goTo('animation')
       }

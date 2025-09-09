@@ -152,21 +152,21 @@ window.CONVOS['template-html-meta-tags'] = (self) => {
       graph: { id: 17, x: 400, y: 1600 },
       content: 'Lastly, the <code>og:type</code> tag tells social media platforms what kind of thing your page represents. Setting it to <i>website</i> is the most common choice for homepages or general pages, but there are also more specific types like <i>article</i>, <i>video</i>, or <i>music</i>. You can learn more about the open graph standard on their website <a href="https://ogp.me/" target="_blank">ogp.me</a>',
       options: {
-        'go on': (e) => e.goTo('closer'),
+        'go on': (e) => e.goTo('end-guide'),
         'go back': (e) => e.goTo('og-url2')
       }
     },
     {
-      id: 'closer',
+      id: 'end-guide',
       graph: { id: 18, x: 400, y: 1725 },
-      content: 'There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. Would you like to build on this template by adding some CSS or shall I leave you with this?',
+      content: 'There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. Would you like to build on this template by adding some CSS or we can start a new project from here?',
       options: {
         'Let\'s add some CSS': (e) => {
           WIDGETS['template-projects'].startGuide('css-landing-page')
         },
         'What\'s CSS?': (e) => e.goTo('pre-closer'),
         'I\'ll take it from here': (e) => {
-          WIDGETS['template-projects']._postGuideConvo()
+          WIDGETS['template-projects'].preNewRepoFromTemplate()
         },
         'go back': (e) => e.goTo('og-type')
       }
@@ -178,7 +178,7 @@ window.CONVOS['template-html-meta-tags'] = (self) => {
         'Ok, let\'s do the CSS intro': (e) => {
           WIDGETS.open('css-reference', (w) => w.toggleIntroPresentation())
         },
-        'go back': (e) => e.goTo('closer')
+        'go back': (e) => e.goTo('end-guide')
       }
     }
   ]
