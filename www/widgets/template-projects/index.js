@@ -57,6 +57,7 @@ class TemplateProjects extends Widget {
     if (i !== -1) NNE.events['code-update'].splice(i, 1)
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
+    NNE.wrap = WIDGETS['student-session'].getData('wrap')
   }
 
   updateEditor (opts = {}) {
@@ -89,6 +90,10 @@ class TemplateProjects extends Widget {
     if (sel === this.state.editor.selected) {
       NNE.cm.scrollTo(info.left, info.top)
     }
+
+    // this was causing strainge spotlight/scrolling offfset bugs
+    // so instead we'll make sure to revert to normal on "cancel"
+    // NNE.wrap = WIDGETS['student-session'].getData('wrap')
   }
 
   loadTemplate (name) {
@@ -407,8 +412,12 @@ class TemplateProjects extends Widget {
         const path = paths[i]
         const dict = this.state.templates || this.state.files
         if (typeof dict[path] === 'string') {
-          files[path] = dict[path].includes('\t') // clean up tabs (if present)
-            ? dict[path].replace(/\t/g, '  ') : dict[path]
+          if (path === this.state.editor.selected) { // use current verstion
+            files[path] = NNE.code
+          } else { // used the template or state version
+            files[path] = dict[path].includes('\t') // clean up tabs (if present)
+              ? dict[path].replace(/\t/g, '  ') : dict[path]
+          }
         } else {
           files[path] = { base64: await this._pathToBase64(path) }
         }
@@ -456,7 +465,15 @@ class TemplateProjects extends Widget {
   }
 
   _hydrateTemplateFiles (type) {
-    const obj = this.state[type]
+    // store unhydrated tempalted data
+    if (!this._originalData) {
+      this._originalData = {
+        renderers: JSON.parse(JSON.stringify(this.state.renderers)),
+        templates: JSON.parse(JSON.stringify(this.state.templates))
+      }
+    }
+    // create new hydrated state from original data
+    const obj = this._originalData[type]
     for (const tmp in obj) {
       let str = obj[tmp]
       Object.entries(this.state.vars).forEach(([key, val]) => {

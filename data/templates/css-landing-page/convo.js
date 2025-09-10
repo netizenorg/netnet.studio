@@ -88,6 +88,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
         const a = nn.alpha2hex(c.a)
         if (a < 1) hex += a
         WIDGETS['template-projects'].state.vars[curColorWig] = hex
+        WIDGETS['template-projects']._hydrateTemplateFiles('renderers')
       }
     }
 
@@ -619,7 +620,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
           renderer: 'pre-link'
         })
       },
-      content: 'Instead, we can put our CSS in a separate file. You can name it anything as long as it ends with <code>.css</code>. I\'ll call this one <code>styles.css</code> and place it in a <code>css</code> folder for future stylesheets. Once it\'s in its own file, we connect it to our HTML with the <code>link</code> element.',
+      content: 'Instead, we can put our CSS in a separate file. You can name it anything as long as it ends with <code>.css</code>. I\'ll call this one <code>styles.css</code> and place it in a <code>css</code> folder for this and other future stylesheets. Removing the CSS code from our HTML means our styles will no longer be applied, so we\'ll have to reconnect them with a <code>link</code> element.',
       options: {
         'go on': (e) => e.goTo('link-ele'),
         'go back': (e) => e.goTo('too-much')
@@ -1513,7 +1514,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
         clrWig.events.close = clrWig.events.close.filter(e => e.name !== 'colorCloseListener')
         clrWig.events.open = clrWig.events.open.filter(e => e.name !== 'colorWigConvo')
       },
-      content: 'Now that our template is complete. Our CSS code is less than 100 lines but takes advantage of many of the language\'s powerful features, from adaptive layouts using Flexbox and media queries to interactive transitions on link hovers and even a bit of animation. But you can obviously take these principles much further, this is just a starting point!',
+      content: 'Our template is complete and our CSS code is less than 100 lines but takes advantage of many of the language\'s powerful features, from adaptive layouts using Flexbox and media queries to interactive transitions on link hovers and even a bit of animation. You can obviously take these principles much further, this is just a starting point!',
       options: {
         'great, let\'s start a new project': (e) => {
           WIDGETS['template-projects'].preNewRepoFromTemplate()
