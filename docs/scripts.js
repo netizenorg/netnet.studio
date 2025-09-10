@@ -1,4 +1,4 @@
-/* global nn, Netitor */
+/* global nn, Netitor, NNE, utils, Fuse */
 
 const netitors = [] // netitor instances
 
@@ -45,7 +45,57 @@ function setupNetitors () {
     })
 }
 
+function filterResults (e) {
+  const v = e.target.value.toLowerCase()
+  const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list .inline-link')
+  navItems.forEach(ele => {
+    if (v === '') ele.classList.remove('hide')
+    else {
+      let pass = false
+      let parent = false
+      let eleText = ele.textContent.toLowerCase()
+      let parentEle = ele.parentElement.parentElement.previousElementSibling
+
+      if (eleText.trim().includes(v)) pass = true
+      if (pass) {
+        ele.classList.remove('hide')
+        if (parentEle.classList.contains('header')) parent = true
+        if (parent) {
+          parentEle.classList.remove('hide')
+        } else {
+          parentEle.classList.add('hide')
+        }
+      } else {
+        ele.classList.add('hide')
+      }
+
+    }
+  })
+}
+
+function setupSearch () {
+  const searchInput = document.querySelector('#search-input')
+
+  searchInput.addEventListener('input', (e) => filterResults(e))
+}
+
+function mobileMenu () {
+  const hamburger = document.querySelector('#hamburger')
+  const docsPanel = document.querySelector('.docs__panel')
+
+  hamburger.addEventListener('click', (e) => {
+    docsPanel.classList.toggle('open')
+    if (docsPanel.classList.contains('open')) {
+      hamburger.setAttribute('aria-expanded', 'true')
+    } else {
+      hamburger.setAttribute('aria-expanded', 'false')
+    }
+  })
+}
+
 nn.on('load', () => {
   findActive()
   setupNetitors()
+  setupSearch()
+  mobileMenu()
 })

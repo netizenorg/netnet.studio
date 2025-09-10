@@ -87,6 +87,7 @@
 
 .inline-link,
 p > a:not(.pill-btn):not(.highlight),
+strong > a:not(.pill-btn):not(.highlight),
 div > a:not(.pill-btn):not(.highlight),
 .text-bubble-content > a:not(.pill-btn):not(.highlight) {
   position: relative;
@@ -107,6 +108,7 @@ div > a:not(.pill-btn):not(.highlight),
 
 .inline-link:hover,
 p > a:not(.pill-btn):not(.highlight):hover,
+strong > a:not(.pill-btn):not(.highlight),
 div > a:not(.pill-btn):not(.highlight):hover,
 .text-bubble-content > a:not(.pill-btn):not(.highlight):hover {
   color: var(--netizen-match-color);
@@ -114,6 +116,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
 .inline-link:active,
 p > a:not(.pill-btn):not(.highlight):active,
+strong > a:not(.pill-btn):not(.highlight),
 div > a:not(.pill-btn):not(.highlight):active,
 .text-bubble-content > a:not(.pill-btn):not(.highlight):active {
   text-shadow: none;

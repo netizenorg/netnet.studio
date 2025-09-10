@@ -4,13 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
     <link rel="icon" type="image/png" href="/images/eye.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro"><a href="/">( ◕ ◞ ◕ )</a></span>
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
+        <span class="screen-reader-only">Open/close mobile menu</span>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
       {{nav}}
     </div>
 
@@ -22,6 +44,8 @@
 
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>
