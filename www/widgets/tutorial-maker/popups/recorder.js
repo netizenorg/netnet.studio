@@ -1,4 +1,4 @@
-/* global nn metadata */
+/* global nn metadata modal updateVideo */
 const recorder = {
   // TODO: methods for recording keystrokes (migrate + refactor from netitor-logger)
   key: 'stream-video',
@@ -8,6 +8,7 @@ const recorder = {
   },
   data: [],
   recorder: null,
+  mimeType: 'video/webm',
 
   close: () => {
     if (window.stream) window.stream.getTracks().forEach(t => t.stop())
@@ -30,7 +31,7 @@ const recorder = {
     // 'video/webm;codecs=vp9,opus'
     // 'video/webm;codecs=vp8,opus'
     // TODO if firefox record webm and display conversion message afterwards
-    const opts = { mimeType: 'video/webm' }
+    const opts = { mimeType: recorder.mimeType }
     recorder.recorder = new window.MediaRecorder(window.stream, opts)
     recorder.recorder.ondataavailable = (e) => {
       if (e.data && e.data.size > 0) recorder.data.push(e.data)
@@ -128,9 +129,23 @@ const recorder = {
   },
 
   editTutorial: () => {
-    nn.get('#video-recorder').style.display = 'none'
-    // TODO: set data for tutorial maker to edit new video
-    // TODO: for users who recorded webm, display overlay that they must convert their video to mp4 and re-upload it. Show upload UI (drop box UI idea)
+    if (recorder.mimeType === 'video/mp4') {
+      updateVideo(recorder.blob)
+      nn.get('#video-recorder').style.display = 'none'
+    } else {
+      const innerHTML = `
+        <h2>Video Format Notice</h2>
+        <p>Looks like for compatibility reasons you recorded we recorded your video as a .webm. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4.</p>
+        <a href="#" style="margin-bottom: 10px;">how to convert my video to .mp4?</a>
+        <div class="buttons">
+          <button name="vfn-download" class="pill-btn pill-btn--secondary">download tutorial</button>
+          <button name="vfn-upload" class="pill-btn pill-btn--secondary">upload mp4</button>
+        </div>
+        <p class="warning">Please download your tutorial before leaving this page, otherwise your data will be lost.</p>
+      `
+      modal.openWithHTML(innerHTML)
+      // TODO: configure buttons
+    }
   },
 
   goBack: () => {
@@ -166,6 +181,10 @@ const recorder = {
     // nn.get('.av-str-post-msg').style.display = 'block'
     nn.get('.recording-controls').style.display = 'none'
     nn.get('.playback-controls').style.removeProperty('display')
+  },
+
+  displayConversionPrompt: () => {
+
   },
 
   init: async (e) => {

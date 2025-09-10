@@ -64,6 +64,7 @@ function openTutorial () {
 
 function updateMetadata (data) {
   TUT_ID = data.id
+  FILES.init(TUT_ID, {})
 
   msg('tut-mkr-update-metadata', data)
 
@@ -77,15 +78,14 @@ function updateMetadata (data) {
   // re-run FILES.init(id, files) with the new id name
 }
 
-function updateVideo () {
-  // TODO: need to store video blob to indexedDB
-  // like this >> FILES.updateFile(`${TUT_ID}.mp4`, video-blob)
+function updateVideo (blob) {
+  // store video blob to indexedDB
+  FILES.updateFile(`${TUT_ID}.mp4`, blob)
   msg('tut-mkr-update-video') // << notifies to load video blob from indexedDB
   overlay(null)
   // NOTE: this should only run once per tutorial
   // if they want to re-record the video, they should make a new tutorial
 }
-window.updateMetadata = updateMetadata
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   TIMECODE = obj.time
@@ -177,3 +177,24 @@ nn.on('beforeunload', (e) => {
   // so they dont' accidently quit popup and loose tutorial progress
   e.preventDefault(); e.returnValue = ''
 })
+
+const modal = {
+  opened: false,
+
+  openWithHTML: (html) => {
+    const modal = nn.get('#tut-mkr-modal')
+    if (!modal) return new Error('modal is undefined.')
+    modal.style.display = 'flex'
+    nn.get('.tut-mkr-modal-content').innerHTML = html
+  },
+
+  close: () => {
+    const modal = nn.get('#tut-mkr-modal')
+    if (!modal) return new Error('modal is undefined.')
+    modal.style.display = 'none'
+  }
+}
+
+window.updateVideo = updateVideo
+window.updateMetadata = updateMetadata
+window.modal = modal
