@@ -212,13 +212,14 @@ const recorder = {
     else recorder.file = e.detail.files[0]
   },
 
-  onFileSubmit: () => {
+  onFileSubmit: async () => {
     if (!recorder.file) {
       console.error('No file detected to be uploaded. Please upload a file.')
       return
     }
     if (nn.get('tutorial-modal file-drop')) modal.close({ clear: true })
-    updateVideo(recorder.file)
+    const blobURL = URL.createObjectURL(recorder.file)
+    updateVideo(blobURL)
   },
 
   // functions for Video Format Notice
