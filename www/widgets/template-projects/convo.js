@@ -40,7 +40,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'buttons',
       graph: { id: 2, x: 150, y: 25 },
-      content: 'Click "Preview" to view the end result in a new tab, click "Guided Walkthrough" if you\'d like me to explain it to you, or click "New Project From Tempate" if you simply want to use it as the basis of a new project.',
+      content: 'Click "Preview" to view the template\'s HTML page in a new tab, click "Guided Walkthrough" if you\'d like me to explain it to you, or click "New Project From Tempate" if you simply want to use it as the basis of a new project.',
       options: {
         ok: (e) => e.hide()
       }

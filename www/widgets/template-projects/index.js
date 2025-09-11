@@ -298,6 +298,7 @@ class TemplateProjects extends Widget {
     this.state.curPassage = id
 
     const getLine = () => {
+      if (!this.state.lines) return null
       const line = this.state.lines[this.state.curPassage]
       if (!line) return null
       else return this._transformLine(line)
@@ -468,8 +469,8 @@ class TemplateProjects extends Widget {
     // store unhydrated tempalted data
     if (!this._originalData) {
       this._originalData = {
-        renderers: JSON.parse(JSON.stringify(this.state.renderers)),
-        templates: JSON.parse(JSON.stringify(this.state.templates))
+        renderers: JSON.parse(JSON.stringify(this.state.renderers || {})),
+        templates: JSON.parse(JSON.stringify(this.state.templates || {}))
       }
     }
     // create new hydrated state from original data
@@ -496,7 +497,7 @@ class TemplateProjects extends Widget {
     const tab = ' '.repeat(i)
     c = c.replace(/\t/g, tab)
     t = t.replace(/\t/g, tab)
-    Object.entries(this.state.vars).forEach(([key, val]) => {
+    Object.entries(this.state.vars || {}).forEach(([key, val]) => {
       c = c.replaceAll(`{{${key}}}`, val)
       t = t.replaceAll(`{{${key}}}`, val)
     })
