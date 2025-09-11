@@ -96,7 +96,13 @@ const recorder = {
 
   initMenu: () => {
     nn.get('#record-video').addEventListener('click', (e) => recorder.init(e, true))
-    nn.get('#video-menu file-drop').addEventListener('files-changed', (e) => recorder.onFileChanged(e))
+    nn.get('[name="file-drop-submit"]').addEventListener('click', () => recorder.onFileSubmit())
+    nn.get('#video-menu file-drop').addEventListener('files-changed', (e) => {
+      recorder.onFileChanged(e)
+      const submit = nn.get('[name="file-drop-submit"]')
+      if (recorder.file) submit.style.display = 'block'
+      else submit.style.display = 'none'
+    })
   },
 
   // -------------------------- [ WebRTC ] ------------------------------------
@@ -202,18 +208,11 @@ const recorder = {
   },
 
   onFileChanged: (e) => {
-    console.log(e.detail)
-    if (!e.detail.files) return
-    // store file uploaded (only one)
-    recorder.file = e.detail.files[0]
-
-    const submit = nn.get('[name="file-drop-submit"]')
-    const fileDrop = nn.get('#video-menu file-drop')
-    if (fileDrop.files.length > 0) submit.style.display = 'block'
-    else if (fileDrop.files.length <= 0) submit.style.display = 'none'
+    if (!e.detail.files) recorder.file = null
+    else recorder.file = e.detail.files[0]
   },
 
-  onFileUpload: () => {
+  onFileSubmit: () => {
     if (!recorder.file) {
       console.error('No file detected to be uploaded. Please upload a file.')
       return
@@ -249,7 +248,7 @@ const recorder = {
     modal.openWithHTML(uploader)
     nn.get('tutorial-modal file-drop').addEventListener('files-changed', (e) => recorder.onFileChanged(e))
     nn.get('[name="vfn-upload-go-back"]').addEventListener('click', () => recorder.displayVFN())
-    nn.get('[name="vfn-upload-submit"]').addEventListener('click', () => recorder.onFileUpload())
+    nn.get('[name="vfn-upload-submit"]').addEventListener('click', () => recorder.onFileSubmit())
   }
 }
 
