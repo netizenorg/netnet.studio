@@ -9,6 +9,7 @@ const recorder = {
   data: [],
   recorder: null,
   mimeType: 'video/webm',
+  file: null,
 
   close: () => {
     if (window.stream) window.stream.getTracks().forEach(t => t.stop())
@@ -133,18 +134,9 @@ const recorder = {
       updateVideo(recorder.blob)
       nn.get('#video-recorder').style.display = 'none'
     } else {
-      const innerHTML = `
-        <h2>Video Format Notice</h2>
-        <p>Looks like for compatibility reasons you recorded we recorded your video as a .webm. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4.</p>
-        <a href="#" style="margin-bottom: 10px;">how to convert my video to .mp4?</a>
-        <div class="buttons">
-          <button name="vfn-download" class="pill-btn pill-btn--secondary">download tutorial</button>
-          <button name="vfn-upload" class="pill-btn pill-btn--secondary">upload mp4</button>
-        </div>
-        <p class="warning">Please download your tutorial before leaving this page, otherwise your data will be lost.</p>
-      `
-      modal.openWithHTML(innerHTML)
-      // TODO: configure buttons
+      recorder.displayVFN()
+      // nn.get('[name="vfn-download"]').addEventListener('click' => main.downloadTutorial())
+
     }
   },
 
@@ -183,10 +175,6 @@ const recorder = {
     nn.get('.playback-controls').style.removeProperty('display')
   },
 
-  displayConversionPrompt: () => {
-
-  },
-
   init: async (e) => {
     // hide video menu & display video recorder
     nn.get('#video-menu').style.display = 'none'
@@ -214,11 +202,54 @@ const recorder = {
   },
 
   onFileChanged: (e) => {
-    if (nn.get('#video-menu').style.display === 'none') return
+    console.log(e.detail)
+    if (!e.detail.files) return
+    // store file uploaded (only one)
+    recorder.file = e.detail.files[0]
+
     const submit = nn.get('[name="file-drop-submit"]')
     const fileDrop = nn.get('#video-menu file-drop')
     if (fileDrop.files.length > 0) submit.style.display = 'block'
     else if (fileDrop.files.length <= 0) submit.style.display = 'none'
+  },
+
+  onFileUpload: () => {
+    if (!recorder.file) {
+      console.error('No file detected to be uploaded. Please upload a file.')
+      return
+    }
+    if (nn.get('tutorial-modal file-drop')) modal.close({ clear: true })
+    updateVideo(recorder.file)
+  },
+
+  // functions for Video Format Notice
+  displayVFN: () => {
+    const innerHTML = `
+      <h2>Video Format Notice</h2>
+      <p>Looks like for compatibility reasons you recorded we recorded your video as a .webm. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4.</p>
+      <a href="#" style="margin-bottom: 10px;">how to convert my video to .mp4?</a>
+      <div class="buttons">
+        <button name="vfn-download" class="pill-btn pill-btn--secondary">download tutorial</button>
+        <button name="vfn-upload" class="pill-btn pill-btn--secondary">upload mp4</button>
+      </div>
+      <p class="warning">Please download your tutorial before leaving this page, otherwise your data will be lost.</p>
+    `
+    modal.openWithHTML(innerHTML)
+    nn.get('[name="vfn-upload"]').addEventListener('click', () => recorder.onUploadVFN())
+  },
+
+  onUploadVFN: () => {
+    const uploader = `
+      <file-drop accept=".mp4" maxFiles="1" maxSize="1GB"></file-drop>
+      <div class="buttons">
+         <button name="vfn-upload-go-back" class="pill-btn pill-btn--secondary">go back</button>
+         <button name="vfn-upload-submit" class="pill-btn pill-btn--secondary">submit</button>
+      </div>
+    `
+    modal.openWithHTML(uploader)
+    nn.get('tutorial-modal file-drop').addEventListener('files-changed', (e) => recorder.onFileChanged(e))
+    nn.get('[name="vfn-upload-go-back"]').addEventListener('click', () => recorder.displayVFN())
+    nn.get('[name="vfn-upload-submit"]').addEventListener('click', () => recorder.onFileUpload())
   }
 }
 

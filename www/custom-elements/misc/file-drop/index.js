@@ -105,7 +105,7 @@ class FileDrop extends HTMLElement {
     this.renderFileItems()
 
     this.dispatchEvent(new CustomEvent('files-changed', {
-      detail: { added: add, rejected, all: this.files.slice() },
+      detail: { added: add, rejected, files: this.files.slice() },
       bubbles: true,
       composed: true
     }))

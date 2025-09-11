@@ -1,4 +1,4 @@
-/* global nn timeline zipper recorder FILES metadata */
+/* global nn timeline zipper recorder FILES metadata HTMLElement customElements */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TUT_ID = null
@@ -6,6 +6,7 @@ let THUMBNAILS = []
 let DUR = 0
 let JSFILE = false
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
+let modal
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -135,6 +136,10 @@ nn.on('load', () => {
     msg('tut-mkr-seek', time)
   }
   timeline.init()
+
+  const m = document.createElement('tutorial-modal')
+  nn.get('body').appendChild(m)
+  modal = m
 })
 
 nn.on('resize', () => {
@@ -178,23 +183,35 @@ nn.on('beforeunload', (e) => {
   e.preventDefault(); e.returnValue = ''
 })
 
-const modal = {
-  opened: false,
+// custom modal element
+class TutorialModal extends HTMLElement {
+  constructor (opt) {
+    super()
+  }
 
-  openWithHTML: (html) => {
-    const modal = nn.get('#tut-mkr-modal')
-    if (!modal) return new Error('modal is undefined.')
-    modal.style.display = 'flex'
-    nn.get('.tut-mkr-modal-content').innerHTML = html
-  },
+  connectedCallback () {
+    this.id = 'tut-mkr-modal'
+    this.style.display = 'none'
 
-  close: () => {
-    const modal = nn.get('#tut-mkr-modal')
-    if (!modal) return new Error('modal is undefined.')
-    modal.style.display = 'none'
+    this.innerHTML = '<div class="tut-mkr-modal-content"></div>'
+    this.content = this.querySelector('.tut-mkr-modal-content')
+  }
+
+  openWithHTML (html) {
+    this.clear()
+    this.style.display = 'flex'
+    this.content.innerHTML = html
+  }
+
+  clear () { this.content.innerHTML = '' }
+
+  close (options) {
+    this.style.display = 'none'
+    if (options.clear) this.clear()
   }
 }
 
+customElements.define('tutorial-modal', TutorialModal)
+window.modal = modal
 window.updateVideo = updateVideo
 window.updateMetadata = updateMetadata
-window.modal = modal
