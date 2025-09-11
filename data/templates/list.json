@@ -2,7 +2,8 @@
   "published": [
     "html-basic",
     "html-meta-tags",
-    "css-landing-page"
+    "css-landing-page",
+    "css-art"
   ],
   "build-on": {
     "html-meta-tags": ["html-basic"],
