@@ -406,7 +406,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
           top: nn.height / 2 - 100,
           left: nn.width / 2 - 100
         })
-        colorWheel.open()
+        setTimeout(() => colorWheel.open(), 510)
       },
       content: 'Now I\'ve replaced them with the <code>hsl()</code> functions which take three arguments as well: hue, saturation, and lightness, which work a little differently. Hue is a degree on the color wheel from 0 to 360, saturation is a percentage that controls how intense the color is, and lightness is a percentage that sets how dark or bright it looks.',
       options: {
