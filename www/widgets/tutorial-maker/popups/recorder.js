@@ -25,13 +25,20 @@ const recorder = {
   },
 
   startRecording: (keylogger) => {
+    const mimeType = [
+      'video/mp4;codecs="avc1.42E01E, mp4a.40.2"',
+      'video/mp4;codecs="avc1.64001F, mp4a.40.2"',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm'
+    ]
+    for (const type of mimeType) {
+      if (window.MediaRecorder.isTypeSupported?.(type)) {
+        recorder.mimeType = type
+        break
+      }
+    }
     recorder.data = []
-    // NOTE: in future might want to use .isTypeSupported
-    // to check for supported types, like:
-    // 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
-    // 'video/webm;codecs=vp9,opus'
-    // 'video/webm;codecs=vp8,opus'
-    // TODO if firefox record webm and display conversion message afterwards
     const opts = { mimeType: recorder.mimeType }
     recorder.recorder = new window.MediaRecorder(window.stream, opts)
     recorder.recorder.ondataavailable = (e) => {
@@ -136,13 +143,12 @@ const recorder = {
   },
 
   editTutorial: () => {
-    if (recorder.mimeType === 'video/mp4') {
+    if (recorder.mimeType.split(';')[0].trim() === 'video/mp4') {
       updateVideo(recorder.blob)
       nn.get('#video-recorder').style.display = 'none'
     } else {
       recorder.displayVFN()
       // nn.get('[name="vfn-download"]').addEventListener('click' => main.downloadTutorial())
-
     }
   },
 
