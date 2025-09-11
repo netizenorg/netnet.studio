@@ -98,7 +98,7 @@ class TutorialMaker extends Widget {
     // clear edit watcher
     NNE.cm.off('change', this._boundEditWatcher)
     // quit hyper video player so it runs the "reset"
-    this.hvp.quit()
+    if (this.hvp) this.hvp.quit()
     this.hvp = null
   }
 
