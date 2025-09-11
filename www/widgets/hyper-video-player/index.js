@@ -72,6 +72,7 @@ class HyperVideoPlayer extends Widget {
       }
 
       if (NNE.code !== utils.starterCode() && NNE.code.length > 0) {
+        if (!this.convos) this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'clear-code')
         setTimeout(() => nn.get('load-curtain').hide(), 250)
         return
