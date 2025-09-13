@@ -33,7 +33,7 @@ class TutorialMaker extends Widget {
       } else if (type === 'tut-mkr-get-metadata') { // asked for metadata
         this._messagePopup('tut-mkr-metadata', this.hvp.data.metadata)
       } else if (type === 'tut-mkr-update-video') { // new video data
-        this._updateVideo()
+        this._updateVideo(payload)
       } else if (type === 'tut-mkr-keyframe-click') { // keyframe marker click
         this.hvp.seek(payload)
         const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
@@ -75,7 +75,7 @@ class TutorialMaker extends Widget {
       this.hvp = widget
       this.hvp.making = true
       this.hvp.data = data
-      this.hvp._loadTutorial(data)
+      this.hvp._loadTutorial()
       this._setCustomRenderer()
       this.hvp.video.on('timeupdate', () => this._onVideoTimeUpdate())
     })
@@ -112,12 +112,14 @@ class TutorialMaker extends Widget {
     }
   }
 
-  _updateVideo () {
+  _updateVideo (blob) {
     if (this.hvp.video.src.includes('videos/screen-saver')) {
       // then we can assume this is the first time we're updating the video
-      const name = this.hvp.data.id
-      this.hvp.updateVideo(name, name)
-      this._messagePopup('tut-mkr-video-duration', this.hvp.duration)
+      this.hvp.video.on('loadeddata', () => {
+        this._messagePopup('tut-mkr-video-duration', this.hvp.duration)
+      })
+      this.hvp.data.videoBlob = blob
+      this.hvp.updateVideo()
     } else {
       console.error('Tutorial Maker: You can only create a video once per tutorial')
     }
@@ -190,15 +192,13 @@ class TutorialMaker extends Widget {
   }
 
   _onVideoTimeUpdate () {
-    setTimeout(() => {
-      const tc = this.hvp.currentTime
-      const payload = {
-        time: tc,
-        keyframe: this.hvp.data.keyframes.find(k => k.timecode === tc),
-        keylog: this.hvp.data.keylogs.find(k => k.timecode === tc)
-      }
-      this._messagePopup('tut-mkr-time-update', payload)
-    }, 2000)
+    const tc = this.hvp.currentTime
+    const payload = {
+      time: tc,
+      keyframe: this.hvp.data.keyframes.find(k => k.timecode === tc),
+      keylog: this.hvp.data.keylogs.find(k => k.timecode === tc)
+    }
+    this._messagePopup('tut-mkr-time-update', payload)
   }
 
   // NOTE: may not need this now, but if ever we need to delay a call to another

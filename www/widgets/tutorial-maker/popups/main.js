@@ -58,6 +58,7 @@ function openTutorial () {
     tut.keylogs.forEach(kl => marker(kl, 'keylog'))
     timeline.updateMarkers()
 
+    tut.videoBlob = FILES.readFile(TUT_ID + '.mp4')
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
     overlay(null) // remove overlay
   })
@@ -80,9 +81,11 @@ function updateMetadata (data) {
 }
 
 function updateVideo (blob) {
-  // store video blob to indexedDB
-  FILES.updateFile(`${TUT_ID}.mp4`, blob)
-  msg('tut-mkr-update-video') // << notifies to load video blob from indexedDB
+  // NOTE: chrome has issues with "seeking" a video when being served by a SW...
+  // FILES.updateFile(`${TUT_ID}.mp4`, blob) // <-(so can't do this anymore)
+  // ...so instead of requesting the blob from the SW we need to give it to the
+  // HyperVideoPlayer directly...
+  msg('tut-mkr-update-video', blob)
   overlay(null)
   // NOTE: this should only run once per tutorial
   // if they want to re-record the video, they should make a new tutorial
@@ -90,6 +93,10 @@ function updateVideo (blob) {
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   TIMECODE = obj.time
+  if (!DUR) {
+    console.log('TUT MKR: skipping videoTimeUpdated, no DUR (duration) set yet')
+    return
+  }
   const x = obj.time / DUR * 100
   timeline.updatePlayhead(x)
   timeline.clearSelections()
