@@ -1,10 +1,6 @@
 /* global nn timeline zipper recorder FILES metadata HTMLElement customElements */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
-let TUT_ID = null
-let THUMBNAILS = []
-let DUR = 0
-let JSFILE = false
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
 let modal
 
@@ -30,13 +26,12 @@ function overlay (ele) {
 function openTutorial () {
   // open zip file...
   zipper.open(SWP, async (id, files) => {
-    TUT_ID = id // set tutorial id globally
     const loaded = await FILES.init(id, files) // load files to indexedDB
     console.log('FILES LOADED:', loaded)
     const tut = JSON.parse(files[`${SWP}/${id}/tutorial.json`]) // get tutorial data
-    THUMBNAILS = tut.metadata.thumbnails
-    DUR = tut.metadata.duration
-    JSFILE = tut.metadata.jsfile
+    // load metadata
+    Object.assign(metadata, tut.metadata)
+
     // modify's path so that the service worker resolves requests correctly
     for (const key in tut.widgets) {
       const wig = tut.widgets[key]
@@ -44,12 +39,12 @@ function openTutorial () {
     }
     if (tut.keyframes[0].code && tut.keyframes[0].code !== 'DEFAULT') {
       // update db's index.html (used by SW to render iframe)
-      FILES.updateFile(`${SWP}/${TUT_ID}/index.html`, tut.keyframes[0].code)
+      FILES.updateFile(`${SWP}/${metadata.id}/index.html`, tut.keyframes[0].code)
     }
     // create timeline markers for keyframes && keylogs
     const marker = (k, type) => {
       const t = k.timecode
-      const x = t / DUR * 100
+      const x = t / metadata.duration * 100
       timeline.createMarker(x, t, type, (tc) => {
         msg(`tut-mkr-${type}-click`, tc)
       })
@@ -64,16 +59,14 @@ function openTutorial () {
 }
 
 function updateMetadata (data) {
-  TUT_ID = data.id
-  FILES.init(TUT_ID, {})
-
+  FILES.init(metadata.id, {})
   msg('tut-mkr-update-metadata', data)
 
-  const hasVid = FILES.readFile(`${TUT_ID}.mp4`) || FILES.readFile(`${TUT_ID}.webm`)
+  const hasVid = FILES.readFile(`${metadata.id}.mp4`) || FILES.readFile(`${metadata.id}.webm`)
   if (hasVid) overlay(null)
   else overlay('#video-menu')
 
-  // NOTE: the TUT_ID is used all over the place && works best if only set once
+  // NOTE: the metadata.id is used all over the place && works best if only set once
   // but we may want to allow the user to change it, so we'll need to make sure
   // to do some cleanup. first things that comes to mind is we'll need to
   // re-run FILES.init(id, files) with the new id name
@@ -81,7 +74,7 @@ function updateMetadata (data) {
 
 function updateVideo (blob) {
   // store video blob to indexedDB
-  FILES.updateFile(`${TUT_ID}.mp4`, blob)
+  FILES.updateFile(`${metadata.id}.mp4`, blob)
   msg('tut-mkr-update-video') // << notifies to load video blob from indexedDB
   overlay(null)
   // NOTE: this should only run once per tutorial
@@ -90,7 +83,7 @@ function updateVideo (blob) {
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   TIMECODE = obj.time
-  const x = obj.time / DUR * 100
+  const x = obj.time / metadata.duration * 100
   timeline.updatePlayhead(x)
   timeline.clearSelections()
   if (obj.keyframe) {
@@ -132,7 +125,7 @@ nn.getAll('button[name]').forEach(btn => {
 
 nn.on('load', () => {
   timeline.onScrub = (x) => {
-    const time = (x / 100) * DUR
+    const time = (x / 100) * metadata.duration
     msg('tut-mkr-seek', time)
   }
   timeline.init()
@@ -164,11 +157,11 @@ nn.on('message', (e) => {
   if (e.origin !== window.location.origin) return
   const { type, payload } = e.data
   if (type === 'tut-mkr-code-update') {
-    FILES.updateFile(`${SWP}/${TUT_ID}/index.html`, payload)
+    FILES.updateFile(`${SWP}/${metadata.id}/index.html`, payload)
   } else if (type === 'tut-mkr-metadata') {
     openMetadata(payload)
   } else if (type === 'tut-mkr-video-duration') {
-    DUR = payload
+    metadata.duration = payload
   } else if (type === 'tut-mkr-keyframe') {
     // TODO: select/enable keyframe, payload === keyframe object
   } else if (type === 'tut-mkr-keylog') {

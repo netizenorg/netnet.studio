@@ -1,4 +1,4 @@
-/* global nn metadata modal updateVideo */
+/* global nn metadata modal updateVideo zipper */
 const recorder = {
   // TODO: methods for recording keystrokes (migrate + refactor from netitor-logger)
   key: 'stream-video',
@@ -179,6 +179,7 @@ const recorder = {
     const video = document.createElement('video')
     video.controls = true
     const blob = new window.Blob(recorder.data, { type: 'video/webm' })
+    recorder.blob = blob
     video.src = window.URL.createObjectURL(blob)
     nn.get('.recorded-videos').appendChild(video)
 
@@ -242,6 +243,7 @@ const recorder = {
     `
     modal.openWithHTML(innerHTML)
     nn.get('[name="vfn-upload"]').addEventListener('click', () => recorder.onUploadVFN())
+    nn.get('[name="vfn-download"]').addEventListener('click', () => zipper.download(recorder.blob))
   },
 
   onUploadVFN: () => {
