@@ -61,7 +61,7 @@ const recorder = {
   },
 
   download: () => {
-    const blob = new window.Blob(recorder.data, { type: 'video/webm' })
+    const blob = new window.Blob(recorder.data, { type: recorder.mimeType })
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     document.body.appendChild(a)
@@ -223,7 +223,7 @@ const recorder = {
       console.error('No file detected to be uploaded. Please upload a file.')
       return
     }
-    if (nn.get('tutorial-modal file-drop')) modal.close({ clear: true })
+    if (document.querySelector('tutorial-modal file-drop')) modal.close({ clear: true })
     const blobURL = URL.createObjectURL(recorder.file)
     updateVideo(blobURL)
   },
