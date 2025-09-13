@@ -148,7 +148,8 @@ nn.on('resize', () => {
 })
 
 nn.on('keydown', (e) => {
-  if (e.key === ' ' && e.target.localName !== 'input') {
+  const avoidToggle = ['input', 'textarea']
+  if (e.key === ' ' && !avoidToggle.includes(e.target.localName)) {
     msg('tut-mkr-toggle')
   } else if (e.key === 'ArrowLeft') {
     const frame = timeline.getPrevMarker(TIMECODE)
