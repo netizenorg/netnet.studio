@@ -78,23 +78,10 @@ class TutorialMaker extends Widget {
       this.hvp._loadTutorial(data)
       this._setCustomRenderer()
       this.hvp.video.on('timeupdate', () => this._onVideoTimeUpdate())
-      // let the service worker know we're in "tutorial mode"
-      // so it properly routes any requests from the iframe as it does
-      // other tutorial requests (ie. the HVP video file + widget assets)
-      // turn ON tutorial mode for this tab
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller
-          .postMessage({ type: 'SET_TUTORIAL_MODE', slug: data.id, enabled: true })
-      } else console.error('Tutorial Maker: iframe SW CFG was not properly set')
     })
   }
 
   _quitTutorial () {
-    // let the service worker know to return to it's default behavior
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller
-        .postMessage({ type: 'SET_TUTORIAL_MODE', enabled: false })
-    } else console.error('Tutorial Maker: failed to reset iframe SW to default')
     // clear edit watcher
     NNE.cm.off('change', this._boundEditWatcher)
     // quit hyper video player so it runs the "reset"
@@ -203,13 +190,15 @@ class TutorialMaker extends Widget {
   }
 
   _onVideoTimeUpdate () {
-    const tc = this.hvp.currentTime
-    const payload = {
-      time: tc,
-      keyframe: this.hvp.data.keyframes.find(k => k.timecode === tc),
-      keylog: this.hvp.data.keylogs.find(k => k.timecode === tc)
-    }
-    this._messagePopup('tut-mkr-time-update', payload)
+    setTimeout(() => {
+      const tc = this.hvp.currentTime
+      const payload = {
+        time: tc,
+        keyframe: this.hvp.data.keyframes.find(k => k.timecode === tc),
+        keylog: this.hvp.data.keylogs.find(k => k.timecode === tc)
+      }
+      this._messagePopup('tut-mkr-time-update', payload)
+    }, 2000)
   }
 
   // NOTE: may not need this now, but if ever we need to delay a call to another
