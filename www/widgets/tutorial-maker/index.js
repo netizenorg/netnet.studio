@@ -136,13 +136,14 @@ class TutorialMaker extends Widget {
     }
   }
 
-  _updateFrame (type, time) {
-    let frame = this.hvp.data[type].find(k => k.timecode === time)
+  _updateFrame (type, data) {
+    const { timecode, name } = data
+    let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
       if (!frame) { // create keyframe
         frame = {
-          timecode: time,
-          name: null,
+          timecode,
+          name: `keyframe ${(this.hvp.data[type].length + 1).toString()}`,
           video: this._getSizeAndPosition(this.hvp),
           widgets: this._getCurrentWidgets(),
           netitor: this._getNetitorData(),
@@ -150,8 +151,9 @@ class TutorialMaker extends Widget {
         }
         this.hvp.data[type].push(frame)
         this.hvp.data[type].sort((a, b) => a.timecode - b.timecode)
+        return { frame, add: true }
       } else { // update keyframe
-        // frame.name = ... // TODO get from popup
+        frame.name = name ?? ''
         frame.video = this._getSizeAndPosition(this.hvp)
         frame.widgets = this._getCurrentWidgets()
         frame.netitor = this._getNetitorData()
@@ -160,7 +162,7 @@ class TutorialMaker extends Widget {
     } else if (type === 'keylogs') {
       // TODO
     }
-    return frame
+    return { frame }
   }
 
   // ............................ helpers ......................................

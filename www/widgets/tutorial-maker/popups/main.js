@@ -42,15 +42,8 @@ function openTutorial () {
       FILES.updateFile(`${SWP}/${metadata.id}/index.html`, tut.keyframes[0].code)
     }
     // create timeline markers for keyframes && keylogs
-    const marker = (k, type) => {
-      const t = k.timecode
-      const x = t / metadata.duration * 100
-      timeline.createMarker(x, t, type, (tc) => {
-        msg(`tut-mkr-${type}-click`, tc)
-      })
-    }
-    tut.keyframes.forEach(kf => marker(kf, 'keyframe'))
-    tut.keylogs.forEach(kl => marker(kl, 'keylog'))
+    tut.keyframes.forEach(kf => addMarker(kf, 'keyframe'))
+    tut.keylogs.forEach(kl => addMarker(kl, 'keylog'))
     timeline.updateMarkers()
 
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
@@ -107,13 +100,32 @@ function openMetadata (metadata) {
   overlay('#metadata')
 }
 
+function addMarker (k, type) {
+  const t = k.timecode
+  const x = t / metadata.duration * 100
+  timeline.createMarker(x, t, type, (tc) => {
+    msg(`tut-mkr-${type}-click`, tc)
+  })
+}
+
+function updateMarker (k, type) {
+  // TODO needs configured
+}
+
+function updateKeyframe (data) {
+  const { frame, add } = data
+  if (add) addMarker(frame, 'keyframe')
+  else updateMarker(frame, 'keyframe')
+  timeline.updateMarkers()
+}
+
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
 // nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
-nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', TIMECODE))
+nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 nn.get('#download-tutorial').on('click', () => zipper.download())
 
 nn.getAll('button[name]').forEach(btn => {
@@ -121,6 +133,7 @@ nn.getAll('button[name]').forEach(btn => {
     msg('tut-mkr-explain', btn.getAttribute('name'))
   })
 })
+nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 
 // .................... window events
 
@@ -164,7 +177,7 @@ nn.on('message', (e) => {
   } else if (type === 'tut-mkr-video-duration') {
     metadata.duration = payload
   } else if (type === 'tut-mkr-keyframe') {
-    // TODO: select/enable keyframe, payload === keyframe object
+    updateKeyframe(payload)
   } else if (type === 'tut-mkr-keylog') {
     // TODO...
   } else if (type === 'tut-mkr-time-update') {
