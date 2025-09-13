@@ -1,4 +1,4 @@
-/* global JSZip nn metadata Blob FILES recorder */
+/* global JSZip nn metadata Blob FILES recorder fetch */
 const zipper = {
   mimeFromName: (name) => {
     const ext = name.split('.').pop().toLowerCase()
@@ -73,51 +73,61 @@ const zipper = {
     picker.click()
   },
 
-  URLtoBlob: (url) => {
-
+  URLtoBlob: async (url) => {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error('Failed to fetch blob URL.')
+      const blob = await res.blob()
+      return blob
+    } catch (error) {
+      throw new Error('Failed to convert blob URL to Blob: ', error)
+    }
   },
 
   download: async (data = null) => {
-    const video = data || FILES.readFile(`${metadata.id}.mp4`)
-    const tutorial = { metadata: {}, widgets: {}, keyframes: {}, keylogs: {} }
-    // set metadata
-    const keys = ['id', 'title', 'author', 'authorURL', 'duration', 'jsfile', 'description', 'keywords', 'thumbnails']
-    keys.forEach(key => {
-      tutorial.metadata[key] = metadata[key]
-    })
-    // TODO: configure widgets
-    // TODO: configure keyframes
-    // TODO: configure keylogs
+    try {
+      const video = data || FILES.readFile(`${metadata.id}.mp4`)
+      const tutorial = { metadata: {}, widgets: {}, keyframes: {}, keylogs: {} }
+      // set metadata
+      const keys = ['id', 'title', 'author', 'authorURL', 'duration', 'jsfile', 'description', 'keywords', 'thumbnails']
+      keys.forEach(key => {
+        tutorial.metadata[key] = metadata[key]
+      })
+      // TODO: configure widgets
+      // TODO: configure keyframes
+      // TODO: configure keylogs
 
-    const json = JSON.stringify(tutorial, null, 2)
+      const json = JSON.stringify(tutorial, null, 2)
 
-    // handle video data
-    let blob
-    if (video instanceof Blob) blob = video
-    else if (typeof video === 'string' && video.startsWith('blob:')) blob = zipper.URLtoBlob(video)
-    else throw new Error('video must be type Blob or blob URL. type was: ', typeof video)
+      // handle video data
+      let blob
+      if (video instanceof Blob) blob = video
+      else if (typeof video === 'string' && video.startsWith('blob:')) blob = await zipper.URLtoBlob(video)
+      else throw new Error('Video must be type Blob or blob URL. type was: ', typeof video)
 
-    const zip = new JSZip()
-    zip.file('tutorial.json', json)
-    zip.file(
-      data
-        ? metadata.id + (recorder.mimeType.includes('mp4') ? '.mp4' : '.webm')
-        : `${metadata.id}.mp4`,
-      blob,
-      { compression: 'STORE' }
-    )
+      const zip = new JSZip()
+      zip.file('tutorial.json', json)
+      zip.file(
+        data
+          ? metadata.id + (recorder.mimeType.includes('mp4') ? '.mp4' : '.webm')
+          : `${metadata.id}.mp4`,
+        blob,
+        { compression: 'STORE' }
+      )
 
-    const zipBlob = await zip.generateAsync({ type: 'blob' })
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
 
-    //  trigger download
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(zipBlob)
-    a.download = `${metadata.id}.zip`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(a.href)
-
+      //  trigger download
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(zipBlob)
+      a.download = `${metadata.id}.zip`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(a.href)
+    } catch (error) {
+      console.error('Failed to download tutorial: ', error)
+    }
     // TODO: store all the data in FILES.files into a zip file && download it
   }
 }

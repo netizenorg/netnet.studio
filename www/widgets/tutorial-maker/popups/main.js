@@ -114,6 +114,7 @@ nn.get('#open').on('click', openTutorial)
 // nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', TIMECODE))
+nn.get('#download-tutorial').on('click', () => zipper.download())
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
