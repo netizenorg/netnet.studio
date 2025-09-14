@@ -1,6 +1,6 @@
 /* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Timeline Styles ~ ~  ~ ~ ~ ~  ~ ~ */
 
-svg {
+svg#timeline {
   position: absolute;
   inset: 0;
   width: 100vw;

@@ -1,11 +1,8 @@
-/* global nn timeline zipper recorder FILES */
+/* global nn timeline zipper recorder FILES metadata HTMLElement customElements */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
-let TUT_ID = null
-let THUMBNAILS = []
-let DUR = 0
-let JSFILE = false
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
+let modal
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -14,20 +11,27 @@ const msg = (type, payload) => {
 function overlay (ele) {
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
-  if (ele) window.resizeTo(800, 600)
+  if (ele) window.resizeTo(436, 731)
   else window.resizeTo(1000, 300)
+
+  if (ele === '#metadata') {
+    window.resizeTo(420, 850)
+    metadata.init()
+  } else if (ele === '#video-menu') {
+    window.resizeTo(420, 850)
+    recorder.initMenu()
+  }
 }
 
 function openTutorial () {
   // open zip file...
   zipper.open(SWP, async (id, files) => {
-    TUT_ID = id // set tutorial id globally
     const loaded = await FILES.init(id, files) // load files to indexedDB
     console.log('FILES LOADED:', loaded)
     const tut = JSON.parse(files[`${SWP}/${id}/tutorial.json`]) // get tutorial data
-    THUMBNAILS = tut.metadata.thumbnails
-    DUR = tut.metadata.duration
-    JSFILE = tut.metadata.jsfile
+    // load metadata
+    Object.assign(metadata, tut.metadata)
+
     // modify's path so that the service worker resolves requests correctly
     for (const key in tut.widgets) {
       const wig = tut.widgets[key]
@@ -35,57 +39,39 @@ function openTutorial () {
     }
     if (tut.keyframes[0].code && tut.keyframes[0].code !== 'DEFAULT') {
       // update db's index.html (used by SW to render iframe)
-      FILES.updateFile(`${SWP}/${TUT_ID}/index.html`, tut.keyframes[0].code)
+      FILES.updateFile(`${SWP}/${metadata.id}/index.html`, tut.keyframes[0].code)
     }
     // create timeline markers for keyframes && keylogs
-    const marker = (k, type) => {
-      const t = k.timecode
-      const x = t / DUR * 100
-      timeline.createMarker(x, t, type, (tc) => {
-        msg(`tut-mkr-${type}-click`, tc)
-      })
-    }
-    tut.keyframes.forEach(kf => marker(kf, 'keyframe'))
-    tut.keylogs.forEach(kl => marker(kl, 'keylog'))
+    tut.keyframes.forEach(kf => addMarker(kf, 'keyframe'))
+    tut.keylogs.forEach(kl => addMarker(kl, 'keylog'))
     timeline.updateMarkers()
 
+    tut.videoBlob = FILES.readFile(metadata.id + '.mp4')
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
     overlay(null) // remove overlay
   })
 }
 
-function updateMetadata () {
-  const except = ['id', 'thumbnails', 'duration', 'jsfile'] // upated elsewhere
+function updateMetadata (data) {
+  FILES.init(metadata.id, {})
+  msg('tut-mkr-update-metadata', data)
 
-  TUT_ID = nn.get('#metadata input[name="id"]').value
-  const metadata = { id: TUT_ID }
-  nn.getAll('#metadata input').forEach(ele => {
-    const name = ele.getAttribute('name')
-    if (!except.includes(name)) {
-      metadata[name] = ele.value
-    }
-  })
-  metadata.thumbnails = THUMBNAILS
-  metadata.duration = DUR
-
-  // TODO: likely need some validation here,
-  // all required props need to be filled before moving forward
-  msg('tut-mkr-update-metadata', metadata)
-
-  const hasVid = FILES.readFile(`${TUT_ID}.mp4`) || FILES.readFile(`${TUT_ID}.webm`)
+  const hasVid = FILES.readFile(`${metadata.id}.mp4`) || FILES.readFile(`${metadata.id}.webm`)
   if (hasVid) overlay(null)
-  else overlay('#video-recorder')
+  else overlay('#video-menu')
 
-  // NOTE: the TUT_ID is used all over the place && works best if only set once
+  // NOTE: the metadata.id is used all over the place && works best if only set once
   // but we may want to allow the user to change it, so we'll need to make sure
   // to do some cleanup. first things that comes to mind is we'll need to
   // re-run FILES.init(id, files) with the new id name
 }
 
-function updateVideo () {
-  // TODO: need to store video blob to indexedDB
-  // like this >> FILES.updateFile(`${TUT_ID}.mp4`, video-blob)
-  msg('tut-mkr-update-video') // << notifies to load video blob from indexedDB
+function updateVideo (blob) {
+  // NOTE: chrome has issues with "seeking" a video when being served by a SW...
+  // FILES.updateFile(`${TUT_ID}.mp4`, blob) // <-(so can't do this anymore)
+  // ...so instead of requesting the blob from the SW we need to give it to the
+  // HyperVideoPlayer directly...
+  msg('tut-mkr-update-video', blob)
   overlay(null)
   // NOTE: this should only run once per tutorial
   // if they want to re-record the video, they should make a new tutorial
@@ -93,7 +79,11 @@ function updateVideo () {
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   TIMECODE = obj.time
-  const x = obj.time / DUR * 100
+  if (!metadata.duration) {
+    console.log('TUT MKR: skipping videoTimeUpdated, no DUR (duration) set yet')
+    return
+  }
+  const x = obj.time / metadata.duration * 100
   timeline.updatePlayhead(x)
   timeline.clearSelections()
   if (obj.keyframe) {
@@ -117,29 +107,53 @@ function openMetadata (metadata) {
   overlay('#metadata')
 }
 
+function addMarker (k, type) {
+  const t = k.timecode
+  const x = t / metadata.duration * 100
+  timeline.createMarker(x, t, type, (tc) => {
+    msg(`tut-mkr-${type}-click`, tc)
+  })
+}
+
+function updateMarker (k, type) {
+  // TODO needs configured
+}
+
+function updateKeyframe (data) {
+  const { frame, add } = data
+  if (add) addMarker(frame, 'keyframe')
+  else updateMarker(frame, 'keyframe')
+  timeline.updateMarkers()
+}
+
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
-nn.get('#close-metadata').on('click', updateMetadata)
-nn.get('#close-recorder').on('click', updateVideo)
+// nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
-nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', TIMECODE))
+nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+nn.get('#download-tutorial').on('click', () => zipper.download())
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
     msg('tut-mkr-explain', btn.getAttribute('name'))
   })
 })
+nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 
 // .................... window events
 
 nn.on('load', () => {
   timeline.onScrub = (x) => {
-    const time = (x / 100) * DUR
+    const time = (x / 100) * metadata.duration
     msg('tut-mkr-seek', time)
   }
   timeline.init()
+
+  const m = document.createElement('tutorial-modal')
+  nn.get('body').appendChild(m)
+  modal = m
 })
 
 nn.on('resize', () => {
@@ -148,7 +162,8 @@ nn.on('resize', () => {
 })
 
 nn.on('keydown', (e) => {
-  if (e.key === ' ' && e.target.localName !== 'input') {
+  const avoidToggle = ['input', 'textarea']
+  if (e.key === ' ' && !avoidToggle.includes(e.target.localName)) {
     msg('tut-mkr-toggle')
   } else if (e.key === 'ArrowLeft') {
     const frame = timeline.getPrevMarker(TIMECODE)
@@ -163,13 +178,13 @@ nn.on('message', (e) => {
   if (e.origin !== window.location.origin) return
   const { type, payload } = e.data
   if (type === 'tut-mkr-code-update') {
-    FILES.updateFile(`${SWP}/${TUT_ID}/index.html`, payload)
+    FILES.updateFile(`${SWP}/${metadata.id}/index.html`, payload)
   } else if (type === 'tut-mkr-metadata') {
     openMetadata(payload)
   } else if (type === 'tut-mkr-video-duration') {
-    DUR = payload
+    metadata.duration = payload
   } else if (type === 'tut-mkr-keyframe') {
-    // TODO: select/enable keyframe, payload === keyframe object
+    updateKeyframe(payload)
   } else if (type === 'tut-mkr-keylog') {
     // TODO...
   } else if (type === 'tut-mkr-time-update') {
@@ -182,3 +197,36 @@ nn.on('beforeunload', (e) => {
   // so they dont' accidently quit popup and loose tutorial progress
   e.preventDefault(); e.returnValue = ''
 })
+
+// custom modal element
+class TutorialModal extends HTMLElement {
+  constructor (opt) {
+    super()
+  }
+
+  connectedCallback () {
+    this.id = 'tut-mkr-modal'
+    this.style.display = 'none'
+
+    this.innerHTML = '<div class="tut-mkr-modal-content"></div>'
+    this.content = this.querySelector('.tut-mkr-modal-content')
+  }
+
+  openWithHTML (html) {
+    this.clear()
+    this.style.display = 'flex'
+    this.content.innerHTML = html
+  }
+
+  clear () { this.content.innerHTML = '' }
+
+  close (options) {
+    this.style.display = 'none'
+    if (options.clear) this.clear()
+  }
+}
+
+customElements.define('tutorial-modal', TutorialModal)
+window.modal = modal
+window.updateVideo = updateVideo
+window.updateMetadata = updateMetadata

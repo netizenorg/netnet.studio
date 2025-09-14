@@ -1,42 +1,133 @@
 <link rel="stylesheet" href="/core/styles/fonts.css">
 <link rel="stylesheet" href="/core/styles/buttons.css">
 <link rel="stylesheet" href="/core/styles/form-fields.css">
+<link rel="stylesheet" href="/core/styles/base.css">
+<link rel="stylesheet" href="/core/styles/text.css">
 <link rel="stylesheet" href="/custom-elements/misc/reorderable-list/styles.css">
+<link rel="stylesheet" href="/custom-elements/misc/file-drop/styles.css">
 <link rel="stylesheet" href="main.css">
+<!-- <link rel="stylesheet" href="www/core/netitor/src/css/main.css"> -->
+<link rel="stylesheet" href="metadata.css">
+<link rel="stylesheet" href="recorder.css">
 <link rel="stylesheet" href="timeline.css">
-
 
 <section id="start" class="overlay">
   <button id="new" class="pill-btn pill-btn--secondary">new</button>
-  <button id="open" class="pill-btn pill-btn--secondary">open</button>
+  <button id="open" class="pill-btn pil-btn--secondary">open</button>
+</section>
+
+<section id="metadata" class="overlay" style="display: none;">
+  <h1>Tutorial Metadata</h1>
+  <input name="id" placeholder="tutorial id (lower case, no spaces)" class="input--lg" required>
+  <input name="title" placeholder="title" class="input--lg" required>
+  <input name="subtitle" placeholder="sub-title" class="input--lg">
+  <input name="author" placeholder="author's name" class="input--lg">
+  <input name="authorURL" placeholder="author's website" class="input--lg">
+  <textarea name="description" placeholder="description of tutorial" class="input--lg"></textarea>
+  <input name="keywords" placeholder="search terms (comma separated)" class="input--lg">
+  <div class='metadata-bottom'>
+    <button id="metadata-close" class="pill-btn pill-btn--secondary">go back</button>
+    <button id="metadata-submit" class="pill-btn pill-btn--secondary">submit</button>
+  </div>
 </section>
 
 
-<section id="metadata" class="overlay" style="display: none;">
-  <input name="id" placeholder="tutorial id (lower case, no spaces)">
-  <input name="title" placeholder="title">
-  <input name="subtitle" placeholder="sub-title">
-  <input name="author" placeholder="author's name">
-  <input name="authorURL" placeholder="author's website">
-  <input name="description" placeholder="description of tutorial">
-  <input name="keywords" placeholder="search terms (comma separated)">
-  <br>
-  <button id="close-metadata" class="pill-btn pill-btn--secondary">done</button>
+<section id="video-menu" class="overlay" style="display: none;">
+  <div>
+    <div id="record-video" class="icon-btn pill-btn pill-btn--secondary">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="11" fill="#FF4545"/>
+        <circle cx="16" cy="16" r="15" stroke="#FF4545" stroke-width="2"/>
+      </svg>
+      <p>record video</p>
+    </div>
+    <div class="or-divider">
+      <hr><p>or</p><hr>
+    </div>
+    <div class="file-drop-cont">
+      <file-drop accept=".mp4" maxFiles="1" maxSize="1GB"></file-drop>
+      <button name="file-drop-submit" class="pill-btn pill-btn--secondary" style="display: none;">submit</button>
+    </div>
+  </div>
 </section>
 
 
 <section id="video-recorder" class="overlay" style="display: none;">
-  <h1>Video Recorder</h1>
-  <!-- TODO: video element && UI for start/stop recording + checkbox to include keylogger or not -->
-  <br>
-  <button id="close-recorder" class="pill-btn pill-btn--secondary">done</button>
+  <div>
+    <div class="v-r-header">
+      <div name="vr-go-back" class="icon-btn pill-btn pill-btn--secondary">
+        <svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L2.41714 8.38621C1.77309 8.77486 1.7726 9.70871 2.41624 10.098L13 16.5" stroke="#C3C3DA" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <!-- <p>go back</p> -->
+      </div>
+      <h1>Video Recorder</h1>
+    </div>
+    <div class="vid-stream-loading">
+      <p>loading recorder...</p>
+    </div>
+    <video name="vid-stream" style="width: 100%;display:none;" autoplay playsinline muted></video>
+    <div class="recorded-videos av-strm-row">
+      <!-- <div style="margin-top: 15px; text-align: center;">
+        <p>⚠️ WARNING!!! AUDIO FEEDBACK ⚠️</p>
+        <p>(mute your audio or use headphones)</p>
+      </div> -->
+    </div>
+    <div class="av-strm-controls" style="display:none;">
+      <!-- video recording controls -->
+      <div class="recording-controls">
+        <div id="start-recording" name="vr-start-rec" class="icon-btn pill-btn pill-btn--secondary">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="11" fill="#FF4545"/>
+            <circle cx="16" cy="16" r="15" stroke="#FF4545" stroke-width="2"/>
+          </svg>
+          <p >record video</p>
+        </div>
+        <div class="b-recording flex">
+          <label class="vr-checkbox">
+            <input name="av-keylog-sync" type="checkbox">
+            <span class="vr-checkmark"></span>
+            include keylogs
+          </label>
+          <div class="tooltip-content closed">
+            <p>Keylogs capture every keystroke made while the video is being recorded.</p>
+          </div>
+          <div class="pill-btn pill-btn--secondary">?</div>
+        </div>
+
+        <!-- TODO: flip camera logic  -->
+        <!-- <label class="vr-checkbox">
+          <input name="fc-checkbox" type="checkbox">
+          <span class="vr-checkmark"></span>
+          flip camera
+        </label> -->
+      </div>
+      <!-- post-recording controls -->
+      <div class="playback-controls" style="display: none;">
+        <div></div>
+        <div id="start-recording" name="vr-edit-tut" class="icon-btn pill-btn pill-btn--secondary">
+          <p>edit tutorial</p>
+          <svg width="31" height="20" viewBox="0 0 31 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28.75 10L2 10" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+            <path d="M17.5 18L28.2519 10.832C28.8457 10.4362 28.8457 9.56376 28.2519 9.16794L17.5 2" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="av-str-post-msg" style="margin-top: 15px">
+      <button name="dl-kl">download</button>
+    </div> -->
+  <!-- <button id="close-recorder" class="pill-btn pill-btn--secondary">done</button> -->
+  </div>
 </section>
 
 
 <nav>
   <button id="open-metadata" class="pill-btn pill-btn--secondary">settings</button>
+  <button id="create-keyframe" class="pill-btn pill-btn--secondary">create keyframe</button>
   <button id="update-keyframe" class="pill-btn pill-btn--secondary">update keyframe</button>
   <button name="nav-infos" class="pill-btn pill-btn--secondary">?</button>
+  <button id="download-tutorial" class="pill-btn pill-btn--secondary">download</button>
 </nav>
 
 <div class="labels">
@@ -45,7 +136,7 @@
 </div>
 
 <div id="playhead-marker"></div>
-<svg viewBox="0 0 100 100" preserveAspectRatio="none"  xmlns="http://www.w3.org/2000/svg">
+<svg id="timeline" viewBox="0 0 100 100" preserveAspectRatio="none"  xmlns="http://www.w3.org/2000/svg">
   <line x1="0" y1="30" x2="100" y2="30" stroke="var(--netizen-tag)" stroke-width="2" vector-effect="non-scaling-stroke"/>
   <line x1="0" y1="70" x2="100" y2="70" stroke="var(--netizen-attribute)" stroke-width="2" vector-effect="non-scaling-stroke"/>
 
@@ -63,9 +154,11 @@
 
 <script src="/nn.min.js"></script>
 <script src="/custom-elements/misc/reorderable-list/index.js"></script>
+<script src="/custom-elements/misc/file-drop/index.js"></script>
 <script src="jszip.min.js"></script>
 <script src="file-manager.js"></script>
 <script src="zip-tools.js"></script>
 <script src="timeline.js"></script>
 <script src="recorder.js"></script>
+<script src="metadata.js"></script>
 <script src="main.js"></script>

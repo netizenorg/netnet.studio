@@ -30,10 +30,14 @@
   --netizen-hint-shadow: #515199BF;
   --fg-color: #c76ebc;
   --bg-color: #1c1c36;
+
+  /* tutorial maker custom */
+  --error-red: #FF4545;
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -56,12 +60,13 @@ nav {
 .overlay {
   position: fixed;
   z-index: 100;
-  background: var(--netizen-meta);
+  background: var(--bg-color);
   inset: 0;
   padding: 20px;
+  overflow-y: auto;
 }
 
-.overlay button {
+.overlay > button {
   color: var(--bg-color);
   background: var(--netizen-meta);
   border-color: var(--bg-color);
@@ -69,4 +74,54 @@ nav {
 
 .overlay button:hover {
   background: var(--netizen-text);
+}
+
+#tut-mkr-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 105;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(14, 14, 30, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#tut-mkr-modal .tut-mkr-modal-content {
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  margin: 30px;
+  border-radius: 10px;
+  background: var(--bg-color);
+  color: var(--netizen-meta);
+  text-align: center;
+  box-shadow: 0px 4px 9.4px 6px rgba(0, 0, 0, 0.25);
+}
+
+#tut-mkr-modal .buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+}
+
+#tut-mkr-modal a {
+  color: var(--netizen-tag);
+  transition: ease-in-out .1s;
+}
+#tut-mkr-modal a:hover {
+  color: var(--netizen-attribute);
+}
+
+#tut-mkr-modal p.warning {
+  color: var(--error-red);
+  font-size: 0.8rem;
 }

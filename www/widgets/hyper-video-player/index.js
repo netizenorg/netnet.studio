@@ -99,8 +99,7 @@ class HyperVideoPlayer extends Widget {
   // ----------------------------- video controls ------------------------------
 
   updateVideo (name, folder) {
-    const tutRoot = this.making ? 'TUTORIAL_MAKER' : 'tutorials'
-    const path = folder ? `${tutRoot}/${folder}` : 'videos'
+    const path = folder ? `tutorials/${folder}` : 'videos'
 
     const updateMetadata = () => {
       this._videoMetaDataListener = true
@@ -108,8 +107,14 @@ class HyperVideoPlayer extends Widget {
         this.data.metadata.duration = this.video.duration
       } else setTimeout(() => updateMetadata(), 100)
     }
+
     if (path !== 'videos' && !this._videoMetaDataListener) {
       this.video.on('loadeddata', updateMetadata)
+    }
+
+    if (this.making) {
+      this.video.setAttribute('src', this.data.videoBlob)
+      return
     }
 
     if (this.video.canPlayType('video/mp4') !== '') {

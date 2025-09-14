@@ -471,7 +471,7 @@ class ProjectFiles extends Widget {
           this.projectData = { url, branch, name: repo }
           this.dbName = repo
 
-          await this._initServiceWorker() // setup service worker
+          this._swControl = this._initServiceWorker() // setup service worker
           this.db = await this._initIndexedDB() // setup indexedDB
           await this._clearIndexedDB() // clear this store for fresh project state
           await this._saveFilesToIndexedDB()
@@ -1015,23 +1015,61 @@ class ProjectFiles extends Widget {
     window.convo = new Convo(this.convos, 'oh-no-error')
   }
 
-  _readyToRender () {
-    return navigator.serviceWorker.controller && this.listAllFiles().length > 0
+  waitForSWControl (timeoutMs = 1200) {
+    return new Promise(resolve => {
+      // already controlled?
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) return resolve(true)
+
+      let done = false
+      const finish = ok => { if (!done) { done = true; cleanup(); resolve(ok) } }
+
+      const onChange = () => finish(true)
+      const cleanup = () => {
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.removeEventListener('controllerchange', onChange)
+        }
+        clearTimeout(timer)
+      }
+
+      // when the active worker is ready, we may or may not be controlled; if still not, wait a bit more
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(() => {
+          if (navigator.serviceWorker.controller) finish(true)
+        })
+        navigator.serviceWorker.addEventListener('controllerchange', onChange)
+      }
+
+      const timer = setTimeout(() => finish(false), timeoutMs)
+    })
   }
 
   _setCustomRenderer () {
-    NNE.customRender = (eve) => {
-      if (this._readyToRender()) {
-        if (NNE.code === this.readFile(this.viewing)) {
-          eve.iframe.src = this.rendering || 'index.html'
-          if (this.log) console.log('rendered this.rendering')
+    NNE.customRender = async (eve) => {
+      // await (this._swControl || Promise.resolve())
+
+      // don't hang here forever on hard-reload
+      const controlled = await this.waitForSWControl(1200)
+
+      if (this.listAllFiles().length > 0) {
+        const page = (this.rendering || 'index.html').replace(/^\/+/, '')
+        const swPath = `/PROJ__${encodeURIComponent(this.dbName)}`
+
+        if (!controlled) {
+          // if not controlled, probably b/c they hard refreshed, let them know...
+          eve.update('<div style="font:24px system-ui;padding:1rem">Seems you may have refreshed the page with a "hard reload". Refresh netnet once more normally for things to reboot correctly ( ◕ ◞ ◕ )</div>')
+          return
         }
-        if (!this.files[this.rendering].code) {
-          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${this.rendering}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
+
+        eve.iframe.src = `${swPath}/${page}`
+
+        if (this.log) console.log('rendered via SW path')
+
+        if (!this.files[page]?.code) {
+          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${page}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
         }
       } else {
         // eve.iframe.srcdoc = eve.code
-        eve.update(eve.code)
+        eve.update(eve.code) // srcdoc fallback only when no files yet
         if (this.log) console.log('rendered default')
       }
     }
@@ -1225,7 +1263,7 @@ class ProjectFiles extends Widget {
         }
         this.dbName = res.repo
 
-        await this._initServiceWorker() // setup service worker
+        this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
         await this._clearIndexedDB() // clear this store for fresh project state
         await this._saveFilesToIndexedDB()
@@ -1430,35 +1468,34 @@ class ProjectFiles extends Widget {
 
     if (this.log) console.log('ProjectFiles: service worker loading')
 
-    // Listen for messages from the service worker
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('SW now controlling')
+    })
+
     navigator.serviceWorker.addEventListener('message', event => {
-      if (this.log) console.log('ProjectFiles: Message received from service worker:', event.data)
-      // Handle the data received from the service worker
+      if (this.log) console.log('ProjectFiles: Message from SW:', event.data)
       this._handleServiceWorkerMessage(event.data)
     })
 
-    try { // setup the service worker
-      const reg = await navigator.serviceWorker.register('/files-db-service-worker.js', {
-        scope: '/'
-      })
+    try {
+      const reg = await navigator.serviceWorker.register('/files-db-service-worker.js', { scope: '/' })
 
-      // ensure this page is controlled, then send this tab's config
-      const sendCfg = () => {
-        const ctrl = navigator.serviceWorker.controller
-        if (ctrl) {
-          ctrl.postMessage({
-            dbName: this.dbName,
-            dbVersion: this.dbVersion,
-            storeName: this.storeName,
-            objName: this.objName,
-            log: this.log
-          })
-        }
+      // wait until the SW is active
+      await navigator.serviceWorker.ready
+
+      // ensure the current page is actually *controlled*
+      if (!navigator.serviceWorker.controller) {
+        await new Promise(resolve => {
+          const onChange = () => {
+            navigator.serviceWorker.removeEventListener('controllerchange', onChange)
+            resolve()
+          }
+          navigator.serviceWorker.addEventListener('controllerchange', onChange, { once: true })
+        })
       }
 
-      // once ready (or immediately if already controlled)
-      if (navigator.serviceWorker.controller) sendCfg()
-      else navigator.serviceWorker.addEventListener('controllerchange', sendCfg)
+      // NOTE: for messaging (in case we need it again in the future)
+      // navigator.serviceWorker.controller.postMessage()
 
       return reg.active || reg.waiting || reg.installing
     } catch (error) {
