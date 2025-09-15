@@ -90,7 +90,6 @@
   padding-left: 20px;
   color: var(--netizen-meta);
   text-decoration: none;
-  transition: all 0.2s ease;
   overflow: hidden;
 }
 

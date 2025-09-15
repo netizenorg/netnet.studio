@@ -21,7 +21,7 @@ class ProjectFiles extends Widget {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 0.1)</span>'
+    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
     this.width = 450
     // this.shaDict = {}
 
@@ -66,7 +66,7 @@ class ProjectFiles extends Widget {
       svg: 'image/svg+xml',
       ico: 'image/x-icon',
       webp: 'image/webp',
-      // fonts
+      // fonts (include .ext b/c finders/browsers screw up font mimeTypes)
       woff: 'font/woff',
       woff2: 'font/woff2',
       ttf: 'font/ttf',
@@ -142,13 +142,6 @@ class ProjectFiles extends Widget {
         <div class="proj-files__disclaimer">
           ${loggedIn ? loggedInMsg : loggedOutMsg}
         </div>
-        <div class="proj-files__beta">
-          <h1>Beta Agreement</h1>
-          <p>
-            THERE MAY BE BUGS! This widget and the accompanying Version Control widget are in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. Keep watch for glitches and/or losses of data that may result from using these widgets while they're in development. <br><br>If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
-          </p>
-          <button class="pill-btn pill-btn--secondary" style="margin-top: 20px;">Got it!</button>
-        </div>
         <!-- if project is open -->
         <div class="proj-files__header">
           <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
@@ -165,24 +158,15 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
 
     this.ele.querySelector('.git-btn').addEventListener('click', () => this._launchGit())
-
-    this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
-      this._agreed2beta = true
-      this._showHideDivs()
-      const { x, y } = this._openSpot()
-      this.update({ left: x, top: y }, 500)
-    })
   }
 
   _showHideDivs () {
-    const a = this._agreed2beta
     const op = this.projectData.name
 
     this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
 
-    this.$('.proj-files__beta').style.display = op && !a ? 'block' : 'none'
-    this.$('.proj-files__header').style.display = op && a ? 'flex' : 'none'
-    this.$('.proj-files__list').style.display = op && a ? 'block' : 'none'
+    this.$('.proj-files__header').style.display = op ? 'flex' : 'none'
+    this.$('.proj-files__list').style.display = op ? 'block' : 'none'
 
     this.keepInFrame()
   }
@@ -486,26 +470,28 @@ class ProjectFiles extends Widget {
           this._setCustomRenderer()
 
           // load all the data
+
           Object.entries(res.data).forEach((arr) => {
             const name = arr[0]
             const data = arr[1]
-            const mimetype = this._getMimeType(name)
-            // this.files[name] = data // NOTE: no longer storing all the github data
+            const mt = this._getMimeType(name)
+            const textMimes = ['application/json', 'image/svg+xml']
+            const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
             this.files[name] = { path: data.path }
             let code // store plain-text/code
-            if (mimetype.split('/')[0] === 'text' || mimetype === 'application/json' || mimetype === 'image/svg+xml') {
+            if (name.split('/').includes('.gitkeep') || isTxt) {
               code = (data.content === '') ? data.download_url : utils.atob(data.content)
               // exception for empty index.html files
               if (name === 'index.html' && data.content === '') code = ''
             } else { // otherwise assume binary file && store blob-url (or github URL)
               // b/c github sends back empty strings for large binary files's content
               code = (data.content === '')
-                ? data.download_url : this._base64ToBlob(data.content, mimetype)
+                ? data.download_url : this._base64ToBlob(data.content, mt)
             }
             this._updateFile(name, code)
           })
 
-          this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+          this.lastCommitFiles = this._snapshotFiles(this.files)
 
           this._updateFilesGUI()
 
@@ -581,7 +567,7 @@ class ProjectFiles extends Widget {
   }
 
   _openMediaViewer (filepath, type) { // TODO: make sure widget fits (might need to scale image down)
-    const urlBlob = this.files[filepath].code
+    const urlBlob = this._toBlobURL(this.files[filepath].code)
 
     let html = `<div style="align-self: flex-end; margin-bottom: 13px;">
       <a href="${urlBlob}" target="_blank">open file in new tab</a>
@@ -612,7 +598,8 @@ class ProjectFiles extends Widget {
   openFile (filepath, skipSave) {
     window.convo.hide()
     this._opening = filepath
-    this._openingCode = this.files[filepath].code
+    this._openingCode = this._toBlobURL(this.files[filepath].code)
+
     this.convos = window.CONVOS[this.key](this)
     const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'webp']
     const txts = ['html', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml', 'svg']
@@ -634,7 +621,7 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'cname'); return
     } else if (!filepath.includes('.gitkeep') && !txts.includes(ext) && !txts.includes(ext.toLowerCase())) {
       window.convo = new Convo(this.convos, 'unknown-format2'); return
-    } else if (this.files[filepath].code.startsWith('https://raw.')) {
+    } else if (typeof this.files[filepath].code === 'string' && this.files[filepath].code.startsWith('https://raw.')) {
       this._jsLibPath = this.files[filepath].code
       this.convos = window.CONVOS[this.key](this)
       if (filepath.endsWith('.js')) window.convo = new Convo(this.convos, 'js-too-big')
@@ -661,6 +648,7 @@ class ProjectFiles extends Widget {
     }
     this.viewing = filepath
     this._opening = null
+    if (this._openingCode) URL.revokeObjectURL(this._openingCode)
     this._openingCode = null
 
     if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
@@ -688,7 +676,11 @@ class ProjectFiles extends Widget {
     }
 
     setTimeout(() => {
+      if (!nn.get('load-curtain').showing) return
+      // run on initial load only
       NNW.menu.switchFace('default')
+      const { x, y } = this._openSpot()
+      this.update({ left: x, top: y }, 500)
       nn.get('load-curtain').hide()
       if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
@@ -797,6 +789,7 @@ class ProjectFiles extends Widget {
     const allowedTypes = Object.values(this.mimeTypes)
     allowedTypes.push('application/x-javascript')
     allowedTypes.push('application/ogg')
+    allowedTypes.push('.woff', '.woff2', '.ttf', '.otf')
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = allowedTypes.join(',')
@@ -921,64 +914,85 @@ class ProjectFiles extends Widget {
     return { x, y }
   }
 
+  _snapshotFiles (files) {
+    const snap = {}
+    for (const [path, f] of Object.entries(files || {})) {
+      // shallow copy; keep the exact Blob/string reference
+      snap[path] = { path: f.path, code: f.code }
+    }
+    return snap
+  }
+
   async resetChanges () {
-    this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+    this.lastCommitFiles = this._snapshotFiles(this.files)
     this.changes = await this.computeChanges()
     return this.changes
   }
 
   async computeChanges () {
-    const oldFiles = this.lastCommitFiles
-    const newFiles = this.files
+    const oldFiles = this.lastCommitFiles || {}
+    const newFiles = this.files || {}
 
-    // helper for turning a blob: URL into a bare Base64 string
-    const toBase64 = async blobUrl => {
-      const res = await window.fetch(blobUrl, { mode: 'cors' })
-      const blob = await res.blob()
-      return new Promise((resolve, reject) => {
-        const reader = new window.FileReader()
-        reader.onloadend = () => {
-          // strip off "data:*/*;base64," prefix
-          resolve(reader.result.split(',')[1])
+    const toBase64 = async (src) => {
+      if (src instanceof window.Blob) {
+        const buf = await src.arrayBuffer()
+        // fast btoa for big arrays
+        let binary = ''
+        const bytes = new Uint8Array(buf)
+        const chunk = 0x8000
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
         }
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      })
+        return window.btoa(binary)
+      }
+      if (typeof src === 'string' && src.startsWith('blob:')) {
+        const r = await window.fetch(src)
+        return toBase64(await r.blob())
+      }
+      if (typeof src === 'string' && src.startsWith('data:')) {
+        return src.split('base64,')[1] || ''
+      }
+      return '' // or throw if you prefer
     }
 
+    const isBinary = (v) =>
+      v instanceof window.Blob ||
+      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
+
     const changes = []
-    const allPaths = new Set([
-      ...Object.keys(oldFiles),
-      ...Object.keys(newFiles)
-    ])
+    const allPaths = new Set([...Object.keys(oldFiles), ...Object.keys(newFiles)])
 
     for (const path of allPaths) {
-      const oldEntry = oldFiles[path]
-      const newEntry = newFiles[path]
+      const prev = oldFiles[path]
+      const curr = newFiles[path]
 
-      if (!oldEntry && newEntry) {
-        // CREATE
+      if (!prev && curr) {
         const change = { action: 'create', path }
-        if (newEntry.code.startsWith('blob:')) {
-          change.isBinary = true
-          change.content = await toBase64(newEntry.code)
-        } else {
-          change.content = newEntry.code
-        }
+        change.isBinary = isBinary(curr.code)
+        change.content = change.isBinary ? await toBase64(curr.code) : (curr.code || '')
         changes.push(change)
-      } else if (oldEntry && !newEntry) {
-        // DELETE
+        continue
+      }
+
+      if (prev && !curr) {
         changes.push({ action: 'delete', path })
-      } else if (oldEntry && newEntry && oldEntry.code !== newEntry.code) {
-        // UPDATE
-        const change = { action: 'update', path }
-        if (newEntry.code.startsWith('blob:')) {
-          change.isBinary = true
-          change.content = await toBase64(newEntry.code)
-        } else {
-          change.content = newEntry.code
+        continue
+      }
+
+      if (prev && curr) {
+        const a = prev.code
+        const b = curr.code
+
+        let same = false
+        if (typeof a === 'string' && typeof b === 'string') same = a === b
+        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b // Blob identity
+
+        if (!same) {
+          const change = { action: 'update', path }
+          change.isBinary = isBinary(b)
+          change.content = change.isBinary ? await toBase64(b) : (b || '')
+          changes.push(change)
         }
-        changes.push(change)
       }
     }
 
@@ -1130,24 +1144,26 @@ class ProjectFiles extends Widget {
     return path
   }
 
-  _base64ToBlob (base64, mimeType) {
-    mimeType = mimeType || ''
-    const sliceSize = 1024
-    const byteCharacters = window.atob(base64)
-    const byteArrays = []
+  _toBlobURL (c) { // convert files[path].code into URL
+    if (typeof c === 'string' && (c.startsWith('blob:') || c.startsWith('http'))) return c
+    else if (c instanceof window.Blob) return URL.createObjectURL(c)
+    else return null
+  }
 
-    for (let offset = 0, len = byteCharacters.length; offset < len; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize)
-      const byteNumbers = new Array(slice.length)
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i)
-      }
-      const byteArray = new Uint8Array(byteNumbers)
-      byteArrays.push(byteArray)
+  _base64ToBlob (base64, mimeType = '') {
+    const binary = window.atob(base64)
+    const len = binary.length
+    const chunkSize = 1 << 20 // 1MB
+    const parts = []
+
+    for (let i = 0; i < len; i += chunkSize) {
+      const slice = binary.slice(i, i + chunkSize)
+      const arr = new Uint8Array(slice.length)
+      for (let j = 0; j < slice.length; j++) arr[j] = slice.charCodeAt(j)
+      parts.push(arr)
     }
 
-    const blob = new window.Blob(byteArrays, { type: mimeType })
-    return URL.createObjectURL(blob)
+    return new window.Blob(parts, { type: mimeType })
   }
 
   _base64ToText (base64) {
@@ -1169,10 +1185,28 @@ class ProjectFiles extends Widget {
     } else { // update existing file
       const oldCode = this.files[filePath].code
       this.files[filePath].code = fileContent
-      if (!oldCode) this._updateFilesGUI() // ren-render to remove "(empty file)"
+      if (!oldCode) this._updateFilesGUI() // re-render to remove "(empty file)"
       else this._colorizeChanges()
     }
     await this._saveFilesToIndexedDB()
+  }
+
+  _removeRedundantGitkeeps () {
+    const folders = {} // group keys by parent folder
+    for (const path of Object.keys(this.files)) {
+      const parts = path.split('/')
+      const name = parts.pop()
+      const folder = parts.join('/') || ''
+      if (!folders[folder]) folders[folder] = []
+      folders[folder].push({ name, full: path })
+    }
+    // delete .gitkeep when the folder has another entry
+    for (const entries of Object.values(folders)) {
+      const idx = entries.findIndex(e => e.name === '.gitkeep')
+      if (idx !== -1 && entries.length > 1) {
+        delete this.files[entries[idx].full]
+      }
+    }
   }
 
   _updateViewingFile () {
@@ -1284,7 +1318,7 @@ class ProjectFiles extends Widget {
           this._updateFile(name, arr[1])
         })
 
-        this.lastCommitFiles = JSON.parse(JSON.stringify(this.files))
+        this.lastCommitFiles = this._snapshotFiles(this.files)
 
         this._updateFilesGUI()
 
@@ -1321,15 +1355,20 @@ class ProjectFiles extends Widget {
 
   _postUpload () {
     const cpath = this._rightClicked.dataset.path
-    const type = this._fpathExists(cpath)
-    const path = type === 'folder' ? cpath : this._getSubPath(cpath)
+    const fof = this._fpathExists(cpath)
+    const path = fof === 'folder' ? cpath : this._getSubPath(cpath)
     const allowedTypes = Object.values(this.mimeTypes)
     allowedTypes.push('application/x-javascript')
     allowedTypes.push('application/ogg')
     const file = this._uploadedFile
+    let type = file.type
     if (!file) return console.error('project-files: upload file faild, no file data to uplaod')
-
-    if (allowedTypes.length > 0 && !allowedTypes.includes(file.type)) {
+    // finders/browsers screw up font mimeTypes, this corrects for that
+    const ext = file.name.split('.').pop().toLowerCase()
+    const fmt = ['woff', 'woff2', 'ttf', 'otf']
+    if (fmt.includes(ext)) type = `font/${ext}`
+    // ....
+    if (allowedTypes.length > 0 && !allowedTypes.includes(type)) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unknown-format')
       this._uploadedFile = {}
@@ -1340,14 +1379,14 @@ class ProjectFiles extends Widget {
       this._uploadedFile = {}
     } else {
       nn.get('load-curtain').show('upload.html', { filename: file.name })
-      const isTextType = this._isTxt(file.name, file.type)
+      const isTextType = this._isTxt(file.name, type)
       const reader = new window.FileReader()
       reader.onloadend = async () => {
-        // console.log({ name: file.name, type: file.type, data })
+        // console.log({ name: file.name, type: type, data })
         let data = reader.result
-        if (!isTextType && file.type !== 'image/svg+xml') {
-          data = this._base64ToBlob(data.split(',')[1], file.type)
-        } else if (file.type === 'image/svg+xml') {
+        if (!isTextType && type !== 'image/svg+xml') {
+          data = this._base64ToBlob(data.split(',')[1], type)
+        } else if (type === 'image/svg+xml') {
           data = utils.atob(data.split(',')[1])
         }
         const filepath = path ? `${path}/${file.name}` : file.name
@@ -1364,7 +1403,8 @@ class ProjectFiles extends Widget {
   async _postDeletion (filepath) {
     // nn.get('load-curtain').show('delete.html')
     if (this.files[filepath]) {
-      if (this.files[filepath].code.indexOf('blob') === 0) {
+      const c = this.files[filepath].code
+      if (typeof c === 'string' && c.indexOf('blob') === 0) {
         URL.revokeObjectURL(this.files[filepath].code) // for memory management
       }
       delete this.files[filepath]
@@ -1388,9 +1428,12 @@ class ProjectFiles extends Widget {
     const dup = this._fpathExists(newPath)
 
     const renameFile = (newPath, oldPath) => {
-      this.files[newPath] = JSON.parse(JSON.stringify(this.files[oldPath]))
-      this.files[newPath].path = newPath
+      if (!oldPath || !newPath || newPath === oldPath) return
+      const entry = this.files[oldPath]
+      if (!entry) return
       delete this.files[oldPath]
+      entry.path = newPath
+      this.files[newPath] = entry
     }
 
     let errConvo
@@ -1412,6 +1455,8 @@ class ProjectFiles extends Widget {
       })
     }
 
+    this._removeRedundantGitkeeps()
+
     // update database && tree view
     await this._saveFilesToIndexedDB()
     if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
@@ -1428,9 +1473,12 @@ class ProjectFiles extends Widget {
     const dup = this._fpathExists(newPath)
 
     const renameFile = (newPath, oldPath) => {
-      this.files[newPath] = JSON.parse(JSON.stringify(this.files[oldPath]))
-      this.files[newPath].path = newPath
+      if (!oldPath || !newPath || newPath === oldPath) return
+      const entry = this.files[oldPath]
+      if (!entry) return
       delete this.files[oldPath]
+      entry.path = newPath
+      this.files[newPath] = entry
     }
 
     if (dup) {
@@ -1448,6 +1496,9 @@ class ProjectFiles extends Widget {
           renameFile(updatedPath, oldPath)
         })
       }
+
+      this._removeRedundantGitkeeps()
+
       // update database && tree view
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
@@ -1511,6 +1562,7 @@ class ProjectFiles extends Widget {
     if (this.log) console.log('SW MESSAGE:', message)
     if (message.type === 'BAD_PATHS') {
       for (const path in message.data) {
+        if (path !== this.viewing) continue
         const type = 'warning'
         const badPath = message.data[path].badPath
         const line = message.data[path].lineNo
