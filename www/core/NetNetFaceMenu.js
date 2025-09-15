@@ -94,8 +94,6 @@ class NetNetFaceMenu {
     if (obj.mouth) this.face.mouth = obj.mouth
     if (obj.rightEye) this.face.rightEye = obj.rightEye
 
-    if (obj.leftEye) this._updateFavicon(obj.leftEye)
-
     this.face.lookAtCursor = typeof obj.lookAtCursor === 'boolean'
       ? obj.lookAtCursor : true
 
@@ -216,6 +214,8 @@ class NetNetFaceMenu {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸
 
   _updateFavicon (svg) {
+    // NOTE: this is no longer in use (was causing way too many HTTP reqs before)
+    // leaving it here in case we want to re-use in another context
     if (svg === '.') svg = 'mouth-dot'
     document.querySelector('link[rel="icon"]').href = `images/faces/${svg}.svg`
   }
