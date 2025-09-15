@@ -1191,6 +1191,24 @@ class ProjectFiles extends Widget {
     await this._saveFilesToIndexedDB()
   }
 
+  _removeRedundantGitkeeps () {
+    const folders = {} // group keys by parent folder
+    for (const path of Object.keys(this.files)) {
+      const parts = path.split('/')
+      const name = parts.pop()
+      const folder = parts.join('/') || ''
+      if (!folders[folder]) folders[folder] = []
+      folders[folder].push({ name, full: path })
+    }
+    // delete .gitkeep when the folder has another entry
+    for (const entries of Object.values(folders)) {
+      const idx = entries.findIndex(e => e.name === '.gitkeep')
+      if (idx !== -1 && entries.length > 1) {
+        delete this.files[entries[idx].full]
+      }
+    }
+  }
+
   _updateViewingFile () {
     // runs on each netitor update
     const lastSave = this.readFile(this.viewing)
@@ -1437,6 +1455,8 @@ class ProjectFiles extends Widget {
       })
     }
 
+    this._removeRedundantGitkeeps()
+
     // update database && tree view
     await this._saveFilesToIndexedDB()
     if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
@@ -1476,6 +1496,9 @@ class ProjectFiles extends Widget {
           renameFile(updatedPath, oldPath)
         })
       }
+
+      this._removeRedundantGitkeeps()
+
       // update database && tree view
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: '${fpath}' renamed to '${newPath}'`)
