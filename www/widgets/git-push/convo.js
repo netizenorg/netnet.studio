@@ -1,18 +1,5 @@
-/* global WIDGETS, NNW, nn, utils */
+/* global WIDGETS, NNW, nn */
 window.CONVOS['git-push'] = (self) => {
-  const updateCommitMessage = (e, t) => {
-    const v = t.$('input').value
-    if (v.length < 1) e.goTo('message-too-short')
-    else if (v.length > 72) e.goTo('message-too-long')
-    else {
-      self._commitMessage = v
-      self.$('button[name="run"]').innerHTML = 'run'
-      self.$('.git-push-widget__cli').innerHTML = `git commit -m "${v}"`
-      e.goTo('git-commit2')
-      utils.afterLayoutTransition(() => self.$('button[name="run"]').focus())
-    }
-  }
-
   const gh = (() => {
     const u = WIDGETS['student-session'].getData('username')
     const o = WIDGETS['student-session'].getData('owner')
@@ -85,20 +72,20 @@ window.CONVOS['git-push'] = (self) => {
     id: 'git-commit',
     content: `${self.include.length === WIDGETS['project-files']?.changes.length ? 'All the changes' : 'The specific files you selected'} have been added to your "stage" and now await your commit. Write a short message describing the changes included in this commit. Then click <code>run</code> to commit it.<br><input style="width:350px" placeholder="what has changed since last commit?">`,
     options: {
-      'ok, ready to commit': (e, t) => updateCommitMessage(e, t),
+      'ok, ready to commit': (e, t) => self._updateCommitMessage(e),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'message-too-short',
     content: 'You forgot to inclue a message. Before I can "push" your changes to GitHub you\'ll need to leave a short message (one sentence) explainig what changed <input style="width:350px" placeholder="what has changed since last commit?">',
     options: {
-      'ok, try now': (e, t) => updateCommitMessage(e, t)
+      'ok, try now': (e, t) => self._updateCommitMessage(e)
     }
   }, {
     id: 'message-too-long',
     content: 'That\'s is too long for a commit message, I need you to keep it below 72 characters <input style="width:350px" placeholder="what has changed since last commit?">',
     options: {
-      'ok, try now': (e, t) => updateCommitMessage(e, t),
+      'ok, try now': (e, t) => self._updateCommitMessage(e),
       'never mind': (e) => e.hide()
     }
   }, {
@@ -111,6 +98,9 @@ window.CONVOS['git-push'] = (self) => {
     options: { 'got it': (e) => e.hide() }
   }, {
     id: 'git-updated',
+    after: () => {
+      self.close()
+    },
     content: `Your <a href="${gh.url}" target="_blank">GitHub repo</a> has been updated with your new commit, it is now part of your project's <a href="${gh.url}/network" target="_blank">version history</a>.`,
     options: {
       'great!': (e) => e.hide(),

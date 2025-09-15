@@ -33,7 +33,7 @@ class TutorialMaker extends Widget {
       } else if (type === 'tut-mkr-get-metadata') { // asked for metadata
         this._messagePopup('tut-mkr-metadata', this.hvp.data.metadata)
       } else if (type === 'tut-mkr-update-video') { // new video data
-        this._updateVideo()
+        this._updateVideo(payload)
       } else if (type === 'tut-mkr-keyframe-click') { // keyframe marker click
         this.hvp.seek(payload)
         const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
@@ -75,30 +75,17 @@ class TutorialMaker extends Widget {
       this.hvp = widget
       this.hvp.making = true
       this.hvp.data = data
-      this.hvp._loadTutorial(data)
+      this.hvp._loadTutorial()
       this._setCustomRenderer()
       this.hvp.video.on('timeupdate', () => this._onVideoTimeUpdate())
-      // let the service worker know we're in "tutorial mode"
-      // so it properly routes any requests from the iframe as it does
-      // other tutorial requests (ie. the HVP video file + widget assets)
-      // turn ON tutorial mode for this tab
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller
-          .postMessage({ type: 'SET_TUTORIAL_MODE', slug: data.id, enabled: true })
-      } else console.error('Tutorial Maker: iframe SW CFG was not properly set')
     })
   }
 
   _quitTutorial () {
-    // let the service worker know to return to it's default behavior
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller
-        .postMessage({ type: 'SET_TUTORIAL_MODE', enabled: false })
-    } else console.error('Tutorial Maker: failed to reset iframe SW to default')
     // clear edit watcher
     NNE.cm.off('change', this._boundEditWatcher)
     // quit hyper video player so it runs the "reset"
-    this.hvp.quit()
+    if (this.hvp) this.hvp.quit()
     this.hvp = null
   }
 
@@ -125,24 +112,27 @@ class TutorialMaker extends Widget {
     }
   }
 
-  _updateVideo () {
+  _updateVideo (blob) {
     if (this.hvp.video.src.includes('videos/screen-saver')) {
       // then we can assume this is the first time we're updating the video
-      const name = this.hvp.data.id
-      this.hvp.updateVideo(name, name)
-      this._messagePopup('tut-mkr-video-duration', this.hvp.duration)
+      this.hvp.video.on('loadeddata', () => {
+        this._messagePopup('tut-mkr-video-duration', this.hvp.duration)
+      })
+      this.hvp.data.videoBlob = blob
+      this.hvp.updateVideo()
     } else {
       console.error('Tutorial Maker: You can only create a video once per tutorial')
     }
   }
 
-  _updateFrame (type, time) {
-    let frame = this.hvp.data[type].find(k => k.timecode === time)
+  _updateFrame (type, data) {
+    const { timecode, name } = data
+    let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
       if (!frame) { // create keyframe
         frame = {
-          timecode: time,
-          name: null,
+          timecode,
+          name: `keyframe ${(this.hvp.data[type].length + 1).toString()}`,
           video: this._getSizeAndPosition(this.hvp),
           widgets: this._getCurrentWidgets(),
           netitor: this._getNetitorData(),
@@ -150,8 +140,9 @@ class TutorialMaker extends Widget {
         }
         this.hvp.data[type].push(frame)
         this.hvp.data[type].sort((a, b) => a.timecode - b.timecode)
+        return { frame, add: true }
       } else { // update keyframe
-        // frame.name = ... // TODO get from popup
+        frame.name = name ?? ''
         frame.video = this._getSizeAndPosition(this.hvp)
         frame.widgets = this._getCurrentWidgets()
         frame.netitor = this._getNetitorData()
@@ -160,7 +151,7 @@ class TutorialMaker extends Widget {
     } else if (type === 'keylogs') {
       // TODO
     }
-    return frame
+    return { frame }
   }
 
   // ............................ helpers ......................................

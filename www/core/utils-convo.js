@@ -49,14 +49,14 @@ window.CONVOS['utils-misc'] = (self) => {
     }
   }, {
     id: 'remix-github-path-issues',
-    content: `That could mean this project contains relative paths to assets in sub-folders I'm having trouble requesting. In these instances I might not render the output properly when experimenting with the code, but you can ${gh.o === a[0] ? 'open' : 'fork'} the project in order to access all the files and appropriate paths which should fix that.`,
+    content: `That could mean this project contains relative paths to assets in sub-folders I'm having trouble requesting. In these instances I might not render the output properly when previewing the project this way, but you can ${gh.o === a[0] ? 'open' : 'fork'} it in order to access all the files and appropriate paths which should fix that.`,
     options: {
       'ok, let\'s do it': (e) => {
         if (gh.o === a[0]) {
           e.hide(); WIDGETS.load('project-files', (w) => w.openProject(a[1]))
         } else e.goTo('agree-to-fork')
       },
-      'no thanks, I\'ll keep experimenting': (e) => e.hide()
+      'no thanks, I\'m just experimenting': (e) => e.hide()
     }
   }, {
     id: 'remix-github-project-auth-redirect',

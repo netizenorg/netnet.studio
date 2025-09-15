@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
+        <span class="screen-reader-only">Open/close mobile menu</span>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>Convos and Passages</h1>
+<p>In these docs we&#39;ll explain how to edit &quot;passages&quot; (netnet&#39;s speech bubbles) as well as how to create new &quot;convos&quot; (a collection of passages associated with a specific widget). These docs assume you&#39;ve already done the following steps covered in the prior section of <a href="the-docs.html">The Docs</a>:</p>
+<ol>
+<li>You have <a href="https://github.com/signup" target="_blank">created a GitHub account</a> and you&#39;re currently <a href="https://github.com/login" target="_blank">logged in</a> to your account.</li>
+<li>You&#39;ve created a &quot;<a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo" target="_blank">fork</a>&quot; of the <a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio repo</a></li>
+</ol>
+<p>If you&#39;re an experienced open source developer and have already <a href="contributor-workflow.html">setup a local development environment</a>, you can alternatively create and/or edit these files in your code editor, refer instead to the <a href="convo-system.html">Convo System</a> docs.</p>
+<h2>Finding a passage in the code</h2>
+<p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. All of netnet&#39;s passage&#39;s are part of of a <code>convo.js</code> file associated with one of netnet&#39;s widgets, which can all be found in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">`www/widgets`</a> folder. With a couple of exceptions:</p>
+<ul>
+<li>any passage where netent explains a piece of code that you double-clicked on, these are part of the netitor sub-module.</li>
+<li>any passage where netnet explains an issue or error that appear when you click on an error marker in the line-number gutters, these are also part of the netitor sub-module</li>
+</ul>
+<p>It might be immediately obvious which widget the passage you want to edit is a part of, but if not you can always <strong>use GitHub&#39;s repo search bar</strong> to find the file that contains the line of dialogue you&#39;re trying to edit. We recommend placing your search withing quote marks <code>&quot; &quot;</code> to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:</p>
+<p><img src="../images/convo-ex1.png" alt="example netnet passage with markup in it"></p>
+<p>This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case <code>&lt;code&gt;</code> tags around the words &quot;run&quot; and &quot;git status&quot;. Additionally, because most of the passage&#39;s text are stored as JavaScript strings in the code, often when a word has an apostraphe like the first word in this passage, &quot;Let&#39;s&quot; it needs to be <em>escaped</em> in the code, which means it acctually looks like this: <code>Let\&#39;s</code>. Here is how that passage actually appears in netnet&#39;s code:</p>
+<pre><code class="javascript">content: 'Let\'s version our changes by creating a new "commit"! Click the &lt;code&gt;run&lt;/code&gt; button in the Terminal of the Version Control widget to run &lt;code&gt;git status&lt;/code&gt;. This will list all the files which have changed since your last commit.',</code></pre>
+<p>For this reason it&#39;s best to search for small snippets of text from a passage and avoid including any of the markuped text (like code blocks and links) as well as any text with apostraphes in it.</p>
+<p>⚠️ <strong>NOTE</strong>: if you have trouble searching your fork of the repo, because GitHub hasn&#39;t yet indexed your code for example, you can always <a href="https://github.com/search?q=repo%3Anetizenorg%2Fnetnet.studio&type=code" target="_blank">search our main repo</a> instead. Your fork should be more or less an exact copy of ours (until you start to make changes) so the convo file should be in the same place.</p>
+<h2>Editing a passage</h2>
+<p>...</p>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>

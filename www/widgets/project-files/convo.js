@@ -145,13 +145,15 @@ window.CONVOS['project-files'] = (self) => {
     content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project.',
     options: {
       cool: (e) => e.hide(),
-      'how?': (e) => e.goTo('explain2')
+      'how?': (e) => e.goTo('explain2'),
+      'beta?': (e) => e.goTo('beta')
     }
   }, {
     id: 'explain2',
     content: 'For example, you could upload additional assets to your project, say you have an image called <code>cat.jpg</code> on your computer, you could upload that file to include it in your project using the <b>Project Files</b> widget and then in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code> to embed that image into your page.',
     options: {
-      'I see': (e) => e.hide()
+      'I see': (e) => e.hide(),
+      'beta?': (e) => e.goTo('beta')
     }
   },
   // ------------- explain title bar
@@ -349,7 +351,8 @@ window.CONVOS['project-files'] = (self) => {
     id: 'project-opened',
     content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (images, fonts, etc) to use in your project. Don\'t forget to save your progress as you work! Feel free to close this widget and re-open it anytime by clicking the "Files" button in the title bar.',
     options: {
-      ok: (e) => e.hide()
+      ok: (e) => e.hide(),
+      'beta?': (e) => e.goTo('beta')
       // 'submit to BrowserFest': (e) => {
       //   if (WIDGETS['browser-fest']) {
       //     WIDGETS['browser-fest'].submit()
@@ -363,6 +366,12 @@ window.CONVOS['project-files'] = (self) => {
     //   document.querySelector('.text-bubble-options > button:nth-child(2)')
     //     .classList.add('opt-rainbow-bg')
     // }
+  }, {
+    id: 'beta',
+    content: 'This is the first version of the <b>Project Files</b> widget, it\'s still in "beta", meaning we\'re still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>',
+    options: {
+      ok: (e) => e.hide()
+    }
   }, { // ---------------------------------------------------- folder stuff ----
     id: 'new-folder',
     content: namingConvos('new-f', 'folder'),

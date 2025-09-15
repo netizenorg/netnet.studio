@@ -6,7 +6,7 @@ class GitPush extends Widget {
     this.key = 'git-push'
     this.keywords = ['git', 'github', 'push', 'version', 'upload', 'publish', 'repo', 'repository']
 
-    this.title = 'Version Control <span style="opacity:0.5;padding-left:10px;">(BETA 0.1)</span>'
+    this.title = 'Version Control <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
     this.width = 680
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
@@ -17,6 +17,8 @@ class GitPush extends Widget {
       if (op && ch.length > 0) window.convo = new Convo(this.convos, 'start-ready')
       else if (op) window.convo = new Convo(this.convos, 'start-not-ready2')
       else window.convo = new Convo(this.convos, 'start-not-ready')
+      this.$('button[name="run"]').focus()
+      utils.afterLayoutTransition(() => this.$('button[name="run"]').focus())
     })
 
     this.steps = this._createSteps()
@@ -98,9 +100,25 @@ class GitPush extends Widget {
     this.$('button[name="run"]').innerHTML = obj.btn || 'run'
     this.$('button[name="run"]').onclick = () => obj.next()
     utils.afterLayoutTransition(() => {
-      if (obj.btn === 'edit') nn.get('text-bubble input').focus()
-      else this.$('button[name="run"]').focus()
+      if (obj.btn === 'edit') { // commit message bubble
+        nn.get('text-bubble input').on('keydown', (e) => {
+          if (e.key === 'Enter') this._updateCommitMessage(window.convo)
+        }).focus()
+      } else this.$('button[name="run"]').focus()
     })
+  }
+
+  _updateCommitMessage (e) {
+    const v = nn.get('text-bubble input').value
+    if (v.length < 1) e.goTo('message-too-short')
+    else if (v.length > 72) e.goTo('message-too-long')
+    else {
+      this._commitMessage = v
+      this.$('button[name="run"]').innerHTML = 'run'
+      this.$('.git-push-widget__cli').innerHTML = `git commit -m "${v}"`
+      e.goTo('git-commit2')
+      utils.afterLayoutTransition(() => this.$('button[name="run"]').focus())
+    }
   }
 
   _createSteps () {

@@ -4,111 +4,28 @@
 this class is used to intercept requests coming from the website (specifically
 the iframe rendering the output) and resolve those by returning the data stored
 in indexedDB via the project-files widget.
- ___________________                                  ________________
-|        www         |                               | service-worker |
-| netitor | <iframe> |<------ send res to -----------|________________|
-|____\_______________|                                           |
+ __________                                           ________________
+|    www   |                                         | service-worker |
+| <iframe> | <--------- send res to -----------------|________________|
+|_ netitor_|                                                      |
       \__                 _______________                        /
-         \__ save to --> | project-files | ->>- pass data to ___/
+         \__ save to --> | project-files | <--- get data from __/
                          |   IndexedDB   |
                          |_______________|
-
- this is also now being used by the Tutorial Maker widget, so any local tutorial
- files (which will eventually be in www/tutorials) which get loaded from a zip
- can be stored in indexedDB while working on tutorials and resolved correctly.
 
 // NOTE: for debug console visit "about:debugging" in Firefox
 */
 
-const DEFAULT_CFG = {
-  dbName: 'netnetDB',
-  dbVersion: 1,
-  storeName: 'filesStore',
-  objName: 'files',
-  log: false
-}
+// NOTE: these must match values in project-files + tut maker's file-manager.js
+// (AVOID CHANGING THESE UNLESS WE HAVE TO FOR SOME UNFORSEEN REASON)
+const DB_VERSION = 1
+const STORE_NAME = 'filesStore'
+const OBJ_NAME = 'files'
 
-const TUTORIAL_MAKER_PATH = 'TUTORIAL_MAKER'
-const TUTORIAL_MAKER_CFG = {
-  dbName: 'tutorialMakerDB',
-  dbVersion: 1,
-  storeName: 'filesStore',
-  objName: 'files',
-  log: false
-}
+const LOG = false // for debugging
 
-// one SW controls all tabs (if multiple projs open); track a config per client
-const clientConfigs = new Map() // clientId -> cfg
-const parentOf = new Map() // childId -> topId
-
-async function getCfgForClientAsync (clientId, requestUrl, preferId) {
-  // 1) exact hit
-  if (clientId && clientConfigs.has(clientId)) return clientConfigs.get(clientId)
-
-  // 2) try to “inherit” from a top-level window with same origin
-  const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-  const reqOrigin = new URL(requestUrl).origin
-
-  // If we know which client id we prefer (e.g. resultingClientId for navigations), try that one’s origin first
-  let candidateTop = null
-  if (preferId) {
-    const prefer = await self.clients.get(preferId)
-    if (prefer) {
-      const topWithCfgSameOrigin = all.find(c =>
-        c.frameType === 'top-level' &&
-        new URL(c.url).origin === reqOrigin &&
-        clientConfigs.has(c.id)
-      )
-      candidateTop = topWithCfgSameOrigin || null
-    }
-  }
-  // Otherwise just pick any top-level same-origin client that already registered a cfg
-  if (!candidateTop) {
-    candidateTop = all.find(c =>
-      c.frameType === 'top-level' &&
-      new URL(c.url).origin === reqOrigin &&
-      clientConfigs.has(c.id)
-    ) || null
-  }
-
-  if (candidateTop) {
-    const cfg = clientConfigs.get(candidateTop.id)
-    // cache it for this nested client so future subresource fetches don’t have to search again
-    if (clientId) {
-      clientConfigs.set(clientId, cfg)
-      parentOf.set(clientId, candidateTop.id)
-    }
-    return cfg
-  }
-
-  // 3) no config known → signal “no project” so you fall through to network
-  return null
-}
-
-// prune configs for closed clients
-async function pruneDeadClients () {
-  const alive = new Set((await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).map(c => c.id))
-  for (const id of clientConfigs.keys()) {
-    if (!alive.has(id)) clientConfigs.delete(id)
-  }
-}
-
-function openDB (cfg) {
-  if (cfg?.log) console.log('[SW] openDB', cfg.dbName)
-  return new Promise((resolve, reject) => {
-    // Open a database, specifying the name and version of specific tab (ie. cfg)
-    const req = indexedDB.open(cfg.dbName, cfg.dbVersion)
-    // Handle database upgrades
-    req.onupgradeneeded = e => {
-      const db = e.target.result
-      if (!db.objectStoreNames.contains(cfg.storeName)) db.createObjectStore(cfg.storeName)
-    }
-    // Handle successful database opening
-    req.onsuccess = e => resolve(e.target.result)
-    // Handle errors in opening the database
-    req.onerror = e => reject(new Error('Failed to open DB: ' + e.target.error))
-  })
-}
+const PROJ_PREFIX = 'PROJ__'
+const TUT_PREFIX = 'TUTORIAL_MAKER'
 
 // NOTE: this method needs to stay in sync with the mimeTypes object in the Project Files widget
 function getMimeType (filePath) {
@@ -151,94 +68,309 @@ function getMimeType (filePath) {
   return mimeTypes[extension]
 }
 
-async function getKVFromDB (key, cfg) {
-  const db = await openDB(cfg)
-  const tx = db.transaction([cfg.storeName], 'readonly')
-  const store = tx.objectStore(cfg.storeName)
+// =============================================================================
+// =============================================================== IDB FUNCTIONS
+// =============================================================================
+
+function openDB (dbName, opts = {}) {
+  const { timeoutMs = 2000 } = opts // <- so we avoid "hanging"
   return new Promise((resolve, reject) => {
-    const getReq = store.get(key)
-    getReq.onsuccess = () => resolve(getReq.result || false)
-    getReq.onerror = () => reject(new Error('IndexedDB read error'))
+    let settled = false
+    const timer = setTimeout(() => {
+      if (settled) return
+      settled = true
+      console.warn('[SW] IDB open timeout for', dbName)
+      reject(new Error('IDB_OPEN_TIMEOUT'))
+    }, timeoutMs)
+
+    const req = indexedDB.open(dbName, DB_VERSION)
+
+    req.onupgradeneeded = e => {
+      const db = e.target.result
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME)
+        if (LOG) console.log(`[SW] Created object store ${STORE_NAME}`)
+      }
+    }
+
+    req.onblocked = () => {
+      console.warn('[SW] IDB open BLOCKED for', dbName, '(another tab holds older version open)')
+    }
+
+    req.onsuccess = e => {
+      if (settled) { e.target.result.close(); return }
+      settled = true
+      clearTimeout(timer)
+      if (LOG) console.log('[SW] Successfully opened database', dbName)
+      resolve(e.target.result)
+    }
+
+    req.onerror = e => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      console.error(`[SW] Failed to open database ${dbName}:`, e.target.error)
+      reject(e.target.error || new Error('IDB_OPEN_ERROR'))
+    }
   })
 }
 
-const getFileFromIndexedDB = async (filePath, cfg) => {
-  const dict = await getKVFromDB(cfg.objName, cfg)
-  if (dict && dict[filePath]) return dict[filePath]
-  return false
-}
+async function getFileFromIndexedDB (dbName, filePath, opts) {
+  try {
+    const db = await openDB(dbName, opts)
+    const transaction = db.transaction([STORE_NAME], 'readonly')
+    const store = transaction.objectStore(STORE_NAME)
+    const getRequest = store.get(OBJ_NAME)
 
-const getAllFilesFromIndexedDB = async (cfg) => {
-  const dict = await getKVFromDB(cfg.objName, cfg)
-  return dict || false
-}
+    return new Promise((resolve, reject) => {
+      getRequest.onsuccess = (event) => {
+        if (getRequest.result && getRequest.result[filePath]) {
+          resolve(getRequest.result[filePath]) // File exists
+        } else {
+          resolve(false) // File does not exist
+        }
+      }
 
-const tryGetFromIDB = async (path, cfg, isIframe) => {
-  // if in tutorial mode and this is an iframe, try prefixed path first
-  if (cfg?.prefix && isIframe) {
-    const prefixed = cfg.prefix + path
-    const hit = await getFileFromIndexedDB(prefixed, cfg)
-    if (hit) return { data: hit, path: prefixed }
+      getRequest.onerror = (event) => {
+        reject(new Error('Error checking file in IndexedDB'))
+      }
+    })
+  } catch (error) {
+    console.error('[SW] Error accessing the database', error)
+    throw new Error('Error accessing the database')
   }
-  // otherwise (or if prefix miss), try the raw path
-  const hit = await getFileFromIndexedDB(path, cfg)
-  if (hit) return { data: hit, path }
-  return { data: null, path }
 }
 
+async function getAllFilesFromIndexedDB (dbName) {
+  try {
+    const db = await openDB(dbName)
+    const transaction = db.transaction([STORE_NAME], 'readonly')
+    const store = transaction.objectStore(STORE_NAME)
+    const getRequest = store.get(OBJ_NAME)
+
+    return new Promise((resolve, reject) => {
+      getRequest.onsuccess = () => {
+        if (getRequest.result) {
+          // An object whose keys are file paths and values are your files
+          resolve(getRequest.result)
+        } else {
+          // No files stored yet
+          resolve(false)
+        }
+      }
+      getRequest.onerror = () => {
+        reject(new Error('Error retrieving files from IndexedDB'))
+      }
+    })
+  } catch (error) {
+    console.error('[SW] Error accessing the database', error)
+    throw new Error('Error accessing the database')
+  }
+}
+
+// =============================================================================
+// ============================================================= HTTP RESPONSES
+// =============================================================================
+
+// NOTE: this used to only handle blob urls (#3 below) but can now handle raw
+// blobs + also generally has better conditional/fallback logic
 async function generateResponse (filePath, data) {
-  try { // NOTE: render .md as HTML (see markdownToHtml in fetch listener below)
-    const mimeType = filePath.endsWith('.md') ? 'text/html; charset=UTF-8' : getMimeType(filePath)
+  try {
+    // NOTE: render .md as HTML (see markdownToHtml in fetch listener below)
+    const mimeType = filePath.endsWith('.md')
+      ? 'text/html; charset=UTF-8'
+      : (getMimeType(filePath) || 'application/octet-stream')
+
+    const baseType = mimeType.split(';')[0].trim()
+    const noStore = baseType.startsWith('text/') ||
+      baseType === 'application/json' ||
+      baseType === 'application/javascript' ||
+      baseType === 'application/xml'
+
     const headers = new Headers({
       'Content-Type': mimeType,
       'Access-Control-Allow-Origin': '*'
     })
-
-    let blob
-    if (data.startsWith('blob:')) {
-      // Fetch the actual Blob data from the blob URL
-      const response = await fetch(data)
-      blob = await response.blob()
-    } else {
-      blob = new Blob([data], { type: mimeType })
+    if (noStore) headers.set('Cache-Control', 'no-store')
+    if (/^(audio|video)\//.test(baseType)) {
+      headers.set('Vary', 'Range')
+      headers.set('Accept-Ranges', 'bytes')
     }
 
-    return new Response(blob, { headers })
-  } catch (error) {
-    console.error('Error generating response', error)
+    // 1) direct binary (best path for fonts/images/audio/video)
+    if (data instanceof Blob) {
+      // optional: Content-Length is nice-to-have
+      try {
+        const buf = await data.arrayBuffer()
+        headers.set('Content-Length', String(buf.byteLength))
+        if (/^(font|audio|video)\//.test(baseType)) headers.set('Accept-Ranges', 'bytes')
+        if (LOG) console.log('[SW] responding from -> Blob')
+        return new Response(buf, { headers })
+      } catch { // fallback: stream Blob as-is if .arrayBuffer() fails
+        if (LOG) console.log('[SW] responding from -> stream Blob')
+        return new Response(data, { headers })
+      }
+    }
+    if (data instanceof ArrayBuffer) {
+      headers.set('Content-Length', String(data.byteLength))
+      if (/^(font|audio|video)\//.test(baseType)) headers.set('Accept-Ranges', 'bytes')
+      if (LOG) console.log('[SW] responding from -> ArrayBuffer')
+      return new Response(data, { headers })
+    }
+    if (data instanceof Uint8Array) {
+      headers.set('Content-Length', String(data.byteLength))
+      if (/^(font|audio|video)\//.test(baseType)) headers.set('Accept-Ranges', 'bytes')
+      if (LOG) console.log('[SW] responding from -> Uint8Array')
+      return new Response(data, { headers })
+    }
+
+    // 2) data:…;base64,… (tiny assets only)
+    if (typeof data === 'string' && data.startsWith('data:')) {
+      const comma = data.indexOf(',')
+      const meta = data.slice(5, comma) // e.g. 'font/woff2;base64'
+      const b64 = data.slice(comma + 1)
+      const bin = window.atob(b64)
+      const arr = new Uint8Array(bin.length)
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i)
+      const mt = meta.split(';')[0] || mimeType
+      headers.set('Content-Type', mt)
+      headers.set('Content-Length', String(arr.byteLength))
+      if (/^(font|audio|video)\//.test(mt)) headers.set('Accept-Ranges', 'bytes')
+      if (LOG) console.log('[SW] responding from -> data:…;base64')
+      return new Response(arr.buffer, { headers })
+    }
+
+    // 3) legacy blob: URL (kept for backward compat)
+    if (typeof data === 'string' && data.startsWith('blob:')) {
+      const res = await fetch(data)
+      const buf = await res.arrayBuffer()
+      headers.set('Content-Length', String(buf.byteLength))
+      if (/^(font|audio|video)\//.test(baseType)) headers.set('Accept-Ranges', 'bytes')
+      if (LOG) console.log('[SW] responding from -> blob:URL')
+      return new Response(buf, { headers })
+    }
+
+    // 4) plain text (html/css/js/md/etc)
+    if (typeof data === 'string') {
+      // you already convert .md → HTML earlier; this just sends the string
+      if (LOG) console.log('[SW] responding from -> plain text')
+      return new Response(new Blob([data], { type: mimeType }), { headers })
+    }
+
+    // 5) last resort: stringify whatever it is
+    const s = String(data ?? '')
+    if (LOG) console.log('[SW] responding from -> stringified !!! fallack')
+    return new Response(new Blob([s], { type: 'text/plain; charset=UTF-8' }), { headers })
+  } catch (err) {
+    console.error('[SW] Error generating response', err)
     throw new Error('Error generating response')
   }
 }
 
-// if a stuent has a large media file (like an image) or .js file (like a minified library) in their GH project
-// it won't load when 'opening a project', instead we store the raw URL to the hosted js file on github
-// this handles (ie. proxies) requesting and returning that large .js file
-async function handleProxyRequest (targetUrl) {
+// if a student has a large media file (like an image) or .js file (like a minified library) in their GH project
+// it won't load when 'opening a project', instead we store the raw URL to the hosted file on github
+// this handles (ie. proxies) requesting and returning that large file
+async function handleProxyRequest (targetUrl, rangeHdr) {
   try {
-    // 1) build a Request so we can set redirect:'follow'
-    const proxyReq = new Request(targetUrl, { mode: 'cors', credentials: 'omit', redirect: 'follow' })
-    const res = await fetch(proxyReq)
-    // 2) if GitHub/raw gave us an error status, bail
-    if (!res.ok) {
-      console.warn('Proxy target returned', res.status, res.statusText)
+    const headers = new Headers()
+    if (rangeHdr) headers.set('Range', rangeHdr)
+
+    const req = new Request(targetUrl, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
+      headers
+    })
+
+    const res = await fetch(req)
+    // 200 or 206 are both fine; just pass it through untouched
+    if (!res.ok && res.status !== 206) {
+      console.warn('[SW] Proxy target returned', res.status, res.statusText)
       return new Response('Failed to fetch resource', { status: 502 })
     }
-    // 3) grab a fresh Headers object to copy back later
-    const headers = new Headers(res.headers)
-    // 4) only read as text if we need to mutate (e.g. JS injection)
-    if (targetUrl.endsWith('.js')) {
-      const body = await res.text()
-      // ensure Content-Type stays correct
-      headers.set('Content-Type', headers.get('Content-Type') || 'application/javascript')
-      return new Response(body, { status: res.status, statusText: res.statusText, headers })
-    }
-    // 5) all other assets (images, CSS, etc.) get streamed straight back
-    return new Response(res.body, { status: res.status, statusText: res.statusText, headers })
+
+    return res
   } catch (err) {
-    console.error('Proxy fetch error:', err)
+    console.error('[SW] Proxy fetch error:', err)
     return new Response('Error: ' + err.message, { status: 500 })
   }
 }
+
+// in Chrome we were having issues seeking (ie. changint currentTime) in videos
+// being resolved by the SW. Sometimes these vids are stored as http://raw
+// urls on GitHub (those are handled separately) but other times they may be
+// Blob's stored in IDB; respondWithRange handles ressolving rquests for
+// "ranges" (ie. video seek) for these videos.
+function parseRangeHeader (hdr, size) {
+  if (!hdr || !hdr.startsWith('bytes=')) return null
+  // we only handle a single range (what browsers send for media)
+  const m = /^bytes=(\d*)-(\d*)$/.exec(hdr)
+  if (!m) return null
+  let start = m[1] === '' ? NaN : parseInt(m[1], 10)
+  let end = m[2] === '' ? NaN : parseInt(m[2], 10)
+
+  if (Number.isNaN(start) && Number.isNaN(end)) return null
+
+  if (Number.isNaN(start)) {
+    // suffix range: last N bytes
+    const n = Math.min(end, size)
+    start = size - n
+    end = size - 1
+  } else {
+    if (Number.isNaN(end) || end >= size) end = size - 1
+  }
+
+  if (start < 0 || start > end || start >= size) return null
+  return { start, end }
+}
+
+async function respondWithRange (filePath, data, rangeHdr, mimeType) {
+  // normalize to a Blob so we can slice() cheaply
+  let blob
+  if (data instanceof Blob) {
+    blob = data
+  } else if (data instanceof ArrayBuffer) {
+    blob = new Blob([data], { type: mimeType || 'application/octet-stream' })
+  } else if (data instanceof Uint8Array) {
+    blob = new Blob([data], { type: mimeType || 'application/octet-stream' })
+  } else {
+    // last-ditch fallback (shouldn’t happen because caller checks isBinary)
+    const s = String(data ?? '')
+    blob = new Blob([s], { type: mimeType || 'application/octet-stream' })
+  }
+
+  const size = blob.size
+  const parsed = parseRangeHeader(rangeHdr, size)
+  if (!parsed) {
+    return new Response('Requested Range Not Satisfiable', {
+      status: 416,
+      headers: {
+        'Content-Range': `bytes */${size}`,
+        'Accept-Ranges': 'bytes',
+        Vary: 'Range'
+      }
+    })
+  }
+
+  const { start, end } = parsed
+  const chunk = blob.slice(start, end + 1)
+
+  const headers = new Headers({
+    'Content-Type': blob.type || mimeType || 'application/octet-stream',
+    'Content-Length': String(chunk.size),
+    'Content-Range': `bytes ${start}-${end}/${size}`,
+    'Accept-Ranges': 'bytes',
+    Vary: 'Range',
+    'Cache-Control': 'no-store'
+  })
+
+  return new Response(chunk, { status: 206, headers })
+}
+
+// =============================================================================
+// ============================================================ MISC FETCH UTILS
+// =============================================================================
 
 // in order to render markdown files
 function markdownToHtml (md) {
@@ -286,38 +418,62 @@ function markdownToHtml (md) {
   return md.trim()
 }
 
-async function findFileReferences (filePath, cfg) {
-  const files = await getAllFilesFromIndexedDB(cfg)
-  const before = ['src="', 'href="', 'url(', 'poster="']
+async function findFileReferences (dbName, filePath) {
+  const files = await getAllFilesFromIndexedDB(dbName)
   const result = {}
   if (!files) return result
 
+  const textExts = new Set(['html', 'htm', 'css', 'js', 'md', 'txt'])
+  const escapeRegExp = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  const rePath = escapeRegExp(filePath)
+  const htmlRe = new RegExp(`(?:src|href|poster)\\s*=\\s*["']?${rePath}["']?`, 'i')
+  const cssRe = new RegExp(`url\\(\\s*["']?${rePath}["']?\\s*\\)`, 'i')
+
   for (const path in files) {
+    const ext = path.split('.').pop().toLowerCase()
+    if (!textExts.has(ext)) continue
+
     const content = files[path]
+    if (typeof content !== 'string') continue
+
     const lines = content.split(/\r?\n/)
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
-      for (const prefix of before) {
-        if (line.includes(prefix + filePath)) {
-          result[path] = {
-            lineNo: i + 1,
-            line: line,
-            badPath: filePath
-          }
-          break
-        }
+      if (htmlRe.test(line) || cssRe.test(line)) {
+        result[path] = { lineNo: i + 1, line, badPath: filePath }
+        break
       }
-      if (result[path]) break
     }
   }
+
   return result
 }
 
 // send a message to the client (see _handleServiceWorkerMessage in project-files widget)
-async function postMessageToClient (clientId, type, data) {
-  const c = await self.clients.get(clientId)
-  if (c) c.postMessage({ type, data })
+async function postMessage (type, data) {
+  // Get all clients that are currently controlled by the service worker
+  const clients = await self.clients.matchAll({
+    type: 'window',
+    includeUncontrolled: true
+  })
+  // Iterate through clients and send messages
+  for (const client of clients) client.postMessage({ type, data })
 }
+
+const normalizePath = p => (p || '').replace(/^\/+/, '')
+
+const parseProjectPath = filePath => {
+  const [first, ...rest] = filePath.split('/')
+  if (!first || !first.startsWith(PROJ_PREFIX)) return null
+  const dbName = decodeURIComponent(first.slice(PROJ_PREFIX.length))
+  const innerPath = rest.join('/') // may be '' (folder root)
+  return { dbName, innerPath }
+}
+
+// =============================================================================
+// ============================================================= EVENT LISTENERS
+// =============================================================================
 
 self.addEventListener('install', (event) => {
   self.skipWaiting() // Forces the waiting service worker to become the active service worker
@@ -329,132 +485,121 @@ self.addEventListener('activate', (event) => {
 
 // receiving messages from the client
 self.addEventListener('message', event => {
-  const id = event?.source?.id
-  if (!id) return
-  const data = event.data || {}
-
-  // ...................... tutorial mode iframe routing ......................
-  if (data.type === 'SET_TUTORIAL_MODE') {
-    if (data.enabled) {
-      const slug = String(data.slug || '').trim()
-      const prefix = slug ? `TUTORIAL_MAKER/${slug}/` : ''
-      clientConfigs.set(id, { ...TUTORIAL_MAKER_CFG, prefix })
-      if (TUTORIAL_MAKER_CFG.log) console.log('[SW] tutorial ON', id, prefix)
-    } else {
-      // turn OFF: remove this tab's cfg and any inherited child mappings
-      clientConfigs.delete(id)
-      if (typeof parentOf !== 'undefined') {
-        for (const [childId, topId] of parentOf.entries()) {
-          if (topId === id) {
-            parentOf.delete(childId)
-            clientConfigs.delete(childId)
-          }
-        }
-      }
-      if (DEFAULT_CFG.log) console.log('[SW] tutorial OFF', id)
-    }
-    pruneDeadClients()
-    return
-  }
-
-  // ...................... project-files mode cfg's ......................
-  if (
-    data.dbName || data.dbVersion || data.storeName || data.objName || typeof data.log === 'boolean'
-  ) {
-    const cfg = {
-      dbName: data.dbName || DEFAULT_CFG.dbName,
-      dbVersion: data.dbVersion || DEFAULT_CFG.dbVersion,
-      storeName: data.storeName || DEFAULT_CFG.storeName,
-      objName: data.objName || DEFAULT_CFG.objName,
-      log: !!data.log
-    }
-    clientConfigs.set(id, cfg)
-    if (cfg.log) console.log('[SW] config set for client', id, cfg)
-    pruneDeadClients()
-  }
+  if (LOG) console.log('[SW] message from client:', event.data)
 })
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     try {
       const request = event.request
+
+      // bypass not GET requests
+      if (request.method !== 'GET') return fetch(request)
+      if (request.method !== 'GET' && LOG) console.log('[SW] bypass non-GET', request.url)
+
       const url = new URL(request.url)
-      const filePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
+      const filePath = normalizePath(url.pathname)
 
-      const clientId = event.resultingClientId || event.clientId
-      const cfg = filePath.startsWith(TUTORIAL_MAKER_PATH + '/')
-        ? TUTORIAL_MAKER_CFG : await getCfgForClientAsync(clientId, url)
+      // bypass sockets && analytics
+      const accept = request.headers.get('accept') || ''
+      const isRealtimeOrAnalytics = url.pathname === '/socket.io' ||
+          url.pathname.startsWith('/socket.io/') ||
+          url.pathname.startsWith('/snt-api/') ||
+          accept.includes('text/event-stream')
+      if (isRealtimeOrAnalytics) return fetch(request)
+      if (isRealtimeOrAnalytics && LOG) console.log('[SW] bypass SNT/socket.io ', url.pathname)
 
-      let isIframe = false // is req coming from iframe or main netnet
-      try {
-        if (clientId) {
-          const cli = await self.clients.get(clientId)
-          isIframe = !!cli && cli.frameType !== 'top-level'
-        }
-      } catch (_) {}
+      const isNav = event.request.mode === 'navigate'
+      const opts = isNav ? { timeoutMs: 1500 } : undefined
 
-      if (request.mode === 'navigate' && cfg?.log) {
-        console.log('[SW] NAV', { path: url.pathname, clientId })
-      }
-      if (cfg?.log) console.log('[SW] fetch', { clientId, filePath, cfg })
-
-      // not an iframe request, then let it pass through
-      const hasProjectCfg = cfg && cfg.dbName && cfg.storeName
-      if (!hasProjectCfg) {
+      // .......................................................................
+      // ------------------------------------------------- TUTORIAL_MAKER lookup
+      if (filePath.startsWith(TUT_PREFIX + '/')) {
+        if (LOG) console.log('[SW] checking TUT:', filePath)
+        const fileData = await getFileFromIndexedDB('tutorialMakerDB', filePath, opts)
+        if (fileData && LOG) console.log('[SW] TUT data found!')
+        if (fileData) return generateResponse(filePath, fileData)
         return fetch(request, { cache: 'no-store' })
       }
 
-      const hosts = ['localhost', 'netnet.studio', 'dev.netnet.studio']
-      const comingFromNetnet = hosts.includes(url.hostname)
+      // .......................................................................
+      // ----------------------------------------------------- PROJ-FILES lookup
+      if (LOG) console.log('[SW] checking path:', filePath)
+      const proj = parseProjectPath(filePath)
 
-      // ----------------------------------------------------- MAIN file lookup
-      // let fileData = await getFileFromIndexedDB(filePath, cfg)
-      // if (cfg?.log) console.warn('[SW] fileData:', fileData)
-      let { data: fileData, path: lookedUpPath } = await tryGetFromIDB(filePath, cfg, isIframe)
-      if (cfg?.log) console.warn('[SW] lookup', { requestPath: filePath, lookedUpPath, hit: !!fileData })
+      if (proj) {
+        const { dbName, innerPath } = proj
+        const lookup = innerPath || 'index.html'
 
-      // ------------------------------------------- FOLDER index.html fallback
-      if (!fileData) {
-        const idx = await tryGetFromIDB(filePath + '/index.html', cfg, isIframe)
-        if (idx.data) {
-          fileData = '⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file... add index.html to the end of the path you navigated to.'
-          lookedUpPath = idx.path
+        if (LOG) console.log('[SW] looking for file in PROJ:', dbName)
+        let fileData = await getFileFromIndexedDB(dbName, lookup, opts)
+
+        // --------------------------- ABSOLUTE URL passthrough (ex: raw GitHub)
+        // now resolves seeking rquests on http://raw.github... vids as well
+        const rangeHdr = request.headers.get('Range')
+        const isMediaPath = /\.(mp4|webm|ogv|mp3|wav|weba|ogg|oga)$/i.test(lookup)
+        const isBinary =
+          fileData instanceof Blob ||
+          fileData instanceof ArrayBuffer ||
+          fileData instanceof Uint8Array
+
+        // local media (bytes in IDB): serve a range slice (for video seeking)
+        if (rangeHdr && isMediaPath && isBinary) {
+          const mt = getMimeType(lookup) || 'application/octet-stream'
+          return respondWithRange(lookup, fileData, rangeHdr, mt)
         }
-      }
-
-      // ----------------------------------------------------- BAD PATHS helper
-      // ex: trying to link (src, href, ) to a local file that does not exist
-      if (!fileData) {
-        const bads = await findFileReferences(filePath, cfg)
-        if (bads && Object.keys(bads).length > 0 && clientId) {
-          await postMessageToClient(clientId, 'BAD_PATHS', bads)
+        // otherwise handle absolute URL (string, ie. http://raw.github...)
+        if (typeof fileData === 'string' && fileData.startsWith('http')) {
+          if (isMediaPath) {
+            if (LOG) console.log('[SW] redirecting media to upstream', lookup)
+            return Response.redirect(fileData, 302)
+          }
+          return handleProxyRequest(fileData, rangeHdr)
         }
-      }
 
-      // ---------------------------- ABSOLUTE URL passthrough (ex: raw GitHub)
-      if (fileData && typeof fileData === 'string' && fileData.startsWith('http') && comingFromNetnet) {
-        if (fileData.startsWith('https://raw.')) return handleProxyRequest(fileData)
-        return fetch(fileData, { cache: 'no-store' })
-      }
-
-      // ------------------------------------------------- SERVE FROM IndexedDB
-      if (fileData) {
-        if (cfg?.log) console.log('[SW] serving from IDB:', lookedUpPath || filePath)
-        let body = fileData
-        if (filePath.endsWith('.html')) {
-          body = `<script>
-            window.onerror = function (message, source, lineno) {
-              window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
-            }
-          </script>` + body
-        } else if (filePath.endsWith('.md')) {
-          body = markdownToHtml(body)
+        // ------------------------------------------ FOLDER index.html fallback
+        // ex: request is for a directory; check if dir has an index file in DB
+        let indexPath
+        if (!fileData && innerPath && !innerPath.includes('.')) {
+          indexPath = innerPath + '/index.html'
+          fileData = await getFileFromIndexedDB(dbName, indexPath, opts)
+          if (fileData) {
+            const body = `⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, but you forgot to specify index.html in your linked path, try writing: ${indexPath}`
+            // NOTE: this wouldn't be a problem in publshed www, but it is here
+            // b/c SW needs a filepath (not dir only) to lokkup + return DB data
+            return generateResponse(indexPath, body)
+          }
         }
-        return generateResponse(filePath, body)
+
+        // ---------------------------------------------------- BAD PATHS helper
+        // ex: trying to link (src, href, ) to a local file that does not exist
+        if (!fileData) {
+          const bads = await findFileReferences(dbName, lookup)
+          if (bads && Object.keys(bads).length > 0) await postMessage('BAD_PATHS', bads)
+        }
+
+        // ------------------------------------------------ SERVE FROM IndexedDB
+        if (fileData) {
+          if (LOG) console.log('[SW] serving:', lookup, ' :: from :', dbName)
+          let body = fileData
+          if (filePath.endsWith('.html')) {
+            body = `<script>
+              window.onerror = function (message, source, lineno) {
+                window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
+              }
+            </script>` + body
+          } else if (filePath.endsWith('.md')) {
+            body = markdownToHtml(body)
+          }
+          return generateResponse(lookup, body)
+        }
+
+        // miss inside project → network
+        return fetch(request, { cache: 'no-store' })
       }
 
       // ------------------------------------------- else, pass request through
-      if (cfg?.log) console.warn('[SW] miss; falling back to network:', filePath)
+      if (LOG) console.warn('[SW] not PROJ; falling back to network:', filePath)
       return fetch(request, { cache: 'no-store' })
     } catch (err) {
       console.error('[SW] fetch error:', err)

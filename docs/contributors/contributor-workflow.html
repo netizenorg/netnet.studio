@@ -4,14 +4,57 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
     <link rel="icon" type="image/png" href="/images/eye.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro"><a href="/">( ◕ ◞ ◕ )</a></span>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">introduction</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/advocates/index.html">advocates</a><ul class="docs__panel__list"></ul></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/index.html">developers</a><ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/contributor-workflow.html">contributor workflow</a></li><li class="docs__panel__list-item"><a class="inline-link" href="/docs/developers/manual-setup.html">manual setup</a></li></ul></li></ul>
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
+        <span class="screen-reader-only">Open/close mobile menu</span>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li></ul>
+              </li></ul>
     </div>
 
     <div class="docs__viewer">
@@ -38,8 +81,7 @@
 <pre><code>git checkout main
 git pull upstream main
 git push origin --delete [FEATURE-NAME]
-git branch --delete [FEATURE-NAME]
-</code></pre>
+git branch --delete [FEATURE-NAME]</code></pre>
 <hr>
 <h2>The Details:</h2>
 <ul>
@@ -60,65 +102,58 @@ git branch --delete [FEATURE-NAME]
 <ol>
 <li>First, <a href="https://guides.github.com/activities/forking/" target="_blank">fork</a> the netnet.studio repo and then clone it to your local computer (replacing &quot;YOUR_USER_NAME&quot; in the git URL below with your own)</li>
 </ol>
-<pre><code>git clone https://github.com/YOUR_USER_NAME/netnet.studio.git
-</code></pre>
+<pre><code>git clone https://github.com/YOUR_USER_NAME/netnet.studio.git</code></pre>
 <ol start="2">
 <li>Then you&#39;ll need to <code>cd</code> (change directory) into the netnet.studio folder and run our setup script.</li>
 </ol>
 <pre><code>cd netnet.studio
-npm run setup
-</code></pre>
+npm run setup</code></pre>
 <p>The setup script will guide you through a series of questions and handle the entire setup for you. You don&#39;t need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we&#39;ve also put together document ion for <a href="Setting-Up-The-Repo-Locally">how to setup a local environment *manually*</a> if you&#39;re curious.</p>
 <h2><a id="run"></a> running netnet locally</h2>
 <p>Assuming you still have a terminal open to the repo&#39;s directory, simply run:</p>
-<pre><code>npm run start
-</code></pre>
+<pre><code>npm run start</code></pre>
 <p>Then visit <a href="http://localhost:8001" target="_blank">http://localhost:8001</a> in the browser (assuming you haven&#39;t changed the default port number in the <code>.env</code> file from 8001 to something else).</p>
 <h2><a id="contribute"></a> making contributions</h2>
 <h4><a id="branch"></a>  setup a feature branch</h4>
 <p>Before you start working on a new feature or bug fix ensure you&#39;re working with the latest version of netnet.studio by pulling updates from our main branch</p>
-<pre><code>git pull upstream main
-</code></pre>
+<pre><code>git pull upstream main</code></pre>
 <p>If that failed, make sure you setup our repo as your remote &quot;upstream&quot; by running <code>git remote -v</code>, if you didn&#39;t setup a remote upstream during the setup you will need to do this manually by running <code>git remote add upstream https://github.com/netizenorg/netnet.studio.git</code></p>
 <p>Create a &quot;feature branch&quot; for the feature/bugfix/etc you plan on working on by running the command below (replacing <code>[FEATURE-NAME]</code> with name for this feature/task)</p>
-<pre><code>git checkout -b [FEATURE-NAME]
-</code></pre>
+<pre><code>git checkout -b [FEATURE-NAME]</code></pre>
 <h4><a id="style"></a> make sure you conform to the style guide</h4>
 <p>We&#39;re using <a href="https://standardjs.com/" target="_blank">standardJS</a> as our style guide, so before commuting/pushing any code you should check that everything&#39;s tidy by running:</p>
-<pre><code>npm run lint
-</code></pre>
+<pre><code>npm run lint</code></pre>
 <p>But that can get annoying, so it&#39;s better to just install a <a href="https://standardjs.com/#are-there-text-editor-plugins" target="_blank">standard plugin</a> for your preferred code editor. This way we do our linting as we code and don&#39;t have to worry about running this command and then going through all the required changes in order to conform to the style guide after the fact.</p>
 <p>When writing any CSS, we&#39;re doing our best to stick to <a href="http://getbem.com/introduction/" target="_blank">BEM</a>, refer to this post on <a href="https://css-tricks.com/bem-101/" target="_blank">CSS-Tricks</a> for a general introduction.</p>
 <h4><a id="push"></a> commit and push your changes</h4>
 <p>Commit significant changes to your feature branch as you work (ensuring you don&#39;t have any linting errors or bugs in your console first):</p>
-<pre><code>git commit -m &quot;a brief but useful message&quot;
-</code></pre>
+<pre><code>git commit -m "a brief but useful message"</code></pre>
 <p>Push your changes to your fork&#39;s feature branch:</p>
-<pre><code>git push origin [FEATURE-NAME]
-</code></pre>
+<pre><code>git push origin [FEATURE-NAME]</code></pre>
 <h4><a id="pr"></a>  create a PR (pull request)</h4>
 <p>When you&#39;re finished <a href="https://github.com/netizenorg/netnet.studio/pulls" target="_blank">create a  PR</a> (pull request) <em>from</em> the feature branch of your form <em>into</em> the main branch of the class repo. The arrow icon in the GitHub PR interface between the two repos being merged conveys the direction of the pull request. <em>NOTE: If you don&#39;t see your fork in the the drop-down menus, you may first need to click on the &quot;compare across forks&quot; link in the PR page</em></p>
 <p>We may start a &quot;review&quot; for your PR before merging it. If we do give you some feedback or request some changes, the PR will remain open during the review and any future commits you push will automatically be registered in the PR page. Once everything looks good we&#39;ll accept your PR and merge your changes with our repo.</p>
 <h4><a id="clean"></a> post-merge clean up</h4>
 <p>Once your PR has been merged, clean things up before starting on your next feature. Check out your main branch and pull the changes we merged from your (and any one else&#39;s) PRs:</p>
 <pre><code>git checkout main
-git pull upstream main
-</code></pre>
+git pull upstream main</code></pre>
 <p>Then delete the feature branch from your remote and local repos:</p>
 <pre><code>git push origin --delete [FEATURE-NAME]
-git branch --delete [FEATURE-NAME]
-</code></pre>
+git branch --delete [FEATURE-NAME]</code></pre>
 <h2><a id="update"></a> updating dependencies</h2>
 <p>During the initial <code>npm run setup</code>, netnet would have installed a series of dependencies. In addition to the server-side (back-end) dependencies, this repo also contains <a href="https://github.com/netizenorg/netnet.studio/blob/main/.gitmodules" target="_blank">git submodules</a> for a couple of the client-side (front-end) dependencies, maintained by us (@netizenorg). Specifically, those are the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a> (itself a collection of other sub-modules) as well as the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a>, netnet&#39;s core code editor.</p>
 <p><strong>occasionally we may update these, if/when that happens you&#39;ll want to pull those updates to your local repository as well.</strong></p>
 <p>To pull updates to the submodules run:</p>
-<pre><code>npm run pull-modules
-</code></pre>
+<pre><code>npm run pull-modules</code></pre>
 <p><strong>NOTE:</strong> we&#39;ve noticed issues running these scripts, where sometimes they don&#39;t actually pull updates (<em>plz open an issue if you think you might know why</em>), but alternatively you can also <code>cd</code> into the individual submodule folders found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/js/core" target="_blank">www/core</a> and pull the code using <code>git pull</code></p>
 
       </div>
     </div>
 
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>

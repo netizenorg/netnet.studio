@@ -5,7 +5,7 @@ const timeline = {
   onScrub: null,
 
   init: () => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     const scrub = nn.get('#playhead-marker')
 
     const toSvgX = clientX => {
@@ -64,7 +64,7 @@ const timeline = {
   },
 
   placeLabels: () => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     const vb = svg.viewBox.baseVal
     const sy = svg.clientHeight / vb.height
     nn.get('.labels > div:nth-child(1)').css({ top: 30 * sy })
@@ -72,7 +72,7 @@ const timeline = {
   },
 
   updateMarkers: () => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     const vb = svg.viewBox.baseVal
     const sx = svg.clientWidth / vb.width
     const sy = svg.clientHeight / vb.height
@@ -94,7 +94,7 @@ const timeline = {
   },
 
   clearSelections: () => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     svg.querySelectorAll(timeline.mkrs).forEach(u => {
       u.setAttribute('fill', 'var(--bg-color)')
     })
@@ -111,7 +111,7 @@ const timeline = {
   },
 
   createMarker: (x, t, type, callback) => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     const SVG = 'http://www.w3.org/2000/svg'
     const XLINK = 'http://www.w3.org/1999/xlink'
     const y = type === 'keyframe' ? 30 : 70
@@ -128,7 +128,7 @@ const timeline = {
   },
 
   getAllMarkers: (type) => {
-    const svg = nn.get('svg')
+    const svg = nn.get('svg#timeline')
     let arr = [...svg.querySelectorAll(timeline.mkrs)]
     arr = arr.map(u => {
       const n = u.getAttribute('name').split('-')
