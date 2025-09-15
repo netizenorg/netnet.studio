@@ -192,6 +192,10 @@ async function generateResponse (filePath, data) {
       'Access-Control-Allow-Origin': '*'
     })
     if (noStore) headers.set('Cache-Control', 'no-store')
+    if (/^(audio|video)\//.test(baseType)) {
+      headers.set('Vary', 'Range')
+      headers.set('Accept-Ranges', 'bytes')
+    }
 
     // 1) direct binary (best path for fonts/images/audio/video)
     if (data instanceof Blob) {
