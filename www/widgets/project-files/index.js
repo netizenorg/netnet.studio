@@ -21,7 +21,7 @@ class ProjectFiles extends Widget {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 0.1)</span>'
+    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
     this.width = 450
     // this.shaDict = {}
 
@@ -142,13 +142,6 @@ class ProjectFiles extends Widget {
         <div class="proj-files__disclaimer">
           ${loggedIn ? loggedInMsg : loggedOutMsg}
         </div>
-        <div class="proj-files__beta">
-          <h1>Beta Agreement</h1>
-          <p>
-            THERE MAY BE BUGS! This widget and the accompanying Version Control widget are in "beta" meaning we're still testing and developing it. This widget is provided “as is” without warranty of any kind. Keep watch for glitches and/or losses of data that may result from using these widgets while they're in development. <br><br>If you do have thoughts or suggestions, we would appreciate your constructive feedback (<a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>) We've been developing this widget for use in our curriculum, if you're a professor or school administrator feel free to reach out for mutual support! <br><a href="mailto:hi@netizen.org">📧</a> email us: hi@netizen.org
-          </p>
-          <button class="pill-btn pill-btn--secondary" style="margin-top: 20px;">Got it!</button>
-        </div>
         <!-- if project is open -->
         <div class="proj-files__header">
           <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
@@ -165,24 +158,15 @@ class ProjectFiles extends Widget {
     this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
 
     this.ele.querySelector('.git-btn').addEventListener('click', () => this._launchGit())
-
-    this.ele.querySelector('.proj-files__beta button').addEventListener('click', () => {
-      this._agreed2beta = true
-      this._showHideDivs()
-      const { x, y } = this._openSpot()
-      this.update({ left: x, top: y }, 500)
-    })
   }
 
   _showHideDivs () {
-    const a = this._agreed2beta
     const op = this.projectData.name
 
     this.$('.proj-files__disclaimer').style.display = op ? 'none' : 'block'
 
-    this.$('.proj-files__beta').style.display = op && !a ? 'block' : 'none'
-    this.$('.proj-files__header').style.display = op && a ? 'flex' : 'none'
-    this.$('.proj-files__list').style.display = op && a ? 'block' : 'none'
+    this.$('.proj-files__header').style.display = op ? 'flex' : 'none'
+    this.$('.proj-files__list').style.display = op ? 'block' : 'none'
 
     this.keepInFrame()
   }
@@ -615,6 +599,7 @@ class ProjectFiles extends Widget {
     window.convo.hide()
     this._opening = filepath
     this._openingCode = this._toBlobURL(this.files[filepath].code)
+
     this.convos = window.CONVOS[this.key](this)
     const imgs = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'webp']
     const txts = ['html', 'css', 'js', 'md', 'txt', 'json', 'csv', 'xml', 'svg']
@@ -663,7 +648,7 @@ class ProjectFiles extends Widget {
     }
     this.viewing = filepath
     this._opening = null
-    URL.revokeObjectURL(this._openingCode)
+    if (this._openingCode) URL.revokeObjectURL(this._openingCode)
     this._openingCode = null
 
     if (WIDGETS['demo-toc']) WIDGETS['demo-toc'].cancel()
@@ -691,7 +676,11 @@ class ProjectFiles extends Widget {
     }
 
     setTimeout(() => {
+      if (!nn.get('load-curtain').showing) return
+      // run on initial load only
       NNW.menu.switchFace('default')
+      const { x, y } = this._openSpot()
+      this.update({ left: x, top: y }, 500)
       nn.get('load-curtain').hide()
       if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
@@ -1158,7 +1147,7 @@ class ProjectFiles extends Widget {
   _toBlobURL (c) { // convert files[path].code into URL
     if (typeof c === 'string' && (c.startsWith('blob:') || c.startsWith('http'))) return c
     else if (c instanceof window.Blob) return URL.createObjectURL(c)
-    else console.log('ProjectFiles: _toBlobURL() expecing a blob')
+    else return null
   }
 
   _base64ToBlob (base64, mimeType = '') {
