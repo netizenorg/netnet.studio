@@ -55,6 +55,13 @@ nav {
   padding: 10px;
 }
 
+nav > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+}
+
 /* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Overlay Panels ~ ~  ~ ~ ~ ~  ~ ~ */
 
 .overlay {
