@@ -522,8 +522,7 @@ class ProjectFiles extends Widget {
     utils.updateURL()
     NNW.updateTitleBar(null)
     // remove code update event listener
-    const i = NNE.events['code-update'].indexOf(this.codeEdit)
-    if (i !== -1) NNE.events['code-update'].splice(i, 1)
+    NNE.off('code-update', this.codeEdit)
     this.codeEdit = null
     // remove custom shorcuts
     const CM = NNE.cm.constructor

@@ -53,8 +53,7 @@ class TemplateProjects extends Widget {
     NNE.marker(null)
     this.state = {}
     NNE.update(NNE.code)
-    const i = NNE.events['code-update'].indexOf(this.codeEdit)
-    if (i !== -1) NNE.events['code-update'].splice(i, 1)
+    NNE.off('code-update', this.codeEdit)
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
     NNE.wrap = WIDGETS['student-session'].getData('wrap')
