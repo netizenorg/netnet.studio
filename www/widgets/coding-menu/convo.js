@@ -150,7 +150,12 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'already-blank-sketch',
-    content: 'Great! There isn\'t any code in my editor yet, so you\'ve essentially got a blank canvas to start sketching! If you\'re looking for some inspiration check out the <span class="link" onclick="WIDGETS.open(\'demo-sketches\')">Code Demos</span> widget!',
+    before: () => {
+      if (NNW.layout === 'welcome') {
+        NNW.layout = 'dock-left'
+      }
+    },
+    content: 'Great! There isn\'t any code in my editor yet, so you\'ve essentially got a blank canvas to start sketching! If you\'re looking for some inspiration check out the <span class="link" onclick="WIDGETS.open(\'template-projects\')">Template Starter Projects</span> or the <span class="link" onclick="WIDGETS.open(\'demo-sketches\')">Code Demos</span> widget!',
     options: {
       'got it': (e) => e.hide()
     }
