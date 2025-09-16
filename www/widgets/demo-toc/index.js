@@ -164,7 +164,7 @@ class DemoToc extends Widget {
         window.convo = new Convo(this.convos, 'loaded-annotated-demo')
       }
     } else { // if this isn't an annoted demo
-      this.$('.demo-toc--ex-parts').innerHTML = ''
+      this.$('.demo-toc--ex-parts').innerHTML = '<i>this demo has no annotations</i>'
       if (this.opened) this.close()
       startDemo = () => { window.convo = new Convo(this.convos, 'loaded-demo') }
     }
@@ -219,7 +219,6 @@ class DemoToc extends Widget {
       if (window.convo) window.convo.hide()
       utils.updateURL(null)
       NNW.updateTitleBar(null)
-      NNW.title.dataset.demo = false
     } else if (this.demoName) {
       if (this.demoType !== 'custom') utils.updateURL(`?demo=${this.demoKey}`)
       NNW.updateTitleBar(this.demoName)
