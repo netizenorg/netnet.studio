@@ -257,7 +257,7 @@
 .learning-guide__apx-grid3 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  margin-top: 24px;
+  /* margin-top: 24px; */
 }
 
 .learning-guide__apx-grid2 {
