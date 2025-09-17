@@ -3,7 +3,8 @@
     "html-basic",
     "html-meta-tags",
     "css-landing-page",
-    "css-art"
+    "css-art",
+    "css-minimalist"
   ],
   "build-on": {
     "html-meta-tags": ["html-basic"],
