@@ -10,7 +10,7 @@
   ],
   "layout": "dock-left",
   "key": 13,
-  "code": "#code/eJyV0t0KwiAYBuDzXcV3EhTU5v5rjehWrNz20X5AXWOM3XtudhJ5YKCgL++jHpgLOdbs4jgAt+4xwqQWAA3lJbYZkPO6HfAhqwx8Ql6DTiqGZSV1VOno3nPR8Qx6Xm+xoSUTno6E12CLwiNuicVuD7SXnSa0VUWJnbppqRw+fSBuLADbQmWSLdVZTTWuTzYWnDZMfPf1o8kGpj9fsR4M4EdW1DfQ4GRFAwONQisaGmicWtHIQFPfisYGekysaPJDZ8fJPf3R3jh7xpY=",
+  "code": "#code/eJyV0t0KwiAUB/B7n+LcBAVt033WGtGrWLlN2hyoC8bYu+eym8gLAwXP4f87nAsrpaeOnRECuA73CWbzAOipbLgoAZ9syUXQMt60ugSC8bO17dso1SBLGGW35T1tmIpsS0VGcBXhsOH1bg901IMlVJig5oOZvUaCTx5wmCngojY9zdboYq45lwebakl7pr7zdk28gfnPLd6DAUjqRYmDxkcvGjtomnjRxEGzwoumDloQL5o56CH3ovkPXRCqIvu1Xitaw0o=",
   "info": [
     {
       "title": "getting started",
@@ -21,22 +21,23 @@
       "title": "custom cursor",
       "focus": [
         3,
-        7,
-        9
+        6,
+        8
       ],
       "text": "As explained in the <a href=\"https://netnet.studio/?ex=12\" target=\"_blank\">custom mouse cursor</a> example, we can apply a custom cursor to our entire <b>body</b> by updating the <code>cursor</code> property using the CSS <b>url()</b> function. This won't animate the cursor though, for that we need to create a new CSS animation."
     },
     {
       "title": "animation",
       "focus": [
-        11,
-        19
+        10,
+        18
       ],
       "text": "As explained in the <a href=\"https://netnet.studio/?ex=1696262481254\" target=\"_blank\">CSS animation</a> example, we can create a new animation using the <code>@keyframes</code> <i>at-rule</i>, I've called mine \"mini-cursors\"."
     },
     {
       "title": "keyframes",
       "focus": [
+        10,
         11,
         12,
         13,
@@ -44,8 +45,7 @@
         15,
         16,
         17,
-        18,
-        19
+        18
       ],
       "text": "I've got multiple different images in a folder called \"minis\", each representing a different frame in the animation. So in my CSS animation I'll create a keyframe for each which will update the CSS <b>cursor</b> property to the next image in the animation sequence."
     },
@@ -53,8 +53,8 @@
       "title": "apply animation",
       "focus": [
         3,
-        8,
-        9
+        7,
+        8
       ],
       "text": "Lastly, we'll apply the animation to our entire <b>body</b>, we'll set the animation duration to <code>0.5s</code>, or half a second, and the animation iteration count to <code>infinite</code>."
     },

@@ -3,7 +3,9 @@
   "name": "audio element",
   "tags": [
     "HTML",
-    "CSS",
+    "media",
+    "asset",
+    "file",
     "basics"
   ],
   "layout": "dock-bottom",
