@@ -44,6 +44,10 @@ class DemoMaker extends Widget {
         this._loadData(this.demo)
       } else if (e.data.type === 'demo-mkr-preview') {
         this._preview(e.data.payload)
+      } else if (e.data.type === 'demo-mkr-loaded-note') {
+        if (NNW.menu.textBubble.opened) {
+          this._preview(e.data.payload)
+        }
       } else if (e.data.type === 'demo-mkr-update') {
         if (!this.demo || !this.demo.key) {
           if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
@@ -88,10 +92,11 @@ class DemoMaker extends Widget {
   _loadData (demo) {
     NNE.code = NNE._decode(demo.code.split('#code/').pop())
     NNW.layout = demo.layout || 'dock-left'
-    window.convo.hide()
+    if (window.convo) window.convo.hide()
   }
 
   _preview (noteIdx) {
+    NNE.spotlight(null)
     const note = this.demo.info[noteIdx]
     window.convo = new Convo({
       content: note.text,
