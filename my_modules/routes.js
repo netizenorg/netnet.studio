@@ -390,8 +390,10 @@ router.get('/api/demos', (req, res) => {
   const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
     const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
-    dict[d.key] = {
-      key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+    if (d.hide !== true) {
+      dict[d.key] = {
+        key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+      }
     }
   })
   res.json({ success: 'success', data: dict })
