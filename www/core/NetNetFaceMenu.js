@@ -9,20 +9,20 @@ class NetNetFaceMenu {
       animation: 'blink'
     }
     this.itemOpts = {
-      hi: {
+      'talk to netnet': {
         path: 'images/menu/hi.png',
         click: () => {
           WIDGETS['student-session'].greetStudent()
         }
       },
-      functions: {
+      'Coding Menu': {
         path: 'images/menu/code.png',
         click: () => {
           NNW.menu.toggleMenu(false)
           WIDGETS.open('coding-menu')
         }
       },
-      search: {
+      'Search Bar': {
         path: 'images/menu/search.png',
         click: () => {
           NNW.menu.toggleMenu(false)
@@ -30,7 +30,7 @@ class NetNetFaceMenu {
           else this.search.open()
         }
       },
-      guide: {
+      'Learning Guide': {
         path: 'images/menu/tutorials.png',
         width: '73%',
         click: () => {
