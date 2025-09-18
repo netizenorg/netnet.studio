@@ -1,6 +1,7 @@
 {
   "name": "CSS Art Template",
   "toc": true,
+  "hide": true,
   "tags": [
     "template",
     "css",

@@ -16,7 +16,7 @@
     {
       "title": "getting started",
       "focus": null,
-      "text": "In this example I'll demonstrate how the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/position\" target=\"_blank\">position</a> property works, which is one of many ways to change the default position of any element on your page."
+      "text": "In this example I'll demonstrate how the CSS <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/position\" target=\"_blank\">position</a> property works, which is one of many ways to change the default placement of any element on your page."
     },
     {
       "title": "div elements",

@@ -578,7 +578,12 @@ class NetNet {
       this._toggleTransition(false)
       this._canvasResize()
       this.menu.updatePosition()
-      if (tbWasOpened) this.menu.textBubble.fadeIn()
+      if (tbWasOpened) {
+        this.menu.textBubble.fadeIn()
+        setTimeout(() => { // refocus on first option after fadeIn
+          this.menu.textBubble.$('.text-bubble-options').children[0].focus()
+        }, utils.getVal('--menu-fades-time'))
+      }
       NNE.cm.refresh()
       this.emit('layout-change', { old, new: v })
     }
@@ -587,7 +592,6 @@ class NetNet {
     if (v === this._layout && confirm(v)) return
 
     // -------------- if so, re-run the layout logic ---------------------------
-
     const old = this._layout
     this._toggleTransition(true)
     this._layout = v

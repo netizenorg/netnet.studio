@@ -1,0 +1,75 @@
+.css-ref-gui {
+  overflow-y: scroll;
+  height: 180px;
+  transform: translateY(17px);
+}
+
+.css-ref-gui-box {
+  border-radius: 5px;
+  padding: 5px 10px;
+  background: var(--netizen-meta);
+  color: var(--bg-color);
+  margin-bottom: 20px;
+}
+
+.css-ref-gui-toggle-btn {
+  position: absolute;
+  top: 0px;
+  right: 0;
+}
+
+.css-ref-gui-box label {
+  display: block;
+  float: right;
+  font-style: italic;
+  opacity: 0.5;
+}
+
+.css-ref-gui-row {
+  display: flex;
+  align-items: center;
+}
+
+.css-ref-gui-row span {
+  margin-right: 10px;
+}
+
+.css-ref-gui-slider {
+  width: 100%;
+  height: 10px;
+
+  border: 1px solid var(--netizen-meta);
+  border-radius: 5px;
+  outline: none;
+
+  background: var(--netizen-meta);
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.css-ref-gui-slider::-webkit-slider-thumb {
+  width: 6px;
+  height: 24px;
+
+  border: 1px solid var(--netizen-meta);
+  border-radius: 5px;
+
+  background: #fff;
+
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.css-ref-gui-slider::-moz-range-thumb {
+  width: 6px;
+  height: 24px;
+
+  border-radius: 5px;
+  border: 1px solid var(--netizen-meta);
+
+  background: #fff;
+
+  cursor: pointer;
+}

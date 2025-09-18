@@ -9,7 +9,7 @@
   ],
   "layout": "dock-left",
   "key": 70,
-  "code": "#code/eJxtjzsOwjAQRPucYumggIg2WJE4iuNsbIN/steIj7g7C0qBCN1I82Y0IwrdHPYNgCHv4MECYJDqrHOsYdxaLzV2ULNbBxyqk7tT0pvDL1bsnSkVL5gXniSSyngM1MFkrzguiBSLJRsDNzD1pyJjQsnxEGf5Jp6NaOf1jTD7/ghTdQ4SD/7KwufBSrRMvAB1w05t",
+  "code": "#code/eJxtzj0OwjAMBeC9p/AIA7CXiru4qUkNSRwlDuJH3B0jdaJsT/L3njxUfQQ6dQCzxgAvCwAjuqsv0tK044ieemglbBKNLeD+kv32+MsqP005uVFZ3VAV3RwpaQ9nvtO0ElkqK0uyBVN/JgplQqsnWeJXvLvhsHz/AXkJQbk=",
   "info": [
     {
       "title": "CSS Full Page Background Image",
@@ -50,6 +50,11 @@
         7
       ],
       "text": "The <code>background-repeat</code> property will tell the page whether or not to repeat the image. By default, the image will repeat along the x and y axis. In this example it is set to \"no-repeat\" which will keep the image from repeating."
+    },
+    {
+      "title": "Any Element",
+      "focus": null,
+      "text": "In this example we're setting a background image to our root element, <code>html</code>, but you can apply these properties to any element when you want a centered background image that fully covers it."
     }
   ]
 }

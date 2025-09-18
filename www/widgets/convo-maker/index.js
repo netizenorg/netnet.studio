@@ -251,7 +251,7 @@ class ConvoMaker extends Widget {
 
   /** 4) walk that arrayContent, pulling out each top-level { … } */
   _parseConvoItems (arrayContent) {
-    const items = []
+    let items = []
     let i = 0
     // state for old-convo fallback
     const state = { newId: 1, newX: 25, newY: 25, lastConvoHides: false }
@@ -276,6 +276,8 @@ class ConvoMaker extends Widget {
       i++
     }
 
+    // ensure that there are no duplicate ids and all are in order
+    items = items.map((o, i) => { o.id = i + 1; return o })
     return items
   }
 

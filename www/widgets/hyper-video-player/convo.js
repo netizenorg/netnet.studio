@@ -1,7 +1,7 @@
 /* global NNE WIDGETS */
 window.CONVOS['hyper-video-player'] = (self) => {
-  const name = self.metadata ? self.metadata.author.name : ''
-  const title = self.metadata ? self.metadata.title : ''
+  const name = self.data.metadata ? self.data.metadata.author : ''
+  const title = self.data.metadata ? self.data.metadata.title : ''
 
   const play = (e) => {
     if (e) e.hide()

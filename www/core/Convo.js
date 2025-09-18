@@ -108,7 +108,9 @@ class Convo {
       scope: obj.scope
     })
 
-    if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
+    // const layoutLater = obj.layout === 'welcome' || obj.layout === 'separate-window'
+    const layoutLater = false
+    if (!layoutLater && (NNW.layout === 'welcome' || NNW.layout === 'separate-window')) {
       NNW.keepInFrame()
     }
 
@@ -134,10 +136,10 @@ class Convo {
         NNE.spotlight(obj.spotlight)
       }
 
-      if (typeof obj.layout === 'string') {
+      if (typeof obj.layout === 'string' && NNW.layout !== obj.layout) {
         NNW.layout = obj.layout
         if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
-          NNW.keepInFrame()
+          utils.afterLayoutTransition(() => NNW.keepInFrame())
         }
       }
 
@@ -146,9 +148,9 @@ class Convo {
 
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)
-    }, time)
 
-    this.emit('update', { id, ignoreFocus })
+      this.emit('update', { id, ignoreFocus })
+    }, time)
   }
 
   _mapData (steps) {

@@ -1,14 +1,8 @@
-/* global HTMLElement NNE */
+/* global HTMLElement  */
 class SvgTag extends HTMLElement {
   connectedCallback (opts) {
     if (!this.c) this.c = []
     this.updateHTML()
-  }
-
-  transitionTo (stage) {
-    const stages = [
-      {}
-    ]
   }
 
   updateHTML () {

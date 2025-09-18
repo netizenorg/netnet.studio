@@ -1,6 +1,117 @@
 {
-  "tags": "HTML CSS basics",
+  "key": "0",
   "name": "img element",
-  "code": "#code/eJxNjk0OgjAQhfec4oUlCRa3CG68gFcopbSjpRhaDI3x7hbKwt3M935mGueDkdcM6KY+4BMHYOSzIlujuuyrlqS0r3GuqrdOiBVYHFmFwcg1Rlf4CUJaL2fQyJVEwXZjT+5leKh3Y8o+FudpCKWYot3G3pRLIjekbEleju5f+GYNOz7NGhoV3CzafL/kmKLBsZ5bER8qFc3mFEkeq3ybHxgbRhdw04t44j6FrTm//gCsNVDV",
-  "key": "0"
+  "tags": [
+    "HTML",
+    "media",
+    "asset",
+    "file",
+    "basics"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyzycxNVyguSrZVSknMS87MS9dNzyzK0UvPTFNSSMwpgQsrgIQVkioVnDNKk7MVAvIr80pSi5TsuGywGqCbVE6xGUPNEVw2SUUgcjC4Zdg4Am+gjsQAGU2mg9ERuAMV6hSs1pAWbyAAAGuE7pA=",
+  "info": [
+    {
+      "focus": null,
+      "text": "This sketch demonstrates a few key principles of the <code>img</code> element. Though most elements have an opening and closing tag, <code>img</code> is one of those few elements known as a \"singleton\" or \"void element\" which only consists of a single opening tag.",
+      "title": "getting started"
+    },
+    {
+      "title": "img attributes",
+      "focus": [
+        1
+      ],
+      "text": "This <code>img</code> element has two <i>attributes</i>, the first is <code>src</code> which we use to specify the image file we want to place in this element, and the second is <code>alt</code> which is used to provide <i>alt</i>ernative information for an image if a user for some reason cannot view it (we'll come back to this later)."
+    },
+    {
+      "title": "two files, many imgs",
+      "focus": null,
+      "text": "We've got lots of <code>img</code> elements in this demo (22 to be exact), but they all use just two source files, the first is called <a href=\"dancing-girl.gif\" target=\"_blank\">dancing-girl.gif</a> and the second is called <a href=\"dancing-girl-bw.gif\" target=\"_blank\">dancing-girl-bw.gif</a>. By adding more <code>img</code> tags you can instantiate either image as many times as you like. These image files have a <code>.gif</code> at the end of their names which means they're GIFs (I'll let you pronounce that however you want)."
+    },
+    {
+      "title": "GIF \"spirit of the web\"",
+      "focus": null,
+      "text": "The <a href=\"https://en.wikipedia.org/wiki/GIF\" target=\"_blank\">GIF</a> is a very special image file format, what net artist <a href=\"https://elephant.art/what-does-net-art-mean-in-the-post-digital-age-olia-lialina-30032020/\" target=\"_blank\">Olia Lialina</a> has called \"the spirit of the web\". It was the first format supported by the <code>img</code> element when it was first introduced. Despite its limitations (or maybe because of them) it's remained one of the most popular formats for online content, embraced by <a href=\"https://blog.archive.org/2016/11/01/gifcities-the-geocities-animated-gif-search-engine/\" target=\"_blank\">early web makers</a> to <a href=\"https://news.artnet.com/art-world/a-brief-history-of-animated-gif-art-part-one-69060\" target=\"_blank\">formal artists</a> to all manner of <a href=\"https://www.pbs.org/video/-off-book-animated-gifs/\" target=\"_blank\">creative folks</a> in between."
+    },
+    {
+      "title": "image formats",
+      "focus": null,
+      "text": "There are other image file formats we can assign to an <code>img</code> element's <code>src</code>, each has its own pros and cons. Generally speaking, you want to choose an image format that will look good while also being as small as possible."
+    },
+    {
+      "title": "file size",
+      "focus": [
+        1
+      ],
+      "text": "When I say <i>small</i> I don't mean the dimensions (width/height) of the image, I mean the amount of data stored in the image file. This gif is 5KB (five kilobytes) which is very small, so it transfers quickly over the network and loads almost instantly for viewers. Ideally our media assets (images, videos, audio, etc) would be less than 5MB (five megabytes) each, that's 5,000 kilobytes."
+    },
+    {
+      "title": "JPG",
+      "focus": null,
+      "text": "GIF's tend to be real small, even when animated like these, but they're not great at storing high resolution images. If I wanted to include a photograph I took on my page, it would be wiser to use a <a href=\"https://en.wikipedia.org/wiki/JPEG\" target=\"_blank\">JPG</a> (aka JPEG), which are a great at keeping photos looking good while keeping the file size small."
+    },
+    {
+      "title": "PNG",
+      "focus": null,
+      "text": "A GIF can contain colored pixels but also transparent pixels, a JPG however can only contain colored pixels. If you have a high resolution image that needs to look crisp but also has transparent parts, then you're going to want to use a <a href=\"https://en.wikipedia.org/wiki/PNG\" target=\"_blank\">PNG</a>. Like GIFS, PNG's can also be <a href=\"https://en.wikipedia.org/wiki/APNG\" target=\"_blank\">animated</a> and they actually support varying degrees of opacity. GIFs do not, each pixel is either fully transparent or fully opaque. Like JPGs, PNGs can display photos perfectly, but the trade-off is going to be size. PNGs are usually much larger than GIF and JPG files, so only use them if you have to."
+    },
+    {
+      "title": "other formats",
+      "focus": null,
+      "text": "These are the most common image file types, but there are others the <code>img</code> element supports like <a href=\"https://en.wikipedia.org/wiki/AVIF\" target=\"_blank\">AVIF</a>, the increasingly popular <a href=\"https://en.wikipedia.org/wiki/WebP\" target=\"_blank\">WebP</a> and the infinitely scalable (meaning you can make it as big or small as you want without loosing resolution) <a href=\"https://en.wikipedia.org/wiki/SVG\" target=\"_blank\">SVG</a>, we'll talk more about those in other lessons."
+    },
+    {
+      "title": "img's are inline",
+      "focus": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "text": "The <code>img</code> element isn't the only element in this demo. Notice that there are 4 rows of visible images in the rendered page. <code>img</code> are \"inline\" elements, which means that when we write them one after another, as we've done here, they'll show up on the same <i>line</i>, meaning next to each other on the page."
+    },
+    {
+      "title": "br element",
+      "focus": [
+        7,
+        15,
+        23,
+        31
+      ],
+      "text": "So in order to break them up into separate rows I've added <code>br</code> elements between every 5 images. A <code>br</code> element is used to create a line <i>br</i>eak in text, also known as a carriage-return. Because images show up \"in-line\", like text does, a <code>br</code> can also be used to create a line break between images."
+    },
+    {
+      "title": "broken imgs",
+      "focus": [
+        33,
+        34
+      ],
+      "text": "Now, take a look at this last row, which only contains two <code>img</code> elements, neither of which are showing up because I've intentionally misspelled the file's name (I left out the \"i\" in \"girl\"), so the browser couldn't locate the asset."
+    },
+    {
+      "title": "missing alt",
+      "focus": [
+        33
+      ],
+      "text": "This first <code>img</code> is missing its <code>alt</code> attribute so it shows up on the page as a \"broken image\" icon."
+    },
+    {
+      "title": "Chuck Poynter",
+      "focus": [
+        34
+      ],
+      "text": "This second <code>img</code> does have an <code>alt</code> attribute, so the page renders that instead of the broken image icon, in this case a short description and the author's name, <a href=\"https://blog.geocities.institute/archives/2466\" target=\"_blank\">Chuck Poynter</a>."
+    },
+    {
+      "title": "alt's purpose",
+      "focus": null,
+      "text": "But this isn't the only function of the <code>alt</code> attribute. It's also used by assistive technologies, like screen readers, to read aloud this description for visually impaired users. Because of this, it's considered \"best practice\" and also has an impact on your SEO, or <a href=\"https://en.wikipedia.org/wiki/Search_engine_optimization\" target=\"_blank\">search engine optimization</a>. This is why, although it's not <i>technically necessary</i> I'll make sure to warn you with an orange dot on any lines containing <code>img</code> elements missing their <code>alt</code> attribute."
+    },
+    {
+      "title": "next demo",
+      "focus": null,
+      "text": "Feel free to experiment with this demo, or we can jump to another media element demo, the <span class=\"link\" onclick=\"utils.loadDemo(1)\">audio</span> element."
+    }
+  ]
 }
