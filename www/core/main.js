@@ -51,7 +51,6 @@ NNE.on('edu-info', (e, eve) => {
 
 nn.on('resize', (e) => {
   utils.windowResize()
-  utils.keepWidgetsInFrame()
 })
 
 nn.on('load', () => {
