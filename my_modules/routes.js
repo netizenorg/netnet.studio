@@ -75,22 +75,16 @@ router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
-  if (host.endsWith('.netnet.studio')) {
+  if (host.endsWith('.netnet.studio') && !req.originalUrl.endsWith('/list.json')) {
     const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
     return res.sendFile(filePath)
   }
 
-  // if asking for tutorials that don't exist (ex: in local dev)
-  if (req.originalUrl.endsWith('/list.json')) {
-    const listPath = path.join(__dirname, '../www/tutorials/list.json')
-    const file = fs.readFileSync(listPath, 'utf8')
-    const json = JSON.parse(file)
-    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials'))
-    Object.keys(json).forEach(section => {
-      json[section] = json[section].filter(t => dirs.includes(t))
-    })
-    return res.json(json)
-  }
+  // TODO: this works for now, b/c all the tutorials are on the main "netnet.studio" folder
+  // but when we launch v4 we'll need to migrate old tutorials from main to v3
+  // duplicate the onese we want to keep (net art && css art) into main
+  // and then updating the logic in this route so that v2 && v3 use the v3 folder
+  // where as main && dev use the main folder in '../../netnet.studio/www'
 
   next()
 })
