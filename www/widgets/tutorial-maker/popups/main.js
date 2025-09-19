@@ -123,7 +123,7 @@ function createKeyframe (kf) {
 }
 
 function updateKeframe () {
-  const name = nn.get('#kf-name-input').textContent
+  const name = document.querySelector('#kf-name-input')?.textContent
   msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE })
   nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
 }
