@@ -79,7 +79,7 @@ nav > div > div {
   border: 1px solid var(--netizen-meta);
   background: var(--bg-color);
   color: var(--netizen-meta);
-  padding: 4px 10px;
+  padding: 2.5px 10px;
   font-weight: 600;
   border-radius: 7px;
   max-width: 320px;

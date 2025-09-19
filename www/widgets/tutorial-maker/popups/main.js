@@ -89,6 +89,9 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   if (obj.keyframe) {
     const marker = nn.get(`[name="keyframe-${obj.keyframe.timecode}"]`)
     timeline.selectMarker(marker)
+    keyframeEditMode(true)
+  } else {
+    keyframeEditMode(false)
   }
   if (obj.keylog) {
     const marker = nn.get(`[name="keylog-${obj.keylog.timecode}"]`)
@@ -128,6 +131,12 @@ function updateKeframe () {
   nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
 }
 
+function keyframeEditMode (enable) {
+  const tools = nn.getAll('[kf-edit-tool]')
+  if (enable) tools.forEach((t) => { t.style.display = 'block' })
+  else tools.forEach((t) => { t.style.display = 'none' })
+}
+
 function setNameInput (tc) {
   const name = nn.get(`[name="keyframe-${tc}"]`).dataset.name
   nn.get('#kf-name-input').textContent = name
@@ -158,6 +167,8 @@ nn.on('load', () => {
     msg('tut-mkr-seek', time)
   }
   timeline.init()
+
+  keyframeEditMode(false)
 
   const m = document.createElement('tutorial-modal')
   nn.get('body').appendChild(m)
