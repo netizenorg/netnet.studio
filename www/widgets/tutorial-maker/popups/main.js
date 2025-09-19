@@ -112,18 +112,25 @@ function addMarker (k, type) {
   const x = t / metadata.duration * 100
   timeline.createMarker(x, t, type, (tc) => {
     msg(`tut-mkr-${type}-click`, tc)
+    if (type === 'keyframe') setNameInput(tc)
   })
+  if (type === 'keyframe') nn.get(`[name="keyframe-${k.timecode}"]`).dataset.name = k.name
 }
 
-function updateMarker (k, type) {
-  // TODO needs configured
-}
-
-function updateKeyframe (data) {
-  const { frame, add } = data
-  if (add) addMarker(frame, 'keyframe')
-  else updateMarker(frame, 'keyframe')
+function createKeyframe (kf) {
+  addMarker(kf, 'keyframe')
   timeline.updateMarkers()
+}
+
+function updateKeframe () {
+  const name = nn.get('#kf-name-input').textContent
+  msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE })
+  nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
+}
+
+function setNameInput (tc) {
+  const name = nn.get(`[name="keyframe-${tc}"]`).dataset.name
+  nn.get('#kf-name-input').textContent = name
 }
 
 // -------------------------------------------------------- SETUP EVENT LISTENRS
@@ -132,7 +139,7 @@ nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
 // nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
-nn.get('#update-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+nn.get('#update-keyframe').on('click', () => updateKeframe())
 nn.get('#download-tutorial').on('click', () => zipper.download())
 
 nn.getAll('button[name]').forEach(btn => {
@@ -141,6 +148,7 @@ nn.getAll('button[name]').forEach(btn => {
   })
 })
 nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() }) // prevents shortcuts when typing
 
 // .................... window events
 
@@ -184,7 +192,7 @@ nn.on('message', (e) => {
   } else if (type === 'tut-mkr-video-duration') {
     metadata.duration = payload
   } else if (type === 'tut-mkr-keyframe') {
-    updateKeyframe(payload)
+    if (payload.add) createKeyframe(payload.frame)
   } else if (type === 'tut-mkr-keylog') {
     // TODO...
   } else if (type === 'tut-mkr-time-update') {

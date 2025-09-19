@@ -132,7 +132,7 @@ class TutorialMaker extends Widget {
       if (!frame) { // create keyframe
         frame = {
           timecode,
-          name: `keyframe ${(this.hvp.data[type].length + 1).toString()}`,
+          name: `keyframe: ${timecode}`,
           video: this._getSizeAndPosition(this.hvp),
           widgets: this._getCurrentWidgets(),
           netitor: this._getNetitorData(),

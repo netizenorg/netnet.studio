@@ -62,6 +62,43 @@ nav > div {
   gap: 7px;
 }
 
+nav > div > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.keyframe-tools {
+  flex-grow: 1;
+}
+.tutorial-tools {
+  flex: 0;
+}
+
+#kf-name-input {
+  border: 1px solid var(--netizen-meta);
+  background: var(--bg-color);
+  color: var(--netizen-meta);
+  padding: 4px 10px;
+  font-weight: 600;
+  border-radius: 7px;
+  max-width: 320px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#kf-name-input::-webkit-scrollbar {
+  display: none;
+}
+#kf-name-input:empty:before {
+    content: attr(data-placeholder);
+    color: var(--netizen-hint-shadow);
+    pointer-events: none;
+  }
+
 /* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Overlay Panels ~ ~  ~ ~ ~ ~  ~ ~ */
 
 .overlay {
