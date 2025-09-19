@@ -110,6 +110,7 @@ class Widget {
     window.addEventListener('mouseup', (e) => this._mouseUp(e), true)
     window.addEventListener('mousemove', (e) => this._mouseMove(e), true)
     window.addEventListener('mousemove', (e) => utils.updateShadow(e, this.ele))
+    window.addEventListener('resize', (e) => this.keepInFrame())
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

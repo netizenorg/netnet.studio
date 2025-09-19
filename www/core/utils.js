@@ -71,6 +71,8 @@ window.utils = {
     if (wigs[0]) wigs[0].close()
   },
 
+  // NOTE: this is no longer in use (keeping it here in case we need it back)
+  // was used in main.js > nn.on('resize') (but now handled in widget's 'resize')
   keepWidgetsInFrame: () => {
     WIDGETS.list().forEach(w => {
       const maxLeft = window.innerWidth - w.ele.offsetWidth
