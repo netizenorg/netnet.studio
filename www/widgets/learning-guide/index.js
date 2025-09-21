@@ -28,7 +28,7 @@ class LearningGuide extends Widget {
 
         // create sub pages
         this.subpages = [
-          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts }
           // {
           //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
           //   subs: [
@@ -163,6 +163,10 @@ class LearningGuide extends Widget {
     })
 
     this.slide.style.overflowX = 'hidden'
+  }
+
+  _jsIntroConvo () {
+    window.convo = new Convo(this.convos, 'js-intro')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

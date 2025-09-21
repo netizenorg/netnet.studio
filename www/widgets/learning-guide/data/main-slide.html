@@ -109,9 +109,9 @@
     <div class="learning-guide__tut-thumbs-code">
       <!-- What is Code tutorials here -->
     </div>
-    <!-- <div class="learning-guide__tut-cntrl" name="code">
+    <div class="learning-guide__tut-cntrl" name="code">
       <span class="highlight">How/Why/Where/What is Code</span>
-    </div> -->
+    </div>
   </div>
 
   <!--                      <<<  -   >>>                              -->
@@ -316,21 +316,61 @@
   <div class="learning-guide__main__item" id="learning-guide-js">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('js')">JS</h3>
     <br>
-    <br><br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
-    <!-- <div>
+    <!-- animated SVG -->
+    <br>
+    <div>
       <div class="learning-guide__ex-start">
         <span><b>JavaScript</b></span>
-        <button class="pill-btn pill-btn--secondary"
-                onclick="utils.loadDemo(1695501143020)">
-          review core concepts
+        <button class="pill-btn pill-btn--secondary" onclick="WIDGETS['learning-guide']._jsIntroConvo()">
+          Start Intro to JS
         </button>
       </div>
       <p>
         JavasScript is the Web's defacto programming language, although you can use it in other contexts (robotics, AI, games, etc) it was first invented to add interactive and dynamic capabilities to the Web, converting our hypertext "documents" into hypermedia "applications".
       </p>
     </div>
-    <br><br> -->
+
+    <div class="learning-guide__apx">
+      <div class="learning-guide__apx-grid2">
+        <div>
+          <h2>Templates</h2>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('js-gen-art')">
+            Generative Art
+          </span>
+          <!-- <br> -->
+        </div>
+        <div>
+          <h2>Docs</h2>
+          <span class="highlight" name="ref:js:mainOpts">JS Basics</span><br>
+          <span class="highlight" name="ref:js:dataStructOpts">Data Structures</span><br>
+          <span class="highlight" name="ref:js:deeperFuncsOpts">Functions (alt syntax)</span><br>
+          <span class="highlight" name="ref:js:apisAndLibsOpts">APIs + Libraries</span><br>
+        </div>
+      </div>
+      <br>
+      <div class="learning-guide__apx-grid3">
+        <div>
+          <h2>JS Demos</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="learning-guide__ex-row">
+      <div style="width: 100%">
+        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
+        <div class="learning-guide__tut-thumbs-css">
+          [[JS TUTORIAL THUMBNAILS HERE]]
+        </div>
+        <div class="learning-guide__tut-cntrl" name="css">
+          <span class="pill-btn pill-btn--secondary">◀◀ Prev</span>
+          <span class="highlight">[[TUTORIAL NAME HERE]]</span>
+          <span class="pill-btn pill-btn--secondary">Next ▶▶</span>
+        </div>
+      </div>
+    </div> -->
+
+    <br><br>
+    <div class="learning-guide__ex-divider"></div>
   </div>
 
 

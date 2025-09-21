@@ -1,0 +1,21 @@
+.js-reference-widget--sec-link {
+  display: inline-block;
+  color: var(--netizen-meta);
+  font-size: 24px;
+  margin: 8px;
+  transition: color .5s ease, border .5s ease;
+  border-bottom: 2px solid var(--netizen-meta);
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+}
+
+.js-reference-widget--sec-link:hover {
+  color: var(--netizen-match-color);
+  border-bottom: 2px solid var(--netizen-match-color);
+  cursor: pointer;
+}
+
+.js-reference-widget--border {
+  border: 3px solid var(--fg-color);
+  padding: 20px;
+  border-radius: 3px;
+}

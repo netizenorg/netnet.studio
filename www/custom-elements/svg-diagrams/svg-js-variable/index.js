@@ -22,7 +22,7 @@ class SvgJSVariable extends HTMLElement {
       style="isolation:isolate;font-size:68.0999984741211px;fill:${this.c[3]};font-family:'fira-sans-regular', sans-serif">
     </text>
     <text transform="translate(432.94 124.56)"
-      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[2]};font-family:'fira-sans-regular', sans-serif">
+      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[4]};font-family:'fira-sans-regular', sans-serif">
       <tspan style="letter-spacing:-0.02999501485096394em">‘</tspan>
       <tspan x="11.31" y="0">Ada </tspan>
       <tspan x="123.7" y="0" style="letter-spacing:-0.02498730012085999em">L</tspan>
