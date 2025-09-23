@@ -125,7 +125,28 @@
 <nav>
   <div>
     <div class="keyframe-tools">
-      <button id="create-keyframe" class="pill-btn pill-btn--secondary">create keyframe</button>
+      <div style="position: relative;">
+        <button id="create-marker" class="pill-btn pill-btn--secondary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 8.13908L1.72182 8.13908" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+            <path d="M7.8609 14.2782L7.8609 1.99999" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="create-options" style="display: none;">
+          <div id="create-keyframe" class="pill-btn pill-btn--secondary icon-btn">
+            <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.4393" y="5.97487" width="5.74266" height="5.74266" transform="rotate(-45 1.4393 5.97487)" stroke="#C56DBB" stroke-width="2"/>
+            </svg>
+            <p>new keyframe</p>
+          </div>
+          <div id="create-keylog" class="pill-btn pill-btn--secondary icon-btn">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.41421" y="5.47488" width="5.74266" height="5.74266" transform="rotate(-45 1.41421 5.47488)" stroke="#7DCA95" stroke-width="2"/>
+            </svg>
+            <p>new keylog</p>
+          </div>
+        </div>
+      </div>
       <div id="kf-name-input" contentEditable="true" data-placeholder="type keyframe name..." kf-edit-tool></div>
       <button id="update-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>update</button>
       <button id="delete-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>delete</button>

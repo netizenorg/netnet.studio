@@ -69,7 +69,8 @@
   text-wrap: wrap;
 }
 
-.icon-btn {
+#video-recorder .icon-btn,
+#video-menu .icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,11 +78,13 @@
   padding: 8px 15px;
   width: fit-content;
 }
-.icon-btn svg {
+#video-recorder .icon-btn svg,
+#video-menu .icon-btn svg {
   width: 22px;
   height: 22px;
 }
-.icon-btn p {
+#video-recorder .icon-btn p,
+#video-menu .icon-btn p {
   margin: 0;
 }
 

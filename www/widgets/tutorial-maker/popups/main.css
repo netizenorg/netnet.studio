@@ -97,7 +97,38 @@ nav > div > div {
     content: attr(data-placeholder);
     color: var(--netizen-hint-shadow);
     pointer-events: none;
-  }
+}
+
+#create-marker {
+  aspect-ratio: 1/1;
+  padding: 5px;
+}
+#create-marker svg {
+  transition: 0.2s ease-in-out transform;
+}
+
+#create-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: absolute;
+  top: 32;
+  left: 0;
+}
+#create-options button {
+  text-align: left;
+}
+#create-options .icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+}
+#create-options .icon-btn > svg {
+  width: 18px;
+  height: 18px;
+}
 
 /* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Overlay Panels ~ ~  ~ ~ ~ ~  ~ ~ */
 

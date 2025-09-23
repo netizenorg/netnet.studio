@@ -147,16 +147,35 @@ function setNameInput (tc) {
   nn.get('#kf-name-input').textContent = name
 }
 
+function showCreateOptions () {
+  const o = nn.get('#create-options')
+  const s = nn.get('#create-marker svg')
+  const c = o.style.display === 'flex'
+  if (!c) {
+    o.style.display = 'flex'
+    s.style.transform = 'rotate(45deg)'
+  } else {
+    o.style.display = 'none'
+    s.style.removeProperty('transform')
+  }
+  // TODO configure so it only displays options that aren't already created on selected timestamp
+}
+
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
 // nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
+nn.get('#create-marker').on('click', () => showCreateOptions())
+
 nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 nn.get('#update-keyframe').on('click', () => updateKeyframe())
 nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
 nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))
+
+// TODO: configure keylog actions
+// nn.get('#create-keylog').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
