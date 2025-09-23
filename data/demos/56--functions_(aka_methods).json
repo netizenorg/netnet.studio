@@ -81,7 +81,7 @@
         28,
         29
       ],
-      "text": "Technically speaking, a function is also a variable. Except rather than storing simple data types or data structures (like objects or arrays), it stores instructions. For this reason we could also declare a function similar to how we would any other variable. If we were to check the <code>tyepof square</code> or <code>tyepof cube</code> we'd get the data type \"function\"."
+      "text": "Technically speaking, a function is also a variable. Except rather than storing simple data types or data structures (like objects or arrays), it stores instructions. For this reason we could also declare a function similar to how we would any other variable. If we were to check the <code>typeof square</code> or <code>typeof cube</code> we'd get the data type \"function\"."
     },
     {
       "title": "arrow syntax",

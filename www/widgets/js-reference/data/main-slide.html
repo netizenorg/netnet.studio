@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="/widgets/js-reference/data/styles.css">
 
+<svg-js-invoke-function style="cursor:pointer" onclick="window.alert('Welcome!')" colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+</svg-js-invoke-function>
+<br><br>
+
 <p>
   Unlike HTML and CSS, JavaScript is a programming language. Programming languages come in many forms (Python, Java, C++, Rust, etc.) but at their core they all serve the same purpose: letting us give instructions to a computer. Each language shares the same basic building blocks—things like variables, functions, loops, and conditionals—but each one has its own way of writing them. That way of writing is called its <b>syntax</b>.
 </p>
@@ -19,13 +23,15 @@
 <br>
 
 <p>
-  As Paul Ford notes, JavaScript helped turn the Web into a place where software runs. Software is just a set of instructions—like a recipe. Before the steps, a recipe lists its ingredients. In programming, our “ingredients” are data, and we store that data in <i>variables</i>..
+  As Paul Ford notes, JavaScript helped turn the Web into a place where software runs. Software is just a set of instructions—like a recipe. Before the steps, a recipe lists its ingredients. In programming, our “ingredients” are data, and we store that data in <i>variables</i>...
 </p>
-
+<br>
 <br>
 
-<svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
-</svg-js-variable>
+<div name="variables">
+  <svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+  </svg-js-variable>
+</div>
 
 <br>
 
@@ -37,14 +43,16 @@
 
 <br>
 
-<h4>The 6 Types of Data</h4>
+<h3 style="margin-bottom: 1px;">Different Types of Data</h3>
+<p>(<i>see <span class="link" name="data-types">Data Types</span> docs for more info</i>)</p>
+<br>
 <ul>
   <li>
     <b>string</b>: can be any text and must always be surrounded by quotes, these can be double quotes <code>"hi"</code> or single quotes <code>'hi'</code>, a string can be as short as 0 characters long <code>""</code> (also known as an empty string) and as long as your memory allows <code>"a rose is a rose is a rose is a rose is a rose"</code> (much longer than that)
   </li>
   <br>
   <li>
-    <b>number</b>: this can be an integer like <code>1337</code> or a float (aka decimal) like <code>3.141592653589793</code>, the largest number is <code>Infinity</code> and the smallest number is <code>-Infinity</code> (those are actual <i>numbers</i> in JavaScript).
+    <b>number</b>: this can be an integer like <code>1337</code> or a float (aka decimal) like <code>3.141592653589793</code>, the largest number is <code>Infinity</code> and the smallest number is <code>-Infinity</code> <i>(sort of, big numbers can get a little complicated, see the "<span class="link" name="data-types">Data Types</span>" docs for more on that)</i>.
   </li>
   <br>
   <li>
@@ -52,22 +60,23 @@
   </li>
   <br>
   <li>
-    <b>undefined</b>: it's possibe to declare a variable, giving it a name, but not assign it any value (no <code>=</code> with data after it), in these instances the "type" of this variable would be <code>undefined</code>, our container (the space in memory) has a name, there's just nothing in it (yet).
+    <b>objects</b>: it's possible to store more than one value in the same variable. These variables become "Data Structures" the most fundamental of which is called an <i>object</i>. In some sense, almost everything in JavaScript can <i>behave</i> like an object. <i>(but we'll come back to this later, refer to the "<span class="link" name="data-structs">Data Structure</span>" docs for more on that)</i>.
   </li>
   <br>
   <li>
-    <b>objects</b>: it's possible to store more than one value in the same variable. These variables become "data structures" the most fundamental of which is called an <i>object</i>. In some sense, everything in JavaScript is some sort of object, but we'll come back to this at the end of these notes).
-  </li>
-  <br>
-  <li>
-    <b>functions</b>: instructions are also a form of data, because we need to store them in memory before we "run" or execute our instructions by passing them along to our computers CPU (central processing unit). Sometimes we'll write a small set of instructions we want to "call" or "run" at different points in our program, we call this sub-set of instructions a <i>function</i>
+    <b>functions</b>: instructions are also a form of data, because we need to store them in memory before we "run" or execute our instructions by passing them along to our computers CPU (central processing unit). Sometimes we'll write a small set of instructions we want to "call" or "run" at different points in our program, we call this sub-set of instructions a <i>function</i>. Though we store functions in there own variables, they're really not like the other <i>types</i> and deserve special consideration. <i>(We'll come back to functions later)</i>.
   </li>
 </ul>
+<br>
+
+<p>
+  There are a few other data types, but those are the most important to understand for now. If you'd like a deeper dive into this topic refer to the JavaScript "<span class="link" name="data-types">Data Types</span>" docs.
+</p>
 
 <br>
 
 <p>
-  hen you make a new variable, you start with a declaration keyword. Back in the day there was only <code>var</code>, but this proved problematic for reasons we won't get into here. So in 2015 ECMA, the European Computer Manufacturers Association (the nonprofit organization that standardizes JavaScript) introduced two better options: <code>const</code> and <code>let</code>. When a variable's value is meant to stay <i>constant</i> and never change, we use <code>const</code>. We use <code>let</code> when we plan to reassign it. For example, declaring <code>let year = 2015</code> means it can change later, <code>year = 2016</code>. Notice we only write the keyword when we first declare the variable, after that, we just re-assign it. A good rule of thumb: prefer <code>const</code> by default (it helps prevent accidental re-assignments), use <code>let</code> if you actually need to change the value.
+  When you make a new variable, you start with a declaration keyword. Back in the day there was only <code>var</code>, but this proved problematic for reasons we won't get into here. So in 2015 ECMA, the European Computer Manufacturers Association (the nonprofit organization that standardizes JavaScript) introduced two better options: <code>const</code> and <code>let</code>. When a variable's value is meant to stay <i>constant</i> and never change, we use <code>const</code>. We use <code>let</code> when we plan to reassign it. For example, declaring <code>let year = 2015</code> means it can change later, <code>year = 2016</code>. Notice we only write the keyword when we first declare the variable, after that, we just re-assign it. A good rule of thumb: prefer <code>const</code> by default (it helps prevent accidental re-assignments), use <code>let</code> if you actually need to change the value.
 </p>
 
 <br>
@@ -90,10 +99,10 @@
 
 <br>
 
-<h1>Functions</h1>
+<h1 name="functions">Functions</h1>
 
 <p>
-  Another kind of statement is a function <i>call</i> (aka function <i>invocation</i>). A function is a stored set of instructions, and calling it runs those instructions. For example, every browser has a built-in function named <code>print</code> that tries to send the current page to your printer. Notice the parentheses, without them, you're just referring to the function, the variable name which stores the instructions. With the parentheses, you're telling the computer to run those instrutions.
+  Another kind of statement is a function <i>call</i> (aka function <i>invocation</i>). A function is a stored set of instructions, and calling it runs those instructions. For example, every browser has a built-in function named <code>print()</code> that tries to send the current page to your printer. Notice the parentheses, without them, you're just referring to the function, the variable name which stores the instructions. With the parentheses, you're telling the computer to run those instrutions.
 </p>
 
 <br><br>
@@ -153,9 +162,14 @@
 <p>
   Earlier we said programs run line by line, top to bottom. That's true by default, but functions let us change the default <i>flow</i>. Notice in the example above: the code <code>x * x</code> is written on line 2, but it doesn't run right away. It only runs later, when we call <code>square(5)</code> on line 5. Functions act like bookmarks in your code, you write them once, and they're only activated when you decide to call them.
 </p>
+<br>
+
+<p>
+  It's worth mentioning that way we defined the <code>square</code> function above is just one way to create a new function, not all the JavaScript code you come acorss will define functions that way, so it's worth reviewing the <span class="link" name="deeper-funcs">Functions (alt syntax)</span> docs for other variations and considerations.
+</p>
 
 <br>
-<h1>Conditional Statements</h1>
+<h1 name="conditionals">Conditional Statements</h1>
 <br>
 
 <p>
@@ -191,8 +205,17 @@
 <button onclick="window.alert('Not bad!')" class="pill-btn pill-btn--secondary">run code</button>
 <br><br>
 
+<p>
+  You can also write conditionals like <code>if (name)</code>, which check to see if that varible is <a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy" target="_blank">truthy</a> of <a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy" target="_blank">falsy</a>. If a variable has a value in it (meaning it is not empty or "undefined"), it's usually going to be <i>truthy</i>, but there are some values which evaluate as <i>falsey</i>, including <code>0</code>, <code>null</code>, <code>''</code> (an empty string) and obviously <code>false</code>.
+</p>
+
 <br>
-<h1>Loops</h1>
+<code-sample name="js-ex-10"></code-sample>
+<button onclick="window.alert('hello second!')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<br>
+<h1 name="loops">Loops</h1>
 
 <p>
   Sometimes we don't just want to check a condition once, we want to keep repeating some code as long as the condition stays true. That's exactly what a <b>while loop</b> does.
@@ -212,7 +235,7 @@
 <button onclick="window.alert(5)" class="pill-btn pill-btn--secondary">run code</button>
 <br><br><br>
 
-<p>
+<p name="for-loop">
   A <b>for loop</b> is just a more compact way to write the same thing. Instead of spreading the setup <code>let i = 0</code>, the condition <code>i &lt; 10</code>, and the update <code>i++</code> across different lines, the for loop puts them together on the same line.
 </p>
 
@@ -262,7 +285,12 @@
 
 
 
-<h2>JS References</h2>
+<h2>More JS Docs</h2>
+
+<div class="js-reference-widget--sec-link" name="data-types" style="color: var(--netizen-tag)">
+  Data Types
+</div>
+<br>
 
 <div class="js-reference-widget--sec-link" name="data-structs" style="color: var(--netizen-tag)">
   Data Structures

@@ -1,5 +1,14 @@
 {
+  "variable": {
+    "bubble": "When you want your program to remember a value, we store that value in a <b>variable</b>, a name we give to a slot in memory where your computer stores that value. Variables can hold different kinds of values, which we call their <i>data type</i>. Some common data types include <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('dataTypesOpts', 'number')\">numbers</span>, <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('dataTypesOpts', 'string')\">strings</span> and <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('dataTypesOpts', 'boolean')\">booleans</span>."
+  },
   "function": {
-    "bubble": "A <b>function</b> is a reusable block of code, like a mini program.<br><br>Algorithms and programs are ultimately a series of instructions that you write for the computer to follow, much the same way a recipe is a series of instructions for a cook to follow. When your algorithmic recipe requires repeating similar sets of instructions at different points in your program, it can be useful to encapsulate that sub-set of instructions into it's own module, creating a <b>function</b> is one way of doing that."
+    "bubble": "A <b>function</b> is a reusable block of code, in a sense a mini-program. When the same steps appear in different places, it's best to package that subset of instrutions into a function so you can run, or \"call\", it wherever you need it instead of repeating yourself."
+  },
+  "Arrow function expression": {
+    "bubble": "A <b>function</b> is a reusable block of code, in a sense a mini-program. When the same steps appear in different places, it's best to package that subset of instrutions into a function so you can run, or \"call\", it wherever you need it instead of repeating yourself. <br><br>In this case we're uisng the <b>arrow function expression</b>, which is a syntactically compact alternative to a regular function expression,"
+  },
+  "if": {
+    "bubble": "Sometimes we only want code to run <i>if</i> a certain condition is <i>true</i>. That's where <b>conditional statements</b> come in. If the code within the <code>(</code> parentheses <code>)</code> is <i>true</i> then the code within the <code>{</code> curly braces <code>}</code> runs, otherwise it does not."
   }
 }

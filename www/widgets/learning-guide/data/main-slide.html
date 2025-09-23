@@ -20,13 +20,7 @@
 
     <div class="learning-guide__arrow" style="cursor:pointer" onclick="WIDGETS['learning-guide'].scrollTo('toc')">➤</div>
 
-    <p style="transform: translateY(43px);">
-      "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
-    </p>
-
   </div>
-
-  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
 
   <!--                  <<<        -          >>>                              -->
@@ -59,7 +53,7 @@
   </div>
   <i class="lg-v-spacer"></i>
 
-  <div class="learning-guide__ex-divider"></div>
+  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
   <br>
   <!--                  <<<      -       >>>                              -->
@@ -70,8 +64,16 @@
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-net')">THE PLATFORM</h3>
 
     <div class="learning-guide__tc">
-      <br><br>
-      <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+      <br>
+      <div style="display: flex; justify-content: center">
+        <span class="highlight" style="opacity:0.5;" onclick="WIDGETS['learning-guide']._comingSoon()">
+          the Web + the Internet + Artificial intelligence
+        </span>
+      </div>
+      <svg-hypertext onclick="WIDGETS['learning-guide']._comingSoon()" colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
+      <p style="border:none">
+        "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
+      </p>
       <!-- <div>
         <div id="lg_platform">
           <h2>the Internet</h2>
@@ -97,6 +99,9 @@
       </div>
     </div> -->
   </div>
+
+  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
+
 
   <!--                  <<<      -       >>>                              -->
   <!--                  <<<     CODE     >>>                              -->
@@ -185,7 +190,6 @@
     </div>
 
     <br><br><br>
-    <div class="learning-guide__ex-divider"></div>
   </div>
 
   <!--                      <<<  -   >>>                              -->
@@ -304,8 +308,7 @@
       </div>
     </div>
 
-    <br><br>
-    <div class="learning-guide__ex-divider"></div>
+    <br><br><br>
   </div>
 
 
@@ -316,7 +319,7 @@
   <div class="learning-guide__main__item" id="learning-guide-js">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('js')">JS</h3>
     <br>
-    <!-- animated SVG -->
+    <svg-js-animated colors="var(--netizen-meta),var(--netizen-keyword),var(--netizen-operator),var(--netizen-string),var(--netizen-variable)" onclick="WIDGETS.open('js-reference')" style="cursor:pointer;"></svg-js-animated>
     <br>
     <div>
       <div class="learning-guide__ex-start">
@@ -335,13 +338,24 @@
         <div>
           <h2>Templates</h2>
           <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('js-gen-art')">
-            Generative Art
+            Generative Art (10print)
           </span>
-          <!-- <br> -->
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactive Music (theramin)
+          </span>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactive Game (wall ball)
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            flat file database (portfolio)
+          </span>
         </div>
         <div>
           <h2>Docs</h2>
           <span class="highlight" name="ref:js:mainOpts">JS Basics</span><br>
+          <span class="highlight" name="ref:js:dataTypesOpts">Data Types</span><br>
           <span class="highlight" name="ref:js:dataStructOpts">Data Structures</span><br>
           <span class="highlight" name="ref:js:deeperFuncsOpts">Functions (alt syntax)</span><br>
           <span class="highlight" name="ref:js:apisAndLibsOpts">APIs + Libraries</span><br>

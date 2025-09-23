@@ -71,5 +71,11 @@ window.CONVOS['learning-guide'] = (self) => {
       },
       'never mind': (e) => e.hide()
     }
+  }, {
+    id: 'coming-soon',
+    content: '...coming soon...',
+    options: {
+      ok: (e) => e.hide()
+    }
   }]
 }
