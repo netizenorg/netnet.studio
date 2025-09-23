@@ -156,7 +156,7 @@ nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 nn.get('#update-keyframe').on('click', () => updateKeyframe())
 nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
-nn.get('#download-tutorial').on('click', () => zipper.download())
+nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
@@ -214,6 +214,8 @@ nn.on('message', (e) => {
     // TODO...
   } else if (type === 'tut-mkr-time-update') {
     videoTimeUpdated(payload)
+  } else if (type === 'tut-mkr-data') {
+    zipper.download(payload)
   }
 })
 

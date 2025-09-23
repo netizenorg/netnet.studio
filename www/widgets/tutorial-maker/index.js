@@ -28,6 +28,9 @@ class TutorialMaker extends Widget {
       if (e.origin !== window.location.origin) return // for security
       if (type === 'tut-mkr-opened-tutorial') { // opened tutorial from zip
         this._loadTutorial(payload)
+      } else if (type === 'tut-mkr-get-data') { // get tutorial data
+        const data = this._getData()
+        this._messagePopup('tut-mkr-data', data)
       } else if (type === 'tut-mkr-update-metadata') { // new metadata
         this._updateMetadata(payload)
       } else if (type === 'tut-mkr-get-metadata') { // asked for metadata
@@ -161,6 +164,13 @@ class TutorialMaker extends Widget {
       // TODO
     }
     return { frame }
+  }
+
+  _getData () {
+    const keyframes = this.hvp.data.keyframes
+    const keylogs = this.hvp.data.keylogs
+    // TODO: fetch widgets
+    return { keyframes, keylogs }
   }
 
   // ............................ helpers ......................................

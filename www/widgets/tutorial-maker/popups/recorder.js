@@ -243,7 +243,7 @@ const recorder = {
     `
     modal.openWithHTML(innerHTML)
     nn.get('[name="vfn-upload"]').addEventListener('click', () => recorder.onUploadVFN())
-    nn.get('[name="vfn-download"]').addEventListener('click', () => zipper.download(recorder.blob))
+    nn.get('[name="vfn-download"]').addEventListener('click', () => zipper.download({ video: recorder.blob }))
   },
 
   onUploadVFN: () => {

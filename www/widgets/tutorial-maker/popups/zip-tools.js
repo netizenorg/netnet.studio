@@ -86,16 +86,16 @@ const zipper = {
 
   download: async (data = null) => {
     try {
-      const video = data || FILES.readFile(`${metadata.id}.mp4`)
-      const tutorial = { metadata: {}, widgets: {}, keyframes: {}, keylogs: {} }
+      const video = data?.video || FILES.readFile(`${metadata.id}.mp4`)
+      const tutorial = { metadata: {}, widgets: {}, keyframes: [], keylogs: [] }
       // set metadata
       const keys = ['id', 'title', 'author', 'authorURL', 'duration', 'jsfile', 'description', 'keywords', 'thumbnails']
       keys.forEach(key => {
         tutorial.metadata[key] = metadata[key]
       })
       // TODO: configure widgets
-      // TODO: configure keyframes
-      // TODO: configure keylogs
+      tutorial.keyframes = data?.keyframes ?? []
+      tutorial.keylogs = data?.keylogs ?? []
 
       const json = JSON.stringify(tutorial, null, 2)
 
@@ -108,7 +108,7 @@ const zipper = {
       const zip = new JSZip()
       zip.file('tutorial.json', json)
       zip.file(
-        data
+        data?.video
           ? metadata.id + (recorder.mimeType.includes('mp4') ? '.mp4' : '.webm')
           : `${metadata.id}.mp4`,
         blob,
