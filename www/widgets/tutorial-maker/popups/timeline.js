@@ -165,6 +165,17 @@ const timeline = {
       if (Number(list[i].timecode) < t) return list[i]
     }
     return null
+  },
+
+  removeMarker: (time, type) => {
+    const t = Number(time)
+    const m = nn.get(`[name="${type}-${t}"]`)
+    if (m) {
+      m.remove()
+      timeline.updateMarkers()
+    } else {
+      console.error(`Failed to remove marker. No Marker found for: ${time} seconds`)
+    }
   }
 }
 

@@ -125,10 +125,15 @@ function createKeyframe (kf) {
   timeline.updateMarkers()
 }
 
-function updateKeframe () {
+function updateKeyframe () {
   const name = document.querySelector('#kf-name-input')?.textContent
   msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE })
   nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
+}
+
+function deleteKeyframe () {
+  timeline.removeMarker(TIMECODE, 'keyframe')
+  msg('tut-mkr-get-keyframe', { timecode: TIMECODE, remove: true })
 }
 
 function keyframeEditMode (enable) {
@@ -148,7 +153,9 @@ nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
 // nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
-nn.get('#update-keyframe').on('click', () => updateKeframe())
+nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+nn.get('#update-keyframe').on('click', () => updateKeyframe())
+nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
 nn.get('#download-tutorial').on('click', () => zipper.download())
 
 nn.getAll('button[name]').forEach(btn => {
@@ -156,7 +163,6 @@ nn.getAll('button[name]').forEach(btn => {
     msg('tut-mkr-explain', btn.getAttribute('name'))
   })
 })
-nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
 nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() }) // prevents shortcuts when typing
 
 // .................... window events

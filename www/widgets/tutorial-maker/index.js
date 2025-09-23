@@ -129,7 +129,16 @@ class TutorialMaker extends Widget {
     const { timecode, name } = data
     let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
-      if (!frame) { // create keyframe
+      if (data?.remove) { // delete keyframe
+        if (frame) {
+          this.hvp.data[type].splice(this.hvp.data[type].indexOf(frame), 1)
+          return { frame, remove: true }
+        } else {
+          const error = `Failed to remove keyframe. No keyframe found for: ${timecode} seconds`
+          console.error(error)
+          return { error }
+        }
+      } else if (!frame) { // create keyframe
         frame = {
           timecode,
           name: name ?? '',
