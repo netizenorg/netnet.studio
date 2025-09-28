@@ -61,6 +61,8 @@ class TutorialMaker extends Widget {
         this.hvp.toggle()
       } else if (type === 'tut-mkr-explain') { // clicked on (?) explainer button
         this._openConvo(payload)
+      } else if (type === 'tut-mkr-sptlght') {
+        this._addSpotlight(payload.spotlight)
       }
     })
 
@@ -129,7 +131,7 @@ class TutorialMaker extends Widget {
   }
 
   _updateFrame (type, data) {
-    const { timecode, name } = data
+    const { timecode, name, spotlight } = data
     let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
       if (data?.remove) { // delete keyframe
@@ -157,7 +159,7 @@ class TutorialMaker extends Widget {
         frame.name = name ?? ''
         frame.video = this._getSizeAndPosition(this.hvp)
         frame.widgets = this._getCurrentWidgets()
-        frame.netitor = this._getNetitorData()
+        frame.netitor = this._getNetitorData(spotlight)
         frame.netnet = this._getNetNetPos()
       }
     } else if (type === 'keylogs') {
@@ -171,6 +173,23 @@ class TutorialMaker extends Widget {
     const keylogs = this.hvp.data.keylogs
     // TODO: fetch widgets
     return { keyframes, keylogs }
+  }
+
+  _addSpotlight (ls) {
+    if ((Array.isArray(ls) && ls.length <= 0) || !ls) {
+      NNE.spotlight(null)
+    } else {
+      const lines = []
+      ls.forEach(l => {
+        if (l.includes('-')) {
+          const [start, end] = l.split('-').map(Number)
+          for (let i = start; i <= end; i++) {
+            lines.push(i)
+          }
+        } else lines.push(Number(l))
+      })
+      NNE.spotlight(lines)
+    }
   }
 
   // ............................ helpers ......................................
@@ -269,12 +288,12 @@ class TutorialMaker extends Widget {
       .map(w => this._getSizeAndPosition(w))
   }
 
-  _getNetitorData () {
+  _getNetitorData (ls) {
     const s = NNE.cm.getScrollInfo()
     return {
       code: NNE.code,
       scrollTo: { x: s.left, y: s.top },
-      spotlight: null, // TODO: need to send data from popup
+      spotlight: ls ?? [],
       layout: NNW.layout
     }
   }

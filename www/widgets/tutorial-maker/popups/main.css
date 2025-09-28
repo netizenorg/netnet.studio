@@ -234,14 +234,14 @@ nav > div > div {
   top: 36;
   left: 0;
 }
-.sptlght-edit-menu > div,
 .sptlght-footer {
   display: flex;
   justify-content: space-between;
   width: 100%;
   gap: 6px;
 }
-..sptlght-edit-menu > div > div,
+.sptlght-edit-menu > div > div,
+.sptlght-edit-menu > div,
 .sptlght-footer > div {
   display: flex;
   gap: 6px;

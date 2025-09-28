@@ -2,6 +2,7 @@
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
+let SPOTLIGHT = []
 let modal
 
 const msg = (type, payload) => {
@@ -127,7 +128,7 @@ function createKeyframe (kf) {
 
 function updateKeyframe () {
   const name = document.querySelector('#kf-name-input')?.textContent
-  msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE })
+  msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE, spotlight: SPOTLIGHT })
   nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
 }
 
@@ -161,6 +162,55 @@ function showCreateOptions () {
   // TODO configure so it only displays options that aren't already created on selected timestamp
 }
 
+function addSpotlights (ls) {
+  const ts = nn.get('#spot-tags')
+  ls.forEach((l) => {
+    const t = document.createElement('div')
+    t.className = 'spot-tag'
+    t.dataset.lines = l
+    t.innerHTML = `
+      <p>${l}</p>
+      <div class="vrtl-line"></div>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L2 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 2L14 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `
+    t.querySelector('svg').addEventListener('click', () => removeSpotlight(l))
+    ts.appendChild(t)
+  })
+}
+
+function removeSpotlight (l) {
+  const t = nn.get(`[data-lines="${l}"]`)
+  t.remove()
+  SPOTLIGHT = SPOTLIGHT.filter(line => line !== l)
+  updateKeyframe()
+}
+
+function clearAllSpotlights () {
+  SPOTLIGHT.forEach((s) => {
+    const t = nn.get(`[data-lines="${s}"]`)
+    t.remove()
+  })
+  SPOTLIGHT = []
+  msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT })
+  updateKeyframe()
+}
+
+function handleSpotlightEnter () {
+  const i = nn.get('#sptlght-line-input')
+  let ls = i.textContent
+    .split(',')
+    .map(s => s.trim())
+  i.textContent = ''
+  ls = ls.filter(l => !SPOTLIGHT.includes(l))
+  SPOTLIGHT = [...SPOTLIGHT, ...ls]
+  addSpotlights(ls)
+  msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT })
+  updateKeyframe()
+}
+
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
 nn.get('#new').on('click', () => overlay('#metadata'))
@@ -182,15 +232,22 @@ nn.getAll('button[name]').forEach(btn => {
     msg('tut-mkr-explain', btn.getAttribute('name'))
   })
 })
-nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() }) // prevents shortcuts when typing
+
+// prevents shortcuts when typing in custom inputs
+nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() })
+nn.get('#sptlght-line-input').on('keydown', (e) => { e.stopPropagation() })
 
 // opening and closing spotlight dropdown
-nn.get('#spotlight-dd').addEventListener('click', (e) => {
+nn.get('#spotlight-dd').on('click', (e) => {
   const em = nn.get('.sptlght-edit-menu')
   if (!em.contains(e.target)) {
     em.style.display = em.style.display === 'none' ? 'flex' : 'none'
   }
 })
+nn.get('[name="sptlght-enter"]').on('click', () => handleSpotlightEnter())
+nn.get('[name="sptlght-show"]').on('click', () => msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT }))
+nn.get('[name="sptlght-clear"]').on('click', () => clearAllSpotlights())
+// TODO add handling for pressing enter/return
 
 // .................... window events
 
