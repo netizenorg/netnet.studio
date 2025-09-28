@@ -150,6 +150,39 @@
       <div id="kf-name-input" contentEditable="true" data-placeholder="type keyframe name..." kf-edit-tool></div>
       <button id="update-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>update</button>
       <button id="delete-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>delete</button>
+      <!-- spotlight edit menu -->
+      <div id="spotlight-dd" class="dd-edit dd-styles">
+        <div class="dd-title">
+          <p>spotlights</p>
+          <svg width="18" height="9" viewBox="0 0 21 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="sptlght-edit-menu dd-styles" style="display: none;">
+          <div>
+            <div id="sptlght-line-input" contenteditable="true" data-placeholder="enter line numbers..."></div>
+            <button class="pill-btn pill-btn--secondary">enter</button>
+          </div>
+          <div class="hrztl-line"></div>
+          <div id="spot-tags">
+            <div class="spot-tag">
+              <p>12</p>
+              <div class="vrtl-line"></div>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2L2 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 2L14 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="sptlght-footer">
+            <div></div>
+            <div>
+              <button class="pill-btn pill-btn--secondary red">clear all</button>
+              <button class="pill-btn pill-btn--secondary">?</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- <button name="nav-infos" class="pill-btn pill-btn--secondary" kf-edit-tool>?</button> -->
     </div>
     <div class="tutorial-tools">

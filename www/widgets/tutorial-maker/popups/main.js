@@ -184,6 +184,14 @@ nn.getAll('button[name]').forEach(btn => {
 })
 nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() }) // prevents shortcuts when typing
 
+// opening and closing spotlight dropdown
+nn.get('#spotlight-dd').addEventListener('click', (e) => {
+  const em = nn.get('.sptlght-edit-menu')
+  if (!em.contains(e.target)) {
+    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
+  }
+})
+
 // .................... window events
 
 nn.on('load', () => {

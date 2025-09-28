@@ -200,3 +200,97 @@ nav > div > div {
   color: var(--error-red);
   font-size: 0.8rem;
 }
+
+/* styles for spotlight dropdown menu */
+.dd-styles {
+  background: var(--bg-color);
+  border: 1px solid var(--netizen-meta);
+  border-radius: 9px;
+  padding: 10px;
+  width: 100%;
+}
+.dd-edit {
+  padding-top: 4px;
+  cursor: pointer;
+  height: 32px;
+  position: relative;
+}
+.dd-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.dd-title > p {
+  color: var(--netizen-meta);
+  font-weight: 700;
+  margin: auto 0;
+}
+.sptlght-edit-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: absolute;
+  top: 36;
+  left: 0;
+}
+.sptlght-edit-menu > div,
+.sptlght-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+}
+..sptlght-edit-menu > div > div,
+.sptlght-footer > div {
+  display: flex;
+  gap: 6px;
+}
+.hrztl-line {
+  height: 3px;
+  border-radius: 15px;
+  background: var(--netizen-comment);
+}
+
+#sptlght-line-input {
+  background: var(--netizen-meta);
+  border: 2px solid #9999BE;
+  border-radius: 7px;
+  font-weight: 700;
+  margin: auto 0;
+  padding: 4px 10px;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#sptlght-line-input:empty:before {
+    content: attr(data-placeholder);
+    color: var(--netizen-hint-shadow);
+    pointer-events: none;
+}
+.spot-tag {
+  background: var(--netizen-tag);
+  color: var(--bg-color);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 7px;
+  border-radius: 7px;
+  width: fit-content;
+}
+.spot-tag p {
+  font-size: 1.188rem;
+  line-height: 1.188rem;
+  font-weight: 700;
+  margin: 0;
+}
+.spot-tag .vrtl-line {
+  height: 19px;
+  background-color: #AA4C9F;
+  width: 3px;
+}
+.spot-tag svg {
+  padding-bottom: 1px;
+  cursor: pointer;
+}
