@@ -114,7 +114,7 @@ window.CONVOS['student-session'] = (self) => {
     }
   }, {
     id: 'blank-canvas-ready',
-    content: 'Great! Here\'s a blank canvas. Click on my face when you need something, or double click on any piece of code if you want me to explain it to you.<br><br>Check out the <span class="link" onclick="WIDGETS.open(\'learning-guide\')">Guide</span> to get oriented or explore the <span class="link" onclick="WIDGETS.open(\'demo-sketches\')">Code Demos</span> widget for inspiration!',
+    content: 'Great! Here\'s a blank canvas. Click on my face when you need something, or double click on any piece of code if you want me to explain it to you.<br><br>Check out the <span class="link" onclick="WIDGETS.open(\'learning-guide\')">Guide</span> to get oriented or explore the <span class="link" onclick="WIDGETS.open(\'template-projects\')">Template Starter Projects</span> and <span class="link" onclick="WIDGETS.open(\'demo-sketches\')">Code Demos</span> widget for inspiration!',
     options: {
       'will do, thanks!': (e) => e.hide()
     }

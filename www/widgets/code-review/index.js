@@ -88,7 +88,7 @@ class CodeReview extends Widget {
   }
 
   _findErrors () { // list console error objects
-    return Array.from(nn.getAll('.netitor-gutter-marker'))
+    return Array.from(document.querySelectorAll('.netitor-gutter-marker'))
       .filter(ele => ele.dataset.err)
       .map(ele => JSON.parse(ele.dataset.err))
   }
@@ -106,13 +106,18 @@ class CodeReview extends Widget {
     NNE.cm.scrollIntoView({ ch: 0, line: err.line - 1 })
     setTimeout(() => NNE.spotlight(err.line), 100)
     window.convo = new Convo({
-      content: `On line ${err.line}, ${err.friendly}`,
+      // content: `On line ${err.line}, ${err.friendly}`,
+      content: err.friendly,
       options: opts
     })
   }
 
   _markIssues (arr, clearFirst) {
-    if (clearFirst) NNE.marker(null)
+    if (clearFirst) {
+      // NNE.marker(null) // this will clear green demo markers as well
+      NNE.getMarkers()
+        .filter(m => m.color !== 'green').forEach(m => m.element.remove())
+    }
     const lines = []
     arr.forEach(e => {
       if (lines.includes(e.line)) return

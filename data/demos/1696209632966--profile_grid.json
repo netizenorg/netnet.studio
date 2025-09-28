@@ -3,7 +3,6 @@
   "toc": true,
   "tags": [
     "css",
-    "template",
     "profile",
     "grid",
     "flexbox",
@@ -17,7 +16,7 @@
     {
       "title": "getting started",
       "focus": null,
-      "text": "This template is modeled on popular social media sites, except that it's hand coded which means it's infinitely more customizable. It uses some cat images as place holders, but keep in mind that if you save this to your own GitHub project you'll need to replace these with your own uploaded assets."
+      "text": "This demo is modeled on popular social media sites, except that it's hand coded which means it's infinitely more customizable. It uses some cat images as place holders, but keep in mind that if you save this to your own GitHub project you'll need to replace these with your own uploaded assets."
     },
     {
       "title": "the HTML",

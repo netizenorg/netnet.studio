@@ -341,6 +341,7 @@ class DemoSketches extends Widget {
     const delay = parseInt(utils.getVal('--demo-screen-tt'))
     setTimeout(() => {
       nn.get(this.$('.demos-list')).css({ display: 'none' })
+      this._filterResults({ target: { value: '' } }) // reset filtered list
     }, delay)
   }
 

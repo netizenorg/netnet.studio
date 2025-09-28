@@ -104,21 +104,13 @@
 
   <div class="learning-guide__main__item" id="learning-guide-the-craft">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">THE CRAFT</h3>
-    <div class="learning-guide__tut-code">
+    <br><br>
+    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+    <div class="learning-guide__tut-thumbs-code">
       <!-- What is Code tutorials here -->
     </div>
-    <div class="learning-guide__tut-cntrl" name="code">
-      <span class="highlight">How To / Why Write Code</span>
-    </div>
-
-    <!-- <div class="learning-guide__tc">
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <div onclick="WIDGETS.open('demo-sketches')" class="learning-guide__code-example-btn">
-          &lt;/&gt;
-        </div>
-        <p style="padding: 20px; width: 331px;">← A collection of code examples and annotated demos created especially for internet artists. If you're new to creative coding, you may want to start with the interactive tutorial above.</p>
-      </div>
-      <br>
+    <!-- <div class="learning-guide__tut-cntrl" name="code">
+      <span class="highlight">How/Why/Where/What is Code</span>
     </div> -->
   </div>
 
@@ -126,9 +118,8 @@
   <!--                      <<< HTML >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item" id="learning-guide-html">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('html'); WIDGETS['html-reference'].open()">HTML</h3>
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('html')">HTML</h3>
     <br>
-    <!-- <svg-title-tag colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text)"></svg-title-tag> -->
     <svg-tag-animated colors="var(--netizen-tag-bracket),var(--netizen-tag),var(--netizen-meta),var(--netizen-text),var(--netizen-attribute),var(--netizen-string)" onclick="WIDGETS.open('html-reference')" style="cursor:pointer;"></svg-tag-animated>
     <br>
     <div>
@@ -145,7 +136,7 @@
     </div>
 
     <div class="learning-guide__apx">
-      <div class="learning-guide__apx-list3">
+      <div class="learning-guide__apx-list-flex">
         <div>
           <h2>Templates</h2>
           <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('html-basic')">
@@ -182,13 +173,13 @@
     <div class="learning-guide__ex-row">
       <div style="width: 100%">
         <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
-        <div class="learning-guide__tut-html">
+        <div class="learning-guide__tut-thumbs-html">
           <!-- HTML tutorial thumbnails here -->
         </div>
         <div class="learning-guide__tut-cntrl" name="html">
-          <span>&lt;&lt; Prev</span>
+          <span class="pill-btn pill-btn--secondary">◀◀ Prev</span>
           <span class="highlight"><!-- tutorial name --></span>
-          <span>Next &gt;&gt;</span>
+          <span class="pill-btn pill-btn--secondary">Next ▶▶</span>
         </div>
       </div>
     </div>
@@ -201,38 +192,39 @@
   <!--                      <<< CSS >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item" id="learning-guide-css">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('css'); WIDGETS['css-reference'].open()">CSS</h3>
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('css')">CSS</h3>
     <br>
+    <svg-css-animated colors="var(--netizen-meta), var(--netizen-tag),var(--netizen-text),var(--netizen-property),var(--netizen-number),var(--netizen-tag-bracket)" onclick="WIDGETS.open('css-reference')" style="cursor:pointer;"></svg-css-animated>
     <br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
-    <!-- <div>
+    <div>
       <div class="learning-guide__ex-start">
         <span><b>Cascading Style Sheets</b></span>
         <button class="pill-btn pill-btn--secondary"
-                onclick="utils.loadDemo(49)">
-          review core concepts
+                onclick="WIDGETS.open('css-reference', (w) => {w.toggleIntroPresentation(); WIDGETS['learning-guide'].close()})">
+          Start Intro to CSS
         </button>
       </div>
       <p>
-         Cascading Style Sheets, or CSS, was a language introduced to the Web in the mid 90s for the purpose of separating a webpage's "form" or "presentation" from it's "structure" and "content". Initially it handled things like layout, color and fonts, but today, it has evolved to become a much more expressive language capable of creating interactive effects and animations.
+        Cascading Style Sheets, or CSS, was a language introduced to the Web in the mid 90s for the purpose of separating a webpage's "form" or "presentation" from it's "structure" and "content". Initially it handled things like layout, color and fonts, but today, it has evolved to become a much more expressive language capable of creating interactive effects and animations.
       </p>
     </div>
 
-    <br>
-
-    <svg-css-rule colors="var(--netizen-property),var(--netizen-tag),var(--netizen-text),var(--netizen-meta),var(--netizen-keyword)"></svg-css-rule>
-
-    <div class="learning-guide__ex-row">
-      <div style="width: 100%">
-        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
-        <div class="learning-guide__tut-css">
-          CSS TUTORIALS GO HERE
-        </div>
-      </div>
-    </div>
-
     <div class="learning-guide__apx">
-      <div class="learning-guide__apx-list2">
+      <div class="learning-guide__apx-grid2">
+        <div>
+          <h2>Templates</h2>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('css-landing-page')">
+            Landing Page
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('css-art')">
+            CSS Art
+          </span>
+          <br>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('css-minimalist')">
+            Modern Minimalist
+          </span>
+        </div>
         <div>
           <h2>Docs</h2>
           <span class="highlight" name="ref:css:mainOpts">CSS Reference</span><br>
@@ -240,25 +232,11 @@
           <span class="highlight" name="ref:css:selectorListOpts">Selectors List</span><br>
           <span class="highlight" name="ref:css:cascadeOpts">The Cascade</span><br>
         </div>
-        <div>
-          <h2>Templates</h2>
-          <span class="highlight" onclick="utils.loadDemo(1695683222462)">
-            CSS still life
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(1696209632966)">
-            profile page
-          </span>
-          <br>
-          <span class="highlight" onclick="utils.loadDemo(1696815273134)">
-            splash page
-          </span>
-        </div>
       </div>
       <br>
-      <div class="learning-guide__apx-list3">
+      <div class="learning-guide__apx-grid3">
         <div>
-          <h2>Examples</h2>
+          <h2>CSS Demos</h2>
           <span class="highlight" onclick="utils.loadDemo(1696291638151)">
             the "box model"
           </span>
@@ -311,17 +289,34 @@
         </div>
       </div>
     </div>
+
+    <div class="learning-guide__ex-row">
+      <div style="width: 100%">
+        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
+        <div class="learning-guide__tut-thumbs-css">
+          <!-- HTML tutorial thumbnails here -->
+        </div>
+        <div class="learning-guide__tut-cntrl" name="css">
+          <span class="pill-btn pill-btn--secondary">◀◀ Prev</span>
+          <span class="highlight"><!-- tutorial name --></span>
+          <span class="pill-btn pill-btn--secondary">Next ▶▶</span>
+        </div>
+      </div>
+    </div>
+
     <br><br>
-    <div class="learning-guide__ex-divider"></div> -->
+    <div class="learning-guide__ex-divider"></div>
   </div>
+
+
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<<  JS  >>>                              -->
   <!--                      <<<  -   >>>                              -->
   <div class="learning-guide__main__item" id="learning-guide-js">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('js'); WIDGETS['js-reference'].open()">JS</h3>
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('js')">JS</h3>
     <br>
-    <br>
+    <br><br>
     <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
     <!-- <div>
       <div class="learning-guide__ex-start">
@@ -335,8 +330,7 @@
         JavasScript is the Web's defacto programming language, although you can use it in other contexts (robotics, AI, games, etc) it was first invented to add interactive and dynamic capabilities to the Web, converting our hypertext "documents" into hypermedia "applications".
       </p>
     </div>
-    <br><br>
-    <div class="learning-guide__ex-divider"></div> -->
+    <br><br> -->
   </div>
 
 
@@ -354,7 +348,7 @@
         The <span class="link" onclick="WIDGETS.open('demo-sketches')">Code Demos</span> widget contains a variety of creative code "demos" in single file sketches which showcase the generative, interactive, expressive and otherwise poetic possibilities of the Web.
       </p>
       <p style="position: absolute; left: 0px; width: 47%; top: 224px;">
-        The <span class="link" onclick="WIDGETS.open('template-projects')">Template Starter Projects</span> widget contains a few different project structures you can use as starting points for your own projects.
+        The <span class="link" onclick="WIDGETS.open('template-projects')">Template Starter Projects</span> widget contains a few different project structures you can use as starting points to learn from and build on.
       </p>
     </div>
   </div>
@@ -370,7 +364,7 @@
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('refs')">APPENDIX</h3>
     <br>
 
-    <div class="learning-guide__apx-list2">
+    <div class="learning-guide__apx-grid2">
       <div>
         <div class="learning-guide__ex-start">
           <span><b>coding resources</b></span>
@@ -400,7 +394,7 @@
     </div>
     <br>
 
-    <div class="learning-guide__apx-list2">
+    <div class="learning-guide__apx-grid2">
       <div>
         <div class="learning-guide__ex-start">
           <span><b>cultural archives</b></span>

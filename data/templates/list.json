@@ -1,9 +1,13 @@
 {
   "published": [
     "html-basic",
-    "html-meta-tags"
+    "html-meta-tags",
+    "css-landing-page",
+    "css-art",
+    "css-minimalist"
   ],
   "build-on": {
-    "html-meta-tags": ["html-basic"]
+    "html-meta-tags": ["html-basic"],
+    "css-landing-page": ["html-meta-tags"]
   }
 }

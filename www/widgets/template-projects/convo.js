@@ -1,4 +1,4 @@
-/* global WIDGETS NNW nn */
+/* global WIDGETS NNW nn NNE */
 window.CONVOS['template-projects'] = (self) => {
   const f12 = nn.platformInfo().platform.includes('Mac') ? 'Fn + F12' : 'F12'
   const safari = nn.platformInfo().name === 'Safari'
@@ -16,11 +16,23 @@ window.CONVOS['template-projects'] = (self) => {
     else self._newRepoFromTemplate(v, t)
   }
 
+  const downloadZip = async (name) => {
+    const url = `/templates/${name}/files.zip`
+    const resp = await window.fetch(url)
+    if (!resp.ok) throw new Error('Network error')
+    const blob = await resp.blob()
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `netnet-${name}.zip`
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
+
   return [
     {
       id: 'template-widget-open',
       graph: { id: 1, x: 25, y: 25 },
-      content: 'This widget contains a collection of templates which serve as starting points for new web projects. Some contain only a single HTML file while others contain multiple files. Click "Begin Guide" if you\'d like me to explain it to you, or click "Open Completed Template" if you simply want to use it as the basis of a new project.',
+      content: 'This widget contains a collection of templates which serve as starting points for new web projects. Click "Preview" to view the end result in a new tab, click "Guided Walkthrough" if you\'d like me to explain it to you, or click "New Project From Tempate" if you simply want to use it as the basis of a new project.',
       options: {
         ok: (e) => e.hide()
       }
@@ -28,7 +40,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'buttons',
       graph: { id: 2, x: 150, y: 25 },
-      content: 'Clicking on "Open Completed Tempate" will display the full template, ready for remixing into your own work. If instead you click "Begin Guide", I\'ll type out the code for you line by line, explaining the purpose of each piece as we code.',
+      content: 'Click "Preview" to view the template\'s HTML page in a new tab, click "Guided Walkthrough" if you\'d like me to explain it to you, or click "New Project From Tempate" if you simply want to use it as the basis of a new project.',
       options: {
         ok: (e) => e.hide()
       }
@@ -36,13 +48,13 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'load-template',
       graph: { id: 3, x: 25, y: 275 },
-      content: `Would you like me to start the step-by-step guide for the <i>${self._getTemplateName()} Template</i> or would you prefer I just load the full template?`,
+      content: `Would you like start a guided walkthrough of the <i>${self._getTemplateName()}</i> template or would you prefer to jump straight into creating a new project from it?`,
       options: {
         'guide me through it': (e) => {
           self.startGuide(self._tempName)
         },
-        'load the full template': (e) => {
-          self.displayTemplate(self._tempName)
+        'let\'s start a project': (e) => {
+          self.preNewRepoFromTemplate()
         }
       }
     },
@@ -57,6 +69,24 @@ window.CONVOS['template-projects'] = (self) => {
       }
     },
     {
+      id: 'notes-click-pre-guide',
+      graph: { id: 21, x: 400, y: 275 },
+      content: `Would you like me to begin the walkthrough for the <i>${self._getTemplateName()}</i> template or did you want to jump straight into creating a new project from this template?`,
+      options: {
+        'guide me through it': (e) => {
+          self._templateConvo(true) // first template convo
+        },
+        'let\'s start a project': (e) => {
+          self.preNewRepoFromTemplate()
+        },
+        neither: (e) => {
+          self.cancel()
+          NNE.code = ''
+          e.hide()
+        }
+      }
+    },
+    {
       id: 'notes-click',
       graph: { id: 5, x: 275, y: 275 },
       content: 'Would you like to continue where we left off, restart the guide from the start or skip to the end?',
@@ -65,10 +95,15 @@ window.CONVOS['template-projects'] = (self) => {
           self._continueGuide()
         },
         'restart guide': (e) => {
-          self.startGuide(true) // first template convo
+          self.startGuide()
         },
         'skip to the end': (e) => {
-          self.displayTemplate()
+          self._skipToEnd()
+        },
+        'quit guide': (e) => {
+          self.cancel()
+          NNE.code = ''
+          e.hide()
         }
       }
     },
@@ -79,7 +114,7 @@ window.CONVOS['template-projects'] = (self) => {
       options: {
         'yes, that\'s ok': (e) => {
           if (self._tempType === 'guide') self.startGuide(self._tempName)
-          else self.displayTemplate(self._tempName)
+          else self.preNewRepoFromTemplate(self._tempName)
         },
         'no, never mind': (e) => e.hide()
       }
@@ -95,7 +130,7 @@ window.CONVOS['template-projects'] = (self) => {
         'no, we can discard my changes': (e) => {
           WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
-          else self.displayTemplate(self._tempName)
+          else self.preNewRepoFromTemplate(self._tempName)
         },
         'oh, never mind': (e) => e.hide()
       }
@@ -108,26 +143,39 @@ window.CONVOS['template-projects'] = (self) => {
         'yes, let\'s go ahead': (e) => {
           WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
-          else self.displayTemplate(self._tempName)
+          else self.preNewRepoFromTemplate(self._tempName)
         },
         'oh, never mind': (e) => e.hide()
       }
     },
     {
-      id: 'end-guide',
-      graph: { id: 9, x: 600, y: 100 },
-      content: 'Great, that ends the guide to this template. Would you like to continue working on this as a single page <i>sketch</i> or would you like to create a multi-file <i>project</i> hosted on GitHub?',
+      id: 'new-proj-single-file',
+      graph: { id: 10, x: 500, y: 475 },
+      content: 'This is template is just a single HTML file  which means we can jump straight into creating a new GitHub <b>project</b> from it, or I could just open it as a <b>sketch</b> first?',
       options: {
-        ok: (e) => e.hide()
+        'let\'s create a new project': (e) => e.goTo('new-project-from-template'),
+        'let\'s just sketch first': (e) => self.loadIndexAsSketch(),
+        'never mind': (e) => e.hide()
       }
     },
     {
-      id: 'display-template-single-file',
-      graph: { id: 10, x: 500, y: 475 },
-      content: `This is the complete <i>${self._getTemplateName()}</i> template! Would you like to create a new <i>project</i> from it on GitHub or do you just want to experiment with it as a <i>sketch</i>?`,
+      id: 'new-proj-single-file-no-auth',
+      graph: { id: 17, x: 375, y: 475 },
+      content: 'I can only create a new project for you if you connect me to your GitHub, but since this template is just a single HTML file I could just open it as a <b>sketch</b> for you to experiment with?',
       options: {
-        'let\'s create a new project': (e) => e.goTo('new-project-from-template'),
-        'just experimenting': (e) => e.hide()
+        'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
+        'let\'s just sketch first': (e) => self.loadIndexAsSketch(),
+        'never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'new-proj-multi-file-no-auth',
+      graph: { id: 20, x: 125, y: 475 },
+      content: 'I can only create a new project on GitHub for you if you connect me to your account. Or if you just want to download the project files I\'ll be happy to zip them up for you',
+      options: {
+        'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
+        'I\'ll take that download': (e) => downloadZip(self.state.name),
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -139,7 +187,7 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -150,7 +198,7 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -161,7 +209,7 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -172,7 +220,7 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -183,56 +231,7 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
-      }
-    },
-    {
-      id: 'display-template-single-file-no-auth',
-      graph: { id: 17, x: 375, y: 475 },
-      content: `This is the complete <i>${self._getTemplateName()}</i> template! If you connect me to your GitHub account we can turn this into a new <i>project</i>, otherwise feel free experiment with this as a <i>sketch</i>.`,
-      options: {
-        'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
-        'just experimenting': (e) => e.hide()
-      }
-    },
-    {
-      id: 'display-template-multi-file',
-      graph: { id: 18, x: 250, y: 475 },
-      content: `This is the complete index.html file for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, would you like to create a new <i>project</i> from it on GitHub so you can access all the files or are you just experimenting?`,
-      options: {
-        'let\'s create a new project': (e) => e.goTo('new-project-from-template'),
-        'just experimenting': (e) => e.goTo('just-experimenting')
-      }
-    },
-    {
-      id: 'just-experimenting',
-      graph: { id: 19, x: 50, y: 650 },
-      content: 'Ok, just keep in mind that if you want to save any changes you make, you\'ll need to create a <i>project</i> for this to work properly. Saving it as a <i>sketch</i> will break any references to other files in this template.',
-      options: {
-        ok: (e) => e.hide()
-      }
-    },
-    {
-      id: 'display-template-multi-file-no-auth',
-      graph: { id: 20, x: 125, y: 475 },
-      content: `This is the complete index.html page for the <i>${self._getTemplateName()}</i> template! This template contains other files as well, I could create a <i>project</i> for you from this template, bu you'll first need to connect me to your GitHub.`,
-      options: {
-        'ok, let\'s connect to GitHub': (e) => WIDGETS['student-session'].chatGitHubAuth(),
-        'just experimenting': (e) => e.goTo('just-experimenting')
-      }
-    },
-    {
-      id: 'title-click-from-template',
-      graph: { id: 21, x: 400, y: 275 },
-      content: `Would you like me to guide you through creating this <i>${self._getTemplateName()}</i> template from scratch, or do you want to create a new project from this template?`,
-      options: {
-        'guide me through it': (e) => {
-          self.startGuide(self.state.name)
-        },
-        'let\'s start a project': (e) => {
-          self.preNewRepoFromTemplate()
-        },
-        'neither, I\'m just experimenting': (e) => e.hide()
+        'never mind': (e) => e.hide()
       }
     },
     {
@@ -243,7 +242,21 @@ window.CONVOS['template-projects'] = (self) => {
         'ready!': (e, t) => {
           validateName(e, t)
         },
-        'never mind, i\'ll just experiment': (e) => e.goTo('just-experimenting')
+        'never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'on-edit',
+      content: 'I\'m glad you want to experiment, but before you try to edit some of the code in my editor, don\'t forget that during my walkthrough your edits will be lost when you ask me to continue the guide.',
+      options: {
+        'understood!': (e) => {
+          NNE.readOnly = false
+          e.hide()
+        },
+        'let\'s continue the guide': (e) => {
+          if (self._lastConvo === 'start-guide') e.goTo('start-guide')
+          else self._templateConvo()
+        }
       }
     },
     {
@@ -263,8 +276,18 @@ window.CONVOS['template-projects'] = (self) => {
     }, {
       id: 'explain-error',
       before: () => NNW.menu.switchFace('default'),
-      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and you could <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on the netizen.org GitHub to let us know what you found!`,
+      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on our GitHub to let us know what you found!`,
       options: { ok: (e) => e.hide() }
+    },
+    {
+      id: 'can-not-edit',
+      content: 'Occasionally I might ask you for content which I\'ll include in the code, but you can\'t edit the code directly while I build out the template. You\'ll have to wait till I\'m finished, or click on the "Notes" button at the top to skip to the end.',
+      options: {
+        ok: (e) => {
+          if (self._lastConvo === 'start-guide') e.goTo('start-guide')
+          else self._templateConvo()
+        }
+      }
     }
   ]
 }

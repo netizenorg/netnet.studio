@@ -65,6 +65,7 @@ function sendUpdate () {
     payload.code = ne.code
     payload.spotlight = translateSpotlight(nn.get('#spotlight').value)
     payload.edit = nn.get('#editable').value === 'true'
+    if (!nn.get('#editable').value) delete payload.edit
   } else if (type === 'BEFORE') {
     payload.type = 'netitor-before-update'
     if (ne.code === 'const BEFORE = () => {\n  \n}') {
@@ -126,7 +127,7 @@ nn.on('message', (e) => {
     const code = `/* global ${garr.join(', ')} */\n`
     ne.code = code + e.data.code
   } else if (type === 'CODE') {
-    const edit = typeof e.data.edit === 'boolean' ? e.data.edit.toString() : 'true'
+    const edit = typeof e.data.edit === 'boolean' ? e.data.edit.toString() : null
     const spot = e.data.spotlight === 'undefined' ? null : e.data.spotlight
     nn.get('#editable').value = edit
     nn.get('#spotlight').set({ value: spot || '' })

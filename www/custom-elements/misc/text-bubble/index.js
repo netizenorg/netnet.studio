@@ -127,7 +127,7 @@ class TextBubble extends HTMLElement {
     }
   }
 
-  fadeIn (t) {
+  fadeIn (t, cb) {
     const time = (typeof t === 'number') ? t : utils.getVal('--menu-fades-time')
     this._fadeDebounce()
     const tb = this.$('.text-bubble')
@@ -138,6 +138,7 @@ class TextBubble extends HTMLElement {
     const t2 = setTimeout(() => {
       tb.querySelector('.text-bubble-options').style.transform = 'translateX(-50%) translateY(0)'
       tb.querySelector('.text-bubble-options').style.opacity = 1
+      if (cb) cb()
     }, time)
     this._fadeTimers.push(t1)
     this._fadeTimers.push(t2)
@@ -160,6 +161,10 @@ class TextBubble extends HTMLElement {
     this._fadeTimers.push(t1)
     this._fadeTimers.push(t2)
     this._fadeTimers.push(t3)
+  }
+
+  focusOption () {
+    this.$('.text-bubble-options').children[0].focus()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS

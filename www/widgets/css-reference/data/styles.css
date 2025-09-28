@@ -1,0 +1,70 @@
+:root {
+  --css-ref-toggle-message: "click diagram to toggle guide";
+}
+
+.css-reference-widget--sec-link {
+  display: inline-block;
+  color: var(--netizen-meta);
+  font-size: 24px;
+  margin: 8px;
+  transition: color .5s ease, border .5s ease;
+  border-bottom: 2px solid var(--netizen-meta);
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+}
+
+.css-reference-widget--sec-link:hover {
+  color: var(--netizen-match-color);
+  border-bottom: 2px solid var(--netizen-match-color);
+  cursor: pointer;
+}
+
+.css-reference-widget--intro-btn {
+  margin: 0 auto 8px auto;
+  display: block;
+  font-size: 22px;
+  padding: 20px 30px;
+  border-radius: 50px;
+  transition: opacity 1s var(--sarah-ease);
+}
+
+.css-reference-widget--intro-p {
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 45px !important;
+  transition: opacity 1s var(--sarah-ease);
+}
+
+.css-reference-widget--guided-intro {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  height: 0px;
+  margin-bottom: 20px;
+  transform: translateY(-24px);
+
+  opacity: 0;
+  transition: opacity 2s var(--sarah-ease),
+    height 1s var(--sarah-ease);
+}
+
+.css-reference-widget--guided-intro > * {
+  display: inline-block;
+  width: 100%;
+}
+
+.css-reference-widget--guided-intro > .link {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.css-reference-widget--guided-intro > svg-css-animated::before {
+  content: var(--css-ref-toggle-message);
+  font-style: italic;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0.5;
+}

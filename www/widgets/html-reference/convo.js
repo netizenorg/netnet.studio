@@ -37,7 +37,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'syntax',
       graph: { id: 2, x: 275, y: 150 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(0)
+        self.$('svg-tag-presentation').updateHTML(0)
       },
       content: 'All markup languages share the same <i>syntax</i>, a <code>&lt;</code> bracket followed by the name of the element and then a <code>&gt;</code> bracket',
       options: {
@@ -58,7 +58,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'hr',
       graph: { id: 4, x: 275, y: 450 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(1)
+        self.$('svg-tag-presentation').updateHTML(1)
       },
       code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>\n<script>\n/* global nn */\n\nfunction animate () {\n  setTimeout(animate, 100)\n  const hrs = nn.getAll(\'hr\').length\n  if (hrs < nn.height / 11) nn.create(\'hr\').addTo(\'body\')\n}\nnn.on(\'load\', animate)\n\n</script>',
       edit: true,
@@ -72,7 +72,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'names',
       graph: { id: 5, x: 275, y: 300 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(0)
+        self.$('svg-tag-presentation').updateHTML(0)
       },
       code: '<!-- nothing -->',
       edit: true,
@@ -86,7 +86,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'meta',
       graph: { id: 7, x: 275, y: 600 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(2)
+        self.$('svg-tag-presentation').updateHTML(2)
       },
       code: '<meta>',
       edit: true,
@@ -100,7 +100,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'input',
       graph: { id: 8, x: 475, y: 300 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(3)
+        self.$('svg-tag-presentation').updateHTML(3)
       },
       code: '<input style="font-size: 24px">',
       edit: true,
@@ -114,9 +114,9 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'input-default',
       graph: { id: 9, x: 475, y: 450 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(4)
-        setTimeout(() => self.$('svg-tag-animated').updateHTML(5), 1000)
-        setTimeout(() => self.$('svg-tag-animated').updateHTML(6), 2000)
+        self.$('svg-tag-presentation').updateHTML(4)
+        setTimeout(() => self.$('svg-tag-presentation').updateHTML(5), 1000)
+        setTimeout(() => self.$('svg-tag-presentation').updateHTML(6), 2000)
       },
       code: '<input style="font-size: 24px">',
       edit: true,
@@ -130,7 +130,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'attr-intro',
       graph: { id: 10, x: 475, y: 600 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(7)
+        self.$('svg-tag-presentation').updateHTML(7)
       },
       code: '<input style="font-size: 24px">',
       edit: true,
@@ -144,7 +144,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'attr2',
       graph: { id: 11, x: 675, y: 300 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(8)
+        self.$('svg-tag-presentation').updateHTML(8)
       },
       code: '<input style="font-size: 24px">',
       edit: true,
@@ -158,8 +158,8 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'other-types',
       graph: { id: 12, x: 675, y: 450 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(9)
-        setTimeout(() => self.$('svg-tag-animated').updateHTML(10), 1000)
+        self.$('svg-tag-presentation').updateHTML(9)
+        setTimeout(() => self.$('svg-tag-presentation').updateHTML(10), 1000)
       },
       code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>\n<script>\n  /* global nn */\n\n  function animate() {\n    setTimeout(animate, 100)\n    const types = [\'text\', \'number\', \'color\', \'range\', \'checkbox\', \'radio\']\n    const t = nn.random(types)\n    const x = nn.random(nn.width - 100)\n    const y = nn.random(nn.height - 50)\n    const e = nn.create(\'input\')\n      .set(\'type\', t)\n      .css(\'width\', 50)\n      .position(x, y)\n      .addTo(\'body\')\n    if (t !== \'color\' && nn.random() > 0.5) e.click()\n  }\n  nn.on(\'load\', animate)\n</script>',
       edit: true,
@@ -173,7 +173,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'singleton',
       graph: { id: 13, x: 675, y: 600 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(11)
+        self.$('svg-tag-presentation').updateHTML(11)
       },
       code: '<!-- nothing -->',
       edit: true,
@@ -187,7 +187,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'tags',
       graph: { id: 14, x: 875, y: 300 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(12)
+        self.$('svg-tag-presentation').updateHTML(12)
       },
       content: 'Most elements actually consist of two <i>tags</i>, the purpose of which is to annotate some <i>content</i> by placing it within the element\'s tags.',
       options: {
@@ -199,7 +199,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'element-parts',
       graph: { id: 15, x: 875, y: 450 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(13)
+        self.$('svg-tag-presentation').updateHTML(13)
       },
       code: '<h1>my web site</h1>',
       edit: true,
@@ -213,7 +213,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'h1-ele',
       graph: { id: 16, x: 875, y: 600 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(14)
+        self.$('svg-tag-presentation').updateHTML(14)
       },
       code: '<h1>my web site</h1>',
       edit: true,
@@ -227,7 +227,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'p-ele',
       graph: { id: 17, x: 875, y: 750 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(15)
+        self.$('svg-tag-presentation').updateHTML(15)
       },
       code: '<p>my web site</p>',
       edit: true,
@@ -241,7 +241,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'a-ele',
       graph: { id: 18, x: 875, y: 900 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(16)
+        self.$('svg-tag-presentation').updateHTML(16)
       },
       code: '<a>my web site</a>',
       edit: true,
@@ -255,7 +255,7 @@ window.CONVOS['html-reference'] = (self) => {
       id: 'href',
       graph: { id: 19, x: 875, y: 1075 },
       before: () => {
-        self.$('svg-tag-animated').updateHTML(17)
+        self.$('svg-tag-presentation').updateHTML(17)
       },
       code: '<a href="https://netizen.org">my web site</a>',
       edit: true,

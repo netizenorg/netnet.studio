@@ -322,6 +322,8 @@ class CodingMenu extends Widget {
   }
 
   toggleSubMenu (id, type) {
+    if (!this._initHeight) this._initHeight = this.height
+
     const subSec = this.$(`#${id} > .func-menu-sub-section`)
     const subSecParent = this.$(`#${id}`)
     if (type === 'close') {
@@ -339,7 +341,14 @@ class CodingMenu extends Widget {
         subSecParent.classList.add('open')
       }
     }
-    setTimeout(() => this.keepInFrame(), 500)
+
+    const classList = Array.from(this.$('.func-menu-dropdown'))
+      .flatMap(el => [...el.classList])
+    setTimeout(() => {
+      this.keepInFrame()
+      // make srure we reset to _initHeight if all menu's are closed
+      if (!classList.includes('open')) this.height = this._initHeight
+    }, 500)
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

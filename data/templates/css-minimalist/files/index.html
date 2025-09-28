@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <!-- your metadata goes here in the "head" -->
+    <title>Your Page Title</title>
+    <meta name="author" content="Your Name">
+    <meta name="description" content="What's this page about?">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+
+    <style>
+      /* feel free to move this into its own stylesheet */
+
+      *, *::before, *::after { box-sizing: border-box }
+
+      :root {
+        --brand: #b94bac;
+        --bg: #ffffff;
+        --fg: #111111;
+        --alt: #c76ebc;
+        --alt-bg: #eaeaea;
+        --alt-fg: #0b0b0b;
+        --space: 1rem;
+        --measure: 65ch;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: var(--alt-bg);
+          --fg: var(--alt-fg);
+          --brand: var(--alt)
+        }
+      }
+
+      ::selection {
+        background: var(--brand);
+        color: var(--bg);
+      }
+
+      :focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px
+      }
+
+      html {
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        overflow-wrap: anywhere;
+      }
+
+      img, video {
+        max-width: 100%;
+        height: auto;
+        display: block
+      }
+
+      a { color: var(--brand); }
+      a:visited { opacity: 0.9 }
+      a:hover, a:focus-visible {
+        text-decoration-thickness: 2px
+      }
+
+      .wrap {
+        max-width: var(--measure);
+        margin-inline: auto;
+        padding: var(--space);
+      }
+
+    </style>
+
+  </head>
+  <body>
+
+    <!-- you page's content goes here in the body -->
+    <main class="wrap">
+      <p>
+        Lorem ipsum dolor sit amet, <a href="#">consectetur</a> adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu <a href="#">fugiat</a> nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </main>
+
+  </body>
+</html>

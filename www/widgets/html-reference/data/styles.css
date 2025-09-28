@@ -56,9 +56,11 @@
   left: 0px;
 }
 
-.html-reference-widget--guided-intro > svg-tag-animated::before {
-  content: "resume guide";
+.html-reference-widget--guided-intro > svg-tag-presentation::before {
+  content: "click diagram to toggle guide";
+  font-style: italic;
   position: absolute;
   right: 0px;
   top: 0px;
+  opacity: 0.5;
 }

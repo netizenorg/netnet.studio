@@ -31,6 +31,14 @@
 </main>
 
 <div id="demo-settings" class="menu" style="opacity: 0.1">
+  <div style="align-items: flex-start;">
+    <button id="new" class="pill-btn pill-btn--secondary" title="create a new annotation">+ New Note</button>
+    <button id="preview" class="pill-btn pill-btn--secondary" title="preview this annotation">💬 prevew Note</button>
+    <reorderable-list id="note-list"></reorderable-list>
+    <button id="delete" class="pill-btn pill-btn--secondary" title="delete selected annotation(s)">
+      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete Note
+    </button>
+  </div>
   <div>
     <div>
       <input class="input" id="demo-name" placeholder="demo name">
@@ -47,14 +55,6 @@
       </select>
       <button class="pill-btn pill-btn--secondary" name="layout-info">?</button>
     </div>
-  </div>
-  <div style="align-items: flex-start;">
-    <button id="new" class="pill-btn pill-btn--secondary" title="create a new annotation">+ New Note</button>
-    <button id="preview" class="pill-btn pill-btn--secondary" title="preview this annotation">💬 prevew Note</button>
-    <reorderable-list id="note-list"></reorderable-list>
-    <button id="delete" class="pill-btn pill-btn--secondary" title="delete selected annotation(s)">
-      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete Note
-    </button>
   </div>
 </div>
 

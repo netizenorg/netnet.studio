@@ -8,13 +8,21 @@ class WidgetCard {
       targetRy: 0,
       rx: 0,
       ry: 0,
+      targetShineX: 50,
+      targetShineY: 20,
       shineX: 50,
-      shineY: 20
+      shineY: 20,
+      scale: o.appear ? 0 : 1,
+      targetScale: o.appear ? 1 : 1
     }
 
-    this.maxTilt = o.maxTilt || 18 // degrees of rotation at the edges
-    this.pop = o.pop || 32 // translateZ to enhance parallax
-    this.ease = o.ease || 0.12 // smaller = more floaty easing
+    this.maxTilt = o.maxTilt || 18
+    this.pop = o.pop || 32
+    this.ease = o.ease || 0.12
+    this.shineEase = o.shineEase || 0.12
+
+    this._animating = false
+    this._raf = null
 
     this.w = typeof o.box?.w !== 'undefined' ? o.box?.w : 250
     this.h = typeof o.box?.h !== 'undefined' ? o.box?.h : 150
@@ -27,6 +35,13 @@ class WidgetCard {
       .content(o.content || '')
       .addTo(this.parent)
 
+    if (o.main) this.card.classList.add('main')
+
+    if (o.appear) {
+      this.card.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0px) scale(0)'
+      setTimeout(() => this.appear(), 100)
+    }
+
     const css = { width: this.w, height: this.h, left: this.x, top: this.y }
     if (o.thumbnail) {
       css.background = `url(${o.thumbnail}) no-repeat center center`
@@ -38,7 +53,7 @@ class WidgetCard {
 
     this.parent.on('mousemove', (e) => {
       this.updateTargetFromMouse(e.pageX, e.pageY)
-      this.animate()
+      this.start()
     })
     this.parent.on('mouseleave', () => this.reset())
   }
@@ -47,46 +62,73 @@ class WidgetCard {
     this.pop = val
   }
 
+  start () {
+    if (this._animating) return
+    this._animating = true
+    const tick = () => {
+      if (!this._animating) return
+      const stillMoving = this.animate()
+      if (stillMoving) {
+        this._raf = window.requestAnimationFrame(tick)
+      } else {
+        this._animating = false
+        this._raf = null
+      }
+    }
+    this._raf = window.requestAnimationFrame(tick)
+  }
+
+  stop () {
+    this._animating = false
+    if (this._raf) window.cancelAnimationFrame(this._raf)
+    this._raf = null
+  }
+
   reset () {
-    // TODO: transition: box-shadow 0.2s ease, transform 0.2s ease;
+    // ease back to neutral — only set targets
     this.state.targetRx = 0
     this.state.targetRy = 0
-    this.state.rx = 0
-    this.state.ry = 0
-    this.state.shineX = 50
-    this.state.shineY = 20
-    this.animate()
+    this.state.targetShineX = 50
+    this.state.targetShineY = 20
+    this.start()
+  }
+
+  appear () {
+    this.state.targetScale = 1
+    this.start()
+  }
+
+  hide () {
+    this.state.targetScale = 0
+    this.start()
   }
 
   updateTargetFromMouse (pageX, pageY) {
-    // get card bounds
     const rect = this.card.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
 
-    // mouse offset from card center, normalized to [-1, 1]
     const nx = (pageX - cx) / (rect.width / 2)
     const ny = (pageY - cy) / (rect.height / 2)
 
-    // clamp so we don't go wild off-card
     const x = nn.clamp(nx, -1, 1)
     const y = nn.clamp(ny, -1, 1)
 
-    // rotateY follows horizontal, rotateX follows vertical (invert for natural feel)
     this.state.targetRy = x * this.maxTilt
     this.state.targetRx = -y * this.maxTilt
 
-    // move sheen opposite to the tilt for a “light from above” feel
-    this.state.shineX = nn.map(x, -1, 1, 80, 20)
-    this.state.shineY = nn.map(y, -1, 1, 10, 60)
+    this.state.targetShineX = nn.map(x, -1, 1, 80, 20)
+    this.state.targetShineY = nn.map(y, -1, 1, 10, 60)
   }
 
   animate () {
-    // ease current angles toward targets
+    // ease current toward targets
     this.state.rx += (this.state.targetRx - this.state.rx) * this.ease
     this.state.ry += (this.state.targetRy - this.state.ry) * this.ease
+    this.state.shineX += (this.state.targetShineX - this.state.shineX) * this.shineEase
+    this.state.shineY += (this.state.targetShineY - this.state.shineY) * this.shineEase
+    this.state.scale += (this.state.targetScale - this.state.scale) * this.ease
 
-    // subtle depth pop based on how steep the tilt is
     const depth = this.pop * nn.norm(
       Math.hypot(this.state.rx, this.state.ry),
       0,
@@ -96,17 +138,25 @@ class WidgetCard {
     this.card.style.transform =
       `rotateX(${this.state.rx.toFixed(3)}deg) ` +
       `rotateY(${this.state.ry.toFixed(3)}deg) ` +
-      `translateZ(${depth.toFixed(2)}px)`
+      `translateZ(${depth.toFixed(2)}px)` +
+      `scale(${this.state.scale.toFixed(3)})`
 
-    // drive the sheen position via CSS variables
-    this.card.style.setProperty('--lgwc-shine-x', `${this.state.shineX}%`)
-    this.card.style.setProperty('--lgwc-shine-y', `${this.state.shineY}%`)
+    this.card.style.setProperty('--lgwc-shine-x', `${this.state.shineX.toFixed(2)}%`)
+    this.card.style.setProperty('--lgwc-shine-y', `${this.state.shineY.toFixed(2)}%`)
 
-    // punch up shadow slightly when tilted
     const glow = 0.08 + 0.24 * nn.norm(depth, 0, this.pop)
     const bs1 = `0 10px 30px rgba(0, 0, 0, ${0.45 + glow})`
     const bs2 = '0 0 0 1px rgba(255,255,255,0.03) inset'
     this.card.style.boxShadow = `${bs1}, ${bs2}`
+
+    // stop when we're effectively at rest
+    const nearRot = Math.abs(this.state.targetRx - this.state.rx) < 0.01 &&
+      Math.abs(this.state.targetRy - this.state.ry) < 0.01
+    const nearShine = Math.abs(this.state.targetShineX - this.state.shineX) < 0.05 &&
+      Math.abs(this.state.targetShineY - this.state.shineY) < 0.05
+
+    const nearScale = Math.abs(this.state.targetScale - this.state.scale) < 0.002
+    return !(nearRot && nearShine && nearScale)
   }
 }
 

@@ -146,6 +146,7 @@ function loadNote (idx) {
   nn.get('#note-nums').value = note.focus ? note.focus.join(', ') : ''
   nn.get('#note-list').selectStep(curNoteIdx)
   ne.code = note.text || '...'
+  MSG('demo-mkr-loaded-note', curNoteIdx)
 }
 
 function newNote () {
@@ -253,7 +254,10 @@ ne.cm.on('blur', () => {
   DEMO.info[curNoteIdx].text = ne.code
   updateWidget()
 })
-ne.cm.on('focus', closeNotesList)
+ne.cm.on('focus', () => {
+  if (ne.code === '...') ne.cm.execCommand('selectAll')
+  closeNotesList()
+})
 
 // ..................................................
 

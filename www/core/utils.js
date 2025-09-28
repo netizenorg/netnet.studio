@@ -71,6 +71,8 @@ window.utils = {
     if (wigs[0]) wigs[0].close()
   },
 
+  // NOTE: this is no longer in use (keeping it here in case we need it back)
+  // was used in main.js > nn.on('resize') (but now handled in widget's 'resize')
   keepWidgetsInFrame: () => {
     WIDGETS.list().forEach(w => {
       const maxLeft = window.innerWidth - w.ele.offsetWidth
@@ -543,7 +545,7 @@ window.utils = {
       }
     }
 
-    const introGuides = ['html-reference']
+    const introGuides = ['html-reference', 'css-reference']
     introGuides.forEach(guide => {
       if (!hasException(guide)) {
         if (WIDGETS[guide]?.opened) WIDGETS[guide].close()
@@ -582,36 +584,66 @@ window.utils = {
     }
   },
 
-  netitorToString: () => {
-    const html = NNE.code
-    const lines = String(html).replace(/\r\n?/g, '\n').split('\n')
-
-    const escaped = lines.map(line => {
-      // turn leading spaces into \t per two spaces
-      const m = line.match(/^ +/)
-      let head = ''
-      if (m) {
-        const n = m[0].length
-        head = '\\t'.repeat(Math.floor(n / 2)) + (n % 2 ? ' ' : '')
-        line = line.slice(n)
+  diff: (a, b) => {
+    const aLines = a.split('\n')
+    const bLines = b.split('\n')
+    // ---------- LCS matrix ----------
+    const m = aLines.length
+    const n = bLines.length
+    const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1))
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (aLines[i - 1] === bLines[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1] + 1
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+        }
       }
-      // escape only double quotes; leave backslashes alone
-      return head + line.replace(/"/g, '\\"')
-    })
-
-    // join with literal \n between lines
-    console.log(escaped.join('\\n'))
+    }
+    // ---------- Backtrack to find diff ----------
+    const removed = []
+    const added = []
+    let i = m
+    let j = n
+    while (i > 0 && j > 0) {
+      if (aLines[i - 1] === bLines[j - 1]) { // Same line – move diagonally
+        i--; j--
+      } else if (dp[i - 1][j] >= dp[i][j - 1]) { // Line i in A was removed
+        removed.push({ line: i, text: aLines[i - 1] }); i--
+      } else { // Line j in B was added
+        added.push({ line: j, text: bLines[j - 1] }); j--
+      }
+    }
+    while (i > 0) { // Anything left at the start of either str is also a diff
+      removed.push({ line: i, text: aLines[i - 1] }); i--
+    }
+    while (j > 0) { // Reverse because we built the arrays backwards
+      added.push({ line: j, text: bLines[j - 1] }); j--
+    }
+    removed.reverse()
+    added.reverse()
+    return { removed, added }
   },
 
-  autoType: (code, template, speed = 60) => {
+  autoType: (opts = {}) => {
+    /*
+      opts = {
+        id: id, // object id
+        template: 'string with {{code}}',
+        code: 'code to type out',
+        speed: 60, // how fast to type the characters out
+        buffer: 0 // number of lines to leave above code (if we need to scroll to find it)
+        callback: func // callback function after typing is complete
+      }
+    */
     const normalize = s => (s || '')
       .replace(/\\t/g, '\t')
       .replace(/\\n/g, '\n')
       .replace(/\\r/g, '\r')
 
     // turn escaped sequences into real chars
-    let src = normalize(code)
-    let tpl = normalize(template)
+    let src = normalize(opts.code)
+    let tpl = normalize(opts.template)
 
     // b/c the netitor does not indent with tabs
     // -> NNE.cm.getOption('indentWithTabs') === fasle
@@ -622,12 +654,31 @@ window.utils = {
 
     // ensure typing code is always visible
     const startLine = tpl.split('\n').findIndex(str => str.includes('{{code}}'))
-    const jumpToLine = (line) => {
+    // ...this function ensures "line" is at the top...
+    const scrollToLineT = (line) => {
+      const lineHeight = NNE.cm.defaultTextHeight()
+      const buffer = (opts.buffer) ? opts.buffer * lineHeight : 0
       const coords = NNE.cm.charCoords({ line, ch: 0 }, 'local')
-      NNE.cm.getScrollerElement().scrollTop = coords.top
+      // NNE.cm.getScrollerElement().scrollTop = coords.top - buffer
+      NNE.cm.getScrollerElement().scrollTo({
+        top: coords.top - buffer,
+        behavior: 'smooth'
+      })
+    }
+    // ...while this one ensures "line" is at the bottom...
+    const scrollToLineB = (line) => {
+      const info = NNE.cm.getScrollInfo()
+      const lineHeight = NNE.cm.defaultTextHeight()
+      const coords = NNE.cm.charCoords({ line, ch: 0 }, 'local')
+      const targ = coords.top - (info.clientHeight - lineHeight)
+      const targetScrollTop = Math.max(0, targ)
+      // NNE.cm.getScrollerElement().scrollTop = targetScrollTop
+      NNE.cm.getScrollerElement().scrollTo({
+        top: targetScrollTop, behavior: 'smooth'
+      })
     }
 
-    // instead of using "NNE.coe = ..." b/c it clashes with jumpToLine()
+    // instead of using "NNE.code = ..." b/c it clashes with scrollToLine()
     const setValuePreserveView = value => {
       const info = NNE.cm.getScrollInfo()
       const sels = NNE.cm.listSelections()
@@ -645,12 +696,27 @@ window.utils = {
       const newVal = tpl ? tpl.replace('{{code}}', cstr) : cstr
       setValuePreserveView(newVal)
       // if line is not visible
-      const lastLine = startLine + src.split('\n').length
-      if (lastLine >= NNE.getVisibleRange().bottom) jumpToLine(lastLine)
+      const hasCode = startLine !== -1
+      if (hasCode) {
+        const lastLine = startLine + src.split('\n').length
+        const v = NNE.getVisibleRange()
+        const vLen = v.bottom - v.top
+        const cLen = lastLine - startLine
+        const fitsInView = cLen <= vLen // entire "code" block fits in view
+        const startNotInFrame = startLine >= v.bottom || startLine < v.top
+        const lastNotInFrame = lastLine >= v.bottom || lastLine < v.top
+        if (startNotInFrame && fitsInView) {
+          scrollToLineT(startLine)
+        } else if (lastNotInFrame) {
+          scrollToLineB(lastLine)
+        }
+      }
       // if we've got more chars, set timer for next key stroke
       if (idx <= chars.length) {
         window.utils.cancelAutoType()
-        window.utils._autoTypeTimer = setTimeout(type, speed)
+        window.utils._autoTypeTimer = setTimeout(type, opts.speed || 60)
+      } else {
+        if (opts.callback) opts.callback(opts.id)
       }
       idx++
     }
@@ -707,6 +773,27 @@ window.utils = {
 
   // dev testing utilities
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  netitorToString: () => {
+    const html = NNE.code
+    const lines = String(html).replace(/\r\n?/g, '\n').split('\n')
+
+    const escaped = lines.map(line => {
+      // turn leading spaces into \t per two spaces
+      const m = line.match(/^ +/)
+      let head = ''
+      if (m) {
+        const n = m[0].length
+        head = '\\t'.repeat(Math.floor(n / 2)) + (n % 2 ? ' ' : '')
+        line = line.slice(n)
+      }
+      // escape only double quotes; leave backslashes alone
+      return head + line.replace(/"/g, '\\"')
+    })
+
+    // join with literal \n between lines
+    console.log(escaped.join('\\n'))
+  },
 
   testConvo: (convoName) => {
     convoName = convoName || 'example-widget'
