@@ -88,8 +88,14 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   timeline.updatePlayhead(x)
   timeline.clearSelections()
   if (obj.keyframe) {
-    const marker = nn.get(`[name="keyframe-${obj.keyframe.timecode}"]`)
+    const { timecode, netitor } = obj.keyframe
+    const marker = nn.get(`[name="keyframe-${timecode}"]`)
     timeline.selectMarker(marker)
+    if (SPOTLIGHT) clearAllSpotlights('reset')
+    if (netitor.spotlight) {
+      SPOTLIGHT = netitor.spotlight
+      addSpotlights(netitor.spotlight)
+    }
     keyframeEditMode(true)
   } else {
     keyframeEditMode(false)
@@ -188,14 +194,14 @@ function removeSpotlight (l) {
   updateKeyframe()
 }
 
-function clearAllSpotlights () {
+function clearAllSpotlights (reset = false) {
   SPOTLIGHT.forEach((s) => {
     const t = nn.get(`[data-lines="${s}"]`)
     t.remove()
   })
   SPOTLIGHT = []
   msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT })
-  updateKeyframe()
+  if (!reset) updateKeyframe()
 }
 
 function handleSpotlightEnter () {
