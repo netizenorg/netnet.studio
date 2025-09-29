@@ -1,4 +1,4 @@
-/* global nn timeline zipper recorder FILES metadata HTMLElement customElements */
+/* global nn timeline zipper recorder FILES metadata HTMLElement customElements Netitor */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
@@ -21,7 +21,7 @@ function overlay (ele) {
   } else if (ele === '#video-menu') {
     window.resizeTo(420, 850)
     recorder.initMenu()
-  }
+  } else if (ele === '#widget-maker') window.resizeTo(610, 380)
 }
 
 function openTutorial () {
@@ -245,7 +245,7 @@ nn.get('#sptlght-line-input').on('keydown', (e) => { e.stopPropagation() })
 
 // opening and closing spotlight dropdown
 nn.get('#spotlight-dd').on('click', (e) => {
-  const em = nn.get('.sptlght-edit-menu')
+  const em = nn.get('#sptlght-edit')
   if (!em.contains(e.target)) {
     em.style.display = em.style.display === 'none' ? 'flex' : 'none'
   }
@@ -254,6 +254,15 @@ nn.get('[name="sptlght-enter"]').on('click', () => handleSpotlightEnter())
 nn.get('[name="sptlght-show"]').on('click', () => msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT }))
 nn.get('[name="sptlght-clear"]').on('click', () => clearAllSpotlights())
 // TODO add handling for pressing enter/return
+
+nn.get('#widget-dd').on('click', (e) => {
+  const em = nn.get('#widget-options')
+  if (!em.contains(e.target) || e.target?.name === 'widget-create') {
+    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
+  }
+})
+nn.get('[name="widget-create"]').on('click', () => overlay('#widget-maker'))
+nn.get('[name="widget-maker-goback"]').on('click', () => overlay(null))
 
 // .................... window events
 
@@ -269,6 +278,17 @@ nn.on('load', () => {
   const m = document.createElement('tutorial-modal')
   nn.get('body').appendChild(m)
   modal = m
+
+  // init netitor for widget maker
+  const ne = new Netitor({
+    ele: '#widget-maker-html',
+    code: '...',
+    wrap: true,
+    hint: false,
+    lint: false,
+    language: 'html'
+  })
+  ne.cm.setOption('lineNumbers', false)
 })
 
 nn.on('resize', () => {

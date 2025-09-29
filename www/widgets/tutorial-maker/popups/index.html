@@ -122,6 +122,27 @@
 </section>
 
 
+<section id="widget-maker" class="overlay" style="display: none;">
+  <div>
+    <div class="widget-maker-inputs">
+      <div>
+        <p>key:</p>
+        <div id="widget-key-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="type widget key..." kf-edit-tool></div>
+      </div>
+      <div>
+        <p>title:</p>
+        <div id="widget-title-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="type widget title..." kf-edit-tool></div>
+      </div>
+    </div>
+    <div id="widget-maker-html"></div>
+    <div class="widget-maker-bottom">
+      <div name="widget-maker-goback" class="pill-btn pill-btn--secondary">go back</div>
+      <div name="widget-maker-create" class="pill-btn pill-btn--secondary">create</div>
+    </div>
+  </div>
+</section>
+
+
 <nav>
   <div>
     <div class="keyframe-tools">
@@ -147,7 +168,7 @@
           </div>
         </div>
       </div>
-      <div id="kf-name-input" contentEditable="true" data-placeholder="type keyframe name..." kf-edit-tool></div>
+      <div id="kf-name-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="type keyframe name..." kf-edit-tool></div>
       <button id="update-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>update</button>
       <button id="delete-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>delete</button>
       <!-- spotlight edit menu -->
@@ -158,9 +179,9 @@
             <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="sptlght-edit-menu dd-styles" style="display: none;">
+        <div id="sptlght-edit" class="dd-edit-menu dd-styles" style="display: none;">
           <div>
-            <div id="sptlght-line-input" contenteditable="true" data-placeholder="enter line numbers..."></div>
+            <div id="sptlght-line-input" class="tut-mkr-input-light" contenteditable="true" data-placeholder="enter line numbers..."></div>
             <button name="sptlght-enter" class="pill-btn pill-btn--secondary">enter</button>
           </div>
           <div class="hrztl-line"></div>
@@ -206,7 +227,45 @@
   </defs>
 </svg>
 
+<footer>
+  <div id="widget-dd" class="dd-edit dd-styles" kf-edit-tool>
+    <div class="dd-title">
+      <p>widgets</p>
+      <svg width="18" height="9" viewBox="0 0 21 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div id="widget-options" class="dd-edit-menu-flip dd-styles" style="display: none;">
+        <button name="widget-create" class="pill-btn pill-btn--secondary">create new widget</button>
+        <div class="widget">
+          <div>
+            <!-- TODO add custom netnet purple checkbox -->
+            <input type="checkbox" name="" value="">
+            <p>widget-title</p>
+          </div>
+          <div>
+            <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">edit</button>
+            <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">delete</button>
+          </div>
+        </div>
+        <hr>
+        <div class="widget">
+          <div>
+            <input type="checkbox" name="" value="">
+            <p>widget-title</p>
+          </div>
+          <div>
+            <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">edit</button>
+            <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">upload assets</button>
+</footer>
+
 <script src="/nn.min.js"></script>
+<script src="/netitor.min.js"></script>
 <script src="/custom-elements/misc/reorderable-list/index.js"></script>
 <script src="/custom-elements/misc/file-drop/index.js"></script>
 <script src="jszip.min.js"></script>
