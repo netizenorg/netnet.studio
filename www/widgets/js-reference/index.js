@@ -66,8 +66,6 @@ class JsReference extends Widget {
   textBubble (eve) {
     if (!eve || !eve.nfo) return
 
-    console.log(eve.data, eve.nfo.keyword.text, eve);
-
     const keywordMap = {
       variable: () => this.openDocs('mainOpts', 'variables'),
       var: () => this.openDocs('mainOpts', 'variables'),
