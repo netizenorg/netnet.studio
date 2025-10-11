@@ -63,7 +63,7 @@ window.CONVOS['learning-guide'] = (self) => {
     options: {
       'Ok, let\'s try it!': (e) => {
         e.hide()
-        WIDGETS.load('template-projects', w => w.startGuide('js-gen-art'))
+        WIDGETS.load('template-projects', w => w.startGuide('js-10print'))
       },
       'I want to read the docs': (e) => {
         e.hide()
