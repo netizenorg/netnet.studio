@@ -56,7 +56,9 @@ class TemplateProjects extends Widget {
     NNE.off('code-update', this.codeEdit)
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
-    NNE.wrap = WIDGETS['student-session'].getData('wrap')
+    NNE.language = 'html'
+    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
   }
 
   updateEditor (opts = {}) {
@@ -108,6 +110,8 @@ class TemplateProjects extends Widget {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'load-template')
     }
+
+    if (!NNE.autoUpdate) NNE.update()
   }
 
   async preNewRepoFromTemplate (n) {
@@ -180,6 +184,7 @@ class TemplateProjects extends Widget {
     }
 
     NNE.readOnly = true
+    NNE.autoUpdate = true
     NNE.cm.on('keydown', this._boundEditWatcher)
 
     this.state = { // also used for convo's "self" object
@@ -251,9 +256,9 @@ class TemplateProjects extends Widget {
   }
 
   _updateTitleBar () {
-    const sel = this.state.editor?.selected || 'index.html'
+    const sel = this.state.editor?.selected
     const tname = this._getTemplateName()
-    const t = `${tname}: ${sel}`
+    const t = sel !== 'index.html' ? `${tname}: ${sel}` : tname
     NNW.updateTitleBar(t)
     NNW.title.dataset.template = true
   }
@@ -278,8 +283,17 @@ class TemplateProjects extends Widget {
     // if (first) this._typeTemplateCode(psg) // TODO: check if we still need this?
   }
 
+  _experimentWithCode () {
+    this._prevWrap = NNE.wrap
+    NNE.readOnly = false
+    NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
+    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+  }
+
   _continueGuide () {
     NNE.readOnly = true
+    NNE.autoUpdate = true
+    NNE.wrap = this._prevWrap
     const s = this.state
     window.convo = new Convo(s.convos, s.curPassage)
     window.convo.on('update', (c) => this._typeTemplateCode(c.id))

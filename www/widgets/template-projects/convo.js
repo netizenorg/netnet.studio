@@ -250,7 +250,7 @@ window.CONVOS['template-projects'] = (self) => {
       content: 'I\'m glad you want to experiment, but before you try to edit some of the code in my editor, don\'t forget that during my walkthrough your edits will be lost when you ask me to continue the guide.',
       options: {
         'understood!': (e) => {
-          NNE.readOnly = false
+          self._experimentWithCode()
           e.hide()
         },
         'let\'s continue the guide': (e) => {

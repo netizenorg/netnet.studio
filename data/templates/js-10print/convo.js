@@ -846,16 +846,16 @@ window.CONVOS['template-js-10print'] = (self) => {
       id: 'minified',
       content: 'Notice the library file is named <b>nn.min.js</b>. The ".min" indicates the code is "minified": spaces and line breaks removed, variable names shortened, and other tricks applied to make the file compact. Smaller files load faster. The code isn\'t human-friendly, but this library is open source, so you can read the original on <a href="https://github.com/netizenorg/netnet-standard-library/tree/main" target="_blank">GitHub</a>.',
       options: {
-        'go on': (e) => e.goTo('wrap-up'),
+        'go on': (e) => e.goTo('end-guide'),
         'go back': (e) => e.goTo('cdn-common')
       }
     },
     {
-      id: 'wrap-up',
+      id: 'end-guide',
       content: 'There is so much more we can do with JavaScript, this is only the beginning! There are many more Web APIs and creative coding libraries full of potential. We\'ll explore these in other lessons, templates, and demos. To make the most of them, keep building your understanding of the fundamentals we covered here, and explore the <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.scrollTo(\'js-docs\'))">JavaScript Docs</span> in my Learning Guide.',
       options: {
         'great!': (e) => {
-          NNE.readyOnly = false
+          WIDGETS['template-projects']._experimentWithCode()
           e.hide()
         }
       }
