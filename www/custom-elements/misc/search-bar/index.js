@@ -18,11 +18,12 @@ class SearchBar extends HTMLElement {
     }
 
     this.type2color = {
+      netnet: 'var(--netizen-number)',
       'Coding Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
-      Tutorials: 'var(--netizen-string)',
+      Tutorials: 'var(--netizen-attribute)',
       Demos: 'var(--netizen-string)',
-      netnet: 'var(--netizen-number)'
+      Templates: 'var(--netizen-string)'
     }
   }
 
@@ -226,8 +227,8 @@ class SearchBar extends HTMLElement {
           utils.get(`tutorials/${name}/tutorial.json`, (tut) => {
             arr.push({
               type: 'Tutorials',
-              word: tut.title,
-              alts: tut.keywords,
+              word: tut.metadata.title,
+              alts: tut.metadata.keywords,
               clck: () => {
                 WIDGETS.load('hyper-video-player', w => w.load(name))
               }
@@ -259,6 +260,32 @@ class SearchBar extends HTMLElement {
           word: ex.name,
           alts: keywords,
           clck: () => utils.loadDemo(i)
+        })
+        update()
+      }
+    })
+
+    utils.get('api/templates', (json) => {
+      const arr = []
+      const len = Object.keys(json.data.list).length
+      const update = () => { if (arr.length === len) this.addToDict(arr) }
+
+      const titleFromId = (s) => {
+        const u = new Set(['html', 'css', 'js'])
+        return s.split('-').filter(Boolean).map(t => {
+          t = t.toLowerCase()
+          return u.has(t) || t.length === 2 ? t.toUpperCase() : t.charAt(0).toUpperCase() + t.slice(1)
+        }).join(' ')
+      }
+
+      for (const i in json.data.list) {
+        const t = json.data.list[i]
+        const name = t.title || titleFromId(i)
+        arr.push({
+          type: 'Templates',
+          word: name,
+          alts: ['template', 'starter', 'project'],
+          clck: () => utils.loadTemplate(i)
         })
         update()
       }

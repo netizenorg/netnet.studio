@@ -20,13 +20,23 @@
 
     <div class="learning-guide__arrow" style="cursor:pointer" onclick="WIDGETS['learning-guide'].scrollTo('toc')">➤</div>
 
-    <p style="transform: translateY(43px);">
-      "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
-    </p>
-
   </div>
 
-  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
+  <!--                  <<<      -       >>>                              -->
+  <!--                  <<<     CODE     >>>                              -->
+  <!--                  <<<      -       >>>                              -->
+
+  <div class="learning-guide__main__item" id="learning-guide-intro">
+    <p style="border:none">
+      "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
+    </p>
+    <div class="learning-guide__tut-thumbs-code">
+      <!-- What is Code tutorials here -->
+    </div>
+    <div class="learning-guide__tut-cntrl" name="code">
+      <span class="highlight">How/Why/Where/What is Code</span>
+    </div>
+  </div>
 
 
   <!--                  <<<        -          >>>                              -->
@@ -36,30 +46,41 @@
   <div id="learning-guide-toc">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('toc')">HYPERLINKS</h3>
     <br>
-    1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span>
+    <span style="color: var(--netizen-attribute)">0.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('intro')">
+      Orientation
+    </span>
     <i class="lg-v-spacer"></i>
-    2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span>
+    <span style="color: var(--netizen-attribute)">1.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">
+      The Platform <span style="font-size: 14px;">(Internet + Web + "AI")</span>
+    </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
+    <span style="color: var(--netizen-tag)">2.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
       HTML <span style="font-size: 14px;">(Hypertext Markup Language)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
+    <span style="color: var(--netizen-tag)">3.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
       CSS <span style="font-size: 14px;">(Cascading Style Sheets)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
+    <span style="color: var(--netizen-tag)">4.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
       JS <span style="font-size: 14px;">(JavaScript)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    3. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
+    <span style="color: var(--netizen-string)">5.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
     <i class="lg-v-spacer"></i>
-    4. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
+    <span style="color: var(--netizen-string)">6.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
     <i class="lg-v-spacer"></i>
   </div>
   <i class="lg-v-spacer"></i>
 
-  <div class="learning-guide__ex-divider"></div>
+  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
   <br>
   <!--                  <<<      -       >>>                              -->
@@ -70,8 +91,16 @@
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-net')">THE PLATFORM</h3>
 
     <div class="learning-guide__tc">
-      <br><br>
-      <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
+      <br>
+      <div style="display: flex; justify-content: center">
+        <span class="highlight" style="opacity:0.5;" onclick="WIDGETS['learning-guide']._comingSoon()">
+          the Internet + the Web + "Artificial intelligence"
+        </span>
+      </div>
+      <svg-hypertext onclick="WIDGETS['learning-guide']._comingSoon()" colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
+      <p style="border:none">
+        "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
+      </p>
       <!-- <div>
         <div id="lg_platform">
           <h2>the Internet</h2>
@@ -98,21 +127,8 @@
     </div> -->
   </div>
 
-  <!--                  <<<      -       >>>                              -->
-  <!--                  <<<     CODE     >>>                              -->
-  <!--                  <<<      -       >>>                              -->
+  <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
-  <div class="learning-guide__main__item" id="learning-guide-the-craft">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">THE CRAFT</h3>
-    <br><br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
-    <div class="learning-guide__tut-thumbs-code">
-      <!-- What is Code tutorials here -->
-    </div>
-    <!-- <div class="learning-guide__tut-cntrl" name="code">
-      <span class="highlight">How/Why/Where/What is Code</span>
-    </div> -->
-  </div>
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<< HTML >>>                              -->
@@ -145,6 +161,10 @@
           <br>
           <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('html-meta-tags')">
             social &lt;meta&gt; tags
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            PWA (mobile app)
           </span>
         </div>
         <div>
@@ -185,7 +205,6 @@
     </div>
 
     <br><br><br>
-    <div class="learning-guide__ex-divider"></div>
   </div>
 
   <!--                      <<<  -   >>>                              -->
@@ -223,6 +242,10 @@
           <br>
           <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('css-minimalist')">
             Modern Minimalist
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Profile Page (IG Grid)
           </span>
         </div>
         <div>
@@ -304,10 +327,8 @@
       </div>
     </div>
 
-    <br><br>
-    <div class="learning-guide__ex-divider"></div>
+    <br><br><br>
   </div>
-
 
 
   <!--                      <<<  -   >>>                              -->
@@ -316,21 +337,137 @@
   <div class="learning-guide__main__item" id="learning-guide-js">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('js')">JS</h3>
     <br>
-    <br><br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
-    <!-- <div>
+    <svg-js-animated colors="var(--netizen-meta),var(--netizen-keyword),var(--netizen-operator),var(--netizen-string),var(--netizen-variable)" onclick="WIDGETS.open('js-reference')" style="cursor:pointer;"></svg-js-animated>
+    <br>
+    <div>
       <div class="learning-guide__ex-start">
         <span><b>JavaScript</b></span>
-        <button class="pill-btn pill-btn--secondary"
-                onclick="utils.loadDemo(1695501143020)">
-          review core concepts
+        <button class="pill-btn pill-btn--secondary" onclick="WIDGETS['learning-guide']._jsIntroConvo()">
+          Start Intro to JS
         </button>
       </div>
       <p>
         JavasScript is the Web's defacto programming language, although you can use it in other contexts (robotics, AI, games, etc) it was first invented to add interactive and dynamic capabilities to the Web, converting our hypertext "documents" into hypermedia "applications".
       </p>
     </div>
-    <br><br> -->
+
+    <div class="learning-guide__apx" id="learning-guide-js-docs">
+      <div class="learning-guide__apx-grid2">
+        <div>
+          <h2>Templates</h2>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Animation (setup/draw)
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactivity (cursor trails)
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactive Music (theramin)
+          </span>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactive Game (wall ball)
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            flat file database (portfolio)
+          </span>
+        </div>
+        <div>
+          <h2>Docs</h2>
+          <span class="highlight" name="ref:js:mainOpts">JS Basics</span><br>
+          <span class="highlight" name="ref:js:dataTypesOpts">Data Types</span><br>
+          <span class="highlight" name="ref:js:dataStructOpts">Data Structures</span><br>
+          <span class="highlight" name="ref:js:deeperFuncsOpts">Functions (alt syntax)</span><br>
+          <span class="highlight" name="ref:js:apisAndLibsOpts">APIs + Libraries</span><br>
+        </div>
+      </div>
+      <br>
+      <div class="learning-guide__apx-grid3">
+        <div>
+          <h2>JS Demos</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760399447905)">
+            Date + Time
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760744714860)">
+            Fetching Data
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760741021412)">
+            Dynamic GIFs
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Web Audio API
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Canvas API
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760295673479)">
+            anime.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760300797481)">
+            D3.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760302442637)">
+            GSAP.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760308694995)">
+            Hydra.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760397365973)">
+            nn.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760311192678)">
+            p5.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760313053385)">
+            Paper.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760323166556)">
+            Three.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760372554130)">
+            Tone.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760375559811)">
+            Two.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="learning-guide__ex-row">
+      <div style="width: 100%">
+        <h2 style="margin: 24px 0;">Interactive Video Tutorials</h2>
+        <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+          coming soon...
+        </span>
+      </div>
+    </div>
+
+    <br><br>
+    <div class="learning-guide__ex-divider"></div>
   </div>
 
 

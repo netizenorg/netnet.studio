@@ -284,7 +284,7 @@ window.CONVOS['template-css-minimalist'] = (self) => {
           WIDGETS['template-projects'].preNewRepoFromTemplate()
         },
         'no, I\'ll experiment a bit first': (e) => {
-          NNE.readyOnly = false
+          WIDGETS['template-projects']._experimentWithCode()
           e.hide()
         },
         'go back': (e) => e.goTo('wrap-padding')

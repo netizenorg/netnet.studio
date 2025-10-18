@@ -1,0 +1,37 @@
+.js-reference-widget--sec-link {
+  display: inline-block;
+  color: var(--netizen-meta);
+  font-size: 24px;
+  margin: 8px;
+  transition: color .5s ease, border .5s ease;
+  border-bottom: 2px solid var(--netizen-meta);
+  text-shadow: -2px 2px var(--bg-color), 0px 2px var(--bg-color), -1px 2px var(--bg-color), 1px 1px var(--bg-color);
+}
+
+.js-reference-widget--sec-link:hover {
+  color: var(--netizen-match-color);
+  border-bottom: 2px solid var(--netizen-match-color);
+  cursor: pointer;
+}
+
+.js-reference-widget--border {
+  border: 3px solid var(--fg-color);
+  padding: 20px;
+  border-radius: 3px;
+}
+
+.js-reference-widget--intro-btn {
+  margin: 0 auto 8px auto;
+  display: block;
+  font-size: 22px;
+  padding: 20px 30px;
+  border-radius: 50px;
+  transition: opacity 1s var(--sarah-ease);
+}
+
+.js-reference-widget--intro-p {
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 45px !important;
+  transition: opacity 1s var(--sarah-ease);
+}

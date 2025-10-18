@@ -1,0 +1,92 @@
+{
+  "key": 1760308694995,
+  "name": "hydra-js",
+  "tags": [
+    "hydra",
+    "synth",
+    "visuals",
+    "shaders",
+    "webgl",
+    "webrtc",
+    "canvas"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJxNkVFvwiAQx9/9FBdfSk0HrUuWadRsWUz2sC+BgIUNoSlXG7P43UdLdb4Q7n/3O/7HbYJoTYMQWrGda8QmrBnrXPNTU+FPTF9ky5/CxaF+q+gzXa6YNAEfdfod5rsNS312s83tAsAWUFt/4BY+h/ICfBCwYDFz7JxA4x0EhV0DJIffqAII7wKC4O7MA2xBetGdlEMqWsVR7a0aIpKlgixPzBjQ3kjUkXkpy0dZK1NrnPSHN8YBouxUn9yR5OAGFlMkFSqB7500fg1HboMaE9c8NYsTkaosoKRVARVd5hMWP8/6lpR0NeReh+M/5zskE3+f8ODlhfKmUU5+aGMlGQ3SZGYgrwPQGyd9T7mU+3OkvuIqlFMtyaznMivSd+az+zb+AHAOkKg=",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://hydra.ojack.xyz/docs/docs/reference/\" target=\"_blank\">Hydra</a>, a web-based visual synth for the browser inspired by analog video systems and live-coding. Created by the artist <a href=\"https://ojack.xyz/\" target=\"_blank\">Olivia Jack</a> and <a href=\"https://github.com/hydra-synth/hydra-synth/graphs/contributors\" target=\"_blank\">others</a>, Hydra lets you compose <a href=\"https://thebookofshaders.com/\" target=\"_blank\">graphic shaders</a> (WebGL visuals) by chaining functions (oscillators, shapes, color ops, blends) in JavaScript.",
+      "title": "getting started"
+    },
+    {
+      "title": "live coding",
+      "focus": null,
+      "text": "Hydra is often used to create realtime visuals in \"live coding\" contexts like <a href=\"https://en.wikipedia.org/wiki/Algorave\" target=\"_blank\">algoraves</a>, which is why Olivia also created an online <a href=\"https://hydra.ojack.xyz\" target=\"_blank\">hydra editor</a>. In this example we're importing hydra as a stand-alone library, which allows us to incorporate it into our web projects and combine it with other creative libraries."
+    },
+    {
+      "title": "canvas",
+      "focus": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "text": "We start in a <code>setup</code> function by creating a <code>canvas</code> element and setting its size to 600 by 600 (or whatever size you want)."
+    },
+    {
+      "title": "hydra instance",
+      "focus": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "text": "Then we make a new <code>Hydra</code> instance and point it at that canvas. Setting <code>detectAudio</code> to <b>false</b> means we’re not asking for microphone access. However if you want to, Hydra can pull data from the mic and camera and send live audio/video into the synth."
+    },
+    {
+      "title": "osc",
+      "focus": [
+        14
+      ],
+      "text": "With hydra imported we can build a signal chain, we'll start with an <code>osc()</code> which creates a striped oscillator pattern: the first number is spatial frequency (how many stripes), the second is the rate of change over time, and the third shifts the phase."
+    },
+    {
+      "title": "color",
+      "focus": [
+        15,
+        16
+      ],
+      "text": " We'll chain a couple more Hydra methods to our signal. Next the <code>.color()</code> tints the output of our <b>osc</b> toward a warmer yellow using normalized RGB (red, green, blue) values (0–1). Lastly, <code>.out()</code> sends the current signal graph to the Hydra output (our canvas)."
+    },
+    {
+      "title": "hydra flow",
+      "focus": [
+        14,
+        15,
+        16
+      ],
+      "text": "That’s the Hydra flow in a nutshell: define sources, transform them with chained operators, and route the output to a canvas. We could process our signal even more using other <a href=\"https://hydra.ojack.xyz/docs/docs/reference/\" target=\"_blank\">Hydra methods</a> simply by adding others to the mix, you can get some very powerful visuals all in a few compact lines of code. "
+    },
+    {
+      "title": "append canvas",
+      "focus": [
+        18
+      ],
+      "text": "At the end of our setup we need to make sure to add the <code>hydra.canvas</code> to the page so the rendered result is visible."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        21
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library—this is only the beginning. Hydra has interactive <a href=\"https://hydra.ojack.xyz/docs/\" target=\"_blank\">documentation</a>, stacks of <a href=\"https://hydra.ojack.xyz/api/\" target=\"_blank\">chainable functions</a> (mixing, modulating, kaleidoscopes, pixelation, feedback loops), and even a browser-based <a href=\"https://hydra.ojack.xyz/\" target=\"_blank\">live coding</a> editor. You can route video inputs, use screen capture as a source, and sync visuals to audio you create with other APIs/libraries for reactive pieces."
+    }
+  ]
+}

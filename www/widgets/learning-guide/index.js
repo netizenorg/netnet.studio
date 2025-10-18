@@ -28,7 +28,7 @@ class LearningGuide extends Widget {
 
         // create sub pages
         this.subpages = [
-          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts }
           // {
           //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
           //   subs: [
@@ -163,6 +163,14 @@ class LearningGuide extends Widget {
     })
 
     this.slide.style.overflowX = 'hidden'
+  }
+
+  _jsIntroConvo () {
+    window.convo = new Convo(this.convos, 'js-intro')
+  }
+
+  _comingSoon () {
+    window.convo = new Convo(this.convos, 'coming-soon')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -385,7 +393,7 @@ class LearningGuide extends Widget {
     }
 
     const animatedSvgs = [
-      'svg-tag-animated', 'svg-css-animated'
+      'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]
 
     animatedSvgs.forEach(eleStr => {
@@ -398,7 +406,7 @@ class LearningGuide extends Widget {
 
   _stopSvgAnimations () {
     const animatedSvgs = [
-      'svg-tag-animated', 'svg-css-animated'
+      'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]
     animatedSvgs.forEach(svg => this.$(svg).stop())
   }

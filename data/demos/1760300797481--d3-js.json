@@ -1,0 +1,90 @@
+{
+  "key": 1760300797481,
+  "name": "d3-js",
+  "tags": [
+    "d3",
+    "data",
+    "viz",
+    "visualization",
+    "chart",
+    "graph"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx1ksFuwjAMhu88hcUlKSpNWQdDE6DtsNvuO0w7hDq0mbK0akwZmvbuCy0rBcQlsn5/9m9bWbi00iWBq9LlMCcq3aMQKdro06Eyuq4iq0jY8ktg8vQwXC1EW7AaLP4DADGCzBRraQATGAmvbLY2JV1YcIq2JfAAfrwKkBbWEdTSOFjCexKHMJ+FMJnNQ7ibT0JI4sQ/s+lHj95ppNzj93HcU3Ols5yu5LWs3o58Wycat8gom1E+6JGuzjyESeSUUSlxti5wz4KGAIhkWSqLnHmsJxJVnDWNWdgaXOTasXyyDYLW0Tc52jwbw1nlg1NTlCT5YchOUZZUxa9GOS9r/b69FccQdADLFWgYdRe4APcexANzPNwY8MZa3QnHML21XdPp1MDR3ijONtoYn2SkpGkG/T2sv9MWi10kEV9qv9mrdqSs34+ZQqLHmy8SDLqf9QfpQrp9",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported the <a href=\"https://d3js.org/\" target=\"_blank\">D3</a> library created by the data visualization company <a href=\"https://observablehq.com/\" target=\"_blank\">Observable</a>, a powerful toolkit for working with data and generating SVG programatically popular in the data-viz community. D3 gives you building blocks like selections, data joins, and scales, so you can generate exactly the sort of chart or graph you want.",
+      "title": "getting started"
+    },
+    {
+      "title": "settings",
+      "focus": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "text": "We start inside a <code>setup</code> function by defining a tiny dataset and a few layout variables: <code>width</code>, <code>height</code>, and <code>barWidth</code>. This is just us deciding how big the drawing should be and how wide each bar ought to be (total width divided by number of data points)."
+    },
+    {
+      "title": "svg",
+      "focus": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "Next we create the drawing context: an <code>svg</code> element. With D3, we select an element that already exists (in this case <code>body</code>), append a new element to it (our <code>svg</code>), and set attributes on it (<code>width</code> and <code>height</code>). SVG is like a tiny canvas where each shape (like a rectangle) is a real DOM node you can style, animate and interact with."
+    },
+    {
+      "title": "data join",
+      "focus": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "Here’s where D3 <i>joins</i> our data with our SVG (the visuals), <code>svg.selectAll('rect')</code> asks D3 for all the rectangles in the SVG (none yet). <code>.data(vals)</code> binds our array of numbers to that <i>selection</i>. <code>.enter()</code> represents the incoming data points that need elements, and <code>.append('rect')</code> creates one rectangle per value. That’s how D3 turns data into SVG elements."
+    },
+    {
+      "title": "bar attributes",
+      "focus": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "text": "Each bar’s attributes are set from the data. <code>x</code> uses the index to place bars left-to-right: <code>i * barWidth</code>. <code>width</code> is <code>barWidth - 5</code> so we get a small gap between bars. <code>height</code> literally comes from the data value originally defined in <code>vals</code>."
+    },
+    {
+      "title": "coordinate system",
+      "focus": [
+        20
+      ],
+      "text": "SVG’s coordinate system starts at the top-left, with <code>y</code> increasing downward. That’s why we set <code>y</code> to <code>height - d</code>: it moves the top of the bar up by its value so bars get drawn upward from the bottom edge (otherwise the graph would look upside down)."
+    },
+    {
+      "title": "fill color",
+      "focus": [
+        23
+      ],
+      "text": "This last method is used to change the SVG element's CSS, we're using it here to give the bars a <b>fill</b> color of <b>teal</b>."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        26
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded. "
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s so much more you can do with this library, this is only the beginning. <a href=\"https://d3js.org/\" target=\"_blank\">D3</a> is an incredibly deep toolkit, beyond simple bar charts it can be used to build <a href=\"https://observablehq.com/@d3/gallery\" target=\"_blank\">interactive visualizations</a>, <a href=\"https://observablehq.com/@d3/scatterplot\" target=\"_blank\">scatter plots</a>, <a href=\"https://observablehq.com/@d3/gallery?utm_source=d3js-org&utm_medium=hero&utm_campaign=try-observable#maps\" target=\"_blank\">maps</a>, <a href=\"https://observablehq.com/@d3/force-directed-graph\" target=\"_blank\">force-directed graphs</a>, and <a href=\"https://observablehq.com/@d3/streamgraph\" target=\"_blank\">streamgraphs</a> that respond to user interaction or live data. It also plays well with other libraries and frameworks."
+    }
+  ]
+}

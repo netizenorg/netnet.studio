@@ -1,0 +1,65 @@
+{
+  "key": 1760372554130,
+  "name": "tone-js",
+  "tags": [
+    "tone",
+    "music",
+    "sound",
+    "audio",
+    "synth"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx9kMFKxDAQhu99imEvaRdJLh5EuoVFvXlSXyAmYxsaJyGZbiniu5t2obAXj/Pz/R8/01p36Yx3ZgRNyzxgQuAA0esFNFBgbNWKVG02yUWGnMzpMDDH/KjURHHspQnfigPhoWvVldrxrgJQR+h9+NQePgoER1Uyj8W0EA9VOb4mMuwCQUaeItQN/JQUrgCcgHDeqvJ9DepGcnjGzI702qqbAv/eeLb1txrJyfU9pjOzNuMbetQZa/F0L+5APJDYJbMjG2aprX25IPGry4yEqRY+aFvgbWPzH7h9s5DriqbaX/IHdTd2RQ==",
+  "info": [
+    {
+      "focus": [
+        2
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a>, a library created by musician and instrument maker <a target=\"_blank\" href=\"https://yotammann.info\">Yotam Mann</a> (with help from <a target=\"_blank\" href=\"https://github.com/Tonejs/Tone.js/graphs/contributors\">other</a> folks) that turns the Web Audio API into musician-friendly building blocks. ",
+      "title": "getting started"
+    },
+    {
+      "title": "Web Audio API",
+      "focus": null,
+      "text": "Instead of wiring low-level nodes by hand, Tone.js lets you work with instruments, notes, timing, and effects, perfect for sketches where you want sound quickly without losing control. This demo might seem simple, but it would <a href=\"https://netnet.studio/?layout=dock-left#code/eJyVVdtuGzcQfddXDPyiFequJbsOCsMx4Nhu+9BckATJM70cSUQockMOJatB8+0Zcm9cOVc9SLvizDlnbpxLqbZXlVbVBxBmv1ujQyALtRZ7EGAs4eVJNJlc+sqpmq4mACcncONQELKFV2alEa6DVPbGGsIHgqV1ILROIPei+lCyT2WNJxDJjB7gKRjcwU4ZaXdl7lzMJmy9DKYiZU2CeLM3tC5m8IkPRuQGrK+U1oKYsLDBgbfByPjtKpyxgWSFK6EMByIRiiiM1ghotqhtjbOE2EjLoJ72OssqUb3sz4rcJSK/iMCPHP7mkyYSyIBL2tfReEpOiZi2aRfR6ZNF+eQMlE/ylg4/BjTVvskkHN38cXQI1duUHumd0AGv6a3aYNFAHWeKgnNo0uHsEEUiBYOHEPNvefcFsMZgNcrZ71dNovlXoidlRKzfIV/VOBZd5hpB3Vt/3LNnUAP7XVs9JlqKoAlYPlutPBfY2U1KYe3sVkmUnY2fXWSFE0TcllyJeTmfnwO0wB75WPpj0MqgcK1Z5iex4rGIbgvoPrkfPtTWcLaU0I1t5uuDp5ig6H2W+bZ/a+SgoDAWglEsN/N0qFH42Dg/Zm1t+1y94AEGGVxKIXT9z/23WqG7TvG9buGrOLLFn7ROU8/Bw+J0Ds9ePYfP8/L0PPLNykxWtLrtkGNUp+ej091oLIY26rX9xWpG2sWmbgZgG5sRNiHicF4c3PPMPoiK9J55xj0THx41MJd1cRw1DF3TBHvR1paBIh2khknF/g+djTff4mv4jdNr9nhrc6KGBH5rW2Vgu43Vv8jDGzEuIlOMdFT+rzFnCI/pW++xCH5IvTeI+cdq2TMFxtKJOxZw6ofu4NuHL69qjfInUnxAnTfDQNy21rfz0InibPRF+OUsDNU+EMKv7TwMkt6QcJTCzy4vtdmgVHxvs7i4NHxMQuC1pihK82RrEEtC1+eNF1Pw/WQSyygP7zofmYrUg49ObF18Xy7A/5Nm075XcSPHK61bhcN2bJvoPhDxW9riUUa7VoWUd1tO2r/KExp0xTRZTI8HqNnk8qTb618As92n8g==\" target=\"_blank\">require a lot more code</a> had we written it directly with the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API\" target=\"_blank\">Web Audio API</a>."
+    },
+    {
+      "title": "global var",
+      "focus": [
+        5
+      ],
+      "text": "First, we'll declare a global variable <code>synth</code> so we can access our Tone.js instrument across different functions."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        7,
+        8,
+        9
+      ],
+      "text": "Then, as with many of our other demos, we'll define a <code>setup</code> function. This is where we'll create a synthesizer instrument with <code>new Tone.Synth()</code>. Calling <code>.toDestination()</code> routes the synth’s output to your speakers (the audio context’s destination). Under the hood, Tone creates an oscillator and envelope and connects them in the audio graph so it’s ready to play."
+    },
+    {
+      "title": "play",
+      "focus": [
+        11,
+        12,
+        13
+      ],
+      "text": "The <code>play</code> function performs one note with <code>.triggerAttackRelease('C4', '8n')</code>. The pitch is given in this notation, where <code>'C4'</code> is middle C (the 4th C key on a piano), and the duration uses musical time <code>'8n'</code>, or an \"eighth note\". Tone converts those musical values into the correct frequency and milliseconds based on the current tempo, so your timing stays musical if you change BPM later."
+    },
+    {
+      "title": "load and click",
+      "focus": [
+        15,
+        16
+      ],
+      "text": "We attach two listeners: on <code>load</code> we run <code>setup</code> to create and route the synth, and on <code>click</code> we call <code>play</code>. Modern browsers require a user gesture before starting audio, connecting playback to a click both satisfies that policy and makes the demo interactive, click anywhere on the rendered page and you’ll hear a short tone."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a> has excellent <a href=\"https://tonejs.github.io/docs/\" target=\"_blank\">docs</a> and <a href=\"https://tonejs.github.io/examples/\" target=\"_blank\">examples</a>. Check out Nick's <a href=\"https://algorithmicmusic.online/\" target=\"_blank\">AlgorithmicMusic.Online</a> course for a much deeper dive.\n"
+    }
+  ]
+}
