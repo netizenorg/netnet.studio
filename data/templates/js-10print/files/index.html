@@ -1,35 +1,19 @@
 <link rel="stylesheet" href="css/styles.css">
-<!-- <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script> -->
-<script src="/nn.min.js"></script>
+<script src="js/nn.min.js"></script>
 <script>
   /* global nn */
-  const tenPrint = {
-    classic: '／＼',
-    straight: '─ │',
-    diagnal: '╱ ╲ ╳',
-    boxes1: '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼',
-    boxes2: '═ ║ ╔ ╗ ╚ ╝ ╠ ╣ ╦ ╩ ╬',
-    boxes3: '═ │ ╒ ╕ ╘ ╛ ╞ ╡ ╤ ╧ ╪',
-    boxes4: '─ ║ ╓ ╖ ╙ ╜ ╟ ╢ ╥ ╨ ╫',
-    rounded: '╭ ╮ ╰ ╯',
-    ticks: '╴ ╵ ╶ ╷',
-    shades: '░ ▒ ▓ █',
-    quads: '▀ ▄ ▌ ▐ ▘ ▝ ▗ ▖ ▚ ▞ ▙ ▛ ▜ ▟'
-  }
-  // TODO: turn into function that lets u pick text patterns "ex: 10print" or "random"
 
-  // Animation Loop (runs ~60 times per second)
-  function animate () {
-    requestAnimationFrame(animate)
-
-    const char = nn.random(tenPrint.classic)
-    nn.create('span').addTo('body').content(char)
-
-    // auto scroll for infinite scroll
-    const height = nn.get('body').height
-    window.scrollTo(0, height)
+  function tenPrint() {
+    const hue = nn.random(360)
+    const clr = nn.hsl(hue, 100, 20)
+    const chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'
+    let pattern = ''
+    nn.times(600, () => pattern += nn.random(chars))
+    nn.get('body')
+      .content(pattern)
+      .css('background', clr)
   }
 
-  nn.on('load', animate)
-
+  nn.on('load', tenPrint)
+  nn.on('click', tenPrint)
 </script>

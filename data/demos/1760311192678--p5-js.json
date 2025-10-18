@@ -1,0 +1,90 @@
+{
+  "key": 1760311192678,
+  "name": "p5-js",
+  "tags": [
+    "p5",
+    "animation",
+    "drawing",
+    "canvas"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJxtkMFuwyAMhu95CqsnUkVAJ7HDlOSyl1iPhNCWlADCpJ007d0HTVv1sIMt+/vl37JbVNGEBBhVtzmlFPCDMTW6CamyfhkPVkZNlZ+ZnOQ3s2ZAFgSdkO3ojlNemtm4DDZ9y1azvmofBQDbwtH6QVoIArYsE+Ud5oVnndQJOiChhq6Hn6wABIo6LaHgF1q4ilom/SndRSJ557yBnOqnPEh1Pka/uJFk6U2IW1r13+ruPUZ5/cf6YKwlt5Ey+uqqrTUBNQl09gvqrwbu1b4BwUs8Nqzh9DWfSdbb6ur5kD+KxmNZ",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://p5js.org/\" target=\"_blank\">p5.js</a>, one of the most popular general purpose creative-coding libraries first created by the artist <a href=\"https://get-lauren.net/\" target=\"_blank\">Lauren McCarthy</a> supported by the <a href=\"https://processingfoundation.org/\" target=\"_blank\">Processing Foundation</a> and loads of <a href=\"https://github.com/processing/p5.js/graphs/contributors\" target=\"_blank\">other contributors</a>.",
+      "title": "getting started"
+    },
+    {
+      "title": "library vs framework",
+      "focus": null,
+      "text": "It might make more sense to call p5.js a \"framework\", because p5.js code is often written in the <a href=\"https://editor.p5js.org/\" target=\"_blank\">p5 editor</a> (created by <a href=\"https://cassietarakajian.com/\" target=\"_blank\">Cassie Tarakajian </a> and <a href=\"https://github.com/processing/p5.js-web-editor/graphs/contributors\" target=\"_blank\">others</a>) in a way that requires a predefined code structure with specific function names which are called by the library behind the scenes."
+    },
+    {
+      "title": "instance mode",
+      "focus": [
+        4,
+        14
+      ],
+      "text": "That said, we can also incorporate p5.js into our web projects and combine it with other Web APIs and creative coding libraries. In order to accomplish this smoothly, it's best to use the library in \"instance mode\" by first defining a <b>sketch</b> function like this. "
+    },
+    {
+      "title": "p object",
+      "focus": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "text": "Instead of calling global functions (which is what you might be used to if you've used p5.js before) we are going to use the passed-in <code>p</code> object to call all the p5.js methods (<code>p.createCanvas</code>, <code>p.fill</code>, etc.). This keeps the sketch self-contained and avoids naming conflicts when you're using other libraries or have multiple sketches on the same page."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "text": "Inside <code>p.setup</code> we run code once at the start. <code>p.createCanvas(600, 600)</code> creates a 600×600 drawing surface, and <code>p.background(0, 255, 255)</code> paints it cyan using RGB values (0–255). Setup runs once and is where you’d also load images, fonts, or initialize state."
+    },
+    {
+      "title": "draw",
+      "focus": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "<code>p.draw</code> runs continuously, by default about 60 times per second (your screen's refresh rate), so anything you do here will animate or respond to input over time. We set a magenta fill color with <code>p.fill(255, 0, 200)</code> and draw a circle each frame using <code>p.ellipse</code>."
+    },
+    {
+      "title": "circles",
+      "focus": [
+        12
+      ],
+      "text": "The circle’s width and height are set to <b>50</b> and its position follows the mouse: <code>p.mouseX</code> and <code>p.mouseY</code> give the current cursor coordinates relative to the canvas. Because we don’t repaint the background inside <code>draw</code>, each new circle stays on the screen, creating a trail as you move."
+    },
+    {
+      "title": "new p5(sketch)",
+      "focus": [
+        15
+      ],
+      "text": "Lastly, we call <code>new p5(sketch)</code> which creates and runs the sketch. p5 takes care of creating the canvas element, wiring up input events, and calling <code>setup</code> and <code>draw</code> at the right times.\n"
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"https://p5js.org/\" target=\"_blank\">p5.js</a> has great <a href=\"https://p5js.org/reference/\" target=\"_blank\">reference docs</a> and supports everything from <a href=\"https://p5js.org/examples/animation-and-variables-drawing-lines/\" target=\"_blank\">2D drawing</a> to <a href=\"https://p5js.org/examples/3d-geometries/\" target=\"_blank\">WebGL 3D</a> and even <a href=\"https://medium.com/processing-foundation/announcing-the-new-p5-sound-js-library-42efc154bed0\" target=\"_blank\">sound</a>."
+    }
+  ]
+}

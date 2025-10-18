@@ -1,0 +1,336 @@
+{
+  "key": 1760399447905,
+  "name": "Date Object",
+  "tags": [
+    "date",
+    "time",
+    "on kawara",
+    "conceptual art"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx1U01v2zAMvftXCEUBOYDrdfd2QNE2wLplO6SXohhQWWJsdbJkSFQ8L8h/r5jUdb9yeqbe4yNpSmdBet3htyxbRStRO8uc/SF64QXLZ2yTMaacjC1YLCunhjLgYKCshPxbexetYueMVyaF/IC0AV03SLKvp6fr5pBM6dAZMZCu9lodkj3GgHo1XDqLiSG1TAj+kF4YXdvvCG14rU1i6WxARu1b6NmVQMhn0/GuEVXWgO+YNhVuyOs+HTHGb4TlBeNzqAgWwhNcdH4fDQQ3MUme1dHs+FgTLKEj+C2R4JdbE1yBpFn+TBXHThZU+n0ridy3dN9OKQMIP2bNozF3KX4zHcISvbZ1Ej0cb3YG25Idb9Lc2yIhGWwfUsJLTuiEJcvxF0sPyeXaAEU5J5pTBfooEf7htKGp3MjvVyOdcdQm7xuNwN+Sq5S+1P9hf2/W/Sf0XLTa7C7MPGL0omBHtx6qKBtAtlgeFezCa2EKFoQNJwG8Xn28JaLrwKrLRhuVk/8s22ZZr61yfSmUul4n5U8d0ijgc26cUGlJ4wuZZdnZl+cH9ATxShB3",
+  "info": [
+    {
+      "focus": null,
+      "text": "In this example we'll explore the JavaScript <code>Date</code> object be remixing a classic piece of conceptual art, the <a href=\"https://www.youtube.com/watch?v=wXjiWD7j0fM\" target=\"_blank\">Date Paintings</a> by <a href=\"https://en.wikipedia.org/wiki/On_Kawara\" target=\"_blank\">On Kawara</a>.",
+      "title": "getting started"
+    },
+    {
+      "title": "Date object",
+      "focus": [
+        3,
+        10,
+        27
+      ],
+      "text": "We've defined a single function called <code>onKawara</code>. In the center of our function we've created a variable <code>d</code> which is a <i>new</i> instance of the JavaScript <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date\" target=\"_blank\">Date</a> object, this snapshots a specific moment in time and provides methods for displaying different aspects of this moment."
+    },
+    {
+      "title": "day of the month",
+      "focus": [
+        3,
+        10,
+        11,
+        27
+      ],
+      "text": "For example, the <code>.getDate()</code> method gives us the number value of the current day of the month. An important piece of data we'll need to recreate On Kawara's Date Painting in the browser."
+    },
+    {
+      "title": "current month index",
+      "focus": [
+        3,
+        10,
+        11,
+        16,
+        27
+      ],
+      "text": "Another important piece of data we needs is the current month. The <code>.getMonth()</code> gives us the number value of the current month (from 0 - 11), which we'll need to translate into the month's name."
+    },
+    {
+      "title": "months array",
+      "focus": [
+        3,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        27
+      ],
+      "text": "To do this, we'll create an array with all the abbreviated month names, the way On Kawara would often write them in his paintings."
+    },
+    {
+      "title": "month name",
+      "focus": [
+        3,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        27
+      ],
+      "text": "Then we'll create a new variable <code>month</code> which will grab the month name matching the index value of the current month we got from the Date object."
+    },
+    {
+      "title": "year",
+      "focus": [
+        3,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        27
+      ],
+      "text": "The last bit of data we need from the Date object is the <code>year</code> which we can get with the <code>.getFullYear()</code> method."
+    },
+    {
+      "title": "date string",
+      "focus": [
+        3,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        27
+      ],
+      "text": "Now we can construct a string using JavaScript's <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals\" target=\"_blank\">template literals</a> syntax so that we can not only combine these three pieces of data, but also add the <code>.</code> and space after the month, as well as the <code>,</code> and space after before the year."
+    },
+    {
+      "title": "DOM API",
+      "focus": [
+        3,
+        4,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        27
+      ],
+      "text": "We've constructed a string with the current date, next we need to use the Web's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model\" target=\"_blank\">DOM API</a> to modify our page using the <code>document</code> object. We first use this object at the top of our function to change the page's background color to <b>'black'</b>. It's worth noting that even though we haven't explicitly defined a <code>&lt;body&gt;</code> element in our HTML, the browser will automatically create one, which is why we can still modify it here."
+    },
+    {
+      "title": "body CSS",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        27
+      ],
+      "text": "Next we ensure the body's height matches that of our viewport (the entire window) and set it's <code>display</code> property to <b>'grid'</b> in order to use the CSS Grid properties."
+    },
+    {
+      "title": "CSS Grid",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        27
+      ],
+      "text": "When an element has a single child, CSS Grid makes it really easy to center that child within it both vertically using the <code>alignItems</code> property, and horizontally with the the <code>justifyContent</code> property."
+    },
+    {
+      "title": "create the span",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        27
+      ],
+      "text": "The body doesn't have any elements in it to center by default, which is why we create one at the end of our function using the DOM API's <code>createElement()</code> method. Here we've used it to create a new <code>&lt;span&gt;</code> element."
+    },
+    {
+      "title": "text content",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        27
+      ],
+      "text": "Next we set the new span element's content to the <code>dateString</code> we created.\n"
+    },
+    {
+      "title": "span CSS",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        27
+      ],
+      "text": "We can also modify the element's CSS as we did with the body. I've defined a font-stack which prioritizes Futura because On Kawara would often use this typeface."
+    },
+    {
+      "title": "append span",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "text": "Lastly, we append this new element to our body so that it gets rendered to the page."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by calling our function as soon as our page has loaded.\n"
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There's lots more we could do with the <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date\" target=\"_blank\">Date</a> object, including access the current time, down to the millisecond. Rendering this data is a pretty straight forward use, but we could also use this to create conditional logic (maybe a page is only accessible at a certain time) or to create an animation (maybe to control a sunrise that is synced to real life)."
+    },
+    {
+      "title": "no libraries",
+      "focus": null,
+      "text": "On Kawara would create each date painting by hand from scratch. In a way I've done the same, having <i>hand coded</i> it from \"scratch\" without the use of any JavaScript libraries. That said, nothing is every really coded from scratch, as explained in the <span class=\"link\" onclick=\"WIDGETS.open('js-reference', w => w.openDocs('apisAndLibsOpts')) \">APIs + Libraries</span> JS Doc. We've kept this demo \"vanilla\" but we'll be making use of many different creative coding libraries through out the other lessons."
+    }
+  ]
+}

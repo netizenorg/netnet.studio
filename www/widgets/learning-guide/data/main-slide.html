@@ -22,6 +22,22 @@
 
   </div>
 
+  <!--                  <<<      -       >>>                              -->
+  <!--                  <<<     CODE     >>>                              -->
+  <!--                  <<<      -       >>>                              -->
+
+  <div class="learning-guide__main__item" id="learning-guide-intro">
+    <p style="border:none">
+      "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
+    </p>
+    <div class="learning-guide__tut-thumbs-code">
+      <!-- What is Code tutorials here -->
+    </div>
+    <div class="learning-guide__tut-cntrl" name="code">
+      <span class="highlight">How/Why/Where/What is Code</span>
+    </div>
+  </div>
+
 
   <!--                  <<<        -          >>>                              -->
   <!--                  <<< TABLE OF CONTENTS >>>                              -->
@@ -30,25 +46,36 @@
   <div id="learning-guide-toc">
     <h3 onclick="WIDGETS['learning-guide'].scrollTo('toc')">HYPERLINKS</h3>
     <br>
-    1. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">The Platform</span>
+    <span style="color: var(--netizen-attribute)">0.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('intro')">
+      Orientation
+    </span>
     <i class="lg-v-spacer"></i>
-    2. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">The Craft</span>
+    <span style="color: var(--netizen-attribute)">1.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">
+      The Platform <span style="font-size: 14px;">(Internet + Web + "AI")</span>
+    </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
+    <span style="color: var(--netizen-tag)">2.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
       HTML <span style="font-size: 14px;">(Hypertext Markup Language)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
+    <span style="color: var(--netizen-tag)">3.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
       CSS <span style="font-size: 14px;">(Cascading Style Sheets)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <i class="lg-h-spacer"></i> ● <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
+    <span style="color: var(--netizen-tag)">4.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
       JS <span style="font-size: 14px;">(JavaScript)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    3. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
+    <span style="color: var(--netizen-string)">5.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
     <i class="lg-v-spacer"></i>
-    4. <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
+    <span style="color: var(--netizen-string)">6.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
     <i class="lg-v-spacer"></i>
   </div>
   <i class="lg-v-spacer"></i>
@@ -67,7 +94,7 @@
       <br>
       <div style="display: flex; justify-content: center">
         <span class="highlight" style="opacity:0.5;" onclick="WIDGETS['learning-guide']._comingSoon()">
-          the Web + the Internet + Artificial intelligence
+          the Internet + the Web + "Artificial intelligence"
         </span>
       </div>
       <svg-hypertext onclick="WIDGETS['learning-guide']._comingSoon()" colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
@@ -102,22 +129,6 @@
 
   <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
-
-  <!--                  <<<      -       >>>                              -->
-  <!--                  <<<     CODE     >>>                              -->
-  <!--                  <<<      -       >>>                              -->
-
-  <div class="learning-guide__main__item" id="learning-guide-the-craft">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-craft')">THE CRAFT</h3>
-    <br><br>
-    <img src="/images/under-construction/1.gif" alt="under construction gif" style="width:100%">
-    <div class="learning-guide__tut-thumbs-code">
-      <!-- What is Code tutorials here -->
-    </div>
-    <div class="learning-guide__tut-cntrl" name="code">
-      <span class="highlight">How/Why/Where/What is Code</span>
-    </div>
-  </div>
 
   <!--                      <<<  -   >>>                              -->
   <!--                      <<< HTML >>>                              -->
@@ -320,7 +331,6 @@
   </div>
 
 
-
   <!--                      <<<  -   >>>                              -->
   <!--                      <<<  JS  >>>                              -->
   <!--                      <<<  -   >>>                              -->
@@ -377,6 +387,72 @@
       <div class="learning-guide__apx-grid3">
         <div>
           <h2>JS Demos</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760399447905)">
+            Date + Time
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760744714860)">
+            Fetching Data
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760741021412)">
+            Dynamic GIFs
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Web Audio API
+          </span>
+          <br>
+          <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
+            Canvas API
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760295673479)">
+            anime.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760300797481)">
+            D3.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760302442637)">
+            GSAP.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760308694995)">
+            Hydra.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760397365973)">
+            nn.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+        </div>
+        <div>
+          <h2>&nbsp;</h2>
+          <span class="highlight" onclick="utils.loadDemo(1760311192678)">
+            p5.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760313053385)">
+            Paper.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760323166556)">
+            Three.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760372554130)">
+            Tone.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+          <br>
+          <span class="highlight" onclick="utils.loadDemo(1760375559811)">
+            Two.js <span style="margin-left: 4px; font-size: 14px;">(library)</span>
+          </span>
+
+
+
         </div>
       </div>
     </div>

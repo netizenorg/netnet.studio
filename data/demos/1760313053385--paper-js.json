@@ -1,0 +1,130 @@
+{
+  "key": 1760313053385,
+  "name": "paper-js",
+  "tags": [
+    "svg",
+    "vector",
+    "canvas",
+    "drawing",
+    "animation"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyFVD1v2zAQ3fUruEl2HEoKkAyuk8XIlgAFOnQIMtDkWaJLkwJJyQmK/PceScmxgqKdfHz37uvdyRvHrew8cZbf5633nVuXJRf64ChXphd7xSxQbo4lO7C3UsmdKzvWgaUHV1a0vqH1bQKu971S9Cg1evKHTZkSP2SbySCkXJJGmR1TJEaQZYmgAo9P36LJjXb4MFJ7R+7Jze0Zc9A8gW58i3BdZYjve829NBpdvu9IsSC/EZ34nOmBhRzC8P4I2lNugXl4VBBeRZ4I+SLFxAc9SREL3FXVJdyCbFp/gZ9z7ox4p6zrQIttK5UoUsQii7QkU2zvqyOW0XAaOd8RKFL7hDhvzS/YGmXsmuQWRL6aeX6GLtfkpprDW9YFuum1yKPjY6w2CuiZDTOkgoOEE+U4AtpCDlJA8VJXK1K/JkH2xpIiLEZiSPUNfzbjWtC+upq0vtjOfJ5ALSRZfu5tRarFLCamw6jYGGVCFMidKEGhiEVWQj8uVY0DGP1segfPZgBM1HcCF5yNxPN5JJgUMDUdc++ldf4HNHGNUyuQrOw/EpBrUv9DhpjfpdTuRb7OKBreQtkwNzQ0vGbuAbjHuskbq1HX77xl3BdjKL2QhIwBVE3fxlnv0T8L+nvelOKLxmGEozHhLIl/7wBPCzv0UveoeB5uaySfpBbmFHb1OODAT9J50GCLXBmGl5u+zkX2+XfwB6mPYfw=",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"http://paperjs.org/\" target=\"_blank\">Paper.js</a> by artist/designers <a href=\"http://lehni.org\" target=\"_blank\">Jürg Lehni</a> &amp; <a href=\"http://jonathanpuckey.com\" target=\"_blank\">Jonathan Puckey</a> and <a href=\"https://github.com/paperjs/paper.js/graphs/contributors\" target=\"_blank\">others</a>, a vector-graphics scripting library for the browser. Paper sits on top of the HTML5 Canvas, but unlike pixel-based drawing libraries such as <a href=\"https://p5js.org/\" target=\"_blank\">p5.js</a>, it treats everything you draw as vector geometry, paths, curves, points, and segments. That makes it especially good for projects that require precise, resolution-independent drawing or vector-based workflows.",
+      "title": "getting started"
+    },
+    {
+      "title": "Paper and Illustrator",
+      "focus": null,
+      "text": "Paper.js grew out of <a href=\"http://scriptographer.org/\" target=\"_blank\">Scriptographer</a>, an early scripting plugin for Adobe Illustrator that let designers automate and extend their artwork using JavaScript. Think of it as a programmable version of Photoshop or Illustrator as explained in the <a href=\"http://paperjs.org/features/\" target=\"_blank\">Features</a> section of their site. Even though it renders to Canvas, it’s fully fluent in SVG. You can <a href=\"http://paperjs.org/reference/project/#importsvg-svg\" target=\"_blank\">import SVG files</a> directly into Paper.js and you can <a href=\"http://paperjs.org/reference/item/#exportsvg\" target=\"_blank\">export your scene back to SVG</a> for use in vector editors or the web."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        4,
+        5,
+        6
+      ],
+      "text": "At the top of our JavaScript I've created three global variables, first <code>path</code> (which will hold our path object), then <code>points</code> to define how many points we want our path to have and <code>segLength</code> to set the length of each segment (the space between each point)"
+    },
+    {
+      "title": "canvas setup",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "text": "We start in a <code>setup</code> function by creating a 600×600 <code>canvas</code>, appending it to the page, and calling <code>paper.setup(canvas)</code>. That initiates Paper.js and binds all of its drawing tools and coordinate system to this canvas."
+    },
+    {
+      "title": "new Path",
+      "focus": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "text": "Next we create a <code>paper.Path</code> with a thick red stroke and rounded caps."
+    },
+    {
+      "title": "start anchor",
+      "focus": [
+        22
+      ],
+      "text": "To begin creating our path we first compute a starting anchor, <code>start</code>, by taking the canvas center and dividing it by <code>[10, 1]</code>. That scales the x-coordinate to one-tenth while leaving y unchanged, so the baseline sits well to the left but remains vertically centered."
+    },
+    {
+      "title": "segments",
+      "focus": [
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "text": "Inside this loop we create a growing horizontal offset <code>i * segLength</code> for each segment. Adding that offset to <code>start</code> gives the absolute position for the current segment, which we then append to the path as a new point with <code>path.add()</code>. Because <code>.add()</code> returns a new point (it doesn’t change <code>start</code>), each iteration cleanly places the next segment exactly <code>segLength</code> pixels to the right of the previous one, all sharing the same y. The result is a straight, evenly spaced horizontal chain that begins near the left side and marches across the canvas."
+    },
+    {
+      "title": "onMouseMove",
+      "focus": [
+        29
+      ],
+      "text": "To make it interactive, we set Paper's <code>onMouseMove</code> to our update function. Whenever the mouse moves over the canvas, Paper will call <code>update</code> passing an event that includes the mouse position in project coordinates."
+    },
+    {
+      "title": "update function",
+      "focus": [
+        32,
+        33,
+        44
+      ],
+      "text": "Inside <code>update</code> function we attach the head of the path to the cursor by setting the path's <code>firstSegment</code> to <code>e.point</code> (the current mouse coordinates)."
+    },
+    {
+      "title": "update segments",
+      "focus": [
+        32,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        44
+      ],
+      "text": "Then we “relax” the rest of the segments: for each pair of neighbors, we compute the vector from the current segment to the next, reset that vector’s <code>length</code> to the fixed <code>segLength</code>, and reposition the next segment accordingly. This algorithmic constraint keeps each segment the same distance apart, like links in a chain."
+    },
+    {
+      "title": "smooth",
+      "focus": [
+        32,
+        43,
+        44
+      ],
+      "text": "Lastly, <code>path.smooth({ type: 'continuous' })</code> recalculates the Bézier handles so the chain curves gracefully rather than showing sharp kinks. The result is a smooth, springy ribbon that follows your mouse with evenly spaced segments."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        46
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"http://paperjs.org/\" target=\"_blank\">Paper.js</a> has great <a href=\"http://paperjs.org/reference/\" target=\"_blank\">reference docs</a> and <a href=\"http://paperjs.org/tutorials/\" target=\"_blank\">tutorials</a>, powerful path operations (booleans, offsets), hit-testing, groups, and raster support, plus handy tools for <a href=\"http://paperjs.org/tutorials/interaction/mouse-tool-events/\" target=\"_blank\">mouse/keyboard interaction</a>. Because it’s vector-based, you can scale artwork cleanly, export SVG, or even mix Paper with Canvas image effects, check out some of their other <a href=\"http://paperjs.org/examples/\" target=\"_blank\">examples</a> for more insiration. "
+    }
+  ]
+}
