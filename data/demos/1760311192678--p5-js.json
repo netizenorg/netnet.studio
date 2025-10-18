@@ -8,7 +8,7 @@
     "canvas"
   ],
   "layout": "dock-left",
-  "code": "#code/eJxtkMFuwyAMhu95CqsnUkVAJ7HDlOSyl1iPhNCWlADCpJ007d0HTVv1sIMt+/vl37JbVNGEBBhVtzmlFPCDMTW6CamyfhkPVkZNlZ+ZnOQ3s2ZAFgSdkO3ojlNemtm4DDZ9y1azvmofBQDbwtH6QVoIArYsE+Ud5oVnndQJOiChhq6Hn6wABIo6LaHgF1q4ilom/SndRSJ557yBnOqnPEh1Pka/uJFk6U2IW1r13+ruPUZ5/cf6YKwlt5Ey+uqqrTUBNQl09gvqrwbu1b4BwUs8Nqzh9DWfSdbb6ur5kD+KxmNZ",
+  "code": "#code/eJxtkMFugzAMhu88hdVTqFASEGzSBFz2EtsxhLQNDUkUh3XStHdfELTbYQdb9mf7t+wWZdA+AgbZHS4xenxhTI52QiqNW8aTEUFR6WYmJvHJjB6Q+YZOyEpacsrXZNY2gUPfsk2sz9p7AMCOcDZuEAZ8A0eWiHQW08KrivICHRCfQ9fDV6oAeIoqLn7Ff+jKZVAiqldhPwSSJ84LSC5/lAchr+fgFjuSsqkLKMvnAqp67/jOdvUxiNs/4idtDKn4OlElV9W/wsoY7VERT2e3oHorYI/eC2j4avcVm1l1S5eS7bw8e/zkB579Y+4=",
   "info": [
     {
       "focus": [
@@ -55,7 +55,7 @@
         7,
         8
       ],
-      "text": "Inside <code>p.setup</code> we run code once at the start. <code>p.createCanvas(600, 600)</code> creates a 600×600 drawing surface, and <code>p.background(0, 255, 255)</code> paints it cyan using RGB values (0–255). Setup runs once and is where you’d also load images, fonts, or initialize state."
+      "text": "Inside <code>p.setup</code> we run code once at the start. <code>p.createCanvas(600, 600)</code> creates a 600×600 drawing surface, and <code>p.background(154, 117, 240)</code> paints it a purple color using RGB values (0–255). Setup runs once and is where you’d also load images, fonts, or initialize state."
     },
     {
       "title": "draw",
@@ -65,7 +65,7 @@
         12,
         13
       ],
-      "text": "<code>p.draw</code> runs continuously, by default about 60 times per second (your screen's refresh rate), so anything you do here will animate or respond to input over time. We set a magenta fill color with <code>p.fill(255, 0, 200)</code> and draw a circle each frame using <code>p.ellipse</code>."
+      "text": "<code>p.draw</code> runs continuously, by default about 60 times per second (your screen's refresh rate), so anything you do here will animate or respond to input over time. We set a bright blue fill color with <code>p.fill(20, 242, 224)</code> and draw a circle each frame using <code>p.ellipse</code>."
     },
     {
       "title": "circles",
