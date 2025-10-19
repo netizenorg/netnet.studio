@@ -1,0 +1,148 @@
+
+<h1>Data Structures</h1>
+
+<p>
+  It's possible to store more than one value in the same variable. These variables become "data structures" the most fundamental of which is called an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" target="_blank">object</a> one of the 6 "data types" discussed in the introductory notes. There's are a couple of ways to create a new object in JavaScript, the most common is to assign an empty set of curly braces <code>{}</code> to a variable.
+</p>
+
+<br>
+<code-sample name="js-ex-0"></code-sample>
+<button onclick="window.alert('object')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+   The <code>typeof</code> operator can be used to find out what data type is stored in a variable. If we create a variable, for example <code>let i = 0</code> and then check <code>typeof i</code> it would be <i>"number"</i>.
+</p>
+
+<br>
+
+<p>
+  Another way is to create a new "instance" of an object using the constructor method like <code>new Object</code>, which is less common when creating basic objects like these, instead that's used to create instances of more complex types of objects, the the kinds we get access to when using different creative coding libraries.
+</p>
+
+<br>
+<code-sample name="js-ex-1"></code-sample>
+<button onclick="window.alert('object')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  Typically we create objects with some data in them to start. Objects are essentially a series of key/value pairs. These internal variables are refered to as <i>properties</i>. An object's property has a name or <i>key</i> followed by a colon <code>:</code> and then the <i>value</i> of that property. We separate each property (the key/value pairs) with commas <code>,</code>
+</p>
+
+<br>
+<svg-js-object colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+</svg-js-object>
+<br><br>
+
+<p>
+  There are a couple of different ways to reference a specific property within an object, the first is using the dot <code>.</code> syntax, the other is by passing the name of the property as a string into a pair of square brackets <code>[]</code>.
+</p>
+
+<br>
+<code-sample name="js-ex-2"></code-sample>
+<button onclick="window.alert('Nick')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  The dot syntax is much more common, but the square brackets have their advantage. For example, if you have a properties name stored in a changing variable elsewhere in your code, you could place that variable between the square brackets to access that particular value.
+</p>
+
+<br>
+<code-sample name="js-ex-3"></code-sample>
+<button onclick="window.alert('5.9')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+
+<p>
+  We'll stick to the dot syntax for the rest of these examples as they are more common. You can reassign any of these properties like we would any other variable. We can remove a particular property from an object using the delete keyword.
+</p>
+
+<br>
+<code-sample name="js-ex-4"></code-sample>
+<button onclick="window.alert('Nicholas')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  When an object gets very long, it's best to write the values into multiple lines. An object's properties can contain any kind of data, including other objects (like the "city" property in the example below), We can access nested properties with the dot syntax as shown in this example.
+</p>
+
+<br>
+<code-sample name="js-ex-5"></code-sample>
+<button onclick="window.alert('Chicago')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  You could even store a function inside an object. When there's a function inside of an object we typically refer to it as a <i>method</i>, this is what we call a function that belongs to an object rather than being it's own global variable.
+</p>
+
+<br>
+<code-sample name="js-ex-6"></code-sample>
+<button onclick="window.alert('la la la la la')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<h1>Arrays</h1>
+
+<p>
+  Another common data structure is called an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank">Array</a>. You can create one of these by accessing a set of square brackets <code>[]</code> to a variable. Technically, an Array is just another kind of "object" (we'll come to realize that nearly everything in JavaScript behaves like an object, but more on that later).
+</p>
+
+<br>
+<code-sample name="js-ex-7"></code-sample>
+<button onclick="window.alert('object')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  Like basic objects, an array can be created a couple of different ways, either by assigning a set of empty square brackets <code>[]</code> to a variable, or using the Array constructor <code>new Array()</code>.
+</p>
+
+<br>
+<code-sample name="js-ex-8"></code-sample>
+<button onclick="window.alert('object')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  If we check to see what type of data is stored in these variables it will return "object", this is because anything we can create a <code>new</code> instance of is essentially some kind of object. But these special kind of objects (of which Arrays are only one) have their own built in properties and methods that we can use just by creating them. Another operator, similar to <code>typeof</code> which will tell us what <i>kind of object</i> a particular variable might be is the <code>instanceof</code> keyword.
+</p>
+
+<br>
+<code-sample name="js-ex-9"></code-sample>
+<button onclick="window.alert('true')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  Like objects, we can create arrays with data in them to start. But unlike objects, the data aren't stored in key/value pairs, instead array's are simply a list of comma separated values. To access a piece of data we must use the bracket <code>[]</code> syntax, passing in the <i>index</i> number (or position in the list) of the item we want, starting from 0. We can reassign a particular item in the array using this way as well. It's also worth noting, that although in this example the values in the array are all strings, you can technically store any combination of values (of any data type) in arrays, for example <code>const c = [1, 'hi', true]</code>
+</p>
+
+<br>
+<code-sample name="js-ex-10"></code-sample>
+<button onclick="window.alert('nick')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  Arrays have their own bult-in <i>methods</i> (which again, is what we call functions built-in to an object). There are loads which you can learn about in the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods" target="_blank">MDN documentation page</a>, in these examples we'll just cover the basic ones. To add a new item to the end of an array's list we use the <code>push()</code> method, to remove an item from the end of the list we use the <code>pop()</code> method. The <code>join()</code> method turns the entire array into a string we can send to our alert pop up.
+</p>
+
+<br>
+<code-sample name="js-ex-11"></code-sample>
+<button onclick="window.alert('nick,tina,andy,frank')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  We can also add and remove items from the start of the list. To add a new item to the start of an array's list we use the <code>unshift()</code> method, to remove an item from the start of the list we use the <code>shift()</code> method.
+</p>
+
+<br>
+<code-sample name="js-ex-12"></code-sample>
+<button onclick="window.alert('frank,tina,andy')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  We can use a <code>for</code> loop to iterate over an array. Array's have a property called <code>length</code> which returns the number of items currently in the array. We can use this to define the loops <i>condition</i> as <code>i &lt; names.length</code>, this way we know our loop will only ever loop as many times as there are items in the array. We can then use the <code>i</code> variable as our index value for the items we want to log from the array.
+</p>
+
+<br>
+<code-sample name="js-ex-13"></code-sample>
+<button onclick="window.alert('nick');window.alert('tina');window.alert('andy')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<br><br><br>

@@ -535,6 +535,8 @@ class ProjectFiles extends Widget {
     // clear code
     NNE.customRender = null
     NNE.code = ''
+    NNE.language = 'html'
+    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
     // close widget
     this.close()
   }

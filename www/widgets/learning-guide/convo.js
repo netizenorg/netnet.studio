@@ -1,4 +1,4 @@
-/* global utils */
+/* global WIDGETS utils */
 window.CONVOS['learning-guide'] = (self) => {
   const menuOpts = () => {
     return {
@@ -54,6 +54,26 @@ window.CONVOS['learning-guide'] = (self) => {
   }, {
     id: '<tutorials>',
     content: 'These are a collection of interactive hypermedia tutorials which will introduce you to both the craft and the culture of HTML and CSS. You can click the (i) to read more about each individual tutorial, or click (play) to launch right into it.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'js-intro',
+    content: 'If you\'d like to read through a written guide, I can open the JavaScript Reference Guide for you, but I think the best way to learn the basics of JavaScript is with an example project. I suggest you jump right into the 10print Template, want me to guide you through it?',
+    options: {
+      'Ok, let\'s try it!': (e) => {
+        e.hide()
+        WIDGETS.load('template-projects', w => w.startGuide('js-10print'))
+      },
+      'I want to read the docs': (e) => {
+        e.hide()
+        WIDGETS.open('js-reference')
+      },
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'coming-soon',
+    content: '...coming soon...',
     options: {
       ok: (e) => e.hide()
     }

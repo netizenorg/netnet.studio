@@ -98,6 +98,7 @@ class DemoMaker extends Widget {
   _preview (noteIdx) {
     NNE.spotlight(null)
     const note = this.demo.info[noteIdx]
+    if (!note) return
     window.convo = new Convo({
       content: note.text,
       spotlight: note.focus

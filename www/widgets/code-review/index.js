@@ -115,8 +115,7 @@ class CodeReview extends Widget {
   _markIssues (arr, clearFirst) {
     if (clearFirst) {
       // NNE.marker(null) // this will clear green demo markers as well
-      NNE.getMarkers()
-        .filter(m => m.color !== 'green').forEach(m => m.element.remove())
+      NNE.clearMarkers(['orange', 'red'])
     }
     const lines = []
     arr.forEach(e => {

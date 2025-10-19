@@ -1,72 +1,322 @@
-<p>
-  Unlike HTML and CSS, JavaScript is a programming language. There are loads of different programming languages out there (Python, Java, C++, Rust, C, etc) and they all basically do the same thing: allow you to write programs that get the computer to do what you want it to do. All programming languages contain the same core concepts (variables, functions, loops, conditional statements, etc) but they all have slightly different ways of expressing these concepts, which is to say, they all have different <b><i>syntax</i></b> and <b><i>APIs</i></b>.
-</p>
+<link rel="stylesheet" href="/widgets/js-reference/data/styles.css">
+
+<button class="pill-btn pill-btn--secondary js-reference-widget--intro-btn" onclick="WIDGETS.load('template-projects', w => w.startGuide('js-10print'))">Start Guided Intro to JavaScript</button>
+<p class="js-reference-widget--intro-p">or keep scrolling if you prefer to review the text version</p>
+
+
+<svg-js-invoke-function style="cursor:pointer" onclick="window.alert('Welcome!')" colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+</svg-js-invoke-function>
+<br><br>
 
 <p>
-  Like any other programming language, JavaScript can be used to create all sorts of things outside of the web browser, from <a href="https://www.electronjs.org/" target="_blank">native apps</a> to <a href="http://johnny-five.io/" target="_blank">robots</a>, you can even use it to script other programs like the <a href="https://helpx.adobe.com/photoshop/using/scripting.html" target="_blank">Adobe Creative Suite</a> and <a href="https://learn.microsoft.com/en-us/office/dev/scripts/develop/javascript-objects" target="_blank">Microsoft Office</a>. All that said, JavaScript was originally invented for the Web and it's inside the browser where its creative possabilities really shine!
+  Unlike HTML and CSS, JavaScript is a programming language. Programming languages come in many forms (Python, Java, C++, Rust, etc.) but at their core they all serve the same purpose: letting us give instructions to a computer. Each language shares the same basic building blocks—things like variables, functions, loops, and conditionals—but each one has its own way of writing them. That way of writing is called its <b>syntax</b>.
 </p>
+
+<br>
+
+<p>
+  Although JavaScript is not the only programming language we can use on the Internet, it's definitely the most popular, which means there's a large community creating libraries, tutorials and answering questions online. Like any other programming language, JavaScript can be used to create all sorts of things outside of the web browser, from <a href="https://www.electronjs.org/" target="_blank">native apps</a> to <a href="http://johnny-five.io/" target="_blank">robots</a>, you can even use it to script other programs like the <a href="https://helpx.adobe.com/photoshop/using/scripting.html" target="_blank">Adobe Creative Suite</a> and <a href="https://learn.microsoft.com/en-us/office/dev/scripts/develop/javascript-objects" target="_blank">Microsoft Office</a>. All that said, JavaScript was originally invented for the Web, in 1995 for a browser called Netscape Navigator...
+</p>
+
+<br>
+
+<p style="margin-left:20px">
+  "<i>[Netscape] displayed Web pages that were not very lively. You could have a nice cartoon of a monkey on the Web page, but there was no way to make the monkey dance when you moved over it with your mouse. Figuring out how to make that happen was the job of a language developer named Brendan Eich. He sat down and in a few weeks created a language called JavaScript [...] as browsers proliferated and the Web grew from a document-delivery platform into a software-delivery platform, JavaScript became, arguably, the most widely deployed language runtime in the world. If you wrote some JavaScript code, you could run it wherever the Web was—everywhere.</i>" &mdash;<a href="https://www.bloomberg.com/graphics/2015-paul-ford-what-is-code/" target="_blank">Paul Ford</a>
+</p>
+
+<br>
+
+<p>
+  As Paul Ford notes, JavaScript helped turn the Web into a place where software runs. Software is just a set of instructions—like a recipe. Before the steps, a recipe lists its ingredients. In programming, our “ingredients” are data, and we store that data in <i>variables</i>...
+</p>
+<br>
+<br>
+
+<div name="variables">
+  <svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+  </svg-js-variable>
+</div>
+
+<br>
+
+<h1>Variables</h1>
+
+<p>
+  A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types#variables" target="_blank">variable</a> is a named slot in memory where you store data. Variables can hold different kinds of data (see below). In our example, the variable is named <code>user</code>, its type is a <i>string</i>, and its value is <code>'Ada Lovelace'</code>.
+</p>
+
+<br>
+
+<h3 style="margin-bottom: 1px;">Different Types of Data</h3>
+<p>(<i>see <span class="link" name="data-types">Data Types</span> docs for more info</i>)</p>
+<br>
+<ul>
+  <li>
+    <b>string</b>: can be any text and must always be surrounded by quotes, these can be double quotes <code>"hi"</code> or single quotes <code>'hi'</code>, a string can be as short as 0 characters long <code>""</code> (also known as an empty string) and as long as your memory allows <code>"a rose is a rose is a rose is a rose is a rose"</code> (much longer than that)
+  </li>
+  <br>
+  <li>
+    <b>number</b>: this can be an integer like <code>1337</code> or a float (aka decimal) like <code>3.141592653589793</code>, the largest number is <code>Infinity</code> and the smallest number is <code>-Infinity</code> <i>(sort of, big numbers can get a little complicated, see the "<span class="link" name="data-types">Data Types</span>" docs for more on that)</i>.
+  </li>
+  <br>
+  <li>
+    <b>boolean</b>: named after <a href="https://en.wikipedia.org/wiki/George_Boole" target="_blank" class="link">George Boole</a>, this can only be one of two values, either <code>true</code> or <code>false</code>. Deep down, inside the computers circuitry everything can ultimately be breaken down into booleans, true or false, on or off, 1 or 0, binary code.
+  </li>
+  <br>
+  <li>
+    <b>objects</b>: it's possible to store more than one value in the same variable. These variables become "Data Structures" the most fundamental of which is called an <i>object</i>. In some sense, almost everything in JavaScript can <i>behave</i> like an object. <i>(but we'll come back to this later, refer to the "<span class="link" name="data-structs">Data Structure</span>" docs for more on that)</i>.
+  </li>
+  <br>
+  <li>
+    <b>functions</b>: instructions are also a form of data, because we need to store them in memory before we "run" or execute our instructions by passing them along to our computers CPU (central processing unit). Sometimes we'll write a small set of instructions we want to "call" or "run" at different points in our program, we call this sub-set of instructions a <i>function</i>. Though we store functions in there own variables, they're really not like the other <i>types</i> and deserve special consideration. <i>(We'll come back to functions later)</i>.
+  </li>
+</ul>
+<br>
+
+<p>
+  There are a few other data types, but those are the most important to understand for now. If you'd like a deeper dive into this topic refer to the JavaScript "<span class="link" name="data-types">Data Types</span>" docs.
+</p>
+
+<br>
+
+<p>
+  When you make a new variable, you start with a declaration keyword. Back in the day there was only <code>var</code>, but this proved problematic for reasons we won't get into here. So in 2015 ECMA, the European Computer Manufacturers Association (the nonprofit organization that standardizes JavaScript) introduced two better options: <code>const</code> and <code>let</code>. When a variable's value is meant to stay <i>constant</i> and never change, we use <code>const</code>. We use <code>let</code> when we plan to reassign it. For example, declaring <code>let year = 2015</code> means it can change later, <code>year = 2016</code>. Notice we only write the keyword when we first declare the variable, after that, we just re-assign it. A good rule of thumb: prefer <code>const</code> by default (it helps prevent accidental re-assignments), use <code>let</code> if you actually need to change the value.
+</p>
+
+<br>
 
 <svg-js-statement colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-statement>
 
-<p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
-</p>
-
-<svg-js-variable colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
-</svg-js-variable>
+<br>
+<br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  A single instruction in your program is called a <b>statement</b>. Declaring a variable is one example of a short statement. Statements often contain an expression, a piece of code that produces a value. For example, <code>2 + 5</code> is an expression that produces the value 7. If we write <code>let sum = 2 + 5</code>, that whole line is a statement: we declare a variable named "sum", evaluate the expression, and store the result. Because <i>sum</i> was declared with <i>let</i>, we could later change its value if needed. Other mathematical or <i>arithmetic</i> operators include <code>-</code> for subtraction, <code>/</code> for division and <code>*</code> for multiplication. There are <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank">other operators</a>, but we'll get to those later.
 </p>
 
-<svg-js-object colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
-</svg-js-object>
+<code-sample name="js-ex-0"></code-sample>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  Programs normally run top to bottom, one statement after another. In the example below we start with <code>let i = 100</code>. On the next line we double it <code>i = i * 2</code>, and then add one <code>i = i + 1</code>. By the end, <code>i</code> holds the value <i>201</i>. If we swapped the last two lines, adding 1 before doubling, we'd end up with <i>202</i> instead. The order of your statements matters.
 </p>
 
-<svg-js-invoke-function colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+<br>
+
+<h1 name="functions">Functions</h1>
+
+<p>
+  Another kind of statement is a function <i>call</i> (aka function <i>invocation</i>). A function is a stored set of instructions, and calling it runs those instructions. For example, every browser has a built-in function named <code>print()</code> that tries to send the current page to your printer. Notice the parentheses, without them, you're just referring to the function, the variable name which stores the instructions. With the parentheses, you're telling the computer to run those instrutions.
+</p>
+
+<br><br>
+<code-sample name="js-ex-1"></code-sample>
+<button onclick="window.print()" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<br>
+
+<p>
+  You can send data into a function using their <code>()</code> parenthesis, this input data is called an <i>arguments</i>. For example the browser also has a built in function called <code>alert</code>. When we call this funcion the browser will display its alert box, whatever we pass into the alert function's argument becomes the message that appears in the pop up, click the diagram below to run that function.
+</p>
+
+<br>
+
+<svg-js-invoke-function style="cursor:pointer" onclick="window.alert('Welcome!')" colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-invoke-function>
 
+<br><br>
+
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  In the diagram above we're passing raw data, the string "Welcome!", as the alert function's argument, but we can also pass variables. Because variables store data, the effect will be the same as if we had passed the raw data itself.
 </p>
 
+<br>
+<code-sample name="js-ex-2"></code-sample>
+<button onclick="window.alert('Ada Lovelace')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  You're not limited to the browser's built-in functions, you can write your own. The simplest way is with the <code>function</code> keyword, followed by the name you want to give it, a set of parentheses <code>()</code>, and a block of code inside <code>{</code> curly braces <code>}</code>. If your function should take input, you list that input as a variable inside the parentheses. For example, <code>(x)</code> means "this function expects a value we'll call x." Inside the braces you can then use x like any other variable.
+</p>
+
+<br><br>
 <svg-js-define-function colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-define-function>
+<br><br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  What happens in a function, stays in the function, unless you explicitly want to send something back out. The way to do that is with the <code>return</code> keyword. Whatever value comes after <i>return</i> is handed back to the place where the function was called. This means we can save the result of a function into a variable, just like we save the result of an expression.
 </p>
 
+<br><br>
 <svg-js-invoke-and-assign colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-invoke-and-assign>
+<br><br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  For example, our  <code>square</code> function takes a number and multiplies it by itself. Let's assume the variable <code>length</code> in the diagram above was set to <code>5</code>, if we pass that in the function calculates 5 * 5 and returns 25. We then store that result in a variable named <code>area</code>, which we can use later in our program.
 </p>
 
+<br>
+<code-sample name="js-ex-3"></code-sample>
+<button onclick="window.alert(25)" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  Earlier we said programs run line by line, top to bottom. That's true by default, but functions let us change the default <i>flow</i>. Notice in the example above: the code <code>x * x</code> is written on line 2, but it doesn't run right away. It only runs later, when we call <code>square(5)</code> on line 5. Functions act like bookmarks in your code, you write them once, and they're only activated when you decide to call them.
+</p>
+<br>
+
+<p>
+  It's worth mentioning that way we defined the <code>square</code> function above is just one way to create a new function, not all the JavaScript code you come acorss will define functions that way, so it's worth reviewing the <span class="link" name="deeper-funcs">Functions (alt syntax)</span> docs for other variations and considerations.
+</p>
+
+<br>
+<h1 name="conditionals">Conditional Statements</h1>
+<br>
+
+<p>
+  Sometimes we only want code to run <i>if</i> a certain <i>condition</i> is <i>true</i>. That's where conditional statements come in. A condition is just a true/false question. If it's true, the code inside the <code>{</code> curly braces <code>}</code> runs. If it's false, that block is skipped. This gives us control over the program's flow, instead of always running everything in order.
+</p>
+
+<br>
 <svg-js-conditional colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-conditional>
+<br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  In the example <code>if (score &gt; 7)</code>, the symbol <code>&gt;</code> is a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators#relational_operators">relational operator</a>. It asks, "is the value on the left greater than the value on the right?" If the answer is <i>true</i>, the code in the block runs. If not, the block is skipped. Other relational operators you'll use often include:
 </p>
 
+<ul>
+  <li><code>&lt;</code> less than</li>
+  <li><code>&lt;=</code> less than or equal to</li>
+  <li><code>&gt;=</code> greater than or equal to</li>
+  <li><code>===</code> equal to (strict comparison)</li>
+  <li><code>!==</code> not equal to</li>
+</ul>
+
+<br>
+
+<p>
+  Below we have three possible branches. First, the program checks <code>if (score &gt; 7)</code>. If that's true, it runs the first block and ignores the rest. If not, it moves to the <code>else if (score &gt; 3)</code> check. If that's true, it runs the second block. If neither condition is true, the final <code>else</code> runs as a "catch-all" backup. This kind of branching is central to all algorithms, it's how programs make choices and respond differently depending on the data.
+</p>
+
+
+<br>
+<code-sample name="js-ex-4"></code-sample>
+<button onclick="window.alert('Not bad!')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<p>
+  You can also write conditionals like <code>if (name)</code>, which check to see if that varible is <a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy" target="_blank">truthy</a> of <a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy" target="_blank">falsy</a>. If a variable has a value in it (meaning it is not empty or "undefined"), it's usually going to be <i>truthy</i>, but there are some values which evaluate as <i>falsey</i>, including <code>0</code>, <code>null</code>, <code>''</code> (an empty string) and obviously <code>false</code>.
+</p>
+
+<br>
+<code-sample name="js-ex-10"></code-sample>
+<button onclick="window.alert('hello second!')" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<br>
+<h1 name="loops">Loops</h1>
+
+<p>
+  Sometimes we don't just want to check a condition once, we want to keep repeating some code as long as the condition stays true. That's exactly what a <b>while loop</b> does.
+</p>
+
+<br>
 <svg-js-while colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-while>
+<br><br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  This starts by declaring a variable <code>let i = 0</code>. Each time the loop runs, it checks if <code>i &lt; 10</code>. If that's <i>true</i>, it runs the block. Inside the block we use the <code>i++</code>, which is just shorthand for <code>i = i + 1</code>. In other words, it increases <code>i</code> by one each time. The loop keeps going until <code>i</code> reaches 10, at which point the condition is <i>false</i> and the loop stops. Can you guess what value the example below will alert when you run it?
 </p>
 
+<br><br>
+<code-sample name="js-ex-5"></code-sample>
+<button onclick="window.alert(5)" class="pill-btn pill-btn--secondary">run code</button>
+<br><br><br>
+
+<p name="for-loop">
+  A <b>for loop</b> is just a more compact way to write the same thing. Instead of spreading the setup <code>let i = 0</code>, the condition <code>i &lt; 10</code>, and the update <code>i++</code> across different lines, the for loop puts them together on the same line.
+</p>
+
+<br><br>
 <svg-js-for colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
 </svg-js-for>
+<br><br>
 
 <p>
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore, minima ea quo velit, sequi rem iusto commodi laudantium, harum obcaecati ut expedita similique explicabo? Ratione nesciunt architecto numquam nisi a!
+  Notice the <b>semicolons</b>. In JavaScript, semicolons are used to separate statements if you write more than one on the same line. That's why we see them here, dividing the setup, condition, and update. Some people also put semicolons at the end of every line (it's required in some other languages), but in JavaScript they're optional most of the time. The main place you must use them is when you're writing multiple statements side by side, like inside a for loop.
+</p>
+
+<br><br>
+<code-sample name="js-ex-6"></code-sample>
+<button onclick="window.alert(15)" class="pill-btn pill-btn--secondary">run code</button>
+<br><br>
+
+<br>
+
+<h1>Where do we write it?</h1>
+
+<p>
+  Just like CSS, JavaScript can be added to a page in 3 similar ways ways. The first is <b>inline</b> by attaching  JavaScript directly to an element with <a href="https://www.w3schools.com/tags/ref_eventattributes.asp" target="_blank">event attributes</a> like <code>onclick</code>. An event is something that happens in the browser, like a click, a key press, or the page finishing its load. By attaching code to an event, we tell the browser "when this happens, run that code."
+</p>
+
+<br>
+<code-sample name="js-ex-7"></code-sample>
+<br><br>
+
+<p>
+  Inline JavaScript works, but it quickly gets messy if you try to add more than a couple of lines. And remember, events aren't limited to attributes like onclick, we can also respond to them directly in our JavaScript code (we'll cover that in another lesson). A more common approach is to put JavaScript inside a <code>script</code> element, usually at the bottom of your HTML file.
+</p>
+
+<br>
+<code-sample name="js-ex-8"></code-sample>
+<br><br>
+
+<p>
+  The <code>script</code> element helps keep your HTML and JavaScript separate while staying in the same file—just like CSS in a <code>style</code> element. For bigger projects, you'll usually put JavaScript in its own file and load it with a <code>script</code> tag that points to it. Instead of writing code between the tags, use the src attribute to reference the path to your file (Just like you can move CSS into its own file and load it with a <code>link</code> tag).
+</p>
+
+<br>
+<code-sample name="js-ex-9"></code-sample>
+<br><br>
+
+<br>
+
+
+
+<h2>More JS Docs</h2>
+
+<div class="js-reference-widget--sec-link" name="data-types" style="color: var(--netizen-tag)">
+  Data Types
+</div>
+<br>
+
+<div class="js-reference-widget--sec-link" name="data-structs" style="color: var(--netizen-tag)">
+  Data Structures
+</div>
+<br>
+
+<div class="js-reference-widget--sec-link" name="deeper-funcs" style="color: var(--netizen-tag)">
+  Functions (alt syntax)
+</div>
+<br>
+
+<div class="js-reference-widget--sec-link" name="apis-and-libs" style="color: var(--netizen-tag)">
+  APIs and Libraries
+</div>
+<br>
+
+<br>
+<br>
+<br>
+
+<p>
+  For an even deeper dive into the core JavaScript programming concepts covered above, consider reading the first few chapters from Marijn Haverbeke's book <a href="https://eloquentjavascript.net/" target="_blank" style="">Eloquent JavaScript</a> (4th edition 2024) as well as the Mozilla Developer Network's <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Overview" target="_blank" style="">JavaScript language overview</a>.
 </p>
 
 <br>

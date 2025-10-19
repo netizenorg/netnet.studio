@@ -1,0 +1,353 @@
+{
+  "name": "js-10print",
+  "title": "Guided Intro to JS",
+  "description": "In this intro lesson, you'll learn how to bring the classic 10PRINT algorithm to life in JavaScript while exploring core programming concepts like variables, loops, conditionals, functions, and randomness. You'll also learn how to make your code interactive using event listeners and how to simplify your work using libraries.",
+  "lines": {
+    "two-symbols": {
+      "template": "<body>\n／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／\n</body>"
+    },
+    "not-keyboard-slashes": {
+      "template": "<body>\n/\\/\\\\///\\\\\\\\\\\\/\\\\/\\//////\\\\\\\\\\///////\\////\\\\\\///\\/\\////\\\\\\///\\///\\\\/\\\\\\\\///\\//\\\\///\\//\\/\\/\\/\\/\\/\\/\\\\\\////\\/\\\\//\\/\\\\\\\\\\\\/\\\\////\\\\/\\\\\\\\\\/\\\\\\/\\\\//\\/\\//////\\\\//\\/\\///\\//\\/\\/\\/\\/\\\\//\\\\\\//\\///\\//\\/\\/\\\\\\/\\///\\/\\\\///\\\\\\\\\\\\/\\\\/\\//////\\\\\\\\\\///////\\////\\\\\\///\\/\\////\\\\\\///\\///\\\\/\\\\\\\\///\\//\\\\///\\//\\/\\/\\/\\/\\/\\/\\\\\\////\\/\\\\//\\/\\\\\\\\\\\\/\\\\////\\\\/\\\\\\\\\\/\\\\\\/\\\\//\\/\\//////\\\\//\\/\\///\\//\\/\\/\\/\\/\\\\//\\\\\\//\\///\\//\\/\\/\\\\\\/\\///\\/\\\\///\\\\\\\\\\\\/\\\\/\\//////\\\\\\\\\\///////\\////\\\\\\///\\/\\////\\\\\\///\\///\\\\/\\\\\\\\///\\//\\\\///\\//\\/\\/\\/\\/\\/\\/\\\\\\////\\/\\\\//\\/\\\\\\\\\\\\/\\\\////\\\\/\\\\\\\\\\/\\\\\\/\\\\//\\/\\//////\\\\//\\/\\///\\//\\/\\/\\/\\/\\\\//\\\\\\//\\///\\//\\/\\/\\\\\\/\\//\n</body>"
+    },
+    "unicode": {
+      "template": "<body>\n／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／\n</body>"
+    },
+    "add-styles": {
+      "template": "{{code}}\n<body>\n／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／\n</body>",
+      "code": "<link rel=\"stylesheet\" href=\"css/styles.css\">"
+    },
+    "inline-js": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body {{code}}>\n／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／／＼／＼＼／／／＼＼＼＼＼＼／＼＼／＼／／／／／／＼＼＼＼＼／／／／／／／＼／／／／＼＼＼／／／＼／＼／／／／＼＼＼／／／＼／／／＼＼／＼＼＼＼／／／＼／／＼＼／／／＼／／＼／＼／＼／＼／＼／＼／＼＼＼／／／／＼／＼＼／／＼／＼＼＼＼＼＼／＼＼／／／／＼＼／＼＼＼＼＼／＼＼＼／＼＼／／＼／＼／／／／／／＼＼／／＼／＼／／／＼／／＼／＼／＼／＼／＼＼／／＼＼＼／／＼／／／＼／／＼／＼／＼＼＼／＼／／\n</body>",
+      "code": "onclick=\"alert('hello there!')\"",
+      "spotlight": [2]
+    },
+    "external-js": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n{{code}}\n<body></body>",
+      "code": "<script src=\"js/my-file.js\"></script>",
+      "spotlight": [2]
+    },
+    "inline-script": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n{{code}}",
+      "code": "<script>\n\n</script>",
+      "spotlight": [3,4,5]
+    },
+    "numbers": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "const a = 9000\n\tconst b = 3.14"
+    },
+    "arithmetic": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tconst a = 9000\n\tconst b = 3.14\n\t{{code}}\n\n</script>",
+      "code": "const c = 10 + a / 3"
+    },
+    "const-vs-let": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tconst a = 9000\n\tconst b = 3.14\n\tconst c = 10 + a / 3\n\n\t{{code}}\n\n</script>",
+      "code": "let x = 100\n\tx = 200"
+    },
+    "reassignment": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tconst a = 9000\n\tconst b = 3.14\n\tconst c = 10 + a / 3\n\n\tlet x = 100\n\tx = 200\n\n</script>",
+      "spotlight": [9, 10]
+    },
+    "booleans": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "let loggedIn = false\n\t\n\t// later we can change it\n\tloggedIn = true"
+    },
+    "boolean-expr": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet loggedIn = false\n\t\n\t// later we can change it\n\tloggedIn = true\n\t\n\t{{code}}\n\n</script>",
+      "code": "const a = 100 > 50 // true\n\tconst b = 10 < 5   // false\n\tconst c = 20 >= 20 // true\n\tconst d = 40 === 2 // false"
+    },
+    "strings": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "let greet = 'hello there!'"
+    },
+    "string-quotes": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet greet = 'hello there!'\n\t{{code}}\n\n</script>",
+      "code": "greet = \"hello there!\"\n\tgreet = `hello there!`"
+    },
+    "string-plus": {
+      "template": "XXX",
+      "code": "XXX"
+    },
+    "string-plus": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet greet = 'hello there!'\n\tgreet = \"hello there!\"\n\tgreet = `hello there!`\n\t\n\t{{code}}\n\n</script>",
+      "code": "const user = 'Nick'\n\tgreet = 'hello there ' + user"
+    },
+    "number-plus-string": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet greet = 'hello there!'\n\tgreet = \"hello there!\"\n\tgreet = `hello there!`\n\t\n\tconst user = 'Nick'\n\tgreet = 'hello there ' + user\n\t\n\t{{code}}\n\n</script>",
+      "code": "let i = 100\n\tlet message = 'My favorite number is ' + i"
+    },
+    "calling-functions": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet greet = 'hello there!'\n\tgreet = \"hello there!\"\n\tgreet = `hello there!`\n\t\n\tconst user = 'Nick'\n\tgreet = 'hello there ' + user\n\t\n\tlet i = 100\n\tlet message = 'My favorite number is ' + i\n\t\n\t{{code}}\n\n</script>",
+      "code": "alert(message)"
+    },
+    "pass-args": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet greet = 'hello there!'\n\tgreet = \"hello there!\"\n\tgreet = `hello there!`\n\t\n\tconst user = 'Nick'\n\tgreet = 'hello there ' + user\n\t\n\tlet i = 100\n\tlet message = 'My favorite number is ' + i\n\t\n\t{{code}}\n\n</script>",
+      "code": "alert('Hi!')"
+    },
+    "objects-intro": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "Math"
+    },
+    "math-object": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tMath{{code}}\n\n</script>",
+      "code": ".PI"
+    },
+    "math-pi": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}Math.PI\n\n</script>",
+      "code": "let x = "
+    },
+    "math-round": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tlet x = Math.PI\n\t{{code}}\n\n</script>",
+      "code": "x = Math.round(x)"
+    },
+    "dom-api": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "document"
+    },
+    "document-body": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tdocument{{code}}\n\n</script>",
+      "code": ".body.innerText = 'Oh'"
+    },
+    "inner-text": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tdocument.body.textContent = 'Oh'\n\t{{code}}\n\n</script>",
+      "code": "document.body.textContent = 'Hi'\n\tdocument.body.textContent = 'Bye'"
+    },
+    "reassign-vs-append": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '／'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\tdocument.body.innerText += '＼'\n\n</script>"
+    },
+    "math-random": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t// random value between 0 and 1\n\t{{code}}\n\t\n</script>",
+      "code": "Math.random()"
+    },
+    "scale-random": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t// random value between 0 and 99\n\tMath.random(){{code}}\n\t\n</script>",
+      "code": " * 100"
+    },
+    "random-boolean": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t// 50/50 chance it's either true or false\n\tMath.random(){{code}}\n\t\n</script>",
+      "code": " < 0.5"
+    },
+    "conditionals": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tif (Math.random() < 0.5) {{code}}\n\t\n</script>",
+      "code": "{\n\t\tdocument.body.innerText += '／'\n\t}"
+    },
+    "conditional-else": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t}{{code}}\n\t\n</script>",
+      "code": " else {\n\t\tdocument.body.innerText += '＼'\n\t}"
+    },
+    "conditional-repeat": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\tif (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t} else {\n\t\tdocument.body.innerText += '＼'\n\t}\n\t\n\t\n\t\n</script>"
+    },
+    "while-loop": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\n\t{{code}}\n\n</script>",
+      "code": "while (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t}"
+    },
+    "loop-counter": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\t{{code}}\n\twhile (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t}\n\n</script>",
+      "code": "let i = 0",
+      "spotlight": [5]
+    },
+    "increment": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tlet i = 0\n\twhile (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t\t{{code}}\n\t}\n\n</script>",
+      "code": "i = i + 1",
+      "spotlight": [5, 8]
+    },
+    "increment2": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tlet i = 0\n\twhile (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t\ti {{code}}\n\t}\n\n</script>",
+      "code": "+= 1",
+      "spotlight": [5, 8]
+    },
+    "increment3": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tlet i = 0\n\twhile (Math.random() < 0.5) {\n\t\tdocument.body.innerText += '／'\n\t\ti{{code}}\n\t}\n\n</script>",
+      "code": "++",
+      "spotlight": [5, 8]
+    },
+    "loop-bound": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tlet i = 0\n\twhile ({{code}}) {\n\t\tdocument.body.innerText += '／'\n\t\ti++\n\t}\n\n</script>",
+      "code": "i < 600",
+      "spotlight": [5, 6, 8]
+    },
+    "loop-with-if": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tlet i = 0\n\twhile (i < 600) {\n\t\t{{code}}\n\t\ti++\n\t}\n\n</script>",
+      "code": "if (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}"
+    },
+    "for-loop": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\t{{code}} {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "code": "for (let i = 0; i < 600; i++)"
+    },
+    "for-loop2": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "spotlight": [5, 11]
+    },
+    "define-function-var": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\t{{code}}\n\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "code": "const changeBackground = function () {\n\t\t// instructions go here\n\t}"
+    },
+    "name-function": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction {{code}} () {\n\t\t// instructions go here\n\t}\n\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "code": "changeBackground"
+    },
+    "function-body-bg": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\t{{code}}\n\t}\n\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "code": "document.body.style.background"
+    },
+    "document-style-background": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tdocument.body.style.background {{code}}\n\t}\n\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\n</script>",
+      "code": "= 'orange'"
+    },
+    "call-function": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tdocument.body.style.background = 'orange'\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\t{{code}}\n\n</script>",
+      "code": "changeBackground()",
+      "spotlight": [17]
+    },
+    "window-addEventListener": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tdocument.body.style.background = 'orange'\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\t{{code}}\n\n</script>",
+      "code": "window.addEventListener('click', changeBackground)",
+      "spotlight": [17]
+    },
+    "css-colors-rgb": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\t{{code}}\n\t\tdocument.body.style.background = bg\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "const bg = 'rgb(0, 0, 0)'",
+      "spotlight": [5,6,7,8]
+    },
+    "random-0-255": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\t{{code}}\n\t\tdocument.body.style.background = bg\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "const r = Math.random() * 255\n\t\tconst bg = 'rgb(' + r + ', 0, 0)'",
+      "spotlight": [5,6,7,8, 9]
+    },
+    "full-rgb-color": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\t{{code}}\n\t\tdocument.body.style.background = bg\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "const g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = 'rgb(' + r + ', ' + g + ', ' + b + ')'"
+    },
+    "template-literals": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = 'rgb(' + r + ', ' + g + ', ' + b + ')'\n\t\tdocument.body.style.background = bg\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "spotlight": [9]
+    },
+    "template-vars": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = {{code}}\n\t\tdocument.body.style.background = bg\n\t}\n\t\t\n\tfor (let i = 0; i < 600; i++) {\n\t\tif (Math.random() < 0.5) {\n\t\t\tdocument.body.innerText += '／'\n\t\t} else {\n\t\t\tdocument.body.innerText += '＼'\n\t\t}\n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "`rgb(${r}, ${g}, ${b})`",
+      "spotlight": [9]
+    },
+    "function-10print": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\t{{code}}{\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "function tenPrint () ",
+      "spotlight": [13,14,15,16,17,18,19,20,21]
+    },
+    "click-regenerate": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\twindow.addEventListener('load', tenPrint)\n\t{{code}}\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "window.addEventListener('click', tenPrint)"
+    },
+    "clear-innertext": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\t{{code}}\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\twindow.addEventListener('load', tenPrint)\n\twindow.addEventListener('click', tenPrint)\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "document.body.innerText = ''",
+      "spotlight": [14]
+    },
+    "import-lib": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n{{code}}\n<script>\n\t\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\twindow.addEventListener('load', tenPrint)\n\twindow.addEventListener('click', tenPrint)\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "<script src=\"js/nn.min.js\"></script>"
+    },
+    "nn-global": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t{{code}}\n\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\twindow.addEventListener('load', tenPrint)\n\twindow.addEventListener('click', tenPrint)\n\twindow.addEventListener('click', changeBackground)\n\n</script>",
+      "code": "/* global nn */",
+      "spotlight": [5]
+    },
+    "nn-on": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst r = Math.random() * 255\n\t\tconst g = Math.random() * 255\n\t\tconst b = Math.random() * 255\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "spotlight": [26,27,28]
+    },
+    "nn-random": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst r = {{code}}\n\t\tconst bg = `rgb(${r}, ${g}, ${b})`\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "nn.random() * 255 // can do this,\n\t\tconst g = nn.random(0, 255) // but also this,\n\t\tconst b = nn.random(255) // or just this"
+    },
+    "nn-randomColor": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst bg = {{code}}\n\t\tdocument.body.style.background = bg\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "nn.randomColor()"
+    },
+    "nn-hsl": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\t{{code}}\n\t\tdocument.body.style.background = red\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "const red = nn.hsl(0, 100, 20)"
+    },
+    "nn-dark-random": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\t{{code}}\n\t\tdocument.body.style.background = clr\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "const hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)"
+    },
+    "nn-get": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\t{{code}}.style.background = clr\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "nn.get('body')",
+      "spotlight": [10]
+    },
+    "nn-css": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tnn.get('body').{{code}}\n\t}\n\t\n\tfunction tenPrint () {\n\t\tdocument.body.innerText = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tdocument.body.innerText += '／'\n\t\t\t} else {\n\t\t\t\tdocument.body.innerText += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "css('background', clr)",
+      "spotlight": [10]
+    },
+    "pattern-var": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tnn.get('body').css('background', clr)\n\t}\n\t\n\tfunction tenPrint () {\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tpattern += '／'\n\t\t\t} else {\n\t\t\t\tpattern += '＼'\n\t\t\t}\n\t\t} \n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "spotlight": [14, 17, 19]
+    },
+    "nn-content": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction changeBackground () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tnn.get('body').css('background', clr)\n\t}\n\t\n\tfunction tenPrint () {\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tpattern += '／'\n\t\t\t} else {\n\t\t\t\tpattern += '＼'\n\t\t\t}\n\t\t}\n\t\t{{code}}\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\tnn.on('click', changeBackground)\n\n</script>",
+      "code": "nn.get('body').content(pattern)",
+      "spotlight": [14, 17, 19, 22]
+    },
+    "chain-methods": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\t{{code}}\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tpattern += '／'\n\t\t\t} else {\n\t\t\t\tpattern += '＼'\n\t\t\t}\n\t\t}\n\t\tnn.get('body').content(pattern)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "const hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)",
+      "spotlight": [8, 9]
+    },
+    "chain-multiline": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tpattern += '／'\n\t\t\t} else {\n\t\t\t\tpattern += '＼'\n\t\t\t}\n\t\t}\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t{{code}}\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": ".css('background', clr)",
+      "spotlight": [8, 9, 18, 19, 20]
+    },
+    "chars-var": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\t{{code}}\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tif (Math.random() < 0.5) {\n\t\t\t\tpattern += '／'\n\t\t\t} else {\n\t\t\t\tpattern += '＼'\n\t\t\t}\n\t\t}\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "const chars = '／＼'",
+      "spotlight": [10]
+    },
+    "random-char": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '／＼'\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\t{{code}}\n\t\t}\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "pattern += nn.random(chars)",
+      "spotlight": [13]
+    },
+    "more-symbols": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = {{code}}\n\t\tlet pattern = ''\n\t\tfor (let i = 0; i < 600; i++) {\n\t\t\tpattern += nn.random(chars)\n\t\t}\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "'─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'",
+      "spotlight": [10, 11, 12, 13, 14]
+    },
+    "nn-times": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\t{{code}}\n\t\t\tpattern += nn.random(chars)\n\t\t})\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "nn.times(600, i => {",
+      "spotlight": [12, 13, 14]
+    },
+    "arrow-one-line": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, i => {{code}}\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "pattern += nn.random(chars))",
+      "spotlight": [12]
+    },
+    "arrow-one-line2": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, {{code}} => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "(i, v)",
+      "spotlight": [12]
+    },
+    "arrow-one-line3": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, {{code}} => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "()",
+      "spotlight": [12]
+    },
+    "local-vs-cdn": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, () => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "spotlight": [3]
+    },
+    "cdn-url": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"{{code}}\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, () => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"
+    },
+    "cdn-common": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"{{code}}\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, () => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>",
+      "code": "js/nn.min.js"
+    },
+    "end-guide": {
+      "template": "<link rel=\"stylesheet\" href=\"css/styles.css\">\n<body></body>\n<script src=\"js/nn.min.js\"></script>\n<script>\n\t/* global nn */\n\n\tfunction tenPrint () {\n\t\tconst hue = nn.random(360)\n\t\tconst clr = nn.hsl(hue, 100, 20)\n\t\tconst chars = '─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼'\n\t\tlet pattern = ''\n\t\tnn.times(600, () => pattern += nn.random(chars))\n\t\tnn.get('body')\n\t\t\t.content(pattern)\n\t\t\t.css('background', clr)\n\t}\n\t\n\tnn.on('load', tenPrint)\n\tnn.on('click', tenPrint)\n\n</script>"
+    }
+  }
+}

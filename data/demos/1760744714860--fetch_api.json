@@ -1,0 +1,141 @@
+{
+  "key": 1760744714860,
+  "name": "Fetch API",
+  "tags": [
+    "rest",
+    "api",
+    "fetch",
+    "dog",
+    "random",
+    "data"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJxNUUFOwzAQvPcVo17sFBQXuKG0EoIicQJBP+DaTmJI7Mh2VVWIv7Nxlba31czs7OxuFVWwQ0IMajV3ruytK7/jfF2JE7GeVVMBiAWazu9kB+ewEDOCZDw6hXrvVLLeIZq0H8AL/BJHDQK1SaqFlkmiDr5Hag3mL77B8+Z9js/N1xZPH29ZrbyLCfvQYQXWpjTERyG0b0plvJCDFbtgjI7C9rIxIkinfc+uOoOJ1CkP0qbTWE5exZUgp5gUpKZNvePFFHUgKOL17h7Jww/G5TbfGfDa4SYztGMv1cWU2LLzDR+tz0YqGJkMpENl+2ZNhYbUGjSVnMcLDLLJYrr4ScwZKVmBjAIlHZIzegq7zanLnqLR1sXEqxg5O1idWlI8LJdnguZsPWc7r49sBP/GL9EYWpR1XmqS5ycVF1h1Vv1c8Nn59/85bqFx",
+  "info": [
+    {
+      "focus": null,
+      "text": "In this example I'm going to show you how to make <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP\" target=\"_blank\">HTTP</a> requests to <a href=\"https://www.ibm.com/cloud/learn/rest-apis\" target=\"_blank\">REST APIs</a> in order to access resources on other servers. There are <a href=\"/?demo=61\" target=\"_blank\">old</a> (and even <a href=\"/?demo=60\" target=\"_blank\">older</a>) ways of writing code that makes HTTP requests, but this is the most modern.\n",
+      "title": "getting started"
+    },
+    {
+      "title": "asynchronicity",
+      "focus": null,
+      "text": "JavaScript code typically runs \"synchronously\", meaning one line at a time, each line waiting for the line before it to finish executing before the next line runs. But there are often situations where we need to write \"<a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous\" target=\"_blank\">asynchronous code</a>\", where parts of our code wait for something to happen before getting called. This sort of code can get messy and often leads to \"<a href=\"https://stackoverflow.com/questions/25098066/what-is-callback-hell-and-how-and-why-does-rx-solve-it\" target=\"_blank\">callback hell</a>\""
+    },
+    {
+      "title": "async / await",
+      "focus": null,
+      "text": "In this example we're using newer JavaScript syntax known as <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function\" target=\"_blank\">async functions</a> which allows us to write <a href=\"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await\" target=\"_blank\">asynchronous code</a> in a synchronous fashion, this generally makes our code both easier to write and easier to read."
+    },
+    {
+      "title": "async setup",
+      "focus": [
+        5,
+        17
+      ],
+      "text": "In order to create an \"async function\", we need to include the <code>async</code> keyword before our function definition. Async functions allows us to write JavaScript \"Promises\" (a form of asynchronous code explained in another <a href=\"https://netnet.studio/?ex=61\" target=\"_blank\">Fetch demo</a>) as though they were synchronous by including the <code>await</code> keyword before we call the promise function."
+    },
+    {
+      "title": "fetch",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        17
+      ],
+      "text": "Here I'm using the <a href=\"https://dog.ceo/\" target=\"_blank\">dog.ceo</a> REST API to request a random dog image. When using a third party REST API like this it's important to check out their <a href=\"https://dog.ceo/dog-api/\" target=\"_blank\">documentation</a> page, that's where you'll find what other URL endpoints we can send requests to as well as what type of data we should expect in return."
+    },
+    {
+      "title": "other APIs",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        17
+      ],
+      "text": "There are loads of REST APIs on the Web for us to experiment with, you can explore some listed on sites like <a href=\"https://apilist.fun/\" target=\"_blank\">API List</a> and <a href=\"https://publicapis.io/\" target=\"_blank\">Public APIs</a>. Keep in mind that some APIs require you sign up for a \"key\", in these instances there may be a limit to how many times you can request data for free before before you need to pay."
+    },
+    {
+      "title": "response",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        17
+      ],
+      "text": "Because I'm using the <code>await</code> keyword (which can only be used inside an  <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function\" target=\"_blank\">async functions</a>) the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Response\" target=\"_blank\">Response</a> object gets returned by the Fetch API and stored in the <code>res</code> variable. The <code>await</code> keyword also guarantees that the next line (which makes use of the <code>res</code> object) won't fire until the REST API has sent us its response."
+    },
+    {
+      "title": "JSON data",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        17
+      ],
+      "text": "The <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Response\" target=\"_blank\">Response</a> object's <code>json()</code> method (which is used to parse the response data as a JSON object) is another instance of a JavaScript Promise (asynchronous function), which means we can use the <code>await</code> keyword again to wait for it to return the parsed object before storing it into our <code>json</code> variable.\n"
+    },
+    {
+      "title": "API docs",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        17
+      ],
+      "text": "It's important to note, while JSON is the most common response type, not all REST APIs return data this way, it's important to check their documentation to know for sure. In this case the <a href=\"https://dog.ceo/dog-api/documentation/random\" target=\"_blank\">documentation</a> for the Dog CEO API confirms that this endpoint returns JSON.\n"
+    },
+    {
+      "title": "log data",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        17
+      ],
+      "text": "Once the data from our response has been parsed into a json object it's always a good idea to log that object to the console to make sure the data we got back is what we were expecting. You can open your browser's console by pressing <code>F12</code> (or <code>Fn+F12</code> on Mac). This is also great for catching errors.\n"
+    },
+    {
+      "title": "nn.min.js",
+      "focus": [
+        1
+      ],
+      "text": "In this example, our JSON object, which we've called <code>data</code>, has a <code>message</code> property which contains a URL string to a random dog image which we can use to to set as the src of a new <code>&lt;img&gt;</code> element. To make it a little easier to create new HTML elements I've imported the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">netnet standard library</a> at the top of our page."
+    },
+    {
+      "title": "create img",
+      "focus": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "With the <code>nn</code> library we can <code>.create()</code> a new img element, <code>.set()</code> it's \"src\" attribute to our new random dog image url, stored in <code>data.message</code> of our response. These images come in different sizes so we'll use the <code>.css()</code> method to make sure they all conform to the same width, and then we'll use <code>.addTo()</code> to add our new dog image to the body of our page."
+    },
+    {
+      "title": "oad and clickl",
+      "focus": [
+        19,
+        20
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded. I've also added a call to that function on our window's \"click\" event."
+    },
+    {
+      "title": "try it",
+      "focus": null,
+      "text": "Try clicking the page a few time to send new requests to the Dog CEO API, we'll get a new random dog image each time."
+    }
+  ]
+}

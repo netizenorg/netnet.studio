@@ -44,25 +44,20 @@ class SvgJSConditional extends HTMLElement {
       </text>
     </g>
     <text transform="translate(178.39 124.2)"
-      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[7]};font-family:'fira-sans-regular', sans-serif">age</text>
-    <text transform="translate(284.69 124.2)"
+      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[7]};font-family:'fira-sans-regular', sans-serif">score</text>
+    <text transform="translate(330.69 124.2)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[3]};font-family:'fira-sans-regular', sans-serif">&gt;</text>
-    <text transform="translate(328.23 124.2)"
-      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[6]};font-family:'fira-sans-regular', sans-serif;letter-spacing:-0.024995845709136617em">2
-      <tspan x="26.85" y="0" style="letter-spacing:0.000008545588276627903em">1</tspan>
+    <text transform="translate(348.23 124.2)"
+      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[6]};font-family:'fira-sans-regular', sans-serif;letter-spacing:-0.024995845709136617em">
+      <tspan x="26.85" y="0" style="letter-spacing:0.000008545588276627903em">7</tspan>
       </text>
-    <text transform="translate(380.23 124.2)"
+    <text transform="translate(400.23 124.2)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[0]};font-family:'fira-sans-regular', sans-serif">)
       {</text>
     <text transform="translate(260.98 192.45)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[0]};font-family:'fira-sans-regular', sans-serif">(</text>
     <text transform="translate(278.98 192.45)"
-      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[4]};font-family:'fira-sans-regular', sans-serif">‘
-      <tspan x="13.03" y="0" style="letter-spacing:-0.009998338283654646em">W</tspan>
-      <tspan x="59.65" y="0">e</tspan>
-      <tspan x="90.73" y="0" style="letter-spacing:-0.004990623553550695em">l</tspan>
-      <tspan x="107.25" y="0" style="letter-spacing:-0.015006053013758597em">c</tspan>
-      <tspan x="133.7" y="0" style="letter-spacing:0.000008545588276627903em">ome!’</tspan>
+      style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[4]};font-family:'fira-sans-regular', sans-serif">‘Good Job!’
     </text>
     <text transform="translate(552.98 192.45)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[0]};font-family:'fira-sans-regular', sans-serif">)</text>

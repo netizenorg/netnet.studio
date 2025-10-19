@@ -1,6 +1,6 @@
 /* global HTMLElement, utils */
 class WidgetSlide extends HTMLElement {
-  updateSlide (opts) {
+  updateSlide (opts, anchor) {
     /*
       updateSlide({
         name: 'new-slide',    // a unique name for this slide
@@ -44,9 +44,14 @@ class WidgetSlide extends HTMLElement {
       }
     }
 
-    if (opts.cb) opts.cb()
+    if (!anchor) this.scrollTop = 0
+    else {
+      setTimeout(() => {
+        this.scrollTop = this.querySelector(`[name="${anchor}"]`).offsetTop - 50
+      }, utils.getVal('--menu-fades-time'))
+    }
 
-    this.scrollTop = 0
+    if (opts.cb) opts.cb()
   }
 
   getName () {

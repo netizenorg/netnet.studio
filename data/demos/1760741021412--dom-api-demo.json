@@ -1,0 +1,236 @@
+{
+  "key": 1760741021412,
+  "name": "DOM API Demo",
+  "tags": [
+    "dom",
+    "gif",
+    "transition",
+    "dynamic",
+    "generative",
+    "interctive",
+    "butterfly"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx9VVFP2zAQfudX3HiJw0paxmBTVZAQmmDSnsYknh3nkhhcO7IdSjbx33eO2yQFtqfW952/O3/+zlk5YWXjwVlxcah1tpY6e3CHl6t5BC4PVrs/APMjqJTJuQKt4WhOEYUeymoGeXVAq7LVwkujwaFvG2Ap/KEo7ZtDI8Uj+I0By3Vh1iCMMtb1aFnBBRFmEbkOAEt7JP8nQoyoXWsR7q9vruDqigg1weHHW+58n7WppUJgxNCXu95iLHacwgo+Z2e7Jv/XyMuuaNsU3CPkpugS1xdD7YHywflOYTwQUVToWdJnpVvybJvMklsJ98aqAu5lQf1j/mGS5Bz7A9sVRJWWvcJDLOfisbKm1cWSDjEb4uYJbanMZglJLYsCdTJiNcqq9oScLBZP9QQopGsU7wiprCwmAFey0t89rh1hgvpGO0EfWudl2V3HI72XURJ0J3/jEr582gZfhquzrQZfIwiLpOaNLEfnnC3Ay/UoZL9g1PZszA484Uamjhuppq7ro8B3pnueddAYJ6NHVdBEdZBjZ+gCQ0MNr/AgCq+dh+epH9hx3wWtN7LwNXwEWqeT7O797Kj923S7l356vgeKCHpze/eD7JruHQjJcCDXFaDCdfBfScY3rYW89T6YoINKljsF4xaW0IbRZy74k2Y+mUEy7Mpo15jCi+KXeW3inXrseQbdELXGhxJ2CNQt/oyx8wUcg8jqsTL3rQ2IyBzMR1EIym1QSiPNgMjUK7CfjHEwWuvCZJBteT6xXevQ3pEsIphSG40TjGZfx+4J40rBSXbmALnDY9P6ZN+lVJFOmawNMYbJIqG467QYHcfGh4O4a+kyJ7hCdpruR0PjiWm4kL4jlsUreKcdyXTydQLyDZc+3J9TiA07OVu82Ylr6oyl08Zfj8X2vRp6jU/TlVJbP2RknW9c1CzY6eIyuGrgjcT9U84m3EQRlFGG03sR4XQMC0UPPcVj4fRg+I78Bco20JQ=",
+  "info": [
+    {
+      "focus": null,
+      "text": "As I explained in the <span class=\"link\" onclick=\"window.open('/?template=js-10print', '_blank')\">introduction to JavaScript</span> lesson, the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model\" target=\"_blank\">DOM</a> (Document Object Model) API, turns our <i>document</i> (our HTML page) into a JavaScript <i>object</i> which we can use to modify it problematically.",
+      "title": "getting started"
+    },
+    {
+      "title": "nn.min.js",
+      "focus": [
+        1
+      ],
+      "text": "In that lesson I showed you how to interact with this API directly, using the <code>document</code> object (which I also cover in the <span class=\"link\" onclick=\"window.open('/?demo=1760399447905', '_blank')\">Date object</span> demo) as well as how to use the <a href=\"https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#netnet-standard-library\" target=\"_blank\">netnet standard library</a> to make working with this API a whole lot easier. I've imported the library here (available as <code>nn</code>), without it, this demo would require <a href=\"https://netnet.studio/?layout=dock-left#code/eJylV1tv2zYUfu+vOAUaiJodxXbq9Ja0CIKsHZA9pUAetgGlJFriSosaScXxMv/3nUNdLLmO22EGYsk837nfmHObGFm6988AP0o4WGRjiLNn/veiKhIndQGGF6leXmmlDbAQHj0VINGFdWDgAn7lLo+MroqU1a+eAaE/wWw+Dwf47D/i4x/GG+EqU8AXk8XsxaPZjOHFY+a/4034xYM2u55l8a0zssg+609WAat/77r4mxkDxeUPNKVGNGSAaMldkrOT39PR0Yd/8PskC7dEq2Qi2GQMp2Gfo2QJXLyHJJJFoqpUWBYcBSF8AFZyY8XPSnPHkhBOYDqZNE7CWxgl4bNh6AsyCGFIH3cK6JMRJdtHiYkS76Ms+UMbanxlpkCn8S8uwh2cLDqcLJ7GpYgimcfEMSQpJDGijYhGjs5az6gIcyRP+hyWDt41B3IBLIXnF3i0TVSNSVESm6JGbx2PLZth9BQeTMNtBlB8T7Z3G4VhMDEBDCN3TL6gpDSEIziDt3vAmQfHhDU1Fl2ZDaD9DwYJkVmHfNm3BZXmaOUZejOCU3oc0aOBbIbF/Qj523475OEY7ODEoiwqmzGowblqzhuJu52AFeUMx6JiHHO52wElmmmpZu2+gu/X+f8r775OKhIvaJvjb9sRddUq7wl5X9f14OQc6ySanL6ZvUYLCDCdRW8wVXVsSr1iiBwRBhmJTC9jmEUveyXTRH8SzaazM7TYeI5X0znVV1azv5rRj7jN27uBMzdTNFYxjmm5mfnXeGdssa7zbqYEChujyCbWddsOrU3lMJcWJZb9SX1yAqVMvoJb6WaYo1k4zW1DX9BQ7k151toWP0VAiaKwlRFwd/XxEi4vyU/aD20dNbhVLpUA1p6yer+EcA4vo3m/fZ80YbPVWJUpdwJina4D6zWJwgHygHVrJVpvUp1US6REBIyceHBXDfQCgk8S7rRRKdzJFI0X8fNgL5uXGPkoIdsiOwCKefI1801Go/UQUt8Ls1B6RYbkMk1FcUh5LmSWe6OxT+7zQ9BU2lLxNWEzI9NDUK5kVvzixJIGZpAgVZhD+D8r6+Ri3Qvh93kWCL6VfwtCv5qVD8E2h6YqwOUCEiMwlx9xmHdlO5+Ak8sujQu6bdA6kH764+OcBga+jEb9yukk7ZTMNxOu0zjsDH8OvG2Mh/EaSm1l3UmKUqDWEIu1xvyS5SXPxKC3u7XZu5awlcT3FY7AQhgsNZfTgqBxd0xODPjX3+P/VBfCkwK+cwWjnTLAJ909pr35YF+GOxER2FgglxkIJSi/Ph+6MhBXzlEZryGTi4FcQl9sC6IWc12zswCpQasE3yOaF5xapssQ66eVIHU1ddnAasKdrlXlRLAHp8SC6pNuHHS48lHHhYCBC7Y12OdwmhbbumFo+u0gh9GOQnPhN0CQimwfaCEVRghBXyzH2Y4MeB9NIrs5CiE2pKQQ1vozRWd5JY5rwXh2NkFzkijfoPDm1jqUnlTG+qGErc7jfforK8wtpi3x7Vroohcu3A2fscl05RiGe7BdB5HB+ulFXSnci3MLgltxjLxbeXi/pi2+M6y9IEN1FnTlEmG57B8avCxFkV7hqkgZcna3XJLC0/T6HpE30uL8EYYFS43+LXGUBmNgYscHtJybTLi+G1i4S7LEJlwJdhoGT6F1yRPpqB0nT0F6+cc+fD35sbh2Qow3nIWD8M178Qv3jq5m8fX6owvgX5Uw6zrZ2lwq1fQZjmBzzfGi5nvyvQ9lq7xV5q8JbKCxmTrfBp1aFePtWcLD0AQvg18RWxuNyTw/af/L/Bf+avXo\" target=\"_blank\">a lot more code</a>."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        4
+      ],
+      "text": "In this sketch, <code>fg</code> and <code>bg</code> are declared at the top-level as \"global variables\" so they’re available across functions. This way they're accessible for both the initial page styling in <code>setup</code> and the butterflies created later in <code>createGif</code>. Making them global keeps things simple by avoiding having to pass them around as parameters."
+    },
+    {
+      "title": "color setup",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "The <code>setup</code> function chooses two random colors with <code>nn.randomColor()</code>, one for text <code>fg</code> and one for the page background <code>bg</code>. It then checks contrast using <code>nn.colorContrast(fg, bg)</code> and loops until the pair meets a minimum contrast ratio of 4.5. That threshold corresponds to <a href=\"https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG\" target=\"_blank\">WCAG</a> <a href=\"https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html\" target=\"_blank\">AA</a> for normal text, so the text stays legible no matter which colors we picked."
+    },
+    {
+      "title": "body",
+      "focus": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "After selecting colors, <code>setup</code> styles the page by grabbing the <code>body</code> via <code>nn.get('body')</code>, setting its content to “Hi World Wide Web!”, and applying layout styles. The foreground and background colors are applied, the viewport is locked with <code>height: '100vh'</code> and <code>overflow: 'hidden'</code>, and a simple <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout\" target=\"_blank\">CSS Grid</a> layout centers the message both horizontally and vertically. A large <code>fontSize</code> turns the text into a bold, poster-like headline."
+    },
+    {
+      "title": "100 gifs",
+      "focus": [
+        28
+      ],
+      "text": "Lastly, <code>nn.times(100, createGif)</code> calls the <code>createGif</code> function one hundred times. This is a convenience helper: rather than writing a loop, we ask the library to execute a \"callback\" function some number of <i>times</i>. Each call adds another butterfly somewhere around the scene, quickly filling the page."
+    },
+    {
+      "title": "createGif vars",
+      "focus": [
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "text": "At the start of <code>createGif</code>, we generate a few variables that control placement and color. <code>x</code> and <code>y</code> are random coordinates chosen slightly beyond the edges of the page, so some butterflies appear just offscreen. <code>r</code> is a random rotation angle in degrees, which gives variety to their orientation.\n"
+    },
+    {
+      "title": "color object",
+      "focus": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "text": "We also create <code>c</code>, the HSL values of the foreground color, using <code>nn.toHSL(fg)</code>. Converting the CSS color string into an HSL object is handy because it exposes <code>h</code> (hue), <code>s</code> (saturation), and <code>l</code> (lightness) as numbers we can map into effects. Those values let each butterfly visually harmonize with the text color rather than feeling arbitrary (we'll come back to this).\n"
+    },
+    {
+      "title": "create gif",
+      "focus": [
+        38,
+        39,
+        40
+      ],
+      "text": "Then we generate our gif by creating a new <code>img</code> element, setting its <code>'src'</code> to a butterfly image (one of my pre-packaged gifs) and add it directly to the page's <code>body</code> element."
+    },
+    {
+      "title": "place gif",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "text": "Then we place teh gif by calling <code>.position(x, y)</code> which moves the element to the random coordinates we computed and <code>.rotate(r)</code> spins the image by <code>r</code> degrees."
+    },
+    {
+      "title": "hue shift",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43
+      ],
+      "text": "The original <a href=\"/butterfly.gif\" target=\"_blank\">butterfly</a> has some flashy colors which might clash with the randomly created color scheme. In order to ensure its color matches our headline text, we apply a few CSS filter-style transforms. <code>.hueRotate(60 - c.h)</code> shifts the hue relative to the text’s hue, nudging the butterflies toward a complementary range. "
+    },
+    {
+      "title": "color match",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "text": "The <b>s</b> and <b>l</b> values fall within a range of 0-100, but our methods expect a range from 0-1 so we need to scale them (divide them by 100). <code>.saturate(c.s / 100)</code> scales saturation based on the text’s saturation, and <code>.brightness(c.l / 100)</code> scales brightness from its lightness."
+    },
+    {
+      "title": "transition styles",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50
+      ],
+      "text": "The <code>.css()</code> method sets a few presentation details. The important bit is the <code>transition</code>, which asks the browser to animate any future style or transform change over 1.5 seconds. We set this up before the hover behavior so that when we scale, fade, and rotate on mouseover, those changes 'ease-out' smoothly instead of snapping. Since we're going to be interacting with them, the <code>cursor: 'grab'</code> and <code>userSelect: 'none'</code> make them feel interactive without accidental selection highlights. "
+    },
+    {
+      "title": "mouseover",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        57
+      ],
+      "text": "Using using the <code>.on()</code> method, we define an \"async\" function to run when we <code>'mouseover'</code> the element. Inside the function <code>this</code> is the element itself, the butterfly we moused over. We change its <code>.scale(3)</code>, <code>.css('opacity', 0)</code>, and <code>.rotate(r - 180)</code>, and because of the earlier <code>transition</code>, these changes animate over time (1.5 seconds) instead of changing automatically."
+    },
+    {
+      "title": "wait then remove",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57
+      ],
+      "text": "The function is defined with <code>async</code> so that we can use <code>await nn.sleep(1500)</code>. The <code>sleep</code> blocks the code below from running for 1.5 seconds (1500 milliseconds), matching our <code>transition</code> duration. Awaiting it gives the animation time to finish before we call <code>this.remove()</code>. This avoids removing the element mid-transition and waits until the animation (the hover transition) is complete."
+    },
+    {
+      "title": "update logic",
+      "focus": [
+        60,
+        61,
+        62,
+        63
+      ],
+      "text": "The <code>update</code> function resets the composition. It selects all images with <code>nn.getAll('img')</code>, removes them, and then calls <code>setup()</code> again. That re-picks an accessible color pair, re-styles the page, and repopulates the butterflies, essentially generating a new variation of our page."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        65,
+        66
+      ],
+      "text": "As with many of our other demos, the last couple of lines in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded. We also set our <code>update</code> to run each time we \"click\" the page."
+    },
+    {
+      "title": "try it out",
+      "focus": null,
+      "text": "Try hovering over the butterflies to see the transition in action, then click on the page a few times to render new variations."
+    }
+  ]
+}

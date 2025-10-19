@@ -1520,7 +1520,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
           WIDGETS['template-projects'].preNewRepoFromTemplate()
         },
         'I\'ll experiment a bit first': (e) => {
-          NNE.readyOnly = false
+          WIDGETS['template-projects']._experimentWithCode()
           e.hide()
         },
         'go back': (e) => e.goTo('animation')
