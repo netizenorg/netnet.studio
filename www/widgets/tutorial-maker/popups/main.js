@@ -5,6 +5,7 @@ let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
 let SPOTLIGHT = []
 let modal
 let WN // neitior instance for widget maker
+let WIDGET // previous widget state
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -302,7 +303,7 @@ function updateWidget () {
     maker.dataset.widget = key // set to new key
   }
   msg('tut-mkr-update-widget', { widget })
-  closeWidgetMaker()
+  closeWidgetMaker('true')
 }
 
 function editWidget (w) {
@@ -314,6 +315,7 @@ function editWidget (w) {
   nn.get('#widget-key-input').textContent = w.key
   nn.get('#widget-title-input').textContent = w.title
   WN.code = w.innerHTML
+  WIDGET = w // store current widget state
   nn.get('[name="widget-maker-update"]').textContent = 'update'
   overlay('#widget-maker')
 }
@@ -344,12 +346,33 @@ function loadWidgets (widgets) {
   Object.keys(widgets).forEach(key => addWidgetOption(widgets[key]))
 }
 
-function closeWidgetMaker () {
-  overlay(null)
-  // clear widget maker inputs
-  nn.get('#widget-key-input').textContent = ''
-  nn.get('#widget-title-input').textContent = ''
-  WN.code = '...'
+function closeWidgetMaker (updated = false) {
+  const key = nn.get('#widget-key-input').textContent
+  const title = nn.get('#widget-title-input').textContent
+  const innerHTML = WN.code
+  const currentWidget = { key, title, innerHTML, type: 'Widget' }
+  if (updated || JSON.stringify(WIDGET) === JSON.stringify(currentWidget)) {
+    // close widget maker & clear inputs
+    overlay(null)
+    nn.get('#modal').css('display', 'none')
+    nn.get('#widget-key-input').textContent = ''
+    nn.get('#widget-title-input').textContent = ''
+    WN.code = '...'
+  } else {
+    // double-check users want to close without saving changes
+    const modal = nn.get('.custom-modal-inner')
+    modal.classList.add('warning')
+    modal.innerHTML = `
+    <p>You have unsaved changes that you’re about to lose. Are you sure you want to proceed?</p>
+    <div class="custom-modal-buttons">
+      <button name="wgt-mkr-discard" class="pill-btn pill-btn--secondary pill-btn--red">Discard Changes</button>
+      <button name="wgt-mkr-cancel" class="pill-btn pill-btn--secondary">Cancel</button>
+    </div>
+    `
+    nn.get('[name="wgt-mkr-discard"]').on('click', () => closeWidgetMaker(true))
+    nn.get('[name="wgt-mkr-cancel"]').on('click', () => nn.get('#modal').css('display', 'none'))
+    nn.get('#modal').css('display', 'flex')
+  }
 }
 
 function debounce (fn, wait, { leading = false, trailing = true } = {}) {

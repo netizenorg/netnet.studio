@@ -201,6 +201,41 @@ nav > div > div {
   font-size: 0.8rem;
 }
 
+.pill-btn--red:hover {
+  background: var(--error-red);
+  border-color: var(--error-red);
+}
+
+/* styles for custom modal */
+.custom-modal {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(28, 28, 54, 0.69);
+  z-index: 110;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-modal-inner {
+  background: var(--bg-color);
+  border: 3px solid var(--netizen-meta);
+  border-radius: 10px;
+  height: fit-content;
+  padding: 15px;
+  color: var(--netizen-meta);
+  text-align: center;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  max-width: 360px;
+}
+.custom-modal-inner.warning {
+  border-color: var(--error-red);
+}
+
 /* styles for spotlight dropdown menu */
 .dd-styles {
   background: var(--bg-color);
