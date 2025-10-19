@@ -63,6 +63,12 @@ class TutorialMaker extends Widget {
         this._openConvo(payload)
       } else if (type === 'tut-mkr-sptlght') {
         this._addSpotlight(payload.spotlight)
+      } else if (type === 'tut-mkr-update-widget') {
+        this._updateWidget(payload.widget, payload.remove)
+      } else if (type === 'tut-mkr-update-widget-state') {
+        this._updateWidgetState(payload.widget)
+      } else if (type === 'tut-mkr-open-widget') {
+        this._openWidget(payload.widget, payload.open)
       }
     })
 
@@ -189,6 +195,50 @@ class TutorialMaker extends Widget {
         } else lines.push(Number(l))
       })
       NNE.spotlight(lines)
+    }
+  }
+
+  _openWidget (widget, open) {
+    const { key, title, innerHTML } = widget
+    if (WIDGETS[key] && open) WIDGETS[key].open()
+    else if (WIDGETS[key] && !open) WIDGETS[key].close()
+    else if (open) {
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS[key].open()
+    }
+  }
+
+  // update widget in HVP
+  _updateWidget (widget, remove) {
+    const { key, title, innerHTML, type } = widget
+    if (remove) { // remove widget
+      delete this.hvp.data.widgets[key]
+    } else if (widget.oldKey) { // save over existent widget
+      this.hvp.data.widgets[widget.oldKey] = { key, title, innerHTML, type }
+      WIDGETS[widget.oldKey] = { key, title, innerHTML, type }
+    } else { // create new widget
+      this.hvp.data.widgets[key] = { key, title, innerHTML, type }
+      WIDGETS[key] = { key, title, innerHTML, type }
+    }
+  }
+
+  // updates widgets state in netnet (WIDGETS)
+  _updateWidgetState (widget) {
+    const { key, title, innerHTML } = widget
+    const k = widget.oldKey || key
+    if (widget.oldKey && widget.oldKey !== key && WIDGETS[k]) {
+      // remove old widget and open new widget if key changed
+      WIDGETS[k].close()
+      delete WIDGETS[k]
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS.open(key)
+    } else if (WIDGETS[k]) {
+      WIDGETS[k].key = key
+      WIDGETS[k].title = title
+      WIDGETS[k].innerHTML = innerHTML
+    } else {
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS.open(key)
     }
   }
 

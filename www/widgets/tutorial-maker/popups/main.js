@@ -4,6 +4,7 @@ const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
 let SPOTLIGHT = []
 let modal
+let WN // neitior instance for widget maker
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -21,7 +22,7 @@ function overlay (ele) {
   } else if (ele === '#video-menu') {
     window.resizeTo(420, 850)
     recorder.initMenu()
-  } else if (ele === '#widget-maker') window.resizeTo(610, 380)
+  } else if (ele === '#widget-maker') window.resizeTo(610, 400)
 }
 
 function openTutorial () {
@@ -49,6 +50,10 @@ function openTutorial () {
 
     tut.videoBlob = FILES.readFile(metadata.id + '.mp4')
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
+
+    // TODO: load widgets into widget editor
+    loadWidgets(tut.widgets)
+
     overlay(null) // remove overlay
   })
 }
@@ -117,6 +122,22 @@ function openMetadata (metadata) {
   overlay('#metadata')
 }
 
+function showCreateOptions () {
+  const o = nn.get('#create-options')
+  const s = nn.get('#create-marker svg')
+  const c = o.style.display === 'flex'
+  if (!c) {
+    o.style.display = 'flex'
+    s.style.transform = 'rotate(45deg)'
+  } else {
+    o.style.display = 'none'
+    s.style.removeProperty('transform')
+  }
+  // TODO configure so it only displays options that aren't already created on selected timestamp
+}
+
+// ---------------------------------------------------------- KEYFRAME FUNCTIONS
+
 function addMarker (k, type) {
   const t = k.timecode
   const x = t / metadata.duration * 100
@@ -130,6 +151,7 @@ function addMarker (k, type) {
 function createKeyframe (kf) {
   addMarker(kf, 'keyframe')
   timeline.updateMarkers()
+  // TODO: show keyframe edit menu
 }
 
 function updateKeyframe () {
@@ -154,19 +176,7 @@ function setNameInput (tc) {
   nn.get('#kf-name-input').textContent = name
 }
 
-function showCreateOptions () {
-  const o = nn.get('#create-options')
-  const s = nn.get('#create-marker svg')
-  const c = o.style.display === 'flex'
-  if (!c) {
-    o.style.display = 'flex'
-    s.style.transform = 'rotate(45deg)'
-  } else {
-    o.style.display = 'none'
-    s.style.removeProperty('transform')
-  }
-  // TODO configure so it only displays options that aren't already created on selected timestamp
-}
+// --------------------------------------------------------- SPOTLIGHT FUNCTIONS
 
 function addSpotlights (ls) {
   const ts = nn.get('#spot-tags')
@@ -217,6 +227,156 @@ function handleSpotlightEnter () {
   updateKeyframe()
 }
 
+// ------------------------------------------------------------ WIDGET FUNCTIONS
+
+// create widget option in widget dropdown menu
+function addWidgetOption (w) {
+  const d = document.createElement('div')
+  d.className = 'widget'
+
+  // create checkbox and title
+  const d1 = document.createElement('div')
+  const box = document.createElement('input')
+  box.type = 'checkbox'
+  box.name = `${w.key}-checkbox`
+  box.value = false
+  const p = document.createElement('p')
+  p.textContent = w.key
+  d1.appendChild(box)
+  d1.appendChild(p)
+
+  // create edit and delete buttons
+  const d2 = document.createElement('div')
+  const ebtn = document.createElement('button')
+  ebtn.textContent = 'edit'
+  ebtn.name = `${w.key}-edit`
+  ebtn.className = 'pill-btn pill-btn--secondary'
+  const dbtn = document.createElement('button')
+  dbtn.textContent = 'delete'
+  dbtn.name = `${w.key}-delete`
+  dbtn.className = 'pill-btn pill-btn--secondary'
+  d2.appendChild(ebtn)
+  d2.appendChild(dbtn)
+
+  function checkboxSelected (e, key) {
+    if (e.target.checked) msg('tut-mkr-open-widget', { widget: w, open: true })
+    else msg('tut-mkr-open-widget', { widget: w, open: false })
+  }
+
+  box.addEventListener('change', (e) => checkboxSelected(e, w.key))
+  ebtn.addEventListener('click', () => editWidget(w))
+  dbtn.addEventListener('click', () => deleteWidget(w, d))
+
+  d.appendChild(d1)
+  d.appendChild(d2)
+  nn.get('#widget-options').appendChild(d)
+}
+
+function createWidget () {
+  nn.get('[name="widget-maker-update"]').textContent = 'create'
+  overlay('#widget-maker')
+  nn.get('#widget-maker').dataset.widget = 'new-widget'
+  // open new widget in netnet
+  msg('tut-mkr-open-widget', {
+    widget: {
+      key: 'new-widget',
+      title: 'new widget',
+      innerHTML: '...'
+    },
+    open: true
+  })
+}
+
+function updateWidget () {
+  const key = nn.get('#widget-key-input').textContent
+  // TODO: make sure it is a astring with no spaces
+  // TODO: check if that widget key is already in the netnet system
+  const title = nn.get('#widget-title-input').textContent
+  const innerHTML = WN.code
+  const widget = { key, title, innerHTML, type: 'Widget' }
+
+  // if editing an existent widget, send old widget key
+  if (nn.get('[name="widget-maker-update"]').textContent === 'update') {
+    const maker = nn.get('#widget-maker')
+    widget.oldKey = maker.dataset.widget
+    maker.dataset.widget = key // set to new key
+  }
+  msg('tut-mkr-update-widget', { widget })
+  closeWidgetMaker()
+}
+
+function editWidget (w) {
+  // set widget to active and open in netnet
+  nn.get(`[name="${w.key}-checkbox"]`).checked = true
+  msg('tut-mkr-open-widget', { widget: w, open: true })
+  // load widget data into widget maker
+  nn.get('#widget-maker').dataset.widget = w.key
+  nn.get('#widget-key-input').textContent = w.key
+  nn.get('#widget-title-input').textContent = w.title
+  WN.code = w.innerHTML
+  nn.get('[name="widget-maker-update"]').textContent = 'update'
+  overlay('#widget-maker')
+}
+
+function deleteWidget (w, ele) {
+  // TODO: do we want to confirm with users if they want to remove a widget?
+  msg('tut-mkr-update-widget', { widget: w, remove: true })
+  ele.remove()
+}
+
+function updateWidgetState (code) {
+  const key = nn.get('#widget-key-input').textContent
+  const title = nn.get('#widget-title-input').textContent
+  const innerHTML = code || WN.code
+  if (key && title && innerHTML) {
+    // fetch old key incase it changed
+    const maker = nn.get('#widget-maker')
+    const oldKey = maker.dataset.widget
+    if (oldKey !== key) {
+      msg('tut-mkr-update-widget-state', { widget: { key, title, innerHTML, oldKey } })
+      maker.dataset.widget = key // set to new key
+    }
+    msg('tut-mkr-update-widget-state', { widget: { key, title, innerHTML } })
+  }
+}
+
+function loadWidgets (widgets) {
+  Object.keys(widgets).forEach(key => addWidgetOption(widgets[key]))
+}
+
+function closeWidgetMaker () {
+  overlay(null)
+  // clear widget maker inputs
+  nn.get('#widget-key-input').textContent = ''
+  nn.get('#widget-title-input').textContent = ''
+  WN.code = '...'
+}
+
+function debounce (fn, wait, { leading = false, trailing = true } = {}) {
+  let timer = null
+  let lastArgs
+  let lastThis
+  let invoked = false
+  const invoke = () => {
+    timer = null
+    if (trailing && (!leading || invoked)) {
+      fn.apply(lastThis, lastArgs)
+    }
+    invoked = false
+  }
+  return function debounced (...args) {
+    lastArgs = args
+    lastThis = this
+    if (timer) clearTimeout(timer)
+    else if (leading && !invoked) {
+      fn.apply(lastThis, lastArgs) // call immediately once
+      invoked = true
+    }
+    timer = setTimeout(invoke, wait)
+  }
+}
+
+
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
 nn.get('#new').on('click', () => overlay('#metadata'))
@@ -242,6 +402,8 @@ nn.getAll('button[name]').forEach(btn => {
 // prevents shortcuts when typing in custom inputs
 nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() })
 nn.get('#sptlght-line-input').on('keydown', (e) => { e.stopPropagation() })
+nn.get('#widget-key-input').on('keydown', (e) => { e.stopPropagation() })
+nn.get('#widget-title-input').on('keydown', (e) => { e.stopPropagation() })
 
 // opening and closing spotlight dropdown
 nn.get('#spotlight-dd').on('click', (e) => {
@@ -261,8 +423,11 @@ nn.get('#widget-dd').on('click', (e) => {
     em.style.display = em.style.display === 'none' ? 'flex' : 'none'
   }
 })
-nn.get('[name="widget-create"]').on('click', () => overlay('#widget-maker'))
-nn.get('[name="widget-maker-goback"]').on('click', () => overlay(null))
+nn.get('[name="widget-create"]').on('click', () => createWidget())
+nn.get('[name="widget-maker-goback"]').on('click', () => closeWidgetMaker())
+nn.get('[name="widget-maker-update"]').on('click', () => updateWidget())
+nn.get('#widget-key-input').on('blur', () => updateWidgetState())
+nn.get('#widget-title-input').on('blur', () => updateWidgetState())
 
 // .................... window events
 
@@ -280,7 +445,7 @@ nn.on('load', () => {
   modal = m
 
   // init netitor for widget maker
-  const ne = new Netitor({
+  WN = new Netitor({
     ele: '#widget-maker-html',
     code: '...',
     wrap: true,
@@ -288,7 +453,10 @@ nn.on('load', () => {
     lint: false,
     language: 'html'
   })
-  ne.cm.setOption('lineNumbers', false)
+  WN.cm.setOption('lineNumbers', false)
+  const debouncedUpdate = debounce(updateWidgetState, 1500)
+  WN.on('code-update', (code) => debouncedUpdate(code))
+  // TODO: fix where if you try to ctrl + arrow doesn't jump to different keyframes
 })
 
 nn.on('resize', () => {
