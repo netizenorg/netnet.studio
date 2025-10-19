@@ -52,6 +52,16 @@ window.WIDGETS = { // GLOBAL WIDGETS OBJECT
   close: (key) => {
     if (WIDGETS.instantiated.includes(key)) WIDGETS[key].close()
     else console.error(`WIDGETS: ${key} was never instantiated`)
+  },
+  delete: (key, cb) => {
+    if (WIDGETS.instantiated.includes(key) && WIDGETS[key]) {
+      WIDGETS[key].close()
+      delete WIDGETS[key]
+      const i = WIDGETS.instantiated.indexOf(key)
+      if (i !== -1) WIDGETS.instantiated.splice(i, 1)
+    } else {
+      console.error(`Widget (${key}) does not exist.`)
+    }
   }
 }
 

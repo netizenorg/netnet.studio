@@ -228,17 +228,16 @@ class TutorialMaker extends Widget {
     const k = widget.oldKey || key
     if (widget.oldKey && widget.oldKey !== key && WIDGETS[k]) {
       // remove old widget and open new widget if key changed
-      WIDGETS[k].close()
-      delete WIDGETS[k]
+      WIDGETS.delete(k)
       WIDGETS.create({ key, title, innerHTML })
-      WIDGETS.open(key)
+      WIDGETS[key].open()
     } else if (WIDGETS[k]) {
       WIDGETS[k].key = key
       WIDGETS[k].title = title
       WIDGETS[k].innerHTML = innerHTML
     } else {
       WIDGETS.create({ key, title, innerHTML })
-      WIDGETS.open(key)
+      WIDGETS[key].open()
     }
   }
 
