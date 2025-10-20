@@ -213,12 +213,11 @@ class TutorialMaker extends Widget {
     const { key, title, innerHTML, type } = widget
     if (remove) { // remove widget
       delete this.hvp.data.widgets[key]
+      WIDGETS.delete(key)
     } else if (widget.oldKey) { // save over existent widget
       this.hvp.data.widgets[widget.oldKey] = { key, title, innerHTML, type }
-      WIDGETS[widget.oldKey] = { key, title, innerHTML, type }
     } else { // create new widget
       this.hvp.data.widgets[key] = { key, title, innerHTML, type }
-      WIDGETS[key] = { key, title, innerHTML, type }
     }
   }
 

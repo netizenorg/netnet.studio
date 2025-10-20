@@ -231,7 +231,7 @@ function handleSpotlightEnter () {
 // ------------------------------------------------------------ WIDGET FUNCTIONS
 
 // create widget option in widget dropdown menu
-function addWidgetOption (w) {
+function addWidgetOption (w, opened = false) {
   const d = document.createElement('div')
   d.className = 'widget'
 
@@ -240,7 +240,7 @@ function addWidgetOption (w) {
   const box = document.createElement('input')
   box.type = 'checkbox'
   box.name = `${w.key}-checkbox`
-  box.value = false
+  box.checked = opened
   const p = document.createElement('p')
   p.textContent = w.key
   d1.appendChild(box)
@@ -266,6 +266,7 @@ function addWidgetOption (w) {
 
   box.addEventListener('change', (e) => checkboxSelected(e, w.key))
   ebtn.addEventListener('click', () => editWidget(w))
+  // TODO: need to fix where edit widget state updates after already editing
   dbtn.addEventListener('click', () => deleteWidget(w, d))
 
   d.appendChild(d1)
@@ -289,12 +290,16 @@ function createWidget () {
 }
 
 function updateWidget () {
+  updateWidgetState()
   const key = nn.get('#widget-key-input').textContent
-  // TODO: make sure it is a astring with no spaces
-  // TODO: check if that widget key is already in the netnet system
   const title = nn.get('#widget-title-input').textContent
   const innerHTML = WN.code
   const widget = { key, title, innerHTML, type: 'Widget' }
+
+  // if widget is new, add it to the dropdown options
+  if (nn.get('[name="widget-maker-update"]').textContent === 'create') {
+    addWidgetOption(widget, true)
+  }
 
   // if editing an existent widget, send old widget key
   if (nn.get('[name="widget-maker-update"]').textContent === 'update') {
@@ -327,6 +332,8 @@ function deleteWidget (w, ele) {
 }
 
 function updateWidgetState (code) {
+  // TODO: make sure it is a astring with no spaces
+  // TODO: check if that widget key is already in the netnet system
   const key = nn.get('#widget-key-input').textContent
   const title = nn.get('#widget-title-input').textContent
   const innerHTML = code || WN.code
