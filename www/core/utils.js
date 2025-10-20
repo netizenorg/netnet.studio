@@ -653,6 +653,10 @@ window.utils = {
     // update netnet shadow + eyes
     window.utils.updateShadow(o, NNW.win)
     NNW.menu._moveEyes(o)
+    // update netnet bubble
+    if (NNW.menu.textBubble.opened) {
+      window.utils.updateShadow(o, NNW.menu.textBubble.querySelector('div'))
+    }
   },
 
   selecting: (bool) => {
