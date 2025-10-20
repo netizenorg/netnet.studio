@@ -109,31 +109,110 @@ window.utils = {
   starterCode: () => {
     const clr1 = window.utils.getVal('--fg-color')
     const clr2 = window.utils.getVal('--netizen-comment')
+    const clr3 = window.utils.getVal('--bg-color')
     const sc = `<!DOCTYPE html>
 <style>
   /* netnet default bg */
   body {
-    margin: 0;
-    background-image: linear-gradient(${clr2}a8 2px, transparent 1px),
-      linear-gradient(90deg, ${clr2}a8 2px, transparent 1px);
-    background-size: 50px 50px;
     position: relative;
     z-index: 1;
-    overflow: hidden;
-  }
 
-  body::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    width: 100vw;
     height: 100vh;
-    background: linear-gradient(0deg, ${clr1}a8, ${clr2}a8);
+    margin: 0;
+    overflow: hidden;
+
+    background-image:
+      linear-gradient(${clr2}a8 2px, transparent 1px),
+      linear-gradient(90deg, ${clr2}a8 2px, transparent 1px),
+      linear-gradient(0deg, ${clr1}a8, ${clr2}a8);
+    background-size:
+      50px 50px,
+      50px 50px,
+      auto;
+
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'30\\' height=\\'45\\' viewBox=\\'0 0 131 196\\'><path d=\\'M 0.79414644,1031.3588 18.076723,1021.668 5.2251904,991.35578 l 23.8296476,-4.73097 -62.258277,-56.10759 1.6199,88.65138 18.343131,-18.0704 z\\' transform=\\'matrix(1.8395544,0.03086834,-0.01723207,1.7679318,85.742524,-1635.7459)\\' fill=\\'%23${clr1.slice(1)}a8\\' stroke=\\'%23${clr3.slice(1)}\\' stroke-width=\\'8.23332\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'/></svg>') 2 6, auto;
   }
 </style>
-    `
+<script src="nn.min.js"></script>
+<script>
+  /* global nn */
+
+  function updateBG (mouse) {
+    const d = -33 // max amount to shift background
+    const x = nn.map(mouse.x, 0, nn.width, 0, d)
+    const y = nn.map(mouse.y, 0, nn.height, 0, d)
+    const p = \`\${x}px \${y}px\`
+    nn.get('body').css({
+      backgroundPosition: \`\${p}, \${p}, 0 0\`
+    })
+  }
+
+  function createTrail () {
+    const char = nn.random('ᴖ﹏^⌄◉_☉︵⇀‸◑◡-◞◕‿ŏᗜ◠ᴗ✖')
+    const size = 48
+    const x = nn.mouseX + nn.random(-25, 25) - size / 2
+    const y = nn.mouseY + nn.random(-25, 25) - size / 2
+    const el = nn.create('span')
+      .content(char)
+      .position(x, y)
+      .css({
+        fontSize: size,
+        cursor: 'default',
+        color: '${clr1}a8',
+        pointerEvents: 'none'
+      })
+      .addTo('body')
+
+    el.data.size = 1
+    el.data.speed = 0.05
+
+    updateTrail(el)
+  }
+
+  async function updateTrail (trail) {
+    const d = trail.data
+    d.size -= d.speed
+
+    trail.scale(d.size)
+
+    if (d.size <= 0) trail.remove()
+    else {
+      await nn.sleep(1000 / 30)
+      updateTrail(trail)
+    }
+  }
+
+  function comms (e) {
+    // listen for mouse movements on netnet's face/editor
+    const { type, data } = e.data
+    if (type === 'netnet') updateBG(data)
+  }
+
+  function bgmovement (e) {
+    createTrail()
+    // send mousemovments back up to netnet
+    window.top.postMessage({
+      type: 'netnet-bg',
+      data: { x: e.x, y: e.y }
+    })
+  }
+
+  nn.on('message', comms)
+  nn.on('mousemove', bgmovement)
+  nn.on('mousemove', updateBG)
+</script>`
     window.utils.starterCodeB64 = window.utils.btoa(sc)
     return sc
+  },
+
+  netnetBGComms: (e) => {
+    // used to send messages to the iframe (when default bg is present)
+    const viewingDefaultBG = NNE.code.includes('/* netnet default bg */')
+    if (!viewingDefaultBG) return
+    NNE.iframe.contentWindow.postMessage({
+      type: 'netnet',
+      data: { x: e.x, y: e.y }
+    })
   },
 
   forkRepo: () => {
@@ -190,6 +269,57 @@ window.utils = {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*• NETNET ON LOAD stuff
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  loaderSetup: async (initWidgets) => {
+    window.loading = {
+      queue: [],
+      total: 1,
+      faces: ['ᴖ', '﹏', '^', '⌄', '◉', '_', '☉', '︵', '⇀', '‸', '◑', '◡', '-', '◞', '◕', '‿', 'ŏ', 'ᗜ', '◠', 'ᴗ', '✖', 'mouth-dot']
+    }
+
+    let idx = 0
+    const animFace = (face) => {
+      nn.get('#loader .loader-face').content('')
+      const l = window.loading.faces.length
+      const i = face ? 0 : idx % l
+      const f = face || window.loading.faces
+      const s = (i) => `images/faces/${f[i]}.svg`
+      nn.create('img').set('src', s(i)).addTo('#loader .loader-face')
+      nn.create('img').set('src', s((i + 1) % l)).addTo('#loader .loader-face')
+      nn.create('img').set('src', s((i + 2) % l)).addTo('#loader .loader-face')
+      idx++
+    }
+    animFace()
+
+    const data = await window.utils.getSync('/api/custom-elements')
+    window.loading.total += initWidgets.length
+    window.loading.total += data.length
+    window.loading.animFace = animFace
+    window.loading.anim = setInterval(animFace, 150)
+    window.utils.registerColor('--load-bg1', '#fff')
+    window.utils.registerColor('--load-bg2', '#fff')
+  },
+
+  loaderUpdate: (msg) => {
+    window.loading.queue.push(msg)
+    window.utils.setVal('--load-mod', JSON.stringify(msg))
+    const slots = 10 // 10 boxes total
+    const len = window.loading.queue.length
+    const total = window.loading.total
+    const progress = Math.max(0, Math.min(1, len / total))
+    const filled = Math.round(progress * slots)
+    const empty = slots - filled
+    const str = 'loading ' + '■  '.repeat(filled) + '□  '.repeat(empty)
+    window.utils.setVal('--load-bar', JSON.stringify(str))
+    if (slots === filled) {
+      clearInterval(window.loading.anim)
+      window.loading.animFace(['◕', '◞', '◕'])
+      window.utils.setVal('--load-win', window.utils.getVal('--bg-color'))
+      window.utils.setVal('--load-clr', window.utils.getVal('--fg-color'))
+      window.utils.setVal('--load-bg1', window.utils.getVal('--fg-color') + 'a8')
+      window.utils.setVal('--load-bg2', window.utils.getVal('--netizen-comment') + 'a8')
+    }
+  },
 
   whenLoaded: (eles, wigs, callback) => {
     const textBubbleLoaded = NNW.menu.textBubble
@@ -469,6 +599,19 @@ window.utils = {
     setTimeout(() => { callback() }, t)
   },
 
+  registerColor: (name, initial) => {
+    if (window.CSS && window.CSS.registerProperty) {
+      try {
+        window.CSS.registerProperty({
+          name,
+          syntax: '<color>',
+          inherits: true,
+          initialValue: initial
+        })
+      } catch (e) { /* ignore if already registered */ }
+    }
+  },
+
   getVal: (prop) => { // get value of a CSS variable
     const p = (prop.indexOf('--') === 0) ? prop : `--${prop}`
     const de = document.documentElement
@@ -499,6 +642,17 @@ window.utils = {
       ? nn.map(e.clientY, 0, center.y, 33, 0)
       : nn.map(e.clientY, center.y, window.innerHeight, 0, -33)
     ele.style.boxShadow = `rgba(0, 0, 0, ${opac}) ${x}px ${y}px 6px`
+  },
+
+  updateAllShadows: (e) => {
+    const o = { clientX: e.data.data.x, clientY: e.data.data.y }
+    // update any open widget shadows
+    WIDGETS.list().forEach(w => {
+      if (w.opened) window.utils.updateShadow(o, w.ele)
+    })
+    // update netnet shadow + eyes
+    window.utils.updateShadow(o, NNW.win)
+    NNW.menu._moveEyes(o)
   },
 
   selecting: (bool) => {
