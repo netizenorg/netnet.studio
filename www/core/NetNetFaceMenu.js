@@ -260,8 +260,8 @@ class NetNetFaceMenu {
     this._loadFaceAssets(() => this.updateFace({ animation: 'blink' }))
   }
 
-  _char2SVG (char) {
-    const fg = NNW.getThemeColors().fg
+  _char2SVG (char, altClr) {
+    const fg = altClr || NNW.getThemeColors().fg
     const sz = NNW.layout === 'welcome' ? '64px' : '20px'
     return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
        viewBox="0 0 200 200" xml:space="preserve" style="enable-background:new 0 0 200 200; fill: ${fg}; height: ${sz}">
