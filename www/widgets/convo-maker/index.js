@@ -164,7 +164,7 @@ class ConvoMaker extends Widget {
   // 0) extract global variables comment
   _extractGlobals (code) {
     const m = code.match(/\/\*\s*global\s+([^*]+)\*\//)
-    if (!m) return []
+    if (!m) return undefined
     return m[1]
       .split(',')
       .map(name => name.trim())
@@ -634,9 +634,12 @@ class ConvoMaker extends Widget {
 
   // ---------------------------------------------------------------------- SAVE
   _globalsToStr () {
-    let globals = `/* global ${this.state.globals.join(', ')} */`
-    if (this.state.data.filter(o => o.code).length > 0) {
-      globals += '\n/* eslint no-template-curly-in-string: "off" */'
+    let globals
+    if (this.state.globals instanceof Array && this.state.globals.length > 0) {
+      globals = `/* global ${this.state.globals.join(', ')} */`
+      if (this.state.data.filter(o => o.code).length > 0) {
+        globals += '\n/* eslint no-template-curly-in-string: "off" */'
+      }
     }
 
     let varLines = this.state.variables.split('\n')
@@ -756,7 +759,9 @@ class ConvoMaker extends Widget {
     const { globals, varLines } = this._globalsToStr()
     const items = this._dataArrayToStr()
 
-    let code = [globals, `window.CONVOS['${name}'] = (self) => {`]
+    let code = []
+    if (globals) code.push(globals)
+    code.push(`window.CONVOS['${name}'] = (self) => {`)
     if (varLines) {
       code.push(varLines)
       code.push('')

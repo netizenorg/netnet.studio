@@ -67,7 +67,11 @@ filemenu.updateDisplayFilename = (name) => {
 
 filemenu.projHasIssues = () => {
   const test = graph.evaluate()
-  test.deadends = test.deadends.filter(p => p !== 'FUNC' && p !== 'HIDE')
+  // ignore special pseudo-targets and function-call style option expressions
+  const isFuncLike = (s) => /^(?:[A-Za-z_$][A-Za-z0-9_$]*\s*\().*\)$/.test(s)
+  test.deadends = test.deadends
+    .filter(p => p !== 'FUNC' && p !== 'HIDE')
+    .filter(p => !isFuncLike(p))
   if (test.badNames.length > 0) {
     filemenu.prompt('error', 'some of your passages have bad names, make sure none where left untitled.')
     return true

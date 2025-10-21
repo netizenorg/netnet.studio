@@ -653,6 +653,10 @@ window.utils = {
     // update netnet shadow + eyes
     window.utils.updateShadow(o, NNW.win)
     NNW.menu._moveEyes(o)
+    // update netnet bubble
+    if (NNW.menu.textBubble.opened) {
+      window.utils.updateShadow(o, NNW.menu.textBubble.querySelector('div'))
+    }
   },
 
   selecting: (bool) => {
@@ -732,7 +736,7 @@ window.utils = {
   },
 
   hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'how-to-code', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }
