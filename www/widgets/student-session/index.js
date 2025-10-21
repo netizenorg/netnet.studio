@@ -13,6 +13,9 @@ class StudentSession extends Widget {
 
     this.on('open', () => this._onOpen())
 
+    // temporary store for platform info (used to explain "made-up-name")
+    this._explainName = 'oh dang! I hit a bug...'
+
     this._init()
     this._createHTML()
   }
@@ -93,13 +96,13 @@ class StudentSession extends Widget {
     window.localStorage.removeItem('last-saved-widgets')
   }
 
-  newSketch () {
+  newSketch (convo) {
     this.convos = window.CONVOS[this.key](this)
     this.clearSaveState()
     NNW.layout = 'dock-left'
     NNE.code = ''
     setTimeout(() => {
-      window.convo = new Convo(this.convos, 'blank-canvas-ready')
+      window.convo = new Convo(this.convos, convo || 'blank-canvas-ready')
       if (!NNE.autoUpdate) NNE.update()
     }, utils.getVal('--layout-transition-time'))
   }
@@ -122,15 +125,14 @@ class StudentSession extends Widget {
   clearAllData (skipDialogue) {
     window.localStorage.clear()
     window.sessionStorage.clear()
-    this._init()
-    this.deleteGitHubSession(skipDialogue)
+    this.deleteGitHubSession(skipDialogue, () => this._init())
   }
 
   chatGitHubLogout () {
     window.convo = new Convo(this.convos, 'github-logout')
   }
 
-  deleteGitHubSession (skipDialogue) {
+  deleteGitHubSession (skipDialogue, callback) {
     utils.get('./api/github/clear-cookie', (res) => {
       this.authStatus = false
       if (WIDGETS['project-files']?.projectData.name) {
@@ -143,6 +145,7 @@ class StudentSession extends Widget {
       if (!skipDialogue) {
         window.convo = new Convo(this.convos, 'logged-out-of-gh')
       }
+      if (callback) callback()
     })
   }
 
@@ -200,7 +203,11 @@ class StudentSession extends Widget {
     if (NNW.win.style.display === 'none') NNW.recenter(1000)
 
     if (typeof this.getData('username') === 'string') {
-      window.convo = new Convo(this.convos, 'returning-student')
+      if (this.greeted) {
+        window.convo = new Convo(this.convos, 'returning-student-after')
+      } else {
+        window.convo = new Convo(this.convos, 'returning-student-init')
+      }
     } else {
       window.convo = new Convo(this.convos, 'first-time')
     }
@@ -227,6 +234,10 @@ class StudentSession extends Widget {
     const postName = () => {
       setTimeout(() => {
         NNW.menu.switchFace('happy')
+        this._explainName = `<i>${this._temp.a}</i> because you're on a ${this._temp.os} device; <i>${this._temp.b}</i> becuase you're using version ${this._temp.browser?.version} of the ${this._temp.browser?.name} browser;`
+        if (this._temp.city) {
+          this._explainName += ` <i>${this._temp.c}</i> because you're currently located in the city of ${this._temp.city};`
+        }
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'made-up-name')
       }, 1000)
@@ -252,7 +263,7 @@ class StudentSession extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _init () {
+  _init (cb) {
     if (!WIDGETS['coding-menu']) {
       setTimeout(() => this._init(), 100); return
     }
@@ -271,7 +282,10 @@ class StudentSession extends Widget {
     if (window.localStorage.getItem('theme') === null) {
       this.setData('theme', 'dark')
     }
-    NNW.theme = this.data.editor.theme || 'dark'
+
+    if (NNW.theme !== this.data.editor.theme) {
+      NNW.theme = this.data.editor.theme || 'dark'
+    }
 
     utils.get('/api/github/auth-status', (json) => this.initGitHubData(json))
   }
