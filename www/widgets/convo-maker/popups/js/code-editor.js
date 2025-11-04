@@ -53,10 +53,11 @@ function translateSpotlight (str) {
 function sendUpdate () {
   const payload = {}
   if (type === 'VARS') {
-    const idx = ne.code.indexOf(ne.code.match(/\/\*\s*global\s+([^*]+)\*\//)[0])
-    const globals = (idx === 0) ? extractGlobals() : []
+    const glob = ne.code.match(/\/\*\s*global\s+([^*]+)\*\//)
+    const idx = glob ? ne.code.indexOf(glob[0]) : null
+    const globals = (idx === 0) ? extractGlobals() : undefined
     const code = ne.code.split('\n')
-    code.shift()
+    if (globals) code.shift()
     payload.type = 'netitor-globals-update'
     payload.code = code.join('\n')
     payload.globals = globals
@@ -123,9 +124,14 @@ nn.on('message', (e) => {
   nn.get(`#${type}`).css({ display: 'block' })
 
   if (type === 'VARS') {
+    if (!e.data.globals && !e.data.code) return
+    if (!e.data.globals && e.data.code) {
+      ne.code = e.data.code
+      return
+    }
     const garr = e.data.globals
     const code = `/* global ${garr.join(', ')} */\n`
-    ne.code = code + e.data.code
+    ne.code = code + (e.data.code || '')
   } else if (type === 'CODE') {
     const edit = typeof e.data.edit === 'boolean' ? e.data.edit.toString() : null
     const spot = e.data.spotlight === 'undefined' ? null : e.data.spotlight

@@ -21,52 +21,100 @@
 
 /* loader */
 
+:root {
+  --load-bar: 'loading □ □ □ □ □ □ □ □ □ □';
+  --load-mod: '...';
+  --load-bg1: #fff;
+  --load-bg2: #fff;
+  --load-clr: #515199;
+  --load-win: #fff;
+}
+
 #loader {
-  display: flex;
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 999999;
 
+  display: flex;
   justify-content: space-around;
   align-items: center;
-
-  opacity: 1;
-  z-index: 999999;
 
   width: 100vw;
   height: 100vh;
 
+  opacity: 1;
   color: #fff;
+  background-image:
+    linear-gradient(#51519944 2px, transparent 1px),
+    linear-gradient(90deg, #51519944 2px, transparent 1px),
+    linear-gradient(0deg, var(--load-bg1), var(--load-bg2));
+  background-size: 50px 50px, 50px 50px, auto;
   background-color: #ffffff;
-  background-image: linear-gradient(#51519944 2px, transparent 1px),
-      linear-gradient(90deg, #51519944 2px, transparent 1px);
-  background-size: 50px 50px;
 
   font-size: 20px;
   font-family: "fira-mono-regular", inconsolata, monospace;
 
-  transition: opacity 1s;
+  transition: opacity 1s, --load-bg1 .4s ease, --load-bg2 .4s ease;
 }
 
-#loader::before {
-  content: "";
-  position: absolute;
+#loader > div::before {
+  content: var(--load-mod);
 
-  z-index: -1;
+  position: relative;
+  top: 15px;
 
-  width: 100vw;
-  height: 100vh;
+  display: block;
+  width: 100%;
 
-  background: linear-gradient(0deg, #c76ebca8, #515199a8);
+  color: var(--load-clr);
+  text-align: center;
 }
 
 #loader > div {
-  color: #e7e5c9;
+  position: absolute;
+  left: calc(-170px + 50vw);
+  top: calc(-135px + 50vh);
 
-  font-size: 32px;
-  text-align: center;
-  text-shadow: 0px 1px 6px rgba(0,0,0,0.7);
+  width: 430px;
+  height: 295px;
+
+  border-radius: 25px 25px 1px 1px;
+  border: 4px solid var(--load-clr);
+  background-color: var(--load-win);
 }
+
+#loader > div::after {
+  content: var(--load-bar);
+
+  position: relative;
+  top: 158px;
+
+  display: block;
+  width: 100%;
+
+  color: var(--load-clr);
+  text-align: center;
+}
+
+#loader .loader-face {
+  position: relative;
+  top: 87px;
+
+  height: 64px;
+
+  display: flex;
+  justify-content: center;
+  align-content: center;
+
+  user-select: none;
+}
+
+#loader .loader-face > * {
+  margin: 0px 13px 0 6px;
+}
+
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */
 
 #netnet {
   position: absolute;

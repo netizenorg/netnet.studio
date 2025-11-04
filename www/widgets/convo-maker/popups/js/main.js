@@ -92,22 +92,33 @@ function createFuncOptions () {
   const links = graph.parsePassageLinks(curPsg)
   // create/update options
   const funcs = {} // collection previous funcs
-  if (curPsg.options) {
+  if (curPsg.options && typeof curPsg.options === 'object') {
     Object.entries(curPsg.options).forEach(([key, code]) => { funcs[key] = code })
   }
-  curPsg.options = {} // clear options && recreate
-  links.forEach(l => {
-    if (l.label === l.target) {
-      curPsg.options = l.target
-    } if (l.target === 'HIDE') {
-      curPsg.options[l.label] = '(e) => e.hide()'
-    } else if (l.target === 'FUNC') {
-      if (funcs[l.label]) curPsg.options[l.label] = funcs[l.label]
-      else curPsg.options[l.label] = '(e) => {\n\n}'
-    } else if (l.target !== 'HIDE' && l.target !== 'FUNC') {
-      curPsg.options[l.label] = `(e) => e.goTo('${l.target}')`
-    }
-  })
+
+  // detect a single function-call style link: [[example('hello')]]
+  const isFuncLike = s => /^(?:[A-Za-z_$][A-Za-z0-9_$]*\s*\().*\)$/.test(s)
+  const single = links.length === 1 ? links[0] : null
+  const isSingleFuncExpr = single && single.label === single.target && isFuncLike(single.label)
+
+  if (isSingleFuncExpr) {
+    // Save options as expression string, not an object
+    curPsg.options = single.label
+  } else {
+    // Build object-style options from links
+    curPsg.options = {}
+    links.forEach(l => {
+      if (l.target === 'HIDE') {
+        curPsg.options[l.label] = '(e) => e.hide()'
+      } else if (l.target === 'FUNC') {
+        if (funcs[l.label]) curPsg.options[l.label] = funcs[l.label]
+        else curPsg.options[l.label] = '(e) => {\n\n}'
+      } else {
+        curPsg.options[l.label] = `(e) => e.goTo('${l.target}')`
+      }
+    })
+  }
+
   graph.updatePassage(curPsg.id, curPsg)
   nn.get(`#card${curPsg.id}`).classList.add('selected')
   return { links, options: curPsg.options }
@@ -115,7 +126,7 @@ function createFuncOptions () {
 
 function createCodeSelectUI (opts, menu) {
   const dict = {
-    'code inside netnet': curPsg.code,
+    'inside netnet': curPsg.code,
     'before run function': curPsg.before,
     'after run function': curPsg.after
   }
@@ -133,12 +144,12 @@ function createCodeSelectUI (opts, menu) {
     })
 
   nn.create('button')
-    .content('edit')
+    .content('&lt;/&gt; code')
     .set({ class: 'func-btn', title: 'open code editor for custom logic' })
     .addTo(menu)
     .on('click', (e) => {
       const data = {}
-      if (sel.value === 'code inside netnet') {
+      if (sel.value === 'inside netnet') {
         data.type = 'CODE'
         data.code = dict[sel.value]
         data.edit = curPsg.edit
@@ -175,6 +186,14 @@ function updatePassageName (e) {
 }
 
 function createMissingLinkedPassages () {
+  // If this passage uses a single global function expression for options,
+  // do not attempt to create local links. Warn the user instead.
+  const links = graph.parsePassageLinks(curPsg)
+  const isFuncLike = s => /^(?:[A-Za-z_$][A-Za-z0-9_$]*\s*\().*\)$/.test(s)
+  if (links.length === 1 && links[0].label === links[0].target && isFuncLike(links[0].label)) {
+    return window.alert('This passage has no local links, it uses a global function to create options instead')
+  }
+  // otherwise attempt to create missing links (if there are any)
   const before = graph.data.length
   graph.createMissingPassages(curPsg)
   graph.data.filter(p => p.name === 'HIDE' || p.name === 'FUNC')
