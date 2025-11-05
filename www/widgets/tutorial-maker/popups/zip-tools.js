@@ -114,6 +114,13 @@ const zipper = {
         blob,
         { compression: 'STORE' }
       )
+      // load all files under FILES.files
+      Object.entries(FILES.files).forEach(file => {
+        if (file[1].path.split('/').pop() === `${metadata.id}.mp4`) return
+        const filePath = file[1].path.split('/').slice(2).join('/')
+        const fileData = FILES.readFile(file[1].path)
+        zip.file(filePath, fileData)
+      })
 
       const zipBlob = await zip.generateAsync({ type: 'blob' })
 
