@@ -1,4 +1,4 @@
-/* global nn timeline zipper recorder FILES metadata HTMLElement customElements Netitor */
+/* global nn timeline zipper recorder FILES metadata HTMLElement customElements Netitor FileReader */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
@@ -23,7 +23,12 @@ function overlay (ele) {
   } else if (ele === '#video-menu') {
     window.resizeTo(420, 850)
     recorder.initMenu()
-  } else if (ele === '#widget-maker') window.resizeTo(610, 400)
+  } else if (ele === '#widget-maker') {
+    window.resizeTo(610, 400)
+  } else if (ele === '#upload') {
+    window.resizeTo(425, 500)
+    loadFiles()
+  }
 }
 
 function openTutorial () {
@@ -406,6 +411,62 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
   }
 }
 
+// ----------------------------------------------------- UPLOAD ASSETS FUNCTIONS
+
+function fileUploaded (e) {
+  if (!e.detail.files) return
+  e.detail.files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = async (event) => {
+      const fileContent = event.target.result
+      await FILES.updateFile(file.name, fileContent)
+    }
+  })
+}
+
+function addFile (file) {
+  const div = document.createElement('div')
+  div.className = 'upl-asset'
+  const p = document.createElement('p')
+  const name = file.path.split('/').pop()
+  p.textContent = name
+
+  // create 'X' svg button
+  const NS = 'http://www.w3.org/2000/svg'
+  const svg = document.createElementNS(NS, 'svg')
+  svg.setAttribute('width', '15')
+  svg.setAttribute('height', '15')
+  svg.setAttribute('viewBox', '0 0 15 15')
+  svg.setAttribute('fill', 'none')
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+
+  const p1 = document.createElementNS(NS, 'path')
+  p1.setAttribute('d', 'M13 2L2 13')
+  p1.setAttribute('stroke', '#1D1B36')
+  p1.setAttribute('stroke-width', '3')
+  p1.setAttribute('stroke-linecap', 'round')
+
+  const p2 = document.createElementNS(NS, 'path')
+  p2.setAttribute('d', 'M13 13L2 2')
+  p2.setAttribute('stroke', '#1D1B36')
+  p2.setAttribute('stroke-width', '3')
+  p2.setAttribute('stroke-linecap', 'round')
+  svg.appendChild(p1)
+  svg.appendChild(p2)
+
+  const deleteFile = () => {
+    FILES.deleteFile(file.path)
+    div.remove()
+  }
+  svg.addEventListener('click', deleteFile)
+  div.appendChild(p)
+  div.appendChild(svg)
+  nn.get('#upload .uploaded-assets').appendChild(div)
+}
+
+function loadFiles () {
+  Object.entries(FILES.files).forEach(file => addFile(file[1]))
+}
 
 // -------------------------------------------------------- SETUP EVENT LISTENRS
 
@@ -458,6 +519,11 @@ nn.get('[name="widget-maker-goback"]').on('click', () => closeWidgetMaker())
 nn.get('[name="widget-maker-update"]').on('click', () => updateWidget())
 nn.get('#widget-key-input').on('blur', () => updateWidgetState())
 nn.get('#widget-title-input').on('blur', () => updateWidgetState())
+
+nn.get('[name="upload-assets"]').on('click', () => overlay('#upload'))
+nn.get('#upload file-drop').addEventListener('files-changed', (e) => fileUploaded(e))
+nn.get('[name="upload-goback"]').on('click', () => overlay(null))
+// TODO: configure upload assets (?) button
 
 // .................... window events
 

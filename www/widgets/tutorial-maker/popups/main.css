@@ -415,3 +415,36 @@ footer {
   justify-content: space-between;
   flex: 0;
 }
+
+#upload > p {
+  color: var(--netizen-meta);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.uploaded-assets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.upl-asset {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  background: var(--netizen-meta);
+  padding: 6px 9px;
+  border-radius: 6px;
+}
+.upl-asset svg {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+.upl-asset svg:hover path {
+  stroke: #FF4545;
+}

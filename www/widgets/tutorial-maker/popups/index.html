@@ -125,6 +125,19 @@
   </div>
 </section>
 
+<!-- style="display: none;" -->
+<section id="upload" class="overlay" style="display: none;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+    <div name="upload-goback" class="pill-btn pill-btn--secondary">go back</div>
+    <button class="pill-btn pill-btn--secondary" style="padding-bottom: 3px;">?</button>
+  </div>
+  <div class="file-drop-cont">
+    <file-drop accept=".png, .jpg, .gif" maxFiles="100" maxSize="1GB"></file-drop>
+  </div>
+  <p>Uploaded Assets</p>
+  <div class="uploaded-assets"></div>
+</section>
+
 
 <section id="widget-maker" class="overlay" style="display: none;">
   <div>
@@ -243,7 +256,7 @@
       </div>
     </div>
   </div>
-  <button type="widget-mkr-open" name="button" class="pill-btn pill-btn--secondary">upload assets</button>
+  <button name="upload-assets" class="pill-btn pill-btn--secondary">upload assets</button>
 </footer>
 
 <script src="/nn.min.js"></script>
