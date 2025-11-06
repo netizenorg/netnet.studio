@@ -111,6 +111,12 @@ window.utils = {
     const clr2 = window.utils.getVal('--netizen-comment')
     const clr3 = window.utils.getVal('--bg-color')
     const sc = `<!DOCTYPE html>
+<!--
+  ( ◕ ◞ ◕ )つ You've found a secret easter egg,
+  this is the code for netnet's background!
+  explore the code/comments below to better
+  understand how it all works!
+-->
 <style>
   /* netnet default bg */
   body {
@@ -129,8 +135,6 @@ window.utils = {
       50px 50px,
       50px 50px,
       auto;
-
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'30\\' height=\\'45\\' viewBox=\\'0 0 131 196\\'><path d=\\'M 0.79414644,1031.3588 18.076723,1021.668 5.2251904,991.35578 l 23.8296476,-4.73097 -62.258277,-56.10759 1.6199,88.65138 18.343131,-18.0704 z\\' transform=\\'matrix(1.8395544,0.03086834,-0.01723207,1.7679318,85.742524,-1635.7459)\\' fill=\\'%23${clr1.slice(1)}a8\\' stroke=\\'%23${clr3.slice(1)}\\' stroke-width=\\'8.23332\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'/></svg>') 2 6, auto;
   }
 </style>
 <script src="nn.min.js"></script>
@@ -138,6 +142,7 @@ window.utils = {
   /* global nn */
 
   function updateBG (mouse) {
+    if (reduceMotion() || window.nomotion) return
     const d = -33 // max amount to shift background
     const x = nn.map(mouse.x, 0, nn.width, 0, d)
     const y = nn.map(mouse.y, 0, nn.height, 0, d)
@@ -147,54 +152,31 @@ window.utils = {
     })
   }
 
-  function createTrail () {
-    const char = nn.random('ᴖ﹏^⌄◉_☉︵⇀‸◑◡-◞◕‿ŏᗜ◠ᴗ✖')
-    const size = 48
-    const x = nn.mouseX + nn.random(-25, 25) - size / 2
-    const y = nn.mouseY + nn.random(-25, 25) - size / 2
-    const el = nn.create('span')
-      .content(char)
-      .position(x, y)
-      .css({
-        fontSize: size,
-        cursor: 'default',
-        color: '${clr1}a8',
-        pointerEvents: 'none'
-      })
-      .addTo('body')
-
-    el.data.size = 1
-    el.data.speed = 0.05
-
-    updateTrail(el)
-  }
-
-  async function updateTrail (trail) {
-    const d = trail.data
-    d.size -= d.speed
-
-    trail.scale(d.size)
-
-    if (d.size <= 0) trail.remove()
-    else {
-      await nn.sleep(1000 / 30)
-      updateTrail(trail)
+  function comms (e) {
+    // listen for mouse movements on netnet's face/editor
+    // and for changes to "reduce motion" setting in code menu
+    const { type, data } = e.data
+    if (type === 'netnet') {
+      updateBG(data)
+      if (typeof data.nomotion === 'string') {
+        window.nomotion = data.nomotion === 'true'
+      }
     }
   }
 
-  function comms (e) {
-    // listen for mouse movements on netnet's face/editor
-    const { type, data } = e.data
-    if (type === 'netnet') updateBG(data)
-  }
-
   function bgmovement (e) {
-    createTrail()
     // send mousemovments back up to netnet
     window.top.postMessage({
       type: 'netnet-bg',
       data: { x: e.x, y: e.y }
     })
+  }
+
+  function reduceMotion () {
+    // check if user "prefers redueced motion"
+    const cssQuery = '(prefers-reduced-motion: reduce)'
+    const queryList = window.matchMedia(cssQuery)
+    return queryList.matches
   }
 
   nn.on('message', comms)
@@ -209,9 +191,10 @@ window.utils = {
     // used to send messages to the iframe (when default bg is present)
     const viewingDefaultBG = NNE.code.includes('/* netnet default bg */')
     if (!viewingDefaultBG) return
+    const nomotion = WIDGETS['student-session']?.getData('nomotion')
     NNE.iframe.contentWindow.postMessage({
       type: 'netnet',
-      data: { x: e.x, y: e.y }
+      data: { x: e.x, y: e.y, nomotion }
     })
   },
 
@@ -628,8 +611,22 @@ window.utils = {
   // apply an object of CSS declarations to an element's styles
   css: (ele, obj) => { for (const key in obj) ele.style[key] = obj[key] },
 
+  reduceMotion: function () {
+    // check if user "prefers redueced motion"
+    const cssQuery = '(prefers-reduced-motion: reduce)'
+    const queryList = window.matchMedia(cssQuery)
+    return queryList.matches
+  },
+
   updateShadow: (e, ele) => {
     const opac = (!NNW.themeConfig[NNW.theme].shadow) ? 0 : 0.15
+
+    // if user wants reduced motion
+    if (WIDGETS['student-session']?.getData('nomotion') === 'true') {
+      ele.style.boxShadow = `rgba(0, 0, 0, ${opac}) 8px 12px 6px`
+      return
+    }
+
     const box = ele.getBoundingClientRect()
     const center = {
       x: box.left + (box.width / 2),

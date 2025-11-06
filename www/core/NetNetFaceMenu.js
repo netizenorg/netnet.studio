@@ -97,7 +97,8 @@ class NetNetFaceMenu {
     this.face.lookAtCursor = typeof obj.lookAtCursor === 'boolean'
       ? obj.lookAtCursor : true
 
-    if (obj.animation) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (obj.animation && !nomotion) {
       this.face.animation = obj.animation
       this._runFaceAnimation()
     } else {
@@ -284,10 +285,14 @@ class NetNetFaceMenu {
       if (this.face.leftEye === '-') {
         this._faceAnimTO = setTimeout(() => {
           this.updateFace({ leftEye: '◕', rightEye: '◕', lookAtCursor: true })
+          const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+          if (nomotion) return // stop blinking
           this._runFaceAnimation()
         }, 150)
       } else {
         this._faceAnimTO = setTimeout(() => {
+          const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+          if (nomotion) return // stop blinking
           this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
           this._runFaceAnimation()
         }, Math.random() * 6000 + 8000)
@@ -330,7 +335,8 @@ class NetNetFaceMenu {
   _moveEyes (e) {
     const leftEye = this.ele.querySelector('#face > span:nth-child(1)')
     const rightEye = this.ele.querySelector('#face > span:nth-child(3)')
-    if (leftEye && rightEye && this.face.lookAtCursor) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (leftEye && rightEye && this.face.lookAtCursor && !nomotion) {
       this._lookAt(leftEye, e.clientX, e.clientY)
       this._lookAt(rightEye, e.clientX, e.clientY)
     } else if (leftEye && rightEye) {

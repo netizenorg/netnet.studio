@@ -90,6 +90,14 @@ window.CONVOS['coding-menu'] = (self) => {
     id: 'chatty-level-high',
     content: 'Great! I\'ll let you know when I notice any potential issues in your code by marking lines with a red or yellow dot. I\'ll also explain any piece of code in the editor you double click on.',
     options: { 'ok, thanks!': (e) => e.hide() }
+  }, {
+    id: 'low-motion',
+    content: 'Got it! I\'ll limit the amount of motion animations in my editor, menu and widgets.',
+    options: { 'ok, thanks!': (e) => e.hide() }
+  }, {
+    id: 'reduce-motion',
+    content: 'I can\'t let you change this here because you\'ve got <b>reduced motion</b> set on your operating system, and that takes precedence. If you disable <b>reduced motion</b> on your computer than you can optionally edit this setting here.',
+    options: { 'ok, thanks!': (e) => e.hide() }
   },
   // ...
   // ...GitHub convos...
