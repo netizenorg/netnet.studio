@@ -18,6 +18,7 @@ class NetNetFaceMenu {
       'Coding Menu': {
         path: 'images/menu/code.png',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
           WIDGETS.open('coding-menu')
         }
@@ -25,6 +26,7 @@ class NetNetFaceMenu {
       'Search Bar': {
         path: 'images/menu/search.png',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
           if (this.search.opened) this.search.close()
           else this.search.open()
@@ -34,6 +36,7 @@ class NetNetFaceMenu {
         path: 'images/menu/tutorials.png',
         width: '73%',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
           WIDGETS.open('learning-guide', w => w.scrollTo(0))
         }
@@ -124,6 +127,9 @@ class NetNetFaceMenu {
       },
       happy: {
         leftEye: 'ᴖ', mouth: '◡', rightEye: 'ᴖ', lookAtCursor, animation: 'big-nod'
+      },
+      surprise: {
+        leftEye: 'ŏ', mouth: '.', rightEye: 'ŏ', lookAtCursor: false, animation: 'spring-up'
       },
       upset: {
         leftEye: '⇀', mouth: '^', rightEye: '↼', lookAtCursor, animation: 'shake'

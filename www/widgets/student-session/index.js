@@ -203,6 +203,12 @@ class StudentSession extends Widget {
     // if netnet was hiding, let's center+display it
     if (NNW.win.style.display === 'none') NNW.recenter(1000)
 
+    // if user hasn't yet accepted the "Safari risk"
+    if (nn.browserInfo().name === 'Safari' && !utils._acceptSafari) {
+      window.convo = new Convo(this.convos, 'safari')
+      return
+    }
+
     if (typeof this.getData('username') === 'string') {
       if (this.greeted) {
         window.convo = new Convo(this.convos, 'returning-student-after')

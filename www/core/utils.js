@@ -109,7 +109,7 @@ window.utils = {
   starterCode: () => {
     const clr1 = window.utils.getVal('--fg-color')
     const clr2 = window.utils.getVal('--netizen-comment')
-    const clr3 = window.utils.getVal('--bg-color')
+    // const clr3 = window.utils.getVal('--bg-color')
     const sc = `<!DOCTYPE html>
 <!--
   ( ◕ ◞ ◕ )つ You've found a secret easter egg,
@@ -137,7 +137,7 @@ window.utils = {
       auto;
   }
 </style>
-<script src="nn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
 <script>
   /* global nn */
 
@@ -374,9 +374,20 @@ window.utils = {
     }
   },
 
+  _acceptSafari: false,
+  warnSafari: () => {
+    return nn.browserInfo().name === 'Safari' && !window.utils._acceptSafari
+  },
+
   checkURL: () => {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
+
+    if (nn.browserInfo().name === 'Safari' && !window.utils._acceptSafari) {
+      window.utils.loadDefault()
+      return 'safari'
+    }
+
     // const hash = window.location.hash
     if (url.widget) WIDGETS.open(url.widget)
     if (nn.isMobile()) return window.utils.mobile()
@@ -432,7 +443,7 @@ window.utils = {
 
   loadDefault: () => {
     NNE.code = window.utils.starterCode()
-    // make sure we at lead update the first time
+    // make sure we at least update the first time
     if (!NNE.autoUpdate) NNE.update()
     const t = NNE.updateDelay
     setTimeout(() => window.utils.fadeOutLoader(false), t)
