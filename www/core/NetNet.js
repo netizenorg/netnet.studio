@@ -413,7 +413,8 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ adjusting layout/orientation
 
   _toggleTransition (bool) {
-    if (bool) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (bool && !nomotion) {
       this.win.style.transition = 'all var(--layout-transition-time)'
       this.menu.ele.style.transition = 'all var(--layout-transition-time)'
       this.rndr.style.transition = 'all var(--layout-transition-time)'

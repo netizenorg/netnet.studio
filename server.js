@@ -9,6 +9,7 @@ const utils = require('./my_modules/utils.js')
 const ROUTES = require('./my_modules/routes.js')
 const GITHUB = require('./my_modules/github.js')
 const SOCKETS = require('./my_modules/sockets.js')
+const ERRORS = require('./my_modules/errors.js')
 const PORT = process.env.PORT || 8001
 
 const cookieParser = require('cookie-parser')
@@ -32,6 +33,8 @@ app.use(ROUTES)
 app.use(GITHUB)
 app.use(express.static(`${__dirname}/www`))
 app.use('/docs', express.static(`${__dirname}/docs`))
+app.use(ERRORS.notFound)
+app.use(ERRORS.errorHandler)
 
 const io = new SocketsServer.Server()
 io.on('connection', (socket) => SOCKETS(socket, io))

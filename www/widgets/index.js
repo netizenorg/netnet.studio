@@ -300,6 +300,9 @@ class Widget {
       bottom ${t} var(--sarah-ease),
       right ${t} var(--sarah-ease)`
 
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (nomotion) this.ele.style.transition = 'none'
+
     // trigger transition
     setTimeout(() => {
       // NOTE: width && height should alwasy be set before left, top, etc
@@ -512,7 +515,8 @@ class Widget {
 
   _display (value, callback) {
     if (this._hidden) return
-    if (value === 'visible') {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (value === 'visible' && !nomotion) {
       this.ele.style.animation = 'openBounce 0.3s ease forwards'
     } else {
       this.ele.style.animation = 'none'
