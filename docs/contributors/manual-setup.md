@@ -1,6 +1,6 @@
 # Setup a Local Development Environment *MANUALLY*
 
-For those looking for a much easier way to set things up locally, see our [Contributor Workflow](contributor-workflow) doc. This page documents how to setup a local development environment manually for those interested in doing things the hard way or for those interested in learning about what exactly our setup script `npm run setup` is doing behind the scenes (the [setup-script.js](https://github.com/netizenorg/netnet.studio/blob/main/my_modules/setup-script.js)).
+For those looking for a much easier way to set things up locally, see our [Contributor Workflow](contributor-workflow.md) doc. This page documents how to setup a local development environment manually for those interested in doing things the hard way or for those interested in learning about what exactly our setup script `npm run setup` is doing behind the scenes (the [setup-script.js](https://github.com/netizenorg/netnet.studio/blob/main/my_modules/setup-script.js)).
 
 ## 1. fork our repo
 

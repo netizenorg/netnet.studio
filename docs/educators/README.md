@@ -7,6 +7,10 @@ netnet.studio has been developed iteratively for the last 5 years (in beta from 
   - what's unique about the editor (edu info, friendly errors, etc)
   - shareable sketches (for quick back/fourth with students)
   - Demo Maker (for annotated demos)
+- Projects
   - Projects (Git integration && literacy)
+- Learning Modes
   - Tutorial Maker (for interactive tutorials)
   - how to contribute back (from edu license fees to PRs)
+
+Guided Intros, Guided Templates, Annotated Demos && Interactive Tutorials.

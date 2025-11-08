@@ -13,7 +13,7 @@ netnet is constantly changing, which means our docs always need lots of editing 
 
 ### 2. [Convos and Passages](editing-convos.md)
 
-Central to netnet's "hypermedia" navigation system are the conversation passages that appear in netnet's speech bubbles. In these docs we'll explain how this system works as well as how to use netnet's "Convo Widget" to either edit a passage in an existing conversation file or create your own.
+Central to netnet's "hypermedia" navigation system are the conversation passages that appear in netnet's speech bubbles. In these docs we'll explain how this system works as well as how to use netnet's "Convo Maker Widget" to either edit a passage in an existing conversation file or create your own.
 
 ### 3. [Code Demos](code-demos.md)
 
@@ -47,7 +47,7 @@ The [netitor](https://github.com/netizenorg/netitor) is the core code editor use
 
 ### the netnet-standard-library
 
-The `nn` object spinkled throughout netnet's code base, also known as the [netnet-standard-library](https://github.com/netizenorg/netnet-standard-library), or `nn.min.js` for short, is a browser based JavaScript library designed to aid creative coders (artists, designers, etc). It's a core utility library used within netnet.studio; both in the sense that it can be used to create projects and sketches in netnet, but also that it's used to create netet.studio itself.
+The `nn` object sprinkled throughout netnet's code base, also known as the [netnet-standard-library](https://github.com/netizenorg/netnet-standard-library), or `nn.min.js` for short, is a browser based JavaScript library designed to aid creative coders (artists, designers, etc). It's a core utility library used within netnet.studio; both in the sense that it can be used to create projects and sketches in netnet, but also that it's used to create netet.studio itself.
 
 1. introduction
 3. adding new methods
