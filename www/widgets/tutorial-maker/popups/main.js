@@ -414,13 +414,15 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
 // ----------------------------------------------------- UPLOAD ASSETS FUNCTIONS
 
 function fileUploaded (e) {
-  if (!e.detail.files) return
+  if (!e.detail.files.length > 0) return
   e.detail.files.forEach(file => {
     const reader = new FileReader()
     reader.onload = async (event) => {
       const fileContent = event.target.result
       await FILES.updateFile(file.name, fileContent)
+      addFile(file.name)
     }
+    reader.readAsText(file)
   })
 }
 
@@ -428,7 +430,7 @@ function addFile (file) {
   const div = document.createElement('div')
   div.className = 'upl-asset'
   const p = document.createElement('p')
-  const name = file.path.split('/').pop()
+  const name = file?.path ? file.path.split('/').pop() : file
   p.textContent = name
 
   // create 'X' svg button
@@ -461,7 +463,9 @@ function addFile (file) {
   svg.addEventListener('click', deleteFile)
   div.appendChild(p)
   div.appendChild(svg)
-  nn.get('#upload .uploaded-assets').appendChild(div)
+  const container = nn.get('#upload .uploaded-assets')
+  if (container.children.length > 0) nn.get('#upload .uploaded-assets').insertBefore(div, container.children[0])
+  else nn.get('#upload .uploaded-assets').appendChild(div)
 }
 
 function loadFiles () {

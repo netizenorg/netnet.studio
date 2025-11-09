@@ -7,7 +7,7 @@ class FileDrop extends HTMLElement {
     this.config = {
       accept: '.pdf, .jpg, .png',
       maxSize: '5MB',
-      maxFiles: '1',
+      maxFiles: 1,
       multiple: false,
       disableFileList: false
     }
@@ -48,9 +48,8 @@ class FileDrop extends HTMLElement {
   applyAttributes () {
     this.config.accept = this.getAttribute('accept') ?? this.config.accept
     this.config.maxSize = this.getAttribute('max-size') ?? this.config.maxSize
-    const mf = parseInt(this.getAttribute('max-files'), 10)
-    this.config.maxFiles = Number.isFinite(mf) ? mf : this.config.maxFiles
-    this.config.multiple = this.hasAttribute('multiple') || this.config.maxFiles > 1
+    this.config.maxFiles = this.getAttribute('maxFiles') || this.config.maxFiles
+    this.config.multiple = this.getAttribute('multiple') || this.config.maxFiles > 1
     this.config.disableFileList = this.hasAttribute('disableFileList') || this.config.disableFileList
   }
 
@@ -86,7 +85,7 @@ class FileDrop extends HTMLElement {
     })
 
     // return if maxFiles amount is already met
-    if (this.files.length >= maxFiles) {
+    if (this.files.length > maxFiles) {
       this.displayMsg({
         text: `Max amount of files (${maxFiles}) has already been uploaded. Please remove previously uploaded files and re-upload.`,
         type: 'error'
@@ -126,7 +125,7 @@ class FileDrop extends HTMLElement {
 
   filterMaxFilesAmount (files) {
     const maxFiles = this.config.maxFiles
-    const max = Number.isFinite(maxFiles) ? maxFiles : 1
+    const max = maxFiles ?? 1
     const room = Math.max(0, max - this.files.length)
     const add = files.slice(0, room)
     const rejected = files.slice(room)
