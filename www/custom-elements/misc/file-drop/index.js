@@ -1,6 +1,6 @@
 /* global HTMLElement CustomEvent FileList */
 class FileDrop extends HTMLElement {
-  static get observedAttributes () { return ['accept', 'max-size', 'max-files', 'multiple'] }
+  static get observedAttributes () { return ['accept', 'max-size', 'max-files', 'multiple', 'disableFileList'] }
 
   constructor (opts) {
     super()
@@ -8,7 +8,8 @@ class FileDrop extends HTMLElement {
       accept: '.pdf, .jpg, .png',
       maxSize: '5MB',
       maxFiles: '1',
-      multiple: false
+      multiple: false,
+      disableFileList: false
     }
     this.files = []
   }
@@ -50,6 +51,7 @@ class FileDrop extends HTMLElement {
     const mf = parseInt(this.getAttribute('max-files'), 10)
     this.config.maxFiles = Number.isFinite(mf) ? mf : this.config.maxFiles
     this.config.multiple = this.hasAttribute('multiple') || this.config.maxFiles > 1
+    this.config.disableFileList = this.hasAttribute('disableFileList') || this.config.disableFileList
   }
 
   applyListeners () {
@@ -102,7 +104,7 @@ class FileDrop extends HTMLElement {
     const { add, rejected } = this.filterMaxFilesAmount(acceptedFiles)
 
     this.files.push(...add)
-    this.renderFileItems()
+    if (!this.config.disableFileList) this.renderFileItems()
 
     this.dispatchEvent(new CustomEvent('files-changed', {
       detail: { added: add, rejected, files: this.files.slice() },
