@@ -29,7 +29,8 @@ class StudentSession extends Widget {
         autoUpdate: ls.getItem('auto-update'),
         wrap: typeof ls.getItem('wrap') === 'string' ? ls.getItem('wrap') : true,
         chattiness: ls.getItem('chattiness'),
-        theme: ls.getItem('theme')
+        theme: ls.getItem('theme'),
+        nomotion: ls.getItem('nomotion')
       },
       github: {
         owner: ls.getItem('owner'),
@@ -202,6 +203,12 @@ class StudentSession extends Widget {
     // if netnet was hiding, let's center+display it
     if (NNW.win.style.display === 'none') NNW.recenter(1000)
 
+    // if user hasn't yet accepted the "Safari risk"
+    if (nn.browserInfo().name === 'Safari' && !utils._acceptSafari) {
+      window.convo = new Convo(this.convos, 'safari')
+      return
+    }
+
     if (typeof this.getData('username') === 'string') {
       if (this.greeted) {
         window.convo = new Convo(this.convos, 'returning-student-after')
@@ -278,6 +285,9 @@ class StudentSession extends Widget {
     if (!window.localStorage.getItem('chattiness')) {
       this.setData('chattiness', 'high')
     }
+
+    if (!window.localStorage.getItem('nomotion')) this.setData('nomotion', 'false')
+    if (utils.reduceMotion()) this.setData('nomotion', 'true')
 
     if (window.localStorage.getItem('theme') === null) {
       this.setData('theme', 'dark')

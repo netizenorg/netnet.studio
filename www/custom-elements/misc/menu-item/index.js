@@ -1,4 +1,4 @@
-/* global HTMLElement, utils */
+/* global HTMLElement, utils, WIDGETS */
 class MenuItem extends HTMLElement {
   constructor () {
     super()
@@ -26,9 +26,10 @@ class MenuItem extends HTMLElement {
       boxShadow: '33px 33px 33px -9px rgba(0, 0, 0, 0.75)',
       display: 'none', /* or flex */
       justifyContent: 'center',
-      alignItems: 'center',
-      transition: `left ${time}ms, top ${time}ms, opacity ${time}ms`
+      alignItems: 'center'
+      // transition: `left ${time}ms, top ${time}ms, opacity ${time}ms`
     })
+    this._setupMotionListener(div, time) // determin whether or not to "transition" css
 
     this._oldPos = { left: div.style.left, top: div.style.top }
 
@@ -154,6 +155,26 @@ class MenuItem extends HTMLElement {
     div.style.top = Math.cos(i) * radius + Number(this.offset) + 'px'
     div.style.left = Math.sin(i) * radius + Number(this.offset) + 'px'
     this._positionTriangle(i)
+  }
+
+  _setupMotionListener (div, time) {
+    if (!WIDGETS['coding-menu']) {
+      setTimeout(() => this._setupMotionListener(div, time), 250)
+      return
+    }
+
+    const updateMotion = () => {
+      const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+      if (!nomotion) {
+        div.style.transition = `left ${time}ms, top ${time}ms, opacity ${time}ms`
+      } else {
+        div.style.transition = 'none'
+      }
+    }
+
+    WIDGETS['coding-menu'].on('motion-change', updateMotion)
+
+    updateMotion()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

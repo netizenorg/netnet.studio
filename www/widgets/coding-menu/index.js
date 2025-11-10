@@ -69,7 +69,12 @@ class CodingMenu extends Widget {
       {
         key: 'word wrap',
         alts: ['word', 'line', 'wrap', 'warpping'],
-        select: 'func-menu-wrap-select',
+        select: 'func-menu-wrap-select'
+      },
+      {
+        key: 'low motion',
+        alts: ['accessibility', 'reduce', 'motion'],
+        select: 'func-menu-motion-select',
         hrAfter: true
       },
       {
@@ -307,6 +312,23 @@ class CodingMenu extends Widget {
     }
   }
 
+  lowMotion (val) {
+    if (utils.reduceMotion()) {
+      this.motionSelect.value = true
+      window.convo = new Convo(this.convos, 'reduce-motion')
+      return
+    }
+
+    if (typeof val === 'boolean') {
+      this.motionSelect.value = val
+    }
+    this.sesh.setData('nomotion', this.motionSelect.value)
+    if (this.motionSelect.value === 'true') {
+      window.convo = new Convo(this.convos, 'low-motion')
+    }
+    this.emit('motion-change', { data: this.motionSelect.value })
+  }
+
   viewYourData () {
     WIDGETS.open('student-session')
   }
@@ -515,6 +537,15 @@ class CodingMenu extends Widget {
     }
     this.chatty.value = this.sesh.getData('chattiness')
     this.chatty.addEventListener('change', () => this.chattiness())
+
+    this.motionSelect = this.$('#func-menu-motion-select')
+    if (this.motionSelect.children.length < 2) {
+      this._creatOption('false', this.motionSelect)
+      this._creatOption('true', this.motionSelect)
+    }
+    this.motionSelect.value = typeof this.sesh.getData('nomotion') === 'string' ? this.sesh.getData('nomotion') : false
+    if (utils.reduceMotion()) this.motionSelect.value = true
+    this.motionSelect.addEventListener('change', () => this.lowMotion())
   }
 
   _setupListeners () {
@@ -533,6 +564,18 @@ class CodingMenu extends Widget {
     NNW.on('layout-change', () => {
       if (this.layoutsSel) {
         this.layoutsSel.value = NNW.layout
+      }
+    })
+
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mql.addEventListener('change', e => {
+      if (utils.reduceMotion()) {
+        this.motionSelect.value = true
+        this.sesh.setData('nomotion', true)
+        this.emit('motion-change', { data: 'true' })
+      } else {
+        this.motionSelect.value = typeof this.sesh.getData('nomotion') === 'string'
+          ? this.sesh.getData('nomotion') : false
       }
     })
   }
