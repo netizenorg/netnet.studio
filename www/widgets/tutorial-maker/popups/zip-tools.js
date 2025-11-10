@@ -114,16 +114,25 @@ const zipper = {
         blob,
         { compression: 'STORE' }
       )
+
       // load all files under FILES.files
-      Object.entries(FILES.files).forEach(file => {
-        if (file[1].path.split('/').pop() === `${metadata.id}.mp4`) return
+      const ignoreFiles = [`${metadata.id}.mp4`, 'tutorial.json', 'index.html']
+      for (const file of Object.entries(FILES.files)) {
+        const fileName = file[1].path.split('/').pop()
+        if (ignoreFiles.contains(fileName)) continue
+
         const filePath = file[1].path.split('/').slice(2).join('/')
         const fileData = FILES.readFile(file[1].path)
-        zip.file(filePath, fileData)
-      })
+        if (fileData.startsWith('blob:')) {
+          const res = await fetch(fileData)
+          const blob = await res.blob()
+          zip.file(filePath, blob, { binary: true })
+        } else {
+          zip.file(filePath, fileData)
+        }
+      }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' })
-
       //  trigger download
       const a = document.createElement('a')
       a.href = URL.createObjectURL(zipBlob)
@@ -135,7 +144,6 @@ const zipper = {
     } catch (error) {
       console.error('Failed to download tutorial: ', error)
     }
-    // TODO: store all the data in FILES.files into a zip file && download it
   }
 }
 
