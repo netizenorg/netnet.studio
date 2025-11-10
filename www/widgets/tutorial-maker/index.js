@@ -177,8 +177,8 @@ class TutorialMaker extends Widget {
   _getData () {
     const keyframes = this.hvp.data.keyframes
     const keylogs = this.hvp.data.keylogs
-    // TODO: fetch widgets
-    return { keyframes, keylogs }
+    const widgets = this.hvp.data.widgets
+    return { keyframes, keylogs, widgets }
   }
 
   _addSpotlight (ls) {
