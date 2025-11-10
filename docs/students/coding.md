@@ -80,10 +80,7 @@ To work on a **project** (a GitHub repository), first connect netnet to your Git
 
 When working on a **project**, netnet will display the path of the file you're currently working in on the top of it's editor. Next to that you'll find a **Files** button, clicking on this opens the **Project Files** widget, where you can upload, create and edit new folders/files.
 
-<video autoplay loop muted playsinline width="720"
-  src="../images/project-files.mp4"
-  poster="../images/project-files.jpg">
-</video>
+![netnet menu](../images/poster-project-files.jpg)
 
 **Clicking** on a folder will toggle (open/close) it's contents, clicking on a file will open that file in the editor. If the file is a media asset (like an image or video) it will open it in a separate widget. If you click on an HTML file specifically you will notice that it gets a label "rendering" placed beside it, this indicates which file is currently being rendered in netnet's output.
 
@@ -99,35 +96,27 @@ When working on a **project**, netnet will display the path of the file you're c
 
 ### Editing Files
 
-<video autoplay loop muted playsinline width="720"
-  src="../images/editing-files.mp4"
-  poster="../images/editing-files.jpg">
-</video>
+![netnet menu](../images/poster-editing-files.jpg)
 
-When working on files in a project, netnet won't render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the **X**, the widget is closed by hitting the **Esc** key, which can be quicker). After editing the CSS file a yellow dot appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking *Coding Menu > my code > save*, or in this case pressing **Ctrl+S**, or **CMD+S** on Mac) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.
+When working on files in a project, netnet won't render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the **X**, the widget is closed by hitting the **Esc** key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking *Coding Menu > my code > save*, or in this case pressing **Ctrl+S**, or **CMD+S** on Mac) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.
 
 ### Pushing (Uploading) to GitHub
 
 Changes to a file (as well as creating or deleting a file) are saved "locally", meaning that they're stored temporarily in your browser as you work. The **Project Files** widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files.
 
- In order to make these changes permanent you'll need to "commit" them to your GitHub repo. To do so you'll need to open the **Version Control** widget by pressing the **git push** button.
-
- <video autoplay loop muted playsinline width="720"
-   src="../images/version-control.mp4"
-   poster="../images/version-control.jpg">
- </video>
-
- This widget will walk you through the process of creating a new "commit" (a versioned "save point") and pushing (aka uploading) that to your GitHub repository. It has a terminal which displays the actual git commands you would have to run if you were working in any terminal, except that rather than typing the terminal commands yourself, netnet will write them for you and walk through it step by step. If you're new to version control it's worth reading the netnet passages to better understand what's going on at each step.
-
- **PRO TIP**: Once you get the hang of it, you can *speed run* the process by pressing, *Enter > Enter > typing your commit message > Enter > Enter > Enter*
+In order to make these changes permanent you'll need to "commit" them to your GitHub repo. To do so you'll need to open the **Version Control** widget by pressing the **git push** button.
 
 
- ### Publishing Your Website
+![netnet menu](../images/poster-version-control.jpg)
 
- <video autoplay loop muted playsinline width="720"
-   src="../images/publish-project.mp4"
-   poster="../images/publish-project.jpg">
- </video>
+This widget will walk you through the process of creating a new "commit" (a versioned "save point") and pushing (aka uploading) that to your GitHub repository. It has a terminal which displays the actual git commands you would have to run if you were working in any terminal, except that rather than typing the terminal commands yourself, netnet will write them for you and walk through it step by step. If you're new to version control it's worth reading the netnet passages to better understand what's going on at each step.
+
+**PRO TIP**: Once you get the hang of it, you can *speed run* the process by pressing, *Enter > Enter > typing your commit message > Enter > Enter > Enter*
+
+
+### Publishing Your Website
+
+![netnet menu](../images/poster-publish-project.jpg)
 
 When you're ready to publish your project to the World Wide Web you can click on netnet's face to open the main menu, then *Coding Menu > my code > share*, netnet explains that it will use the "ghpages" service provided by GitHub to launch a web server on GitHub for your project. It then generates a publicly accessible URL you can share with anyone, your work is now live on the Web!
 

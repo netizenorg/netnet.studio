@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
+        <span class="screen-reader-only">Open/close mobile menu</span>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>The Docs</h1>
+<p>In this doc we&#39;re going to explain how to get started contributing to the netnet.studio code base by creating or editing these docs (meta). If you&#39;re an experienced open source developer and have already <a href="contributor-workflow.html">setup a local development environment</a>, you can of course create and/or edit the docs in your code editor. If you&#39;ve never contributed to an open source project before than this is a great place to start!</p>
+<h2>Forking the repo</h2>
+<p>&quot;Forking the repo&quot; is open-source parlance for <em>creating your own copy of the original code base</em>, this &quot;fork&quot; (or linked copy of our code) is where you&#39;ll make any edits or additions which you&#39;ll later contribute back to netnet&#39;s main code base in the form of a &quot;pull request&quot; (a request for us to incorporate the changes from your fork into our main code base). All this &quot;forking&quot; and &quot;pulling&quot; takes place on GitHub, which is the platform we use to mange our open source development workflow. It&#39;s workth mentioning that GitHub isn&#39;t the only platform for this, but it is the most popular.</p>
+<ol>
+<li><p>The first step is to <a href="https://github.com/signup" target="_blank">create a GitHub account</a> or <a href="https://github.com/login" target="_blank">log-in to your account</a> if you already have one.</p>
+</li>
+<li><p>Once you&#39;re logged into your GitHub account, all you need to do is <a href="https://github.com/netizenorg/netnet.studio/fork" target="_blank">click here to fork our repo</a>, after that you&#39;ll have a copy of netnet.studio&#39;s entire code base on your own account which is linked back to ours (ie. a &quot;fork&quot;). Alternatively, you could navigate to our repo <a href="https://github.com/netizenorg/netnet.studio" target="_blank">https://github.com/netizenorg/netnet.studio</a>, as you would any other on GitHub, and click the &quot;Fork&quot; button towards the top right of the page.</p>
+</li>
+</ol>
+<h2>Editing a file</h2>
+<p>Once you&#39;ve forked the repo, the main page for your fork will list the root directory&#39;s file structure. There you should see a folder called &quot;docs&quot;, click on that folder to navigate into it, and then click on any sub-folder until you find the file you want to edit.</p>
+<p>You may notice that there are two files for every doc, the <code>.md</code> file and the <code>.html</code> file. These have the same name (except for the starting page in any folder, which would be called <code>README.md</code> and <code>index.html</code> respectively). What you want to edit are the <code>.md</code> files. The <code>.html</code> files get generated with a special script (which we&#39;ll return to later).</p>
+<p>Once you find the doc you want to edit, clidk on it&#39;s <code>.md</code> file to view it in it&#39;s own page. Once there, you should see a pencil icon towards the top-right of the file, once you click on that you&#39;ll go into edit mode.</p>
+<p><img src="../images/git-edit.jpg" alt="edit pencil" /></p>
+<p>The first thing you&#39;ll notice is that the docs are written in a language called &quot;markdown&quot;, you can <a href="https://markdownguide.offshoot.io/basic-syntax/" target="_blank">learn the syntax here</a>, but here&#39;s the basic idea:</p>
+<pre><code class="markdown"># headers start with a hash-symbol
+### sub-headers have more hash-symbols
+
+Paragraphs are written like normal text like this. If you want something *italicized* you use single asterisks, and for **bold** you use double-asterisks. To create links you write the [word to link](https://url-to-link-to.com) like that. If you want to include an image you would do something similar except with an exclamation mark to start as seen below.
+
+![image alt text](path/to/image.jpg)
+
+And if you want a bulleted list you can use dashes:
+- like this
+- and this</code></pre>
+<p>This is a very common language for writing code documentation. If you&#39;ve made a project with netnet you might recognize this syntax from the projects&#39; &quot;README&quot; file.</p>
+<h2>Creating a new file</h2>
+<p>To create a new doc, navigate to the folder you want to create it in (either the &quot;docs&quot; folder or one of it&#39;s sub-folders) and press the <strong>Add file</strong> button towards the top-right. Here you will have the option to upload a file (like images for example) or create a new file. Give the new file a name, make sure it&#39;s all lower-case , no spaces (use dashes instead) and ends with a <code>.md</code> extension. Then write the file&#39;s content in <a href="https://markdownguide.offshoot.io/basic-syntax/" target="_blank">markdown syntax</a> and commit your file.</p>
+<p><img src="../images/git-add.jpg" alt="add button" /></p>
+<h2>Commiting your changes</h2>
+<p>Just as we &quot;commit&quot; changes in netnet when working on a project, we&#39;ll need to commit changes here on GitHub after editing any of the <code>.md</code> files. To do so you&#39;ll click the green <b style="color: green">Commit Changes</b> button towards the top-right. This will open up a modal asking you to leave a commit message.</p>
+<p><img src="../images/git-commit.jpg" alt="commit button" /></p>
+<h2>Creating a &quot;pull request&quot;</h2>
+<p>After you&#39;ve made all the necessary commits and you&#39;re ready to submit this back to the main code base you can create a &quot;pull request&quot;. This is a <em>request</em> for us (the &quot;maintainers&quot; of the netnet.studio repository) to review your code, and if everything looks good to <em>pull</em> your changes into our main code base.</p>
+<p>To create a new PR (short for &quot;pull request&quot;) click on the &quot;Pull requests&quot; tab in the top menu and then the green <b style="color: green">New pull request</b> button</p>
+<p><img src="../images/git-pr1.jpg" alt="pr button" /></p>
+<p>On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing <em>from</em> your fork and <em>to</em> ours.</p>
+<p><img src="../images/git-pr2.jpg" alt="pr button" /></p>
+<p>You may see an additional drop-down list next to the repository names, usually with the label &quot;main&quot;. This refers to the &quot;branch&quot; of code, a concept we&#39;ll cover in a later doc, for now just know that it should say &quot;main&quot; on both sides. When we discuss more complex contributes later on we&#39;ll discuss how we&#39;ll be using different branches to ensure the process stays organized.</p>
+<h2>Code Review</h2>
+<p>Once the PR (pull request) is open we&#39;ll get a notification to review your request. If we notice any issues or have any feedback for you, we&#39;ll leave a comment on the PR page with instructions. If it&#39;s not clear you can respond to us and we can start a conversation on the PR page. Once you&#39;ve addressed our feedback you won&#39;t need to create another PR, any time you commit a new change it will automatically get added to the open PR. When those changes are ready for us to re-review, simply leave a comment on the PR letting us know!</p>
+<p>Once we accept and &quot;merge&quot; your pull request, the PR page gets closed and you&#39;ve officially become a <a href="https://github.com/netizenorg/netnet.studio/graphs/contributors" target="_blank">contributor</a> to netnet.studio!</p>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>

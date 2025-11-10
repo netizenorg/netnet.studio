@@ -7,7 +7,7 @@ Contributing to open source can feel intimidating, even for experienced develope
 - **If this is your first time contributing to an open source project** you'll need to start by [creating a GitHub account](https://github.com/signup), if you've already got one make sure you're [logged in](https://github.com/login) before staring section 1 below.
 - **If you're a seasoned open source contributor** and want to dive right in check out our [contributor workflow doc](contributor-workflow.md) and then review our [core functionality](core-functionality.md) docs for a general orientation of the project architecture.
 
-### 1. The Docs
+### 1. [The Docs](the-docs.md)
 
 netnet is constantly changing, which means our docs always need lots of editing to keep up! Making an edit to these docs is something you can do entirely on GitHub and is a great way to get familiar with the basics of contributing to an open source project.
 
@@ -51,3 +51,5 @@ The `nn` object sprinkled throughout netnet's code base, also known as the [netn
 
 1. introduction
 3. adding new methods
+
+*✏️ TODO: need to create detail pages for sub-modules*

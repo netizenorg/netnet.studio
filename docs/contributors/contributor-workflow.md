@@ -1,9 +1,10 @@
 # Contributor Workflow
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+If you're new to open source development, start with our [introduction page for contributors](README.md), if you're a regular open source contributor looking for a quick run-down, this page is for you.
 
 --------------------
 ## The (tl;dr) Overview:
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 **SETUP**
 
