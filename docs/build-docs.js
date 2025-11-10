@@ -13,6 +13,23 @@ const skipFldrs = ['images']
 // ........................................................
 const renderer = new marked.Renderer()
 
+// helper to detect and convert poster images to <video>
+function isPosterSrc (src) {
+  if (typeof src !== 'string') return false
+  const file = src.split('/').pop() || src
+  return /^poster-/.test(file)
+}
+
+function posterToVideoTag (src, alt = '') {
+  // build video src by removing 'poster-' prefix from filename and swapping extension to .mp4
+  const lastSlash = src.lastIndexOf('/')
+  const dir = lastSlash >= 0 ? src.slice(0, lastSlash + 1) : ''
+  const file = lastSlash >= 0 ? src.slice(lastSlash + 1) : src
+  const base = file.replace(/^poster-/, '').replace(/\.[a-zA-Z0-9]+$/, '')
+  const videoSrc = `${dir}${base}.mp4`
+  return `<video autoplay loop muted playsinline width="720"\n  src="${videoSrc}"\n  poster="${src}">\n</video>`
+}
+
 renderer.link = function (obj) {
   let { href, text } = obj
   // format links
@@ -28,10 +45,23 @@ renderer.link = function (obj) {
   if (match) {
     const alt = match[1]
     const src = match[2]
+    if (isPosterSrc(src)) {
+      const video = posterToVideoTag(src, alt)
+      return `<a href="${href}"${targetAttr}>${video}</a>`
+    }
     return `<a href="${href}"${targetAttr}><img src="${src}" alt="${alt}" /></a>`
   }
 
   return `<a href="${href}"${targetAttr}>${text}</a>`
+}
+
+renderer.image = function (obj) {
+  const { href, text } = obj
+  if (isPosterSrc(href)) {
+    return posterToVideoTag(href, text)
+  }
+  const alt = text || ''
+  return `<img src="${href}" alt="${alt}" />`
 }
 
 renderer.code = function (token) {

@@ -1,9 +1,10 @@
 # Contributor Workflow
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+If you're new to open source development, start with our [introduction page for contributors](README.md), if you're a regular open source contributor looking for a quick run-down, this page is for you.
 
 --------------------
 ## The (tl;dr) Overview:
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 **SETUP**
 
@@ -15,16 +16,10 @@
 
 **DEVELOPMENT**
 
-1. create a "feature" branch `git checkout -b [FEATURE-NAME]` from the main branch (make sure to always `git pull upstream main` before starting a new feature branch)
+1. create a "feature" branch `git checkout -b [FEATURE-NAME]` from the main branch (make sure to always `git pull upstream dev` before starting a new feature branch)
 2. work locally, ensuring you're conforming to our [coding style](#style) while making commits to the new feature branch and occasionally/eventually pushing to your fork `git push origin [FEATURE-NAME]` to back up your progress.
 3. Create a [PR](https://github.com/netizenorg/netnet.studio/pulls) from your `feature` branch to our `main` branch.
-4. Once your PR has been merged, clean things up before starting on your next feature
-```
-git checkout main
-git pull upstream main
-git push origin --delete [FEATURE-NAME]
-git branch --delete [FEATURE-NAME]
-```
+4. Once your PR has been merged, clean things up before starting on your next feature by deleting the old feature branch.
 
 --------------------
 ## The Details:
@@ -57,7 +52,7 @@ cd netnet.studio
 npm run setup
 ```
 
-The setup script will guide you through a series of questions and handle the entire setup for you. You don't need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we've also put together document ion for [how to setup a local environment *manually*](Setting-Up-The-Repo-Locally) if you're curious.
+The setup script will guide you through a series of questions and handle the entire setup for you. You don't need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we've also put together document ion for [how to setup a local environment *manually*](manual-setup.md) if you're curious.
 
 
 ## <a id="run"></a> running netnet locally
@@ -73,11 +68,14 @@ Then visit http://localhost:8001 in the browser (assuming you haven't changed th
 
 #### <a id="branch"></a>  setup a feature branch
 
-Before you start working on a new feature or bug fix ensure you're working with the latest version of netnet.studio by pulling updates from our main branch
+Before you start working on a new feature or bug fix ensure you're working with the latest version of netnet.studio by pulling updates from our dev branch
 
 ```
-git pull upstream main
+git pull upstream dev
 ```
+
+**NOTE:** If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from `updstream main`
+
 If that failed, make sure you setup our repo as your remote "upstream" by running `git remote -v`, if you didn't setup a remote upstream during the setup you will need to do this manually by running `git remote add upstream https://github.com/netizenorg/netnet.studio.git`
 
 Create a "feature branch" for the feature/bugfix/etc you plan on working on by running the command below (replacing `[FEATURE-NAME]` with name for this feature/task)
@@ -123,6 +121,10 @@ We may start a "review" for your PR before merging it. If we do give you some fe
 Once your PR has been merged, clean things up before starting on your next feature. Check out your main branch and pull the changes we merged from your (and any one else's) PRs:
 ```
 git checkout main
+git pull upstream dev
+```
+or, if you're working on main (addressing bugs or hot-fixes)
+```
 git pull upstream main
 ```
 

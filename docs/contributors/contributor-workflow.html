@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="netnet.studio">
     <meta name="twitter:site" content="@netizenorg">
 
-    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
     <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
@@ -35,7 +35,13 @@
       </div>
       <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
                 <ul class="docs__panel__list"></ul>
@@ -53,6 +59,9 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/support.html">
                   support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
                 </a></li></ul>
               </li></ul>
     </div>
@@ -60,9 +69,10 @@
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
         <h1>Contributor Workflow</h1>
-<p><a href="https://standardjs.com" target="_blank"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide" /></a></p>
+<p>If you&#39;re new to open source development, start with our <a href="index.html">introduction page for contributors</a>, if you&#39;re a regular open source contributor looking for a quick run-down, this page is for you.</p>
 <hr>
 <h2>The (tl;dr) Overview:</h2>
+<p><a href="https://standardjs.com" target="_blank"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide" /></a></p>
 <p><strong>SETUP</strong></p>
 <ol>
 <li><a href="https://github.com/netizenorg/netnet.studio/fork" target="_blank">fork our repo</a></li>
@@ -73,15 +83,11 @@
 </ol>
 <p><strong>DEVELOPMENT</strong></p>
 <ol>
-<li>create a &quot;feature&quot; branch <code>git checkout -b [FEATURE-NAME]</code> from the main branch (make sure to always <code>git pull upstream main</code> before starting a new feature branch)</li>
+<li>create a &quot;feature&quot; branch <code>git checkout -b [FEATURE-NAME]</code> from the main branch (make sure to always <code>git pull upstream dev</code> before starting a new feature branch)</li>
 <li>work locally, ensuring you&#39;re conforming to our <a href="#style">coding style</a> while making commits to the new feature branch and occasionally/eventually pushing to your fork <code>git push origin [FEATURE-NAME]</code> to back up your progress.</li>
 <li>Create a <a href="https://github.com/netizenorg/netnet.studio/pulls" target="_blank">PR</a> from your <code>feature</code> branch to our <code>main</code> branch.</li>
-<li>Once your PR has been merged, clean things up before starting on your next feature</li>
+<li>Once your PR has been merged, clean things up before starting on your next feature by deleting the old feature branch.</li>
 </ol>
-<pre><code>git checkout main
-git pull upstream main
-git push origin --delete [FEATURE-NAME]
-git branch --delete [FEATURE-NAME]</code></pre>
 <hr>
 <h2>The Details:</h2>
 <ul>
@@ -108,15 +114,16 @@ git branch --delete [FEATURE-NAME]</code></pre>
 </ol>
 <pre><code>cd netnet.studio
 npm run setup</code></pre>
-<p>The setup script will guide you through a series of questions and handle the entire setup for you. You don&#39;t need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we&#39;ve also put together document ion for <a href="Setting-Up-The-Repo-Locally">how to setup a local environment *manually*</a> if you&#39;re curious.</p>
+<p>The setup script will guide you through a series of questions and handle the entire setup for you. You don&#39;t need to answer all of the questions the first time around you can always rerun the setup script later to return to any questions you skipped. We love setup scripts because they help lower the barrier to entry for contributors, but they can also (unintentionally) obfuscate the process. For that reason we&#39;ve also put together document ion for <a href="manual-setup.html">how to setup a local environment *manually*</a> if you&#39;re curious.</p>
 <h2><a id="run"></a> running netnet locally</h2>
 <p>Assuming you still have a terminal open to the repo&#39;s directory, simply run:</p>
 <pre><code>npm run start</code></pre>
 <p>Then visit <a href="http://localhost:8001" target="_blank">http://localhost:8001</a> in the browser (assuming you haven&#39;t changed the default port number in the <code>.env</code> file from 8001 to something else).</p>
 <h2><a id="contribute"></a> making contributions</h2>
 <h4><a id="branch"></a>  setup a feature branch</h4>
-<p>Before you start working on a new feature or bug fix ensure you&#39;re working with the latest version of netnet.studio by pulling updates from our main branch</p>
-<pre><code>git pull upstream main</code></pre>
+<p>Before you start working on a new feature or bug fix ensure you&#39;re working with the latest version of netnet.studio by pulling updates from our dev branch</p>
+<pre><code>git pull upstream dev</code></pre>
+<p><strong>NOTE:</strong> If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from <code>updstream main</code></p>
 <p>If that failed, make sure you setup our repo as your remote &quot;upstream&quot; by running <code>git remote -v</code>, if you didn&#39;t setup a remote upstream during the setup you will need to do this manually by running <code>git remote add upstream https://github.com/netizenorg/netnet.studio.git</code></p>
 <p>Create a &quot;feature branch&quot; for the feature/bugfix/etc you plan on working on by running the command below (replacing <code>[FEATURE-NAME]</code> with name for this feature/task)</p>
 <pre><code>git checkout -b [FEATURE-NAME]</code></pre>
@@ -136,7 +143,9 @@ npm run setup</code></pre>
 <h4><a id="clean"></a> post-merge clean up</h4>
 <p>Once your PR has been merged, clean things up before starting on your next feature. Check out your main branch and pull the changes we merged from your (and any one else&#39;s) PRs:</p>
 <pre><code>git checkout main
-git pull upstream main</code></pre>
+git pull upstream dev</code></pre>
+<p>or, if you&#39;re working on main (addressing bugs or hot-fixes)</p>
+<pre><code>git pull upstream main</code></pre>
 <p>Then delete the feature branch from your remote and local repos:</p>
 <pre><code>git push origin --delete [FEATURE-NAME]
 git branch --delete [FEATURE-NAME]</code></pre>

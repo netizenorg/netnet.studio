@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="netnet.studio">
     <meta name="twitter:site" content="@netizenorg">
 
-    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
     <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
@@ -35,7 +35,13 @@
       </div>
       <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
                 <ul class="docs__panel__list"></ul>
@@ -53,6 +59,9 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/support.html">
                   support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
                 </a></li></ul>
               </li></ul>
     </div>
@@ -64,22 +73,83 @@
 <ol>
 <li>You have <a href="https://github.com/signup" target="_blank">created a GitHub account</a> and you&#39;re currently <a href="https://github.com/login" target="_blank">logged in</a> to your account.</li>
 <li>You&#39;ve created a &quot;<a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo" target="_blank">fork</a>&quot; of the <a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio repo</a></li>
+<li>You understand how to create a PR (pull request)</li>
 </ol>
 <p>If you&#39;re an experienced open source developer and have already <a href="contributor-workflow.html">setup a local development environment</a>, you can alternatively create and/or edit these files in your code editor, refer instead to the <a href="convo-system.html">Convo System</a> docs.</p>
 <h2>Finding a passage in the code</h2>
-<p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. All of netnet&#39;s passage&#39;s are part of of a <code>convo.js</code> file associated with one of netnet&#39;s widgets, which can all be found in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">`www/widgets`</a> folder. With a couple of exceptions:</p>
+<p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. All of netnet&#39;s passage&#39;s are part of of a <code>convo.js</code> file associated with one of netnet&#39;s <em>Widgets</em>, which can all be found in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">`www/widgets`</a> folder, or part of one of netnet&#39;s <em>Guided Templates</em> found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/data/templates" target="_blank">`data/templates`</a> . With a couple of exceptions:</p>
 <ul>
 <li>any passage where netent explains a piece of code that you double-clicked on, these are part of the netitor sub-module.</li>
 <li>any passage where netnet explains an issue or error that appear when you click on an error marker in the line-number gutters, these are also part of the netitor sub-module</li>
 </ul>
+<p><em>✏️ TODO: link to netitor sub-module docs when ready</em></p>
 <p>It might be immediately obvious which widget the passage you want to edit is a part of, but if not you can always <strong>use GitHub&#39;s repo search bar</strong> to find the file that contains the line of dialogue you&#39;re trying to edit. We recommend placing your search withing quote marks <code>&quot; &quot;</code> to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:</p>
-<p><img src="../images/convo-ex1.png" alt="example netnet passage with markup in it"></p>
+<p><img src="../images/convo-ex1.png" alt="example netnet passage with markup in it" /></p>
 <p>This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case <code>&lt;code&gt;</code> tags around the words &quot;run&quot; and &quot;git status&quot;. Additionally, because most of the passage&#39;s text are stored as JavaScript strings in the code, often when a word has an apostraphe like the first word in this passage, &quot;Let&#39;s&quot; it needs to be <em>escaped</em> in the code, which means it acctually looks like this: <code>Let\&#39;s</code>. Here is how that passage actually appears in netnet&#39;s code:</p>
 <pre><code class="javascript">content: 'Let\'s version our changes by creating a new "commit"! Click the &lt;code&gt;run&lt;/code&gt; button in the Terminal of the Version Control widget to run &lt;code&gt;git status&lt;/code&gt;. This will list all the files which have changed since your last commit.',</code></pre>
 <p>For this reason it&#39;s best to search for small snippets of text from a passage and avoid including any of the markuped text (like code blocks and links) as well as any text with apostraphes in it.</p>
 <p>⚠️ <strong>NOTE</strong>: if you have trouble searching your fork of the repo, because GitHub hasn&#39;t yet indexed your code for example, you can always <a href="https://github.com/search?q=repo%3Anetizenorg%2Fnetnet.studio&type=code" target="_blank">search our main repo</a> instead. Your fork should be more or less an exact copy of ours (until you start to make changes) so the convo file should be in the same place.</p>
 <h2>Editing a passage</h2>
-<p>...</p>
+<p>You could theoretically edit the <code>convo.js</code> file directly on GitHub, just like you do with <a href="the-docs.html">the docs</a>, but since these are <code>.js</code> files (not <code>.md</code> files) the stakes are a little higher. For example, if you make a &quot;syntax error&quot; in JavaScript (like forgetting the <code>\</code> before any apostrophes) it might not be immediately obvious on GitHub and thus could cause an error in the convo logic. It&#39;s also difficult to understand which passages connect to which other passages when viewing them in these linear JavaScript files. For these reasons we&#39;ve created a special widget in netnet called the <strong>Convo Maker</strong> which is used to create and edit these convo files.</p>
+<p>To find it, search for &quot;Convo Maker&quot; in netnet&#39;s search bar. The widget should open up in it&#39;s own pop-up window (outside of netnet), it will be empty by default, but you can click on the &quot;edit&quot; button in the menu to find the specific <code>convo.js</code> file you&#39;re looking for and open it.</p>
+<p><img src="../images/convo-maker1.jpg" alt="convo maker" /></p>
+<p>The <strong>Convo Maker</strong> displays all the passages in a conversation file on a two-dimensional grid, with connections between them illustrating which passages link to others. You can use the trackpad to scroll around in the space and can also pinch-to-zoom (or use the zoom slider) to zoom in/out. Clicking on a passage <em>selects</em> it, after selecting on a passage you can move it around or delete it. To edit a passage you must double-click it.</p>
+<p><img src="../images/convo-maker2.jpg" alt="convo maker" /></p>
+<p>This will open up a passage window, there you can edit the text and have the option to write HTML markup and call JavaScript functions.</p>
+<ul>
+<li><strong>HTML Markup</strong>: like the word <code>&lt;i&gt;classical&lt;/i&gt;</code> for example, written inside the <code>&lt;i&gt;</code> element</li>
+<li><strong>JavaScript</strong>: use the <code>${...}</code> syntax to call upon JavaScript functions which return text. In the screen shot above we&#39;re calling <code>${self.getData(&#39;username&#39;)}</code> which will display the specific user&#39;s name. Here &quot;self&quot; refers to the current widget whose convo we&#39;re editing. In this particular case we&#39;re editing the <em>Student Session Data</em> widget which has a <code>getData()</code> method which can be used to call on any locally saved data. Another common use of the <code>${...}</code> JavaScript syntax in these passages is <code>${utils.hotKey()}</code> which will display &quot;CMD&quot; for Mac users or &quot;CNTRL&quot; for Windows and Linux users.</li>
+</ul>
+<p>To preview your changes you can press the 💬 button on the top right of the passage window, this will display the current passage in netnet.studio so you can review how it will appear in-situ and make sure all the HTML and JS works correctly.</p>
+<h2>Editing passage options</h2>
+<p>Below the passage&#39;s content you define what options (the user choices) should appear along side it by writing the options within <code>[[ ]]</code> brackets. An option starts with the text you want to display in it, for example &quot;I&#39;m new to code&quot; followed by an arrow <code>-&gt;</code> and the the name of the passage you want to link to, for example &quot;how-to-learn&quot;, together that would be written like this: <code>[[I&#39;m new to code-&gt;how-to-learn]]</code></p>
+<p>If you want an option that will simply close the passage, rather than link to another one, you can write &quot;HIDE&quot; in place of the name of another passage, for example <code>[[got it!-&gt;HIDE]]</code></p>
+<p>At times you might come across options that point to &quot;FUNC&quot;, this is short for &quot;function&quot; and means that this option will run a custom function when selected (more on that below)</p>
+<h2>Other passage details</h2>
+<p>Most of the time you&#39;ll likely only need to edit a passage&#39;s text or options, but on occasion there are passages that may need other details addressed. Below you&#39;ll find info on all the other editable details as they appear from right-to-left in the passage window:</p>
+<ul>
+<li>💬 - clicking this button triggers a netnet dialogue so you can preview the passage in netnet.studio.</li>
+<li>🔗 - when creating a new passage with links to passage id&#39;s that don&#39;t exist yet, clicking this will auto-create those linked passages</li>
+<li><strong>[default]</strong> - this keeps netnet&#39;s layout as it is, but you can optionally specify a specific layout to guarantee netnet always orients to it when this passage is displayed.</li>
+<li><em>passage-id</em> - you can click on the passage id in order to edit it. Keep in mind, this will break any links from other passages (you&#39;ll need to edit those &quot;options&quot; to re-link to the new id)</li>
+<li><strong>&lt;/&gt; code</strong> - clicking this will open a code editor so you can edit the code for the specific selection (in the drop-down list next to it). There are different aspects to a passage that can take some optional code, see the Code section below for more on that.</li>
+</ul>
+<h2>&lt;/&gt; code</h2>
+<p>The last part of the Convo Maker&#39;s interface worth discussing are the two <strong>&lt;/&gt; code</strong> buttons. Both of these open up a code editor, but they each edit different parts of the convo&#39;s code. A convo doesn&#39;t <em>need</em> to have any special code defined, this is optional when a convo file or specific passage requires some special behavior.</p>
+<h4>global &lt;/&gt; code</h4>
+<p>The <strong>&lt;/&gt; code</strong> button in the main menu (next to the convo&#39;s name) is the global code editor, here you can define any variables or functions that you want to use in any (or multiple) passages. For example, you can create a variable called <code>time</code> that is then referenced in different passages using the <code>${time}</code> syntax discussed before. Or you could make a function that returns a string and call it in a passage the same way <code>${specialString()}</code>, in some convos there are special functions defined which create custom options object, like the <code>firstOpts()</code> function in the Student Session convo, this can then be called inside a single option like <code>[[firstOpts()]]</code></p>
+<h4>passage &lt;/&gt; code</h4>
+<p>The <strong>&lt;/&gt; code</strong> button which appears in the passage&#39;s menu is used to edit code for different aspects of the passage. You can specify what part of the passage&#39;s code you want to edit by updating the drop-down next to it before clicking the button. Here are the different parts of the passages code you may want to edit:</p>
+<ul>
+<li><strong>inside netnet</strong>: this is the first choice in the list, any code you add to this will appear inside netnet&#39;s code editor the moment the passage appears. But be careful, this will delete any code the student is working on and replace it with your code, this should only be used in very specific circumstances.</li>
+<li><strong>before run function</strong>: this second choice allows you to code a function which will run just before the passage is displayed. For example you might want to close a specific widget that was opened by a previous passage <code>WIDGET[&#39;name&#39;].close()</code> or run some other action before the passage appears.</li>
+<li><strong>after run function</strong>: the third, and last default choice, in the list is an optional function you can define which wil run after the passage is desplayed. For example, maybe you want to switch to a different netnet face like <code>NNW.menu.switchFace(&#39;error&#39;)</code> or run some other action after the passage appears.</li>
+<li><strong>OPT: ...</strong> : if you create an option in your passage which points to &quot;FUNC&quot;, for example <code>[[let&#39;s code!-&gt;FUNC]]</code>, this will automatically add an item to the drop down list below the last one with the prefix <em>OPT:</em> followed by the options text, for example <code>OPT:let&#39;s code</code>. Selecting it and clicking the <strong>&lt;/&gt; code</strong> button will allow you to write a custom function to run if/when the user selects this option. Keep in mind that if you don&#39;t include a call to <code>e.goTo()</code> (to link to another passage) or <code>e.hide()</code> within you function, then the passage will remain visible even after the student selects this option. Below is an example of what this custom option function might look like:</li>
+</ul>
+<pre><code class="javascript">const LINK = (e) =&gt; {
+  self._wantsColor = true
+  WIDGETS.open('color-widget')
+  e.hide()
+  // or e.goTo('passage-id')
+}</code></pre>
+<h2>Download the convo.js file</h2>
+<p>When you&#39;re finished working on the passage, or simply want to save your changes locally, you can click the <strong>download</strong> button in the main menu. This will download a file called <code>convo.js</code> with all of the conversion data (all the passages, options, code, etc). When you want to keep working on that convo later you can visit netnet.studio, open the <strong>Convo Maker</strong> widget and click <strong>upload</strong> to load up the <code>convo.js</code> file you downloaded and had been previously working on.</p>
+<h2>Creating a PR (pull request)</h2>
+<p>As discussed in the section which covers editing <a href="the-docs.html">these Docs</a> themselves, when you want to share any updates/changes you&#39;ve made with us you&#39;ll need to create a &quot;pull request&quot; on GitHub, letting us know that there are some updates in your &quot;fork&quot; ready for us to review and considering merging into netnet&#39;s main code base. But before you do that, you&#39;ll need to include these changes in your fork:</p>
+<ol>
+<li>Login to your GitHub account and navigate to your fork of the netnet.studio repo.</li>
+<li>Navigate to the folder this convo belongs to, maybe that&#39;s a specific widget in the <code>www/widgets</code> folder, or maybe that&#39;s a specific template in the <code>data/templates</code> folder.</li>
+<li>Once there, you&#39;ll click on the <strong>Add file</strong> button and select your <code>convo.js</code> file</li>
+<li>Leave a commit message and click the green <b style="color: green">Commit Changes</b> button to officially add it to your fork.</li>
+</ol>
+<p>Then, to create a new PR click on the &quot;Pull requests&quot; tab in the top menu and then the green <b style="color: green">New pull request</b> button</p>
+<p><img src="../images/git-pr1.jpg" alt="pr button" /></p>
+<p>On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing <em>from</em> your fork and <em>to</em> ours.</p>
+<p><img src="../images/git-pr2-b.jpg" alt="pr button" /></p>
+<p><strong>⚠️ NOTE:</strong> Updates to convos are something we&#39;ll want to test on our dev server before deploying to the main public server, for this reason you&#39;ll want to make sure to select <strong>base: dev</strong> next to the <em>netizenorg/netnet.studio</em> repo, so that the request comes to our <em>dev</em> branch and not our <em>main</em> branch. The branch selected next to your forked repo should be whichever branch you committed this new change to (likely your <em>main</em>).</p>
+<h2>Code Review</h2>
+<p>Once the PR (pull request) is open we&#39;ll get a notification to review your request. If we notice any issues or have any feedback for you, we&#39;ll leave a comment on the PR page with instructions. If it&#39;s not clear you can respond to us and we can start a conversation on the PR page. Once you&#39;ve addressed our feedback you won&#39;t need to create another PR, any time you commit a new change it will automatically get added to the open PR. When those changes are ready for us to re-review, simply leave a comment on the PR letting us know!</p>
+<p>Once we accept and &quot;merge&quot; your pull request, the PR page gets closed and you&#39;ll officially become a <a href="https://github.com/netizenorg/netnet.studio/graphs/contributors" target="_blank">contributor</a> to netnet.studio!</p>
 
       </div>
     </div>

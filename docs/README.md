@@ -23,9 +23,9 @@ We're not entirely opposed to LLMs, we believe there's lots of unexplored possib
 
 The [first web browser](https://www.youtube.com/watch?v=3c3Rt6QbHDw) was both a tool for exploring the web and creating it. The first browsers were all research projects created in labs and universities, but when enterprising technologists saw its commercial potential they removed the "editor" part and left only the "browser" part. netnet brings the "editor" back into the "browser", where it was always meant to be.
 
-Unlike most web-based products of [surveillance capitalism](https://www.youtube.com/watch?v=hIXhnWUmMvw) (the dominant business model of big tech today) netnet.studio is not here to collect and profit off your data. The studio is carefully designed to be a privacy-focused safe space for creative experimentation (You can read our [privacy policy](https://dev.netnet.studio/?w=privacy-policy) at the studio). While netnet is modeled on modern code editors and does integrate with other third party tools like GitHub (for the purpose of teaching others the conventions and tooling of the day) we go to great lengths to make this all secure and extremely transparent while remaining accessible.
+Unlike most web-based products of [surveillance capitalism](https://www.youtube.com/watch?v=hIXhnWUmMvw) (the dominant business model of big tech today) netnet.studio is not here to collect and profit off your data. The studio is carefully designed to be a privacy-focused safe space for creative experimentation (You can read our [privacy policy](https://dev.netnet.studio/?w=privacy-policy) at the studio). While netnet is modeled on modern code editors and does integrate with other third party tools like GitHub (for the purpose of teaching students the conventions and tooling of the day) we go to great lengths to make this all secure and extremely transparent while remaining accessible.
 
-**TODO** *update privacy-policy dev link to main link before pushing to main*
+*✏️ TODO: update privacy-policy dev link to main link before pushing to main*
 
 **If you're an educator interested in leveraging the platform in your classroom, [start here](educators/README.md)!**
 

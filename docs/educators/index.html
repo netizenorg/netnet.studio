@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="netnet.studio">
     <meta name="twitter:site" content="@netizenorg">
 
-    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
     <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
@@ -35,7 +35,13 @@
       </div>
       <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
                 <ul class="docs__panel__list"></ul>
@@ -53,6 +59,9 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/support.html">
                   support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
                 </a></li></ul>
               </li></ul>
     </div>
@@ -60,19 +69,80 @@
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
         <h1>Dear Educators,</h1>
-<p>netnet.studio has been developed iteratively for the last 5 years (in beta from 2020-2025),  alongside creative coding educators and students. It has been successfully used by hundreds of students across universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo. By removing many of the technical hurdles beginners face, netnet.studio offers a smoother ramp into creative coding, saving instructors hours in the classroom and reducing student frustration. Its self-revealing interface design also enables educators to introduce complex topics, like version control with Git, earlier than traditional tools allow. The platform also provides tooling for instructors to create their own annotated demos, project templates, interactive tutorials and so much more!</p>
-<p><strong>TODO</strong></p>
+<p>netnet.studio has been developed iteratively for the last 5 years (in beta from 2020-2025),  alongside creative coding educators and students. It has been successfully used by hundreds of students across universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo among others.</p>
+<p>By removing many of the technical hurdles beginners face, netnet.studio offers a smoother ramp into creative coding for the web, saving instructors hours in the classroom and reducing student frustration. Its self-revealing interface design also enables educators to introduce complex topics, like version control with Git, earlier than traditional tools allow, but no sooner than it&#39;s needed. The platform also provides tooling for instructors to create their own annotated demos, project templates, interactive tutorials and so much more!</p>
+<h2>Using netnet as a Classroom Code Editor</h2>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/sketching.mp4"
+  poster="../images/poster-sketching.jpg">
+</video></p>
+<p>One of the simplest and most effective ways to use <strong>netnet</strong> in the classroom is as a browser-based code editor. There’s nothing to download or install—students can go straight to <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a> and start coding instantly.</p>
+<p>The editor includes all the standard tools you’d expect: line numbering, syntax highlighting, and code hinting, but it also adds features designed specifically for beginners.</p>
 <ul>
-<li>sketches<ul>
-<li>what&#39;s unique about the editor (edu info, friendly errors, etc)</li>
-<li>shareable sketches (for quick back/fourth with students)</li>
-<li>Demo Maker (for annotated demos)</li>
-<li>Projects (Git integration &amp;&amp; literacy)</li>
-<li>Tutorial Maker (for interactive tutorials)</li>
-<li>how to contribute back (from edu license fees to PRs)</li>
-</ul>
+<li><p>netnet is a <strong>realtime editor</strong> by default (this can be changed in the <em>Coding Menu &gt; editor settings</em>) which means students get immediate feedback as soon as they start coding.</p>
+</li>
+<li><p>Students can <strong>double-click any piece of code</strong> to get friendly explanations and reference links, helping them understand what each HTML element or CSS property does.</p>
+</li>
+<li><p>netnet provides <strong>friendly error messages</strong> which not only help translate the standard JavaScript errors, but also spot common HTML and CSS mistakes. These messages catch syntax errors as well as common mistakes and bad practices, helping students develop better habits as they code.</p>
 </li>
 </ul>
+<h3>Sharing/Saving &quot;Sketches&quot;</h3>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/saving-sketch.mp4"
+  poster="../images/poster-saving-sketch.jpg">
+</video></p>
+<p>While netnet supports the creation of full web <strong>projects</strong> (more on that below), <strong>sketches</strong> (a single HTML file) are a great way to share simple examples with students. To create a sketch simply type (or copy+paste) your code into the editor and press <b>CTRL+S</b> (or <b>CMD+S</b> on Mac). netnet will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL). When you generate a share link, the code is embedded directly in the URL itself (that’s why it’s so long).</p>
+<p>You can use these as links in class notes, as well as to quickly send a student an example or snippet in response to a question. In fact sending sketches back and fourth is a quick and easy way to asynchronously write code with someone without loosing the history (each link retains it&#39;s own state).</p>
+<h3>Annotate your sketch</h3>
+<p>You can also <strong>annotate a sketch</strong> using the <strong>Demo Maker</strong> widget. This tool lets you highlight specific lines of code and attach notes to them directly within the sketch. Once annotated, you can generate a <strong>shareable URL</strong> where netnet explains each highlighted line through its conversational passages.</p>
+<p><em>✏️ TODO: link to a demo example as well as the Demo Maker with loaded example</em></p>
+<p>Instead of writing a traditional article or blog post with code snippets scattered between paragraphs, this approach keeps everything in context, the full sketch remains live and interactive. netnet can guide students through the annotated code step by step, or they can explore it non-linearly by clicking the markers beside annotated lines or navigating through the <strong>Notes</strong> widget, which acts as a table of contents.</p>
+<p><em>✏️ TODO: link to the docs on how to use the Demo Maker</em></p>
+<h3>Multi-file Projects</h3>
+<p>In netnet, students can work in two ways: sketches and projects. A sketch is a single HTML file, perfect for quick experiments, exercises, or demonstrations. A project, on the other hand, is a full website that can include multiple HTML files, CSS and JavaScript files, and other assets like images, fonts, and video. Projects are also versioned and stored on GitHub, making them ideal for work that will be developed over time with the goal of eventually being published to the Web.</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/project-files.mp4"
+  poster="../images/poster-project-files.jpg">
+</video></p>
+<p>netnet projects not only make GitHub integration effortless (once connected to their GitHub account, students never have to leave netnet), but also helps them build real technical literacy. The <strong>Project Files</strong> widget teaches how file paths work and assists in writing them, while the <strong>Version Control</strong> widget explains what commits are and guides students through creating them. This way, students gain authentic, practical experience with modern web development workflows in an accessible and guided environment.</p>
+<ul>
+<li><p><strong>Automatic GitHub Repositories:</strong>
+Creating a project in netnet automatically generates a GitHub repository, students simply name the project (netnet ensure good naming conventions), and the repo is created and linked to their GitHub account. There’s no setup required, making it a quick, accessible way to start working in a real development environment.</p>
+</li>
+<li><p><strong>Guided Version Control:</strong>
+As students work, netnet walks them through version control step by step. They learn to create commits and track changes through clear explanations and prompts. This gives them hands-on experience with Git, demystifying the command line.</p>
+</li>
+<li><p><strong>One-Click Publishing:</strong>
+Because projects are hosted on GitHub, students can publish their work to the web with a single click using <em>GitHub Pages</em>. This makes it easy to share finished projects publicly, showcase their progress, or present completed coursework online.</p>
+</li>
+</ul>
+<p>To learn more about these features refer to the <a href="../students/coding.html">Student's Coding Doc</a></p>
+<h2>Using netnet as a &quot;Flipped Classroom&quot;</h2>
+<p>netnet’s <strong>Learning Guide</strong> makes it easy to support a <em>flipped classroom</em> model, where students learn core concepts independently, through interactive lessons, demos, and tutorials, before coming together in class to discuss, experiment, and build. Because the Learning Guide combines explanation, interactivity, and hands-on coding all in one place, students can engage with new material at their own pace, while instructors can dedicate class time to creative exploration, collaboration, and deeper problem-solving.</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/learning-guide.mp4"
+  poster="../images/poster-learning-guide.jpg">
+</video></p>
+<p>Each section of the Learning Guide is designed to be self-contained and accessible, so students can move through topics linearly or jump around based on their needs. The built-in interactivity means students aren’t just reading or watching, they’re actively experimenting with code as they go, with guided explanations from netnet. Educators can assign specific lessons or demos as pre-class activities, then use classroom time for guided practice, discussion, or project work that builds on what students explored individually.</p>
+<h3>Learning Modes</h3>
+<p>The Learning Guide offers several <strong>learning modes</strong>, each supporting a different approach to how students explore and practice coding concepts. Some are guided and structured, while others encourage open-ended experimentation. Educators can mix and match these modes to suit different learners or lesson goals.</p>
+<ul>
+<li><p><strong>Guided Intros</strong>
+Short, interactive lessons where netnet introduces core web concepts like HTML, CSS, and JavaScript. These use slide-like widgets and conversational passages to walk students through key ideas step by step.</p>
+</li>
+<li><p><strong>Annotated Demos</strong>
+Interactive examples that let students explore complete sketches annotated with notes and explanations. Each note highlights a specific line or section of code. Students can follow along sequentially or jump between notes to focus on the parts most relevant to them. As mentioned before, you can make your own Annotated Demos using the <strong>Demo Maker</strong> widget.</p>
+</li>
+<li><p><strong>Guided Templates</strong>
+Starter projects that help students move from examples to creation. netnet explains each part of the code as it writes it out, sometimes prompting students for input along the way. Once complete, students can immediately start building on the project. We don&#39;t have widget for creating these (yet), but if you have ideas for new templates you can submit those as open source contributions (see the <a href="../contributors/index.html">Contributors Doc</a> for details)</p>
+</li>
+<li><p><strong>Interactive Tutorials</strong>
+Hypermedia lessons that blend video, text, and live code. Students can pause at any point to experiment with code or explore related widgets, making these ideal for self-paced or homework-based exploration. At the time of writing, these are all led by Nick Briz, but you can make your own hypermedia tutorials using the <strong>Tutorial Maker</strong> widget.</p>
+</li>
+</ul>
+<p>To learn more about these features refer to the <a href="../students/learning.html">Student's Learning Doc</a></p>
+<hr>
+<p><em>✏️ TODO: explain our syllabi review and classroom-consulting services (if you&#39;re reading this before we&#39;ve added the details for this, email <a href="mailto:nick@netizen.org">nick@netizen.org</a> to inquire)</em></p>
 
       </div>
     </div>
