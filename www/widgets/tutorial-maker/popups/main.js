@@ -494,12 +494,6 @@ nn.getAll('button[name]').forEach(btn => {
   })
 })
 
-// prevents shortcuts when typing in custom inputs
-nn.get('#kf-name-input').on('keydown', (e) => { e.stopPropagation() })
-nn.get('#sptlght-line-input').on('keydown', (e) => { e.stopPropagation() })
-nn.get('#widget-key-input').on('keydown', (e) => { e.stopPropagation() })
-nn.get('#widget-title-input').on('keydown', (e) => { e.stopPropagation() })
-
 // opening and closing spotlight dropdown
 nn.get('#spotlight-dd').on('click', (e) => {
   const em = nn.get('#sptlght-edit')
@@ -556,6 +550,7 @@ nn.on('load', () => {
   WN.cm.setOption('lineNumbers', false)
   const debouncedUpdate = debounce(updateWidgetState, 1500)
   WN.on('code-update', (code) => debouncedUpdate(code))
+  WN.ele.querySelector('.CodeMirror-gutters').style.background = 'transparent'
   // TODO: fix where if you try to ctrl + arrow doesn't jump to different keyframes
 })
 
@@ -566,6 +561,8 @@ nn.on('resize', () => {
 
 nn.on('keydown', (e) => {
   const avoidToggle = ['input', 'textarea']
+  const editable = e.target.getAttribute('contenteditable')
+  if (editable) return // stop propagation on all editable elements
   if (e.key === ' ' && !avoidToggle.includes(e.target.localName)) {
     msg('tut-mkr-toggle')
   } else if (e.key === 'ArrowLeft') {
