@@ -148,16 +148,24 @@ TODO (SIMPLE)...
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
-Custom widgets need to be defined in the [www/js/widgets](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets) directory and should look something like this:
+Custom widgets need to be defined in the [www/js/widgets](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets) directory. An example file structure can be found in [www/js/widgets/example-widget](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/example-widget). Every custom widget lives in its own folder within /widgets/, where the folder name in kebab case (`example-widget`) must match your new widget class name in pascal case (`ExampleWidget`). Other optional files such as styles and optional netnet dialogue (`convo.js`, more to come on this later) live here too.
+```
+www/widgets/
+ |
+ |- example-widget/
+    |- convo.js
+    |- index.js
+    |- styles.css
+```
+
+ `index.js` should look something like this. Note the unique `key` for our new widget must match its parent folder's name, both in kebab case.
 
 ```
-// the name of this file should match the class name,
-// for example MyCustomWidget.js
-class MyCustomWidget extends Widget {
+class ExampleWidget extends Widget {
   constructor (opts) {
     super(opts)
 
-    this.key = 'my-custom-widget'
+    this.key = 'example-widget'
     this.title = 'Welcome!'
     this.innerHTML = `
       <h1>This is a custom Widget</h1>
@@ -175,24 +183,24 @@ class MyCustomWidget extends Widget {
   }
 }
 
-window.MyCustomWidget = MyCustomWidget
+window.ExampleWidget = ExampleWidget
 ```
 
-Assuming you've saved the file above into the widgets folder, you can check and see if your widget works by opening your browser's dev console and running:
+Assuming you've saved the file above, you can check and see if your widget works by opening your browser's dev console and running:
 
 ```
-WIDGETS.open('my-custom-widget')
+WIDGETS.open('example-widget')
 ```
 
-This is a contrived example, but you can see how this widget includes a custom method `random()` which wouldn't be possible using the simple widget approach explained above. You could now also do `WIDGETS['my-custom-widget'].random()` in the dev console to run that custom method.
+This is a contrived example, but you can see how this widget includes a custom method `random()` which wouldn't be possible using the simple widget approach explained above. You could now also do `WIDGETS['example-widget'].random()` in the dev console to run that custom method.
 
 **NOTE:**
 
-If you had tried to run `WIDGETS['my-custom-widget'].random()` before `WIDGETS.open('my-custom-widget')` you would have gotten an error saying `WIDGETS['my-custom-widget']` is undefined, that's because the `.open()` method is doing some extra work behind the scenes.
+If you had tried to run `WIDGETS['example-widget'].random()` before `WIDGETS.open('example-widget')` you would have gotten an error saying `WIDGETS['example-widget']` is undefined. That's because the `.open()` method is doing some extra work behind the scenes.
 
-If you had opened your dev console and checked the `WIDGETS.loaded` first, you'd notice that it does not include your new `MyCustomWidget.js` file. This is because netnet doesn't load all the custom widgets by default (loading all the widgets on page load delays the initial load time unnecessarily). Instead the widget system provides a load method, for example: `WIDGETS.load('MyCustomWidget.js')`, to load the widget when you need it. This will add it to the `WIDGETS.loaded` array, as well as instantiating it automatically, which adds it to the `WIDGETS.instantiated` array, at which point you can interact with it like any other widget.
+If you had opened your dev console and checked the `WIDGETS.loaded` first, you'd notice that it does not include your new `example-widget/index.js` file. This is because netnet doesn't load all the custom widgets by default (loading all the widgets on page load delays the initial load time unnecessarily). Instead the widget system provides a load method, for example: `WIDGETS.load('example-widget')`, to load the widget when you need it. This will add it to the `WIDGETS.loaded` array, as well as instantiating it automatically, which adds it to the `WIDGETS.instantiated` array, at which point you can interact with it like any other widget.
 
-The difference between `WIDGETS['my-custom-widget'].open()` and `WIDGETS.open('my-custom-widget')`, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.
+The difference between `WIDGETS['example-widget'].open()` and `WIDGETS.open('example-widget')`, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.
 
 The reason the widget system also instantiates it automatically is because the default assumption is that there is only ever meant to be a single instance of your custom widget. That said, if you're trying to create a new type of widget that's meant to be instantiated multiple times, you can let the widget system know that you don't want it auto-instantiated by including the following getter in your custom widget:
 
@@ -202,12 +210,12 @@ static get skipAutoInstantiation () { return true }
 
 ## <a id="code-gen"></a> Creating a Code Generator Widget (Custom)
 
-The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet's editor with the help of a GUI. A good example would be the [ColorWidget.js]()
+The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet's editor with the help of a GUI. A good example would be the [ColorWidget.js](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/color-widget)
 
-Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory:
+Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory. Let's create a font size generator widget in this example.
 
 ```
-// FontSizeGenerator.js
+// font-size-generator/index.js
 class FontSizeGenerator extends Widget {
   constructor (opts) {
     super(opts)

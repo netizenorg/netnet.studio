@@ -193,14 +193,19 @@ WIDGETS['my-new-widget'].emit('test', { data: 100 })</code></pre>
 <p>TODO (SIMPLE)...</p>
 <h2><a id="custom"></a> Creating a Custom Widget</h2>
 <p>When the options and functionality provided above aren&#39;t enough for what you need to do with a widget, maybe because you need a method or property that doesn&#39;t exist yet, you can create your own custom widget by extending the <code>Widget</code> base class.</p>
-<p>Custom widgets need to be defined in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">www/js/widgets</a> directory and should look something like this:</p>
-<pre><code>// the name of this file should match the class name,
-// for example MyCustomWidget.js
-class MyCustomWidget extends Widget {
+<p>Custom widgets need to be defined in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">www/js/widgets</a> directory. An example file structure can be found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/example-widget" target="_blank">www/js/widgets/example-widget</a>. Every custom widget lives in its own folder within /widgets/, where the folder name in kebab case (<code>example-widget</code>) must match your new widget class name in pascal case (<code>ExampleWidget</code>). Other optional files such as styles and optional netnet dialogue (<code>convo.js</code>, more to come on this later) live here too.</p>
+<pre><code>www/widgets/
+ |
+ |- example-widget/
+    |- convo.js
+    |- index.js
+    |- styles.css</code></pre>
+<p> <code>index.js</code> should look something like this. Note the unique <code>key</code> for our new widget must match its parent folder&#39;s name, both in kebab case.</p>
+<pre><code>class ExampleWidget extends Widget {
   constructor (opts) {
     super(opts)
 
-    this.key = 'my-custom-widget'
+    this.key = 'example-widget'
     this.title = 'Welcome!'
     this.innerHTML = `
       &lt;h1&gt;This is a custom Widget&lt;/h1&gt;
@@ -218,20 +223,20 @@ class MyCustomWidget extends Widget {
   }
 }
 
-window.MyCustomWidget = MyCustomWidget</code></pre>
-<p>Assuming you&#39;ve saved the file above into the widgets folder, you can check and see if your widget works by opening your browser&#39;s dev console and running:</p>
-<pre><code>WIDGETS.open('my-custom-widget')</code></pre>
-<p>This is a contrived example, but you can see how this widget includes a custom method <code>random()</code> which wouldn&#39;t be possible using the simple widget approach explained above. You could now also do <code>WIDGETS[&#39;my-custom-widget&#39;].random()</code> in the dev console to run that custom method.</p>
+window.ExampleWidget = ExampleWidget</code></pre>
+<p>Assuming you&#39;ve saved the file above, you can check and see if your widget works by opening your browser&#39;s dev console and running:</p>
+<pre><code>WIDGETS.open('example-widget')</code></pre>
+<p>This is a contrived example, but you can see how this widget includes a custom method <code>random()</code> which wouldn&#39;t be possible using the simple widget approach explained above. You could now also do <code>WIDGETS[&#39;example-widget&#39;].random()</code> in the dev console to run that custom method.</p>
 <p><strong>NOTE:</strong></p>
-<p>If you had tried to run <code>WIDGETS[&#39;my-custom-widget&#39;].random()</code> before <code>WIDGETS.open(&#39;my-custom-widget&#39;)</code> you would have gotten an error saying <code>WIDGETS[&#39;my-custom-widget&#39;]</code> is undefined, that&#39;s because the <code>.open()</code> method is doing some extra work behind the scenes.</p>
-<p>If you had opened your dev console and checked the <code>WIDGETS.loaded</code> first, you&#39;d notice that it does not include your new <code>MyCustomWidget.js</code> file. This is because netnet doesn&#39;t load all the custom widgets by default (loading all the widgets on page load delays the initial load time unnecessarily). Instead the widget system provides a load method, for example: <code>WIDGETS.load(&#39;MyCustomWidget.js&#39;)</code>, to load the widget when you need it. This will add it to the <code>WIDGETS.loaded</code> array, as well as instantiating it automatically, which adds it to the <code>WIDGETS.instantiated</code> array, at which point you can interact with it like any other widget.</p>
-<p>The difference between <code>WIDGETS[&#39;my-custom-widget&#39;].open()</code> and <code>WIDGETS.open(&#39;my-custom-widget&#39;)</code>, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.</p>
+<p>If you had tried to run <code>WIDGETS[&#39;example-widget&#39;].random()</code> before <code>WIDGETS.open(&#39;example-widget&#39;)</code> you would have gotten an error saying <code>WIDGETS[&#39;example-widget&#39;]</code> is undefined. That&#39;s because the <code>.open()</code> method is doing some extra work behind the scenes.</p>
+<p>If you had opened your dev console and checked the <code>WIDGETS.loaded</code> first, you&#39;d notice that it does not include your new <code>example-widget/index.js</code> file. This is because netnet doesn&#39;t load all the custom widgets by default (loading all the widgets on page load delays the initial load time unnecessarily). Instead the widget system provides a load method, for example: <code>WIDGETS.load(&#39;example-widget&#39;)</code>, to load the widget when you need it. This will add it to the <code>WIDGETS.loaded</code> array, as well as instantiating it automatically, which adds it to the <code>WIDGETS.instantiated</code> array, at which point you can interact with it like any other widget.</p>
+<p>The difference between <code>WIDGETS[&#39;example-widget&#39;].open()</code> and <code>WIDGETS.open(&#39;example-widget&#39;)</code>, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.</p>
 <p>The reason the widget system also instantiates it automatically is because the default assumption is that there is only ever meant to be a single instance of your custom widget. That said, if you&#39;re trying to create a new type of widget that&#39;s meant to be instantiated multiple times, you can let the widget system know that you don&#39;t want it auto-instantiated by including the following getter in your custom widget:</p>
 <pre><code>static get skipAutoInstantiation () { return true }</code></pre>
 <h2><a id="code-gen"></a> Creating a Code Generator Widget (Custom)</h2>
-<p>The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet&#39;s editor with the help of a GUI. A good example would be the <a href="">ColorWidget.js</a></p>
-<p>Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory:</p>
-<pre><code>// FontSizeGenerator.js
+<p>The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet&#39;s editor with the help of a GUI. A good example would be the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/color-widget" target="_blank">ColorWidget.js</a></p>
+<p>Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory. Let&#39;s create a font size generator widget in this example.</p>
+<pre><code>// font-size-generator/index.js
 class FontSizeGenerator extends Widget {
   constructor (opts) {
     super(opts)
