@@ -102,7 +102,7 @@ function generateNav (directory, basePath = '') {
     return 0
   })
   // create nav's <ul> element
-  let nav = '<ul class="docs__panel__list">'
+  let nav = '<ul class="docs__panel__list" role="navigation">'
   if (/\/docs\/?$/.test(directory)) {
     nav += '<li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li>'
   }

@@ -403,8 +403,24 @@ div > a:not(.pill-btn):not(.highlight):hover,
       cursor: pointer;
     }
 
-    .docs__panel__hamburger:before,
-    .docs__panel__hamburger:after {
+    .docs__panel__hamburger:before {
+      content: '';
+
+      position: fixed;
+      top: 52px;
+      right: 0;
+      left: 0;
+
+      height: calc(100vh - 52px);
+
+      background: rgba(0,0,0,0.25);
+
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .docs__panel__hamburger div:before,
+    .docs__panel__hamburger div:after {
       content: '';
       position: absolute;
       left: 50%;
@@ -420,11 +436,11 @@ div > a:not(.pill-btn):not(.highlight):hover,
       transition: transform .3s var(--sarah-ease), top .3s var(--sarah-ease);
     }
 
-    .docs__panel__hamburger:before {
+    .docs__panel__hamburger div:before {
       top: 30%;
     }
 
-    .docs__panel__hamburger:after {
+    .docs__panel__hamburger div:after {
       top: 70%;
     }
   }
@@ -471,16 +487,17 @@ div > a:not(.pill-btn):not(.highlight):hover,
   }
 
   .docs__panel.open {
-    .docs__panel__hamburger span {
-      opacity: 0;
+    .docs__panel__hamburger:before {
+      opacity: 1;
+      visibility: visible;
     }
 
-    .docs__panel__hamburger:before {
+    .docs__panel__hamburger div:before {
       top: 50%;
       transform: translate(-50%, -50%) rotate(40deg);
     }
 
-    .docs__panel__hamburger:after {
+    .docs__panel__hamburger div:after {
       top: 50%;
       transform: translate(-50%, -50%) rotate(-40deg);
     }
