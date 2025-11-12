@@ -1,25 +1,25 @@
 # Widgets
 
-Widgets are multi-purpose independent windows. These are essentially netnet.studio "addons" or "plugins." They can be used during tutorials to open up other media types (images, videos, gifs, audio, texts, 3D objects, etc). Widgets can also be their own miscellaneous utilities. For example we could create a widget that explains some concept using interactive graphics. Widgets can also be GUIs that interact with the netitor, for example a widget that generates snippets of CSS code. The sky's the limit!
+Widgets are multi-purpose independent windows that can be thought of as "plugins" or "addons" for netnet.studio. They're used in a variety of contexts to provide functions, utilities, and information. For example, widgets can be used during tutorials to open up various media types (images, videos, gifs, audio, texts, 3D objects, etc). They can also be their own miscellaneous utilities, such as a widget that explains some concept using interactive graphics. Widgets can also be GUIs that interact with the netitor: for example, a widget that generates snippets of CSS code. The sky's the limit!
 
-The docs below explain how to use netnet's widget system for creating all sorts of custom widgets. For a rundown on some of netnet's core widgets refer to the widget section of the Project-Architecture doc.
+The docs below explain how to use netnet's Widget system for creating all sorts of widgets.
 
 - [The Widget System](#system)
 - [Creating a Simple Widget](#simple)
-- [Properties and Methods](#props)
+  - [Properties and Methods](#props)
 - [Creating a Video Widget](#video)
 - [Creating a Custom Widget](#custom)
 - [Creating a Code Generator Widget](#code-gen)
 
 ## <a id="system"></a> The Widget System
 
-All the logic for how netnet's Widget system works can be found in www/js/Widget.js and so any bug fixes or modifications to the actual Widget system itself would happen there. The system creates a global WIDGETS object which you can test in your browser's dev console, copy+paste one of the following lines for example:
+All of the logic for netnet's Widget system can be found in [www/widgets/index.js](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/index.js), so any bug fixes or modifications to the Widget system itself would happen there. The system creates a global `WIDGETS` object. You can test this object in your browser's developer console. Copy+paste one of the following lines for a demo:
 
 ```
 // Returns an array of all the files currently loaded into the system.
 // These are the actual JavaScript files used to generate different
 // sorts of widgets. These are essentially the various widget classes.
-// (to load a custom widget class see Creating Custom Widget below)
+// (to load a custom widget class see Creating a Custom Widget below)
 WIDGETS.loaded
 
 // Returns an array keys of every widget currently instantiated in netnet.
@@ -32,8 +32,11 @@ WIDGETS.instantiated
 WIDGETS.list()
 ```
 
+Widgets can be made by either using functionality provided in the `WIDGETS` object (detailed in [Simple](#simple)), or extending the base `Widget` class (detailed in [Custom](#custom)).
+
 ## <a id="simple"></a> Creating a Simple Widget
-To create a new widget you can use the WIDGET's .create() method, which takes an object that can contain any number of optional properties, but requires a key property, which must be a unique id that isn't being used by any other widget. You can use WIDGETS.instantiated to reference a list of unique keys for all the currently instantiated widgets (your key can be anything other than those). To test this out try copy+pasting the following into the browser's developer console:
+
+To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
 ```
 // to create the widget first run
@@ -46,38 +49,38 @@ WIDGETS.create({
 // then to open the widget run
 WIDGETS.open('welcome-widget')
 
-// you could also do both at the same time
+// you can work on two at the same time
 WIDGETS.create({ key: 'just-a-test' }).open()
 
 // you can also close it by calling
 WIDGETS.close('just-a-test')
 ```
 
-## <a id="props"></a> Properties and Methods
-Widgets have various properties all of which can be set in the constructor by passing it any of the following options:
+### <a id="props"></a> Properties and Methods
+Widgets have various properties, all of which can be set in the constructor by passing any of the following options to the `.create()` method:
 
 ```
 WIDGETS.create({
   type: 'Widget',         // type of widget
   key: 'my-new-widget',   // the widget's id
-  title: 'My New Widget', // for widget title bar
-  innerHTML: 'hi there',  // html string or HTMLElement
-  closable: true,         // allow user to close the widget
-  resizable: true,        // allow user to resize the widget
-  listed: true,           // should widget be listed in search results
+  title: 'My New Widget', // the widget's title bar
+  innerHTML: 'hi there',  // the widget's window content. html string or HTMLElement.
+  closable: true,         // allows user to close the widget
+  resizable: true,        // allows user to resize the widget
+  listed: true,           // should widget be listed in search results?
   left: 20,               // position from left (x axis)
   right: 20,              // position from right (x axis) instead of left
   top: 20,                // position from top (y axis)
   bottom: 20,             // position from bottom (y axis) instead of top
   zIndex: 100,            // stacking value (z axis)
-  width: 500,             // window width
-  height: 500             // window height
+  width: 500,             // widget window width
+  height: 500             // widget window height
 })
 ```
 
-You can interact with any instantiated widget directly by calling `WIDGETS['my-new-widget']`, alternatively you could also pull it from the `WIDGETS.list()` array (as mentioned above). You can the call the widget's various properties like `WIDGETS['my-new-widget'].resizable` or `WIDGETS['my-new-widget'].width`, there is also a ready only `WIDGETS['my-new-widget'].opened` property which returns a boolean (`true` if the widget is currently opened, `false` if not)
+You can interact with any instantiated widget directly by calling `WIDGETS['my-new-widget']`. Alternatively, you could pull it from the `WIDGETS.list()` array (as mentioned above). You can call the widget's various properties like `WIDGETS['my-new-widget'].resizable` or `WIDGETS['my-new-widget'].width`, and there is also a read-only `WIDGETS['my-new-widget'].opened` property which returns a boolean (`true` if the widget is currently opened, `false` if not).
 
-You can also call various different methods on your instantiated widget, for example:
+You can also call various methods on an instantiated widget, such as:
 
 ```
 // to open and close the widget
@@ -98,12 +101,12 @@ WIDGETS['my-new-widget'].update({
 })
 
 // if you want to animate/transition the change in position
-// pass the number of miliseconds as a second argument
+// pass the number of milliseconds as a second argument
 WIDGETS['my-new-widget'].update({ left: 10 }, 1000)
 
 // by default, if no position is set in the constructor
-// widgets will open in the center of the page
-// if you ever want to recenter a widget call
+// widgets will open in the center of the page.
+// if you ever want to recenter a widget, call
 WIDGETS['my-new-widget'].recenter()
 
 // if there are other widgets on the page obstructing your widget
@@ -137,11 +140,13 @@ WIDGETS['my-new-widget'].on('test', (eve) => {
 WIDGETS['my-new-widget'].emit('test', { data: 100 })
 ```
 
-## <a id="video"></a> Creating a Video Widget
+## <a id="video"></a> Creating a Video Widget (Simple)
+
+TODO (SIMPLE)...
 
 ## <a id="custom"></a> Creating a Custom Widget
 
-When the options and functionality provided above aren't enough for doing whatever it is you want to do with a widget, maybe because you need a method or property that doesn't exist in the base Widget class, you can create your own custom widget by extending this base class.
+When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
 Custom widgets need to be defined in the [www/js/widgets](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets) directory and should look something like this:
 
@@ -189,13 +194,13 @@ If you had opened your dev console and checked the `WIDGETS.loaded` first, you'd
 
 The difference between `WIDGETS['my-custom-widget'].open()` and `WIDGETS.open('my-custom-widget')`, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.
 
-The reason the widget system also instantiates it automatically is because the default assumption is that there is only ever meant to be a single instance of your custom widget. That said, if you're trying to create a new type of widget, which is meant to be instantiated multiple times you can let the widget system know that you don't want it auto-instantiated by including the following getter in your custom widget:
+The reason the widget system also instantiates it automatically is because the default assumption is that there is only ever meant to be a single instance of your custom widget. That said, if you're trying to create a new type of widget that's meant to be instantiated multiple times, you can let the widget system know that you don't want it auto-instantiated by including the following getter in your custom widget:
 
 ```
 static get skipAutoInstantiation () { return true }
 ```
 
-## <a id="code-gen"></a> Creating a Code Generator Widget
+## <a id="code-gen"></a> Creating a Code Generator Widget (Custom)
 
 The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet's editor with the help of a GUI. A good example would be the [ColorWidget.js]()
 
