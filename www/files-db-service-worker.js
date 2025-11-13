@@ -284,13 +284,43 @@ async function handleProxyRequest (targetUrl, rangeHdr) {
     })
 
     const res = await fetch(req)
-    // 200 or 206 are both fine; just pass it through untouched
+    // 200 or 206 are both fine; we'll normalize headers below
     if (!res.ok && res.status !== 206) {
       console.warn('[SW] Proxy target returned', res.status, res.statusText)
       return new Response('Failed to fetch resource', { status: 502 })
     }
 
-    return res
+    // Derive MIME type from URL extension when upstream returns generic types
+    const guessedType = getMimeType(targetUrl) || res.headers.get('content-type') || 'application/octet-stream'
+
+    // Build a new headers object, preserving important range/cache headers and setting our own Content-Type
+    const outHeaders = new Headers()
+    // Preserve common useful headers
+    const passthrough = [
+      'content-length',
+      'content-range',
+      'accept-ranges',
+      'etag',
+      'last-modified',
+      'cache-control'
+    ]
+    passthrough.forEach(h => { const v = res.headers.get(h); if (v) outHeaders.set(h, v) })
+    // Always set content type based on extension or upstream hint
+    outHeaders.set('Content-Type', guessedType)
+    // Allow usage by media elements without CORS issues in same-origin SW response
+    outHeaders.set('Access-Control-Allow-Origin', '*')
+    // Ensure Range semantics are advertised for media
+    if (/^(audio|video)\//.test(guessedType)) {
+      if (!outHeaders.has('accept-ranges')) outHeaders.set('Accept-Ranges', 'bytes')
+      outHeaders.set('Vary', 'Range')
+    }
+
+    // Return a new Response with adjusted headers while streaming body
+    return new Response(res.body, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: outHeaders
+    })
   } catch (err) {
     console.error('[SW] Proxy fetch error:', err)
     return new Response('Error: ' + err.message, { status: 500 })
@@ -550,10 +580,8 @@ self.addEventListener('fetch', (event) => {
         }
         // otherwise handle absolute URL (string, ie. http://raw.github...)
         if (typeof fileData === 'string' && fileData.startsWith('http')) {
-          if (isMediaPath) {
-            if (LOG) console.log('[SW] redirecting media to upstream', lookup)
-            return Response.redirect(fileData, 302)
-          }
+          // For media and all other absolute URLs, proxy them so we can
+          // normalize headers (e.g., proper Content-Type) and preserve Range.
           return handleProxyRequest(fileData, rangeHdr)
         }
 
