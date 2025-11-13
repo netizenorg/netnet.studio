@@ -143,9 +143,16 @@ class CodingMenu extends Widget {
 
   new () {
     this.convos = window.CONVOS[this.key](this)
-    const repo = WIDGETS['project-files']?.projectData.name
-    if (repo) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
-    else window.convo = new Convo(this.convos, 'new-proj-or-sketch')
+    const loggedIn = WIDGETS['student-session'].getData('owner')
+    if (loggedIn) {
+      const repo = WIDGETS['project-files']?.projectData.name
+      if (repo) window.convo = new Convo(this.convos, 'new-proj-or-sketch2')
+      else window.convo = new Convo(this.convos, 'new-proj-or-sketch')
+    } else {
+      if (NNE.code === '') {
+        window.convo = new Convo(this.convos, 'already-blank-sketch')
+      } else this._newSketch()
+    }
   }
 
   _newProject () {
