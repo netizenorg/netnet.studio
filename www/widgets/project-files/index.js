@@ -58,6 +58,11 @@ class ProjectFiles extends Widget {
       csv: 'text/csv',
       json: 'application/json',
       xml: 'application/xml',
+      // 3D formats
+      obj: 'text/plain',
+      mtl: 'text/plain',
+      gltf: 'model/gltf+json',
+      glb: 'model/gltf-binary',
       // image
       png: 'image/png',
       gif: 'image/gif',
@@ -475,7 +480,7 @@ class ProjectFiles extends Widget {
             const name = arr[0]
             const data = arr[1]
             const mt = this._getMimeType(name)
-            const textMimes = ['application/json', 'image/svg+xml']
+            const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
             const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
             this.files[name] = { path: data.path }
             let code // store plain-text/code
@@ -790,7 +795,9 @@ class ProjectFiles extends Widget {
     const allowedTypes = Object.values(this.mimeTypes)
     allowedTypes.push('application/x-javascript')
     allowedTypes.push('application/ogg')
+    // accept by extension for formats where browsers often omit type
     allowedTypes.push('.woff', '.woff2', '.ttf', '.otf')
+    allowedTypes.push('.obj', '.mtl', '.gltf', '.glb')
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = allowedTypes.join(',')
@@ -1129,6 +1136,7 @@ class ProjectFiles extends Widget {
     const mimeType = type || this.mimeTypes[name.split('.')[1]]
     return mimeType.split('/')[0] === 'text' ||
       mimeType === 'application/json' ||
+      mimeType === 'model/gltf+json' ||
       mimeType === 'application/x-javascript' ||
       mimeType === 'application/xml'
   }
@@ -1368,6 +1376,11 @@ class ProjectFiles extends Widget {
     const ext = file.name.split('.').pop().toLowerCase()
     const fmt = ['woff', 'woff2', 'ttf', 'otf']
     if (fmt.includes(ext)) type = `font/${ext}`
+    // normalize 3D formats where type is often blank or generic
+    if (ext === 'obj') type = this.mimeTypes.obj
+    else if (ext === 'mtl') type = this.mimeTypes.mtl
+    else if (ext === 'gltf') type = this.mimeTypes.gltf
+    else if (ext === 'glb') type = this.mimeTypes.glb
     // ....
     if (allowedTypes.length > 0 && !allowedTypes.includes(type)) {
       this.convos = window.CONVOS[this.key](this)

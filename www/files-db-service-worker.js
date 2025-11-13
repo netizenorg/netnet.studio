@@ -39,6 +39,11 @@ function getMimeType (filePath) {
     csv: 'text/csv',
     json: 'application/json',
     xml: 'application/xml',
+    // 3D formats
+    obj: 'text/plain',
+    mtl: 'text/plain',
+    gltf: 'model/gltf+json',
+    glb: 'model/gltf-binary',
     // image
     png: 'image/png',
     gif: 'image/gif',
