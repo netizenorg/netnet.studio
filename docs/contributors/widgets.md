@@ -1,5 +1,7 @@
 # Widgets
 
+![netnet widgets](../images/poster-widget-intro.jpg)
+
 Widgets are multi-purpose independent windows that can be thought of as "plugins" or "addons" for netnet.studio. They're used in a variety of contexts to provide functions, utilities, and information. For example, widgets can be used during tutorials to open up various media types (images, videos, gifs, audio, texts, 3D objects, etc). They can also be their own miscellaneous utilities, such as a widget that explains some concept using interactive graphics. Widgets can also be GUIs that interact with the netitor: for example, a widget that generates snippets of CSS code. The sky's the limit!
 
 The docs below explain how to use netnet's Widget system for creating all sorts of widgets.
