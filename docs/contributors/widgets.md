@@ -38,6 +38,8 @@ Widgets can be made by either using functionality provided in the `WIDGETS` obje
 
 ## <a id="simple"></a> Creating a Simple Widget
 
+![simple widget](../images/simple-widget-ex.jpg)
+
 To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
 ```

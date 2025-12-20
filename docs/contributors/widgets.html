@@ -106,6 +106,7 @@ WIDGETS.instantiated
 WIDGETS.list()</code></pre>
 <p>Widgets can be made by either using functionality provided in the <code>WIDGETS</code> object (detailed in <a href="#simple">Simple</a>), or extending the base <code>Widget</code> class (detailed in <a href="#custom">Custom</a>).</p>
 <h2><a id="simple"></a> Creating a Simple Widget</h2>
+<p><img src="../images/simple-widget-ex.jpg" alt="simple widget" /></p>
 <p>To create a new widget, use the <code>WIDGETS</code>&#39;s <code>.create()</code> method. <code>.create()</code> takes an object that requires a <code>key</code> property with a unique id that isn&#39;t being used by another widget, in addition to any number of optional properties. You can use <code>WIDGETS.instantiated</code> to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser&#39;s developer console:</p>
 <pre><code>// to create the widget first run
 WIDGETS.create({
