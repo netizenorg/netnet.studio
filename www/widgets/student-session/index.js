@@ -116,11 +116,13 @@ class StudentSession extends Widget {
     setTimeout(() => { NNE.cm.refresh() }, 10)
     NNW.layout = window.localStorage.getItem('last-saved-layout')
     const wigs = JSON.parse(window.localStorage.getItem('last-saved-widgets'))
-    wigs.forEach(w => {
-      WIDGETS.open(w.key, widget => {
-        widget.update({ left: w.left, top: w.top, zIndex: w.zIndex }, 500)
+    wigs
+      .filter(w => w.key !== 'hyper-video-player')
+      .forEach(w => {
+        WIDGETS.open(w.key, widget => {
+          widget.update({ left: w.left, top: w.top, zIndex: w.zIndex }, 500)
+        })
       })
-    })
   }
 
   clearAllData (skipDialogue) {
