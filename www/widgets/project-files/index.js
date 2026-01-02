@@ -1392,6 +1392,7 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'duplicate-file')
       this._uploadedFile = {}
     } else {
+      console.log('showing curtain...');
       nn.get('load-curtain').show('upload.html', { filename: file.name })
       const isTextType = this._isTxt(file.name, type)
       const reader = new window.FileReader()
@@ -1406,6 +1407,7 @@ class ProjectFiles extends Widget {
         const filepath = path ? `${path}/${file.name}` : file.name
         await this._updateFile(filepath, data)
         this._updateFilesGUI()
+        console.log('hiding curtain...');
         setTimeout(() => nn.get('load-curtain').hide(), 200)
         this._uploadedFile = {}
       }

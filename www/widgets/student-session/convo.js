@@ -457,7 +457,7 @@ window.CONVOS['student-session'] = (self) => {
       content: 'If you have a GitHub account I can connect to it and save your work to your GitHub as new repos. Should we get authenticated?',
       options: {
         'let\'s do it!': (e) => e.goTo('goto-github'),
-        'what do you mean?': (e) => e.goTo('what-is-auth'),
+        'what\'s GitHub?': (e) => e.goTo('what-is-auth'),
         'never mind': (e) => e.hide()
       }
     },
