@@ -768,7 +768,7 @@ class ProjectFiles extends Widget {
     } else {
       if (NNW.layout !== 'welcome' && NNE.code !== '') {
         const tpw = WIDGETS['template-projects'] // if code is from a template
-        if (typeof tpw.state.name === 'string' && typeof tpw.state.files === 'object') {
+        if (tpw && typeof tpw.state.name === 'string' && typeof tpw.state.files === 'object') {
           tpw.preNewRepoFromTemplate()
         } else window.convo = new Convo(this.convos, 'clear-code?')
       } else { window.convo = new Convo(this.convos, 'create-new-project') }
