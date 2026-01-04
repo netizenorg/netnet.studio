@@ -202,6 +202,17 @@ class StudentSession extends Widget {
       return
     }
 
+    // during tutorial
+    const hvp = WIDGETS['hyper-video-player']
+    if (hvp && hvp.data?.id) {
+      hvp.pause()
+      const convos = this.convos = window.CONVOS['hyper-video-player'](hvp)
+      window.convo = new Convo(convos, 'interrupt')
+      return
+    } else {
+      this.convos = window.CONVOS[this.key](this)
+    }
+
     // if netnet was hiding, let's center+display it
     if (NNW.win.style.display === 'none') NNW.recenter(1000)
 
