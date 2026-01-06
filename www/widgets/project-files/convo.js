@@ -268,6 +268,9 @@ window.CONVOS['project-files'] = (self) => {
       self.closeProject()
       NNW.menu.switchFace('default')
     },
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     content: 'What would you like this new project to be called? <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),
@@ -275,6 +278,9 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'explain-proj-name', // if createNewRepo receives a bad name value
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),
@@ -375,6 +381,9 @@ window.CONVOS['project-files'] = (self) => {
   }, { // ---------------------------------------------------- folder stuff ----
     id: 'new-folder',
     content: namingConvos('new-f', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder'),
       'never mind': (e) => e.hide()
@@ -382,6 +391,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-blank',
     content: namingConvos('f-name-blank', 'folder', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder'),
       'never mind': (e) => e.hide()
@@ -389,6 +401,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-too-long',
     content: namingConvos('f-name-too-long', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -396,6 +411,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -403,6 +421,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -410,6 +431,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-hidden',
     content: namingConvos('f-name-is-hidden', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postNew(tempName, 'folder'),
       'no, oops!': (e) => e.goTo('new-folder')
@@ -417,6 +441,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-dot',
     content: namingConvos('fldr-has-dot', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -424,6 +451,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-rename',
     content: namingConvos('f-rename', 'folder', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', true),
       'never mind': (e) => e.hide()
@@ -472,6 +502,9 @@ window.CONVOS['project-files'] = (self) => {
   }, { // ---------------------------------------------------- file stuff ------
     id: 'new-file',
     content: namingConvos('new-f', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file'),
       'never mind': (e) => e.hide()
@@ -479,6 +512,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-blank',
     content: namingConvos('f-name-blank', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -486,6 +522,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-too-long',
     content: namingConvos('f-name-too-long', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -493,6 +532,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -500,6 +542,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -507,6 +552,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename',
     content: namingConvos('f-rename', 'file', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -514,6 +562,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-new-missing-ext',
     content: namingConvos('f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -521,6 +572,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename-missing-ext',
     content: namingConvos('f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -528,6 +582,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-invalid-ext',
     content: namingConvos('invalid-f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -535,6 +592,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-new-hidden',
     content: namingConvos('f-name-is-hidden', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postNew(tempName, 'file'),
       'no, oops!': (e) => e.goTo('new-file')
@@ -542,6 +602,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename-hidden',
     content: namingConvos('f-name-is-hidden', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postRenameFile(tempName),
       'no, oops!': (e) => e.goTo('file-rename')

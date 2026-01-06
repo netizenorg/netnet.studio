@@ -182,6 +182,9 @@ window.CONVOS['template-projects'] = (self) => {
       id: 'new-project-from-template',
       graph: { id: 12, x: 400, y: 625 },
       edit: true,
+      after: () => {
+        nn.get('text-bubble input').focus()
+      },
       content: 'Great, what would you like this new project to be called? <input placeholder="project-name" style="width: 300px;">',
       options: {
         'ready!': (e, t) => {
