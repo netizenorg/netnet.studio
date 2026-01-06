@@ -307,17 +307,11 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'publish-to-web?',
-    content: `You could always <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/archive/refs/heads/${WIDGETS['project-files']?.projectData.branch}.zip" target="_blank">download your project</a> and upload it to your preferred Web host. But, because you have your project saved on your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?`,
+    content: 'You could always <span class="link" onclick="WIDGETS[\'project-files\'].downloadProject()">download your project</span> and upload it to your preferred Web host. But, because you have your project saved on your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?',
     options: {
       'yes, publish it!': (e) => WIDGETS['project-files'].publishProject(),
       'download it instead': (e) => {
-        const owner = WIDGETS['student-session'].getData('owner')
-        const repo = WIDGETS['project-files']?.projectData.name
-        const branch = WIDGETS['project-files']?.projectData.branch || 'main'
-        const zip = `https://github.com/${owner}/${repo}/archive/refs/heads/${branch}.zip`
-        const a = nn.create('a').set({ href: zip, target: '_blank' }).addTo('body')
-        a.click()
-        a.remove()
+        WIDGETS['project-files'].downloadProject()
       },
       'oh, no thanks': (e) => e.hide()
     }

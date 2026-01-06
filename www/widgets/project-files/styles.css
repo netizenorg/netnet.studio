@@ -126,3 +126,17 @@
 .proj-files__tree-view li.folder:before {
   /* background styles dynamically generated in widget's _createHTML() method */
 }
+
+.save-circ-ex {
+  margin-right: 5px;
+}
+
+.save-circ-ex::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--netizen-number);
+  transform: translateX(5px);
+}
