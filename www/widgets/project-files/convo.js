@@ -220,6 +220,16 @@ window.CONVOS['project-files'] = (self) => {
       ok: (e) => e.hide()
     }
   }, {
+    id: 'cmd-enter-save-info',
+    content: `The <code>${hotkey}+Enter</code> shortcut is used to render <b>sketches</b> when the <i>auto-update</i> setting is false. You are currently working on a <b>project</b>, so instead you'll need to use <code>${hotkey}+S</code> to save and render those changes. Keep in mind, this only saves changes locally and temporarily, to make these changes permanent you'll need to push them to GitHub.`,
+    options: {
+      ok: (e) => e.hide(),
+      'GitHub?': (e) => e.goTo('explain-github'),
+      'can\'t you auto save?': (e) => e.goTo('auto-save'),
+      'what does the circle mean?': (e) => e.goTo('netnet-title-save')
+    },
+    after: () => addCircleToBubble()
+  }, {
     id: 'netnet-title-save',
     content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code><br><br>Now remember, these changes are only being saved temporarily in your browser. To save changes permanently you'll also need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.`,
     options: {

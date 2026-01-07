@@ -1102,6 +1102,11 @@ class ProjectFiles extends Widget {
     }
   }
 
+  explainSave () {
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'cmd-enter-save-info')
+  }
+
   _openSpot () {
     const pt = nn.get('#proj-title')
     const pad = pt.style.padding.split(' ').map(v => parseInt(v))
