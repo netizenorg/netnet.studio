@@ -1,7 +1,7 @@
 /* global NNE WIDGETS */
 window.CONVOS['hyper-video-player'] = (self) => {
-  const name = self.data.metadata ? self.data.metadata.author : ''
-  const title = self.data.metadata ? self.data.metadata.title : ''
+  const name = self.data?.metadata ? self.data.metadata.author : ''
+  const title = self.data?.metadata ? self.data.metadata.title : ''
 
   const play = (e) => {
     if (e) e.hide()
@@ -66,6 +66,19 @@ window.CONVOS['hyper-video-player'] = (self) => {
         e.hide()
         WIDGETS['coding-menu'].downloadCode()
         if (self._tempCode !== NNE.code) self._updateCode(self._tempCode)
+      }
+    }
+  }, {
+    id: 'interrupt',
+    content: 'You\'re currently in the middle of an interactive tutorial. Would you like to continue or do you want to quit the tutorial?',
+    options: {
+      'let\'s continue': (e) => {
+        self.play()
+        e.hide()
+      },
+      'let\'s quit': (e) => {
+        self.close()
+        e.hide()
       }
     }
   }]

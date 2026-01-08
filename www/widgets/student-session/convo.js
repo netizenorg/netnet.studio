@@ -467,12 +467,32 @@ window.CONVOS['student-session'] = (self) => {
       content: 'GitHub is a platform where coders share their open source projects and collaborate with each other. Your GitHub account is sort of like your code "portfolio". If you give me permission, I can send data to and from your account so that any projects you create here get saved as code repositories (aka repos) to your GitHub.',
       options: {
         'ok, let\'s do it!': (e) => e.goTo('goto-github'),
+        'do I have to?': (e) => e.goTo('have-to-github'),
+        'oh, never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'have-to-github',
+      graph: { id: 44, x: 1175, y: 1700 },
+      content: `Of course not, you can continue to sketch and explore the different lessons in my <span class="link" onclick="WIDGETS.open('learning-guide')">Learning Guide</span> without ever having to connect to GitHub. Remember that you can also download anything you sketch, version it locally and upload it to your preferred hosting. That said, if you're still new to all that, connecting me to your GitHub does mean I can help guide you through <a href="${window.location.origin}/docs/students/coding.html" target="_blank">the process</a>.`,
+      options: {
+        'ok, let\'s do it!': (e) => e.goTo('goto-github'),
+        'version? hosting? process?': (e) => e.goTo('git-process'),
+        'oh, never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'git-process',
+      graph: { id: 45, x: 1175, y: 1825 },
+      content: 'First, rather than simply working on a single file "sketch", we\'ll create a "project" (or what GitHub calls a "repository"), essentially a folder where we can store multiple files for your website. Second, I\'ll show you how to use <a href="https://en.wikipedia.org/wiki/Git" target="_blank">git</a>, a tool used to "version" our progress, like creating save points in a video game. Lastly, I\'ll show you how we can upload what we make here to GitHub which will also serve as a free <a href="https://en.wikipedia.org/wiki/Web_hosting_service" target="_blank">web host</a>, which means they\'ll run a server for your site making it accessible to anyone on the Web.',
+      options: {
+        'ok, let\'s do it!': (e) => e.goTo('goto-github'),
         'oh, never mind': (e) => e.hide()
       }
     },
     {
       id: 'goto-github',
-      graph: { id: 44, x: 1350, y: 1575 },
+      graph: { id: 46, x: 1375, y: 1650 },
       content: 'Ok, I\'m going to send you over to GitHub, then they\'ll send you back over here after you\'ve approved me. If you don\'t already have an account, you should be prompted to create one. Sounds good?',
       options: {
         'yep, let\'s go': (e) => {
@@ -484,7 +504,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'github-logout',
-      graph: { id: 45, x: 1000, y: 1425 },
+      graph: { id: 47, x: 1000, y: 1425 },
       content: 'Are you sure you want to disconnect me from your GitHub account?',
       options: {
         'yes I am': (e) => {
@@ -495,7 +515,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'logged-out-of-gh',
-      graph: { id: 46, x: 1000, y: 1550 },
+      graph: { id: 48, x: 1000, y: 1550 },
       after: () => self.greetStudent(),
       content: 'Ok, I\'ve just disconnected from your GitHub and cleared all GitHub related data. You can keep sketching and following tutorials, but you won\'t be able to create new projects on your account until you log back in.',
       options: {
@@ -504,7 +524,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'reboot-session',
-      graph: { id: 47, x: 850, y: 1425 },
+      graph: { id: 49, x: 850, y: 1425 },
       content: 'Are you sure you want to clear all your data and reboot me? This will wipe my entire memory, it will be like we first met...',
       options: {
         ok: (e) => {
@@ -516,7 +536,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'safari2',
-      graph: { id: 49, x: 1700, y: 250 },
+      graph: { id: 50, x: 1700, y: 250 },
       content: 'Our favorite browser is <a href="https://www.firefox.com/" target="_blank">Firefox</a>, but there are loads of other browsers out there like <a href="https://brave.com/" target="_blank">Brave</a>, <a href="https://www.opera.com/download" target="_blank">Opera</a> and <a href="https://vivaldi.com/download/" target="_blank">Vivalid</a>. Of course there\'s also <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> and <a href="https://www.microsoft.com/edge/" target="_blank">Edge</a> if you prefer the corporate "Big Tech" route.',
       options: {
         'I\'ll download one of those!': (e) => e.goTo('safari3'),
@@ -525,7 +545,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'safari3',
-      graph: { id: 50, x: 1850, y: 150 },
+      graph: { id: 51, x: 1850, y: 150 },
       content: 'Click on any of these links to download the new browser you want: <a href="https://www.firefox.com/" target="_blank">Firefox</a>, <a href="https://brave.com/" target="_blank">Brave</a>, <a href="https://www.opera.com/download" target="_blank">Opera</a>, <a href="https://vivaldi.com/download/" target="_blank">Vivalid</a>, <a href="https://www.microsoft.com/edge/" target="_blank">Edge</a>, <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>. These aren\'t the only ones, you can search online for more if you\'d like.',
       options: {
         'Ok!': (e) => e.goTo('safari5'),
@@ -534,7 +554,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'safari4',
-      graph: { id: 51, x: 1850, y: 350 },
+      graph: { id: 52, x: 1850, y: 350 },
       content: 'Ok, just want to confirm that you understand things might get buggy on Safari and not every feature will work correctly.',
       options: {
         'Yes, I accept the risk': (e) => {
@@ -549,7 +569,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'safari5',
-      graph: { id: 52, x: 2000, y: 250 },
+      graph: { id: 53, x: 2000, y: 250 },
       content: 'Great! Open that new browser once you\'ve downloaded it and visit <b>https://netnet.studio</b> to come back.',
       options: {
         'downloaded where': (e) => e.goTo('safari3')

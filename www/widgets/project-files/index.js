@@ -1,4 +1,4 @@
-/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn */
+/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn, JSZip */
 /*
 
 this widget is used to store project files in local storage, it works in tandem
@@ -572,6 +572,200 @@ class ProjectFiles extends Widget {
     })
   }
 
+  // Create and download a ZIP of the current project files
+  async downloadProject () {
+    try {
+      if (!this.projectData?.name) {
+        console.error('ProjectFiles: no project open to download.')
+        return
+      }
+
+      await this._ensureJSZip()
+
+      const zip = new window.JSZip()
+      const root = zip.folder(this.projectData.name || 'project')
+
+      const entries = Object.entries(this.files || {})
+      const tasks = entries.map(async ([path, file]) => {
+        const code = file?.code
+        const zipPath = path.replace(/^\/+/, '')
+
+        // include empty files explicitly
+        if (code === '' || code === null || typeof code === 'undefined') {
+          root.file(zipPath, '')
+          return
+        }
+
+        if (code instanceof window.Blob) {
+          root.file(zipPath, code, { compression: 'STORE' })
+          return
+        }
+
+        if (typeof code === 'string') {
+          // blob: or http(s) URL — fetch and store binary
+          if (code.startsWith('blob:') || code.startsWith('http')) {
+            try {
+              const res = await window.fetch(code)
+              if (!res.ok) throw new Error(`fetch failed with status ${res.status}`)
+              const blob = await res.blob()
+              root.file(zipPath, blob, { compression: 'STORE' })
+            } catch (err) {
+              // fallback: if text-like, save as text; otherwise log the error
+              const mt = this._getMimeType(zipPath)
+              if (this._isTxt(zipPath, mt)) {
+                root.file(zipPath, code)
+              } else {
+                console.error('ProjectFiles: failed to fetch asset for zip:', zipPath, err)
+              }
+            }
+          } else {
+            // treat as plain text
+            root.file(zipPath, code)
+          }
+          return
+        }
+
+        // unknown type — stringify as last resort
+        try { root.file(zipPath, String(code)) } catch (e) { /* noop */ }
+      })
+
+      await Promise.all(tasks)
+
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'download-project')
+
+      const blob = await zip.generateAsync({ type: 'blob' })
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = `${this.projectData.name}.zip`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(a.href)
+    } catch (error) {
+      console.error('ProjectFiles: failed to download project zip:', error)
+    }
+  }
+
+  // NOTE: this is here for the future, if/when we want to be able to work on
+  // "local" projects (ie. projs u upload/download locally) instead of requreing
+  // a GitHub account to work on projects. This method has been tested, but not
+  // thoroughly. Apart from this method, we'll need to adjust the entire proj
+  // workflow (b/c we can no longer assume it's a github repo)
+
+  /*
+  // Open a .zip and import files into the current (or new) project
+  async uploadProject () {
+    try {
+      await this._ensureJSZip()
+
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.zip,application/zip'
+      input.style.display = 'none'
+      document.body.appendChild(input)
+
+      input.addEventListener('change', async () => {
+        const file = input.files && input.files[0]
+        input.remove()
+        if (!file) return
+
+        nn.get('load-curtain').show('folder.html', { filename: file.name })
+        try {
+          const ab = await file.arrayBuffer()
+          const zip = await window.JSZip.loadAsync(ab)
+
+          // collect file entries (skip directories and __MACOSX)
+          const entries = []
+          zip.forEach((path, zipEntry) => {
+            if (zipEntry.dir) return
+            if (path.startsWith('__MACOSX/')) return
+            entries.push(path)
+          })
+
+          if (entries.length === 0) {
+            console.warn('ProjectFiles: zip is empty or contains only unsupported files')
+            nn.get('load-curtain').hide()
+            return
+          }
+
+          // determine common top-level folder to strip (e.g., repo-branch/)
+          const firstSegs = entries.map(p => p.split('/')[0])
+          const sameTop = firstSegs.every(s => s === firstSegs[0])
+          const stripRoot = sameTop ? firstSegs[0] : ''
+
+          // derive project name when none is open
+          let projName = this.projectData?.name
+          if (!projName) {
+            projName = stripRoot || file.name.replace(/\.zip$/i, '')
+            this.projectData = { name: projName, branch: 'local', url: null }
+            this.dbName = projName
+            this._swControl = this._initServiceWorker()
+            this.db = await this._initIndexedDB()
+            await this._clearIndexedDB()
+          } else {
+            // replacing current project contents
+            await this._clearIndexedDB()
+          }
+
+          // load each entry
+          const tasks = entries.map(async (fullPath) => {
+            const rel = stripRoot && fullPath.startsWith(stripRoot + '/')
+              ? fullPath.slice(stripRoot.length + 1)
+              : fullPath
+            const path = rel.replace(/^\/+/, '')
+            const extType = this._getMimeType(path)
+            const isText = this._isTxt(path, extType)
+            const item = zip.file(fullPath)
+            if (!item) return
+            if (isText) {
+              const text = await item.async('string')
+              await this._updateFile(path, text)
+            } else {
+              const blob = await item.async('blob')
+              const typed = new window.Blob([blob], { type: extType })
+              await this._updateFile(path, typed)
+            }
+          })
+
+          await Promise.all(tasks)
+
+          this._removeRedundantGitkeeps()
+          await this._saveFilesToIndexedDB()
+
+          // ensure custom renderer is active for SW loading
+          this._setCustomRenderer && this._setCustomRenderer()
+
+          this.lastCommitFiles = this._snapshotFiles(this.files)
+          this._updateFilesGUI()
+
+          // open index.html if present
+          if (this.files['index.html']) this.openFile('index.html')
+        } catch (err) {
+          console.error('ProjectFiles: failed to upload project zip:', err)
+        } finally {
+          nn.get('load-curtain').hide()
+        }
+      })
+
+      input.click()
+    } catch (error) {
+      console.error('ProjectFiles: uploadProject init failed:', error)
+    }
+  }
+  */
+
+  async _ensureJSZip () {
+    if (typeof window.JSZip !== 'undefined') return
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script')
+      s.src = '/core/libs/jszip.min.js'
+      s.onload = () => resolve()
+      s.onerror = (e) => reject(new Error('Failed to load JSZip'))
+      document.head.appendChild(s)
+    })
+  }
+
   _openMediaViewer (filepath, type) { // TODO: make sure widget fits (might need to scale image down)
     const urlBlob = this._toBlobURL(this.files[filepath].code)
 
@@ -768,7 +962,7 @@ class ProjectFiles extends Widget {
     } else {
       if (NNW.layout !== 'welcome' && NNE.code !== '') {
         const tpw = WIDGETS['template-projects'] // if code is from a template
-        if (typeof tpw.state.name === 'string' && typeof tpw.state.files === 'object') {
+        if (tpw && typeof tpw.state.name === 'string' && typeof tpw.state.files === 'object') {
           tpw.preNewRepoFromTemplate()
         } else window.convo = new Convo(this.convos, 'clear-code?')
       } else { window.convo = new Convo(this.convos, 'create-new-project') }
@@ -899,18 +1093,18 @@ class ProjectFiles extends Widget {
 
   explainTitleBar (path) {
     this.convos = window.CONVOS[this.key](this)
-    if (path.includes('index.html') && path.match(/\//g).length === 1) {
-      window.convo = new Convo(this.convos, 'netnet-title-bar-index')
-    } else if (path.includes('README.md') && path.match(/\//g).length === 1) {
-      window.convo = new Convo(this.convos, 'netnet-title-bar-readme')
-    } else {
-      window.convo = new Convo(this.convos, 'netnet-title-bar-misc')
-    }
+    window.convo = new Convo(this.convos, 'netnet-title-bar')
+
     if (!this.opened) {
       this.open()
       const { x, y } = this._openSpot()
       this.update({ left: x, top: y }, 500)
     }
+  }
+
+  explainSave () {
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'cmd-enter-save-info')
   }
 
   _openSpot () {

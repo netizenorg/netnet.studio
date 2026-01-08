@@ -39,9 +39,13 @@ This is a very common language for writing code documentation. If you've made a 
 
 ## Creating a new file
 
-To create a new doc, navigate to the folder you want to create it in (either the "docs" folder or one of it's sub-folders) and press the **Add file** button towards the top-right. Here you will have the option to upload a file (like images for example) or create a new file. Give the new file a name, make sure it's all lower-case , no spaces (use dashes instead) and ends with a `.md` extension. Then write the file's content in [markdown syntax](https://markdownguide.offshoot.io/basic-syntax/) and commit your file.
+To create a new doc, navigate to the folder you want to create it in (either the "docs" folder or one of it's sub-folders) and press the **Add file** button towards the top-right. Here you will have the option to upload a file (like images for example) or create a new file. **NOTE** we manage video files separately (to avoid bloating the repo with too many large video files), if you'd like to add a new video file to the docs reach out to us directly so we can upload it to our server.
 
 ![add button](../images/git-add.jpg)
+
+When creating a new file, you'll need to give it a name, make sure it's all lower-case , no spaces (use dashes instead) and ends with a `.md` extension. Then write the file's content in [markdown syntax](https://markdownguide.offshoot.io/basic-syntax/) and commit your file.
+
+
 
 ## Commiting your changes
 
