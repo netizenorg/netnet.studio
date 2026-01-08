@@ -26,16 +26,16 @@
         </a>
         <span class="ver">vBETA 3.0</span>
       </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
-        <span class="screen-reader-only">Open/close mobile menu</span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
       </button>
       <div class="docs__panel__search">
         <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
         <input id="search-input" class="search-input" placeholder="search">
       </div>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
                   coding
                 </a></li><li class="docs__panel__list-item">
@@ -44,10 +44,10 @@
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
                   contributor workflow
                 </a></li><li class="docs__panel__list-item">
@@ -62,6 +62,9 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
                   the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
                 </a></li></ul>
               </li></ul>
     </div>
@@ -83,7 +86,7 @@
 <p>Anyone can create and share &quot;sketches&quot; (single file web sites) in netnet by writing some code in netnet&#39;s editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become &quot;demos&quot;, with annotations explaining how different parts of the code works, and added to netnet&#39;s &quot;Code Demos&quot; widget.</p>
 <h3>4. Interactive Tutorials</h3>
 <p>One of netnet.studio&#39;s most dynamic educational components are the interactive tutorials, like this one made by Nick Briz for example. You can create your own interactive tutorials using our &quot;Tutorial Maker&quot; widget.</p>
-<h3>5. Widgets</h3>
+<h3>5. <a href="widgets.html">Widgets</a></h3>
 <p>The vast majority of netnet&#39;s features exist in &quot;widgets&quot;, these are the moveable windows that pop up to do all the various things artists can do in netnet beyond coding.</p>
 <h3>6. Core Components</h3>
 <p>Underneath all the convos, demos, tutorials and widgets are netnet&#39;s &quot;core&quot; components, the foundational code controlling how netnet looks and how it functions. This part of our system doesn&#39;t change often, but if you notice any bugs or have ideas for some fundamental improvements, these are the docs for you. These are the most complex contributions, so it would be wise to have gone through some of the steps above before diving into the depths of netnet&#39;s codebase.</p>

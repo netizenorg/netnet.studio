@@ -74,7 +74,7 @@ Before you start working on a new feature or bug fix ensure you're working with 
 git pull upstream dev
 ```
 
-**NOTE:** If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from `updstream main`
+**NOTE:** If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from `upstream main`
 
 If that failed, make sure you setup our repo as your remote "upstream" by running `git remote -v`, if you didn't setup a remote upstream during the setup you will need to do this manually by running `git remote add upstream https://github.com/netizenorg/netnet.studio.git`
 
@@ -146,4 +146,4 @@ To pull updates to the submodules run:
 npm run pull-modules
 ```
 
-**NOTE:** we've noticed issues running these scripts, where sometimes they don't actually pull updates (*plz open an issue if you think you might know why*), but alternatively you can also `cd` into the individual submodule folders found in [www/core](https://github.com/netizenorg/netnet.studio/tree/main/www/js/core) and pull the code using `git pull`
+**NOTE:** we've noticed issues running these scripts, where sometimes they don't actually pull updates (*plz open an issue if you think you might know why*), but alternatively you can also `cd` into the individual submodule folders found in [www/core](https://github.com/netizenorg/netnet.studio/tree/main/www/core) and pull the code using `git pull`
