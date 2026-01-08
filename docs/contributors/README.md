@@ -23,7 +23,7 @@ Anyone can create and share "sketches" (single file web sites) in netnet by writ
 
 One of netnet.studio's most dynamic educational components are the interactive tutorials, like this one made by Nick Briz for example. You can create your own interactive tutorials using our "Tutorial Maker" widget.
 
-### 5. Widgets
+### 5. [Widgets](widgets.md)
 
 The vast majority of netnet's features exist in "widgets", these are the moveable windows that pop up to do all the various things artists can do in netnet beyond coding.
 

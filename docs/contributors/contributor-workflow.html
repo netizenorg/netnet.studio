@@ -26,16 +26,16 @@
         </a>
         <span class="ver">vBETA 3.0</span>
       </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
-        <span class="screen-reader-only">Open/close mobile menu</span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
       </button>
       <div class="docs__panel__search">
         <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
         <input id="search-input" class="search-input" placeholder="search">
       </div>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
                   coding
                 </a></li><li class="docs__panel__list-item">
@@ -44,10 +44,10 @@
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
                   contributor workflow
                 </a></li><li class="docs__panel__list-item">
@@ -62,6 +62,9 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
                   the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
                 </a></li></ul>
               </li></ul>
     </div>
@@ -123,7 +126,7 @@ npm run setup</code></pre>
 <h4><a id="branch"></a>  setup a feature branch</h4>
 <p>Before you start working on a new feature or bug fix ensure you&#39;re working with the latest version of netnet.studio by pulling updates from our dev branch</p>
 <pre><code>git pull upstream dev</code></pre>
-<p><strong>NOTE:</strong> If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from <code>updstream main</code></p>
+<p><strong>NOTE:</strong> If your contributing a patch or hot-fix you plan to merge directly into main, then  pull from <code>upstream main</code></p>
 <p>If that failed, make sure you setup our repo as your remote &quot;upstream&quot; by running <code>git remote -v</code>, if you didn&#39;t setup a remote upstream during the setup you will need to do this manually by running <code>git remote add upstream https://github.com/netizenorg/netnet.studio.git</code></p>
 <p>Create a &quot;feature branch&quot; for the feature/bugfix/etc you plan on working on by running the command below (replacing <code>[FEATURE-NAME]</code> with name for this feature/task)</p>
 <pre><code>git checkout -b [FEATURE-NAME]</code></pre>
@@ -154,7 +157,7 @@ git branch --delete [FEATURE-NAME]</code></pre>
 <p><strong>occasionally we may update these, if/when that happens you&#39;ll want to pull those updates to your local repository as well.</strong></p>
 <p>To pull updates to the submodules run:</p>
 <pre><code>npm run pull-modules</code></pre>
-<p><strong>NOTE:</strong> we&#39;ve noticed issues running these scripts, where sometimes they don&#39;t actually pull updates (<em>plz open an issue if you think you might know why</em>), but alternatively you can also <code>cd</code> into the individual submodule folders found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/js/core" target="_blank">www/core</a> and pull the code using <code>git pull</code></p>
+<p><strong>NOTE:</strong> we&#39;ve noticed issues running these scripts, where sometimes they don&#39;t actually pull updates (<em>plz open an issue if you think you might know why</em>), but alternatively you can also <code>cd</code> into the individual submodule folders found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/core" target="_blank">www/core</a> and pull the code using <code>git pull</code></p>
 
       </div>
     </div>
