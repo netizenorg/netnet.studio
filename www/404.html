@@ -101,7 +101,7 @@
         ( ◕ ◞ ◕ )つ oh hi! It appears the URL (uniform resource locator) aka "web address" which you've entered doesn't exist:<br>
         <code></code>
         <br><br>
-        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
+        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a id="issues" href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
       </div>
     </div>
 
@@ -116,6 +116,9 @@
       function setup () {
         nn.get('.widget__inner-html code')
           .content(window.location.toString())
+
+        const report = `${window.location.origin}/docs/contributors/bug-report.html`
+        nn.get('#issues').set('href', report)
       }
 
       function updateBG (mouse) {

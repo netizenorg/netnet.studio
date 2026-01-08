@@ -279,7 +279,7 @@ window.CONVOS['template-projects'] = (self) => {
     }, {
       id: 'explain-error',
       before: () => NNW.menu.switchFace('default'),
-      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on our GitHub to let us know what you found!`,
+      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">report an issue</a> on our GitHub to let us know what you found!`,
       options: { ok: (e) => e.hide() }
     },
     {
