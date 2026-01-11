@@ -57,7 +57,7 @@ window.CONVOS['demo-toc'] = (self) => {
     {
       id: 'loaded-annotated-demo',
       graph: { id: 3, x: 225, y: 250 },
-      content: 'I can walk you through this demo if you\'d like me to explain the different parts, just click on the green dots or the links in the Annotations widget.<br><br>Otherwise feel free to edit and experiment with the code yourself. You can also double click any piece of code you don\'t understand and I\'ll do my best to explain that bit to you.',
+      content: 'I can walk you through this demo if you\'d like me to explain the different parts, just click on the green dots or use the <b>Sketch Demo Guide</b> widget.<br><br>Otherwise feel free to edit and experiment with the code yourself. You can also double click any piece of code you don\'t understand and I\'ll do my best to explain that bit to you.',
       options: {
         'great thanks!': (e) => e.hide(),
         'walk me through it': (e) => {

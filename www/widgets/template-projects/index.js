@@ -31,7 +31,7 @@ class TemplateProjects extends Widget {
 
     this._boundEditWatcher = this._editWatcher.bind(this)
     this.on('close', () => {
-      NNE.cm.off('keydown', this._boundEditWatcher)
+      if (!this.state.curPassage) NNE.cm.off('keydown', this._boundEditWatcher)
     })
 
     this.codeEdit = null // runs on code update when template is open
@@ -43,6 +43,7 @@ class TemplateProjects extends Widget {
     } else {
       window.convo = new Convo(this.convos, 'notes-click-pre-guide')
     }
+    if (!WIDGETS['template-toc'].opened) WIDGETS.open('template-toc')
   }
 
   cancel () {
@@ -59,6 +60,10 @@ class TemplateProjects extends Widget {
     NNE.language = 'html'
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
     NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
+    if (WIDGETS['template-toc']) {
+      WIDGETS['template-toc'].updateView()
+      WIDGETS['template-toc'].close()
+    }
   }
 
   updateEditor (opts = {}) {
@@ -237,6 +242,9 @@ class TemplateProjects extends Widget {
       // update title bar && URL
       utils.updateURL(`?template=${this.state.name}`)
       this._updateTitleBar()
+
+      // open the templates-toc (Notes progress bar)
+      WIDGETS.open('template-toc', (w) => w.updateView())
     })
   }
 
@@ -279,7 +287,10 @@ class TemplateProjects extends Widget {
     const cnv = `template-${this.state.name}`
     const psg = first ? window.CONVOS[cnv]()[0].id : this.state.curPassage
     window.convo = new Convo(this.state.convos, psg)
-    window.convo.on('update', (c) => this._typeTemplateCode(c.id))
+    window.convo.on('update', (c) => {
+      this._typeTemplateCode(c.id)
+      WIDGETS['template-toc'].updateProgress()
+    })
     // if (first) this._typeTemplateCode(psg) // TODO: check if we still need this?
   }
 
@@ -296,13 +307,35 @@ class TemplateProjects extends Widget {
     NNE.wrap = this._prevWrap
     const s = this.state
     window.convo = new Convo(s.convos, s.curPassage)
-    window.convo.on('update', (c) => this._typeTemplateCode(c.id))
+    window.convo.on('update', (c) => {
+      this._typeTemplateCode(c.id)
+      WIDGETS['template-toc'].updateProgress()
+    })
+  }
+
+  _skipTo (title) { // NOTE: used by WIDGETS['template-toc']
+    const s = this.state
+    const key = Object.keys(s.lines).find(function (key) {
+      return s.lines[key] && s.lines[key].title === title
+    })
+    if (key) {
+      window.convo = new Convo(s.convos, key)
+      window.convo.on('update', (c) => {
+        this._typeTemplateCode(c.id)
+        WIDGETS['template-toc'].updateProgress()
+      })
+    } else {
+      console.log('WIDGETS: template-projects: could not skip to ', title)
+    }
   }
 
   _skipToEnd () {
     const s = this.state
     window.convo = new Convo(s.convos, 'end-guide')
-    window.convo.on('update', (c) => this._typeTemplateCode(c.id))
+    window.convo.on('update', (c) => {
+      this._typeTemplateCode(c.id)
+      WIDGETS['template-toc'].updateProgress()
+    })
   }
 
   _typeTemplateCode (id) {
