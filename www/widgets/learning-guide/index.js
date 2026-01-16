@@ -169,8 +169,12 @@ class LearningGuide extends Widget {
     window.convo = new Convo(this.convos, 'js-intro')
   }
 
-  _comingSoon () {
-    window.convo = new Convo(this.convos, 'coming-soon')
+  _comingSoon (type) {
+    if (type === 'units') {
+      window.convo = new Convo(this.convos, 'coming-soon-units')
+    } else {
+      window.convo = new Convo(this.convos, 'coming-soon')
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

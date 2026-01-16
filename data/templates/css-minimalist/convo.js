@@ -17,6 +17,7 @@ window.CONVOS['template-css-minimalist'] = (self) => {
       options: {
         'I\'ll get to it later': (e) => e.goTo('style'),
         'Ok, let\'s jump to that one': (e) => {
+          WIDGETS['template-projects'].cancel()
           WIDGETS['template-projects'].startGuide('css-landing-page')
         },
         'go back': (e) => e.goTo('minimalist-intro')

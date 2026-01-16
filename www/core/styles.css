@@ -178,11 +178,11 @@
 }
 
 #nn-window  #proj-title[data-demo]::before {
-  content: "Notes for →";
+  content: "Guide";
 }
 
 #nn-window  #proj-title[data-template]::before {
-  content: "Notes for →";
+  content: "Guide";
 }
 
 #nn-window  #proj-title[data-project]:hover::before,

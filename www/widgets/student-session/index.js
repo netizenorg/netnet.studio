@@ -57,12 +57,15 @@ class StudentSession extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   getData (type) {
+    const ls = window.localStorage
     if (type) {
       if (Object.keys(this.data).includes(type)) return this.data[type]
-      else if (Object.keys(window.localStorage).includes(type)) {
-        return window.localStorage.getItem(type)
+      else if (Object.keys(ls).includes(type)) {
+        return ls.getItem(type)
       } else if (Object.keys(window.sessionStorage).includes(type)) {
         return window.sessionStorage.getItem(type)
+      } else if (type === 'wrap') {
+        return typeof ls.getItem('wrap') === 'string' ? ls.getItem('wrap') : true
       }
     } else return this.data
   }
