@@ -9,7 +9,6 @@ The docs below explain how to use netnet's Widget system for creating all sorts 
 - [The Widget System](#system)
 - [Creating a Simple Widget](#simple)
   - [Properties and Methods](#props)
-- [Creating a Video Widget](#video)
 - [Creating a Custom Widget](#custom)
 - [Creating a Code Generator Widget](#code-gen)
 
@@ -143,10 +142,6 @@ WIDGETS['my-new-widget'].on('test', (eve) => {
 // and then to emit a custom event you can do
 WIDGETS['my-new-widget'].emit('test', { data: 100 })
 ```
-
-## <a id="video"></a> Creating a Video Widget (Simple)
-
-TODO (SIMPLE)
 
 ## <a id="custom"></a> Creating a Custom Widget
 
