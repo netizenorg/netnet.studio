@@ -9,7 +9,6 @@ The docs below explain how to use netnet's Widget system for creating all sorts 
 - [The Widget System](#system)
 - [Creating a Simple Widget](#simple)
   - [Properties and Methods](#props)
-- [Creating a Video Widget](#video)
 - [Creating a Custom Widget](#custom)
 - [Creating a Code Generator Widget](#code-gen)
 
@@ -38,7 +37,7 @@ Widgets can be made by either using functionality provided in the `WIDGETS` obje
 
 ## <a id="simple"></a> Creating a Simple Widget
 
-![simple widget](../images/simple-widget-ex.jpg)
+![simple widget](../images/simple-widget-ex.png)
 
 To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
@@ -144,11 +143,9 @@ WIDGETS['my-new-widget'].on('test', (eve) => {
 WIDGETS['my-new-widget'].emit('test', { data: 100 })
 ```
 
-## <a id="video"></a> Creating a Video Widget (Simple)
-
-TODO (SIMPLE)...
-
 ## <a id="custom"></a> Creating a Custom Widget
+
+![custom widget](../images/poster-creating-custom-widget.jpg)
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
@@ -212,7 +209,7 @@ The reason the widget system also instantiates it automatically is because the d
 static get skipAutoInstantiation () { return true }
 ```
 
-## <a id="code-gen"></a> Creating a Code Generator Widget (Custom)
+## <a id="code-gen"></a> Creating a Code Generator Widget
 
 The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet's editor with the help of a GUI. A good example would be the [ColorWidget.js](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/color-widget)
 
@@ -283,8 +280,9 @@ window.FontSizeGenerator = FontSizeGenerator
 ```
 
 This widget would end up looking something like this:
+![font size generator](../images/font-gen.png)
 
-This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements `<code-field>` and `<code-slider>` which are used to render the input field and slider seen in the gif above.
+This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements: `<code-field>` and `<code-slider>`, which are used to render the input field and slider seen in the above example.
 
 The options you can pass into the code field method are:
 
