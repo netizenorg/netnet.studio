@@ -16,21 +16,6 @@ window.CONVOS['template-css-basic'] = (self) => {
       }
     },
     {
-      id: 'end-guide',
-      layout: 'dock-left',
-      graph: { id: 2, x: 100, y: 5600 },
-      content: 'This is a good place for me to stop. Feel free to change or reformat any of it. If you create additional HTML pages you should definitely migrate the styles into their own CSS file once you create a project. Shall we start a new project?',
-      options: {
-        'yes, let\'s start a new project': (e) => {
-          WIDGETS['template-projects'].preNewRepoFromTemplate()
-        },
-        'no, I\'ll experiment a bit first': (e) => {
-          WIDGETS['template-projects']._experimentWithCode()
-          e.hide()
-        }
-      }
-    },
-    {
       id: 'html',
       graph: { id: 3, x: 100, y: 250 },
       content: 'As we learned in the guide for this HTML template, our "root" <code>&lt;html&gt;</code> element usually contains two children: the <code>&lt;head&gt;</code>, which is where you put information <i>about</i> the page, and the <code>&lt;body&gt;</code>, where you put the actual content people see on the page.',
@@ -536,6 +521,21 @@ window.CONVOS['template-css-basic'] = (self) => {
       options: {
         'go on': (e) => e.goTo('align-div'),
         'go back': (e) => e.goTo('justify-div')
+      }
+    },
+    {
+      id: 'end-guide',
+      layout: 'dock-left',
+      graph: { id: 2, x: 100, y: 5600 },
+      content: 'This is a good place for me to stop. Feel free to change or reformat any of it. If you create additional HTML pages you should definitely migrate the styles into their own CSS file once you create a project. Shall we start a new project?',
+      options: {
+        'yes, let\'s start a new project': (e) => {
+          WIDGETS['template-projects'].preNewRepoFromTemplate()
+        },
+        'no, I\'ll experiment a bit first': (e) => {
+          WIDGETS['template-projects']._experimentWithCode()
+          e.hide()
+        }
       }
     }
   ]

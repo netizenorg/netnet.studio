@@ -162,19 +162,20 @@ window.CONVOS['template-html-meta-tags'] = (self) => {
       graph: { id: 18, x: 400, y: 1725 },
       content: 'There are HTML purists that prefer to keep their pages like this, raw HTML only, but most folks prefer to add some <i>style</i> to their page with CSS code. Would you like to build on this template by adding some CSS or we can start a new project from here?',
       options: {
+        'I\'ll take it from here': (e) => {
+          WIDGETS['template-projects'].preNewRepoFromTemplate()
+        },
         'Let\'s add some CSS': (e) => {
           WIDGETS['template-projects'].startGuide('css-landing-page')
         },
         'What\'s CSS?': (e) => e.goTo('pre-closer'),
-        'I\'ll take it from here': (e) => {
-          WIDGETS['template-projects'].preNewRepoFromTemplate()
-        },
         'go back': (e) => e.goTo('og-type')
       }
     },
     {
       id: 'pre-closer',
-      content: 'CSS, or Cascading Style Sheets, is how we chang the look and feel of our HTML. It handles things like layout, color and fonts, and can also add some interactive effects and animations to our page. If you\'ve never written any CSS but would like to learn I suggest starting with my Introduction to CSS before diving into your first CSS tempate.',
+      graph: { id: 19, x: 400, y: 1875 },
+      content: 'CSS, or Cascading Style Sheets, is how we change the look and feel of our HTML. It handles things like layout, color and fonts, and can also add some interactive effects and animations to our page. If you\'ve never written any CSS but would like to learn I suggest starting with my Introduction to CSS before diving into your first CSS tempate.',
       options: {
         'Ok, let\'s do the CSS intro': (e) => {
           WIDGETS.open('css-reference', (w) => w.toggleIntroPresentation())
