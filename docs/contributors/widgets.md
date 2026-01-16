@@ -209,7 +209,7 @@ The reason the widget system also instantiates it automatically is because the d
 static get skipAutoInstantiation () { return true }
 ```
 
-## <a id="code-gen"></a> Creating a Code Generator Widget (Custom)
+## <a id="code-gen"></a> Creating a Code Generator Widget
 
 The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet's editor with the help of a GUI. A good example would be the [ColorWidget.js](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/color-widget)
 
