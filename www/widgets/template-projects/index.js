@@ -58,7 +58,8 @@ class TemplateProjects extends Widget {
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
     NNE.language = 'html'
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    const ssWrap = WIDGETS['student-session'].getData('wrap')
+    NNE.wrap = ssWrap || ssWrap === 'true'
     NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
     if (WIDGETS['template-toc']) {
       WIDGETS['template-toc'].updateView()
