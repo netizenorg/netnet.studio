@@ -38,7 +38,7 @@ Widgets can be made by either using functionality provided in the `WIDGETS` obje
 
 ## <a id="simple"></a> Creating a Simple Widget
 
-![simple widget](../images/simple-widget-ex.jpg)
+![simple widget](../images/simple-widget-ex.png)
 
 To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
@@ -146,9 +146,11 @@ WIDGETS['my-new-widget'].emit('test', { data: 100 })
 
 ## <a id="video"></a> Creating a Video Widget (Simple)
 
-TODO (SIMPLE)...
+TODO (SIMPLE)
 
 ## <a id="custom"></a> Creating a Custom Widget
+
+![netnet widgets](../images/poster-creating-custom-widget.jpg)
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
@@ -283,6 +285,7 @@ window.FontSizeGenerator = FontSizeGenerator
 ```
 
 This widget would end up looking something like this:
+![simple widget](../images/font-gen.png)
 
 This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements `<code-field>` and `<code-slider>` which are used to render the input field and slider seen in the gif above.
 

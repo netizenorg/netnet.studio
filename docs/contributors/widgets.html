@@ -109,7 +109,7 @@ WIDGETS.instantiated
 WIDGETS.list()</code></pre>
 <p>Widgets can be made by either using functionality provided in the <code>WIDGETS</code> object (detailed in <a href="#simple">Simple</a>), or extending the base <code>Widget</code> class (detailed in <a href="#custom">Custom</a>).</p>
 <h2><a id="simple"></a> Creating a Simple Widget</h2>
-<p><img src="../images/simple-widget-ex.jpg" alt="simple widget" /></p>
+<p><img src="../images/simple-widget-ex.png" alt="simple widget" /></p>
 <p>To create a new widget, use the <code>WIDGETS</code>&#39;s <code>.create()</code> method. <code>.create()</code> takes an object that requires a <code>key</code> property with a unique id that isn&#39;t being used by another widget, in addition to any number of optional properties. You can use <code>WIDGETS.instantiated</code> to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser&#39;s developer console:</p>
 <pre><code>// to create the widget first run
 WIDGETS.create({
@@ -198,8 +198,12 @@ WIDGETS['my-new-widget'].on('test', (eve) =&gt; {
 // and then to emit a custom event you can do
 WIDGETS['my-new-widget'].emit('test', { data: 100 })</code></pre>
 <h2><a id="video"></a> Creating a Video Widget (Simple)</h2>
-<p>TODO (SIMPLE)...</p>
+<p>TODO (SIMPLE)</p>
 <h2><a id="custom"></a> Creating a Custom Widget</h2>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/creating-custom-widget.mp4"
+  poster="../images/poster-creating-custom-widget.jpg">
+</video></p>
 <p>When the options and functionality provided above aren&#39;t enough for what you need to do with a widget, maybe because you need a method or property that doesn&#39;t exist yet, you can create your own custom widget by extending the <code>Widget</code> base class.</p>
 <p>Custom widgets need to be defined in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">www/js/widgets</a> directory. An example file structure can be found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/example-widget" target="_blank">www/js/widgets/example-widget</a>. Every custom widget lives in its own folder within /widgets/, where the folder name in kebab case (<code>example-widget</code>) must match your new widget class name in pascal case (<code>ExampleWidget</code>). Other optional files such as styles and optional netnet dialogue (<code>convo.js</code>, more to come on this later) live here too.</p>
 <pre><code>www/widgets/
@@ -305,7 +309,8 @@ class FontSizeGenerator extends Widget {
 }
 
 window.FontSizeGenerator = FontSizeGenerator</code></pre>
-<p>This widget would end up looking something like this:</p>
+<p>This widget would end up looking something like this:
+<img src="../images/font-gen.png" alt="simple widget" /></p>
 <p>This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements <code>&lt;code-field&gt;</code> and <code>&lt;code-slider&gt;</code> which are used to render the input field and slider seen in the gif above.</p>
 <p>The options you can pass into the code field method are:</p>
 <pre><code>this.codeField = this.createCodeField({
