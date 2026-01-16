@@ -548,7 +548,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
   padding-top: 0;
 }
 
-.docs__viewer-inner img {
+.docs__viewer-inner img,
+.docs__viewer-inner video {
   max-width: 100%;
 }
 
@@ -651,6 +652,35 @@ div > a:not(.pill-btn):not(.highlight):hover,
   background: linear-gradient(90deg, var(--bg-color) 0%, var(--netizen-comment) 50%, var(--netizen-comment) 100%);
 }
 
+/* codemirror */
+.docs__viewer-inner pre {
+  position: relative;
+}
+
+.docs__viewer-inner pre code .CodeMirror-wrap {
+  padding-right: 26px;
+}
+
+.docs__viewer-inner pre .copy-code {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 1;
+}
+
+.docs__viewer-inner pre .copy-code svg {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.docs__viewer-inner pre .copy-code svg path {
+  fill: var(--netizen-def);
+}
+
+.docs__viewer-inner pre .copy-code svg:hover {
+  opacity: 1;
+}
+
 /*
  * docs viewer mobile
  */
@@ -661,36 +691,12 @@ div > a:not(.pill-btn):not(.highlight):hover,
    }
 }
 
-
-/*
-  @Sarah, feel free to edit these or move them around
-  (only put it down here to avoid merge conflicts)
-*/
-
 .center {
   text-align: center;
 }
 
 .italic {
   font-style: italic;
-}
-
-.docs__viewer-inner pre {
-  position: relative;
-}
-
-.docs__viewer-inner pre .copy-code {
-  position: absolute;
-  right: -22px;
-}
-
-.docs__viewer-inner pre .copy-code svg {
-  cursor: pointer;
-  opacity: 0.5;
-}
-
-.docs__viewer-inner pre .copy-code svg:hover {
-  opacity: 1;
 }
 
 /*

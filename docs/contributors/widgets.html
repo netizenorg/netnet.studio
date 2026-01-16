@@ -87,7 +87,6 @@
 <li><a href="#props">Properties and Methods</a></li>
 </ul>
 </li>
-<li><a href="#video">Creating a Video Widget</a></li>
 <li><a href="#custom">Creating a Custom Widget</a></li>
 <li><a href="#code-gen">Creating a Code Generator Widget</a></li>
 </ul>
@@ -197,8 +196,6 @@ WIDGETS['my-new-widget'].on('test', (eve) =&gt; {
 })
 // and then to emit a custom event you can do
 WIDGETS['my-new-widget'].emit('test', { data: 100 })</code></pre>
-<h2><a id="video"></a> Creating a Video Widget (Simple)</h2>
-<p>TODO (SIMPLE)</p>
 <h2><a id="custom"></a> Creating a Custom Widget</h2>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/creating-custom-widget.mp4"
@@ -245,7 +242,7 @@ window.ExampleWidget = ExampleWidget</code></pre>
 <p>The difference between <code>WIDGETS[&#39;example-widget&#39;].open()</code> and <code>WIDGETS.open(&#39;example-widget&#39;)</code>, is that the latter checks to see if the widget has been loaded first and if not loads it for you, and then instantiates it before opening it.</p>
 <p>The reason the widget system also instantiates it automatically is because the default assumption is that there is only ever meant to be a single instance of your custom widget. That said, if you&#39;re trying to create a new type of widget that&#39;s meant to be instantiated multiple times, you can let the widget system know that you don&#39;t want it auto-instantiated by including the following getter in your custom widget:</p>
 <pre><code>static get skipAutoInstantiation () { return true }</code></pre>
-<h2><a id="code-gen"></a> Creating a Code Generator Widget (Custom)</h2>
+<h2><a id="code-gen"></a> Creating a Code Generator Widget</h2>
 <p>The widget system provides some extra methods intended to make the creation of code generator widgets a little easier. A code generator widget is a custom widget designed for generating snippets of code to be injected into netnet&#39;s editor with the help of a GUI. A good example would be the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/color-widget" target="_blank">ColorWidget.js</a></p>
 <p>Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory. Let&#39;s create a font size generator widget in this example.</p>
 <pre><code>// font-size-generator/index.js
@@ -310,7 +307,7 @@ class FontSizeGenerator extends Widget {
 
 window.FontSizeGenerator = FontSizeGenerator</code></pre>
 <p>This widget would end up looking something like this:
-<img src="../images/font-gen.png" alt="simple widget" /></p>
+<img src="../images/font-gen.png" alt="font size generator widget" /></p>
 <p>This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements <code>&lt;code-field&gt;</code> and <code>&lt;code-slider&gt;</code> which are used to render the input field and slider seen in the gif above.</p>
 <p>The options you can pass into the code field method are:</p>
 <pre><code>this.codeField = this.createCodeField({

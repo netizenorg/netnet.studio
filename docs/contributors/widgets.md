@@ -145,7 +145,7 @@ WIDGETS['my-new-widget'].emit('test', { data: 100 })
 
 ## <a id="custom"></a> Creating a Custom Widget
 
-![netnet widgets](../images/poster-creating-custom-widget.jpg)
+![custom widget](../images/poster-creating-custom-widget.jpg)
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
@@ -280,9 +280,9 @@ window.FontSizeGenerator = FontSizeGenerator
 ```
 
 This widget would end up looking something like this:
-![simple widget](../images/font-gen.png)
+![font size generator](../images/font-gen.png)
 
-This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements `<code-field>` and `<code-slider>` which are used to render the input field and slider seen in the gif above.
+This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements: `<code-field>` and `<code-slider>`, which are used to render the input field and slider seen in the above example.
 
 The options you can pass into the code field method are:
 
