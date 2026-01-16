@@ -548,7 +548,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
   padding-top: 0;
 }
 
-.docs__viewer-inner img {
+.docs__viewer-inner img,
+.docs__viewer-inner video {
   max-width: 100%;
 }
 
@@ -651,6 +652,35 @@ div > a:not(.pill-btn):not(.highlight):hover,
   background: linear-gradient(90deg, var(--bg-color) 0%, var(--netizen-comment) 50%, var(--netizen-comment) 100%);
 }
 
+/* codemirror */
+.docs__viewer-inner pre {
+  position: relative;
+}
+
+.docs__viewer-inner pre code .CodeMirror-wrap {
+  padding-right: 26px;
+}
+
+.docs__viewer-inner pre .copy-code {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 1;
+}
+
+.docs__viewer-inner pre .copy-code svg {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.docs__viewer-inner pre .copy-code svg path {
+  fill: var(--netizen-def);
+}
+
+.docs__viewer-inner pre .copy-code svg:hover {
+  opacity: 1;
+}
+
 /*
  * docs viewer mobile
  */
@@ -661,36 +691,12 @@ div > a:not(.pill-btn):not(.highlight):hover,
    }
 }
 
-
-/*
-  @Sarah, feel free to edit these or move them around
-  (only put it down here to avoid merge conflicts)
-*/
-
 .center {
   text-align: center;
 }
 
 .italic {
   font-style: italic;
-}
-
-.docs__viewer-inner pre {
-  position: relative;
-}
-
-.docs__viewer-inner pre .copy-code {
-  position: absolute;
-  right: -22px;
-}
-
-.docs__viewer-inner pre .copy-code svg {
-  cursor: pointer;
-  opacity: 0.5;
-}
-
-.docs__viewer-inner pre .copy-code svg:hover {
-  opacity: 1;
 }
 
 /*
@@ -702,25 +708,41 @@ div > a:not(.pill-btn):not(.highlight):hover,
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 40px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+#donate-links div {
+  margin: 8px 0;
+}
+
+#donate-links span {
+  color: #40407b;
+  font-size: 18px;
+  vertical-align: sub;
 }
 
 #donate-links a {
-  margin: 10px;
-  border: 3px solid var(--bg-color);
+  display: inline-block;
+  margin: 0 8px;
+  border: 2px solid #40407b;
   border-radius: 68px;
-  padding: 20px 40px;
-  background: rgba(255,255,255,0.3);
+  padding: 10px 30px;
+  background: var(--netizen-def);
 
   text-decoration: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--bg-color);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: monospace;
+  text-transform: uppercase;
+  color: #40407b;
   cursor: pointer;
+
+  transition: all .3s ease;
 }
 
 #donate-links a:hover {
-  background: var(--fg-color);
-  color: #fff;
-  border-color: #fff;
+  background: #40407b;
+  color: var(--netizen-def);
+  border-color: #40407b;
 }

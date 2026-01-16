@@ -3,12 +3,12 @@
 netnet's goal is to guide creatives in their journey, from curious beginners to creative code virtuosos, through interactive learning and experimental play with the medium itself. Our mission is to help artists, designers and other DIY makers reclaim the Internet as a hand-crafted space for self-expression.
 
 <div id="donate-links">
-  <a href="contributors/support.html">Donate 💰!</a>
-  <a href="contributors/index.html">Donate ⏰!</a>
+  <div><a href="contributors/support.html">Donate 💰!</a></div>
+  <div><a href="contributors/index.html">Donate ⏰!</a></div>
 </div>
 
 <p class="center italic">
-  netnet.studio is a free/libre open-source project please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
+  netnet.studio is a free/libre open-source project. please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
 </p>
 
 # Meet netnet ( ◕ ◞ ◕ )
