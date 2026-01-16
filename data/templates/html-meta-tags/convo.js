@@ -17,6 +17,7 @@ window.CONVOS['template-html-meta-tags'] = (self) => {
       options: {
         'no, go on': (e) => e.goTo('split-off-mobile'),
         'ok, let\'s do that one instead': (e) => {
+          WIDGETS['template-projects'].cancel()
           WIDGETS['template-projects'].loadTemplate('html-basic')
         }
       }
