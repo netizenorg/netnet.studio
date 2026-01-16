@@ -172,6 +172,30 @@ class TemplateProjects extends Widget {
 
   // .........................................
 
+  async explainTemplate (n) {
+    const name = n || this.state.name
+    const res = await utils.getSync(`/api/template/${name}`)
+    const msg = ' Shall we start the guide?'
+    const convo = new Convo({
+      content: res.data.description + msg,
+      options: {
+        'ok, let\'s do it': (e) => this.startGuide(this._tempName),
+        'what does it look like?': (e) => {
+          const url = `/templates/${name}/files/index.html`
+          window.open(url, '_blank', 'noopener,noreferrer')
+        },
+        'no, never mind': (e) => {
+          this.cancel()
+          if (NNE.code !== utils.starterCode()) {
+            NNE.code = ''
+          }
+          e.hide()
+        }
+      }
+    })
+    return convo
+  }
+
   async startGuide (name) {
     utils.cancelAllNetitorUses('template-projects')
 

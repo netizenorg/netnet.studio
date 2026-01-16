@@ -53,6 +53,9 @@ window.CONVOS['template-projects'] = (self) => {
         'guide me through it': (e) => {
           self.startGuide(self._tempName)
         },
+        'what\'s in this template?': (e) => {
+          self.explainTemplate()
+        },
         'let\'s start a project': (e) => {
           self.preNewRepoFromTemplate()
         }
