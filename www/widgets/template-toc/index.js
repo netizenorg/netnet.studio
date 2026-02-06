@@ -97,8 +97,16 @@ class TemplateToc extends Widget {
           WIDGETS['template-projects']._skipTo(note.title)
           this.updateProgress(note)
         })
-        .on('mouseout', () => nn.get('.template-toc-note-title').content(this.info[this.selected].title))
-        .on('mouseover', () => nn.get('.template-toc-note-title').content(note.title))
+        .on('mouseout', () => {
+          nn.get('.template-toc-note-title')
+            .content(this.info[this.selected].title)
+            .css('color', 'var(--netizen-meta)')
+        })
+        .on('mouseover', () => {
+          nn.get('.template-toc-note-title')
+            .content(note.title)
+            .css('color', 'var(--netizen-attribute)')
+        })
         .addTo('.template-toc-progress .note-markers')
     })
     this.selected = 0
