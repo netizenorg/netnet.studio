@@ -149,5 +149,27 @@
     "name": "Raster Graphics",
     "definition": "Images made up of a grid of individual pixels, each with its own color value. Common formats include JPG, PNG, and GIF. Unlike vector graphics, raster images have a fixed resolution, if you scale them up too much, they become blurry or pixelated because you're stretching the same number of pixels over a larger area. Raster graphics are best for photographs and complex images with lots of color detail and gradients.",
     "see": ["vector-graphics"]
+  },
+  "sketch": {
+    "name": "Sketch",
+    "definition": "In netnet.studio, a sketch is a single HTML file where you can quickly experiment with code and ideas. Because HTML is a polyglot format (meaning you can mix HTML, CSS, JavaScript, and other languages together), you can create complete interactive projects within one file. Sketches are perfect for capturing ideas quickly, learning new concepts, or creating self-contained experiments. You can save them by downloading the HTML file or sharing them as a netnet URL.",
+    "see": ["demo", "project", "template"]
+  },
+  "demo": {
+    "name": "Demo",
+    "definition": "In netnet.studio, a demo is an example sketch designed for learning through exploration and remixing. Many demos are annotated and include a <b>Guide</b> button that reveals explanations tied to specific lines or sections of code, marked with green dots. You can have netnet explain the entire demo sequentially or jump to any note to understand how a particular part works. Demos are meant to be studied, modified, and experimented with to learn by remixing.",
+    "see": ["sketch", "project", "template"],
+    "doc": ["open", "demo-sketches"]
+  },
+  "project": {
+    "name": "Project",
+    "definition": "In netnet.studio, a project is a complete website or application that can include multiple HTML, CSS and JavaScript files, and media assets like images, videos, or fonts. Projects are stored as GitHub repositories, which means they're versioned (you can create save points as you work) and can be published to the web for free using GitHub's hosting. netnet handles the technical Git details for you, but since your code lives on GitHub, you're never locked in and can use other editors anytime.",
+    "see": ["sketch", "demo", "template"]
+  },
+  "template": {
+    "name": "Template",
+    "definition": "In netnet.studio, a template is a starter project with pre-organized files and folders that you can build upon. When you launch a template, netnet can guide you through it step-by-step, generating and explaining the code line by line, sometimes asking for your input along the way (like a coding mad-lib). Templates provide a structured starting point for common types of web projects, helping you understand best practices for file organization and code structure while giving you room to customize and expand.",
+    "see": ["sketch", "demo", "project"],
+    "doc": ["open", "template-projects"]
   }
 }
