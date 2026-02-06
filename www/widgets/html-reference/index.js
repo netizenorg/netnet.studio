@@ -46,6 +46,16 @@ class HtmlReference extends Widget {
     }, true)
   }
 
+  openDocs (opt, entry) {
+    let type
+    if (opt === 'eleListOpts') {
+      type = 'elements'
+    } else if (opt === 'attrListOpts') {
+      type = 'attributes'
+    }
+    this.goTo(type, entry)
+  }
+
   goTo (type, name) {
     if (!this.opened) this.open()
     // ex: goTo('attributes', 'src')
