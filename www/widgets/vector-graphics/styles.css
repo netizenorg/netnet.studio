@@ -99,6 +99,8 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
+  padding: 20px;
+  text-align: center;
   transition: opacity 200ms ease;
 }
 .vector-graphics__code .code-copy-overlay.visible {
