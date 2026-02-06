@@ -40,7 +40,7 @@ window.CONVOS['template-css-art'] = (self) => {
       innerHTML: `
         <video src="https://netart.rocks/files/diana-smith-css-art.mp4" style="width:100%" controls></video>
         <p style="margin-top: 10px;">
-          Check out more of <a href="https://codepen.io/agoodwin" target="_blank">Diana Smith</a>'s work.
+          Check out more of <a href="https://diana-adrianne.com/" target="_blank">Diana Smith</a>'s work.
         </p>
       `
     })
