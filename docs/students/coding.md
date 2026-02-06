@@ -2,7 +2,7 @@
 
 As explained in the [introduction page](README.md) for students (review that first if you haven't), netnet.studio is an interactive learning platform (see [Learning Guide](learning.md) for more on that) where you learn not only by reading docs or watching videos but by making. That's why it's also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. The basic ideas are covered in [introduction page](README.md), here we'll get into the details of the **Coding Menu** as well as the difference between working on a **sketch** (a single HTML file) vs working on a **project** (a GitHub "repo" you can publish online).
 
-## The Coding Menu
+## <img src="/images/menu/code.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Coding Menu
 
 You can open the Coding Menu anytime by clicking on netnet's face and selecting it from the main menu. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet's code editor details like:
 
