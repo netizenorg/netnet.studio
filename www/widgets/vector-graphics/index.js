@@ -442,7 +442,8 @@ class VectorGraphics extends Widget {
         </div>
         <div class="vector-graphics__views">
           <div class="vector-graphics__code">
-            <div class="code-copy-overlay">code copied to clipboard</div>
+            <!-- <div class="code-copy-overlay">copied SVG code to clipboard and downloaded SVG file</div> -->
+            <div class="code-copy-overlay">Use the GUI on the right to edit this code</div>
           </div>
           <div class="vector-graphics__svg"></div>
         </div>
@@ -529,7 +530,8 @@ class VectorGraphics extends Widget {
     codeBox.addEventListener('click', async () => {
       // show overlay
       overlay.classList.add('visible')
-      setTimeout(() => overlay.classList.remove('visible'), 1000)
+      setTimeout(() => overlay.classList.remove('visible'), 3000)
+      /*
       // copy code
       const text = this.editor.code || ''
       try {
@@ -549,6 +551,24 @@ class VectorGraphics extends Widget {
         try { document.execCommand('copy') } catch {}
         document.body.removeChild(ta)
       }
+      */
+      /*
+      // also download SVG file
+      try {
+        const svgText = text
+        if (svgText && typeof svgText === 'string') {
+          const blob = new window.Blob([svgText], { type: 'image/svg+xml;charset=utf-8' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'vector-graphic.svg'
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          setTimeout(() => URL.revokeObjectURL(url), 0)
+        }
+      } catch (e) {}
+      */
     })
   }
 

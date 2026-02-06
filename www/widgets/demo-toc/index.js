@@ -160,8 +160,16 @@ class DemoToc extends Widget {
         nn.create('button')
           .set('aria-label', escapeHTML(note.title))
           .on('click', () => this._explainerClick(note))
-          .on('mouseout', () => nn.get('.demo-toc-note-title').content(this.info[this.selected].title))
-          .on('mouseover', () => nn.get('.demo-toc-note-title').content(note.title))
+          .on('mouseout', () => {
+            nn.get('.demo-toc-note-title')
+              .content(this.info[this.selected].title)
+              .css('color', 'var(--netizen-meta)')
+          })
+          .on('mouseover', () => {
+            nn.get('.demo-toc-note-title')
+              .content(note.title)
+              .css('color', 'var(--netizen-attribute)')
+          })
           .addTo('.demo-toc-progress .note-markers')
       })
       this.selected = 0
