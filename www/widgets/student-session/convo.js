@@ -11,7 +11,7 @@ window.CONVOS['student-session'] = (self) => {
     }
 
     if (type === 'new-name') {
-      o['what now?'] = (e) => e.goTo('how-to')
+      o['where? how?'] = (e) => e.goTo('how-to')
       o['classical AI?'] = (e) => e.goTo('classical-ai')
       o['let\'s code!'] = letsCode
     } else if (type === 'no-greet') {
