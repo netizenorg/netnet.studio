@@ -29,7 +29,13 @@ const FILES = {
   },
 
   updateFile: async (filepath, fileContent) => {
-    if (!filepath.startsWith(FILES.root)) filepath = FILES.root + filepath
+    // ensure path looks like "TUTORIAL_MAKER/[tutrial-id]/[file-path]"
+    if (!filepath.startsWith(FILES.root)) {
+      if (filepath.startsWith('TUTORIAL_MAKER/')) {
+        filepath = filepath.split('TUTORIAL_MAKER/')[1]
+      }
+      filepath = FILES.root + filepath
+    }
 
     if (!FILES.files[filepath]) { // create new file
       FILES.files[filepath] = { code: fileContent, path: filepath }

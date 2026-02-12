@@ -177,8 +177,9 @@ class TutorialMaker extends Widget {
   _getData () {
     const keyframes = this.hvp.data.keyframes
     const keylogs = this.hvp.data.keylogs
+    const video = this.hvp.video.src
     // TODO: fetch widgets
-    return { keyframes, keylogs }
+    return { keyframes, keylogs, video }
   }
 
   _addSpotlight (ls) {
@@ -261,6 +262,12 @@ class TutorialMaker extends Widget {
   }
 
   _openConvo (id) {
+    // NOTE: all <button> eles automatically try to call a convo
+    // see "msg('tut-mkr-explain', btn.getAttribute('name'))" in main.js
+    // so we want to avoid calling new Convo unless it actually exists
+    const exists = this.convos?.find(o => o.id === id)
+    if (!exists) return
+
     this.convos = window.CONVOS[this.key](this)
     window.convo = new Convo(this.convos, id)
   }

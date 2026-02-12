@@ -34,9 +34,9 @@ function overlay (ele) {
 function openTutorial () {
   // open zip file...
   zipper.open(SWP, async (id, files) => {
-    const loaded = await FILES.init(id, files) // load files to indexedDB
-    console.log('FILES LOADED:', loaded)
-    const tut = JSON.parse(files[`${SWP}/${id}/tutorial.json`]) // get tutorial data
+    await FILES.init(id, files) // load files to indexedDB
+    // const tut = JSON.parse(files[`${SWP}/${id}/tutorial.json`]) // get tutorial data
+    const tut = JSON.parse(FILES.readFile(`${SWP}/${id}/tutorial.json`)) // get tutorial data
     // load metadata
     Object.assign(metadata, tut.metadata)
 
@@ -45,7 +45,7 @@ function openTutorial () {
       const wig = tut.widgets[key]
       wig.innerHTML = wig.innerHTML.replace(/tutorials\//g, 'TUTORIAL_MAKER/')
     }
-    if (tut.keyframes[0].code && tut.keyframes[0].code !== 'DEFAULT') {
+    if (tut.keyframes[0]?.code && tut.keyframes[0]?.code !== 'DEFAULT') {
       // update db's index.html (used by SW to render iframe)
       FILES.updateFile(`${SWP}/${metadata.id}/index.html`, tut.keyframes[0].code)
     }
@@ -55,6 +55,8 @@ function openTutorial () {
     timeline.updateMarkers()
 
     tut.videoBlob = FILES.readFile(metadata.id + '.mp4')
+    if (!tut.videoBlob) tut.videoBlob = FILES.readFile(metadata.id + '.webm')
+
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
 
     // TODO: load widgets into widget editor

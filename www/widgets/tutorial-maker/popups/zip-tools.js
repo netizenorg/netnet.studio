@@ -119,7 +119,7 @@ const zipper = {
       const ignoreFiles = [`${metadata.id}.mp4`, 'tutorial.json', 'index.html']
       for (const file of Object.entries(FILES.files)) {
         const fileName = file[1].path.split('/').pop()
-        if (ignoreFiles.contains(fileName)) continue
+        if (ignoreFiles.includes(fileName)) continue
 
         const filePath = file[1].path.split('/').slice(2).join('/')
         const fileData = FILES.readFile(file[1].path)
