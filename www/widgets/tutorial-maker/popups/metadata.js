@@ -47,6 +47,14 @@ const metadata = {
       metadata.displayError(missingValues)
       return
     }
+
+    // validate id is lowercase with no spaces
+    const idInput = nn.get('#metadata > input[name="id"]')
+    if (idInput.value !== idInput.value.toLowerCase() || idInput.value.includes(' ')) {
+      metadata.displayError(['id'], 'must be all lowercase with no spaces')
+      return
+    }
+
     metadata.updateMetadata()
   },
 
@@ -59,14 +67,13 @@ const metadata = {
     updateMetadata({ id, title, subtitle, author, authorURL, description, keywords, duration, thumbnails })
   },
 
-  displayError: (values) => {
+  displayError: (values, customMsg) => {
     values.forEach((value) => {
       const errorMsg = document.createElement('p')
       errorMsg.className = 'metadata-error-msg'
-      errorMsg.textContent = `
-        please provide
-        ${metadata.startsWithVowel(value) ? 'an' : 'a'}
-        ${value}`
+      errorMsg.textContent = customMsg
+        ? `${value} ${customMsg}`
+        : `please provide ${metadata.startsWithVowel(value) ? 'an' : 'a'} ${value}`
       const input = nn.get(`#metadata > input[name="${value}"]`)
       input.classList.add('missing-value')
       input.after(errorMsg)
