@@ -31,8 +31,8 @@
     <meta name="twitter:site" content="@netizenorg">
 
     <link rel="icon" type="image/png" href="images/favicons/learning-guide.png">
-    <link rel="stylesheet" href="./core/styles.css">
-    <link rel="stylesheet" href="./widgets/styles.css">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/widgets/styles.css">
     <style media="screen">
       :root {
         --netizen-text: #e7e5c9;
@@ -63,10 +63,10 @@
       .widget {
         cursor: auto !important;
         box-shadow: rgba(0, 0, 0, 0.15) 17.8282px 32.5562px 6px;
-        height: 250px;
+        height: 264px;
         width: 500px;
         left: calc(50vw - 250px);
-        top: calc(50vh - 125px);
+        top: calc(50vh - 132px);
         z-index: 108;
         transition: none;
         animation: 0.3s forwards openBounce;
@@ -101,7 +101,7 @@
         ( ◕ ◞ ◕ )つ oh hi! It appears the URL (uniform resource locator) aka "web address" which you've entered doesn't exist:<br>
         <code></code>
         <br><br>
-        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
+        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a id="issues" href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
       </div>
     </div>
 
@@ -111,11 +111,14 @@
     <!-- to learn about our privacy-focused web analytics -->
     <script src="/stats-not-tracks.min.js"></script>
     <!-- netizen.org libs -->
-    <script src="./nn.min.js"></script>
+    <script src="/nn.min.js"></script>
     <script>
       function setup () {
         nn.get('.widget__inner-html code')
           .content(window.location.toString())
+
+        const report = `${window.location.origin}/docs/contributors/bug-report.html`
+        nn.get('#issues').set('href', report)
       }
 
       function updateBG (mouse) {

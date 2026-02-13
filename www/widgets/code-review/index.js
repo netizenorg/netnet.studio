@@ -100,8 +100,8 @@ class CodeReview extends Widget {
     if (loc) {
       opts[`what's: ${loc}`] = () => this._textBubble('explain-line-numbers')
     }
-    if (!this.opened) {
-      opts['run Code Review'] = () => this.open()
+    if (!this.opened && this.issues.length > 1) {
+      opts['What else might be wrong?'] = () => this.open()
     }
     NNE.cm.scrollIntoView({ ch: 0, line: err.line - 1 })
     setTimeout(() => NNE.spotlight(err.line), 100)

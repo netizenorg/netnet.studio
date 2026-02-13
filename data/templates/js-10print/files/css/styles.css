@@ -21,4 +21,5 @@ body {
   line-height: 1;
   word-wrap: anywhere;
   font-family: 'Noto Serif 10print', system-ui, sans-serif;
+  user-select: none;
 }

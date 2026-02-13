@@ -1,0 +1,125 @@
+
+.lingo-glossary__nav  {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.lingo-glossary__nav input {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  padding: 4px 5px;
+  border: 1px solid var(--netizen-hint-shadow);
+  border-radius: 6px;
+  background-color: var(--netizen-hint-shadow);
+  color: var(--netizen-meta);
+  font-size: 0.9em;
+  margin-right: 10px;
+}
+
+.lingo-glossary__nav input:focus {
+  outline: 1px solid var(--fg-color);
+  outline-radius: 2px;
+  outline-offset: 2px;
+}
+
+
+
+.lingo-glossary__list  span.annotated {
+  list-style-type: disc;
+}
+
+.lingo-glossary__list span.demo--hide {
+  display: none;
+}
+
+
+.lingo-glossary__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  /* gap: 0.5rem; */
+  align-items: start;
+  margin: 20px 0px;
+  max-height: 80%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+}
+
+.lingo-glossary__list span {
+  font-size: 18px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 27px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.lingo-glossary__list span.vocab--hide {
+  display: none;
+}
+
+.lingo-glossary__entry {
+  display: none;
+}
+
+.lingo-glossary__back {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lingo-glossary__back span {
+  font-style: italic;
+  margin-bottom: 6px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.lingo-glossary__back span:hover {
+  opacity: 1;
+}
+
+.lingo-glossary__name {
+  color: var(--fg-color);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.lingo-glossary__name::after {
+  content: " : ";
+  text-decoration: none;
+}
+
+
+.lingo-glossary__definition code {
+  position: relative;
+  top: -0.1em;
+  padding: .1em 0.3em 0.2em;
+  border-radius: 6px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: none;
+  cursor: text;
+}
+
+.lingo-glossary__extra {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lingo-glossary__see span {
+  display: inline-block;
+  margin: 0 2px;
+}
+
+
+.lingo-glossary__doc {
+
+}

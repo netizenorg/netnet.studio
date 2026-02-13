@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="netnet.studio">
     <meta name="twitter:site" content="@netizenorg">
 
-    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
     <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
@@ -26,22 +26,31 @@
         </a>
         <span class="ver">vBETA 3.0</span>
       </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
-        <span class="screen-reader-only">Open/close mobile menu</span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
       </button>
       <div class="docs__panel__search">
         <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
         <input id="search-input" class="search-input" placeholder="search">
       </div>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  bug report
+                </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
                   contributor workflow
                 </a></li><li class="docs__panel__list-item">
@@ -53,6 +62,12 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/support.html">
                   support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
                 </a></li></ul>
               </li></ul>
     </div>
@@ -66,15 +81,17 @@
 <li><strong>If this is your first time contributing to an open source project</strong> you&#39;ll need to start by <a href="https://github.com/signup" target="_blank">creating a GitHub account</a>, if you&#39;ve already got one make sure you&#39;re <a href="https://github.com/login" target="_blank">logged in</a> before staring section 1 below.</li>
 <li><strong>If you&#39;re a seasoned open source contributor</strong> and want to dive right in check out our <a href="contributor-workflow.html">contributor workflow doc</a> and then review our <a href="core-functionality.html">core functionality</a> docs for a general orientation of the project architecture.</li>
 </ul>
-<h3>1. The Docs</h3>
+<h3>0. <a href="bug-report.html">Bug Reports</a></h3>
+<p>If you came across a bug or some sort of issue you think we should know about please tell us about it! We just ask that you file an issue following the format explained at the link above.</p>
+<h3>1. <a href="the-docs.html">The Docs</a></h3>
 <p>netnet is constantly changing, which means our docs always need lots of editing to keep up! Making an edit to these docs is something you can do entirely on GitHub and is a great way to get familiar with the basics of contributing to an open source project.</p>
 <h3>2. <a href="editing-convos.html">Convos and Passages</a></h3>
-<p>Central to netnet&#39;s &quot;hypermedia&quot; navigation system are the conversation passages that appear in netnet&#39;s speech bubbles. In these docs we&#39;ll explain how this system works as well as how to use netnet&#39;s &quot;Convo Widget&quot; to either edit a passage in an existing conversation file or create your own.</p>
+<p>Central to netnet&#39;s &quot;hypermedia&quot; navigation system are the conversation passages that appear in netnet&#39;s speech bubbles. In these docs we&#39;ll explain how this system works as well as how to use netnet&#39;s &quot;Convo Maker Widget&quot; to either edit a passage in an existing conversation file or create your own.</p>
 <h3>3. <a href="code-demos.html">Code Demos</a></h3>
 <p>Anyone can create and share &quot;sketches&quot; (single file web sites) in netnet by writing some code in netnet&#39;s editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become &quot;demos&quot;, with annotations explaining how different parts of the code works, and added to netnet&#39;s &quot;Code Demos&quot; widget.</p>
 <h3>4. Interactive Tutorials</h3>
 <p>One of netnet.studio&#39;s most dynamic educational components are the interactive tutorials, like this one made by Nick Briz for example. You can create your own interactive tutorials using our &quot;Tutorial Maker&quot; widget.</p>
-<h3>5. Widgets</h3>
+<h3>5. <a href="widgets.html">Widgets</a></h3>
 <p>The vast majority of netnet&#39;s features exist in &quot;widgets&quot;, these are the moveable windows that pop up to do all the various things artists can do in netnet beyond coding.</p>
 <h3>6. Core Components</h3>
 <p>Underneath all the convos, demos, tutorials and widgets are netnet&#39;s &quot;core&quot; components, the foundational code controlling how netnet looks and how it functions. This part of our system doesn&#39;t change often, but if you notice any bugs or have ideas for some fundamental improvements, these are the docs for you. These are the most complex contributions, so it would be wise to have gone through some of the steps above before diving into the depths of netnet&#39;s codebase.</p>
@@ -90,11 +107,12 @@
 <li>hinting system (auto-complete snippets)</li>
 </ol>
 <h3>the netnet-standard-library</h3>
-<p>The <code>nn</code> object spinkled throughout netnet&#39;s code base, also known as the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a>, or <code>nn.min.js</code> for short, is a browser based JavaScript library designed to aid creative coders (artists, designers, etc). It&#39;s a core utility library used within netnet.studio; both in the sense that it can be used to create projects and sketches in netnet, but also that it&#39;s used to create netet.studio itself.</p>
+<p>The <code>nn</code> object sprinkled throughout netnet&#39;s code base, also known as the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a>, or <code>nn.min.js</code> for short, is a browser based JavaScript library designed to aid creative coders (artists, designers, etc). It&#39;s a core utility library used within netnet.studio; both in the sense that it can be used to create projects and sketches in netnet, but also that it&#39;s used to create netet.studio itself.</p>
 <ol>
 <li>introduction</li>
 <li>adding new methods</li>
 </ol>
+<p><em>✏️ TODO: need to create detail pages for sub-modules</em></p>
 
       </div>
     </div>

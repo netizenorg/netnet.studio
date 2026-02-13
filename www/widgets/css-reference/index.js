@@ -171,6 +171,12 @@ class CssReference extends Widget {
     }
   }
 
+  openDocs (opt, anchor) {
+    if (!this.opened) this.open()
+    this._lastScrollTop = this.slide.scrollTop
+    this.slide.updateSlide(this[opt], anchor)
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 

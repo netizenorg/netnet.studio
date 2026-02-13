@@ -228,7 +228,9 @@ class KeyboardShortcuts extends Widget {
         e.preventDefault()
         e.stopPropagation()
         NNE.cm.undo() // remove \n that Enter adds
-        if (!NNE.autoUpdate) {
+        if (WIDGETS['project-files']?.projectData?.name) {
+          WIDGETS['project-files'].explainSave()
+        } else if (!NNE.autoUpdate) {
           console.clear()
           NNE.update()
         }

@@ -118,31 +118,44 @@ window.CONVOS['project-files'] = (self) => {
     return convos[c]
   }
 
-  const titleBarOpts = (type) => {
+  const quitProject = (e) => {
+    if (NNW.title.dataset.unsaved) e.goTo('confirm-quit-unsaved')
+    else if (self.changes.length > 0) e.goTo('confirm-quit-changes')
+    else { self.closeProject(); e.hide() }
+  }
+
+  const helpInfoOptions = () => {
     const opts = {
-      'I see': (e) => e.hide(),
-      'file path?': (e) => e.goTo('file-path')
+      'got it': (e) => e.hide(),
+      'where is this saved?': (e) => e.goTo('where-is-this-saved'),
+      'how do I create new files?': (e) => e.goTo('how-do-new-files'),
+      'what\'s a file path?': (e) => e.goTo('file-path')
     }
+
+    if (self.viewing?.toLowerCase() === 'index.html') {
+      opts['why is this called index.html'] = (e) => e.goTo('netnet-title-ex-index')
+    } else if (self.viewing?.toLowerCase() === 'readme.md') {
+      opts['why is this called README.md?'] = (e) => e.goTo('netnet-title-ex-readme')
+    }
+
     if (NNW.title.dataset.unsaved) {
       opts['what does the circle mean?'] = (e) => e.goTo('netnet-title-save')
     }
-    if (type === 'index') {
-      opts['index.html?'] = (e) => e.goTo('netnet-title-ex-index')
-    } else if (type === 'readme') {
-      opts['README.md?'] = (e) => e.goTo('netnet-title-ex-readme')
-    }
-    opts['quit this project'] = (e) => {
-      if (NNW.title.dataset.unsaved) e.goTo('confirm-quit-unsaved')
-      else if (self.changes.length > 0) e.goTo('confirm-quit-changes')
-      else { self.closeProject(); e.hide() }
-    }
+
+    opts['what does "git push" mean?'] = (e) => e.goTo('explain-github')
     return opts
+  }
+
+  const addCircleToBubble = () => {
+    const d = nn.getAll('.text-bubble-options button')
+      .filter(b => b.textContent.indexOf('what does the circle mean') === 0)[0]
+    if (d) d.innerHTML = 'what does <span class="save-circ-ex">the</span> circle mean?'
   }
 
   // ...
   return [{
     id: 'explain',
-    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project.',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder',
     options: {
       cool: (e) => e.hide(),
       'how?': (e) => e.goTo('explain2'),
@@ -150,7 +163,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'explain2',
-    content: 'For example, you could upload additional assets to your project, say you have an image called <code>cat.jpg</code> on your computer, you could upload that file to include it in your project using the <b>Project Files</b> widget and then in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code> to embed that image into your page.',
+    content: 'For example, you could upload additional assets to your project. In the <b>Project Files</b> widget, right-click the folder where you want the file to live and choose the option to create or upload a file. Say you have an image called <code>cat.jpg</code> on your computer, you could upload that file to include it in your project, and then in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code> to embed that image into your page.',
     options: {
       'I see': (e) => e.hide(),
       'beta?': (e) => e.goTo('beta')
@@ -158,31 +171,71 @@ window.CONVOS['project-files'] = (self) => {
   },
   // ------------- explain title bar
   {
-    id: 'netnet-title-bar-index',
-    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.<br><br>The title bar displays the path to the file you currently have open, which at the moment is your project's main HTML file <code>${NNW.title.textContent}</code>.`,
-    options: titleBarOpts('index')
+    id: 'netnet-title-bar',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder.<br><br>Keep in mind, this widget is still in "beta" (there may be bugs!).',
+    options: {
+      ok: (e) => e.hide(),
+      'help, I\'m confused!': (e) => e.goTo('help-info'),
+      'what does "beta" mean?': (e) => e.goTo('beta'),
+      'download this project': (e) => self.downloadProject(),
+      'quit this project': (e) => quitProject(e)
+    }
+  },
+  {
+    id: 'help-info',
+    content: `You're currently working on a project called <b>${self.projectData.name}</b>, this is also the name of the folder which stores all your website's files. The file you are currently viewing in my editor is <code>${self.viewing}</code>, as noted in the file path at the top of my editor next to the "Files" button which opens this widget.<br><br>You can visit the <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a> to learn more. I'm also happy to explain any of this in more depth?`,
+    options: helpInfoOptions(),
+    after: () => addCircleToBubble()
   }, {
-    id: 'netnet-title-bar-readme',
-    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a>.<br><br>The title bar displays the path to the file you currently have open, which at the moment is your project's README.`,
-    options: titleBarOpts('readme')
+    id: 'where-is-this-saved',
+    content: 'When you create a new project, the initial files get created on your GitHub account before getting loaded here. As you work on your project, any changes you make and new files you create or upload get stored right here in your browser. Keep in mind this is only <b>temporary</b>, as you make changes I will color-code these temporary <span style="color: var(--netizen-attribute);">new</span> and <span style="color: var(--netizen-number);">edited</span> files to remind you that these will eventually need to get "pushed" to your Github in order to save these changes permanently on your account. Alternatively, you can <span class="link" onclick="WIDGETS[\'project-files\'].downloadProject()">download</span> your project locally at anytime.',
+    options: {
+      'got it.': (e) => e.hide(),
+      'ok, download it now': (e) => self.downloadProject(),
+      'what\'s GitHub?': (e) => e.goTo('explain-github'),
+      'can you auto-save?': (e) => e.goTo('auto-save')
+    }
   }, {
-    id: 'netnet-title-bar-misc',
-    content: `These are your project's files. Click on a file or folder to open it, or right-click to open the context-menu. These files are saved in your browser temporarily while working on your project. To save changes permanently you'll need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.<br><br>The title bar displays the path to the file you currently have open, which at the moment is <code>${NNW.title.textContent}</code>.`,
-    options: titleBarOpts()
+    id: 'auto-save',
+    content: `Technically I could, but then I'd be making you reliant on me. The reality is, once you start using professional code editors you will not only be expected to "save" to see your changes reflected, but you'll also have to manually create commits and push your code. That might seem tedious, but the convention ensures you maintain control over your code, and I'm here to help introduce you to these conventions and build good habits. So make sure to press <code>${hotkey}+S</code> to save and render your changes often, and press <b>git push</b> every time you've added new working feature to your site so you don't loose it.`,
+    options: {
+      'got it.': (e) => e.hide()
+    }
+  }, {
+    id: 'how-do-new-files',
+    content: `In the <b>Project Files</b> widget you should see a folder named after your project <b>${self.projectData.name}</b>, click on it to expand the folder and view the files stored within it, then click it again to close it (same with any other folder). To upload or create a new file right-click the folder where you want the file to live to open a drop-down "context menu" then choose the desired option. The right-click context menu can also be used to rename, delete and move files.`,
+    options: {
+      'got it.': (e) => e.hide()
+    }
   }, {
     id: 'netnet-title-ex-index',
-    content: `Every web project begins with a folder, you named yours <code>${gh.p}</code> (this main folder is also known as your project's "root directory"), the first HTML file we always create in that folder must be called <code>index.html</code>, this is a convention that lets most server's know which file to open first when someone visits your website's URL.`,
-    options: titleBarOpts()
+    content: `Every web project starts with a folder. You named yours <b>${self.projectData.name}</b>. This main folder is also called your project’s “root directory.” The first HTML file you create in this folder should be named <code>index.html</code>. This is a common convention that tells web servers which file to load first when someone visits your website. Each folder in a project can have its own <code>index.html</code>, which acts as the default page for that folder.`,
+    options: {
+      ok: (e) => e.hide()
+    }
   }, {
     id: 'netnet-title-ex-readme',
-    content: `When you create and version a project on GitHub (aka a "repository" or "repo" for short) it's customary to include a file called <code>README.md</code> in your project's "root directory" (your project's main folder <code>${gh.p}</code>), this file is "metadata", meaning it's information <i>about</i> your project. You can write whatever you want here using a simple markup language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown</a>, this is the first thing someone will see when they checkout your code's repo on <a href="${gh.url}" target="_blank">GitHub</a>`,
-    options: titleBarOpts()
+    content: `When you create a project on GitHub (often called a “repository” or “repo”), it’s customary to include a file named <code>README.md</code> in the project’s root directory, the "${self.projectData.name}" folder. This file contains information <i>about</i> your project. It’s usually the first thing people see when they view your repository on <a href="${gh.url}" target="_blank">GitHub</a>. I’ve created this file for you with some starter instructions, but you can edit it however you like using a simple formatting language called <a href="https://www.markdownguide.org/basic-syntax" target="_blank">Markdown</a>.`,
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'cmd-enter-save-info',
+    content: `The <code>${hotkey}+Enter</code> shortcut is used to render <b>sketches</b> when the <i>auto-update</i> setting is false. You are currently working on a <b>project</b>, so instead you'll need to use <code>${hotkey}+S</code> to save and render those changes. Keep in mind, this only saves changes locally and temporarily, to make these changes permanent you'll need to push them to GitHub.`,
+    options: {
+      ok: (e) => e.hide(),
+      'GitHub?': (e) => e.goTo('explain-github'),
+      'can\'t you auto save?': (e) => e.goTo('auto-save'),
+      'what does the circle mean?': (e) => e.goTo('netnet-title-save')
+    },
+    after: () => addCircleToBubble()
   }, {
     id: 'netnet-title-save',
     content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code><br><br>Now remember, these changes are only being saved temporarily in your browser. To save changes permanently you'll also need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.`,
     options: {
       'got it': (e) => e.hide(),
-      'save changes': (e) => {
+      'can you auto save?': (e) => e.goTo('auto-save'),
+      'ok, save changes now': (e) => {
         self.saveCurrentFile()
         e.goTo('netnet-title-save2')
       }
@@ -214,6 +267,33 @@ window.CONVOS['project-files'] = (self) => {
         self.closeProject()
         e.hide()
       }
+    }
+  }, {
+    id: 'explain-github',
+    content: 'GitHub is an online platform where coders often store their work, functioning both as their code portfolio as well as a place to collaborate with others. It takes it\'s name from <a href="https://en.wikipedia.org/wiki/Git" target="_blank">git</a>, an open-source tool used by GitHub to "version" our progress, like creating save points in a video game. That\'s the first thing I\'ll guide you through when you press "git push". After creating that save point, or what we call a "commit", I\'ll send these updates to your GitHub account for storage and optional web hosting.',
+    options: {
+      'optional hosting?': (e) => e.goTo('hosting'),
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'hosting',
+    content: 'Put simply, a web "host" is a computer connected to the Internet running a web server with your project stored on it. When someone "visits" your website, their browser sends a request to the host\'s server which sends them your website in response. You can download your project and upload it to any web host you\'d like, you could even <a href="https://homebrewserver.club/" target="_blank">host it yourself</a>, the web is an open platform after all. But, because you have your project saved on your GitHub the easiest solution would be to use <a href="https://pages.github.com/" target="_blank">ghpages</a>, GitHub\'s free web hosting service which I can enable for you.',
+    options: {
+      'how do I host on GitHub?': (e) => e.goTo('how-host'),
+      'download my project': (e) => self.downloadProject(),
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'how-host',
+    content: 'While working on a project, open the <b>Coding Menu</b>, click on <i>my code</i> and select the <i>share</i> option. Once there you\'ll be given the option to enable the ghpages web server. You only need to do this one time, once enabled all you need to do is "push" your updates to GitHub, and your public website will be updated within minutes.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'download-project',
+    content: 'I\'ve started downloading the current version of your project to your computer. All your files will be stored in a <a href="https://en.wikipedia.org/wiki/ZIP_(file_format)" target="_blank">zip file</a> named after your project\'s root folder. You should see the zip file in your downloads folder shortly.',
+    options: {
+      ok: (e) => e.hide()
     }
   },
   // -------------------------- creating a new project -------------------------
@@ -268,13 +348,19 @@ window.CONVOS['project-files'] = (self) => {
       self.closeProject()
       NNW.menu.switchFace('default')
     },
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     content: 'What would you like this new project to be called? <input placeholder="project-name">',
     options: {
-      'save it!': (c, t) => createNewRepo(c, t),
+      'create it!': (c, t) => createNewRepo(c, t),
       'never mind': (e) => e.hide()
     }
   }, {
     id: 'explain-proj-name', // if createNewRepo receives a bad name value
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     content: 'Project names can not contain any special characters, try a different name. <input placeholder="project-name">',
     options: {
       'save it!': (c, t) => createNewRepo(c, t),
@@ -368,13 +454,16 @@ window.CONVOS['project-files'] = (self) => {
     // }
   }, {
     id: 'beta',
-    content: 'This is the first version of the <b>Project Files</b> widget, it\'s still in "beta", meaning we\'re still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">submit an issue!</a>',
+    content: `This is the first version of the <b>Project Files</b> widget, it's still in "beta", meaning we're still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">submit an issue!</a>`,
     options: {
       ok: (e) => e.hide()
     }
   }, { // ---------------------------------------------------- folder stuff ----
     id: 'new-folder',
     content: namingConvos('new-f', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder'),
       'never mind': (e) => e.hide()
@@ -382,6 +471,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-blank',
     content: namingConvos('f-name-blank', 'folder', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder'),
       'never mind': (e) => e.hide()
@@ -389,6 +481,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-too-long',
     content: namingConvos('f-name-too-long', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -396,6 +491,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -403,6 +501,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -410,6 +511,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-hidden',
     content: namingConvos('f-name-is-hidden', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postNew(tempName, 'folder'),
       'no, oops!': (e) => e.goTo('new-folder')
@@ -417,6 +521,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-dot',
     content: namingConvos('fldr-has-dot', 'folder'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', self._rename),
       'never mind': (e) => e.hide()
@@ -424,6 +531,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'folder-rename',
     content: namingConvos('f-rename', 'folder', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'folder', true),
       'never mind': (e) => e.hide()
@@ -472,6 +582,9 @@ window.CONVOS['project-files'] = (self) => {
   }, { // ---------------------------------------------------- file stuff ------
     id: 'new-file',
     content: namingConvos('new-f', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file'),
       'never mind': (e) => e.hide()
@@ -479,6 +592,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-blank',
     content: namingConvos('f-name-blank', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -486,6 +602,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-too-long',
     content: namingConvos('f-name-too-long', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -493,6 +612,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-has-spaces',
     content: namingConvos('f-name-has-spaces', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -500,6 +622,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-name-has-uppercase',
     content: namingConvos('f-name-has-uppercase', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -507,6 +632,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename',
     content: namingConvos('f-rename', 'file', self._rename),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -514,6 +642,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-new-missing-ext',
     content: namingConvos('f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', self._rename),
       'never mind': (e) => e.hide()
@@ -521,6 +652,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename-missing-ext',
     content: namingConvos('f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -528,6 +662,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-invalid-ext',
     content: namingConvos('invalid-f-ext', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'save it!': (c, t) => validateFName(c, t, 'file', true),
       'never mind': (e) => e.hide()
@@ -535,6 +672,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-new-hidden',
     content: namingConvos('f-name-is-hidden', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postNew(tempName, 'file'),
       'no, oops!': (e) => e.goTo('new-file')
@@ -542,6 +682,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'file-rename-hidden',
     content: namingConvos('f-name-is-hidden', 'file'),
+    after: () => {
+      nn.get('text-bubble input').focus()
+    },
     options: {
       'yes, save it!': (c, t) => self._postRenameFile(tempName),
       'no, oops!': (e) => e.goTo('file-rename')
@@ -663,7 +806,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'unknown-format',
-    content: 'Unfortunately that\'s not a file I know how to open, if you think this is a mistake you should let my creators know by filing an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a>.',
+    content: `Unfortunately that's not a file I know how to open, if you think this is a mistake you should let my creators know by filing an <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">issue</a>.`,
     options: {
       ok: (e) => e.hide()
     }
@@ -730,7 +873,7 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'explain-error',
     before: () => NNW.menu.switchFace('default'),
-    content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on our GitHub to let us know what you found!`,
+    content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">report an issue</a> on our GitHub to let us know what you found!`,
     options: { ok: (e) => e.hide() }
   }]
 }

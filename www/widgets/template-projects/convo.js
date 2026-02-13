@@ -53,6 +53,9 @@ window.CONVOS['template-projects'] = (self) => {
         'guide me through it': (e) => {
           self.startGuide(self._tempName)
         },
+        'what\'s in this template?': (e) => {
+          self.explainTemplate()
+        },
         'let\'s start a project': (e) => {
           self.preNewRepoFromTemplate()
         }
@@ -61,7 +64,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'start-guide',
       graph: { id: 4, x: 150, y: 275 },
-      content: `I'm going to walk you through creating the <i>${self._getTemplateName()} Template</i>. Feel free to experiment with the code at anytime, you can always click the <b>Notes</b> button at the top of the editor which will reset the code and return to the guided tour.`,
+      content: `I'm going to walk you through creating the <i>${self._getTemplateName()} Template</i>. Feel free to experiment with the code at anytime, you can always click the <b>Guide</b> button at the top of the editor which will reset the code and return to the guided tour.`,
       options: {
         ok: (e) => {
           self._templateConvo(true) // first template convo
@@ -71,7 +74,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'notes-click-pre-guide',
       graph: { id: 21, x: 400, y: 275 },
-      content: `Would you like me to begin the walkthrough for the <i>${self._getTemplateName()}</i> template or did you want to jump straight into creating a new project from this template?`,
+      content: `Would you like me to begin the walkthrough for the <i>${self._getTemplateName()}</i> template or did you want to skip to the end and jump straight into creating a new project from this template?`,
       options: {
         'guide me through it': (e) => {
           self._templateConvo(true) // first template convo
@@ -79,7 +82,7 @@ window.CONVOS['template-projects'] = (self) => {
         'let\'s start a project': (e) => {
           self.preNewRepoFromTemplate()
         },
-        neither: (e) => {
+        'neither, I want to quit': (e) => {
           self.cancel()
           NNE.code = ''
           e.hide()
@@ -89,18 +92,18 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'notes-click',
       graph: { id: 5, x: 275, y: 275 },
-      content: 'Would you like to continue where we left off, restart the guide from the start or skip to the end?',
+      content: 'You can use the <b>Project Template Guide</b> widget to jump to any point in this guide. Click the current point to continue where we left off, click on the first point to restart this guide or click the last one to skip to the end.',
       options: {
-        'continue guide': (e) => {
+        'let\'s continue': (e) => {
           self._continueGuide()
         },
-        'restart guide': (e) => {
-          self.startGuide()
-        },
-        'skip to the end': (e) => {
-          self._skipToEnd()
-        },
-        'quit guide': (e) => {
+        // 'restart guide': (e) => {
+        //   self.startGuide()
+        // },
+        // 'skip to the end': (e) => {
+        //   self._skipToEnd()
+        // },
+        'I want to quit this guide': (e) => {
           self.cancel()
           NNE.code = ''
           e.hide()
@@ -182,6 +185,9 @@ window.CONVOS['template-projects'] = (self) => {
       id: 'new-project-from-template',
       graph: { id: 12, x: 400, y: 625 },
       edit: true,
+      after: () => {
+        nn.get('text-bubble input').focus()
+      },
       content: 'Great, what would you like this new project to be called? <input placeholder="project-name" style="width: 300px;">',
       options: {
         'ready!': (e, t) => {
@@ -276,12 +282,12 @@ window.CONVOS['template-projects'] = (self) => {
     }, {
       id: 'explain-error',
       before: () => NNW.menu.switchFace('default'),
-      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">open an issue</a> on our GitHub to let us know what you found!`,
+      content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">report an issue</a> on our GitHub to let us know what you found!`,
       options: { ok: (e) => e.hide() }
     },
     {
       id: 'can-not-edit',
-      content: 'Occasionally I might ask you for content which I\'ll include in the code, but you can\'t edit the code directly while I build out the template. You\'ll have to wait till I\'m finished, or click on the "Notes" button at the top to skip to the end.',
+      content: 'Occasionally I might ask you for content which I\'ll include in the code, but you can\'t edit the code directly while I build out the template. You\'ll have to wait till I\'m finished, or click on the "Guide" button at the top to skip to the end.',
       options: {
         ok: (e) => {
           if (self._lastConvo === 'start-guide') e.goTo('start-guide')

@@ -87,6 +87,9 @@ function mobileMenu () {
     docsPanel.classList.toggle('open')
     if (docsPanel.classList.contains('open')) {
       hamburger.setAttribute('aria-expanded', 'true')
+      const overlay = nn.create('div')
+        .set('class', 'overlay')
+        .on('click', () => docsPanel.hide())
     } else {
       hamburger.setAttribute('aria-expanded', 'false')
     }

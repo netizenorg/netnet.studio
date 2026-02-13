@@ -46,6 +46,16 @@ class HtmlReference extends Widget {
     }, true)
   }
 
+  openDocs (opt, entry) {
+    let type
+    if (opt === 'eleListOpts') {
+      type = 'elements'
+    } else if (opt === 'attrListOpts') {
+      type = 'attributes'
+    }
+    this.goTo(type, entry)
+  }
+
   goTo (type, name) {
     if (!this.opened) this.open()
     // ex: goTo('attributes', 'src')
@@ -233,15 +243,23 @@ class HtmlReference extends Widget {
 
   _createList (type) {
     const list = []
-    Object.keys(NNE.edu.html[type]).sort().forEach(name => {
+    const names = [
+      ...new Set([
+        ...Object.keys(NNE.edu.html[type]),
+        ...Object.keys(NNE.edu.svg[type])
+      ])
+    ]
+    names.sort().forEach(name => {
       const item = { name }
+      const isSVG = !Object.keys(NNE.edu.html[type]).includes(name)
       if (type === 'elements') {
         item.html = `<span style="color:var(--netizen-tag-bracket);">&lt;</span><span style="color:var(--netizen-tag);">${name}</span><span style="color:var(--netizen-tag-bracket);">&gt;</span>`
       } else if (type === 'attributes') {
         item.html = `<span style="color:var(--netizen-attribute);">${name}</span>`
       }
+      if (isSVG) item.html += '<span class="html-ref__svg-label">SVG</span>'
       item.click = () => {
-        const nfo = NNE.edu.html[type][name]
+        const nfo = isSVG ? NNE.edu.svg[type][name] : NNE.edu.html[type][name]
         this._createInfoSlide(type, name, nfo)
       }
       list.push(item)
@@ -252,6 +270,8 @@ class HtmlReference extends Widget {
   _createInfoSlide (type, name, nfo) {
     const div = document.createElement('div')
     if (!nfo) nfo = NNE.edu.html[type][name]
+    if (!nfo) nfo = NNE.edu.svg[type][name]
+    if (!nfo) return
 
     const h1 = document.createElement('h1')
     h1.classList.add('hdr-highlight')
@@ -295,6 +315,13 @@ class HtmlReference extends Widget {
     }
     div.appendChild(description)
 
+    // if it's an SVG element
+    if (type === 'elements' && !Object.keys(NNE.edu.html.elements).includes(name)) {
+      nn.create('br').addTo(div)
+      const m = 'This is an <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorials/SVG_from_scratch/Getting_started" target="_blank">SVG element</a> so it must be placed within <code>&lt;svg&gt;</code> tags.'
+      nn.create('div').content(m).addTo(div)
+    }
+
     if (type === 'elements') this._createElementDetails(div, name, nfo)
     else if (type === 'attributes') this._createAttributeDetails(div, name, nfo)
 
@@ -322,31 +349,47 @@ class HtmlReference extends Widget {
     if (nfo.flow || nfo.singleton) {
       const d = document.createElement('div')
       d.innerHTML = ''
-      if (nfo.flow === 'inline') {
-        d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements" target="_blank">inline</a> element.`
-      } else if (nfo.flow === 'block') {
-        d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
-      }
+      // NOTE: don't think differentiating between inline/block is all that helpful here after all.
+      // ...but will leave it here in case we change our mind.
+      // if (nfo.flow === 'inline') {
+      //   d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements" target="_blank">inline</a> element.`
+      // } else if (nfo.flow === 'block') {
+      //   d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
+      // }
       if (nfo.singleton) {
         d.innerHTML += `${nfo.flow ? ' ' : ''}The <b>${name}</b> element is${nfo.flow ? ' also' : ''} a "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">void element</a>" (aka "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">singleton tag</a>"), which means it consists ony of an opening tag, it does not require a closing tag.`
       }
-      slide.appendChild(d)
-      slide.appendChild(document.createElement('br'))
+
+      if (d.innerHTML !== '') {
+        slide.appendChild(d)
+        slide.appendChild(document.createElement('br'))
+      }
     }
     if (nfo.attributes) {
       const d = document.createElement('div')
-      d.innerHTML = `The following attributes can be applied to the opening <code>&lt;${name}&gt;</code> tag:`
-      nfo.attributes.forEach(attr => {
-        const span = document.createElement('span')
-        span.className = 'inline-link inline-link--attr'
-        span.textContent = attr
-        span.addEventListener('click', () => this._createInfoSlide('attributes', attr))
-        d.appendChild(span)
-      })
+
+      const displayTxtWithAttrs = () => {
+        d.innerHTML = `The following attributes can be applied to the opening <code>&lt;${name}&gt;</code> tag:`
+        nfo.attributes.forEach(attr => {
+          const span = document.createElement('span')
+          span.className = 'inline-link inline-link--attr'
+          span.textContent = attr
+          span.addEventListener('click', () => this._createInfoSlide('attributes', attr))
+          d.appendChild(span)
+        })
+      }
+
+      if (nfo.attributes.length > 5) {
+        d.innerHTML = `This element can have ${nfo.attributes.length} different attributes applied to it's opening tag. `
+        nn.create('span')
+          .set('class', 'link').content('<span class="link">list attributes?')
+          .on('click', displayTxtWithAttrs).addTo(d)
+      } else displayTxtWithAttrs()
+
       slide.appendChild(d)
+      slide.appendChild(document.createElement('br'))
     }
     if (nfo.url) {
-      slide.appendChild(document.createElement('br'))
       const d = document.createElement('div')
       d.innerHTML = `Learn more about it at the <a href="${nfo.url}" target="_blank">Mozilla Developer Network</a> page.`
       slide.appendChild(d)
@@ -369,6 +412,8 @@ class HtmlReference extends Widget {
       slide.appendChild(document.createElement('br'))
     }
     if (nfo.elements) {
+      if (!nfo.note) slide.appendChild(document.createElement('br'))
+
       const d = document.createElement('div')
       if (nfo.elements.text === 'Global attribute') {
         d.innerHTML = `<b>${name}</b> is a global attribute, it can be applied to any element`

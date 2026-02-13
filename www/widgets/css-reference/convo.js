@@ -132,7 +132,7 @@ window.CONVOS['css-reference'] = (self) => {
       graph: { id: 11, x: 175, y: 800 },
       content: 'Like the humans that create them, all technology have their biases. Whether those are good or bad depends heavily on the context and use case. What\'s most important is that we are aware of our technology\'s bias so that we can approach them critically. Understanding a technology\'s bias means we can ask <i>what\'s at stake?</i> and <i>what are the risks?</i> when applying it to any given context.',
       options: {
-        'I see': (e) => e.goTo('declaration')
+        understood: (e) => e.goTo('declaration')
       }
     },
     {
@@ -141,7 +141,7 @@ window.CONVOS['css-reference'] = (self) => {
       before: () => {
         self.$('svg-css-presentation').updateHTML(5)
       },
-      content: 'Now we just need to decide which HTML elements we want to apply this CSS declaration to. There are few different ways to do this, which I\'ll cover in the <i>Basic CSS Template</i>, so for now we\'ll go with the most common which starts with placing our declaration inside a <i>block</i>, which means between <code>{</code> and <code>}</code> brackets.',
+      content: 'Now we just need to decide which HTML elements we want to apply this CSS declaration to. There are a couple of ways to do this, which I\'ll cover in the <i>Basic CSS Template</i>, so for now we\'ll go with the most common which starts with placing our declaration inside a <i>block</i>, which means between <code>{</code> and <code>}</code> brackets.',
       options: {
         'go on': (e) => e.goTo('css-selector'),
         'go back': (e) => e.goTo('declaration')
@@ -166,7 +166,7 @@ window.CONVOS['css-reference'] = (self) => {
       before: () => {
         self.$('svg-css-presentation').updateHTML(7)
       },
-      content: 'Notice how the <code>h1</code> behind me is now bigger than it was by before, it\'s now 100 pixels. Usually, when you see numbers written in CSS they\'re accompanied by some <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units" target="_blank">unit</a>, in this case <code>px</code> for "pixels".',
+      content: 'Notice how the <code>h1</code> behind me is now bigger than it was by before, it now has a font-size of 100 pixels. Usually, when you see numbers written in CSS they\'re accompanied by some <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units" target="_blank">unit</a>, in this case <code>px</code> for "pixels".',
       options: {
         'go on': (e) => e.goTo('other-units'),
         'go back': (e) => e.goTo('css-selector')
@@ -369,7 +369,7 @@ window.CONVOS['css-reference'] = (self) => {
           })
         },
         'go back': (e) => e.goTo('any-order'),
-        'i\'m going to expirament a little': (e) => e.hide()
+        'i\'m going to experiment with this a bit': (e) => e.hide()
       }
     },
     {
@@ -387,7 +387,7 @@ window.CONVOS['css-reference'] = (self) => {
       content: 'You can\'t edit the code directly during this guided lesson, you\'ll have the use the GUI I create in the CSS Reference widget or you can click "end guided intro" to exit this guide.',
       options: {
         ok: (e) => {
-          if (self._lastConvo) e.goTo(self._lastConvo)
+          if (self._lastConvo && self._lastConvo !== 'no-edit') e.goTo(self._lastConvo)
           else e.hide()
         }
       }

@@ -77,5 +77,11 @@ window.CONVOS['learning-guide'] = (self) => {
     options: {
       ok: (e) => e.hide()
     }
+  }, {
+    id: 'coming-soon-units',
+    content: 'My creators are still working on those docs, but in the meantime you can check out MDN\'s <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units" target="_blank">CSS values and units</a> page for more info on that topic.',
+    options: {
+      ok: (e) => e.hide()
+    }
   }]
 }

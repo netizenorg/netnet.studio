@@ -60,7 +60,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'need-js',
-      content: 'It already looks 10PRINT-<i>ish</i>, but it\'s still static. Including our diagonals directly in the HTML means they will render the same way every time. We want a randomized pattern each time we load and also regenerates when we click, which is why we need JavaScript.',
+      content: 'It already looks 10PRINT-<i>ish</i>, but it\'s still static. Typing out our diagonals directly in the HTML means they will render the same way every time. We want a randomized pattern each time we load and also regenerates when we click, which is why we need JavaScript.',
       options: {
         'go on': (e) => e.goTo('inline-js'),
         'go back': (e) => e.goTo('add-styles')
@@ -524,7 +524,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'try-click',
-      content: 'Now our background color won\'t change until you click on the page—try it out! Click anywhere on the maze pattern!',
+      content: 'Now our background color won\'t change until you click on the page, try it out! Click anywhere on the maze pattern!',
       options: {
         'go on': (e) => e.goTo('css-colors-rgb'),
         'go back': (e) => e.goTo('window-addEventListener')
@@ -588,7 +588,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'append-issue',
-      content: 'Except that, the way the code is written now uses the <code>+=</code> operator to <i>append</i> slashes each time, so clicking the page won\'t create a new pattern, it\'ll just make the one we already have longer.',
+      content: 'Except that, the way the code is written now uses the <code>+=</code> operator to <i>append</i> slashes each time, so clicking the page won\'t create a new pattern, it\'ll just make the one we already have longer. (click, then scroll to see)',
       options: {
         'go on': (e) => e.goTo('clear-innertext'),
         'go back': (e) => e.goTo('click-regenerate')
@@ -604,7 +604,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'pause-experiment',
-      content: 'This is probably a good time to pause and experiment with the code we\'ve written so far. Try changing the slashes in our strings to other symbols, change how many times our loop is going to run, and tweak the random probability in our conditional and color function. After some experimentation, click the "Notes" button to resume the lesson.',
+      content: 'This is probably a good time to pause and experiment with the code we\'ve written so far. Try changing the slashes in our strings to other symbols, change how many times our loop is going to run, and tweak the random probability in our conditional and color function. After some experimentation, click the "<b>Guide</b>" button to resume the lesson.',
       options: {
         'go on': (e) => e.goTo('libraries'),
         'go back': (e) => e.goTo('clear-innertext')
@@ -628,7 +628,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'nn-intro',
-      content: 'There\'s a JavaScript library my creators wrote while building this website called the <a href="https://github.com/netizenorg/netnet-standard-library/blob/main/README.md" target="_blank">netnet standard library</a>. It packages up helpful functions for creative coding into a single <code>nn</code> object.',
+      content: 'There\'s a JavaScript library my creators wrote while creating me called the <a href="https://github.com/netizenorg/netnet-standard-library/blob/main/README.md" target="_blank">netnet standard library</a>. It packages up helpful functions for creative coding into a single <code>nn</code> object.',
       options: {
         'go on': (e) => e.goTo('import-lib'),
         'go back': (e) => e.goTo('what-lib')
@@ -740,7 +740,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'chain-multiline',
-      content: 'Now that the variables live here, we can use them by chaining a <code>.css()</code> call directly after <code>nn.get()</code>. When chaining more than a couple of methods, splitting them across lines often makes the code easier to read.',
+      content: 'Now that the variables live here, we can use them by chaining a <code>.css()</code> call directly after <code>.content()</code>. When chaining more than a couple of methods, splitting them across lines often makes the code easier to read.',
       options: {
         'go on': (e) => e.goTo('chars-var'),
         'go back': (e) => e.goTo('chain-methods')
@@ -852,7 +852,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'end-guide',
-      content: 'There is so much more we can do with JavaScript, this is only the beginning! There are many more Web APIs and creative coding libraries full of potential. We\'ll explore these in other lessons, templates, and demos. To make the most of them, keep building your understanding of the fundamentals we covered here, and explore the <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.scrollTo(\'js-docs\'))">JavaScript Docs</span> in my Learning Guide.',
+      content: 'We\'ve covered all of JavaScript\'s core concepts in this lesson, but in terms of what we can do with it, we\'ve really only scratched the surface! There are many more Web APIs and creative coding libraries full of potential. We\'ll explore these in other lessons, templates, and demos. To make the most of them, keep building your understanding of the fundamentals we covered here, and explore the <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.scrollTo(\'js-docs\'))">JavaScript Docs</span> in my Learning Guide.',
       options: {
         'great!': (e) => {
           WIDGETS['template-projects']._experimentWithCode()

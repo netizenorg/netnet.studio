@@ -3,11 +3,14 @@
 netnet.studio is a <a href="http://netizen.org" target="_blank">netizen.org</a> project being designed and developed by <a href="http://nickbriz.com/" target="_blank">Nick Briz</a> and <a href="https://www.sarahrooney.net/" target="_blank">Sarah Rooney</a> with help from a handful of [other contributors](https://github.com/netizenorg/netnet.studio/graphs/contributors). netnet.studio is constantly evolving and is currently seeking financial support from individuals and institutions who benefit from open access to this platform and who support our mission to reclaim creative agency on the Internet and to nurture and grow the hand-crafted expressive parts of the World Wide Web.
 
 ### How can individuals support?
-**TODO**: *needs updating!!!*
+
+*✏️ TODO: write up details*
+
 
 
 ### How can institutions support?
-**TODO**: *needs updating!!!*
+
+*✏️ TODO: write up details*
 
 ### Testimonials
 

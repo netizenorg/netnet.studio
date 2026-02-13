@@ -68,5 +68,18 @@ window.CONVOS['hyper-video-player'] = (self) => {
         if (self._tempCode !== NNE.code) self._updateCode(self._tempCode)
       }
     }
+  }, {
+    id: 'interrupt',
+    content: 'You\'re currently in the middle of an interactive tutorial. Would you like to continue or do you want to quit the tutorial?',
+    options: {
+      'let\'s continue': (e) => {
+        self.play()
+        e.hide()
+      },
+      'let\'s quit': (e) => {
+        self.close()
+        e.hide()
+      }
+    }
   }]
 }

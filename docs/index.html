@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="netnet.studio">
     <meta name="twitter:site" content="@netizenorg">
 
-    <link rel="icon" type="image/png" href="/images/eye.png">
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
     <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
@@ -26,22 +26,31 @@
         </a>
         <span class="ver">vBETA 3.0</span>
       </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false">
-        <span class="screen-reader-only">Open/close mobile menu</span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
       </button>
       <div class="docs__panel__search">
         <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
         <input id="search-input" class="search-input" placeholder="search">
       </div>
-      <ul class="docs__panel__list"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list"></ul>
+                <ul class="docs__panel__list" role="navigation"></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
-                <ul class="docs__panel__list"><li class="docs__panel__list-item">
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  bug report
+                </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
                   contributor workflow
                 </a></li><li class="docs__panel__list-item">
@@ -53,6 +62,12 @@
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/support.html">
                   support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
                 </a></li></ul>
               </li></ul>
     </div>
@@ -62,12 +77,12 @@
         <h3>netnet.studio is an open-source hypermedia cyberspace for fully realizing the Web’s creative potential.</h3>
 <p>netnet&#39;s goal is to guide creatives in their journey, from curious beginners to creative code virtuosos, through interactive learning and experimental play with the medium itself. Our mission is to help artists, designers and other DIY makers reclaim the Internet as a hand-crafted space for self-expression.</p>
 <div id="donate-links">
-  <a href="contributors/support.html">Donate 💰!</a>
-  <a href="contributors/index.html">Donate ⏰!</a>
+  <div><a href="contributors/support.html">Donate 💰!</a></div>
+  <div><a href="contributors/index.html">Donate ⏰!</a></div>
 </div>
 
 <p class="center italic">
-  netnet.studio is a free/libre open-source project please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
+  netnet.studio is a free/libre open-source project. please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
 </p>
 
 <h1>Meet netnet ( ◕ ◞ ◕ )</h1>
@@ -76,8 +91,8 @@
 <p><strong>If you&#39;re an aspiring student of the creative web, <a href="students/index.html">start here</a>!</strong></p>
 <h1>The Platform</h1>
 <p>The <a href="https://www.youtube.com/watch?v=3c3Rt6QbHDw" target="_blank">first web browser</a> was both a tool for exploring the web and creating it. The first browsers were all research projects created in labs and universities, but when enterprising technologists saw its commercial potential they removed the &quot;editor&quot; part and left only the &quot;browser&quot; part. netnet brings the &quot;editor&quot; back into the &quot;browser&quot;, where it was always meant to be.</p>
-<p>Unlike most web-based products of <a href="https://www.youtube.com/watch?v=hIXhnWUmMvw" target="_blank">surveillance capitalism</a> (the dominant business model of big tech today) netnet.studio is not here to collect and profit off your data. The studio is carefully designed to be a privacy-focused safe space for creative experimentation (You can read our <a href="https://dev.netnet.studio/?w=privacy-policy" target="_blank">privacy policy</a> at the studio). While netnet is modeled on modern code editors and does integrate with other third party tools like GitHub (for the purpose of teaching others the conventions and tooling of the day) we go to great lengths to make this all secure and extremely transparent while remaining accessible.</p>
-<p><strong>TODO</strong> <em>update privacy-policy dev link to main link before pushing to main</em></p>
+<p>Unlike most web-based products of <a href="https://www.youtube.com/watch?v=hIXhnWUmMvw" target="_blank">surveillance capitalism</a> (the dominant business model of big tech today) netnet.studio is not here to collect and profit off your data. The studio is carefully designed to be a privacy-focused safe space for creative experimentation (You can read our <a href="https://dev.netnet.studio/?w=privacy-policy" target="_blank">privacy policy</a> at the studio). While netnet is modeled on modern code editors and does integrate with other third party tools like GitHub (for the purpose of teaching students the conventions and tooling of the day) we go to great lengths to make this all secure and extremely transparent while remaining accessible.</p>
+<p><em>✏️ TODO: update privacy-policy dev link to main link before pushing to main</em></p>
 <p><strong>If you&#39;re an educator interested in leveraging the platform in your classroom, <a href="educators/index.html">start here</a>!</strong></p>
 <h1>Our Mission</h1>
 <p>What begun as a research project in computer networking in the late 1960s slowly grew into a globally distributed network of networks called the the <em>Inter</em>net. For the first couple of decades, using the Internet meant reading and typing into text-only displays. That is until the early 1990s, when a small group of scientists, taking inspiration from an experimental <a href="https://archive.org/details/HyperlandBBSDouglasAdamsAndTomBaker1990" target="_blank">media art/tech scene</a>, added a &quot;hypertext&quot; and &quot;multi-media&quot; interface called the World Wide Web. Like the physical infrastructure it was built on (the Internet) the Web reflected a set of values which enabled it to grow far beyond its inventors wildest dreams!</p>

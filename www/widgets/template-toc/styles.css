@@ -1,0 +1,104 @@
+.template-toc {
+  overflow-y: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+  max-height: 250px;
+  /* max-width: 455px; */
+  scrollbar-gutter: stable;
+}
+
+.template-toc p {
+  max-width: 455px;
+}
+
+.template-toc code {
+  position: relative;
+  top: -0.1em;
+  padding: .1em 0.3em 0.2em;
+  border-radius: 6px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: 700;
+  cursor: text;
+}
+
+.template-toc-disclaimer{
+  padding-bottom: 10px;
+}
+
+/* progress bar */
+/* NOTE: this is the same as demo-toc widget */
+
+.template-toc-progress {
+  --h: 10px;
+  --marker: 14px;
+  --pad: calc(var(--marker) / 2);
+  /* max-width: 720px; */
+  width: 100%;
+  overflow: hidden;
+}
+
+.template-toc-progress .bar {
+  position: relative;
+  height: var(--marker);
+  padding: 0 var(--pad);
+}
+
+.template-toc-progress .track,
+.template-toc-progress .fill {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  top: 50%;
+  height: var(--h);
+  transform: translateY(-50%);
+  border-radius: 999px;
+}
+
+.template-toc-progress .track {
+  background: var(--netizen-meta);
+}
+
+.template-toc-progress .fill {
+  right: auto;
+  width: calc((100% - (2 * var(--pad))) * (var(--progress) / 100));
+  background: var(--fg-color);
+  transition: width 180ms ease;
+}
+
+.template-toc-progress .note-markers {
+  position: absolute;
+  top: 0;
+  width: calc(100% - var(--pad));
+  display: flex;
+  justify-content: space-between;
+}
+
+.template-toc-progress .note-markers button {
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: 50%;
+  background: var(--netizen-meta);
+  border: 2px solid var(--bg-color);
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.template-toc-progress .note-markers button:hover {
+  transform: scale(1.5);
+  background-color: var(--netizen-attribute);
+}
+
+.template-toc-progress .note-markers button:focus-visible {
+  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.25);
+}
+
+.template-toc-note-title {
+  text-align: center;
+  margin-top: 10px;
+}

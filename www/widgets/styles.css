@@ -243,12 +243,17 @@
   display: none;
   opacity: 0;
 
-  grid-template-columns: 1fr 1fr 1fr;
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 10px;
 
   padding-top: 24px;
 
   transition: opacity var(--menu-fades-time) var(--sarah-ease);
+}
+
+.reference-widget__slide > * {
+  min-width: 0; /* ensures the items can shrink */
 }
 
 .reference-widget__nav {
@@ -309,6 +314,9 @@
 .reference-widget__list-item {
   cursor: pointer;
   font-family: "fira-code", inconsolata, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* copied from prior text-bubble styles */

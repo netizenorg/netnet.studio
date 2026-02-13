@@ -136,9 +136,11 @@ window.CONVOS['template-css-landing-page'] = (self) => {
       options: {
         'never mind, continue': (e) => e.goTo('footer-html1'),
         'what\'s HTML?': (e) => {
+          WIDGETS['template-projects'].cancel()
           WIDGETS.open('html-reference', (w) => w.toggleIntroPresentation())
         },
         'let\'s see the HTML template': (e) => {
+          WIDGETS['template-projects'].cancel()
           WIDGETS.load('template-projects', w => w.loadTemplate('html-basic'))
         }
       }

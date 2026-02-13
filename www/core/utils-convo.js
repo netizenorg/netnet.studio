@@ -76,7 +76,7 @@ window.CONVOS['utils-misc'] = (self) => {
     }
   }, {
     id: 'gh-redirected',
-    content: 'Great! I\'m connected to your GitHub account, so you can now create projects! Unlike sketches, a project can include other assets (files like images, videos, audio tracks, etc) all of which get saved to your GitHub account as a repository.',
+    content: `Great! I'm connected to your GitHub account, so you can now create projects! Unlike sketches, a project can include other assets (files like images, videos, audio tracks, etc) all of which get saved to your GitHub account as a repository. Read more about it on our <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a>.`,
     options: {
       'cool!': (e) => e.hide(),
       'create a new project?': (e) => e.goTo('gh-create-proj')

@@ -5,15 +5,17 @@ class DemoToc extends Widget {
 
     this.key = 'demo-toc'
     this.listed = false
-    this.title = 'Annotations'
+    this.title = 'Sketch Demo Guide'
     this.left = 150
-    this.top = 50
+    // this.top = 50
+    this.bottom = 20
 
     this.code = null
     this.codeLength = 0
     this.demoKey = null
     this.layout = null
     this.info = null
+    this.selected = null
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -23,14 +25,16 @@ class DemoToc extends Widget {
         <p class="demo-toc--ex-edit1">⚠️ It looks like you've edited some of the code, that's great! It's important to experiment! But keep in mind some of netnet's annotated explanations might be off for the parts you've changed.</p>
         <p class="demo-toc--ex-edit2">⚠️ It looks like you've either added or removed a line of code. That's great, it's important to experiment!<br><br>Feel free to close this widget by pressing the "✖" or <code>${utils.hotKey()}+S</code> to save this as your own sketch or project.<br><br>Otherwise, you can press <code>${utils.hotKey()}+Z</code> if you want to undo your change and revert back to the annotated version. </p>
       </div>
-      <ol class="demo-toc--ex-parts"></ol>
+      <div class="demo-toc-progress" role="group" aria-label="lesson progress"></div>
+      <div class="demo-toc-note-title"></div>
     `
 
     NNE.on('code-update', () => this._editorChange())
 
     this.on('open', () => {
-      const { x, y } = this._openSpot()
-      this.update({ top: y, left: x }, 500)
+      const { x, y, w } = this._openSpot()
+      // this.update({ top: y, left: x, width: w }, 500)
+      this.update({ bottom: y, left: x, width: w }, 500)
     })
   }
 
@@ -143,18 +147,35 @@ class DemoToc extends Widget {
     }
 
     if (this.info) {
-      this.$('.demo-toc--ex-parts').innerHTML = ''
-      // add "Nots" button in title bar
+      this.$('.demo-toc-progress').innerHTML = `
+        <div class="bar" style="--progress: 0;">
+          <div class="track"></div>
+          <div class="fill"></div>
+          <div class="note-markers"></div>
+        </div>`
+      // add "Notes" button in title bar
       NNW.title.dataset.demo = true
-      // populate table of contents
+      // create progress bar markers
       this.info.forEach(note => {
-        const li = nn.create('li').addTo(this.$('.demo-toc--ex-parts'))
-        nn.create('span')
-          .set({ class: 'inline-link inline-link--secondary' })
-          .content(escapeHTML(note.title))
+        nn.create('button')
+          .set('aria-label', escapeHTML(note.title))
           .on('click', () => this._explainerClick(note))
-          .addTo(li)
+          .on('mouseout', () => {
+            nn.get('.demo-toc-note-title')
+              .content(this.info[this.selected].title)
+              .css('color', 'var(--netizen-meta)')
+          })
+          .on('mouseover', () => {
+            nn.get('.demo-toc-note-title')
+              .content(note.title)
+              .css('color', 'var(--netizen-attribute)')
+          })
+          .addTo('.demo-toc-progress .note-markers')
       })
+      this.selected = 0
+      nn.get('.demo-toc-progress .bar').style = '--progress: 0'
+      nn.get('.demo-toc-note-title').content(this.info[0].title)
+
       // add netitor markers
       const occupiedLines = []
       const addMarker = (o, i) => {
@@ -173,7 +194,7 @@ class DemoToc extends Widget {
         window.convo = new Convo(this.convos, 'loaded-annotated-demo')
       }
     } else { // if this isn't an annoted demo
-      this.$('.demo-toc--ex-parts').innerHTML = '<i>this demo has no annotations</i>'
+      this.$('.demo-toc-progress').innerHTML = '<p>this demo has no annotations</p>'
       if (this.opened) this.close()
       startDemo = () => { window.convo = new Convo(this.convos, 'loaded-demo') }
     }
@@ -184,6 +205,12 @@ class DemoToc extends Widget {
 
   _explainerClick (o) {
     const idx = this.info.indexOf(o)
+
+    this.selected = idx
+    const p = (idx / (this.info.length - 1)) * 100
+    nn.get('.demo-toc-progress .bar').style = `--progress: ${p}`
+    nn.get('.demo-toc-note-title').content(o.title)
+
     if (idx === 0) {
       const m = nn.get('.netitor-gutter-marker')
       if (m && m.style.animation) m.style.animation = null
@@ -201,7 +228,8 @@ class DemoToc extends Widget {
     }
     if (!options.done) { options.done = e => e.hide() }
 
-    window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
+    // window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
+    window.convo = new Convo({ content: `${o.text}`, options })
 
     if (o.focus instanceof Array) {
       utils.scrollToLines(o.focus)
@@ -218,11 +246,12 @@ class DemoToc extends Widget {
     const B = diffC && !diffL ? 'block' : 'none'
     const C = diffL ? 'block' : 'none'
     const D = diffL ? 'none' : 'block'
-    if (!this.$('.demo-toc--ex-parts')) return
+    if (!this.$('.demo-toc-progress')) return
     // this.$('.demo-toc--ex-intro').style.display = A
     this.$('.demo-toc--ex-edit1').style.display = B
     this.$('.demo-toc--ex-edit2').style.display = C
-    this.$('.demo-toc--ex-parts').style.display = D
+    this.$('.demo-toc-progress').style.display = D
+    this.$('.demo-toc-note-title').style.display = D
     // reset URL && title bar
     if (diffL) {
       if (window.convo) window.convo.hide()
@@ -233,15 +262,24 @@ class DemoToc extends Widget {
       NNW.updateTitleBar(this.demoName)
       if (this.info) NNW.title.dataset.demo = true
     }
+    if (this.info) {
+      WIDGETS['demo-toc'].update({ bottom: 20 }, 500)
+    }
   }
 
   _openSpot () {
     const pt = nn.get('#proj-title')
     const pad = pt.style.padding.split(' ').map(v => parseInt(v))
     const cx = pt.x + ((pt.width - (pad[1] + pad[3])) / 2) + pad[3]
-    const x = cx - this.width / 2
-    const y = pt.y + pt.height
-    return { x, y }
+    let x = cx - this.width / 2
+    let y = pt.y + pt.height
+    let w = 490
+    if (this.info?.length > 0) {
+      w = nn.get('#nn-window').width * 0.75
+      x = nn.get('#nn-window').width * 0.125
+      y = 20
+    }
+    return { x, y, w }
   }
 }
 

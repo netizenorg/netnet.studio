@@ -57,12 +57,15 @@ class StudentSession extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   getData (type) {
+    const ls = window.localStorage
     if (type) {
       if (Object.keys(this.data).includes(type)) return this.data[type]
-      else if (Object.keys(window.localStorage).includes(type)) {
-        return window.localStorage.getItem(type)
+      else if (Object.keys(ls).includes(type)) {
+        return ls.getItem(type)
       } else if (Object.keys(window.sessionStorage).includes(type)) {
         return window.sessionStorage.getItem(type)
+      } else if (type === 'wrap') {
+        return typeof ls.getItem('wrap') === 'string' ? ls.getItem('wrap') : true
       }
     } else return this.data
   }
@@ -116,11 +119,13 @@ class StudentSession extends Widget {
     setTimeout(() => { NNE.cm.refresh() }, 10)
     NNW.layout = window.localStorage.getItem('last-saved-layout')
     const wigs = JSON.parse(window.localStorage.getItem('last-saved-widgets'))
-    wigs.forEach(w => {
-      WIDGETS.open(w.key, widget => {
-        widget.update({ left: w.left, top: w.top, zIndex: w.zIndex }, 500)
+    wigs
+      .filter(w => w.key !== 'hyper-video-player')
+      .forEach(w => {
+        WIDGETS.open(w.key, widget => {
+          widget.update({ left: w.left, top: w.top, zIndex: w.zIndex }, 500)
+        })
       })
-    })
   }
 
   clearAllData (skipDialogue) {
@@ -198,6 +203,17 @@ class StudentSession extends Widget {
     if (!this.convos) {
       setTimeout(() => this.greetStudent(), 100)
       return
+    }
+
+    // during tutorial
+    const hvp = WIDGETS['hyper-video-player']
+    if (hvp && hvp.data?.id) {
+      hvp.pause()
+      const convos = this.convos = window.CONVOS['hyper-video-player'](hvp)
+      window.convo = new Convo(convos, 'interrupt')
+      return
+    } else {
+      this.convos = window.CONVOS[this.key](this)
     }
 
     // if netnet was hiding, let's center+display it
