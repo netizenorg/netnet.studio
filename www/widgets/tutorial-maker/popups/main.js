@@ -16,7 +16,7 @@ function overlay (ele) {
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
   if (ele) window.resizeTo(436, 731)
-  else window.resizeTo(1000, 300)
+  else window.resizeTo(1000, 369)
 
   if (ele === '#metadata') {
     window.resizeTo(420, 850)
@@ -173,6 +173,7 @@ function addMarker (k, type) {
   const x = t / metadata.duration * 100
   timeline.createMarker(x, t, type, (tc) => {
     msg(`tut-mkr-${type}-click`, tc)
+    nn.get('#widget-options').css('display', 'none')
     if (type === 'keyframe') setNameInput(tc)
   })
   if (type === 'keyframe') nn.get(`[name="keyframe-${k.timecode}"]`).dataset.name = k.name
@@ -181,7 +182,7 @@ function addMarker (k, type) {
 function createKeyframe (kf) {
   addMarker(kf, 'keyframe')
   timeline.updateMarkers()
-  // TODO: show keyframe edit menu
+  keyframeEditMode(true)
 }
 
 function updateKeyframe () {
@@ -294,8 +295,7 @@ function addWidgetOption (w, opened = false) {
   }
 
   box.addEventListener('change', (e) => checkboxSelected(e, w.key))
-  ebtn.addEventListener('click', () => editWidget(w))
-  // TODO: need to fix where edit widget state updates after already editing
+  ebtn.addEventListener('click', () => msg('tut-mkr-get-widget', { key: w.key }))
   dbtn.addEventListener('click', () => deleteWidget(w, d))
 
   d.appendChild(d1)
@@ -440,13 +440,7 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
 function fileUploaded (e) {
   if (!e.detail.files.length > 0) return
   e.detail.files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = async (event) => {
-      const fileContent = event.target.result
-      await FILES.updateFile(file.name, fileContent)
-      addFile(file.name)
-    }
-    reader.readAsText(file)
+    FILES.updateFile(file.name, file).then(() => addFile(file.name))
   })
 }
 
@@ -493,6 +487,7 @@ function addFile (file) {
 }
 
 function loadFiles () {
+  nn.get('#upload .uploaded-assets').content('')
   Object.entries(FILES.files).forEach(file => addFile(file[1]))
 }
 
@@ -536,6 +531,10 @@ nn.get('#widget-dd').on('click', (e) => {
   const em = nn.get('#widget-options')
   if (!em.contains(e.target) || e.target?.name === 'widget-create') {
     em.style.display = em.style.display === 'none' ? 'flex' : 'none'
+  }
+  // trigger logic to auto-check widgets of this keyframe
+  if (e.target.className === 'dd-title') {
+    msg('tut-mkr-get-wigs4kf')
   }
 })
 nn.get('[name="widget-create"]').on('click', () => createWidget())
@@ -587,16 +586,19 @@ nn.on('resize', () => {
 
 nn.on('keydown', (e) => {
   const avoidToggle = ['input', 'textarea']
+  if (avoidToggle.includes(e.target.localName)) return
   const editable = e.target.getAttribute('contenteditable')
   if (editable) return // stop propagation on all editable elements
-  if (e.key === ' ' && !avoidToggle.includes(e.target.localName)) {
+  if (e.key === ' ') {
     msg('tut-mkr-toggle')
   } else if (e.key === 'ArrowLeft') {
     const frame = timeline.getPrevMarker(TIMECODE)
     if (frame) msg('tut-mkr-seek', frame.timecode)
+    nn.get('#widget-options').css('display', 'none')
   } else if (e.key === 'ArrowRight') {
     const frame = timeline.getNextMarker(TIMECODE)
     if (frame) msg('tut-mkr-seek', frame.timecode)
+    nn.get('#widget-options').css('display', 'none')
   }
 })
 
@@ -617,6 +619,16 @@ nn.on('message', (e) => {
     videoTimeUpdated(payload)
   } else if (type === 'tut-mkr-data') {
     zipper.download(payload)
+  } else if (type === 'tut-mkr-edit-widget') {
+    editWidget(payload)
+  } else if (type === 'tut-mkr-wigs4kf') {
+    const keys = payload?.map(w => w.key)
+    nn.getAll('#widget-options .widget input')
+      .forEach(ch => { ch.checked = false })
+    nn.getAll('#widget-options .widget').forEach(ele => {
+      const key = ele.get('p').textContent
+      if (keys.includes(key)) ele.get('input').checked = true
+    })
   }
 })
 

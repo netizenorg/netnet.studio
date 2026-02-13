@@ -69,6 +69,13 @@ class TutorialMaker extends Widget {
         this._updateWidgetState(payload.widget)
       } else if (type === 'tut-mkr-open-widget') {
         this._openWidget(payload.widget, payload.open)
+      } else if (type === 'tut-mkr-get-widget') {
+        const wig = this.hvp.data.widgets[payload.key]
+        this._messagePopup('tut-mkr-edit-widget', wig)
+      } else if (type === 'tut-mkr-get-wigs4kf') {
+        const kf = this.hvp.data.keyframes.find(kf => kf.timecode === this.hvp.currentTime)
+        if (kf) this._messagePopup('tut-mkr-wigs4kf', kf.widgets)
+        else this._messagePopup('tut-mkr-wigs4kf', null)
       }
     })
 

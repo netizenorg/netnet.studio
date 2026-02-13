@@ -123,7 +123,7 @@ const zipper = {
 
         const filePath = file[1].path.split('/').slice(2).join('/')
         const fileData = FILES.readFile(file[1].path)
-        if (fileData.startsWith('blob:')) {
+        if (typeof fileData === 'string' && fileData.startsWith('blob:')) {
           const res = await fetch(fileData)
           const blob = await res.blob()
           zip.file(filePath, blob, { binary: true })
