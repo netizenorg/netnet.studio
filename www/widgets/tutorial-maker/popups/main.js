@@ -6,6 +6,7 @@ let SPOTLIGHT = []
 let modal
 let WN // neitior instance for widget maker
 let WIDGET // previous widget state
+let videoReady = false
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -28,6 +29,10 @@ function overlay (ele) {
   } else if (ele === '#upload') {
     window.resizeTo(425, 500)
     loadFiles()
+  } else if (ele === '#start') {
+    nn.get('#metadata').css('display', 'none')
+    nn.get('#start').css('display', 'block')
+    window.resizeTo(485, 236)
   }
 }
 
@@ -56,28 +61,17 @@ function openTutorial () {
 
     tut.videoBlob = FILES.readFile(metadata.id + '.mp4')
     if (!tut.videoBlob) tut.videoBlob = FILES.readFile(metadata.id + '.webm')
+    videoReady = true
 
     msg('tut-mkr-opened-tutorial', tut) // let main tutorial-maker widget know
 
     // TODO: load widgets into widget editor
     loadWidgets(tut.widgets)
 
+    lockMetadataID()
+
     overlay(null) // remove overlay
   })
-}
-
-function updateMetadata (data) {
-  FILES.init(metadata.id, {})
-  msg('tut-mkr-update-metadata', data)
-
-  const hasVid = FILES.readFile(`${metadata.id}.mp4`) || FILES.readFile(`${metadata.id}.webm`)
-  if (hasVid) overlay(null)
-  else overlay('#video-menu')
-
-  // NOTE: the metadata.id is used all over the place && works best if only set once
-  // but we may want to allow the user to change it, so we'll need to make sure
-  // to do some cleanup. first things that comes to mind is we'll need to
-  // re-run FILES.init(id, files) with the new id name
 }
 
 function updateVideo (blob) {
@@ -87,8 +81,47 @@ function updateVideo (blob) {
   // HyperVideoPlayer directly...
   msg('tut-mkr-update-video', blob)
   overlay(null)
-  // NOTE: this should only run once per tutorial
+  // NOTE: this should only run once per tutorial,
+  // either when they upload a video, or record a new one.
   // if they want to re-record the video, they should make a new tutorial
+  videoReady = true
+}
+
+function updateMetadata (data) {
+  if (videoReady) { // updating existing project
+    overlay(null)
+  } else { // first time submitting metadata
+    FILES.init(metadata.id, {}) // reset files (new empty projet)
+    lockMetadataID()
+    // upload or record a video first
+    overlay('#video-menu')
+  }
+
+  msg('tut-mkr-update-metadata', data)
+}
+
+function lockMetadataID () {
+  // NOTE: the metadata.id is used all over the place && works best if only set once
+  nn.get('#metadata input[name="id"]').classList.add('locked')
+  nn.get('#metadata input[name="id"]').set('readonly', true)
+  nn.get('#metadata input[name="id"]').on('click', () => {
+    nn.get('#metadata button[name="tip-id"]').click()
+  })
+  // if later we choose to allow the user to change it, we'll need to make sure
+  // to do some cleanup. first things that comes to mind is we'll need to
+  // re-run FILES.init(id, files) with the new id name
+}
+
+function openMetadata (metadata) {
+  const q = n => `#metadata *[name="${n}"]`
+  const except = ['thumbnails', 'duration', 'jsfile'] // upated another way
+  for (const key in metadata) {
+    if (!except.includes(key)) {
+      nn.get(q(key)).value = metadata[key]
+    }
+  }
+
+  overlay('#metadata')
 }
 
 function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
@@ -117,17 +150,6 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
     const marker = nn.get(`[name="keylog-${obj.keylog.timecode}"]`)
     timeline.selectMarker(marker)
   }
-}
-
-function openMetadata (metadata) {
-  const q = n => `#metadata input[name="${n}"]`
-  const except = ['thumbnails', 'duration', 'jsfile'] // upated another way
-  for (const key in metadata) {
-    if (!except.includes(key)) {
-      nn.get(q(key)).value = metadata[key]
-    }
-  }
-  overlay('#metadata')
 }
 
 function showCreateOptions () {
@@ -478,11 +500,13 @@ function loadFiles () {
 
 nn.get('#new').on('click', () => overlay('#metadata'))
 nn.get('#open').on('click', openTutorial)
-// nn.get('#close-recorder').on('click', updateVideo)
 nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#create-marker').on('click', () => showCreateOptions())
 
-nn.get('#create-keyframe').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+nn.get('#create-keyframe').on('click', () => {
+  msg('tut-mkr-get-keyframe', { timecode: TIMECODE })
+  showCreateOptions()
+})
 nn.get('#update-keyframe').on('click', () => updateKeyframe())
 nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
 nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))

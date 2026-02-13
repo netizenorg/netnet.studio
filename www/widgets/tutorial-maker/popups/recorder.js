@@ -143,8 +143,10 @@ const recorder = {
   },
 
   editTutorial: () => {
-    if (recorder.mimeType.split(';')[0].trim() === 'video/mp4') {
-      updateVideo(recorder.blob)
+    const mime = recorder.mimeType.split(';')[0].trim()
+    if (mime === 'video/mp4' || mime === 'video/webm') {
+      const blobURL = URL.createObjectURL(recorder.blob)
+      updateVideo(blobURL)
       nn.get('#video-recorder').style.display = 'none'
     } else {
       recorder.displayVFN()
@@ -178,7 +180,7 @@ const recorder = {
     nn.get('[name="vid-stream"]').style.display = 'none'
     const video = document.createElement('video')
     video.controls = true
-    const blob = new window.Blob(recorder.data, { type: 'video/webm' })
+    const blob = new window.Blob(recorder.data, { type: recorder.mimeType })
     recorder.blob = blob
     video.src = window.URL.createObjectURL(blob)
     nn.get('.recorded-videos').appendChild(video)
@@ -233,7 +235,7 @@ const recorder = {
   displayVFN: () => {
     const innerHTML = `
       <h2>Video Format Notice</h2>
-      <p>Looks like for compatibility reasons you recorded we recorded your video as a .webm. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4.</p>
+      <p>Looks like this video was recorded in a non-compatible format. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4 (ideal) or .webm.</p>
       <a href="#" style="margin-bottom: 10px;">how to convert my video to .mp4?</a>
       <div class="buttons">
         <button name="vfn-download" class="pill-btn pill-btn--secondary">download tutorial</button>

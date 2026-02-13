@@ -245,7 +245,7 @@ class TutorialMaker extends Widget {
 
   _openPopup (type, payload) {
     const url = 'widgets/tutorial-maker/popups/index.html'
-    this.popup = window.open(url, 'tut-mkr-widget', 'width=200,height=200')
+    this.popup = window.open(url, 'tut-mkr-widget', 'width=485,height=167')
     // keep an eye on the pop up to see if it closed
     this.popupWatcher = setInterval(() => {
       if (this.popup && this.popup.closed) {

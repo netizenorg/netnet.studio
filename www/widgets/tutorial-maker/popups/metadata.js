@@ -1,5 +1,5 @@
 
-/* global nn updateMetadata */
+/* global nn updateMetadata, videoReady, overlay */
 const metadata = {
   initialized: false,
 
@@ -24,8 +24,8 @@ const metadata = {
   },
 
   close: () => {
-    nn.get('#metadata').css('display', 'none')
-    nn.get('#start').css('display', 'block')
+    if (!videoReady) overlay('#start')
+    else overlay(null)
   },
 
   submit: () => {
@@ -54,6 +54,7 @@ const metadata = {
     nn.getAll('#metadata > input, #metadata > textarea').forEach((input) => {
       metadata[input.name] = input.value
     })
+
     const { id, title, subtitle, author, authorURL, description, keywords, duration, thumbnails } = metadata
     updateMetadata({ id, title, subtitle, author, authorURL, description, keywords, duration, thumbnails })
   },
@@ -74,11 +75,15 @@ const metadata = {
 
   generateToolTips: () => {
     const tooltips = {
+      // id: {
+      //   label: 'Tutorial ID:',
+      //   tip: `The <b>Tutorial ID</b> must match the video's filename.<br><br>
+      //   - If creating a new video, enter the filename you’d like to use.<br>
+      //   - If uploading an existing video, enter its current filename.`
+      // },
       id: {
         label: 'Tutorial ID:',
-        tip: `The <b>Tutorial ID</b> must match the video's filename.<br><br>
-        - If creating a new video, enter the filename you’d like to use.<br>
-        - If uploading an existing video, enter its current filename.`
+        tip: 'The <b>Tutorial ID</b> can only be defined once when first creating a tutorial and is no longer editable after that'
       },
       title: {
         label: 'Title:',

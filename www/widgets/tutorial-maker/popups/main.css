@@ -68,6 +68,11 @@ nav > div > div {
   gap: 7px;
 }
 
+#start > p {
+  color: var(--netizen-meta);
+  margin-bottom: 20px;
+}
+
 .keyframe-tools {
   flex-grow: 1;
 }
