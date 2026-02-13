@@ -93,7 +93,7 @@ const zipper = {
       keys.forEach(key => {
         tutorial.metadata[key] = metadata[key]
       })
-      // TODO: configure widgets
+      tutorial.widgets = data.widgets ?? []
       tutorial.keyframes = data?.keyframes ?? []
       tutorial.keylogs = data?.keylogs ?? []
 
