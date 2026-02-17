@@ -222,6 +222,28 @@ class HyperVideoPlayer extends Widget {
       .sort((a, b) => a.timecode - b.timecode).reverse()[0]
   }
 
+  runInitCallbacks () {
+    // if the init.js file exists and has callbacks
+    if (!window.TUTORIAL.callbacks) return
+
+    if (!this.data.callbacks) { // keep track of which have run
+      this.data.callbacks = []
+      Object.keys(window.TUTORIAL.callbacks).forEach(key => {
+        this.data.callbacks.push({ timecode: key, ran: false })
+      })
+    }
+
+    // get most recent callback from init.js
+    const ct = this.currentTime
+    const mostRecent = this.data.callbacks
+      .filter(cb => ct >= cb.timecode)
+      .sort((a, b) => a.timecode - b.timecode).reverse()[0]
+
+    if (!mostRecent || mostRecent.ran) return
+    window.TUTORIAL.callbacks[mostRecent.timecode]() // run callback
+    mostRecent.ran = true // mark as ran
+  }
+
   renderKeyframe () {
     const kf = this.getMostRecentKeyframe()
     const kl = this.getMostRecentKeylog()
@@ -230,7 +252,7 @@ class HyperVideoPlayer extends Widget {
     this._da = 200 // amount to add to delay for subsequant widget
 
     if (kl && !kl.ran) {
-      if (kl.code !== NNE.code) {
+      if (kl.code && kl.code !== NNE.code) {
         this._updateCode(kl.code) // TODO check if working correctly
         this._updateScrollBar() // TODO check if working correctly
       }
@@ -363,6 +385,9 @@ class HyperVideoPlayer extends Widget {
   _resetKeyframes (skipRender) {
     this.data.keyframes.forEach(kf => { kf.ran = false })
     this.data.keylogs.forEach(kl => { kl.ran = false })
+    if (this.data.callbacks) {
+      this.data.callbacks.forEach(cb => { cb.ran = false })
+    }
     if (!skipRender) this.renderKeyframe()
   }
 
@@ -528,6 +553,7 @@ class HyperVideoPlayer extends Widget {
     this.video.addEventListener('timeupdate', () => {
       this._updateProgressBar()
       this.renderKeyframe()
+      this.runInitCallbacks()
       this.$('.hvp-buffer').style.display = 'none'
     })
 

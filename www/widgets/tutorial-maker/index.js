@@ -93,6 +93,7 @@ class TutorialMaker extends Widget {
       this.hvp = widget
       this.hvp.making = true
       this.hvp.data = data
+      this.hvp.data.id = data.metadata.id
       this.hvp._loadTutorial()
       this._setCustomRenderer()
       this.hvp.video.on('timeupdate', () => this._onVideoTimeUpdate())
