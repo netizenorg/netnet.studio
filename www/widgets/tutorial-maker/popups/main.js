@@ -1,8 +1,7 @@
-/* global nn timeline zipper recorder FILES metadata HTMLElement customElements Netitor FileReader */
+/* global nn timeline zipper recorder FILES metadata HTMLElement customElements Netitor */
 
 const SWP = 'TUTORIAL_MAKER' // MUST MATCH PATH IN: files-db-service-worker.js
 let TIMECODE = 0 // timeline's current timecode (ie. playhead location)
-let SPOTLIGHT = []
 let modal
 let WN // neitior instance for widget maker
 let WIDGET // previous widget state
@@ -120,7 +119,6 @@ function openMetadata (metadata) {
       nn.get(q(key)).value = metadata[key]
     }
   }
-
   overlay('#metadata')
 }
 
@@ -134,14 +132,9 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   timeline.updatePlayhead(x)
   timeline.clearSelections()
   if (obj.keyframe) {
-    const { timecode, netitor } = obj.keyframe
+    const { timecode } = obj.keyframe
     const marker = nn.get(`[name="keyframe-${timecode}"]`)
     timeline.selectMarker(marker)
-    if (SPOTLIGHT) clearAllSpotlights('reset')
-    if (netitor.spotlight) {
-      SPOTLIGHT = netitor.spotlight
-      addSpotlights(netitor.spotlight)
-    }
     keyframeEditMode(true)
   } else {
     keyframeEditMode(false)
@@ -149,6 +142,39 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   if (obj.keylog) {
     const marker = nn.get(`[name="keylog-${obj.keylog.timecode}"]`)
     timeline.selectMarker(marker)
+  }
+}
+
+// ---------------------------------------------------------- KEYFRAME FUNCTIONS
+
+function displayKeyframeData (kf) {
+  if (kf.frame) return
+  // display name
+  nn.get('#kf-name-input').textContent = kf.name || ''
+  // update widgets options
+  const keys = kf.widgets?.map(w => w.key)
+  nn.getAll('#widget-options .widget input')
+    .forEach(ch => { ch.checked = false })
+  nn.getAll('#widget-options .widget').forEach(ele => {
+    const key = ele.get('p').textContent
+    if (keys.includes(key)) ele.get('input').checked = true
+  })
+  // update netitor options
+  if (kf.netitor.code) {
+    const n = kf.netitor
+    nn.getAll('.netitor-set').forEach(s => s.css('opacity', 1))
+    nn.get('[name="include-netitor"]').checked = true
+    if (n.spotlight?.length > 0) {
+      nn.get('#netitor-spotlight').value = n.spotlight.join(', ')
+    }
+    if (n.scrollTo?.x || n.scrollTo?.y) {
+      nn.get('[name="include-scroll"]').checked = true
+    }
+  } else {
+    nn.getAll('.netitor-set').forEach(s => s.css('opacity', 0.25))
+    nn.get('[name="include-netitor"]').checked = false
+    nn.get('#netitor-spotlight').value = ''
+    nn.get('[name="include-scroll"]').checked = false
   }
 }
 
@@ -166,14 +192,13 @@ function showCreateOptions () {
   // TODO configure so it only displays options that aren't already created on selected timestamp
 }
 
-// ---------------------------------------------------------- KEYFRAME FUNCTIONS
-
 function addMarker (k, type) {
   const t = k.timecode
   const x = t / metadata.duration * 100
   timeline.createMarker(x, t, type, (tc) => {
     msg(`tut-mkr-${type}-click`, tc)
     nn.get('#widget-options').css('display', 'none')
+    nn.get('#netitor-options').css('display', 'none')
     if (type === 'keyframe') setNameInput(tc)
   })
   if (type === 'keyframe') nn.get(`[name="keyframe-${k.timecode}"]`).dataset.name = k.name
@@ -183,17 +208,19 @@ function createKeyframe (kf) {
   addMarker(kf, 'keyframe')
   timeline.updateMarkers()
   keyframeEditMode(true)
+  displayKeyframeData(kf)
 }
 
 function updateKeyframe () {
   const name = document.querySelector('#kf-name-input')?.textContent
-  msg('tut-mkr-get-keyframe', { name, timecode: TIMECODE, spotlight: SPOTLIGHT })
+  const netitor = getNetitorSettings()
+  msg('tut-mkr-update-keyframe', { name, timecode: TIMECODE, netitor })
   nn.get(`[name="keyframe-${TIMECODE}"]`).dataset.name = name
 }
 
 function deleteKeyframe () {
   timeline.removeMarker(TIMECODE, 'keyframe')
-  msg('tut-mkr-get-keyframe', { timecode: TIMECODE, remove: true })
+  msg('tut-mkr-update-keyframe', { timecode: TIMECODE, remove: true })
 }
 
 function keyframeEditMode (enable) {
@@ -211,58 +238,61 @@ function setNameInput (tc) {
   nn.get('#kf-name-input').textContent = name
 }
 
-// --------------------------------------------------------- SPOTLIGHT FUNCTIONS
-
-function addSpotlights (ls) {
-  const ts = nn.get('#spot-tags')
-  ls.forEach((l) => {
-    const t = document.createElement('div')
-    t.className = 'spot-tag'
-    t.dataset.lines = l
-    t.innerHTML = `
-      <p>${l}</p>
-      <div class="vrtl-line"></div>
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14 2L2 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 2L14 14" stroke="#23223D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    `
-    t.querySelector('svg').addEventListener('click', () => removeSpotlight(l))
-    ts.appendChild(t)
-  })
+// --------------------------------------------------------- NETITOR FUNCTIONS
+function toggleNetitorOptions (e) {
+  const em = nn.get('#netitor-options')
+  if (!em.contains(e.target)) {
+    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
+    const includeNet = nn.get('[name="include-netitor"]').checked
+    if (includeNet) nn.getAll('.netitor-set').forEach(s => s.css('opacity', 1))
+    else nn.getAll('.netitor-set').forEach(s => s.css('opacity', 0.25))
+  }
 }
 
-function removeSpotlight (l) {
-  const t = nn.get(`[data-lines="${l}"]`)
-  t.remove()
-  SPOTLIGHT = SPOTLIGHT.filter(line => line !== l)
-  updateKeyframe()
+function includeNetitor (e) {
+  if (this.checked) nn.getAll('.netitor-set').forEach(s => s.css('opacity', 1))
+  else nn.getAll('.netitor-set').forEach(s => s.css('opacity', 0.25))
 }
 
-function clearAllSpotlights (reset = false) {
-  SPOTLIGHT.forEach((s) => {
-    const t = nn.get(`[data-lines="${s}"]`)
-    t.remove()
-  })
-  SPOTLIGHT = []
-  msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT })
-  if (!reset) updateKeyframe()
+function getSpotlight () {
+  let focus
+  let val = nn.get('#netitor-spotlight').value.trim()
+  const lastChar = val.slice(-1)
+  if (lastChar === ',') val = val.slice(0, -1)
+  if (val === '') focus = null
+  else {
+    focus = val.split(',').flatMap(f => {
+      if (f.includes('-')) {
+        const [start, end] = f.split('-').map(n => Number(n))
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+      } else {
+        return Number(f)
+      }
+    })
+  }
+  return focus
 }
 
-function handleSpotlightEnter () {
-  const i = nn.get('#sptlght-line-input')
-  let ls = i.textContent
-    .split(',')
-    .map(s => s.trim())
-  i.textContent = ''
-  ls = ls.filter(l => !SPOTLIGHT.includes(l))
-  SPOTLIGHT = [...SPOTLIGHT, ...ls]
-  addSpotlights(ls)
-  msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT })
-  updateKeyframe()
+function getNetitorSettings () {
+  const includeNet = nn.get('[name="include-netitor"]').checked
+  if (includeNet) {
+    const code = true
+    const scrollTo = nn.get('[name="include-scroll"]').checked
+    const spotlight = getSpotlight()
+    return { code, scrollTo, spotlight }
+  } else {
+    return { code: null, scrollTo: null, spotlight: null }
+  }
 }
 
 // ------------------------------------------------------------ WIDGET FUNCTIONS
+
+function toggleWidgetOptions (e) {
+  const em = nn.get('#widget-options')
+  if (!em.contains(e.target) || e.target?.name === 'widget-create') {
+    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
+  }
+}
 
 // create widget option in widget dropdown menu
 function addWidgetOption (w, opened = false) {
@@ -503,7 +533,7 @@ nn.get('#open-metadata').on('click', () => msg('tut-mkr-get-metadata'))
 nn.get('#create-marker').on('click', () => showCreateOptions())
 
 nn.get('#create-keyframe').on('click', () => {
-  msg('tut-mkr-get-keyframe', { timecode: TIMECODE })
+  msg('tut-mkr-update-keyframe', { timecode: TIMECODE })
   showCreateOptions()
 })
 nn.get('#update-keyframe').on('click', () => updateKeyframe())
@@ -511,7 +541,7 @@ nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
 nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))
 
 // TODO: configure keylog actions
-// nn.get('#create-keylog').on('click', () => msg('tut-mkr-get-keyframe', { timecode: TIMECODE }))
+// nn.get('#create-keylog').on('click',...))
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
@@ -519,28 +549,12 @@ nn.getAll('button[name]').forEach(btn => {
   })
 })
 
-// opening and closing spotlight dropdown
-nn.get('#spotlight-dd').on('click', (e) => {
-  const em = nn.get('#sptlght-edit')
-  if (!em.contains(e.target)) {
-    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
-  }
-})
-nn.get('[name="sptlght-enter"]').on('click', () => handleSpotlightEnter())
-nn.get('[name="sptlght-show"]').on('click', () => msg('tut-mkr-sptlght', { spotlight: SPOTLIGHT }))
-nn.get('[name="sptlght-clear"]').on('click', () => clearAllSpotlights())
-// TODO add handling for pressing enter/return
+// netitor options
+nn.get('#netitor-dd').on('click', toggleNetitorOptions)
+nn.get('[name="include-netitor"]').on('click', includeNetitor)
 
-nn.get('#widget-dd').on('click', (e) => {
-  const em = nn.get('#widget-options')
-  if (!em.contains(e.target) || e.target?.name === 'widget-create') {
-    em.style.display = em.style.display === 'none' ? 'flex' : 'none'
-  }
-  // trigger logic to auto-check widgets of this keyframe
-  if (e.target.className === 'dd-title') {
-    msg('tut-mkr-get-wigs4kf')
-  }
-})
+// widget options
+nn.get('#widget-dd').on('click', toggleWidgetOptions)
 nn.get('[name="widget-create"]').on('click', () => createWidget())
 nn.get('[name="widget-maker-goback"]').on('click', () => closeWidgetMaker())
 nn.get('[name="widget-maker-update"]').on('click', () => updateWidget())
@@ -598,11 +612,9 @@ nn.on('keydown', (e) => {
   } else if (e.key === 'ArrowLeft') {
     const frame = timeline.getPrevMarker(TIMECODE)
     if (frame) msg('tut-mkr-seek', frame.timecode)
-    nn.get('#widget-options').css('display', 'none')
   } else if (e.key === 'ArrowRight') {
     const frame = timeline.getNextMarker(TIMECODE)
     if (frame) msg('tut-mkr-seek', frame.timecode)
-    nn.get('#widget-options').css('display', 'none')
   }
 })
 
@@ -616,7 +628,10 @@ nn.on('message', (e) => {
   } else if (type === 'tut-mkr-video-duration') {
     metadata.duration = payload
   } else if (type === 'tut-mkr-keyframe') {
+    // when payload === { add, frame }, widget created a new keyframe
     if (payload.add) createKeyframe(payload.frame)
+    else if (payload.frame) console.log('updated', payload)
+    else displayKeyframeData(payload) // else, payload === keyframe
   } else if (type === 'tut-mkr-keylog') {
     // TODO...
   } else if (type === 'tut-mkr-time-update') {
@@ -625,14 +640,6 @@ nn.on('message', (e) => {
     zipper.download(payload)
   } else if (type === 'tut-mkr-edit-widget') {
     editWidget(payload)
-  } else if (type === 'tut-mkr-wigs4kf') {
-    const keys = payload?.map(w => w.key)
-    nn.getAll('#widget-options .widget input')
-      .forEach(ch => { ch.checked = false })
-    nn.getAll('#widget-options .widget').forEach(ele => {
-      const key = ele.get('p').textContent
-      if (keys.includes(key)) ele.get('input').checked = true
-    })
   }
 })
 

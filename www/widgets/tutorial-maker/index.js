@@ -45,11 +45,17 @@ class TutorialMaker extends Widget {
         this.hvp.seek(payload)
         const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
         this._messagePopup('tut-mkr-keylog', kl)
-      } else if (type === 'tut-mkr-get-keyframe') { // asked for keyframe
+      } else if (type === 'tut-mkr-update-keyframe') { // create/update keyframe
         const kf = this._updateFrame('keyframes', payload)
         this._messagePopup('tut-mkr-keyframe', kf)
-      } else if (type === 'tut-mkr-get-keylog') { // asked for keylog
+      } else if (type === 'tut-mkr-update-keylog') { // create/update keylog
         const kl = this._updateFrame('keylogs', payload)
+        this._messagePopup('tut-mkr-keylog', kl)
+      } else if (type === 'tut-mkr-get-keyframe') { // asked for keyframe
+        const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
+        this._messagePopup('tut-mkr-keyframe', kf)
+      } else if (type === 'tut-mkr-get-keylog') { // asked for keylog
+        const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
         this._messagePopup('tut-mkr-keylog', kl)
       } else if (type === 'tut-mkr-seek') { // scrubbed playhead
         this.hvp.seek(payload)
@@ -57,13 +63,9 @@ class TutorialMaker extends Widget {
         if (kl) this._messagePopup('tut-mkr-keylog', kl)
         const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
         if (kf) this._messagePopup('tut-mkr-keyframe', kf)
-      } else if (type === 'tut-mkr-toggle') {
+      } else if (type === 'tut-mkr-toggle') { // toggle start/stop
         this.hvp.toggle()
-      } else if (type === 'tut-mkr-explain') { // clicked on (?) explainer button
-        this._openConvo(payload)
-      } else if (type === 'tut-mkr-sptlght') {
-        this._addSpotlight(payload.spotlight)
-      } else if (type === 'tut-mkr-update-widget') {
+      } else if (type === 'tut-mkr-update-widget') { // update widget
         this._updateWidget(payload.widget, payload.remove)
       } else if (type === 'tut-mkr-update-widget-state') {
         this._updateWidgetState(payload.widget)
@@ -72,10 +74,8 @@ class TutorialMaker extends Widget {
       } else if (type === 'tut-mkr-get-widget') {
         const wig = this.hvp.data.widgets[payload.key]
         this._messagePopup('tut-mkr-edit-widget', wig)
-      } else if (type === 'tut-mkr-get-wigs4kf') {
-        const kf = this.hvp.data.keyframes.find(kf => kf.timecode === this.hvp.currentTime)
-        if (kf) this._messagePopup('tut-mkr-wigs4kf', kf.widgets)
-        else this._messagePopup('tut-mkr-wigs4kf', null)
+      } else if (type === 'tut-mkr-explain') { // clicked on (?) explainer button
+        this._openConvo(payload)
       }
     })
 
@@ -145,7 +145,7 @@ class TutorialMaker extends Widget {
   }
 
   _updateFrame (type, data) {
-    const { timecode, name, spotlight } = data
+    const { timecode, name, netitor } = data
     let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
       if (data?.remove) { // delete keyframe
@@ -163,7 +163,7 @@ class TutorialMaker extends Widget {
           name: name ?? '',
           video: this._getSizeAndPosition(this.hvp),
           widgets: this._getCurrentWidgets(),
-          netitor: this._getNetitorData(),
+          netitor: this._getNetitorData(netitor),
           netnet: this._getNetNetPos()
         }
         this.hvp.data[type].push(frame)
@@ -173,7 +173,7 @@ class TutorialMaker extends Widget {
         frame.name = name ?? ''
         frame.video = this._getSizeAndPosition(this.hvp)
         frame.widgets = this._getCurrentWidgets()
-        frame.netitor = this._getNetitorData(spotlight)
+        frame.netitor = this._getNetitorData(netitor)
         frame.netnet = this._getNetNetPos()
       }
     } else if (type === 'keylogs') {
@@ -351,13 +351,17 @@ class TutorialMaker extends Widget {
       .map(w => this._getSizeAndPosition(w))
   }
 
-  _getNetitorData (ls) {
+  _getNetitorData (data) {
     const s = NNE.cm.getScrollInfo()
-    return {
-      code: NNE.code,
-      scrollTo: { x: s.left, y: s.top },
-      spotlight: ls ?? [],
-      layout: NNW.layout
+    if (data?.code) {
+      return {
+        code: NNE.code,
+        scrollTo: data.scrollTo ? { x: s.left, y: s.top } : null,
+        spotlight: data.spotlight ?? [],
+        layout: NNW.layout
+      }
+    } else {
+      return { code: null, scrollTo: null, spotlight: [], layout: NNW.layout }
     }
   }
 

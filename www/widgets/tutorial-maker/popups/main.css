@@ -244,8 +244,12 @@ nav > div > div {
 }
 
 /* styles for spotlight dropdown menu */
-#spotlight-dd {
-  width: 260px;
+#netitor-dd {
+  width: 280px;
+}
+
+#netitor-dd input[type="text"] {
+  width: 100%;
 }
 
 .dd-styles {
@@ -266,6 +270,7 @@ nav > div > div {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  user-select: none;
 }
 .dd-title > p {
   color: var(--netizen-meta);

@@ -224,32 +224,29 @@
 </svg>
 
 <footer>
-  <!-- <button name="XXX" class="pill-btn pill-btn--secondary">netitor code</button> -->
-  <!-- spotlight edit menu -->
-  <div id="spotlight-dd" class="dd-edit dd-styles" kf-edit-tool>
+
+  <!-- netitor code edit menu -->
+  <div id="netitor-dd" class="dd-edit dd-styles" kf-edit-tool>
     <div class="dd-title">
       <p>netitor</p>
       <svg width="18" height="9" viewBox="0 0 21 12" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div id="sptlght-edit" class="dd-edit-menu dd-styles" style="display: none;">
+    <div id="netitor-options" class="dd-edit-menu dd-styles" style="display: none;">
       <div>
-        <div id="sptlght-line-input" class="tut-mkr-input-light" contenteditable="true" data-placeholder="line numbers to spotlight"></div>
-        <button name="sptlght-enter" class="pill-btn pill-btn--secondary">enter</button>
+        <input type="checkbox" name="include-netitor" value=""> include current netitor code
       </div>
-      <div class="hrztl-line"></div>
-      <div id="spot-tags"></div>
-      <div class="sptlght-footer">
-        <div></div>
-        <div>
-          <button name="sptlght-show" class="pill-btn pill-btn--secondary red">preview</button>
-          <button name="sptlght-clear" class="pill-btn pill-btn--secondary red">clear all</button>
-          <button class="pill-btn pill-btn--secondary">?</button>
-        </div>
+      <div class="netitor-set">
+        <input id="netitor-spotlight" class="tut-mkr-input-dark" placeholder="lines to focus" type="text">
+      </div>
+      <div class="netitor-set">
+        <input type="checkbox" name="include-scroll" value=""> include scroll position
       </div>
     </div>
   </div>
+
+  <!-- widget options menu -->
   <div id="widget-dd" class="dd-edit dd-styles" kf-edit-tool>
     <div class="dd-title">
       <p>widgets</p>
