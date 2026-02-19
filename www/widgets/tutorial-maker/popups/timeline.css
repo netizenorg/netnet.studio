@@ -40,7 +40,7 @@ use {
   position: absolute;
   top: 50px;
   left: 0px;
-  z-index: 2;
+  z-index: 1;
   width: 0;
   height: 0;
   border-left: 10px solid transparent;

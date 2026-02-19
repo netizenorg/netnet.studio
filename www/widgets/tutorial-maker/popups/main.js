@@ -198,8 +198,12 @@ function deleteKeyframe () {
 
 function keyframeEditMode (enable) {
   const tools = nn.getAll('[kf-edit-tool]')
-  if (enable) tools.forEach((t) => { t.style.display = 'block' })
-  else tools.forEach((t) => { t.style.display = 'none' })
+  if (enable) {
+    tools.forEach((t) => {
+      const s = t.classList.contains('code-bton') ? 'flex' : 'block'
+      t.style.display = s
+    })
+  } else tools.forEach((t) => { t.style.display = 'none' })
 }
 
 function setNameInput (tc) {

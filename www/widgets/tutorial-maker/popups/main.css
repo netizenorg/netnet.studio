@@ -87,8 +87,9 @@ nav > div > div {
   padding: 2.5px 10px;
   font-weight: 600;
   border-radius: 7px;
-  max-width: 320px;
-  width: 100%;
+  /* max-width: 320px; */
+  /* width: 100%; */
+  width: 230px;
   white-space: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
@@ -119,6 +120,7 @@ nav > div > div {
   position: absolute;
   top: 32;
   left: 0;
+  z-index: 2;
 }
 #create-options button {
   text-align: left;
@@ -242,6 +244,10 @@ nav > div > div {
 }
 
 /* styles for spotlight dropdown menu */
+#spotlight-dd {
+  width: 260px;
+}
+
 .dd-styles {
   background: var(--bg-color);
   border: 1px solid var(--netizen-meta);
@@ -272,7 +278,7 @@ nav > div > div {
   flex-direction: column;
   gap: 10px;
   position: absolute;
-  top: 36;
+  bottom: 36;
   left: 0;
 }
 .sptlght-footer {
@@ -344,10 +350,13 @@ footer {
   left: 0;
   width: 100%;
   background: var(--bg-color);
+  color: var(--netizen-meta);
   padding: 10px;
   display: flex;
+  align-items: center;
   gap: 7px;
 }
+
 #widget-dd {
   max-width: 330px;
 }
@@ -370,6 +379,11 @@ footer {
   display: flex;
   gap: 7px;
   align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 50%;
 }
 .widget p {
   color: var(--netizen-meta);
