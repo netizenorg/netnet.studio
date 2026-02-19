@@ -448,27 +448,76 @@ footer {
 }
 
 .uploaded-assets {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   margin: 6px 0;
+  overflow-y: auto;
 }
 
-.upl-asset {
+.upl-tree,
+.upl-tree-children {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.upl-tree-children--collapsed {
+  display: none;
+}
+
+.upl-folder,
+.upl-file {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
   align-items: center;
-  width: 100%;
-  background: var(--netizen-meta);
-  padding: 6px 9px;
-  border-radius: 6px;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-right: 6px;
+  border-radius: 5px;
+  color: var(--netizen-meta);
+  font-size: 0.95rem;
 }
-.upl-asset svg {
+
+.upl-folder {
   cursor: pointer;
-  width: 15px;
-  height: 15px;
+  user-select: none;
+  font-weight: 700;
 }
-.upl-asset svg:hover path {
-  stroke: #FF4545;
+.upl-folder:hover {
+  background: rgba(195, 195, 219, 0.1);
+}
+
+.upl-folder-label::before {
+  content: '▾ ';
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+.upl-folder--collapsed .upl-folder-label::before {
+  content: '▸ ';
+}
+
+.upl-file:hover {
+  background: rgba(195, 195, 219, 0.07);
+}
+
+.upl-file-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upl-delete-btn {
+  background: none;
+  border: none;
+  color: var(--netizen-meta);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0 2px;
+  opacity: 0.4;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.upl-delete-btn:hover {
+  color: var(--error-red);
+  opacity: 1;
 }

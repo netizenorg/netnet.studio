@@ -474,55 +474,99 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
 function fileUploaded (e) {
   if (!e.detail.files.length > 0) return
   e.detail.files.forEach(file => {
-    FILES.updateFile(file.name, file).then(() => addFile(file.name))
+    FILES.updateFile(file.name, file).then(() => loadFiles())
   })
 }
 
-function addFile (file) {
-  const div = document.createElement('div')
-  div.className = 'upl-asset'
-  const p = document.createElement('p')
-  const name = file?.path ? file.path.split('/').pop() : file
-  p.textContent = name
+function buildFileTree (files) {
+  // files to hide from the asset view
+  const filtered = [
+    'tutorial.json',
+    `${metadata.id}.mp4`,
+    `${metadata.id}.webm`
+  ]
+  // strip TUTORIAL_MAKER/{id}/ prefix, filter system files, wrap under "assets/"
+  const prefix = `${SWP}/${metadata.id}/`
+  const agg = { temp: [] }
+  Object.values(files).forEach(file => {
+    const rawPath = file?.path || file
+    if (!rawPath) return
+    const stripped = rawPath.startsWith(prefix) ? rawPath.slice(prefix.length) : rawPath
+    if (!stripped) return
+    if (filtered.includes(stripped)) return
+    const virtual = `${metadata.id} (click to view|delete)/${stripped}`
+    virtual.split('/').reduce((agg, part, level, parts) => {
+      if (!agg[part]) {
+        agg[part] = { temp: [] }
+        agg.temp.push({
+          id: parts.slice(0, level + 1).join('/'),
+          fullPath: rawPath,
+          level: level + 1,
+          children: agg[part].temp
+        })
+      }
+      return agg[part]
+    }, agg)
+  })
+  return agg.temp
+}
 
-  // create 'X' svg button
-  const NS = 'http://www.w3.org/2000/svg'
-  const svg = document.createElementNS(NS, 'svg')
-  svg.setAttribute('width', '15')
-  svg.setAttribute('height', '15')
-  svg.setAttribute('viewBox', '0 0 15 15')
-  svg.setAttribute('fill', 'none')
-  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+function renderFileTree (tree, container, depth = 0) {
+  tree.forEach(node => {
+    if (node.children.length > 0) {
+      // folder node — collapsed by default
+      const li = nn.create('li').css('paddingLeft', `${depth * 14}px`)
+      li.className = 'upl-folder upl-folder--collapsed'
 
-  const p1 = document.createElementNS(NS, 'path')
-  p1.setAttribute('d', 'M13 2L2 13')
-  p1.setAttribute('stroke', '#1D1B36')
-  p1.setAttribute('stroke-width', '3')
-  p1.setAttribute('stroke-linecap', 'round')
+      const label = nn.create('span')
+      label.className = 'upl-folder-label'
+      label.textContent = node.id.split('/').pop()
+      li.appendChild(label)
 
-  const p2 = document.createElementNS(NS, 'path')
-  p2.setAttribute('d', 'M13 13L2 2')
-  p2.setAttribute('stroke', '#1D1B36')
-  p2.setAttribute('stroke-width', '3')
-  p2.setAttribute('stroke-linecap', 'round')
-  svg.appendChild(p1)
-  svg.appendChild(p2)
+      const ul = nn.create('ul')
+      ul.className = 'upl-tree-children upl-tree-children--collapsed'
 
-  const deleteFile = () => {
-    FILES.deleteFile(file.path)
-    div.remove()
-  }
-  svg.addEventListener('click', deleteFile)
-  div.appendChild(p)
-  div.appendChild(svg)
-  const container = nn.get('#upload .uploaded-assets')
-  if (container.children.length > 0) nn.get('#upload .uploaded-assets').insertBefore(div, container.children[0])
-  else nn.get('#upload .uploaded-assets').appendChild(div)
+      li.on('click', () => {
+        const isOpen = !ul.classList.contains('upl-tree-children--collapsed')
+        ul.classList.toggle('upl-tree-children--collapsed', isOpen)
+        li.classList.toggle('upl-folder--collapsed', isOpen)
+      })
+
+      container.appendChild(li)
+      container.appendChild(ul)
+      renderFileTree(node.children, ul, depth + 1)
+    } else {
+      // file node
+      const li = nn.create('li').css('paddingLeft', `${depth * 14}px`)
+      li.className = 'upl-file'
+
+      const name = nn.create('span')
+      name.className = 'upl-file-name'
+      name.textContent = node.id.split('/').pop()
+
+      const del = nn.create('button')
+      del.className = 'upl-delete-btn'
+      del.textContent = '✕'
+      del.on('click', () => {
+        FILES.deleteFile(node.fullPath)
+        li.remove()
+      })
+
+      li.appendChild(name)
+      li.appendChild(del)
+      container.appendChild(li)
+    }
+  })
 }
 
 function loadFiles () {
-  nn.get('#upload .uploaded-assets').content('')
-  Object.entries(FILES.files).forEach(file => addFile(file[1]))
+  const container = nn.get('#upload .uploaded-assets')
+  container.innerHTML = ''
+  const ul = nn.create('ul')
+  ul.className = 'upl-tree'
+  container.appendChild(ul)
+  const tree = buildFileTree(FILES.files)
+  renderFileTree(tree, ul)
 }
 
 // -------------------------------------------------------- SETUP EVENT LISTENRS
