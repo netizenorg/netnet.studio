@@ -21,7 +21,7 @@ function overlay (ele) {
     window.resizeTo(420, 850)
     metadata.init()
   } else if (ele === '#video-menu') {
-    window.resizeTo(420, 850)
+    window.resizeTo(420, 572)
     recorder.initMenu()
   } else if (ele === '#widget-maker') {
     window.resizeTo(610, 400)
@@ -474,7 +474,8 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
 function fileUploaded (e) {
   if (!e.detail.files.length > 0) return
   e.detail.files.forEach(file => {
-    FILES.updateFile(file.name, file).then(() => loadFiles())
+    const path = file.relativePath || file.name
+    FILES.updateFile(path, file).then(() => loadFiles())
   })
 }
 
@@ -494,7 +495,7 @@ function buildFileTree (files) {
     const stripped = rawPath.startsWith(prefix) ? rawPath.slice(prefix.length) : rawPath
     if (!stripped) return
     if (filtered.includes(stripped)) return
-    const virtual = `${metadata.id} (click to view|delete)/${stripped}`
+    const virtual = `${metadata.id}/${stripped}`
     virtual.split('/').reduce((agg, part, level, parts) => {
       if (!agg[part]) {
         agg[part] = { temp: [] }

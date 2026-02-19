@@ -79,6 +79,13 @@ file-drop.dragover .fldp-drop-area {
   stroke: #FF4545;
 }
 
+.fldp-browse-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .fldp-msg {
   color: var(--netizen-meta);
   text-align: center;

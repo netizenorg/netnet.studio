@@ -1,6 +1,6 @@
 /* global HTMLElement CustomEvent FileList */
 class FileDrop extends HTMLElement {
-  static get observedAttributes () { return ['accept', 'max-size', 'max-files', 'multiple', 'disableFileList'] }
+  static get observedAttributes () { return ['accept', 'max-size', 'max-files', 'multiple', 'disableFileList', 'allowNames', 'allowFolder'] }
 
   constructor (opts) {
     super()
@@ -9,7 +9,9 @@ class FileDrop extends HTMLElement {
       maxSize: '5MB',
       maxFiles: 1,
       multiple: false,
-      disableFileList: false
+      disableFileList: false,
+      allowNames: [],
+      allowFolder: false
     }
     this.files = []
   }
@@ -28,8 +30,12 @@ class FileDrop extends HTMLElement {
         <div class="fldp-or-divider">
           <hr><p>or</p><hr>
         </div>
-        <button class="fldp-dd-btn icon-btn pill-btn pill-btn--secondary">Browse Files</button>
+        <div class="fldp-browse-btns">
+          <button class="fldp-dd-btn icon-btn pill-btn pill-btn--secondary">Upload Files</button>
+          ${this.config.allowFolder ? '<button class="fldp-folder-btn icon-btn pill-btn pill-btn--secondary">Upload Folder</button>' : ''}
+        </div>
         <input class="fldp-file-input" type="file" hidden>
+        <input class="fldp-folder-input" type="file" webkitdirectory hidden>
         <p class="fldp-msg">* accepted file formats: ${this.config.accept}</p>
       </div>
       <div class="fldp-file-list"></div>
@@ -37,6 +43,7 @@ class FileDrop extends HTMLElement {
 
     this.dropArea = this.querySelector('.fldp-drop-area')
     this.fileInput = this.querySelector('.fldp-file-input')
+    this.folderInput = this.querySelector('.fldp-folder-input')
     this.fileList = this.querySelector('.fldp-file-list')
 
     this.applyListeners()
@@ -51,33 +58,72 @@ class FileDrop extends HTMLElement {
     this.config.maxFiles = this.getAttribute('maxFiles') || this.config.maxFiles
     this.config.multiple = this.getAttribute('multiple') || this.config.maxFiles > 1
     this.config.disableFileList = this.hasAttribute('disableFileList') || this.config.disableFileList
+    this.config.allowNames = this.getAttribute('allowNames')
+      ? this.getAttribute('allowNames').split(',').map(x => x.trim().toLowerCase()).filter(Boolean)
+      : this.config.allowNames
+    this.config.allowFolder = this.hasAttribute('allowFolder') || this.config.allowFolder
   }
 
   applyListeners () {
     this.dropArea.addEventListener('dragover', e => { e.preventDefault(); this.classList.add('dragover') })
     this.dropArea.addEventListener('dragleave', () => this.classList.remove('dragover'))
     this.dropArea.addEventListener('drop', e => this.addFiles(e))
+
     this.querySelector('.fldp-dd-btn').addEventListener('click', e => {
       if (e.target.closest('.fldp-dd-btn') || e.target.closest('.drop-area')) {
         e.preventDefault()
         this.fileInput.click()
       }
     })
+
     this.fileInput.addEventListener('change', e => this.addFiles(e))
+    this.folderInput.addEventListener('change', e => this.addFiles(e))
+
+    if (this.config.allowFolder) {
+      this.querySelector('.fldp-folder-btn').addEventListener('click', e => {
+        e.preventDefault()
+        this.folderInput.click()
+      })
+    }
   }
 
-  addFiles (e) {
+  async addFiles (e) {
     e.preventDefault()
     this.classList.remove('dragover')
 
     const { accept, maxFiles } = this.config
-    const files =
-      e?.dataTransfer?.files ||
-      e?.currentTarget?.files ||
-      e?.target?.files ||
-      (e instanceof FileList ? e : null)
-    if (!files || files.length === 0) return
-    const incoming = Array.from(files)
+
+    // resolve incoming files — use FileSystem API for drag-drop when allowFolder
+    // is set so that folder structure (relativePath) is preserved
+    let incoming = []
+    const items = e?.dataTransfer?.items
+    if (items && items.length > 0 && this.config.allowFolder) {
+      const entries = Array.from(items).map(i => i.webkitGetAsEntry()).filter(Boolean)
+      const allFiles = await Promise.all(entries.map(entry => this._readEntry(entry)))
+      incoming = allFiles.flat()
+    } else {
+      const files =
+        e?.dataTransfer?.files ||
+        e?.currentTarget?.files ||
+        e?.target?.files ||
+        (e instanceof FileList ? e : null)
+      if (!files || files.length === 0) return
+      incoming = Array.from(files).map(file => {
+        // <input webkitdirectory> already populates webkitRelativePath — copy
+        // it onto our own relativePath property so the consumer always has one
+        // consistent property to read regardless of how files were added
+        if (file.webkitRelativePath) {
+          Object.defineProperty(file, 'relativePath', {
+            value: file.webkitRelativePath,
+            writable: false,
+            configurable: true
+          })
+        }
+        return file
+      })
+    }
+
+    if (incoming.length === 0) return
 
     // remove any previous error messages
     this.displayMsg({
@@ -94,9 +140,10 @@ class FileDrop extends HTMLElement {
       // TODO: if a user uploads a new file, prompt them with the option to replace the already uploaded files with the new uploads
     }
 
-    // filter new files uploaded
-    const nameSet = new Set(this.files.map(f => f.name.toLowerCase()))
-    const newFiles = incoming.filter(f => !nameSet.has(f.name.toLowerCase()))
+    // filter new files uploaded (key on relativePath when available so that
+    // two files with the same name in different folders are treated as distinct)
+    const pathSet = new Set(this.files.map(f => (f.relativePath || f.name).toLowerCase()))
+    const newFiles = incoming.filter(f => !pathSet.has((f.relativePath || f.name).toLowerCase()))
     // filter non-accepted file formats
     const acceptedFiles = this.filterAcceptedFiles(newFiles)
     // only allow maxFiles
@@ -112,15 +159,64 @@ class FileDrop extends HTMLElement {
     }))
   }
 
+  // recursively resolve a FileSystemEntry into a flat array of File objects,
+  // each with a .relativePath set to its full path within the dropped folder
+  async _readEntry (entry, basePath = '') {
+    if (entry.isFile) {
+      return new Promise(resolve => {
+        entry.file(file => {
+          const relPath = basePath ? `${basePath}/${file.name}` : file.name
+          Object.defineProperty(file, 'relativePath', {
+            value: relPath,
+            writable: false,
+            configurable: true
+          })
+          resolve([file])
+        }, () => resolve([]))
+      })
+    } else if (entry.isDirectory) {
+      const dirPath = basePath ? `${basePath}/${entry.name}` : entry.name
+      const reader = entry.createReader()
+      // readEntries only returns up to 100 entries at a time — loop until empty
+      const allEntries = await new Promise(resolve => {
+        const results = []
+        const readBatch = () => {
+          reader.readEntries(batch => {
+            if (batch.length === 0) return resolve(results)
+            results.push(...batch)
+            readBatch()
+          }, () => resolve(results))
+        }
+        readBatch()
+      })
+      const nested = await Promise.all(allEntries.map(e => this._readEntry(e, dirPath)))
+      return nested.flat()
+    }
+    return []
+  }
+
   filterAcceptedFiles (files) {
     const acceptedTypes = this.config.accept.split(',').map(x => x.trim()).filter(Boolean)
-    const acceptedFiles = files.filter(f => {
+    const allowedNames = this.config.allowNames
+    const acceptedFiles = []
+    const rejectedFiles = []
+    files.forEach(f => {
       const dot = f.name.lastIndexOf('.')
       const ext = f.name.slice(dot).toLowerCase()
-      return acceptedTypes.includes(ext)
+      if (acceptedTypes.includes(ext) || allowedNames.includes(f.name.toLowerCase())) {
+        acceptedFiles.push(f)
+      } else {
+        rejectedFiles.push(f)
+      }
     })
+    if (rejectedFiles.length > 0) {
+      const names = rejectedFiles.map(f => f.name).join(', ')
+      this.displayMsg({
+        text: `${rejectedFiles.length === 1 ? 'File' : 'Files'} not accepted: ${names}`,
+        type: 'error'
+      })
+    }
     return acceptedFiles
-    // TODO: return non-accepted files and show error message for all rejected files. Users can only upload the incorrect file type if they drag and dropped it.
   }
 
   filterMaxFilesAmount (files) {
@@ -150,7 +246,7 @@ class FileDrop extends HTMLElement {
       div.className = 'fldp-file-item'
       div.dataset.name = file.name.toLowerCase()
       const p = document.createElement('p')
-      p.textContent = file.name
+      p.textContent = file.relativePath || file.name
 
       // create 'X' svg button
       const NS = 'http://www.w3.org/2000/svg'
