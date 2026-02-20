@@ -380,6 +380,7 @@ class TutorialMaker extends Widget {
         code: NNE.code,
         scrollTo: data.scrollTo ? { x: s.left, y: s.top } : null,
         spotlight: data.spotlight ?? null,
+        autoType: data.autoType,
         layout: NNW.layout
       }
     } else {

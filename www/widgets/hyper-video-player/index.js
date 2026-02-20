@@ -298,7 +298,7 @@ class HyperVideoPlayer extends Widget {
       const c = kf.netitor.code === 'DEFAULT'
         ? utils.starterCode() : kf.netitor.code
       if (c && c !== NNE.code) {
-        this._updateCode(c) // TODO check if working correctly
+        this._updateCode(c, kf.netitor.autoType) // TODO check if working correctly
         this._updateScrollBar(kf.scrollTo) // TODO check if working correctly
       }
       // ...layout
@@ -391,11 +391,20 @@ class HyperVideoPlayer extends Widget {
     if (!skipRender) this.renderKeyframe()
   }
 
-  _updateCode (code) {
-    const top = NNE.cm.getScrollInfo().top
-    NNE.code = code // TODO: maybe type it out? using utils.autoType
-    const s = NNE.cm.getScrollInfo()
-    if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+  _updateCode (code, autotype) {
+    if (autotype) {
+      const a = NNE.code
+      const b = code
+      utils.autoType({
+        template: this._diffToAutoTypeTemplate(a, b),
+        code: this._getAutoTypeCode(a, b)
+      })
+    } else {
+      const top = NNE.cm.getScrollInfo().top
+      NNE.code = code
+      const s = NNE.cm.getScrollInfo()
+      if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+    }
   }
 
   _updateScrollBar (obj) {
@@ -446,6 +455,69 @@ class HyperVideoPlayer extends Widget {
     if (this?.opened && NNE.readOnly) {
       window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
     }
+  }
+
+  _diffToAutoTypeTemplate (strA, strB) {
+    const { added, removed } = utils.diff(strA, strB)
+
+    const bLines = strB.split('\n')
+
+    // build a map of added line num -> added text
+    const addedMap = {}
+    added.forEach(a => { addedMap[a.line] = a.text })
+
+    // build a map of removed line num -> removed text
+    const removedMap = {}
+    removed.forEach(r => { removedMap[r.line] = r.text })
+
+    const templateLines = bLines.map((line, i) => {
+      const lineNum = i + 1
+
+      if (addedMap[lineNum] !== undefined) {
+        const oldLine = removedMap[lineNum] // same line num if it was modified
+
+        if (oldLine !== undefined) {
+          // line was modified — keep the shared prefix, replace the rest with {{code}}
+          let prefixLen = 0
+          while (
+            prefixLen < oldLine.length &&
+            prefixLen < line.length &&
+            oldLine[prefixLen] === line[prefixLen]
+          ) prefixLen++
+
+          const prefix = line.slice(0, prefixLen)
+          return prefix + '{{code}}'
+        } else {
+          // line was purely added (no matching removed line)
+          return '{{code}}'
+        }
+      }
+
+      return line
+    })
+
+    return templateLines.join('\n')
+  }
+
+  _getAutoTypeCode (strA, strB) {
+    const { added, removed } = utils.diff(strA, strB)
+    const removedMap = {}
+    removed.forEach(r => { removedMap[r.line] = r.text })
+
+    return added.map(a => {
+      const oldLine = removedMap[a.line]
+      if (oldLine !== undefined) {
+        // only type the new suffix
+        let prefixLen = 0
+        while (
+          prefixLen < oldLine.length &&
+          prefixLen < a.text.length &&
+          oldLine[prefixLen] === a.text[prefixLen]
+        ) prefixLen++
+        return a.text.slice(prefixLen)
+      }
+      return a.text
+    }).join('\n')
   }
 
   // ................................................ HVP HTML .................

@@ -234,15 +234,25 @@ function displayKeyframeData (kf) {
     nn.get('[name="include-netitor"]').checked = true
     if (n.spotlight?.length > 0) {
       nn.get('#netitor-spotlight').value = n.spotlight.join(', ')
+    } else {
+      nn.get('#netitor-spotlight').value = ''
     }
     if (n.scrollTo?.x || n.scrollTo?.y) {
       nn.get('[name="include-scroll"]').checked = true
+    } else {
+      nn.get('[name="include-scroll"]').checked = false
+    }
+    if (n.autoType) {
+      nn.get('[name="auto-type"]').checked = true
+    } else {
+      nn.get('[name="auto-type"]').checked = false
     }
   } else {
     nn.getAll('.netitor-set').forEach(s => s.css('opacity', 0.25))
     nn.get('[name="include-netitor"]').checked = false
     nn.get('#netitor-spotlight').value = ''
     nn.get('[name="include-scroll"]').checked = false
+    nn.get('[name="auto-type"]').checked = false
   }
 }
 
@@ -346,10 +356,11 @@ function getNetitorSettings () {
   if (includeNet) {
     const code = true
     const scrollTo = nn.get('[name="include-scroll"]').checked
+    const autoType = nn.get('[name="auto-type"]').checked
     const spotlight = getSpotlight()
-    return { code, scrollTo, spotlight }
+    return { code, scrollTo, spotlight, autoType }
   } else {
-    return { code: null, scrollTo: null, spotlight: null }
+    return { code: null, scrollTo: null, spotlight: null, autoType: null }
   }
 }
 
