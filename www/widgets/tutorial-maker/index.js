@@ -197,7 +197,7 @@ class TutorialMaker extends Widget {
         this.hvp.data.keylogs.splice(idx, 1)
         return { timecode, remove: true }
       } else {
-        console.log('update keylog', data);
+        // console.log('update keylog', data);
       }
     }
     return { frame }
@@ -379,7 +379,7 @@ class TutorialMaker extends Widget {
       return {
         code: NNE.code,
         scrollTo: data.scrollTo ? { x: s.left, y: s.top } : null,
-        spotlight: data.spotlight ?? [],
+        spotlight: data.spotlight ?? null,
         layout: NNW.layout
       }
     } else {
