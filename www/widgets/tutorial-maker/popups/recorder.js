@@ -48,16 +48,15 @@ const recorder = {
     recorder.recorder.onstop = (e) => {
       window.stream.getTracks().forEach(t => t.stop())
       recorder.displayRecording()
-      // if (keylogger) WIDGETS['netitor-logger'].stopRecording()
+      if (keylogger) recorder.toggleKeyLogging(false) // defined in main.js
       recorder.filename = metadata.id
     }
     recorder.recorder.start()
-    // if (keylogger) WIDGETS['netitor-logger'].startRecording()
+    if (keylogger) recorder.toggleKeyLogging(true) // ddefined in main.js
   },
 
   stopRecording: () => {
     recorder.recorder.stop()
-    // recorder.download()
   },
 
   download: () => {
@@ -79,15 +78,9 @@ const recorder = {
   // -------------------------- [ view ] ---------------------------------------
 
   createRecorder: async (opts) => {
-    // TODO: add handling for keylogger
     nn.get('[name="vr-start-rec"]').addEventListener('click', () => recorder.changeState())
     nn.get('[name="vr-go-back"]').addEventListener('click', () => recorder.goBack())
     nn.get('[name="vr-edit-tut"]').addEventListener('click', () => recorder.editTutorial())
-    // nn.get('[name="dl-kl"]').addEventListener('click', () => {
-    //   recorder.download()
-    //   // const k = nn.get('[name="av-keylog-sync"]').checked
-    //   // if (k) WIDGETS['netitor-logger'].download()
-    // })
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia(recorder.rtcOpts)
@@ -146,7 +139,7 @@ const recorder = {
     const mime = recorder.mimeType.split(';')[0].trim()
     if (mime === 'video/mp4' || mime === 'video/webm') {
       const blobURL = URL.createObjectURL(recorder.blob)
-      updateVideo(blobURL)
+      updateVideo(blobURL, true)
       nn.get('#video-recorder').style.display = 'none'
     } else {
       recorder.displayVFN()
@@ -157,10 +150,6 @@ const recorder = {
   goBack: () => {
     nn.get('#video-recorder').style.display = 'none'
     nn.get('#video-menu').style.display = 'block'
-  },
-
-  includeKeylogs: () => {
-    // TODO: add logic here
   },
 
   reset: () => {

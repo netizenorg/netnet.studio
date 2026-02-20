@@ -68,7 +68,7 @@ const timeline = {
     const vb = svg.viewBox.baseVal
     const sy = svg.clientHeight / vb.height
     nn.get('.labels > div:nth-child(1)').css({ top: 30 * sy })
-    nn.get('.labels > div:nth-child(2)').css({ top: 70 * sy })
+    nn.get('.labels > div:nth-child(2)').css({ top: 60 * sy })
   },
 
   updateMarkers: () => {
@@ -93,7 +93,7 @@ const timeline = {
     })
   },
 
-  clearSelections: () => {
+  clearSelections: (a) => {
     const svg = nn.get('svg#timeline')
     svg.querySelectorAll(timeline.mkrs).forEach(u => {
       u.setAttribute('fill', 'var(--bg-color)')
@@ -103,10 +103,17 @@ const timeline = {
   selectMarker: (e, callback) => {
     const u = e instanceof window.Element ? e : e.target
     if (!u) return
-    timeline.clearSelections()
     const a = u.getAttribute('name').split('-')
+    timeline.clearSelections(a)
     const fill = a[0] === 'keyframe' ? 'var(--netizen-tag)' : 'var(--netizen-attribute)'
     u.setAttribute('fill', fill)
+
+    // if there's a sibling frame, keep that selected too
+    const s = a[0] === 'keyframe' ? 'keylog' : 'keyframe'
+    const c = s === 'keyframe' ? 'var(--netizen-tag)' : 'var(--netizen-attribute)'
+    const sibling = nn.get('svg#timeline').querySelector(`[name="${s}-${a[1]}"]`)
+    if (sibling) sibling.setAttribute('fill', c)
+
     if (callback) callback(e, parseFloat(a[1]))
   },
 
@@ -114,7 +121,7 @@ const timeline = {
     const svg = nn.get('svg#timeline')
     const SVG = 'http://www.w3.org/2000/svg'
     const XLINK = 'http://www.w3.org/1999/xlink'
-    const y = type === 'keyframe' ? 30 : 70
+    const y = type === 'keyframe' ? 30 : 60
     const u = document.createElementNS(SVG, 'use')
     u.setAttribute('href', `#${type}-marker`)
     u.setAttributeNS(XLINK, 'xlink:href', `#${type}-marker`)

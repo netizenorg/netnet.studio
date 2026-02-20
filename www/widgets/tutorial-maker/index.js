@@ -22,6 +22,10 @@ class TutorialMaker extends Widget {
     this._boundEditWatcher = this._editWatcher.bind(this)
     NNE.cm.on('change', this._boundEditWatcher)
 
+    // for keylogging
+    this._boundKeyLogger = this._addKeyLog.bind(this)
+    this.logStart = null // time whne keylogging started
+
     // messages from popup
     nn.on('message', e => {
       const { type, payload } = e.data
@@ -55,8 +59,18 @@ class TutorialMaker extends Widget {
         const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
         this._messagePopup('tut-mkr-keyframe', kf)
       } else if (type === 'tut-mkr-get-keylog') { // asked for keylog
-        const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
-        this._messagePopup('tut-mkr-keylog', kl)
+        if (payload === 'all') {
+          this._messagePopup('tut-mkr-keylog', this.hvp.data.keylogs)
+        } else {
+          const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
+          this._messagePopup('tut-mkr-keylog', kl)
+        }
+      } else if (type === 'tut-mkr-start-keylog') { // start keyLogger
+        this.logStart = Date.now()
+        NNE.cm.on('change', this._boundKeyLogger)
+      } else if (type === 'tut-mkr-stop-keylog') { // stop keyLogger
+        this.logStart = null
+        NNE.cm.off('change', this._boundKeyLogger)
       } else if (type === 'tut-mkr-seek') { // scrubbed playhead
         this.hvp.seek(payload)
         const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
@@ -177,9 +191,34 @@ class TutorialMaker extends Widget {
         frame.netnet = this._getNetNetPos()
       }
     } else if (type === 'keylogs') {
-      // TODO
+      if (data?.remove) { // delete keylog
+        const kl = this.hvp.data.keylogs.find(kl => kl.timecode === data.timecode)
+        const idx = this.hvp.data.keylogs.indexOf(kl)
+        this.hvp.data.keylogs.splice(idx, 1)
+        return { timecode, remove: true }
+      } else {
+        console.log('update keylog', data);
+      }
     }
     return { frame }
+  }
+
+  _addKeyLog () {
+    if (this.hvp.src.includes('screen-saver')) {
+      const timecode = (Date.now() - this.logStart) / 1000
+      this.hvp.data.keylogs.push({ timecode, code: NNE.code })
+    } else {
+      const tc = this.hvp.currentTime
+      const kl = this.hvp.data.keylogs.find(kl => kl.timecode === tc)
+      const newKl = { timecode: tc, code: NNE.code }
+      if (kl) { // replace existing
+        const idx = this.hvp.data.keylogs.indexOf(kl)
+        this.hvp.data.keylogs[idx] = newKl
+      } else { // create new
+        this.hvp.data.keylogs.push(newKl)
+      }
+      this._messagePopup('tut-mkr-keylog', { add: true, frame: newKl })
+    }
   }
 
   _getData () {
@@ -188,23 +227,6 @@ class TutorialMaker extends Widget {
     const video = this.hvp.video.src
     const widgets = this.hvp.data.widgets
     return { keyframes, keylogs, widgets, video }
-  }
-
-  _addSpotlight (ls) {
-    if ((Array.isArray(ls) && ls.length <= 0) || !ls) {
-      NNE.spotlight(null)
-    } else {
-      const lines = []
-      ls.forEach(l => {
-        if (l.includes('-')) {
-          const [start, end] = l.split('-').map(Number)
-          for (let i = start; i <= end; i++) {
-            lines.push(i)
-          }
-        } else lines.push(Number(l))
-      })
-      NNE.spotlight(lines)
-    }
   }
 
   _openWidget (widget, open) {

@@ -224,7 +224,7 @@ class HyperVideoPlayer extends Widget {
 
   runInitCallbacks () {
     // if the init.js file exists and has callbacks
-    if (!window.TUTORIAL.callbacks) return
+    if (!window.TUTORIAL || !window.TUTORIAL.callbacks) return
 
     if (!this.data.callbacks) { // keep track of which have run
       this.data.callbacks = []

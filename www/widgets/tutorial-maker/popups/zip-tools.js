@@ -94,8 +94,10 @@ const zipper = {
         tutorial.metadata[key] = metadata[key]
       })
       tutorial.widgets = data.widgets ?? []
-      tutorial.keyframes = data?.keyframes ?? []
-      tutorial.keylogs = data?.keylogs ?? []
+      // tutorial.keyframes = data?.keyframes ?? []
+      // tutorial.keylogs = data?.keylogs ?? []
+      tutorial.keyframes = (data?.keyframes ?? []).map(({ ran, ...rest }) => rest)
+      tutorial.keylogs = (data?.keylogs ?? []).map(({ ran, ...rest }) => rest)
 
       const json = JSON.stringify(tutorial, null, 2)
 

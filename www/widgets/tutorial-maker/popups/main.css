@@ -73,9 +73,41 @@ nav > div > div {
   margin-bottom: 20px;
 }
 
+#keylog-tools {
+  display: none;
+  width: 100%;
+  margin-left: 20px;
+}
+
+#keylog-tools button,
+#keylog-tools span {
+  border-color: var(--netizen-attribute) !important;
+  color: var(--netizen-attribute) !important;
+  font-weight: bold;
+}
+
+#recording-keylog > span {
+  color: red !important;
+  animation: recPulse 2s ease-in-out infinite;
+}
+
+@keyframes recPulse {
+  0%   { opacity: 0.5; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
 .keyframe-tools {
   flex-grow: 1;
 }
+
+[kf-edit-tool] {
+  border-color: var(--netizen-tag) !important;
+}
+button[kf-edit-tool] {
+  color: var(--netizen-tag) !important;
+}
+
 .tutorial-tools {
   flex: 0;
 }
@@ -254,7 +286,7 @@ nav > div > div {
 
 .dd-styles {
   background: var(--bg-color);
-  border: 1px solid var(--netizen-meta);
+  border: 1px solid var(--netizen-tag);
   border-radius: 9px;
   padding: 10px;
   width: 100%;

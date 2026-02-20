@@ -6,6 +6,7 @@ let modal
 let WN // neitior instance for widget maker
 let WIDGET // previous widget state
 let videoReady = false
+let keyLogging = false
 
 const msg = (type, payload) => {
   window.opener.postMessage({ type, payload }, window.origin)
@@ -15,7 +16,7 @@ function overlay (ele) {
   nn.getAll('.overlay').forEach(e => e.css('display', 'none'))
   if (ele) nn.get(ele).css('display', 'block')
   if (ele) window.resizeTo(436, 731)
-  else window.resizeTo(1000, 369)
+  else window.resizeTo(1000, 280)
 
   if (ele === '#metadata') {
     window.resizeTo(420, 850)
@@ -73,12 +74,13 @@ function openTutorial () {
   })
 }
 
-function updateVideo (blob) {
+function updateVideo (blob, newRecording) {
   // NOTE: chrome has issues with "seeking" a video when being served by a SW...
   // FILES.updateFile(`${TUT_ID}.mp4`, blob) // <-(so can't do this anymore)
   // ...so instead of requesting the blob from the SW we need to give it to the
   // HyperVideoPlayer directly...
   msg('tut-mkr-update-video', blob)
+  if (newRecording) msg('tut-mkr-get-keylog', 'all')
   overlay(null)
   // NOTE: this should only run once per tutorial,
   // either when they upload a video, or record a new one.
@@ -142,6 +144,72 @@ function videoTimeUpdated (obj) { // runs as video plays && it's time udpates
   if (obj.keylog) {
     const marker = nn.get(`[name="keylog-${obj.keylog.timecode}"]`)
     timeline.selectMarker(marker)
+    keylogEditMode('delete')
+  } else {
+    if (!keyLogging) keylogEditMode(false)
+  }
+}
+
+// -------------------------------------------------------- KEYLOGGING FUNCTIONS
+
+recorder.toggleKeyLogging = function (rec) {
+  if (rec) msg('tut-mkr-start-keylog')
+  else msg('tut-mkr-stop-keylog')
+}
+
+function startLogging () {
+  if (keyLogging) {
+    // TODO: let them know it's already recording
+    showCreateOptions()
+    return
+  }
+  keyLogging = true
+  recorder.toggleKeyLogging(keyLogging)
+  keylogEditMode('recording')
+  showCreateOptions()
+}
+
+function stopLogging () {
+  keyLogging = false
+  recorder.toggleKeyLogging(keyLogging)
+  keylogEditMode(false)
+}
+
+function newKeylogsFromRecording (logs) {
+  if (!metadata.duration) return setTimeout(newKeylogsFromRecording, 100, logs)
+  logs.forEach(kl => addMarker(kl, 'keylog'))
+  timeline.updateMarkers()
+}
+
+function createKeylog (kl) {
+  addMarker(kl, 'keylog')
+  timeline.updateMarkers()
+}
+
+function deleteKeylog () {
+  timeline.removeMarker(TIMECODE, 'keylog')
+  msg('tut-mkr-update-keylog', { timecode: TIMECODE, remove: true })
+}
+
+function keylogEditMode (type) {
+  if (!type) {
+    nn.get('#keylog-tools').css('display', 'none')
+  } else if (type === 'selected') {
+    nn.get('#delete-keylog').css('display', 'block')
+    nn.get('#recording-keylog').css('display', 'none')
+    nn.get('#keylog-tools').css('display', 'flex')
+  } else if (type === 'recording') {
+    nn.get('#delete-keylog').css('display', 'none')
+    nn.get('#recording-keylog').css('display', 'block')
+    nn.get('#keylog-tools').css('display', 'flex')
+  }
+}
+
+function displayKeylogData (kl) {
+  if (kl.remove) {
+    keylogEditMode(false) // hide
+  } else {
+    keylogEditMode('selected')
   }
 }
 
@@ -483,6 +551,7 @@ function buildFileTree (files) {
   // files to hide from the asset view
   const filtered = [
     'tutorial.json',
+    'index.html', // NOTE: created by 'tut-mkr-code-update'
     `${metadata.id}.mp4`,
     `${metadata.id}.webm`
   ]
@@ -585,8 +654,9 @@ nn.get('#update-keyframe').on('click', () => updateKeyframe())
 nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
 nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))
 
-// TODO: configure keylog actions
-// nn.get('#create-keylog').on('click',...))
+nn.get('#create-keylog').on('click', startLogging)
+nn.get('#recording-keylog').on('click', stopLogging)
+nn.get('#delete-keylog').on('click', deleteKeylog)
 
 nn.getAll('button[name]').forEach(btn => {
   btn.on('click', () => {
@@ -678,7 +748,9 @@ nn.on('message', (e) => {
     else if (payload.frame) console.log('updated', payload)
     else displayKeyframeData(payload) // else, payload === keyframe
   } else if (type === 'tut-mkr-keylog') {
-    // TODO...
+    if (payload instanceof Array) newKeylogsFromRecording(payload)
+    else if (payload.add) createKeylog(payload.frame)
+    else displayKeylogData(payload)
   } else if (type === 'tut-mkr-time-update') {
     videoTimeUpdated(payload)
   } else if (type === 'tut-mkr-data') {
