@@ -1,4 +1,4 @@
-/* global nn */
+/* global nn keyLogging */
 const timeline = {
   mkrs: 'use[href^="#"][href$="-marker"], use[xlink\\:href^="#"][xlink\\:href$="-marker"]',
   scrubbing: false,
@@ -36,6 +36,7 @@ const timeline = {
     // jump to timeline
     svg.addEventListener('click', (e) => {
       if (e.target !== svg) return // clicked a child element → ignore
+      if (timeline.blockScrub()) return
       const x = toSvgX(e.clientX)
       timeline.updatePlayhead(x)
       if (timeline.onScrub) timeline.onScrub(x)
@@ -45,6 +46,7 @@ const timeline = {
     scrub.addEventListener('pointerdown', e => {
       e.preventDefault()
       e.stopPropagation() // don’t trigger the svg background click
+      if (timeline.blockScrub()) return
       timeline.scrubbing = true
       window.addEventListener('pointermove', onMove)
       window.addEventListener('pointerup', onUp)
@@ -55,6 +57,13 @@ const timeline = {
     timeline.updateMarkers()
     timeline.placeLabels()
     timeline.updatePlayhead(0)
+  },
+
+  blockScrub: () => {
+    if (keyLogging) {
+      window.alert('can not scrub timeline while keylogging is enabled')
+      return true
+    } else return false
   },
 
   updatePlayhead: (x) => {
@@ -103,6 +112,8 @@ const timeline = {
   selectMarker: (e, callback) => {
     const u = e instanceof window.Element ? e : e.target
     if (!u) return
+    if (timeline.blockScrub()) return
+
     const a = u.getAttribute('name').split('-')
     timeline.clearSelections(a)
     const fill = a[0] === 'keyframe' ? 'var(--netizen-tag)' : 'var(--netizen-attribute)'
@@ -131,7 +142,12 @@ const timeline = {
     u.setAttribute('data-size', '8')
     svg.appendChild(u)
     // u.addEventListener('click', (e) => timeline.selectMarker(e, callback))
-    if (callback) u.addEventListener('click', (e) => callback(t))
+    if (callback) {
+      u.addEventListener('click', (e) => {
+        if (timeline.blockScrub()) return
+        callback(t)
+      })
+    }
   },
 
   getAllMarkers: (type) => {
