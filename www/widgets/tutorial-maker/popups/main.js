@@ -160,6 +160,7 @@ recorder.toggleKeyLogging = function (rec) {
 function startLogging () {
   if (keyLogging) {
     // TODO: let them know it's already recording
+    window.alert('keylogging already enabled')
     showCreateOptions()
     return
   }
@@ -197,10 +198,12 @@ function keylogEditMode (type) {
   } else if (type === 'selected') {
     nn.get('#delete-keylog').css('display', 'block')
     nn.get('#recording-keylog').css('display', 'none')
+    nn.get('#keylog-rec-tip').css('display', 'none')
     nn.get('#keylog-tools').css('display', 'flex')
   } else if (type === 'recording') {
     nn.get('#delete-keylog').css('display', 'none')
     nn.get('#recording-keylog').css('display', 'block')
+    nn.get('#keylog-rec-tip').css('display', 'block')
     nn.get('#keylog-tools').css('display', 'flex')
   }
 }
@@ -669,12 +672,6 @@ nn.get('#create-keylog').on('click', startLogging)
 nn.get('#recording-keylog').on('click', stopLogging)
 nn.get('#delete-keylog').on('click', deleteKeylog)
 
-nn.getAll('button[name]').forEach(btn => {
-  btn.on('click', () => {
-    msg('tut-mkr-explain', btn.getAttribute('name'))
-  })
-})
-
 // netitor options
 nn.get('#netitor-dd').on('click', toggleNetitorOptions)
 nn.get('[name="include-netitor"]').on('click', includeNetitor)
@@ -690,7 +687,51 @@ nn.get('#widget-title-input').on('blur', () => updateWidgetState())
 nn.get('[name="upload-assets"]').on('click', () => overlay('#upload'))
 nn.get('#upload file-drop').addEventListener('files-changed', (e) => fileUploaded(e))
 nn.get('[name="upload-goback"]').on('click', () => overlay(null))
-// TODO: configure upload assets (?) button
+
+nn.getAll('.tool-tip[data-tip]').forEach((btn) => {
+  const tipDiv = document.createElement('div')
+  tipDiv.className = 'tooltip-content closed' // manifest.css classes
+  const tipP = document.createElement('p')
+  tipP.innerHTML = btn.dataset.tip
+  tipDiv.appendChild(tipP)
+  btn.after(tipDiv)
+
+  btn.addEventListener('click', (e) => {
+    if (tipDiv.classList.contains('closed')) {
+      btn.textContent = 'x'
+      const rect = btn.getBoundingClientRect()
+
+      // temporarily render off-screen to measure height (display:none prevents measurement)
+      tipDiv.style.position = 'fixed'
+      tipDiv.style.visibility = 'hidden'
+      tipDiv.style.top = '-9999px'
+      tipDiv.style.left = '-9999px'
+      tipDiv.classList.remove('closed')
+      tipDiv.classList.add('opened')
+      const tipHeight = tipDiv.offsetHeight
+
+      // calculate left, clamping to right edge
+      let left = rect.left
+      const rightSide = rect.left + 365 + 20 // tipDiv width + margin
+      const rightOverflow = rightSide - window.innerWidth
+      if (rightOverflow > 0) left -= rightOverflow
+
+      // calculate top: below btn by default, above if it would overflow bottom
+      let top = rect.bottom
+      if (rect.bottom + tipHeight > window.innerHeight) {
+        top = rect.top - tipHeight
+      }
+
+      tipDiv.style.left = `${left}px`
+      tipDiv.style.top = `${top}px`
+      tipDiv.style.visibility = ''
+    } else {
+      btn.textContent = '?'
+      tipDiv.classList.remove('opened')
+      tipDiv.classList.add('closed')
+    }
+  })
+})
 
 // .................... window events
 

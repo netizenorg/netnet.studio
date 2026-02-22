@@ -99,7 +99,7 @@
           <div class="tooltip-content closed">
             <p>Keylogs capture every keystroke made while the video is being recorded.</p>
           </div>
-          <div class="pill-btn pill-btn--secondary">?</div>
+          <div class="pill-btn pill-btn--secondary tool-tip" data-tip="Check this box if you'd like all your key strokes (code typed into the netitor) recorded while recording your video">?</div>
         </div>
 
         <!-- TODO: flip camera logic  -->
@@ -132,9 +132,8 @@
 <section id="upload" class="overlay" style="display: none;">
   <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
     <div name="upload-goback" class="pill-btn pill-btn--secondary">go back</div>
-    <button class="pill-btn pill-btn--secondary" style="padding-bottom: 3px;">?</button>
+    <button class="pill-btn pill-btn--secondary tool-tip" style="padding-bottom: 3px;" data-tip="Any uploaded assets will be listed below. Click folders to expand, click the X next to a file name to delete it. To upload new assets (or folders with assets) use the 'Upload New Assets' area below that.">?</button>
   </div>
-  <p>Uploaded Assets</p>
   <div class="uploaded-assets"></div>
   <p style="margin: 10px 0px;">Upload New Assets</p>
   <div class="file-drop-cont">
@@ -198,6 +197,7 @@
       <span>keylog</span>
       <button id="recording-keylog" class="pill-btn pill-btn--secondary"><span>⦿</span> stop recording</button>
       <button id="delete-keylog" class="pill-btn pill-btn--secondary">delete</button>
+      <div id="keylog-rec-tip" class="pill-btn pill-btn--secondary tool-tip" data-tip="While recording is enabled, play the video and type code into the editor, anything you type will be keylogged with the video's timecode">?</div>
     </div>
     <div class="tutorial-tools">
       <button id="open-metadata" class="pill-btn pill-btn--secondary">settings</button>
