@@ -118,7 +118,7 @@ const zipper = {
       )
 
       // load all files under FILES.files
-      const ignoreFiles = [`${metadata.id}.mp4`, 'tutorial.json', 'index.html']
+      const ignoreFiles = [`${metadata.id}.mp4`, `${metadata.id}.webm`, 'tutorial.json', 'index.html']
       for (const file of Object.entries(FILES.files)) {
         const fileName = file[1].path.split('/').pop()
         if (ignoreFiles.includes(fileName)) continue
@@ -130,7 +130,16 @@ const zipper = {
           const blob = await res.blob()
           zip.file(filePath, blob, { binary: true })
         } else {
-          zip.file(filePath, fileData)
+          if (fileData instanceof window.File || fileData instanceof Blob) {
+            const mime = fileData.type || zipper.mimeFromName(fileData.name || filePath)
+            if (zipper.isTextType(mime)) {
+              zip.file(filePath, await fileData.text())
+            } else {
+              zip.file(filePath, await fileData.arrayBuffer(), { binary: true })
+            }
+          } else {
+            zip.file(filePath, fileData)
+          }
         }
       }
 

@@ -108,6 +108,10 @@ button[kf-edit-tool] {
   color: var(--netizen-tag) !important;
 }
 
+#kf-timecode {
+  display: inline-block;
+}
+
 .tutorial-tools {
   flex: 0;
 }

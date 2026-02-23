@@ -1,4 +1,4 @@
-/* global Convo Widget WIDGETS nn NNW NNE */
+/* global Convo Widget WIDGETS nn NNW NNE utils */
 class TutorialMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -88,6 +88,8 @@ class TutorialMaker extends Widget {
       } else if (type === 'tut-mkr-get-widget') {
         const wig = this.hvp.data.widgets[payload.key]
         this._messagePopup('tut-mkr-edit-widget', wig)
+      } else if (type === 'tut-mkr-new-initjs') { // uploaded a new init.js file
+        this._newInit()
       } else if (type === 'tut-mkr-explain') { // clicked on (?) explainer button
         this._openConvo(payload)
       }
@@ -201,6 +203,25 @@ class TutorialMaker extends Widget {
       }
     }
     return { frame }
+  }
+
+  _newInit () {
+    const name = this.hvp.data.metadata.id
+    const prev = nn.get(`script[src="TUTORIAL_MAKER/${name}/init.js"]`)
+    if (prev) {
+      window.TUTORIAL = null
+      prev.remove()
+    }
+    utils.loadFile(`TUTORIAL_MAKER/${name}/init.js`, (data) => {
+      if (typeof window.TUTORIAL.init === 'function') window.TUTORIAL.init()
+      if (window.TUTORIAL.callbacks) {
+        this.hvp.data.callbacks = []
+        Object.keys(window.TUTORIAL.callbacks).forEach(key => {
+          const ran = key < this.hvp.currentTime
+          this.hvp.data.callbacks.push({ timecode: key, ran })
+        })
+      }
+    })
   }
 
   _addKeyLog () {

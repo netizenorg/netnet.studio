@@ -230,6 +230,8 @@ function displayKeyframeData (kf) {
     const key = ele.get('p').textContent
     if (keys.includes(key)) ele.get('input').checked = true
   })
+  // update timecode
+  nn.get('#kf-timecode').content(kf.timecode)
   // update netitor options
   if (kf.netitor.code) {
     const n = kf.netitor
@@ -476,6 +478,11 @@ function deleteWidget (w, ele) {
   ele.remove()
 }
 
+function copyProjPath () {
+  const path = `${SWP}/${metadata.id}/`
+  navigator.clipboard.writeText(path)
+}
+
 function updateWidgetState (code) {
   // TODO: make sure it is a astring with no spaces
   // TODO: check if that widget key is already in the netnet system
@@ -559,6 +566,8 @@ function fileUploaded (e) {
     const path = file.relativePath || file.name
     FILES.updateFile(path, file).then(() => loadFiles())
   })
+  // when uploading a new init.js, re-run init.js setup
+  if (e.detail.files[0].name === 'init.js') msg('tut-mkr-new-initjs')
 }
 
 function buildFileTree (files) {
@@ -578,7 +587,7 @@ function buildFileTree (files) {
     const stripped = rawPath.startsWith(prefix) ? rawPath.slice(prefix.length) : rawPath
     if (!stripped) return
     if (filtered.includes(stripped)) return
-    const virtual = `${metadata.id}/${stripped}`
+    const virtual = `${metadata.id} (click to view files)/${stripped}`
     virtual.split('/').reduce((agg, part, level, parts) => {
       if (!agg[part]) {
         agg[part] = { temp: [] }
@@ -666,7 +675,10 @@ nn.get('#create-keyframe').on('click', () => {
 })
 nn.get('#update-keyframe').on('click', () => updateKeyframe())
 nn.get('#delete-keyframe').on('click', () => deleteKeyframe())
-nn.get('#download-tutorial').on('click', () => msg('tut-mkr-get-data'))
+nn.get('#download-tutorial').on('click', () => {
+  console.log('CLICKD DOWNLOAD');
+  msg('tut-mkr-get-data')
+})
 
 nn.get('#create-keylog').on('click', startLogging)
 nn.get('#recording-keylog').on('click', stopLogging)
@@ -680,6 +692,7 @@ nn.get('[name="include-netitor"]').on('click', includeNetitor)
 nn.get('#widget-dd').on('click', toggleWidgetOptions)
 nn.get('[name="widget-create"]').on('click', () => createWidget())
 nn.get('[name="widget-maker-goback"]').on('click', () => closeWidgetMaker())
+nn.get('[name="widget-maker-path"]').on('click', () => copyProjPath())
 nn.get('[name="widget-maker-update"]').on('click', () => updateWidget())
 nn.get('#widget-key-input').on('blur', () => updateWidgetState())
 nn.get('#widget-title-input').on('blur', () => updateWidgetState())

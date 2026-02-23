@@ -353,7 +353,9 @@ class HyperVideoPlayer extends Widget {
       const file = this.making
         ? `TUTORIAL_MAKER/${name}/init.js`
         : `tutorials/${name}/init.js`
-      utils.loadFile(file, () => window.TUTORIAL.init())
+      utils.loadFile(file, () => {
+        if (typeof window.TUTORIAL.init === 'function') window.TUTORIAL.init()
+      })
     }
 
     this.video.oncanplay = () => {
