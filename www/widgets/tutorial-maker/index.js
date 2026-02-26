@@ -405,7 +405,7 @@ class TutorialMaker extends Widget {
         layout: NNW.layout
       }
     } else {
-      return { code: null, scrollTo: null, spotlight: [], layout: NNW.layout }
+      return { code: null, scrollTo: null, spotlight: null, layout: NNW.layout }
     }
   }
 

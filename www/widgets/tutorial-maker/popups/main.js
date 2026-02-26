@@ -561,16 +561,16 @@ function debounce (fn, wait, { leading = false, trailing = true } = {}) {
 // ----------------------------------------------------- UPLOAD ASSETS FUNCTIONS
 
 function fileUploaded (e) {
-  if (!e.detail.files.length > 0) return
-  e.detail.files.forEach(file => {
+  if (!e.detail.added?.length > 0) return
+  e.detail.added.forEach(file => {
     const path = file.relativePath || file.name
     FILES.updateFile(path, file).then(() => loadFiles())
   })
   // when uploading a new init.js, re-run init.js setup
-  if (e.detail.files[0].name === 'init.js') msg('tut-mkr-new-initjs')
+  if (e.detail.added.some(f => f.name === 'init.js')) msg('tut-mkr-new-initjs')
 }
 
-function buildFileTree (files) {
+function buildFileTree () {
   // files to hide from the asset view
   const filtered = [
     'tutorial.json',
@@ -581,7 +581,7 @@ function buildFileTree (files) {
   // strip TUTORIAL_MAKER/{id}/ prefix, filter system files, wrap under "assets/"
   const prefix = `${SWP}/${metadata.id}/`
   const agg = { temp: [] }
-  Object.values(files).forEach(file => {
+  Object.values(FILES.files).forEach(file => {
     const rawPath = file?.path || file
     if (!rawPath) return
     const stripped = rawPath.startsWith(prefix) ? rawPath.slice(prefix.length) : rawPath
@@ -658,7 +658,7 @@ function loadFiles () {
   const ul = nn.create('ul')
   ul.className = 'upl-tree'
   container.appendChild(ul)
-  const tree = buildFileTree(FILES.files)
+  const tree = buildFileTree()
   renderFileTree(tree, ul)
 }
 
@@ -810,7 +810,7 @@ nn.on('message', (e) => {
   } else if (type === 'tut-mkr-keyframe') {
     // when payload === { add, frame }, widget created a new keyframe
     if (payload.add) createKeyframe(payload.frame)
-    else if (payload.frame) console.log('updated', payload)
+    else if (payload.remove) keyframeEditMode(false) // delete frame
     else displayKeyframeData(payload) // else, payload === keyframe
   } else if (type === 'tut-mkr-keylog') {
     if (payload instanceof Array) newKeylogsFromRecording(payload)

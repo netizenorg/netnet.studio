@@ -49,7 +49,8 @@ const FILES = {
     if (!filepath.startsWith(FILES.root)) filepath = FILES.root + filepath
 
     if (FILES.files[filepath]) {
-      if (FILES.files[filepath].code.indexOf('blob') === 0) {
+      if (typeof FILES.files[filepath].code === 'string' &&
+        FILES.files[filepath].code.indexOf('blob') === 0) {
         URL.revokeObjectURL(FILES.files[filepath].code) // for memory management
       }
       delete FILES.files[filepath]
