@@ -137,6 +137,7 @@ class HyperVideoPlayer extends Widget {
   play () {
     if (WIDGETS['student-session'].getData('auto-update') === 'false') {
       NNE.autoUpdate = true
+      NNE.update()
     }
 
     const play = (e) => {
