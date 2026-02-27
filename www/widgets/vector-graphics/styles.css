@@ -24,8 +24,13 @@
 .vector-graphics__menu > button {
   font-size: 28px;
   margin: 0 3px;
-  padding: 0px 10px;
   border-radius: 11px;
+  font-family: 'fira-mono-regular';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 32px;
 }
 
 .vector-graphics__views {

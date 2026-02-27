@@ -531,7 +531,7 @@ class VectorGraphics extends Widget {
       // show overlay
       overlay.classList.add('visible')
       setTimeout(() => overlay.classList.remove('visible'), 3000)
-      /*
+
       // copy code
       const text = this.editor.code || ''
       try {
@@ -551,7 +551,7 @@ class VectorGraphics extends Widget {
         try { document.execCommand('copy') } catch {}
         document.body.removeChild(ta)
       }
-      */
+
       /*
       // also download SVG file
       try {
