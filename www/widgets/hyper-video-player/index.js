@@ -187,6 +187,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   seek (time) {
+    this._isSeeking = true
     const p = this.video.paused
     if (!p) this.pause()
     this.video.currentTime = Number(time)
@@ -298,9 +299,22 @@ class HyperVideoPlayer extends Widget {
       const c = kf.netitor.code === 'DEFAULT'
         ? utils.starterCode() : kf.netitor.code
       if (c && c !== NNE.code) {
-        this._updateCode(c, kf.netitor.autoType) // TODO check if working correctly
+        this._updateCode(c, kf.netitor.autoType)
         this._updateScrollBar(kf.scrollTo) // TODO check if working correctly
+      } else if (!c) {
+        const recentWithCode = this.data.keyframes
+          .filter(f => this.currentTime >= f.timecode && f.netitor.code)
+          .sort((a, b) => b.timecode - a.timecode)[0]
+        if (recentWithCode) {
+          const rc = recentWithCode.netitor.code === 'DEFAULT'
+            ? utils.starterCode() : recentWithCode.netitor.code
+          if (rc && rc !== NNE.code) {
+            this._updateCode(rc)
+            this._updateScrollBar(kf.scrollTo)
+          }
+        }
       }
+
       // ...layout
       const prevLayout = NNW.layout
       const newLayout = kf.netitor.layout
@@ -390,7 +404,13 @@ class HyperVideoPlayer extends Widget {
     if (this.data.callbacks) {
       this.data.callbacks.forEach(cb => { cb.ran = false })
     }
-    if (!skipRender) this.renderKeyframe()
+    if (!skipRender) {
+      clearTimeout(this._resetRenderTimeout)
+      this._resetRenderTimeout = setTimeout(() => {
+        this._isSeeking = false
+        this.renderKeyframe()
+      }, 200)
+    }
   }
 
   _updateCode (code, autotype) {
@@ -461,42 +481,40 @@ class HyperVideoPlayer extends Widget {
 
   _diffToAutoTypeTemplate (strA, strB) {
     const { added, removed } = utils.diff(strA, strB)
-
     const bLines = strB.split('\n')
-
-    // build a map of added line num -> added text
     const addedMap = {}
     added.forEach(a => { addedMap[a.line] = a.text })
-
-    // build a map of removed line num -> removed text
     const removedMap = {}
     removed.forEach(r => { removedMap[r.line] = r.text })
 
+    let codeInserted = false
     const templateLines = bLines.map((line, i) => {
       const lineNum = i + 1
 
       if (addedMap[lineNum] !== undefined) {
-        const oldLine = removedMap[lineNum] // same line num if it was modified
+        if (!codeInserted) {
+          codeInserted = true
+          const oldLine = removedMap[lineNum]
 
-        if (oldLine !== undefined) {
-          // line was modified — keep the shared prefix, replace the rest with {{code}}
-          let prefixLen = 0
-          while (
-            prefixLen < oldLine.length &&
-            prefixLen < line.length &&
-            oldLine[prefixLen] === line[prefixLen]
-          ) prefixLen++
+          if (oldLine !== undefined) {
+            let prefixLen = 0
+            while (
+              prefixLen < oldLine.length &&
+              prefixLen < line.length &&
+              oldLine[prefixLen] === line[prefixLen]
+            ) prefixLen++
 
-          const prefix = line.slice(0, prefixLen)
-          return prefix + '{{code}}'
-        } else {
-          // line was purely added (no matching removed line)
-          return '{{code}}'
+            const prefix = line.slice(0, prefixLen)
+            return prefix + '{{code}}'
+          } else {
+            return '{{code}}'
+          }
         }
+        return null
       }
 
       return line
-    })
+    }).filter(line => line !== null)
 
     return templateLines.join('\n')
   }
@@ -626,8 +644,10 @@ class HyperVideoPlayer extends Widget {
     })
     this.video.addEventListener('timeupdate', () => {
       this._updateProgressBar()
-      this.renderKeyframe()
-      this.runInitCallbacks()
+      if (!this._isSeeking) {
+        this.renderKeyframe()
+        this.runInitCallbacks()
+      }
       this.$('.hvp-buffer').style.display = 'none'
     })
 
