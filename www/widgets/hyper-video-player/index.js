@@ -697,13 +697,17 @@ class HyperVideoPlayer extends Widget {
 
   _updatePauseClock () {
     const c = this.$('.hvp-pause-screen > span:nth-child(2)')
-    const h = '00'
+    // const h = '00'
     let m = Math.floor(this.currentTime / 60)
     let s = Math.round(this.currentTime % 60)
     if (m < 10) m = '0' + m
     if (s < 10) s = '0' + s
-    const dur = Math.round((this.duration / 60) * 10) / 10
-    c.textContent = `${h}:${m}:${s} / ${dur} mins`
+    let durM = Math.floor(this.duration / 60)
+    let durS = Math.round(this.duration % 60)
+    if (durM < 10) durM = '0' + durM
+    if (durS < 10) durS = '0' + durS
+    // c.textContent = `${h}:${m}:${s} / ${h}:${durM}:${durS}`
+    c.textContent = `${m}:${s} / ${durM}:${durS}`
     return this.currentTime
   }
 
