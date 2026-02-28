@@ -118,14 +118,23 @@ class HyperVideoPlayer extends Widget {
       return
     }
 
-    if (this.video.canPlayType('video/mp4') !== '') {
+    // if (this.video.canPlayType('video/mp4') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.mp4`)
+    // } else if (this.video.canPlayType('video/webm') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.webm`)
+    // } else if (this.video.canPlayType('video/ogg') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.ogv`)
+    // } else {
+    //   console.error('HyperVideoPlayer: this browser can\'t play videos')
+    // }
+
+    if (this.data?.metadata.videoFormat) {
+      const ext = this.data.metadata.videoFormat
+      if (!name) name = this.data.metadata.id
+      console.log(path, name, ext);
+      this.video.setAttribute('src', `${path}/${name}.${ext}`)
+    } else if (this.data && path && name) {
       this.video.setAttribute('src', `${path}/${name}.mp4`)
-    } else if (this.video.canPlayType('video/webm') !== '') {
-      this.video.setAttribute('src', `${path}/${name}.webm`)
-    } else if (this.video.canPlayType('video/ogg') !== '') {
-      this.video.setAttribute('src', `${path}/${name}.ogv`)
-    } else {
-      console.error('HyperVideoPlayer: this browser can\'t play videos')
     }
   }
 
@@ -347,16 +356,16 @@ class HyperVideoPlayer extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
-  _loadTutorial () {
-    const name = this.data.id
-    const time = this._startTime
+  _loadTutorial (name, time) {
+    name = name || this.data.id || this.data.metadata.id
+    time = time || this._startTime
 
     this.title = this.data.metadata.title
 
     utils.cancelAllNetitorUses('hyper-video-player')
 
     if (!this.making) {
-      utils.updateURL(`?tutorial=${this.data.id}`)
+      utils.updateURL(`?tutorial=${name}`)
       utils.setCustomRenderer(`tutorials/${name}/`)
     }
 
@@ -386,7 +395,7 @@ class HyperVideoPlayer extends Widget {
       }, utils.getVal('--layout-transition-time'))
     }
 
-    this.updateVideo(this.data.id, this.data.id)
+    this.updateVideo(name, name)
   }
 
   _instantiateMissingWidgets () {

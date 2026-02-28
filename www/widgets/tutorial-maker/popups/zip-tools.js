@@ -31,6 +31,23 @@ const zipper = {
     return path.startsWith('__MACOSX/') || path.split('/').some(p => p.startsWith('.'))
   },
 
+  modifyTutorialData: (mode, data) => {
+    const mkr = 'TUTORIAL_MAKER/'
+    const tut = 'tutorials/'
+    if (mode === 'open') { // modify widget URLs to ServiceWorker path
+      data = JSON.parse(data)
+      for (const k in data.widgets) {
+        data.widgets[k].innerHTML = data.widgets[k].innerHTML.replaceAll(tut, mkr)
+      }
+      return JSON.stringify(data, null, 2)
+    } else if (mode === 'download') { // save widget URLs as rel tutorial paths
+      for (const k in data) {
+        data[k].innerHTML = data[k].innerHTML.replaceAll(mkr, tut)
+      }
+      return data
+    }
+  },
+
   open: (swPath, callback) => {
     const picker = nn.create('input')
       .set({ type: 'file', accept: '.zip,application/zip' })
@@ -49,7 +66,10 @@ const zipper = {
         tasks.push((async () => {
           const type = zipper.mimeFromName(item.name)
           if (zipper.isTextType(type)) { // store raw text (utf-8)
-            const text = await item.async('string')
+            let text = await item.async('string')
+            if (path === 'tutorial.json') {
+              text = zipper.modifyTutorialData('open', text)
+            }
             filesDict[`${swPath}/${path}`] = text
           } else { // store object URL for binary (images, video, pdf, etc.)
             const blob = await item.async('blob')
@@ -93,11 +113,17 @@ const zipper = {
       keys.forEach(key => {
         tutorial.metadata[key] = metadata[key]
       })
-      tutorial.widgets = data.widgets ?? []
+
+      const mp4 = FILES.readFile(metadata.id + '.mp4')
+      tutorial.metadata.videoFormat = mp4 ? 'mp4' : 'webm'
+
+      tutorial.widgets = data.widgets ?? {}
       // tutorial.keyframes = data?.keyframes ?? []
       // tutorial.keylogs = data?.keylogs ?? []
       tutorial.keyframes = (data?.keyframes ?? []).map(({ ran, ...rest }) => rest)
       tutorial.keylogs = (data?.keylogs ?? []).map(({ ran, ...rest }) => rest)
+
+      tutorial.widgets = zipper.modifyTutorialData('download', tutorial.widgets)
 
       const json = JSON.stringify(tutorial, null, 2)
 
