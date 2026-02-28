@@ -207,7 +207,7 @@ class StudentSession extends Widget {
 
     // during tutorial
     const hvp = WIDGETS['hyper-video-player']
-    if (hvp && hvp.data?.id) {
+    if (hvp && hvp.data?.metadata.id) {
       hvp.pause()
       const convos = this.convos = window.CONVOS['hyper-video-player'](hvp)
       window.convo = new Convo(convos, 'interrupt')
