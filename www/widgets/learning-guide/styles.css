@@ -99,16 +99,22 @@
 
 
 @keyframes arrow-bounce {
-  0% { transform: rotate(90deg) translateX(-30px); }
-  50% { transform: rotate(90deg) translateX(10px); }
-  100% { transform: rotate(90deg) translateX(-30px); }
+  0% { transform: rotate(90deg) translateX(-50px); }
+  50% { transform: rotate(90deg) translateX(-10px); }
+  100% { transform: rotate(90deg) translateX(-50px); }
 }
 
 .learning-guide__arrow {
+  position: relative;
+  width: 50px;
+  height: 50px;
+
+  left: calc(50% - 35px);
+
   font-size: 50px;
   text-align: center;
 
-  transform: rotate(90deg) translateX(-25px);
+  transform: rotate(90deg) translateX(-50px);
   animation: arrow-bounce 2s infinite;
 }
 
