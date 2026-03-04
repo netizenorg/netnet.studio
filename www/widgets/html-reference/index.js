@@ -207,8 +207,8 @@ class HtmlReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
+    // this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
+    // this.ele.querySelector('.widget__inner-html').style.padding = '10px 0 0'
 
     this.slide.updateSlide(this.mainOpts)
   }

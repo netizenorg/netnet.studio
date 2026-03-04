@@ -187,13 +187,16 @@
 .widget__inner-html {
   position: relative;
 
-  padding: 20px 0 0;
   height: calc(100% - 40px);
 
   color: var(--netizen-meta);
 
   font-size: 16px;
   line-height: 1.45em;
+}
+
+.widget__inner-html > div:first-child {
+  padding-top: 20px;
 }
 
 .widget__inner-html section div,
@@ -224,7 +227,7 @@
 
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
-/* styles sahred by references widgets && <widget-slide> custom element used in em */
+/* styles shared by reference widgets && <widget-slide> custom element used in em */
 
 .reference-widget {
   display: block;
@@ -232,7 +235,7 @@
   width: 600px;
   max-height: 400px;
 
-  padding: 0px 15px 0px 25px;
+  padding: 0px 15px;
 
   overflow-y: auto;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
