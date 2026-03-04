@@ -114,7 +114,7 @@
   font-size: 50px;
   text-align: center;
 
-  transform: rotate(90deg) translateX(-50px);
+  transform: rotate(90deg) translateX(-45px);
   animation: arrow-bounce 2s infinite;
 }
 
@@ -511,4 +511,9 @@
   margin-bottom: -8px;
 
   background: var(--fg-color);
+}
+
+/* no motion */
+.no-motion .learning-guide__arrow {
+  animation: none;
 }

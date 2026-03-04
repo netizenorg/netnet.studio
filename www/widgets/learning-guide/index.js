@@ -65,6 +65,11 @@ class LearningGuide extends Widget {
       const src = this.ele.querySelector('iframe').src
       this.ele.querySelector('iframe').src = src
     })
+
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (nomotion) {
+      this.ele.classList.add('no-motion')
+    }
   }
 
   loadTemplate (name) {
