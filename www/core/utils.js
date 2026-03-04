@@ -669,11 +669,9 @@ window.utils = {
 
   selecting: (bool) => {
     if (bool) {
-      document.body.style.userSelect = 'auto'
-      document.body.style.webkitUserSelect = 'auto'
+      document.body.classList.add('selecting')
     } else {
-      document.body.style.userSelect = 'none'
-      document.body.style.webkitUserSelect = 'none'
+      document.body.classList.remove('selecting')
     }
   },
 

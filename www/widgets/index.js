@@ -592,6 +592,7 @@ class Widget {
       if (e.target.className === 'widget__top') {
         this.ele.querySelector('.widget__top').style.cursor = 'move'
         this.emit('movestart', { x: e.clientX, y: e.clientY })
+        utils.selecting(true)
       }
       this._updateResizeBlocker('create')
       // if it wasn't clicked on bottom right, then we shouldn't resize
@@ -613,7 +614,7 @@ class Widget {
     }
     this.ele.querySelector('.widget__top').style.cursor = 'grab'
     this.keepInFrame()
-    utils.selecting(true)
+    utils.selecting(false)
   }
 
   _mouseMove (e) {
@@ -622,9 +623,6 @@ class Widget {
     if (this._shouldResize(e)) {
       this.ele.style.cursor = 'se-resize'
     } else this.ele.style.cursor = 'auto'
-
-    if (this.ele.style.cursor === 'auto') utils.selecting(true)
-    else utils.selecting(false)
 
     // move or resize window
     if (this.mousedown === 'widget__top') {

@@ -94,3 +94,21 @@
   0% { background-position-x: 0px; }
   100% { background-position-x: 182px; }
 }
+
+
+/* selecting */
+body {
+  user-select: auto;
+  -webkit-user-select: auto;
+  -webkit-touch-callout: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+}
+
+body.selecting {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

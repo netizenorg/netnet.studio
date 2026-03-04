@@ -309,7 +309,7 @@ class NetNet {
     this._updateMouseDown(false)
     this.cursor = 'auto'
     this.winOff = null
-    utils.selecting(true)
+    utils.selecting(false)
   }
 
   _mouseDown (e) {
@@ -318,7 +318,7 @@ class NetNet {
     else if (e.target.id === 'nn-menu' && mw) {
       this._updateMouseDown(true)
       this.cursor = 'move'
-      utils.selecting(false)
+      utils.selecting(true)
       this.win.style.cursor = this.cursor
     }
   }
@@ -358,10 +358,7 @@ class NetNet {
 
     const mv = this.cursor === 'move' || this.cursor === 'grab'
     if (e.target.id !== 'nn-window' && !mv) this.cursor = 'auto'
-
-    if (this.cursor === 'auto') utils.selecting(true)
-    else utils.selecting(false)
-
+    
     this.win.style.cursor = this.cursor
   }
 
