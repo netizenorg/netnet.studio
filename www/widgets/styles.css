@@ -59,7 +59,6 @@
   max-height: 1.2em;
   min-width: 100px;
 
-/*  padding-left: 5px;*/
   margin: 12px 0 9px;
 
   cursor: grab;
@@ -195,8 +194,8 @@
   line-height: 1.45em;
 }
 
-.widget__inner-html > div:first-child {
-  padding-top: 20px;
+.widget__inner-html > *:not(style) {
+  padding-top: 15px;
 }
 
 .widget__inner-html section div,
@@ -235,7 +234,7 @@
   width: 600px;
   max-height: 400px;
 
-  padding: 0px 15px;
+  padding: 0px 15px !important;
 
   overflow-y: auto;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);

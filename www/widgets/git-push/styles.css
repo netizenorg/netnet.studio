@@ -1,3 +1,7 @@
+.git-push-widget {
+  padding-top: 30px;
+}
+
 .git-push-widget p {
   max-width: 500px;
 }
@@ -5,7 +9,7 @@
 .git-push-widget__terminal::before {
   content: "Terminal";
   position: absolute;
-  top: 10px;
+  top: 15px;
   left: 10px;
   background: var(--fg-color);
   color: var(--bg-color);
