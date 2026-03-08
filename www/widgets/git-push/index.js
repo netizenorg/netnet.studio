@@ -186,8 +186,8 @@ class GitPush extends Widget {
               this._nextCmd('finished')
             } else {
               console.log('GIT SERVER ERROR:', json)
-              const face = { leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false }
-              NNW.menu.updateFace(face)
+              nn.get('load-curtain').hide()
+              window.convo = new Convo(this.convos, 'oh-no-error')
             }
           })
         },
