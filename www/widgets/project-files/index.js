@@ -562,6 +562,7 @@ class ProjectFiles extends Widget {
     }
     utils.post('./api/github/gh-pages', data, (res) => {
       if (!res.success) {
+        nn.get('load-curtain').hide()
         window.convo = new Convo(this.convos, 'oh-no-error')
       } else {
         this.projectData.ghpages = res.data.html_url
