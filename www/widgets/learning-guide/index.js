@@ -318,6 +318,7 @@ class LearningGuide extends Widget {
     // Load all the Tutorial Data the Learning Guide needs
     // ........................
     utils.get('tutorials/list.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       Object.entries(json).forEach(([key, val]) => {
         this.tutorials[key] = []
         val.forEach(n => {

@@ -59,6 +59,7 @@ class HyperVideoPlayer extends Widget {
   load (name, time) {
     nn.get('load-curtain').show('tutorial.html')
     utils.get(`tutorials/${name}/tutorial.json`, (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       this.data = json
       this._startTime = time || 0
 

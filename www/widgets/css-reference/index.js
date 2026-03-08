@@ -59,7 +59,10 @@ class CssReference extends Widget {
       NNE.cm.off('keydown', this._boundEditWatcher)
     })
 
-    utils.get('./widgets/css-reference/data/edu-supplement.json', (json) => { this.data = json })
+    utils.get('./widgets/css-reference/data/edu-supplement.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.data = json
+    })
     utils.get('./widgets/css-reference/data/main-slide.html', (html) => init(html), true)
   }
 

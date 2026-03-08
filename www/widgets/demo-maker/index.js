@@ -20,6 +20,7 @@ class DemoMaker extends Widget {
     })
 
     utils.get('api/demos', (res) => {
+      if (res.success === false) return utils._Convo('oh-no-error', res)
       this.demos = res.data
       this._messagePopup('demo-list', this.demos)
     })

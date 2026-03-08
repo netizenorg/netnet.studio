@@ -8,7 +8,11 @@ window.utils = {
         else return res.json()
       })
       .then(res => cb(res))
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err)
+        const errObj = { success: false, error: err }
+        if (cb) cb(errObj)
+      })
   },
 
   post: (url, data, cb) => {
@@ -23,7 +27,11 @@ window.utils = {
     window.fetch(url, opts)
       .then(res => res.json())
       .then(res => { if (cb) cb(res) })
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err)
+        const errObj = { success: false, error: err }
+        if (cb) cb(errObj)
+      })
   },
 
   getSync: async (url, text = false) => {
@@ -203,6 +211,10 @@ window.utils = {
     const a = window.utils.url.github.split('/')
     const data = { owner: a[0], repo: a[1], branch: a[2] }
     window.utils.post('./api/github/fork', data, (json) => {
+      if (!json.success) {
+        console.error(json)
+        return window.utils._Convo('oh-no-error')
+      }
       WIDGETS.open('project-files', (w) => w.openProject(json.data.name))
     })
   },
@@ -211,7 +223,8 @@ window.utils = {
     return nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   },
 
-  _Convo: (id) => {
+  _Convo: (id, err) => {
+    if (id === 'oh-no-error') console.error(err)
     Convo.load('/core/utils-convo.js', () => {
       const convos = window.CONVOS['utils-misc'](window.utils)
       window.convo = new Convo(convos, id)
@@ -518,6 +531,11 @@ window.utils = {
     const proxy = `${proto}//${host}/api/github/proxy?url=${base}/`
     const rawHTML = `${proxy}index.html`
     window.utils.get(rawHTML, (html) => {
+      if (typeof html !== 'string' || html === '{"error":"not_found"}') {
+        window.utils.fadeOutLoader(false)
+        window.utils._Convo('oh-no-error')
+        return
+      }
       window.utils.setCustomRenderer(base, proxy)
 
       NNE.code = ''

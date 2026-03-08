@@ -16,7 +16,10 @@ class HtmlReference extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    utils.get('./widgets/html-reference/data/edu-supplement.json', (json) => { this.data = json })
+    utils.get('./widgets/html-reference/data/edu-supplement.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.data = json
+    })
 
     utils.get('./widgets/html-reference/data/main-slide.html', (html) => {
       // options objects for <widget-slide> .updateSlide() method

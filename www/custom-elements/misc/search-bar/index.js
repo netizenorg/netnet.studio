@@ -199,6 +199,7 @@ class SearchBar extends HTMLElement {
 
   _loadWidgetsData () {
     utils.get('./api/widgets', (list) => {
+      if (list.success === false) return utils._Convo('oh-no-error', list)
       const arr = []
       list.forEach(file => {
         file.keywords.push('widget')
@@ -217,6 +218,7 @@ class SearchBar extends HTMLElement {
   _loadTutorialsData () {
     this.loaded.tutorials = true
     utils.get('tutorials/list.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const arr = []
       let len = 0
       for (const sec in json) { len += json[sec].length }
@@ -225,6 +227,7 @@ class SearchBar extends HTMLElement {
       for (const sec in json) {
         json[sec].forEach(name => {
           utils.get(`tutorials/${name}/tutorial.json`, (tut) => {
+            if (tut.success === false) return utils._Convo('oh-no-error', tut)
             arr.push({
               type: 'Tutorials',
               word: tut.metadata.title,
@@ -240,6 +243,7 @@ class SearchBar extends HTMLElement {
     })
 
     utils.get('api/demos', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const arr = []
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
@@ -266,6 +270,7 @@ class SearchBar extends HTMLElement {
     })
 
     utils.get('api/templates', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const arr = []
       const len = Object.keys(json.data.list).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }

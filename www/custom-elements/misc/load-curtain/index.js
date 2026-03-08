@@ -2,6 +2,7 @@
 class LoadCurtain extends HTMLElement {
   show (filename, opts) {
     window.utils.get(`/custom-elements/misc/load-curtain/data/${filename}`, (html) => {
+      if (typeof html !== 'string') console.error('ERROR', html)
       this.setAttribute('id', 'curtain-loading-screen')
       if (opts) {
         for (const key in opts) {

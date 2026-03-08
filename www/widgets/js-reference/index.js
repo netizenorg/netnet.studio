@@ -11,7 +11,10 @@ class JsReference extends Widget {
 
     // this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 
-    utils.get('./widgets/js-reference/data/edu-supplement.json', (json) => { this.data = json })
+    utils.get('./widgets/js-reference/data/edu-supplement.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.data = json
+    })
 
     utils.get('./widgets/js-reference/data/main-slide.html', (html) => {
       const div = nn.create('div').content(html)
