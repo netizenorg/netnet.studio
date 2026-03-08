@@ -29,7 +29,13 @@ const FILES = {
   },
 
   updateFile: async (filepath, fileContent) => {
-    if (!filepath.startsWith(FILES.root)) filepath = FILES.root + filepath
+    // ensure path looks like "TUTORIAL_MAKER/[tutrial-id]/[file-path]"
+    if (!filepath.startsWith(FILES.root)) {
+      if (filepath.startsWith('TUTORIAL_MAKER/')) {
+        filepath = filepath.split('TUTORIAL_MAKER/')[1]
+      }
+      filepath = FILES.root + filepath
+    }
 
     if (!FILES.files[filepath]) { // create new file
       FILES.files[filepath] = { code: fileContent, path: filepath }
@@ -43,7 +49,8 @@ const FILES = {
     if (!filepath.startsWith(FILES.root)) filepath = FILES.root + filepath
 
     if (FILES.files[filepath]) {
-      if (FILES.files[filepath].code.indexOf('blob') === 0) {
+      if (typeof FILES.files[filepath].code === 'string' &&
+        FILES.files[filepath].code.indexOf('blob') === 0) {
         URL.revokeObjectURL(FILES.files[filepath].code) // for memory management
       }
       delete FILES.files[filepath]

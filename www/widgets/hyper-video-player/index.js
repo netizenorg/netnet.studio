@@ -118,14 +118,23 @@ class HyperVideoPlayer extends Widget {
       return
     }
 
-    if (this.video.canPlayType('video/mp4') !== '') {
+    // if (this.video.canPlayType('video/mp4') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.mp4`)
+    // } else if (this.video.canPlayType('video/webm') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.webm`)
+    // } else if (this.video.canPlayType('video/ogg') !== '') {
+    //   this.video.setAttribute('src', `${path}/${name}.ogv`)
+    // } else {
+    //   console.error('HyperVideoPlayer: this browser can\'t play videos')
+    // }
+
+    if (this.data?.metadata.videoFormat) {
+      const ext = this.data.metadata.videoFormat
+      if (!name) name = this.data.metadata.id
+      console.log(path, name, ext);
+      this.video.setAttribute('src', `${path}/${name}.${ext}`)
+    } else if (this.data && path && name) {
       this.video.setAttribute('src', `${path}/${name}.mp4`)
-    } else if (this.video.canPlayType('video/webm') !== '') {
-      this.video.setAttribute('src', `${path}/${name}.webm`)
-    } else if (this.video.canPlayType('video/ogg') !== '') {
-      this.video.setAttribute('src', `${path}/${name}.ogv`)
-    } else {
-      console.error('HyperVideoPlayer: this browser can\'t play videos')
     }
   }
 
@@ -137,6 +146,7 @@ class HyperVideoPlayer extends Widget {
   play () {
     if (WIDGETS['student-session'].getData('auto-update') === 'false') {
       NNE.autoUpdate = true
+      NNE.update()
     }
 
     const play = (e) => {
@@ -187,6 +197,7 @@ class HyperVideoPlayer extends Widget {
   }
 
   seek (time) {
+    this._isSeeking = true
     const p = this.video.paused
     if (!p) this.pause()
     this.video.currentTime = Number(time)
@@ -222,6 +233,28 @@ class HyperVideoPlayer extends Widget {
       .sort((a, b) => a.timecode - b.timecode).reverse()[0]
   }
 
+  runInitCallbacks () {
+    // if the init.js file exists and has callbacks
+    if (!window.TUTORIAL || !window.TUTORIAL.callbacks) return
+
+    if (!this.data.callbacks) { // keep track of which have run
+      this.data.callbacks = []
+      Object.keys(window.TUTORIAL.callbacks).forEach(key => {
+        this.data.callbacks.push({ timecode: key, ran: false })
+      })
+    }
+
+    // get most recent callback from init.js
+    const ct = this.currentTime
+    const mostRecent = this.data.callbacks
+      .filter(cb => ct >= cb.timecode)
+      .sort((a, b) => a.timecode - b.timecode).reverse()[0]
+
+    if (!mostRecent || mostRecent.ran) return
+    window.TUTORIAL.callbacks[mostRecent.timecode]() // run callback
+    mostRecent.ran = true // mark as ran
+  }
+
   renderKeyframe () {
     const kf = this.getMostRecentKeyframe()
     const kl = this.getMostRecentKeylog()
@@ -230,7 +263,7 @@ class HyperVideoPlayer extends Widget {
     this._da = 200 // amount to add to delay for subsequant widget
 
     if (kl && !kl.ran) {
-      if (kl.code !== NNE.code) {
+      if (kl.code && kl.code !== NNE.code) {
         this._updateCode(kl.code) // TODO check if working correctly
         this._updateScrollBar() // TODO check if working correctly
       }
@@ -276,9 +309,22 @@ class HyperVideoPlayer extends Widget {
       const c = kf.netitor.code === 'DEFAULT'
         ? utils.starterCode() : kf.netitor.code
       if (c && c !== NNE.code) {
-        this._updateCode(c) // TODO check if working correctly
+        this._updateCode(c, kf.netitor.autoType)
         this._updateScrollBar(kf.scrollTo) // TODO check if working correctly
+      } else if (!c) {
+        const recentWithCode = this.data.keyframes
+          .filter(f => this.currentTime >= f.timecode && f.netitor.code)
+          .sort((a, b) => b.timecode - a.timecode)[0]
+        if (recentWithCode) {
+          const rc = recentWithCode.netitor.code === 'DEFAULT'
+            ? utils.starterCode() : recentWithCode.netitor.code
+          if (rc && rc !== NNE.code) {
+            this._updateCode(rc)
+            this._updateScrollBar(kf.scrollTo)
+          }
+        }
       }
+
       // ...layout
       const prevLayout = NNW.layout
       const newLayout = kf.netitor.layout
@@ -310,16 +356,16 @@ class HyperVideoPlayer extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
-  _loadTutorial () {
-    const name = this.data.id
-    const time = this._startTime
+  _loadTutorial (name, time) {
+    name = name || this.data.id || this.data.metadata.id
+    time = time || this._startTime
 
     this.title = this.data.metadata.title
 
     utils.cancelAllNetitorUses('hyper-video-player')
 
     if (!this.making) {
-      utils.updateURL(`?tutorial=${this.data.id}`)
+      utils.updateURL(`?tutorial=${name}`)
       utils.setCustomRenderer(`tutorials/${name}/`)
     }
 
@@ -331,7 +377,9 @@ class HyperVideoPlayer extends Widget {
       const file = this.making
         ? `TUTORIAL_MAKER/${name}/init.js`
         : `tutorials/${name}/init.js`
-      utils.loadFile(file, () => window.TUTORIAL.init())
+      utils.loadFile(file, () => {
+        if (typeof window.TUTORIAL.init === 'function') window.TUTORIAL.init()
+      })
     }
 
     this.video.oncanplay = () => {
@@ -347,7 +395,7 @@ class HyperVideoPlayer extends Widget {
       }, utils.getVal('--layout-transition-time'))
     }
 
-    this.updateVideo(this.data.id, this.data.id)
+    this.updateVideo(name, name)
   }
 
   _instantiateMissingWidgets () {
@@ -363,14 +411,32 @@ class HyperVideoPlayer extends Widget {
   _resetKeyframes (skipRender) {
     this.data.keyframes.forEach(kf => { kf.ran = false })
     this.data.keylogs.forEach(kl => { kl.ran = false })
-    if (!skipRender) this.renderKeyframe()
+    if (this.data.callbacks) {
+      this.data.callbacks.forEach(cb => { cb.ran = false })
+    }
+    if (!skipRender) {
+      clearTimeout(this._resetRenderTimeout)
+      this._resetRenderTimeout = setTimeout(() => {
+        this._isSeeking = false
+        this.renderKeyframe()
+      }, 200)
+    }
   }
 
-  _updateCode (code) {
-    const top = NNE.cm.getScrollInfo().top
-    NNE.code = code // TODO: maybe type it out? using utils.autoType
-    const s = NNE.cm.getScrollInfo()
-    if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+  _updateCode (code, autotype) {
+    if (autotype) {
+      const a = NNE.code
+      const b = code
+      utils.autoType({
+        template: this._diffToAutoTypeTemplate(a, b),
+        code: this._getAutoTypeCode(a, b)
+      })
+    } else {
+      const top = NNE.cm.getScrollInfo().top
+      NNE.code = code
+      const s = NNE.cm.getScrollInfo()
+      if (s.top !== top) NNE.cm.scrollTo(s.left, top)
+    }
   }
 
   _updateScrollBar (obj) {
@@ -421,6 +487,67 @@ class HyperVideoPlayer extends Widget {
     if (this?.opened && NNE.readOnly) {
       window.convo = new Convo(this.convos, 'tutorial-pause-to-edit')
     }
+  }
+
+  _diffToAutoTypeTemplate (strA, strB) {
+    const { added, removed } = utils.diff(strA, strB)
+    const bLines = strB.split('\n')
+    const addedMap = {}
+    added.forEach(a => { addedMap[a.line] = a.text })
+    const removedMap = {}
+    removed.forEach(r => { removedMap[r.line] = r.text })
+
+    let codeInserted = false
+    const templateLines = bLines.map((line, i) => {
+      const lineNum = i + 1
+
+      if (addedMap[lineNum] !== undefined) {
+        if (!codeInserted) {
+          codeInserted = true
+          const oldLine = removedMap[lineNum]
+
+          if (oldLine !== undefined) {
+            let prefixLen = 0
+            while (
+              prefixLen < oldLine.length &&
+              prefixLen < line.length &&
+              oldLine[prefixLen] === line[prefixLen]
+            ) prefixLen++
+
+            const prefix = line.slice(0, prefixLen)
+            return prefix + '{{code}}'
+          } else {
+            return '{{code}}'
+          }
+        }
+        return null
+      }
+
+      return line
+    }).filter(line => line !== null)
+
+    return templateLines.join('\n')
+  }
+
+  _getAutoTypeCode (strA, strB) {
+    const { added, removed } = utils.diff(strA, strB)
+    const removedMap = {}
+    removed.forEach(r => { removedMap[r.line] = r.text })
+
+    return added.map(a => {
+      const oldLine = removedMap[a.line]
+      if (oldLine !== undefined) {
+        // only type the new suffix
+        let prefixLen = 0
+        while (
+          prefixLen < oldLine.length &&
+          prefixLen < a.text.length &&
+          oldLine[prefixLen] === a.text[prefixLen]
+        ) prefixLen++
+        return a.text.slice(prefixLen)
+      }
+      return a.text
+    }).join('\n')
   }
 
   // ................................................ HVP HTML .................
@@ -527,7 +654,10 @@ class HyperVideoPlayer extends Widget {
     })
     this.video.addEventListener('timeupdate', () => {
       this._updateProgressBar()
-      this.renderKeyframe()
+      if (!this._isSeeking) {
+        this.renderKeyframe()
+        this.runInitCallbacks()
+      }
       this.$('.hvp-buffer').style.display = 'none'
     })
 
@@ -567,13 +697,17 @@ class HyperVideoPlayer extends Widget {
 
   _updatePauseClock () {
     const c = this.$('.hvp-pause-screen > span:nth-child(2)')
-    const h = '00'
+    // const h = '00'
     let m = Math.floor(this.currentTime / 60)
     let s = Math.round(this.currentTime % 60)
     if (m < 10) m = '0' + m
     if (s < 10) s = '0' + s
-    const dur = Math.round((this.duration / 60) * 10) / 10
-    c.textContent = `${h}:${m}:${s} / ${dur} mins`
+    let durM = Math.floor(this.duration / 60)
+    let durS = Math.round(this.duration % 60)
+    if (durM < 10) durM = '0' + durM
+    if (durS < 10) durS = '0' + durS
+    // c.textContent = `${h}:${m}:${s} / ${h}:${durM}:${durS}`
+    c.textContent = `${m}:${s} / ${durM}:${durS}`
     return this.currentTime
   }
 

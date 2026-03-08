@@ -31,6 +31,23 @@ const zipper = {
     return path.startsWith('__MACOSX/') || path.split('/').some(p => p.startsWith('.'))
   },
 
+  modifyTutorialData: (mode, data) => {
+    const mkr = 'TUTORIAL_MAKER/'
+    const tut = 'tutorials/'
+    if (mode === 'open') { // modify widget URLs to ServiceWorker path
+      data = JSON.parse(data)
+      for (const k in data.widgets) {
+        data.widgets[k].innerHTML = data.widgets[k].innerHTML.replaceAll(tut, mkr)
+      }
+      return JSON.stringify(data, null, 2)
+    } else if (mode === 'download') { // save widget URLs as rel tutorial paths
+      for (const k in data) {
+        data[k].innerHTML = data[k].innerHTML.replaceAll(mkr, tut)
+      }
+      return data
+    }
+  },
+
   open: (swPath, callback) => {
     const picker = nn.create('input')
       .set({ type: 'file', accept: '.zip,application/zip' })
@@ -49,7 +66,10 @@ const zipper = {
         tasks.push((async () => {
           const type = zipper.mimeFromName(item.name)
           if (zipper.isTextType(type)) { // store raw text (utf-8)
-            const text = await item.async('string')
+            let text = await item.async('string')
+            if (path === 'tutorial.json') {
+              text = zipper.modifyTutorialData('open', text)
+            }
             filesDict[`${swPath}/${path}`] = text
           } else { // store object URL for binary (images, video, pdf, etc.)
             const blob = await item.async('blob')
@@ -86,16 +106,24 @@ const zipper = {
 
   download: async (data = null) => {
     try {
-      const video = data || FILES.readFile(`${metadata.id}.mp4`)
-      const tutorial = { metadata: {}, widgets: {}, keyframes: {}, keylogs: {} }
+      const video = data?.video || FILES.readFile(`${metadata.id}.mp4`)
+      const tutorial = { metadata: {}, widgets: {}, keyframes: [], keylogs: [] }
       // set metadata
       const keys = ['id', 'title', 'author', 'authorURL', 'duration', 'jsfile', 'description', 'keywords', 'thumbnails']
       keys.forEach(key => {
         tutorial.metadata[key] = metadata[key]
       })
-      // TODO: configure widgets
-      // TODO: configure keyframes
-      // TODO: configure keylogs
+
+      const mp4 = FILES.readFile(metadata.id + '.mp4')
+      tutorial.metadata.videoFormat = mp4 ? 'mp4' : 'webm'
+
+      tutorial.widgets = data.widgets ?? {}
+      // tutorial.keyframes = data?.keyframes ?? []
+      // tutorial.keylogs = data?.keylogs ?? []
+      tutorial.keyframes = (data?.keyframes ?? []).map(({ ran, ...rest }) => rest)
+      tutorial.keylogs = (data?.keylogs ?? []).map(({ ran, ...rest }) => rest)
+
+      tutorial.widgets = zipper.modifyTutorialData('download', tutorial.widgets)
 
       const json = JSON.stringify(tutorial, null, 2)
 
@@ -108,15 +136,40 @@ const zipper = {
       const zip = new JSZip()
       zip.file('tutorial.json', json)
       zip.file(
-        data
+        data?.video
           ? metadata.id + (recorder.mimeType.includes('mp4') ? '.mp4' : '.webm')
           : `${metadata.id}.mp4`,
         blob,
         { compression: 'STORE' }
       )
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      // load all files under FILES.files
+      const ignoreFiles = [`${metadata.id}.mp4`, `${metadata.id}.webm`, 'tutorial.json', 'index.html']
+      for (const file of Object.entries(FILES.files)) {
+        const fileName = file[1].path.split('/').pop()
+        if (ignoreFiles.includes(fileName)) continue
 
+        const filePath = file[1].path.split('/').slice(2).join('/')
+        const fileData = FILES.readFile(file[1].path)
+        if (typeof fileData === 'string' && fileData.startsWith('blob:')) {
+          const res = await fetch(fileData)
+          const blob = await res.blob()
+          zip.file(filePath, blob, { binary: true })
+        } else {
+          if (fileData instanceof window.File || fileData instanceof Blob) {
+            const mime = fileData.type || zipper.mimeFromName(fileData.name || filePath)
+            if (zipper.isTextType(mime)) {
+              zip.file(filePath, await fileData.text())
+            } else {
+              zip.file(filePath, await fileData.arrayBuffer(), { binary: true })
+            }
+          } else {
+            zip.file(filePath, fileData)
+          }
+        }
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
       //  trigger download
       const a = document.createElement('a')
       a.href = URL.createObjectURL(zipBlob)
@@ -128,7 +181,6 @@ const zipper = {
     } catch (error) {
       console.error('Failed to download tutorial: ', error)
     }
-    // TODO: store all the data in FILES.files into a zip file && download it
   }
 }
 

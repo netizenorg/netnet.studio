@@ -1,4 +1,4 @@
-/* global Convo Widget WIDGETS nn NNW NNE */
+/* global Convo Widget WIDGETS nn NNW NNE utils */
 class TutorialMaker extends Widget {
   constructor (opts) {
     super(opts)
@@ -22,12 +22,19 @@ class TutorialMaker extends Widget {
     this._boundEditWatcher = this._editWatcher.bind(this)
     NNE.cm.on('change', this._boundEditWatcher)
 
+    // for keylogging
+    this._boundKeyLogger = this._addKeyLog.bind(this)
+    this.logStart = null // time whne keylogging started
+
     // messages from popup
     nn.on('message', e => {
       const { type, payload } = e.data
       if (e.origin !== window.location.origin) return // for security
       if (type === 'tut-mkr-opened-tutorial') { // opened tutorial from zip
         this._loadTutorial(payload)
+      } else if (type === 'tut-mkr-get-data') { // get tutorial data
+        const data = this._getData()
+        this._messagePopup('tut-mkr-data', data)
       } else if (type === 'tut-mkr-update-metadata') { // new metadata
         this._updateMetadata(payload)
       } else if (type === 'tut-mkr-get-metadata') { // asked for metadata
@@ -42,20 +49,47 @@ class TutorialMaker extends Widget {
         this.hvp.seek(payload)
         const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
         this._messagePopup('tut-mkr-keylog', kl)
-      } else if (type === 'tut-mkr-get-keyframe') { // asked for keyframe
+      } else if (type === 'tut-mkr-update-keyframe') { // create/update keyframe
         const kf = this._updateFrame('keyframes', payload)
         this._messagePopup('tut-mkr-keyframe', kf)
-      } else if (type === 'tut-mkr-get-keylog') { // asked for keylog
+      } else if (type === 'tut-mkr-update-keylog') { // create/update keylog
         const kl = this._updateFrame('keylogs', payload)
         this._messagePopup('tut-mkr-keylog', kl)
+      } else if (type === 'tut-mkr-get-keyframe') { // asked for keyframe
+        const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
+        this._messagePopup('tut-mkr-keyframe', kf)
+      } else if (type === 'tut-mkr-get-keylog') { // asked for keylog
+        if (payload === 'all') {
+          this._messagePopup('tut-mkr-keylog', this.hvp.data.keylogs)
+        } else {
+          const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
+          this._messagePopup('tut-mkr-keylog', kl)
+        }
+      } else if (type === 'tut-mkr-start-keylog') { // start keyLogger
+        this.logStart = Date.now()
+        NNE.cm.on('change', this._boundKeyLogger)
+      } else if (type === 'tut-mkr-stop-keylog') { // stop keyLogger
+        this.logStart = null
+        NNE.cm.off('change', this._boundKeyLogger)
       } else if (type === 'tut-mkr-seek') { // scrubbed playhead
         this.hvp.seek(payload)
         const kl = this.hvp.data.keylogs.find(k => k.timecode === payload)
         if (kl) this._messagePopup('tut-mkr-keylog', kl)
         const kf = this.hvp.data.keyframes.find(k => k.timecode === payload)
         if (kf) this._messagePopup('tut-mkr-keyframe', kf)
-      } else if (type === 'tut-mkr-toggle') {
+      } else if (type === 'tut-mkr-toggle') { // toggle start/stop
         this.hvp.toggle()
+      } else if (type === 'tut-mkr-update-widget') { // update widget
+        this._updateWidget(payload.widget, payload.remove)
+      } else if (type === 'tut-mkr-update-widget-state') {
+        this._updateWidgetState(payload.widget)
+      } else if (type === 'tut-mkr-open-widget') {
+        this._openWidget(payload.widget, payload.open)
+      } else if (type === 'tut-mkr-get-widget') {
+        const wig = this.hvp.data.widgets[payload.key]
+        this._messagePopup('tut-mkr-edit-widget', wig)
+      } else if (type === 'tut-mkr-new-initjs') { // uploaded a new init.js file
+        this._newInit()
       } else if (type === 'tut-mkr-explain') { // clicked on (?) explainer button
         this._openConvo(payload)
       }
@@ -75,6 +109,7 @@ class TutorialMaker extends Widget {
       this.hvp = widget
       this.hvp.making = true
       this.hvp.data = data
+      this.hvp.data.id = data.metadata.id
       this.hvp._loadTutorial()
       this._setCustomRenderer()
       this.hvp.video.on('timeupdate', () => this._onVideoTimeUpdate())
@@ -126,16 +161,25 @@ class TutorialMaker extends Widget {
   }
 
   _updateFrame (type, data) {
-    const { timecode, name } = data
+    const { timecode, name, netitor } = data
     let frame = this.hvp.data[type].find(k => k.timecode === timecode)
     if (type === 'keyframes') {
-      if (!frame) { // create keyframe
+      if (data?.remove) { // delete keyframe
+        if (frame) {
+          this.hvp.data[type].splice(this.hvp.data[type].indexOf(frame), 1)
+          return { frame, remove: true }
+        } else {
+          const error = `Failed to remove keyframe. No keyframe found for: ${timecode} seconds`
+          console.error(error)
+          return { error }
+        }
+      } else if (!frame) { // create keyframe
         frame = {
           timecode,
-          name: `keyframe ${(this.hvp.data[type].length + 1).toString()}`,
+          name: name ?? '',
           video: this._getSizeAndPosition(this.hvp),
           widgets: this._getCurrentWidgets(),
-          netitor: this._getNetitorData(),
+          netitor: this._getNetitorData(netitor),
           netnet: this._getNetNetPos()
         }
         this.hvp.data[type].push(frame)
@@ -145,20 +189,114 @@ class TutorialMaker extends Widget {
         frame.name = name ?? ''
         frame.video = this._getSizeAndPosition(this.hvp)
         frame.widgets = this._getCurrentWidgets()
-        frame.netitor = this._getNetitorData()
+        frame.netitor = this._getNetitorData(netitor)
         frame.netnet = this._getNetNetPos()
       }
     } else if (type === 'keylogs') {
-      // TODO
+      if (data?.remove) { // delete keylog
+        const kl = this.hvp.data.keylogs.find(kl => kl.timecode === data.timecode)
+        const idx = this.hvp.data.keylogs.indexOf(kl)
+        this.hvp.data.keylogs.splice(idx, 1)
+        return { timecode, remove: true }
+      } else {
+        // console.log('update keylog', data);
+      }
     }
     return { frame }
+  }
+
+  _newInit () {
+    const name = this.hvp.data.metadata.id
+    const prev = nn.get(`script[src="TUTORIAL_MAKER/${name}/init.js"]`)
+    if (prev) {
+      window.TUTORIAL = null
+      prev.remove()
+    }
+    utils.loadFile(`TUTORIAL_MAKER/${name}/init.js`, (data) => {
+      if (typeof window.TUTORIAL.init === 'function') window.TUTORIAL.init()
+      if (window.TUTORIAL.callbacks) {
+        this.hvp.data.callbacks = []
+        Object.keys(window.TUTORIAL.callbacks).forEach(key => {
+          const ran = key < this.hvp.currentTime
+          this.hvp.data.callbacks.push({ timecode: key, ran })
+        })
+      }
+    })
+  }
+
+  _addKeyLog () {
+    if (this.hvp.src.includes('screen-saver')) {
+      const timecode = (Date.now() - this.logStart) / 1000
+      this.hvp.data.keylogs.push({ timecode, code: NNE.code })
+    } else {
+      const tc = this.hvp.currentTime
+      const kl = this.hvp.data.keylogs.find(kl => kl.timecode === tc)
+      const newKl = { timecode: tc, code: NNE.code }
+      if (kl) { // replace existing
+        const idx = this.hvp.data.keylogs.indexOf(kl)
+        this.hvp.data.keylogs[idx] = newKl
+      } else { // create new
+        this.hvp.data.keylogs.push(newKl)
+      }
+      this._messagePopup('tut-mkr-keylog', { add: true, frame: newKl })
+    }
+  }
+
+  _getData () {
+    const keyframes = this.hvp.data.keyframes
+    const keylogs = this.hvp.data.keylogs
+    const video = this.hvp.video.src
+    const widgets = this.hvp.data.widgets
+    return { keyframes, keylogs, widgets, video }
+  }
+
+  _openWidget (widget, open) {
+    const { key, title, innerHTML } = widget
+    if (WIDGETS[key] && open) WIDGETS[key].open()
+    else if (WIDGETS[key] && !open) WIDGETS[key].close()
+    else if (open) {
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS[key].open()
+    }
+  }
+
+  // update widget in HVP
+  _updateWidget (widget, remove) {
+    const { key, title, innerHTML, type } = widget
+    if (remove) { // remove widget
+      delete this.hvp.data.widgets[key]
+      WIDGETS.delete(key)
+    } else if (widget.oldKey) { // save over existent widget
+      this.hvp.data.widgets[widget.oldKey] = { key, title, innerHTML, type }
+    } else { // create new widget
+      this.hvp.data.widgets[key] = { key, title, innerHTML, type }
+    }
+  }
+
+  // updates widgets state in netnet (WIDGETS)
+  _updateWidgetState (widget) {
+    const { key, title, innerHTML } = widget
+    const k = widget.oldKey || key
+    if (widget.oldKey && widget.oldKey !== key && WIDGETS[k]) {
+      // remove old widget and open new widget if key changed
+      WIDGETS.delete(k)
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS[key].open()
+    } else if (WIDGETS[k]) {
+      WIDGETS[k].key = key
+      WIDGETS[k].title = title
+      WIDGETS[k].innerHTML = innerHTML
+    } else {
+      WIDGETS.create({ key, title, innerHTML })
+      WIDGETS[key].open()
+    }
   }
 
   // ............................ helpers ......................................
 
   _openPopup (type, payload) {
     const url = 'widgets/tutorial-maker/popups/index.html'
-    this.popup = window.open(url, 'example-widget', 'width=200,height=200')
+    this.popup = window.open(url, 'tut-mkr-widget', 'width=485,height=167')
     // keep an eye on the pop up to see if it closed
     this.popupWatcher = setInterval(() => {
       if (this.popup && this.popup.closed) {
@@ -175,6 +313,12 @@ class TutorialMaker extends Widget {
   }
 
   _openConvo (id) {
+    // NOTE: all <button> eles automatically try to call a convo
+    // see "msg('tut-mkr-explain', btn.getAttribute('name'))" in main.js
+    // so we want to avoid calling new Convo unless it actually exists
+    const exists = this.convos?.find(o => o.id === id)
+    if (!exists) return
+
     this.convos = window.CONVOS[this.key](this)
     window.convo = new Convo(this.convos, id)
   }
@@ -250,13 +394,18 @@ class TutorialMaker extends Widget {
       .map(w => this._getSizeAndPosition(w))
   }
 
-  _getNetitorData () {
+  _getNetitorData (data) {
     const s = NNE.cm.getScrollInfo()
-    return {
-      code: NNE.code,
-      scrollTo: { x: s.left, y: s.top },
-      spotlight: null, // TODO: need to send data from popup
-      layout: NNW.layout
+    if (data?.code) {
+      return {
+        code: NNE.code,
+        scrollTo: data.scrollTo ? { x: s.left, y: s.top } : null,
+        spotlight: data.spotlight ?? null,
+        autoType: data.autoType,
+        layout: NNW.layout
+      }
+    } else {
+      return { code: null, scrollTo: null, spotlight: null, layout: NNW.layout }
     }
   }
 

@@ -48,16 +48,15 @@ const recorder = {
     recorder.recorder.onstop = (e) => {
       window.stream.getTracks().forEach(t => t.stop())
       recorder.displayRecording()
-      // if (keylogger) WIDGETS['netitor-logger'].stopRecording()
+      if (keylogger) recorder.toggleKeyLogging(false) // defined in main.js
       recorder.filename = metadata.id
     }
     recorder.recorder.start()
-    // if (keylogger) WIDGETS['netitor-logger'].startRecording()
+    if (keylogger) recorder.toggleKeyLogging(true) // ddefined in main.js
   },
 
   stopRecording: () => {
     recorder.recorder.stop()
-    // recorder.download()
   },
 
   download: () => {
@@ -79,15 +78,9 @@ const recorder = {
   // -------------------------- [ view ] ---------------------------------------
 
   createRecorder: async (opts) => {
-    // TODO: add handling for keylogger
     nn.get('[name="vr-start-rec"]').addEventListener('click', () => recorder.changeState())
     nn.get('[name="vr-go-back"]').addEventListener('click', () => recorder.goBack())
     nn.get('[name="vr-edit-tut"]').addEventListener('click', () => recorder.editTutorial())
-    // nn.get('[name="dl-kl"]').addEventListener('click', () => {
-    //   recorder.download()
-    //   // const k = nn.get('[name="av-keylog-sync"]').checked
-    //   // if (k) WIDGETS['netitor-logger'].download()
-    // })
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia(recorder.rtcOpts)
@@ -143,8 +136,10 @@ const recorder = {
   },
 
   editTutorial: () => {
-    if (recorder.mimeType.split(';')[0].trim() === 'video/mp4') {
-      updateVideo(recorder.blob)
+    const mime = recorder.mimeType.split(';')[0].trim()
+    if (mime === 'video/mp4' || mime === 'video/webm') {
+      const blobURL = URL.createObjectURL(recorder.blob)
+      updateVideo(blobURL, true)
       nn.get('#video-recorder').style.display = 'none'
     } else {
       recorder.displayVFN()
@@ -155,10 +150,6 @@ const recorder = {
   goBack: () => {
     nn.get('#video-recorder').style.display = 'none'
     nn.get('#video-menu').style.display = 'block'
-  },
-
-  includeKeylogs: () => {
-    // TODO: add logic here
   },
 
   reset: () => {
@@ -178,7 +169,7 @@ const recorder = {
     nn.get('[name="vid-stream"]').style.display = 'none'
     const video = document.createElement('video')
     video.controls = true
-    const blob = new window.Blob(recorder.data, { type: 'video/webm' })
+    const blob = new window.Blob(recorder.data, { type: recorder.mimeType })
     recorder.blob = blob
     video.src = window.URL.createObjectURL(blob)
     nn.get('.recorded-videos').appendChild(video)
@@ -233,7 +224,7 @@ const recorder = {
   displayVFN: () => {
     const innerHTML = `
       <h2>Video Format Notice</h2>
-      <p>Looks like for compatibility reasons you recorded we recorded your video as a .webm. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4.</p>
+      <p>Looks like this video was recorded in a non-compatible format. In order to be able to continue editing your tutorial we require users to convert their tutorial videos to .mp4 (ideal) or .webm.</p>
       <a href="#" style="margin-bottom: 10px;">how to convert my video to .mp4?</a>
       <div class="buttons">
         <button name="vfn-download" class="pill-btn pill-btn--secondary">download tutorial</button>
@@ -243,7 +234,7 @@ const recorder = {
     `
     modal.openWithHTML(innerHTML)
     nn.get('[name="vfn-upload"]').addEventListener('click', () => recorder.onUploadVFN())
-    nn.get('[name="vfn-download"]').addEventListener('click', () => zipper.download(recorder.blob))
+    nn.get('[name="vfn-download"]').addEventListener('click', () => zipper.download({ video: recorder.blob }))
   },
 
   onUploadVFN: () => {

@@ -88,6 +88,11 @@ textarea[name="description"] {
   border: 3px solid #ff4545;
 }
 
+#metadata > input.locked {
+  color: var(--netizen-meta);
+  background-color: var(--netizen-hint-color);
+}
+
 .metadata-error-msg {
   margin: 0;
   color: #ff4545;

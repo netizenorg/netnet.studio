@@ -11,7 +11,14 @@
 <link rel="stylesheet" href="recorder.css">
 <link rel="stylesheet" href="timeline.css">
 
+<div id="modal" class="custom-modal" style="display: none;">
+  <div class="custom-modal-inner"></div>
+</div>
+
 <section id="start" class="overlay">
+  <p>
+    Welcome to the Tutorial Maker! This widget can be used to create your own interactive netnet tutorials. To learn how take a look at the <a href="${window.location.origin}/docs/contributors/interactive-tutorials.html" target="_blank">Interactive Tutorial docs</a>.
+  </p>
   <button id="new" class="pill-btn pill-btn--secondary">new</button>
   <button id="open" class="pill-btn pil-btn--secondary">open</button>
 </section>
@@ -92,7 +99,7 @@
           <div class="tooltip-content closed">
             <p>Keylogs capture every keystroke made while the video is being recorded.</p>
           </div>
-          <div class="pill-btn pill-btn--secondary">?</div>
+          <div class="pill-btn pill-btn--secondary tool-tip" data-tip="Check this box if you'd like all your key strokes (code typed into the netitor) recorded while recording your video">?</div>
         </div>
 
         <!-- TODO: flip camera logic  -->
@@ -121,13 +128,84 @@
   </div>
 </section>
 
+<!-- style="display: none;" -->
+<section id="upload" class="overlay" style="display: none;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+    <div name="upload-goback" class="pill-btn pill-btn--secondary">go back</div>
+    <button class="pill-btn pill-btn--secondary tool-tip" style="padding-bottom: 3px;" data-tip="Any uploaded assets will be listed below. Click folders to expand, click the X next to a file name to delete it. To upload new assets (or folders with assets) use the 'Upload New Assets' area below that.">?</button>
+  </div>
+  <div class="uploaded-assets"></div>
+  <p style="margin: 10px 0px;">Upload New Assets</p>
+  <div class="file-drop-cont">
+    <file-drop accept=".png, .jpg, .gif, .svg, .mp4, .webm" maxFiles="50" maxSize="1GB" disableFileList="true" allowNames="init.js" allowFolder></file-drop>
+  </div>
+</section>
+
+
+<section id="widget-maker" class="overlay" style="display: none;">
+  <div>
+    <div class="widget-maker-inputs">
+      <div>
+        <p>key:</p>
+        <div id="widget-key-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="type widget key..." kf-edit-tool></div>
+      </div>
+      <div>
+        <p>title:</p>
+        <div id="widget-title-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="type widget title..." kf-edit-tool></div>
+      </div>
+    </div>
+    <div id="widget-maker-html"></div>
+    <div class="widget-maker-bottom">
+      <div name="widget-maker-goback" class="pill-btn pill-btn--secondary">go back</div>
+      <div name="widget-maker-path" class="pill-btn pill-btn--secondary">copy project path</div>
+      <div name="widget-maker-update" class="pill-btn pill-btn--secondary">create</div>
+    </div>
+  </div>
+</section>
+
 
 <nav>
-  <button id="open-metadata" class="pill-btn pill-btn--secondary">settings</button>
-  <button id="create-keyframe" class="pill-btn pill-btn--secondary">create keyframe</button>
-  <button id="update-keyframe" class="pill-btn pill-btn--secondary">update keyframe</button>
-  <button name="nav-infos" class="pill-btn pill-btn--secondary">?</button>
-  <button id="download-tutorial" class="pill-btn pill-btn--secondary">download</button>
+  <div>
+    <div class="keyframe-tools">
+      <div style="position: relative;">
+        <button id="create-marker" class="pill-btn pill-btn--secondary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 8.13908L1.72182 8.13908" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+            <path d="M7.8609 14.2782L7.8609 1.99999" stroke="#C3C3DA" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="create-options" style="display: none;">
+          <div id="create-keyframe" class="pill-btn pill-btn--secondary icon-btn">
+            <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.4393" y="5.97487" width="5.74266" height="5.74266" transform="rotate(-45 1.4393 5.97487)" stroke="#C56DBB" stroke-width="2"/>
+            </svg>
+            <p>new keyframe</p>
+          </div>
+          <div id="create-keylog" class="pill-btn pill-btn--secondary icon-btn">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.41421" y="5.47488" width="5.74266" height="5.74266" transform="rotate(-45 1.41421 5.47488)" stroke="#7DCA95" stroke-width="2"/>
+            </svg>
+            <p>start keylogging</p>
+          </div>
+        </div>
+      </div>
+      <div id="kf-name-input" class="tut-mkr-input-dark" contentEditable="true" data-placeholder="keyframe name" kf-edit-tool></div>
+      <button id="update-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>update</button>
+      <button id="delete-keyframe" class="pill-btn pill-btn--secondary" kf-edit-tool>delete</button>
+      <!-- <button name="nav-infos" class="pill-btn pill-btn--secondary" kf-edit-tool>?</button> -->
+    </div>
+    <div id="keylog-tools">
+      <span>keylog</span>
+      <button id="recording-keylog" class="pill-btn pill-btn--secondary"><span>⦿</span> stop recording</button>
+      <button id="delete-keylog" class="pill-btn pill-btn--secondary">delete</button>
+      <div id="keylog-rec-tip" class="pill-btn pill-btn--secondary tool-tip" data-tip="While recording is enabled, play the video and type code into the editor, anything you type will be keylogged with the video's timecode">?</div>
+    </div>
+    <div class="tutorial-tools">
+      <button id="open-metadata" class="pill-btn pill-btn--secondary">settings</button>
+      <button name="upload-assets" class="pill-btn pill-btn--secondary">assets</button>
+      <button id="download-tutorial" class="pill-btn pill-btn--secondary">download</button>
+    </div>
+  </div>
 </nav>
 
 <div class="labels">
@@ -138,7 +216,7 @@
 <div id="playhead-marker"></div>
 <svg id="timeline" viewBox="0 0 100 100" preserveAspectRatio="none"  xmlns="http://www.w3.org/2000/svg">
   <line x1="0" y1="30" x2="100" y2="30" stroke="var(--netizen-tag)" stroke-width="2" vector-effect="non-scaling-stroke"/>
-  <line x1="0" y1="70" x2="100" y2="70" stroke="var(--netizen-attribute)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+  <line x1="0" y1="60" x2="100" y2="60" stroke="var(--netizen-attribute)" stroke-width="2" vector-effect="non-scaling-stroke"/>
 
   <line id="playhead" x1="0" y1="0" x2="0" y2="100" stroke="var(--netizen-meta)" stroke-width="2" vector-effect="non-scaling-stroke" marker-start="url(#tri-down)"/>
 
@@ -152,7 +230,52 @@
   </defs>
 </svg>
 
+<footer>
+
+  <!-- netitor code edit menu -->
+  <div id="netitor-dd" class="dd-edit dd-styles" kf-edit-tool>
+    <div class="dd-title">
+      <p>netitor</p>
+      <svg width="18" height="9" viewBox="0 0 21 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div id="netitor-options" class="dd-edit-menu dd-styles" style="display: none;">
+      <div>
+        <input type="checkbox" name="include-netitor" value=""> include current netitor code
+      </div>
+      <div class="netitor-set">
+        <input id="netitor-spotlight" class="tut-mkr-input-dark" placeholder="lines to focus" type="text">
+      </div>
+      <div class="netitor-set">
+        <input type="checkbox" name="include-scroll" value=""> include scroll position
+      </div>
+      <div class="netitor-set">
+        <input type="checkbox" name="auto-type" value=""> auto-type code changes
+      </div>
+    </div>
+  </div>
+
+  <!-- widget options menu -->
+  <div id="widget-dd" class="dd-edit dd-styles" kf-edit-tool>
+    <div class="dd-title">
+      <p>widgets</p>
+      <svg width="18" height="9" viewBox="0 0 21 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 1.5L10.5 10.5L19.5 1.5" stroke="#C3C3DB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div id="widget-options" class="dd-edit-menu-flip dd-styles" style="display: none;">
+        <button name="widget-create" class="pill-btn pill-btn--secondary">create new widget</button>
+      </div>
+    </div>
+  </div>
+
+  <div kf-edit-tool>
+    <b>timecode:</b> <pre id="kf-timecode"></pre>
+  </div>
+</footer>
+
 <script src="/nn.min.js"></script>
+<script src="/netitor.min.js"></script>
 <script src="/custom-elements/misc/reorderable-list/index.js"></script>
 <script src="/custom-elements/misc/file-drop/index.js"></script>
 <script src="jszip.min.js"></script>
