@@ -1,4 +1,4 @@
-/* global Widget, Convo, WIDGETS, NNW, nn, utils */
+/* global Widget, Convo, WIDGETS, nn, utils */
 class GitPush extends Widget {
   constructor (opts) {
     super(opts)

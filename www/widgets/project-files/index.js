@@ -1,4 +1,4 @@
-/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn, JSZip */
+/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn */
 /*
 
 this widget is used to store project files in local storage, it works in tandem
@@ -442,7 +442,7 @@ class ProjectFiles extends Widget {
 
       // load data for all the files
       utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-        if (!res.success) {
+        if (res.success === 'false') {
           nn.get('load-curtain').hide()
           return this._ohNoErr(res)
         }
@@ -1586,7 +1586,6 @@ class ProjectFiles extends Widget {
       window.convo = new Convo(this.convos, 'duplicate-file')
       this._uploadedFile = {}
     } else {
-      console.log('showing curtain...');
       nn.get('load-curtain').show('upload.html', { filename: file.name })
       const isTextType = this._isTxt(file.name, type)
       const reader = new window.FileReader()
@@ -1601,9 +1600,16 @@ class ProjectFiles extends Widget {
         const filepath = path ? `${path}/${file.name}` : file.name
         await this._updateFile(filepath, data)
         this._updateFilesGUI()
-        console.log('hiding curtain...');
         setTimeout(() => nn.get('load-curtain').hide(), 200)
         this._uploadedFile = {}
+      }
+      reader.onerror = (err) => {
+        utils._Convo('oh-no-error', err)
+        setTimeout(() => nn.get('load-curtain').hide(), 200)
+      }
+      reader.onabort = () => {
+        console.log('ProjectFiles: read file aborted')
+        setTimeout(() => nn.get('load-curtain').hide(), 200)
       }
       if (isTextType) reader.readAsText(file)
       else reader.readAsDataURL(file)
