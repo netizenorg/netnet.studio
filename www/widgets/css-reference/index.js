@@ -6,7 +6,7 @@ class CssReference extends Widget {
     this.listed = true
     this.keywords = ['css', 'properties', 'reference']
     this.resizable = false
-    this.title = 'CSS Reference'
+    this.title = 'CSS Reference Docs'
 
     this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 

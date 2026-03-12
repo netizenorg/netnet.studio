@@ -7,7 +7,7 @@ class JsReference extends Widget {
     this.keywords = ['js', 'javascript', 'reference'] // TODO add cheatsheets when finsihed
     this.resizable = false
 
-    this.title = 'JavaScript Reference'
+    this.title = 'JavaScript Reference Docs'
 
     // this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 
