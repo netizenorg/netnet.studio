@@ -169,6 +169,7 @@ class StudentSession extends Widget {
       window.localStorage.setItem('gh-auth-temp-code', '__TEMP__' + utils.url.template)
     } else window.localStorage.setItem('gh-auth-temp-code', code)
     utils.get('api/github/client-id', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const id = `client_id=${json.message}`
       const scope = 'scope=public_repo'
       const url = `https://github.com/login/oauth/authorize?${id}&${scope}`

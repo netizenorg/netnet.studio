@@ -129,12 +129,20 @@ window.CONVOS['git-push'] = (self) => {
     after: () => errorFace(),
     content: 'Oh dang! seems there was a server error... sorry about that...',
     options: {
-      'it\'s ok, errors are a part of the process': (e) => e.hide(),
+      'it\'s ok, errors are a part of the process': (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      },
       'what was the error?': (e) => e.goTo('explain-error')
     }
   }, {
     id: 'explain-error',
     content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">report the issue</a> to let us know what you found!`,
-    options: { ok: (e) => e.hide() }
+    options: {
+      ok: (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      }
+    }
   }]
 }

@@ -232,6 +232,7 @@ class NetNetFaceMenu {
     this._faceAssets = { null: '' }
     let ready = false
     utils.get('api/face-assets', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       json.forEach(svg => {
         const name = svg.split('.')[0]
         let key = name === 'mouth-dot' ? '.' : name

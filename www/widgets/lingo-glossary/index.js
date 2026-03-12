@@ -14,6 +14,7 @@ class LingoGlossary extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     utils.get('/widgets/lingo-glossary/data.json', (data) => {
+      if (data.success === false) return utils._Convo('oh-no-error', data)
       this.dict = Object.fromEntries(
         Object.entries(data).sort(([a], [b]) => a.localeCompare(b))
       )
@@ -134,8 +135,6 @@ class LingoGlossary extends Widget {
     if (wig === 'demo-sketches') txt = 'open demo in new tab'
     else if (wig.includes('-reference')) txt = `open ${lan} docs`
     else if (wig === 'open') txt = 'open widget'
-
-    console.log(wig);
 
     nn.create('span')
       .set('class', 'pill-btn pill-btn--secondary')

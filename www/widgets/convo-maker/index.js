@@ -30,6 +30,7 @@ class ConvoMaker extends Widget {
       if (e.origin !== window.location.origin) return // for security
       if (e.data.type === 'cnvmkr-opened') {
         utils.get('/api/convos', (res) => {
+          if (res.success === false) return utils._Convo('oh-no-error', res)
           this.widgets = res.map(w => w.key)
           this._msgCnvMkr('widgets-list', res)
         })

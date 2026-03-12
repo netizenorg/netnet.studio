@@ -15,6 +15,7 @@ class DemoSketches extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     utils.get('api/demos', (res) => {
+      if (res.success === false) return utils._Convo('oh-no-error', res)
       this.demos = res.data
       Object.entries(this.demos).forEach(a => this._createDemoItem(a))
     })
@@ -266,6 +267,7 @@ class DemoSketches extends Widget {
         this._resizePreview()
         this._updateEditor('#code/eJzT09PLyU9MycxL19PTAwAbtAPz') // loading text
         utils.get(`api/demo/${o.key}`, (demo) => {
+          if (demo.success === false) return utils._Convo('oh-no-error', demo)
           this.editor.code = NNE._decode(demo.code.substr(6))
         })
       }, 500)

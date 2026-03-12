@@ -1,4 +1,4 @@
-/* global utils, WIDGETS, NNW */
+/* global utils, WIDGETS, NNW, nn */
 window.CONVOS['utils-misc'] = (self) => {
   // TODO: consider moving these all into Widget convos
   // Maybe mostly to new Project Files (&& others, ex: Coding Menu, StudentSession)
@@ -18,6 +18,14 @@ window.CONVOS['utils-misc'] = (self) => {
     const o = WIDGETS['student-session'].getData('owner')
     return { u, o }
   })()
+
+  const f12 = nn.platformInfo().platform.includes('Mac') ? 'Fn + F12' : 'F12'
+  const safari = nn.platformInfo().name === 'Safari'
+  const errorFace = () => {
+    NNW.menu.updateFace({
+      leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false
+    })
+  }
 
   return [{
     id: 'remix-github-project-logged-out',
@@ -86,6 +94,26 @@ window.CONVOS['utils-misc'] = (self) => {
     content: 'You can access all the code related actions in the <b>Coding Menu</b> which you can open by clicking on my face. There you\'ll be able to save, open and create new sketchs or projects.',
     options: {
       'cool!': (e) => e.hide()
+    }
+  }, {
+    id: 'oh-no-error',
+    after: () => errorFace(),
+    content: 'Oh dang! seems there was a server error... sorry about that...',
+    options: {
+      'it\'s ok, errors are a part of the process': (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      },
+      'what was the error?': (e) => e.goTo('explain-error')
+    }
+  }, {
+    id: 'explain-error',
+    content: `The details are beyond my awareness, but if you're feeling curious you can investigate the issue yourself by pressing <code>${f12}</code> to open your browser developer tools ${safari ? '(You\'re using Safari, so you may need to enable you developer tools first)' : ''} and check the "Console". Then <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">report the issue</a> to let us know what you found!`,
+    options: {
+      ok: (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      }
     }
   }]
 }

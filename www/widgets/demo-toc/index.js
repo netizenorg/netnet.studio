@@ -43,7 +43,10 @@ class DemoToc extends Widget {
     const isNum = (typeof code === 'number' || (typeof num === 'number' && !isNaN(num)))
 
     if (isNum) {
-      utils.get(`./api/demo/${num}`, json => this._load(json, type))
+      utils.get(`./api/demo/${num}`, json => {
+        if (json.success === false) return utils._Convo('oh-no-error', json)
+        this._load(json, type)
+      })
     } else if (typeof code === 'object' && typeof code.code === 'string') {
       this._load(code, type)
     }
