@@ -329,8 +329,10 @@ class CodingMenu extends Widget {
     if (typeof val === 'boolean') {
       this.motionSelect.value = val
     }
+
+    const prevMotion = this.sesh.getData('nomotion');
     this.sesh.setData('nomotion', this.motionSelect.value)
-    if (this.motionSelect.value === 'true') {
+    if (this.motionSelect.value === 'true' && prevMotion !== 'true') {
       window.convo = new Convo(this.convos, 'low-motion')
     }
     this.emit('motion-change', { data: this.motionSelect.value })

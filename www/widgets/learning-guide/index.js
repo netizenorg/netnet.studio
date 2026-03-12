@@ -65,6 +65,11 @@ class LearningGuide extends Widget {
       const src = this.ele.querySelector('iframe').src
       this.ele.querySelector('iframe').src = src
     })
+
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (nomotion) {
+      this.ele.classList.add('no-motion')
+    }
   }
 
   loadTemplate (name) {
@@ -137,10 +142,6 @@ class LearningGuide extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
     this.slide.addEventListener('scroll', () => this._applyVisibility())
-
-    // this.ele.style.padding = '8px 5px 10px'
-    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.widget__inner-html').style.padding = '0 0 10px 0'
 
     this.slide.updateSlide(this.mainOpts)
 
