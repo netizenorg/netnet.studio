@@ -135,7 +135,6 @@ class HyperVideoPlayer extends Widget {
     if (this.data?.metadata.videoFormat) {
       const ext = this.data.metadata.videoFormat
       if (!name) name = this.data.metadata.id
-      console.log(path, name, ext);
       this.video.setAttribute('src', `${path}/${name}.${ext}`)
     } else if (this.data && path && name) {
       this.video.setAttribute('src', `${path}/${name}.mp4`)

@@ -681,6 +681,12 @@ div > a:not(.pill-btn):not(.highlight):hover,
   opacity: 1;
 }
 
+.docs__viewer-inner .warning {
+  border: 4px solid var(--netizen-hint-color);
+  padding: var(--doc-padding);
+  border-radius: 25px;
+}
+
 /*
  * docs viewer mobile
  */

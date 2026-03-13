@@ -7,6 +7,12 @@ Contributing to open source can feel intimidating, even for experienced develope
 - **If this is your first time contributing to an open source project** you'll need to start by [creating a GitHub account](https://github.com/signup), if you've already got one make sure you're [logged in](https://github.com/login) before staring section 1 below.
 - **If you're a seasoned open source contributor** and want to dive right in check out our [contributor workflow doc](contributor-workflow.md) and then review our [core functionality](core-functionality.md) docs for a general orientation of the project architecture.
 
+<div class="warning">
+⚠️ <b>UNDER CONSTRUCTION</b> ⚠️
+<br>
+these docs are still in progress, if you can't find what you're looking for, or something seems out of date, please <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> (or feel free to fix it yourself! See "The Docs" section below)
+</div>
+
 ### 0. [Bug Reports](bug-report.md)
 
 If you came across a bug or some sort of issue you think we should know about please tell us about it! We just ask that you file an issue following the format explained at the link above.
@@ -23,7 +29,7 @@ Central to netnet's "hypermedia" navigation system are the conversation passages
 
 Anyone can create and share "sketches" (single file web sites) in netnet by writing some code in netnet's editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become "demos", with annotations explaining how different parts of the code works, and added to netnet's "Code Demos" widget.
 
-### 4. Interactive Tutorials
+### 4. [Interactive Tutorials](tutorial-maker.md)
 
 One of netnet.studio's most dynamic educational components are the interactive tutorials, like this one made by Nick Briz for example. You can create your own interactive tutorials using our "Tutorial Maker" widget.
 

@@ -749,6 +749,8 @@ nn.getAll('.tool-tip[data-tip]').forEach((btn) => {
 // .................... window events
 
 nn.on('load', () => {
+  nn.get('#docs-link').set('href', `${window.location.origin}/docs/contributors/tutorial-maker.html`)
+
   timeline.onScrub = (x) => {
     const time = (x / 100) * metadata.duration
     msg('tut-mkr-seek', time)

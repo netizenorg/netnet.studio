@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list" role="navigation"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  bug report
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  code demos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
+                  tutorial maker
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>Creating Interactive Tutorials</h1>
+<div class="warning">
+⚠️ <b>UNDER CONSTRUCTION</b> ⚠️
+<br>
+these docs are still in progress, if you can't find what you're looking for, or something seems out of date, please <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a>
+</div>
+
+<p>One of netnet.studio&#39;s most dynamic educational components are the interactive tutorials. You can create your own interactive tutorials using our &quot;Tutorial Maker&quot; widget which can be found by using netnet&#39;s <img src="/images/menu/search.png" alt="search" style="width:12px;"> search. Like other <em>meta widgets</em> (widgets used to create stuff in netnet, like the Convo Maker and the Demo Maker for example), the Tutorial Maker will open in a separate pop-up window (so make sure you&#39;ve got pop-ups approved in your browser tab&#39;s permissions).</p>
+<h2>metadata</h2>
+<p>When the Tutorial Maker first opens you&#39;ll be given the option to either create a <b>new</b> tutorial or <b>open</b> a previously saved tutorial. When creating a new tutorial you&#39;ll be asked to fill in the following:</p>
+<ul>
+<li><strong>Tutorial ID</strong>: (required) this id is used behind the scene in a number of places, it should be one word (meaning no spaces) all lower case.</li>
+<li><strong>Title</strong>: (required) this is the actual public facing title of the tutorial</li>
+<li><strong>Subtitle</strong>: (optional) any sort of sub-title you may also want listed along side the tutorial&#39;s name</li>
+<li><strong>Author&#39;s Name</strong>: (optional) this is your name, when students launch a tutorial netnet will usually credit the author of that tutorial using the value placed in this field</li>
+<li><strong>Author&#39;s Website URL</strong>: (optional) a link to your personal website for further attribution</li>
+<li><strong>Description</strong>: (optional) this is metatdat displayed in the Learning Guide as well as spoken by netnet when the student asks it what the tutorial is about.</li>
+<li><strong>Keywords</strong>: (optional) if the student uses netnet&#39;s search field, these keywords are used to ensure the tutorial shows up in the results if student searches any of those terms</li>
+</ul>
+<h2>video</h2>
+<p>Once you&#39;ve filled out the metadata, you&#39;ll be taken to a screen where you&#39;ll be given the option to either record a video or upload a video file (either as an <code>.mp4</code> or <code>.webm</code> file). You can think of this video as the tutorial&#39;s backbone or timeline, later you&#39;ll create widgets and keyframes that appear at various points in the timeline of this video.</p>
+<p>If you choose to record a video, rather than uploading one you previously created, you&#39;ll also be given the option to &quot;include keylogs&quot;, what this means is that anything you type into netnet&#39;s editor as you&#39;re recording the video generates &quot;keylog&quot; objects which will be included in the timeline (presented in the next step) of the video. If you plan to create an un-edited tutorial, where you code and explain things in realtime, this is a great option.</p>
+<h2>keyframes</h2>
+<p><img src="../images/tutorial-maker-timeline.png" alt="tutorial-maker-timline" /></p>
+<p>✏️ TODO: explain keframes</p>
+<p>✏️ TODO: explain keylogs</p>
+<p>✏️ TODO: explain assets</p>
+<p>✏️ TODO: make a note about asset paths: <code>TUTORIAL_MAKER/[tutorial-id]/</code></p>
+<p>✏️ TODO: explain download</p>
+<h2>tutorial .zip structure</h2>
+<p>Tutorials are saved as <strong>.zip</strong> files. Like any other zip file, these can be unpacked, the files inside can then be edited and re-zipped (compressed) before loading it in the Tutorial Maker. While this is not advised (it&#39;s best to use the Tutorial Maker widget to edit tutorials as described above), there may come a time where some manuel file editing is necessary. Below you&#39;ll find important information to keep in mind when performing maneul edits.</p>
+<p>Inside the unzipped tutorial folder you&#39;ll find the metadata file <code>tutorial.json</code> as well as the tutorial&#39;s main video file, which will be either a <code>.mp4</code> or <code>.webm</code> file named after the tutorial&#39;s <strong>ID</strong>  (same as the folder) as well as the tutorial&#39;s thumbnail, also named after the project&#39;s <strong>ID</strong>. You may also have an <code>init.js</code> file (explained further below) as well as any other files/folders you uploaded as assets.</p>
+<pre><code>📁 tutorial-ID
+|_ tutorial.json
+|_ tutorial-ID.webm (or .mp4)
+|_ tutorial-ID.jpg
+|_ init.js (optional)
+|_ (other folders/files optional)</code></pre>
+<p>The <code>tutorial.json</code> file is the project&#39;s main metadata file, the top-level object in the JSON file looks as follows:</p>
+<pre><code class="javascript">{
+  metadata: {}, // project's metadata
+  widgets: {}, // any custom widgets
+  keyframes: [], // array of keyframe objects
+  keylogs: [], // array of keylog objects
+}</code></pre>
+<p>The <code>metadata</code> property is an object contaning the following:</p>
+<pre><code class="javascript">{
+  id: "what-is-code", // this is the project's ID, it should never change
+  title: "What Is Code?", // title of the tutorial
+  subtitle: '', // optional sub-title
+  duration: 1081.274833, // in seconds
+  author: "Nick Briz",
+  authorURL: "https://nickbriz.com",
+  jsfile: true, // if this tutorial contains a init.js (see below)
+  description: "Whether or not you've ever written code, this tutorial is a good place to start. In addition to orienting you to the studio (this website), in this lesson we'll cover what code is from both a technical perspective but also a conceptual one. Like all human languages, coding languages are multipurpose. In the same way that the English language can be used to write history, laws, love letters or poems, coding languages can be used to express more than just software. Here we'll introduce the particular creative and experimental vector view that we'll be approaching code from throughout these tutorials.",
+  keywords: [
+    "code",
+    "intro",
+    "netnet",
+    "coding",
+    "computers",
+    "programming"
+  ],
+  thumbnails: [
+    "images/analyticalengine.jpg",
+    "images/punch-card-machine.jpg"
+  ],
+  "videoFormat": "webm"
+}</code></pre>
+<p>While most fields, like <code>author</code>, <code>authorURL</code>, <code>description</code>, <code>keywords</code>, and <code>thumbnails</code> can all be manually edited, there a few we need to be careful with. For example, the project&#39;s <strong>id</strong>, because this gets referrenced in multiple places and mis-matched id names will create bugs. If you do need to change it for some reason, you&#39;ll also need to change every other instance of it, ex: the zip/folder&#39;s name, the video file&#39;s name and the thumbnail file&#39;s name.</p>
+<p>Another example is the duration property. This should always match the length of the tutorial&#39;s main video file (in seconds) and should only ever be manually edited in the event that a new video file (of a different duration) was manually added to this folder. In that instance you should also make sure the video file is either an <code>.mp4</code> or <code>.webm</code> (which should also be noted in the <code>videoFormat</code> property) and that its name matches the value of the <strong>id</strong>  field.</p>
+<p>The <code>jsfile</code> property should only be set to <code>true</code> if the project contains an <code>init.js</code> file (more on that below)</p>
+<p>Returning back to the top-level object, the <code>widgets</code> object contains references to all the widgets created using the tutorial maker, a widget. If need be, <code>title</code> and <code>innerHTML</code> are safe to edit manually, but changing the <code>key</code> would also require changing any references to it in any given keyframe object.</p>
+<pre><code class="javascript">// widgets object
+{
+  "metamedia-commons": { // widget id name
+    "key": "metamedia-commons", // key must match widget id
+    "title": "The WWWeb", // to be displayed in widget's title bar
+    "innerHTML": "&lt;h1&gt;\n  Metamedia Commons\n&lt;/h1&gt;", // widget's content
+    "type": "Widget"
+  },
+  // other widgets listed here...
+}</code></pre>
+<p>The <code>keyframes</code> propperty contains an array of keyframe objects. Tthe keyframe&#39;s properties are safe to change manually if necessary. which look like this:</p>
+<pre><code class="javascript">// a keyframe object (inside the top-level "keyframes" array)
+{
+  // the timecode in seconds for this keyframe
+  timecode: 322.218371,
+  // optional keyframe name
+  name: "",
+  // object containing the HyperVideoPlayer size/position
+  video: {
+    width: 521,
+    height: 447,
+    left: 119,
+    bottom: 54,
+    zIndex: 118
+  },
+  // array of widgets in this keyframe &amp;&amp; their size/position
+  widgets: [
+    {
+      key: "binary",
+      width: 200,
+      height: 245,
+      right: 191,
+      top: 48,
+      zIndex: 122
+    },
+    {
+      key: "gates1",
+      width: 662,
+      height: 389,
+      left: 50,
+      top: 39,
+      zIndex: 124
+    }
+  ],
+  // netitor state for this keyframe (code, scroll position, spotlight values and layout)
+  netitor: {
+    code: "&lt;style&gt;\n  body::after {\n    content: \"\";\n    position: fixed;\n    left: 15px;\n    top: 15px;\n    width: 50vw;\n    height: 50vw;\n    background-color: white;\n    border-color: black;\n    border-style: solid;\n    border-width: 10px;\n    border-radius: 50%;\n  }\n&lt;/style&gt;",
+    scrollTo: { x: 0, y: 100 },
+    spotlight: ['12', '24-28'],
+    autoType: false,
+    layout: "separate-window"
+  },
+  // the netnet windows size/posiition (when it's in 'welcome' or 'separate-window' layout)
+  netnet: {
+    right: 43,
+    top: 158,
+    width: 721,
+    height: 445
+  }
+}</code></pre>
+<p>The <code>keylogs</code> propperty contains an array of keylog objects. This ones much simpler, int just contains the <code>timecode</code> for when this code apperas, and the <code>code</code> which should get injected into the editor at that time.</p>
+<pre><code class="javascript">{
+  timecode: 392.314305,
+  code: "&lt;center&gt;\n  &lt;img src=\"circle.png\" alt=\"an image of a circle\"&gt;\n  &lt;p&gt;This is a Circle&lt;/p&gt;\n&lt;/center&gt;"
+}</code></pre>
+<h3>init.js</h3>
+<p>The <code>init.js</code> file is an optional file you can include in your project in order to run arbitrary code in the netnet.studio enironment during a tutorial. This code runs in the global scope and can interact with any of netnet&#39;s features. To include one create a file called <code>init.js</code> in your preferred code editor and drag+drop it into the assets manager. The file should look like this:</p>
+<pre><code class="javascript">window.TUTORIAL = {
+  init: () =&gt; {
+    // method which gets called soon as the tutorial loads
+  },
+  callbacks: {
+    463.020014: () =&gt; {
+      // functions which get called at specific time codes (like keyframes)
+    }
+  }
+}</code></pre>
+<p>The <code>init</code> function runs as soon as the tutorial loads and the <code>callbacks</code> object contains a dictionary of timecodes with an arbitrary function to execute at that time in the tutorial. Both <code>init</code> and <code>callbacks</code> are optional, so you don&#39;t need to include both if you only need to make use of one or the other.</p>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>
