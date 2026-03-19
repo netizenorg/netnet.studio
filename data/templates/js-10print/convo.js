@@ -12,6 +12,7 @@ window.CONVOS['template-js-10print'] = (self) => {
         </div>`
     })
   }
+
   return [
     {
       id: 'intro-10print',
@@ -68,6 +69,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'inline-js',
+      before: () => tenPrintGif.close(),
       content: 'One way to add JavaScript is inline with HTML, similar to how the <code>style</code> attribute adds CSS. For example, the <code>onclick</code> attribute can run JavaScript when an element is clicked (try clicking the rendered maze).',
       options: {
         'go on': (e) => e.goTo('external-js'),
@@ -100,6 +102,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'numbers',
+      before: () => tenPrintGif.close(),
       content: '<b>Numbers</b> can be integers (whole numbers) or floats (decimals). For example, we might store <code>9000</code> in a variable named <code>a</code> and <code>3.14</code> in a variable named <code>b</code>.',
       options: {
         'go on': (e) => e.goTo('arithmetic'),
@@ -156,6 +159,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'booleans',
+      before: () => tenPrintGif.close(),
       content: 'Now lets talk about <b>booleans</b>, these represent truth values: <code>true</code> or <code>false</code>. Notice how I named this one <i>loggedIn</i>. Variable names are often short but they don\'t have to be a single letter. Sometimes it\'s helpful to give them more descriptive names.',
       options: {
         'go on': (e) => e.goTo('naming'),
@@ -180,6 +184,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'strings',
+      before: () => tenPrintGif.close(),
       content: 'The third basic data type are <b>strings</b>, this is how we store text characters. That can be as short as a single letter or as long as an entire novel. To create a string we need to surround the text in matching quotes.',
       options: {
         'go on': (e) => e.goTo('string-quotes'),
@@ -228,6 +233,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'calling-functions',
+      before: () => tenPrintGif.close(),
       content: 'Running a function is also called a <i>function call</i>. When we <i>call</i> a function we can somtimes pass data into them by writing it between the parenthesis, these are called <b>arguments</b>. Here I\'ve passed our variable <code>message</code> into the <b>alert</b> function as an argument.',
       options: {
         'go on': (e) => e.goTo('pass-args'),
@@ -236,6 +242,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'pass-args',
+      before: () => tenPrintGif.close(),
       content: 'We often pass variables as arguments, but we could also pass data directly, for example: <code>alert(\'Hi!\')</code>. Whether you store a value in a variable first or pass it directly depends on clarity and whether you need to reuse that variable or not.',
       options: {
         'go on': (e) => e.goTo('objects-intro'),
@@ -244,6 +251,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'objects-intro',
+      before: () => tenPrintGif.close(),
       content: 'Some variables group many values and functions together, these are called <b>objects</b>. Think of an object like a multi-tool we can pull all sorts of data and other functions out of.',
       options: {
         'go on': (e) => e.goTo('math-object'),
@@ -316,6 +324,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'randomness',
+      before: () => tenPrintGif.close(),
       content: 'One of the most important tools for turning a static site into something more dynamic is "randomness", remember that book I mentioned earlier about the 10PRINT algorithm? There\'s an entire chapter devoted to <a href="https://generativeart.online/files/randomness-10print.pdf" target="_blank">randomness</a>, not just how it\'s used in this particular algorithm but how it\'s used by artists and engineers alike in creative ways.',
       options: {
         'go on': (e) => e.goTo('math-random'),
@@ -348,6 +357,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'conditionals',
+      before: () => tenPrintGif.close(),
       content: 'We can wrap our "coin flip" code in parenthesis with a special keyword before it <code>if</code>, followed by <code>{</code> curly braces <code>}</code> or a "code block". The code inside the block will only run <i>if</i> the boolean expression between the parenthesis is true, which is why we call this pattern a <b>conditional statements</b>.',
       options: {
         'go on': (e) => e.goTo('conditional-else'),
@@ -380,6 +390,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'while-loop',
+      before: () => tenPrintGif.close(),
       content: ' We can create loops a few different ways, the first version we\'ll explore is called a <b>while</b> loop. The syntax looks like an <code>if</code> block, but the code inside keeps running as long as its condition is <i>true</i>. That means the code in the <code>{</code> block <code>}</code> can execute many times until the condition flips to <i>false</i>.',
       options: {
         'go on': (e) => e.goTo('loop-counter'),
@@ -436,6 +447,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'for-loop',
+      before: () => tenPrintGif.close(),
       content: 'We can actually express these same instructions in even fewer lines of code. This pattern of defining a variable, checking to see if it\'s less than some threshold value, and then incrementing it by some amount (usually 1) is so common that we can actually write those three statements on a single line using a <b>for</b> loop.',
       options: {
         'go on': (e) => e.goTo('for-loop2'),
@@ -468,6 +480,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'define-function-var',
+      before: () => tenPrintGif.close(),
       content: 'There\'s more than one way to define a function. One way is to create a variable the same way we would any other variable, except rather than assigning a simple number or string, we place an entire function declaration on the other side of the equal sign. This includes the special keyword <code>function</code> followed by parentheses <code>()</code>, which we can use to optionally send arguments into our function, and then the <code>{</code> curly braces <code>}</code>.',
       options: {
         'go on': (e) => e.goTo('name-function'),
@@ -516,6 +529,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'window-addEventListener',
+      before: () => tenPrintGif.close(),
       content: 'There\'s another object built into the browser called <code>window</code>, and we can use its <code>.addEventListener()</code> method to attach functions to specific events. We do this by passing two arguments into this method\'s parentheses: first, the name of the event we want to <i>listen</i> for (there\'s a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window#events" target="_blank">specific list</a> and they\'re always written as strings). The second argument is the name of the function we want to run when that event occurs.',
       options: {
         'go on': (e) => e.goTo('try-click'),
@@ -532,6 +546,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'css-colors-rgb',
+      before: () => tenPrintGif.close(),
       content: 'We can make this even more interesting by introducing a little randomness again. In CSS we not only have color names, you may recall from other lessons that we can define colors using CSS functions like <code>rgb()</code>. We can assign these to style properties as strings, which means we can construct custom strings using a little more JavaScript.',
       options: {
         'go on': (e) => e.goTo('random-0-255'),
@@ -556,6 +571,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'template-literals',
+      before: () => tenPrintGif.close(),
       content: 'That string is getting hard to parse, there are so many pieces and <code>+</code> operators it\'s easy to miss one and cause a bug. When we need complex string concatenations like this it\'s often less buggy to use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank">template literals</a>. I mentioned these earlier, it\'s the type of strings that use the <code>`</code> mark (next to the 1-key on most keyboards) instead of the <code>\'</code> or <code>"</code> quote marks.',
       options: {
         'go on': (e) => e.goTo('template-vars'),
@@ -636,6 +652,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'import-lib',
+      before: () => tenPrintGif.close(),
       content: 'There are a few ways to import a JavaScript library, but the traditional approach is the one we referenced earlier: add a pair of <code>script</code> tags above the ones we have and set the opening tag\'s <code>src</code> attribute to a JavaScript file containing the library\'s code. The template we\'re working on already has a <b>js</b> folder with the library inside it.',
       options: {
         'go on': (e) => e.goTo('nn-global'),
@@ -644,6 +661,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'nn-global',
+      before: () => tenPrintGif.close(),
       content: 'Now that the library is loaded, we can use the <code>nn</code> object in our code. First, we\'ll add a special comment at the top of our JavaScript to remind us (especially me) that there\'s a new global variable available.',
       options: {
         'go on': (e) => e.goTo('nn-on'),
@@ -732,6 +750,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'chain-methods',
+      before: () => tenPrintGif.close(),
       content: 'These methods can <i>chain</i>, meaning we can attach one after another. To demonstrate this, let\'s remove our <i>randomBackground</i> function and move those two color variables into the <i>tenPrint</i> function.',
       options: {
         'go on': (e) => e.goTo('chain-multiline'),
@@ -772,6 +791,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'nn-times',
+      before: () => tenPrintGif.close(),
       content: 'We could also abstract our <b>for</b> loop using <code>nn.times()</code>, which takes two arguments: the number of iterations, and a function that looks like <code>i =&gt; { }</code>. This is called an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank">arrow function</a>, because the <code>=&gt;</code> looks like an arrow pointing to the function\'s code block. The <code>i</code> argument is our loop index.',
       options: {
         'go on': (e) => e.goTo('arrow-one-line'),
@@ -812,6 +832,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'local-vs-cdn',
+      before: () => tenPrintGif.close(),
       content: 'Before we finish, a note about how we imported this library. It\'s stored locally in our project, but it\'s also common to use libraries hosted on other servers, often CDNs, or "content delivery networks."',
       options: {
         'go on': (e) => e.goTo('cdn-url'),
@@ -852,6 +873,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'end-guide',
+      before: () => tenPrintGif.close(),
       content: 'We\'ve covered all of JavaScript\'s core concepts in this lesson, but in terms of what we can do with it, we\'ve really only scratched the surface! There are many more Web APIs and creative coding libraries full of potential. We\'ll explore these in other lessons, templates, and demos. To make the most of them, keep building your understanding of the fundamentals we covered here, and explore the <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.scrollTo(\'js-docs\'))">JavaScript Docs</span> in my Learning Guide.',
       options: {
         'great!': (e) => {
