@@ -1,4 +1,4 @@
-/* global WIDGETS NNE */
+/* global WIDGETS */
 window.CONVOS['template-js-10print'] = (self) => {
   let tenPrintGif = WIDGETS['js-template-10print-gif']
   if (!tenPrintGif) {
@@ -111,7 +111,7 @@ window.CONVOS['template-js-10print'] = (self) => {
     },
     {
       id: 'arithmetic',
-      content: 'We can build <b>expressions</b> with arithmetic operators: <code>+</code> (add), <code>-</code> (subtract), <code>*</code> (multiply), <code>/</code> (divide). If we compute <code>a / 3 + 10</code>, what number do you expect will bes stored in <code>c</code>?',
+      content: 'We can build <b>expressions</b> with arithmetic operators: <code>+</code> (add), <code>-</code> (subtract), <code>*</code> (multiply), <code>/</code> (divide). If we compute <code>10 + a / 3</code>, what number do you expect will bes stored in <code>c</code>?',
       options: {
         'go on': (e) => e.goTo('c-value'),
         'go back': (e) => e.goTo('numbers')
