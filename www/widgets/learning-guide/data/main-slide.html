@@ -347,7 +347,11 @@
     <div>
       <div class="learning-guide__ex-start">
         <span><b>JavaScript</b></span>
-        <button class="pill-btn pill-btn--secondary" onclick="WIDGETS['learning-guide']._jsIntroConvo()">
+        <!-- <button class="pill-btn pill-btn--secondary" onclick="WIDGETS['learning-guide']._jsIntroConvo()">
+          Start Intro to JS
+        </button> -->
+        <button class="pill-btn pill-btn--secondary"
+          onclick="WIDGETS.open('js-reference', (w) => {w.toggleIntroPresentation(); WIDGETS['learning-guide'].close()})">
           Start Intro to JS
         </button>
       </div>
@@ -360,6 +364,9 @@
       <div class="learning-guide__apx-grid2">
         <div>
           <h2>Templates</h2>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('js-10print')">
+            Generative Art (introduction)
+          </span>
           <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
             Animation (setup/draw)
           </span>
@@ -371,12 +378,12 @@
           <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
             Interactive Music (theramin)
           </span>
-          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+          <!-- <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
             Interactive Game (wall ball)
-          </span>
+          </span> -->
           <br>
           <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
-            flat file database (portfolio)
+            Flat File Database (portfolio)
           </span>
         </div>
         <div>

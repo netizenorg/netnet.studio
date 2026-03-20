@@ -1,4 +1,11 @@
-.js-reference-widget--sec-link {
+
+.js-reference-widget-- {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 1em;
+  margin-right: 1em;
+  background: rgba(0, 0, 0, 0.1);
+  }.js-reference-widget--sec-link {
   display: inline-block;
   color: var(--netizen-meta);
   font-size: 24px;
@@ -34,4 +41,29 @@
   text-align: center;
   margin-bottom: 45px !important;
   transition: opacity 1s var(--sarah-ease);
+}
+
+.js-reference-widget--trace-code {
+  border: 1px solid var(--fg-color);
+  margin: 21px 0px;
+  border-radius: 5px;
+}
+
+.js-reference-widget--console-label {
+  float: right;
+  display: inline-block;
+  transform: translateY(-10px);
+  color: var(--bg-color);
+  background: var(--netizen-meta);
+  padding: 2px 15px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.js-reference-widget--console {
+  border: 1px solid var(--netizen-meta);
+  border-radius: 5px;
+  border-top-right-radius: 0px;
+  padding: 1em;
+  margin-top: 16px;
 }
