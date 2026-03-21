@@ -24,9 +24,9 @@ class NetNet {
     this.win = document.querySelector('#nn-window')
     this.edtr = document.querySelector('#nn-editor')
     this.menu = new NetNetFaceMenu(this.win) // document.querySelector('#nn-menu')
-    this.canv = this._createCanvas()
     this.title = this._createTitleBar()
-    // ...canvas background visible when theme { background: false }
+    this.fst = this._createFST() // full-screen toggle
+    this.canv = this._createCanvas() // canvas bg if themeConfig { background: false }
 
     this.layout = 'welcome'
 
@@ -194,6 +194,7 @@ class NetNet {
     this._canvasResize()
     this._canvasUpdate(0, 0)
     this.menu.updateFace()
+    this._liveCodeMode(this.layout === 'full-screen')
     this.emit('theme-change', { old, new: NNE.theme })
   }
 
@@ -358,7 +359,7 @@ class NetNet {
 
     const mv = this.cursor === 'move' || this.cursor === 'grab'
     if (e.target.id !== 'nn-window' && !mv) this.cursor = 'auto'
-    
+
     this.win.style.cursor = this.cursor
   }
 
@@ -613,6 +614,7 @@ class NetNet {
     this.win.style.borderRadius = o.win.borderRadius
     this.canv.style.borderRadius = o.canv
     this._showEditor(o.editor)
+    this._liveCodeMode(v === 'full-screen')
     utils.afterLayoutTransition(() => after())
   }
 
@@ -713,6 +715,70 @@ class NetNet {
     title.style.textAlign = 'center'
     this.win.prepend(title)
     return title
+  }
+
+  // TODO: toggle? or opacity slider?
+  _createFST () { // full-screen toggle
+    const fst = document.createElement('button')
+    fst.id = 'full-screen-toggle'
+    fst.textContent = 'hide netnet'
+    fst.classList.add('pill-btn')
+    fst.classList.add('pill-btn--secondary')
+    fst.style.display = 'none'
+    fst.style.position = 'fixed'
+    fst.style.top = '17px'
+    fst.style.left = '17px'
+    fst.style.zIndex = '9000'
+    fst.style.color = 'var(--netizen-meta)'
+    fst.addEventListener('click', () => {
+      const codeVisible = fst.textContent === 'hide netnet'
+      if (codeVisible) { // hide the netitor
+        fst.textContent = 'show netnet'
+        fst.style.opacity = 0.15
+        this.win.style.display = 'none'
+      } else { // show the netitor
+        fst.textContent = 'hide netnet'
+        fst.style.opacity = 1
+        this.win.style.display = 'block'
+      }
+    })
+    document.body.appendChild(fst)
+    this._createFSTBG()
+    return fst
+  }
+
+  _createFSTBG () {
+    this.fstBG = document.createElement('div')
+    this.fstBG.style.display = 'none'
+    this.fstBG.style.position = 'absolute'
+    this.fstBG.style.top = '0px'
+    this.fstBG.style.left = '0px'
+    this.fstBG.style.width = '100%'
+    this.fstBG.style.height = '100%'
+    this.fstBG.style.zIndex = '-10'
+    this.fstBG.style.position = 'absolute'
+    this.fstBG.style.background = NNE.themes[NNE.theme].background + '7f'
+    this.win.prepend(this.fstBG)
+    return this.fstBG
+  }
+
+  _liveCodeMode (fullscreen) {
+    const theme = NNE.theme
+    const hasBG = this.themeConfig[theme].background
+    const bgClr = NNE.themes[theme].background + 'ef'
+    if (fullscreen) { // go into "live coding" mode
+      this.canv.style.display = 'none'
+      this.fstBG.style.background = bgClr
+      this.fstBG.style.display = 'block'
+      if (hasBG) NNE.background = false
+      this.fst.style.display = 'block'
+    } else { // revert to normal
+      this.canv.style.display = 'block'
+      this.fstBG.style.background = bgClr
+      this.fstBG.style.display = 'none'
+      if (hasBG) NNE.background = true
+      this.fst.style.display = 'none'
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow

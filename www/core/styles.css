@@ -139,6 +139,10 @@
   height: 99.7% !important;
 }
 
+#full-screen-toggle:hover {
+  color: var(--bg-color) !important;
+}
+
 #nn-window {
   position: absolute;
 
