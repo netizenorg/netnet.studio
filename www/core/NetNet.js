@@ -25,7 +25,7 @@ class NetNet {
     this.edtr = document.querySelector('#nn-editor')
     this.menu = new NetNetFaceMenu(this.win) // document.querySelector('#nn-menu')
     this.title = this._createTitleBar()
-    this.fst = this._createFST() // full-screen toggle
+    this.fst = this._createLiveCodePanel() // fst = full-screen-toggle
     this.canv = this._createCanvas() // canvas bg if themeConfig { background: false }
 
     this.layout = 'welcome'
@@ -717,65 +717,67 @@ class NetNet {
     return title
   }
 
-  // TODO: toggle? or opacity slider?
-  _createFST () { // full-screen toggle
-    const fst = document.createElement('button')
-    fst.id = 'full-screen-toggle'
-    fst.textContent = 'hide netnet'
-    fst.classList.add('pill-btn')
-    fst.classList.add('pill-btn--secondary')
-    fst.style.display = 'none'
-    fst.style.position = 'fixed'
-    fst.style.top = '17px'
-    fst.style.left = '17px'
-    fst.style.zIndex = '9000'
-    fst.style.color = 'var(--netizen-meta)'
-    fst.addEventListener('click', () => {
-      const codeVisible = fst.textContent === 'hide netnet'
-      if (codeVisible) { // hide the netitor
-        fst.textContent = 'show netnet'
-        fst.style.opacity = 0.15
-        this.win.style.display = 'none'
-      } else { // show the netitor
-        fst.textContent = 'hide netnet'
-        fst.style.opacity = 1
-        this.win.style.display = 'block'
-      }
-    })
-    document.body.appendChild(fst)
-    this._createFSTBG()
-    return fst
-  }
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ live coding panel / full-screen toggle
 
-  _createFSTBG () {
-    this.fstBG = document.createElement('div')
-    this.fstBG.style.display = 'none'
-    this.fstBG.style.position = 'absolute'
-    this.fstBG.style.top = '0px'
-    this.fstBG.style.left = '0px'
-    this.fstBG.style.width = '100%'
-    this.fstBG.style.height = '100%'
-    this.fstBG.style.zIndex = '-10'
-    this.fstBG.style.position = 'absolute'
-    this.fstBG.style.background = NNE.themes[NNE.theme].background + '7f'
-    this.win.prepend(this.fstBG)
-    return this.fstBG
+  _createLiveCodePanel () {
+    // bg opacity slider ......
+    this.fso = 0.75
+    this.fss = nn.create('input')
+      .position(130, 24)
+      .set('class', 'code-slider__range')
+      .css({ display: 'none', width: 100, zIndex: 3 })
+      .set({ type: 'range', min: 0, max: 1, step: 0.01, value: this.fso })
+      .on('input', () => {
+        this.fso = Number(this.fss.value)
+        const o = nn.alpha2hex(this.fso)
+        this.fsb.style.background = NNE.themes[NNE.theme].background + o
+      })
+    this.win.prepend(this.fss)
+    // live coding bg ........
+    this.fsb = nn.create('div')
+      .position(0, 0)
+      .css({ display: 'none', width: '100%', height: '100%', zIndex: -10 })
+    const opac = nn.alpha2hex(0.75)
+    this.fsb.style.background = NNE.themes[NNE.theme].background + opac
+    this.win.prepend(this.fsb)
+    // code toggle button ....
+    const fst = nn.create('button')
+      .content('hide netnet')
+      .set('class', 'pill-btn pill-btn--secondary')
+      .set('id', 'full-screen-toggle')
+      .position(17, 17, 'fixed')
+      .css({ display: 'none', zIndex: 9000 })
+      .on('click', () => {
+        if (fst.textContent === 'hide netnet') {
+          fst.textContent = 'show netnet'
+          fst.style.opacity = 0.1
+          this.win.style.display = 'none'
+        } else { // show the netitor
+          fst.textContent = 'hide netnet'
+          fst.style.opacity = 1
+          this.win.style.display = 'block'
+        }
+      }).addTo('body')
+    return fst
   }
 
   _liveCodeMode (fullscreen) {
     const theme = NNE.theme
     const hasBG = this.themeConfig[theme].background
-    const bgClr = NNE.themes[theme].background + 'ef'
+    const bgClr = NNE.themes[theme].background + nn.alpha2hex(this.fso)
     if (fullscreen) { // go into "live coding" mode
       this.canv.style.display = 'none'
-      this.fstBG.style.background = bgClr
-      this.fstBG.style.display = 'block'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'block'
+      this.fss.value = this.fso
+      this.fss.style.display = 'block'
       if (hasBG) NNE.background = false
       this.fst.style.display = 'block'
     } else { // revert to normal
       this.canv.style.display = 'block'
-      this.fstBG.style.background = bgClr
-      this.fstBG.style.display = 'none'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'none'
+      this.fss.style.display = 'none'
       if (hasBG) NNE.background = true
       this.fst.style.display = 'none'
     }

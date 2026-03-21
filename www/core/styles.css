@@ -141,6 +141,8 @@
 
 #full-screen-toggle:hover {
   color: var(--bg-color) !important;
+  opacity: 1 !important;
+  transition: none !important;
 }
 
 #nn-window {
