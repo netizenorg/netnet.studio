@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn, WidgetCard */
+/* global Widget, WIDGETS, utils, Convo, NNW, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -28,16 +28,20 @@ class LearningGuide extends Widget {
 
         // create sub pages
         this.subpages = [
-          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts }
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+          { id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts },
+          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts }
           // {
-          //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+          //   id: 'theNetOpts',
+          //   file: 'the-internet.html',
+          //   back: this.mainOpts,
           //   subs: [
           //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
           //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
           //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
           //   ]
-          // },
-          // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+          // }
         ]
         this.subpages.forEach(p => {
           this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
@@ -62,8 +66,12 @@ class LearningGuide extends Widget {
     })
 
     WIDGETS['coding-menu'].on('theme-change', () => {
-      const src = this.ele.querySelector('iframe').src
-      this.ele.querySelector('iframe').src = src
+      const srcs = [...WIDGETS['learning-guide'].ele.querySelectorAll('iframe')].map(f => f.src)
+      if (srcs.length > 0) {
+        srcs.forEach((src, i) => {
+          this.ele.querySelectorAll('iframe')[i].src = src
+        })
+      }
     })
 
     const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
@@ -77,6 +85,18 @@ class LearningGuide extends Widget {
       if (this.opened) this.close()
       w.loadTemplate(name)
     })
+  }
+
+  openDocs (opt, anchor) {
+    if (!this.opened) this.open()
+    const dict = {
+      ai: 'theAIOpts',
+      net: 'theNetOpts',
+      web: 'theWebOpts',
+      about: 'aboutOpts'
+    }
+    const name = dict[opt] || opt
+    this.slide.updateSlide(this[name], anchor)
   }
 
   scrollTo (sec) {
@@ -184,7 +204,7 @@ class LearningGuide extends Widget {
     const c = nn.hex2rgb(utils.getVal('--netizen-number'))
     const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
     this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
     })
   }
 
@@ -390,6 +410,8 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _applyVisibility () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
+
     const visible = utils.isVisible(this.ele)
     if (visible) {
       this._startStarField()
@@ -411,6 +433,8 @@ class LearningGuide extends Widget {
   }
 
   _stopSvgAnimations () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
+
     const animatedSvgs = [
       'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]

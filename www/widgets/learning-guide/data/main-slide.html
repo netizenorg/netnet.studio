@@ -37,28 +37,33 @@
     <i class="lg-v-spacer"></i>
     <span style="color: var(--netizen-attribute)">1.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-net')">
-      The Platform <span style="font-size: 14px;">(Internet + Web + "AI")</span>
+      The Platform <span style="font-size: 14px;">(Internet + Web)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <span style="color: var(--netizen-tag)">2.</span>
+    <span style="color: var(--netizen-attribute)">1.</span>
+    <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('the-ai-guide')">
+      "AI" <span style="font-size: 14px;">(Artificial Intelligence)</span>
+    </span>
+    <i class="lg-v-spacer"></i>
+    <span style="color: var(--netizen-tag)">3.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('html')">
       HTML <span style="font-size: 14px;">(Hypertext Markup Language)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <span style="color: var(--netizen-tag)">3.</span>
+    <span style="color: var(--netizen-tag)">4.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('css')">
       CSS <span style="font-size: 14px;">(Cascading Style Sheets)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <span style="color: var(--netizen-tag)">4.</span>
+    <span style="color: var(--netizen-tag)">5.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('js')">
       JS <span style="font-size: 14px;">(JavaScript)</span>
     </span>
     <i class="lg-v-spacer"></i>
-    <span style="color: var(--netizen-string)">5.</span>
+    <span style="color: var(--netizen-string)">6.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('more-code')">Demos + Templates</span>
     <i class="lg-v-spacer"></i>
-    <span style="color: var(--netizen-string)">6.</span>
+    <span style="color: var(--netizen-string)">7.</span>
     <span class="highlight" onclick="WIDGETS['learning-guide'].scrollTo('refs')">Appendix</span>
     <i class="lg-v-spacer"></i>
   </div>
@@ -88,17 +93,32 @@
   <!--                  <<<      -       >>>                              -->
 
   <div class="learning-guide__main__item" id="learning-guide-the-net">
-    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-net')">THE PLATFORM</h3>
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-net')" style="position: relative; z-index: 2;">THE PLATFORM</h3>
 
     <div class="learning-guide__tc">
       <br>
-      <div style="display: flex; justify-content: center">
-        <span class="highlight" style="opacity:0.5;" onclick="WIDGETS['learning-guide']._comingSoon()">
-          the Internet + the Web + "Artificial intelligence"
+      <div style="position: relative; z-index: 2;">
+        <span
+          id="page-theNetOpts"
+          class="highlight"
+          style="transform: translate(230px,5px); color: var(--netizen-hint-bg); font-size: 2em;">
+          ⭠ the Internet
         </span>
       </div>
-      <svg-hypertext onclick="WIDGETS['learning-guide']._comingSoon()" colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"></svg-hypertext>
-      <p style="border:none">
+      <iframe src="./widgets/learning-guide/data/internet-globe.html"
+        style="width: 100%; height: 250px; border: none;  transform: scale(1.65) translate(-154px,-34px); margin-bottom: -220px;"></iframe>
+      <svg-hypertext
+        colors="var(--netizen-tag),var(--netizen-comment),var(--netizen-attribute)"
+        style="transform: scale(0.9) translate(-26px,-29px); display: block;"></svg-hypertext>
+      <div style="display: flex; justify-content: center">
+        <span
+          id="page-theWebOpts"
+          class="highlight"
+          style="transform: translate(-99px,-41px); font-size: 2em; color: var(--netizen-hint-bg);">
+          the World Wide Web ⤴
+        </span>
+      </div>
+      <p style="border:none; margin-top: 40px;">
         "<i>The Web represents a grand emotional, sensory, and intellectual adventure for anyone willing to explore it actively. [...] For artists, ignoring the imperative to grasp the cultural implications of the Internet means risking irrelevance.</i>" &mdash;<a href="https://netart.rocks/files/magic-and-loss.pdf" target="_blank">Virginia Heffernan</a>
       </p>
       <!-- <div>
@@ -126,6 +146,29 @@
       </div>
     </div> -->
   </div>
+
+  <br>
+  <!--                  <<<      -       >>>                              -->
+  <!--                  <<<     "AI"     >>>                              -->
+  <!--                  <<<      -       >>>                              -->
+
+  <div class="learning-guide__main__item" id="learning-guide-the-ai-guide">
+    <h3 onclick="WIDGETS['learning-guide'].scrollTo('the-ai-guide')">"AI"</h3>
+    <svg-neural-net onclick="WIDGETS['learning-guide'].openDocs('theAIOpts')" colors="var(--netizen-attribute),var(--netizen-comment),var(--netizen-tag),var(--bg-color)" style="cursor: pointer"></svg-neural-net>
+    <div>
+      <div class="learning-guide__ex-start">
+        <span><b>Notes Concerning Artificial "Intelligence"</b></span>
+        <button class="pill-btn pill-btn--secondary" id="page-theAIOpts">
+          View AI Notes
+        </button>
+      </div>
+      <p>
+        Today, algorithms aren’t only written, they’re “trained” through a process called “machine learning”. These new “AI” systems, like many technologies before them (smartphones, the Internet, computers), will undoubtably reshape creative practices, though exactly how and to what extent is still anyone's guess. We’ve assembled some interactive notes to help you incorporate these tools into your practice in a way that supports both your learning and making, rather than undermining it.
+      </p>
+    </div>
+  </div>
+
+  <br>
 
   <div class="learning-guide__ex-divider" style="margin-top: 80px;"></div>
 
@@ -365,25 +408,26 @@
         <div>
           <h2>Templates</h2>
           <span class="highlight" onclick="WIDGETS['learning-guide'].loadTemplate('js-10print')">
-            Generative Art (introduction)
+            Intro to Generative Art
           </span>
+          <br>
+          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
+            Interactivity
+          </span>
+          <br>
           <span class="highlight" style="opacity:0.5"  onclick="WIDGETS['learning-guide']._comingSoon()">
-            Animation (setup/draw)
+            Animation
           </span>
           <br>
           <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
-            Interactivity (cursor trails)
-          </span>
-          <br>
-          <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
-            Interactive Music (theramin)
+            Algorithmic Music
           </span>
           <!-- <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
             Interactive Game (wall ball)
           </span> -->
           <br>
           <span class="highlight" style="opacity:0.5" onclick="WIDGETS['learning-guide']._comingSoon()">
-            Flat File Database (portfolio)
+            Flat File Database
           </span>
         </div>
         <div>
