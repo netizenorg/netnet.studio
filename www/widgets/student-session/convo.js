@@ -216,7 +216,7 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'why-classical2',
       graph: { id: 17, x: 1000, y: 600 },
-      content: 'That said, the synthesized, hallucinatory sorcery behind modern "AI" can be quite exciting when applied to creative contexts, but learning to use it effectively and responsibly requires a bit of literacy first. There are some fundamentals we need to cover beforehand, but eventually I\'ll teach you how to creatively use (and misuse) these new "AI".',
+      content: 'That said, the synthesized, hallucinatory sorcery behind modern "AI" can be quite exciting when applied to creative contexts, but learning to use it effectively and responsibly requires a bit of literacy first. You\'ll find helpful notes and tools on this topic in the <img src="images/menu/tutorials.png" class="student-session__d-icons"> <b>Learning Guide</b>, which you can access anytime by clicking on my face.',
       options: {
         'I see': (e) => e.goTo('return-student-no-greet')
       }

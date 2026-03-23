@@ -148,7 +148,10 @@ class LearningGuide extends Widget {
           // this._createStarField()
           // this._svgAnimations()
         }, utils.getVal('--menu-fades-time'))
+      } else if (type === 'theAIOpts') {
+        this.theAIOpts.cb = () => this._createAICards()
       }
+
       if (cb) cb(div)
     }, true)
   }
@@ -354,6 +357,42 @@ class LearningGuide extends Widget {
     })
   }
 
+  _createAICards () {
+    if (this._setupAICards) return
+
+    setTimeout(() => {
+      // enable AI Notes WidgetCards
+      const cards = [
+        {
+          ele: '#learning-guide__ai-prompter',
+          box: { w: 220, h: 140, x: 290, y: 70 },
+          content: `<div>
+            <div style="text-align: center; font-size:32px">AI
+              <span style="font-size:32px; border-bottom: 2px solid;">Prompt</span>
+            </div>
+            <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-prompter')
+          click: () => window.alert('coming soon')
+        },
+        {
+          ele: '#learning-guide__ai-api',
+          box: { w: 220, h: 140, x: 10, y: 40 },
+          content: `<div>
+            <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
+            <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-api-tool')
+          click: () => window.alert('coming soon')
+        }
+      ]
+
+      cards.forEach(card => this.cards.push(new WidgetCard(card)))
+
+      this._setupAICards = true
+    }, 1000)
+  }
+
   _createDemoTemplateCards () {
     // enable WidgetCards
     const cards = [
@@ -361,7 +400,7 @@ class LearningGuide extends Widget {
         ele: '#learning-guide-demos',
         box: { w: 220, h: 140, x: 0, y: 40 },
         content: `<div>
-          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;</div>
           <div style="text-align: center; font-size:24px; margin-top: 20px;">DEMOS<div>
         </div>`,
         click: () => WIDGETS.open('demo-sketches')
@@ -426,6 +465,7 @@ class LearningGuide extends Widget {
 
     animatedSvgs.forEach(eleStr => {
       const svg = this.$(eleStr)
+      if (!svg) return
       const v = utils.isVisible(svg)
       if (v && !svg.looping) svg.start()
       else if (!v) svg.stop()

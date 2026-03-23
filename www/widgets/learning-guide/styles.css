@@ -546,3 +546,10 @@
 .no-motion .learning-guide__arrow {
   animation: none;
 }
+
+.learning-guide__ai-ch {
+   font-family: 'Libre Bodoni', serif;
+   font-size: 2em;
+   text-align: center;
+   margin: 10px auto 30px auto;
+ }
