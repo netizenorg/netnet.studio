@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>netnet.studio</title>
+    <meta name="description" content="hi! (&#9685; &#9694; &#9685;) welcome to netnet.studio, an open-source hypermedia cyberspace for fully realizing the Web's creative potential.">
+    <meta name="author" content="netizen.org">
+
+    <!--
+     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+   /                                    '.
+  | hi there! welcome to netnet.studio's |
+  | source code! hand-coded from scratch |
+  | w/love by the artists at netizen.org |
+   ` _ _ _ _ _ __ _ _ _ _ _ _ _ _ _ _  ,/
+                                    .'`
+                              ( ◕ ◞ ◕ )つ
+
+
+    -->
+
+    <!-- social media stuff -->
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="hi! (&#9685; &#9694; &#9685;) welcome to netnet.studio, an open-source hypermedia cyberspace for fully realizing the Web's creative potential.">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/widgets/styles.css">
+    <style media="screen">
+      :root {
+        --netizen-text: #e7e5c9;
+        --netizen-background: #1c1c3600;
+        --netizen-meta: #c3c3db;
+        --netizen-tag: #c76ebc;
+        --fg-color: #c76ebc;
+        --bg-color: #1c1c36;
+      }
+      body {
+        position: relative;
+        z-index: 1;
+
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+
+        background-image:
+          linear-gradient(#515199a8 2px, transparent 1px),
+          linear-gradient(90deg, #515199a8 2px, transparent 1px),
+          linear-gradient(0deg, #c76ebca8, #515199a8);
+        background-size:
+          50px 50px,
+          50px 50px,
+          auto;
+      }
+
+      .widget {
+        cursor: auto !important;
+        box-shadow: rgba(0, 0, 0, 0.15) 17.8282px 32.5562px 6px;
+        height: 264px;
+        width: 500px;
+        left: calc(50vw - 250px);
+        top: calc(50vh - 132px);
+        z-index: 108;
+        transition: none;
+        animation: 0.3s forwards openBounce;
+      }
+
+      .widget__top {
+        cursor: auto !important;
+      }
+
+      .widget__inner-html {
+        padding-top: 18px;
+      }
+
+      .widget__inner-html code {
+        padding-top: 0;
+      }
+
+      code {
+        position: relative;
+        top: -0.1em;
+        padding: .1em 0.3em 0.2em;
+        border-radius: 6px;
+        color: var(--bg-color);
+        background-color: var(--fg-color);
+        font-family: "fira-code", inconsolata, monospace;
+        font-size: 14px;
+        line-height: 1.4em;
+        font-weight: 700;
+        cursor: text;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="widget">
+      <div class="widget__top">
+        <div class="widget__top__title">404 - Page Not Found</div>
+      </div>
+      <div class="widget__inner-html">
+        ( ◕ ◞ ◕ )つ oh hi! It appears the URL (uniform resource locator) aka "web address" which you've entered doesn't exist:<br>
+        <code></code>
+        <br><br>
+        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a id="issues" href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
+      </div>
+    </div>
+
+    <div class="print‑notice">⚠️ oops! (◕ ◞ ◕) This page isn't optimized for printing, it might be better to take a screen shot, or if there's something specific you're after let us know: hi@netizen.org</div>
+
+    <!-- check out >> https://github.com/nbriz/StatsNotTracks -->
+    <!-- to learn about our privacy-focused web analytics -->
+    <script src="/stats-not-tracks.min.js"></script>
+    <!-- netizen.org libs -->
+    <script src="/nn.min.js"></script>
+    <script>
+      function setup () {
+        nn.get('.widget__inner-html code')
+          .content(window.location.toString())
+
+        const report = `${window.location.origin}/docs/contributors/bug-report.html`
+        nn.get('#issues').set('href', report)
+      }
+
+      function updateBG (mouse) {
+        if (reduceMotion() || window.nomotion) return
+        const d = -33 // max amount to shift background
+        const x = nn.map(mouse.x, 0, nn.width, 0, d)
+        const y = nn.map(mouse.y, 0, nn.height, 0, d)
+        const p = `${x}px ${y}px`
+        nn.get('body').css({
+          backgroundPosition: `${p}, ${p}, 0 0`
+        })
+      }
+
+      function reduceMotion () {
+        // check if user "prefers redueced motion"
+        const cssQuery = '(prefers-reduced-motion: reduce)'
+        const queryList = window.matchMedia(cssQuery)
+        return queryList.matches
+      }
+
+      nn.on('mousemove', updateBG)
+      nn.on('load', setup)
+    </script>
+  </body>
+</html>

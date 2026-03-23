@@ -19,14 +19,14 @@
 
   min-width: 200px;
   min-height: 150px;
-  
+
   padding: 0 15px 15px;
   border: 4px solid var(--netizen-meta);
   border-radius: 10px;
 
   color: var(--bg-color);
   background-color: transparent;
-  
+
   overflow: hidden;
 }
 
@@ -38,10 +38,10 @@
 
   opacity: 0.95;
   z-index:0;
-  
+
   width: 100%;
   height: 100%;
-  
+
   background-color: var(--bg-color);
 
   pointer-events: none;
@@ -59,7 +59,6 @@
   max-height: 1.2em;
   min-width: 100px;
 
-/*  padding-left: 5px;*/
   margin: 12px 0 9px;
 
   cursor: grab;
@@ -139,13 +138,13 @@
   margin-left: 0.9em;
 
   cursor: pointer;
-
-  /*just making this invisible for rn*/
-  color: var(--netizen-meta);
 }
 
-.widget__top .close:before,
-.widget__top .expand:before {
+.widget__top .expand {
+  border: 3px dashed var(--bg-color);
+}
+
+.widget__top .close:before {
   content: '';
   position: absolute;
   top: 50%;
@@ -161,10 +160,6 @@
   background-color: var(--bg-color);
 
   transform: translateY(-50%) rotate(45deg);
-}
-
-.widget__top .expand:before {
-  width: 14px;
 }
 
 .widget__top .close:after {
@@ -185,28 +180,13 @@
   transform: translateY(-50%) rotate(-45deg);
 }
 
-.widget__top .expand:after {
-  content: '';
-  position: absolute;
-  left: 12px;
-
-  width: 10px;
-  height: 10px;
-
-  border-radius: 4px;
-  border-top: 4px solid var(--bg-color);
-  border-left: 4px solid var(--bg-color);
-
-  transform: translateX(-14px);
-}
-
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* default styles for common elements in widget content */
 
 .widget__inner-html {
   position: relative;
 
-  padding: 20px 0 0;
+  height: calc(100% - 40px);
 
   color: var(--netizen-meta);
 
@@ -214,10 +194,28 @@
   line-height: 1.45em;
 }
 
+.widget__inner-html > *:not(style) {
+  padding-top: 15px;
+}
+
 .widget__inner-html section div,
 .widget__inner-html p {
   margin-top: 13px;
   margin-bottom: 0;
+}
+
+.widget__inner-html .link {
+  position: relative;
+  color: var(--fg-color);
+  text-decoration: none;
+  text-decoration: underline;
+  text-underline-position: under;
+  cursor: pointer;
+  transition: color .5s ease, border .5s ease;
+}
+
+.widget__inner-html .link:hover {
+  color: var(--netizen-match-color);
 }
 
 .widget__inner-html section div:first-of-type,
@@ -228,15 +226,15 @@
 
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
-/* styles sahred by references widgets && <widget-slide> custom element used in em */
+/* styles shared by reference widgets && <widget-slide> custom element used in em */
 
 .reference-widget {
   display: block;
 
   width: 600px;
-  max-height: 400px;
+  max-height: 435px;
 
-  padding: 0px 15px 0px 25px;
+  padding: 0px 15px !important;
 
   overflow-y: auto;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
@@ -247,12 +245,17 @@
   display: none;
   opacity: 0;
 
-  grid-template-columns: 1fr 1fr 1fr;
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 10px;
 
-  padding-top: 24px;
+  padding-top: 28px;
 
   transition: opacity var(--menu-fades-time) var(--sarah-ease);
+}
+
+.reference-widget__slide > * {
+  min-width: 0; /* ensures the items can shrink */
 }
 
 .reference-widget__nav {
@@ -276,6 +279,8 @@
 
   padding-left: 16px;
 
+  line-height: 1.2em;
+
   cursor: pointer;
 }
 
@@ -284,10 +289,10 @@
   content: '';
   position: absolute;
   display: block;
-  top: 46%;
+  top: 48%;
   left: 1px;
 
-  width: 10px;
+  width: 9px;
   height: 3px;
 
   border-radius: 20px;
@@ -299,20 +304,26 @@
 }
 
 .reference-widget__nav span:after {
-  top: 50%;
+  top: 54%;
 
   transform: translateY(-50%) rotate(-45deg);
 }
 
 .reference-widget__list-heading {
-  margin: 20px 0;
+  margin: 20px 0 13px;
 
   text-transform: uppercase;
 }
 
 .reference-widget__list-item {
+  margin-top: 6px;
+  padding-right: 2px;
+
   cursor: pointer;
   font-family: "fira-code", inconsolata, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* copied from prior text-bubble styles */
@@ -368,7 +379,7 @@
   text-decoration: underline;
   text-underline-position: under;
   text-shadow: none;
-  
+
   cursor: pointer;
   transition: color var(--element-transition-time) ease;
 }

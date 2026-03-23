@@ -18,11 +18,12 @@ class SearchBar extends HTMLElement {
     }
 
     this.type2color = {
-      'Functions Menu': 'var(--netizen-variable)',
+      netnet: 'var(--netizen-number)',
+      'Coding Menu': 'var(--netizen-variable)',
       Widgets: 'var(--netizen-operator)',
-      Tutorials: 'var(--netizen-string)',
-      Examples: 'var(--netizen-string)',
-      netnet: 'var(--netizen-number)'
+      Tutorials: 'var(--netizen-attribute)',
+      Demos: 'var(--netizen-string)',
+      Templates: 'var(--netizen-string)'
     }
   }
 
@@ -47,6 +48,7 @@ class SearchBar extends HTMLElement {
     this._loadMiscData()
     this._loadWidgetsData()
     this._loadTutorialsData()
+    this._loadCodingMenuData()
     this._setupSearchBar()
   }
 
@@ -144,52 +146,50 @@ class SearchBar extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _loadFunctionsMenuData () {
-    if (!WIDGETS['functions-menu']) {
-      setTimeout(() => this._loadFunctionsMenuData(), 250)
+  _loadCodingMenuData () {
+    if (!WIDGETS['coding-menu']) {
+      setTimeout(() => this._loadCodingMenuData(), 250)
       return
     }
 
     // remove previously created items if we login/logout
-    this.dict = this.dict.filter(o => !o.type.includes('Functions Menu'))
-    this.updateDict()
+    // this.dict = this.dict.filter(o => !o.type.includes('Coding Menu'))
+    // this.updateDict()
     const loggedIn = window.localStorage.getItem('owner')
 
     const arr = []
     arr.push({
-      type: 'Functions Menu',
+      type: 'Coding Menu',
       word: loggedIn ? 'logout' : 'login',
       alts: ['login', 'logout', 'session', 'github', 'repo', 'account'],
-      clck: () => { WIDGETS['functions-menu'].open() }
+      clck: () => { WIDGETS['coding-menu'].open() }
     })
-    for (const submenu in WIDGETS['functions-menu'].subs) {
-      const funcs = WIDGETS['functions-menu'].subs[submenu]
+    for (const submenu in WIDGETS['coding-menu'].subs) {
+      const funcs = WIDGETS['coding-menu'].subs[submenu]
       arr.push({
-        type: 'Functions Menu',
+        type: 'Coding Menu',
         word: submenu,
         alts: funcs.map(f => f.click),
         clck: () => {
-          WIDGETS['functions-menu'].open()
+          WIDGETS['coding-menu'].open()
           const id = `func-menu-${submenu.replace(/ /g, '-')}`
-          WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
+          WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
         }
       })
       funcs.forEach(func => {
-        const hidden = WIDGETS['functions-menu'].checkIfHidden(func.click)
-        if (!hidden) { // only add to search if it's currently in the menu
-          arr.push({
-            type: `Functions Menu.${submenu}`,
-            word: `${func.click}()`,
-            alts: func.alts,
-            clck: () => {
-              if (func.select) {
-                WIDGETS['functions-menu'].open()
-                const id = `func-menu-${submenu.replace(/ /g, '-')}`
-                WIDGETS['functions-menu'].toggleSubMenu(id, 'open')
-              } else WIDGETS['functions-menu'][func.click]()
-            }
-          })
-        }
+        const callFunc = func.func || WIDGETS['coding-menu']._toCamelCase(func.key)
+        arr.push({
+          type: `Coding Menu.${submenu}`,
+          word: func.key,
+          alts: func.alts,
+          clck: () => {
+            if (func.select) {
+              WIDGETS['coding-menu'].open()
+              const id = `func-menu-${submenu.replace(/ /g, '-')}`
+              WIDGETS['coding-menu'].toggleSubMenu(id, 'open')
+            } else WIDGETS['coding-menu'][callFunc]()
+          }
+        })
       })
     }
 
@@ -199,6 +199,7 @@ class SearchBar extends HTMLElement {
 
   _loadWidgetsData () {
     utils.get('./api/widgets', (list) => {
+      if (list.success === false) return utils._Convo('oh-no-error', list)
       const arr = []
       list.forEach(file => {
         file.keywords.push('widget')
@@ -217,6 +218,7 @@ class SearchBar extends HTMLElement {
   _loadTutorialsData () {
     this.loaded.tutorials = true
     utils.get('tutorials/list.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const arr = []
       let len = 0
       for (const sec in json) { len += json[sec].length }
@@ -224,13 +226,14 @@ class SearchBar extends HTMLElement {
 
       for (const sec in json) {
         json[sec].forEach(name => {
-          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
+          utils.get(`tutorials/${name}/tutorial.json`, (tut) => {
+            if (tut.success === false) return utils._Convo('oh-no-error', tut)
             arr.push({
               type: 'Tutorials',
-              word: tut.title,
-              alts: tut.keywords,
+              word: tut.metadata.title,
+              alts: tut.metadata.keywords,
               clck: () => {
-                WIDGETS.open('learning-guide', w => w.load(name))
+                WIDGETS.load('hyper-video-player', w => w.load(name))
               }
             })
             update()
@@ -239,7 +242,8 @@ class SearchBar extends HTMLElement {
       }
     })
 
-    utils.get('api/examples', (json) => {
+    utils.get('api/demos', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       const arr = []
       const len = Object.keys(json.data).length
       const update = () => { if (arr.length === len) this.addToDict(arr) }
@@ -256,14 +260,37 @@ class SearchBar extends HTMLElement {
         const name = ex.name.split(' ').filter(s => !s.includes('element'))
         const keywords = [...tags, ...name]
         arr.push({
-          type: 'Examples',
+          type: 'Demos',
           word: ex.name,
           alts: keywords,
-          clck: () => {
-            if (!WIDGETS['code-examples']) {
-              WIDGETS.load('code-examples', w => w.loadExample(i, 'search'))
-            } else { WIDGETS['code-examples'].loadExample(i, 'search') }
-          }
+          clck: () => utils.loadDemo(i)
+        })
+        update()
+      }
+    })
+
+    utils.get('api/templates', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      const arr = []
+      const len = Object.keys(json.data.list).length
+      const update = () => { if (arr.length === len) this.addToDict(arr) }
+
+      const titleFromId = (s) => {
+        const u = new Set(['html', 'css', 'js'])
+        return s.split('-').filter(Boolean).map(t => {
+          t = t.toLowerCase()
+          return u.has(t) || t.length === 2 ? t.toUpperCase() : t.charAt(0).toUpperCase() + t.slice(1)
+        }).join(' ')
+      }
+
+      for (const i in json.data.list) {
+        const t = json.data.list[i]
+        const name = t.title || titleFromId(i)
+        arr.push({
+          type: 'Templates',
+          word: name,
+          alts: ['template', 'starter', 'project'],
+          clck: () => utils.loadTemplate(i)
         })
         update()
       }

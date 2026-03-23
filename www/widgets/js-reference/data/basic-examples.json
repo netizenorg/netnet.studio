@@ -1,0 +1,121 @@
+{
+  "variables": {
+    "var": {
+      "code": "var year = 1995"
+    },
+    "const": {
+      "code": "const year = 1995"
+    },
+    "let": {
+      "code": "let year = 1995\nyear = 2000"
+    },
+    "output values": {
+      "convo": "output",
+      "code": "let year = 1995\nyear = 2000\noutput(year)",
+      "output": "2000"
+    }
+  },
+  "variables (arithmetic)": {
+    "add, subtract": {
+      "convo": "addition",
+      "code": "const x = 400 + 4\nconst y = 400 - 4\noutput(x)\noutput(y)",
+      "output": "404\n396"
+    },
+    "multiply, divide": {
+      "convo": "multiply",
+      "code": "const x = 400 * 2\nconst y = 400 / 2\noutput(x)\noutput(y)",
+      "output": "800\n200"
+    },
+    "modulo": {
+      "code": "const x = 7 % 2\noutput(x)",
+      "output": "1"
+    },
+    "incrementing": {
+      "code": "let x = 100\nx = x + 50\noutput(x)",
+      "output": "150"
+    },
+    "increment operators": {
+      "convo": "incrementing-2",
+      "code": "let x = 100\nx = x + 1\nx += 1\nx++\noutput(x)",
+      "output": "103"
+    }
+  },
+  "variables (data types)": {
+    "number": {
+      "code": "const pi = 3.14\n\noutput(pi)\noutput(typeof pi)",
+      "output": "3.14\n\"number\""
+    },
+    "string": {
+      "code": "const a = 'hello world'\nconst b = \"bye bye now\"\n\noutput(a)\noutput(typeof b)",
+      "output": "\"hello world\"\n\"string\""
+    },
+    "string (templates)": {
+      "convo": "string-template",
+      "code": "const pi = 3.14\nconst say = `Pi is equal to ${pi}`\noutput(say)",
+      "output": "\"Pi is equal to 3.14\""
+    },
+    "boolean": {
+      "code": "const x = true\nconst y = false\noutput(typeof x)",
+      "output": "\"boolean\""
+    },
+    "undefined": {
+      "code": "let x\noutput(x)\noutput(typeof x)",
+      "output": "undefined\n\"undefined\""
+    },
+    "function": {
+      "code": "output(typeof output)",
+      "output": "\"function\""
+    },
+    "object": {
+      "code": "const p = Math.PI * 2\nconst x = Math.round(p)\n\noutput(p)\noutput(x)\noutput(typeof Math)",
+      "output": "6.283185307179586\n6\n\"object\""
+    }
+  },
+  "conditionals (if/else)": {
+    "if statement": {
+      "convo": "conditionals",
+      "code": "const age = 21\n\nif (age >= 21) {\n\toutput('have a drink')\n}",
+      "output": "\"have a drink\""
+    },
+    "logical operators": {
+      "convo": "logical",
+      "code": "const country = 'US'\nconst age = 18\n\nif (country === 'US' && age >= 21) {\n\toutput('have a drink')\n}"
+    },
+    "else if": {
+      "convo": "else-if",
+      "code": "const country = 'JP'\nconst age = 20\n\nif (country === 'US' && age >= 21) {\n\toutput('have a local US brew')\n} else if (country === 'JP' && age >= 20) {\n\toutput('have a local Japanese brew')\n} else if (country === 'AU' && age >= 18) {\n\toutput('have a local Austrailian brew')\n} else {\n\toutput('sorry, no brew for you')\n}",
+      "output": "\"have a local Japanese brew\""
+    }
+  },
+  "loops (for/while)": {
+    "while": {
+      "code": "let i = 0\nwhile (i < 3) {\n\toutput(`i is now ${i}`)\n\ti++\n}\n\noutput('done')",
+      "output": "\"i is now 0\"\n\"i is now 1\"\n\"i is now 2\"\n\"done\""
+    },
+    "for": {
+      "code": "for (let i = 0; i < 10; i++) {\n\toutput(`i is now ${i}`)\n}\n\noutput('done')",
+      "output": "\"i is now 0\"\n\"i is now 1\"\n\"i is now 2\"\n\"done\""
+    }
+  },
+  "functions": {
+    "functions": {
+      "code": "function greet (name) {\n\tconst message = `hello there, ${name}!`\n\toutput(message)\n}\n\ngreet('Nick')",
+      "output": "\"hello there, Nick!\""
+    },
+    "pure functions": {
+      "convo": "pure-functions",
+      "code": "function square (num) {\n\tconst x = num * num\n\treturn x\n}\n\t\t\nconst a = square(5)  \noutput(a)",
+      "output": "25"
+    },
+    "variable declaration": {
+      "convo": "variable-declaration",
+      "code": "const square = function (num) {\n\tconst x = num * num\n\treturn x\n}\n\t\t\nconst a = square(5)  \noutput(a)",
+      "output": "25"
+    },
+    "arrow functions": {
+      "convo": "arrow-functions",
+      "code": "const square = (num) => {\n\tconst x = num * num\n\treturn x\n}\n\t\t\nconst a = square(5)  \noutput(a)",
+      "output": "25"
+    }
+  }
+}

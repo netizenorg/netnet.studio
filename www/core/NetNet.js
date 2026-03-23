@@ -1,4 +1,4 @@
-/* global NetNetFaceMenu, NNE, nn, utils */
+/* global NetNetFaceMenu, NNE, WIDGETS, nn, utils */
 class NetNet {
   constructor () {
     this.layouts = [
@@ -16,16 +16,17 @@ class NetNet {
       light: { background: true, shadow: false },
       monokai: { background: true, shadow: false },
       'moz-dark': { background: true, shadow: false },
-      'moz-light': { background: true, shadow: false }
+      'moz-light': { background: true, shadow: false },
+      sonnenzimmer: { background: true, shadow: false }
     }
 
     this.rndr = document.querySelector('#nn-output')
     this.win = document.querySelector('#nn-window')
     this.edtr = document.querySelector('#nn-editor')
     this.menu = new NetNetFaceMenu(this.win) // document.querySelector('#nn-menu')
-    this.canv = this._createCanvas()
     this.title = this._createTitleBar()
-    // ...canvas background visible when theme { background: false }
+    this.fst = this._createLiveCodePanel() // fst = full-screen-toggle
+    this.canv = this._createCanvas() // canvas bg if themeConfig { background: false }
 
     this.layout = 'welcome'
 
@@ -193,6 +194,7 @@ class NetNet {
     this._canvasResize()
     this._canvasUpdate(0, 0)
     this.menu.updateFace()
+    this._liveCodeMode(this.layout === 'full-screen')
     this.emit('theme-change', { old, new: NNE.theme })
   }
 
@@ -308,7 +310,7 @@ class NetNet {
     this._updateMouseDown(false)
     this.cursor = 'auto'
     this.winOff = null
-    utils.selecting(true)
+    utils.selecting(false)
   }
 
   _mouseDown (e) {
@@ -317,7 +319,7 @@ class NetNet {
     else if (e.target.id === 'nn-menu' && mw) {
       this._updateMouseDown(true)
       this.cursor = 'move'
-      utils.selecting(false)
+      utils.selecting(true)
       this.win.style.cursor = this.cursor
     }
   }
@@ -357,9 +359,6 @@ class NetNet {
 
     const mv = this.cursor === 'move' || this.cursor === 'grab'
     if (e.target.id !== 'nn-window' && !mv) this.cursor = 'auto'
-
-    if (this.cursor === 'auto') utils.selecting(true)
-    else utils.selecting(false)
 
     this.win.style.cursor = this.cursor
   }
@@ -412,7 +411,8 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ adjusting layout/orientation
 
   _toggleTransition (bool) {
-    if (bool) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (bool && !nomotion) {
       this.win.style.transition = 'all var(--layout-transition-time)'
       this.menu.ele.style.transition = 'all var(--layout-transition-time)'
       this.rndr.style.transition = 'all var(--layout-transition-time)'
@@ -466,114 +466,156 @@ class NetNet {
   }
 
   _adjustLayout (v) {
-    if (v === this._layout) return
-    const old = this._layout
-    this._toggleTransition(true)
-    this._layout = v
-    this.menu.updateFace()
-    this.menu.toggleMenu(false)
-    // this.opacity = STORE.state.opacity
+    // layout dictionary object
+    const wf = nn.width / 2
+    const eh = NNE.code.split('\n').length * 25
+    const hf = nn.height / 2 < eh + 75 ? nn.height / 2 : eh + 75
+    const layouts = {
+      welcome: {
+        tite: 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: '430px',
+          height: '295px',
+          left: 'calc(-170px + 50vw)',
+          top: 'calc(-135px + 50vh)',
+          bottom: null,
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: false
+      },
+      'dock-bottom': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: nn.height / 2 + 'px', left: '0px', top: '0px'
+        },
+        win: {
+          width: '100%',
+          height: nn.height / 2 + 'px',
+          left: '0px',
+          top: null,
+          bottom: '0px',
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: true
+      },
+      'dock-left': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: nn.width / 2 + 'px', height: '100%', left: nn.width / 2 + 'px', top: '0px'
+        },
+        win: {
+          width: nn.width / 2 + 'px',
+          height: '100%',
+          left: '0px',
+          top: '0px',
+          bottom: null,
+          borderRadius: '1px 25px 25px 1px'
+        },
+        canv: '1px 15px 15px 1px',
+        editor: true
+      },
+      'full-screen': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: '100%',
+          height: '100%',
+          left: '0px',
+          top: '0px',
+          bottom: null,
+          borderRadius: '1px 1px 1px 1px'
+        },
+        canv: '1px 1px 1px 1px',
+        editor: true
+      },
+      'separate-window': {
+        title: this.title.textContent.length > 0 ? 'block' : 'none',
+        rndr: {
+          width: '100%', height: '100%', left: '0px', top: '0px'
+        },
+        win: {
+          width: wf + 'px',
+          height: hf + 'px',
+          left: nn.width / 2 - wf / 2 + 'px',
+          top: nn.height / 2 - hf / 2 + 'px',
+          bottom: null,
+          borderRadius: '25px 25px 1px 1px'
+        },
+        canv: '15px 15px 1px 1px',
+        editor: true
+      }
+    }
 
-    const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
-    if (tbWasOpened) this.menu.textBubble.fadeOut(10)
+    const confirm = (l) => {
+      let c = true
+      const o = layouts[l]
+      if (this.title.style.display !== o.title) { c = false }
+      if (this.rndr.style.width !== o.rndr.width) { c = false }
+      if (this.rndr.style.height !== o.rndr.height) { c = false }
+      if (this.rndr.style.left !== o.rndr.left) { c = false }
+      if (this.rndr.style.top !== o.rndr.top) { c = false }
+      if (this.win.style.width !== o.win.width) { c = false }
+      if (this.win.style.height !== o.win.height) { c = false }
+      if (this.win.style.left !== o.win.left) { c = false }
+      if (this.win.style.top !== o.win.top) { c = false }
+      if (this.win.style.bottom !== o.win.bottom) { c = false }
+      if (this.win.style.borderRadius !== o.win.borderRadius) { c = false }
+      if (this.canv.style.borderRadius !== o.canv) { c = false }
+      if ((o.editor === false && this.edtr.style.display !== 'none') ||
+        (o.editor === true && this.edtr.style.display !== 'block')) { c = false }
+      return c
+    }
 
     const after = () => {
       this._toggleTransition(false)
       this._canvasResize()
       this.menu.updatePosition()
-      if (tbWasOpened) this.menu.textBubble.fadeIn()
+      if (tbWasOpened) {
+        this.menu.textBubble.fadeIn()
+        setTimeout(() => { // refocus on first option after fadeIn
+          this.menu.textBubble.$('.text-bubble-options').children[0].focus()
+        }, utils.getVal('--menu-fades-time'))
+      }
       NNE.cm.refresh()
       this.emit('layout-change', { old, new: v })
     }
 
-    if (v === 'welcome') {
-      this.title.style.display = 'none'
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '430px'
-      this.win.style.height = '295px'
-      this.win.style.left = 'calc(-170px + 50vw)'
-      this.win.style.top = 'calc(-135px + 50vh)'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      this._showEditor(false)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'dock-bottom') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = window.innerHeight / 2 + 'px'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '100%'
-      this.win.style.height = window.innerHeight / 2 + 'px'
-      this.win.style.left = '0px'
-      this.win.style.top = null
-      this.win.style.bottom = '0px'
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'dock-left') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = window.innerWidth / 2 + 'px'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = window.innerWidth / 2 + 'px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = window.innerWidth / 2 + 'px'
-      this.win.style.height = '100%'
-      this.win.style.left = '0px'
-      this.win.style.top = '0px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '1px 25px 25px 1px'
-      this.canv.style.borderRadius = '1px 15px 15px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'full-screen') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      this.win.style.width = '100%'
-      this.win.style.height = '100%'
-      this.win.style.left = '0px'
-      this.win.style.top = '0px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '1px 1px 1px 1px'
-      this.canv.style.borderRadius = '1px 1px 1px 1px'
-      this._showEditor(true)
-      utils.afterLayoutTransition(() => after())
-    } else if (v === 'separate-window') {
-      if (this.title.textContent.length > 0) {
-        this.title.style.display = 'block'
-      }
-      this._showEditor(true)
-      this.rndr.style.width = '100%'
-      this.rndr.style.height = '100%'
-      this.rndr.style.left = '0px'
-      this.rndr.style.top = '0px'
-      const wf = window.innerWidth / 2
-      const eh = NNE.code.split('\n').length * 25
-      const hf = window.innerHeight / 2 < eh + 75
-        ? window.innerHeight / 2 : eh + 75
-      this.win.style.width = wf + 'px'
-      this.win.style.height = hf + 'px'
-      this.win.style.left = window.innerWidth / 2 - wf / 2 + 'px'
-      this.win.style.top = window.innerHeight / 2 - hf / 2 + 'px'
-      this.win.style.bottom = null
-      this.win.style.borderRadius = '25px 25px 1px 1px'
-      this.canv.style.borderRadius = '15px 15px 1px 1px'
-      utils.afterLayoutTransition(() => after())
-    }
+    // -------------- do we need to run re-orientation of layout? --------------
+    if (v === this._layout && confirm(v)) return
+
+    // -------------- if so, re-run the layout logic ---------------------------
+    const old = this._layout
+    this._toggleTransition(true)
+    this._layout = v
+    this.menu.updateFace()
+    this.menu.toggleMenu(false)
+
+    const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
+    if (tbWasOpened) this.menu.textBubble.fadeOut(10)
+
+    const o = layouts[v]
+    this.title.style.display = o.title
+    this.rndr.style.width = o.rndr.width
+    this.rndr.style.height = o.rndr.height
+    this.rndr.style.left = o.rndr.left
+    this.rndr.style.top = o.rndr.top
+    this.win.style.width = o.win.width
+    this.win.style.height = o.win.height
+    this.win.style.left = o.win.left
+    this.win.style.top = o.win.top
+    this.win.style.bottom = o.win.bottom
+    this.win.style.borderRadius = o.win.borderRadius
+    this.canv.style.borderRadius = o.canv
+    this._showEditor(o.editor)
+    this._liveCodeMode(v === 'full-screen')
+    utils.afterLayoutTransition(() => after())
   }
 
   // + + + + NETITOR STUFF + + + +
@@ -631,16 +673,28 @@ class NetNet {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• title bar for projets
 
-  updateTitleBar (text) {
-    // const gh = WIDGETS['student-session'].data.github
-    // const url = `https://github.com/${gh.owner}/${gh.openedProject}`
+  updateTitleBar (text, unsaved) {
     if (typeof text === 'string') {
       this.title.textContent = text
+      if (unsaved) this.title.dataset.unsaved = true
+      else delete this.title.dataset.unsaved
       this.title.style.display = 'block'
-      this.title.onclick = () => utils._Convo('netnet-title-bar')
+      this.title.onclick = () => {
+        let wig = false
+        if (this.title.dataset.project) wig = 'project-files'
+        else if (this.title.dataset.demo) wig = 'demo-toc'
+        else if (this.title.dataset.template) wig = 'template-projects'
+        if (!wig) return
+        const path = this.title.textContent
+        WIDGETS[wig].explainTitleBar(path)
+      }
     } else {
       this.title.textContent = ''
       this.title.style.display = 'none'
+      delete this.title.dataset.template
+      delete this.title.dataset.unsaved
+      delete this.title.dataset.project
+      delete this.title.dataset.demo
     }
   }
 
@@ -657,10 +711,76 @@ class NetNet {
     title.style.zIndex = '2'
     title.style.padding = '15px 15px 15px 80px'
     title.style.color = 'var(--netizen-meta)'
-    title.style.textDecoration = 'underline'
+    // title.style.textDecoration = 'underline'
     title.style.textAlign = 'center'
     this.win.prepend(title)
     return title
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ live coding panel / full-screen toggle
+
+  _createLiveCodePanel () {
+    // bg opacity slider ......
+    this.fso = 0.75
+    this.fss = nn.create('input')
+      .position(130, 24)
+      .set('class', 'code-slider__range')
+      .css({ display: 'none', width: 100, zIndex: 3 })
+      .set({ type: 'range', min: 0, max: 1, step: 0.01, value: this.fso })
+      .on('input', () => {
+        this.fso = Number(this.fss.value)
+        const o = nn.alpha2hex(this.fso)
+        this.fsb.style.background = NNE.themes[NNE.theme].background + o
+      })
+    this.win.prepend(this.fss)
+    // live coding bg ........
+    this.fsb = nn.create('div')
+      .position(0, 0)
+      .css({ display: 'none', width: '100%', height: '100%', zIndex: -10 })
+    const opac = nn.alpha2hex(0.75)
+    this.fsb.style.background = NNE.themes[NNE.theme].background + opac
+    this.win.prepend(this.fsb)
+    // code toggle button ....
+    const fst = nn.create('button')
+      .content('hide netnet')
+      .set('class', 'pill-btn pill-btn--secondary')
+      .set('id', 'full-screen-toggle')
+      .position(17, 17, 'fixed')
+      .css({ display: 'none', zIndex: 9000 })
+      .on('click', () => {
+        if (fst.textContent === 'hide netnet') {
+          fst.textContent = 'show netnet'
+          fst.style.opacity = 0.1
+          this.win.style.display = 'none'
+        } else { // show the netitor
+          fst.textContent = 'hide netnet'
+          fst.style.opacity = 1
+          this.win.style.display = 'block'
+        }
+      }).addTo('body')
+    return fst
+  }
+
+  _liveCodeMode (fullscreen) {
+    const theme = NNE.theme
+    const hasBG = this.themeConfig[theme].background
+    const bgClr = NNE.themes[theme].background + nn.alpha2hex(this.fso)
+    if (fullscreen) { // go into "live coding" mode
+      this.canv.style.display = 'none'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'block'
+      this.fss.value = this.fso
+      this.fss.style.display = 'block'
+      if (hasBG) NNE.background = false
+      this.fst.style.display = 'block'
+    } else { // revert to normal
+      this.canv.style.display = 'block'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'none'
+      this.fss.style.display = 'none'
+      if (hasBG) NNE.background = true
+      this.fst.style.display = 'none'
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow
@@ -735,25 +855,18 @@ class NetNet {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc
 
   _preventAccidentalExit () {
-    // NOTE: students on mace would often double-finger swipe back on their
+    // NOTE: students on mac would often double-finger swipe back on their
     // trackpads (when trying to move their scroll bars) and this would trigger
-    // Mac's "back" button, and thus they'd loos all their progress. Similarly,
-    // if they accidentally refresh, they loos all their progress. This code
-    // prevents both from happening (refresh tirggers confirmation box)
+    // Mac's "back" button, and thus they'd loose all their progress. Similarly,
+    // if they accidentally refresh, they loose all their progress. This code,
+    // along with the 'unload' event in main.js, prevents both from happening.
 
     // Prevent backward/forward navigation
     window.addEventListener('popstate', (event) => {
       window.history.pushState(null, '', window.location.href)
     })
-
     // Initialize history state to disable navigation
     window.history.pushState(null, '', window.location.href)
-
-    // Optionally warn the user about navigation attempts
-    window.addEventListener('beforeunload', (event) => {
-      event.preventDefault()
-      event.returnValue = '' // Required for Chrome to show the warning dialog
-    })
   }
 }
 

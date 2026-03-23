@@ -1,3 +1,9 @@
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   UTILITIES!
+            ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
+
 /* keyframes */
 
 @keyframes bounce {
@@ -7,18 +13,30 @@
   100% { transform: translateY(0); }
 }
 
-@keyframes spring-up {
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+@keyframes big-nod {
   0% { transform: translateY(0); }
   30% { transform: translateY(-8px); }
   90% { transform: translateY(-8px); }
   100% { transform: translateY(0); }
 }
 
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
+@keyframes spring-up {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+  100% { transform: translateY(-8px); }
+}
+
+@keyframes duck-down {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(8px); }
+  100% { transform: translateY(8px); }
 }
 
 @keyframes bgshift {
@@ -75,4 +93,22 @@
 @keyframes opt-pan-rainbow {
   0% { background-position-x: 0px; }
   100% { background-position-x: 182px; }
+}
+
+
+/* selecting */
+body {
+  user-select: auto;
+  -webkit-user-select: auto;
+  -webkit-touch-callout: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+}
+
+body.selecting {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }

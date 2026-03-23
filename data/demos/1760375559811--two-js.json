@@ -1,0 +1,112 @@
+{
+  "key": 1760375559811,
+  "name": "two-js",
+  "tags": [
+    "two",
+    "drawing",
+    "svg",
+    "webgl",
+    "canvas",
+    "animation"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJxlU+1u0zAU/d+nuCo/4pQuyaqVAeoqJMQQEkjT2Au4sduYuXZk3zSr0PbsXDsfZFC1UX3OPcfX5zobXzpVI3hX3swrxNp/zPNSmOyXF1Krk8uMxNzUxxxbS+AnzVF6zHeN0qLH5ttN3tlsZ5vhD0C+gIO2O67hobWwyAkqrfEIpIIbMLINBEsJ1xLh4GxTz2ixb0yJyhrwEpsaWAq/CYUgy3hdSyMeLBO2bI7SYLaz4pzOYkHnXipXakkbhPojf5SfI8Aurosl0HddpJNqJ0uc1N7TkpsDlffVl0X36DXRKtsrrUmUvLm9fV8URRK54DQy7rDjjJSrIF+t1+SVXa/T5FWjT/3GrRJYQQ6rKXnuyUqqQ4UjG1OaNPw1rFnX1zL2kP6ty2rrVYgyoyhZ+bQk2yntSx6TKiaYsT/R2UfJ+lDzHFxjgBt1pMmDPEl3RnWUcahNLQgcp7NTRrCkA5PloElHvtb8TOMkS4/cYbBIPMw7wRxe3hX72lP186trMGw9XgTSY6V86Mt3DUHsKGzReVEp8XQ6LUWUqD2w6Zm3NI8P9Bks/02kWzmLPLYwRPQ8mVC4NuwSLqbKFBZkXFz9l/FbmtgEHI0DTpor+v3gWGV334bjt5SlbTMuxJcT3fPvyqM00rFEWy4o3PhypLPxzfsD1iElpA==",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://two.js.org/\" target=\"_blank\">Two.js</a> a lightweight drawing library by designer <a href=\"https://www.jono.fyi/\" target=\"_blank\">Jono</a> and <a href=\"https://github.com/jonobr1/two.js/graphs/contributors\" target=\"_blank\">many others</a>. Part of what makes it unique from other drawing libraries is that it can draw to SVG (like D3.js), Canvas (like p5.js), or WebGL (like Three.js) using the same API, which makes it great for projects that might benefit from being able to migrate between these different contexts with a single code base.",
+      "title": "getting started"
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        4,
+        5
+      ],
+      "text": "We start by creating a new <code>Two()</code> instance, which acts as both our drawing context and animation loop. We'll also create a <code>group</code> variable which will contain a couple of different shapes we want to access to in both our functions.\n"
+    },
+    {
+      "title": "append to body",
+      "focus": [
+        7,
+        8
+      ],
+      "text": "When we call <code>two.appendTo(document.body)</code> inside our <code>setup</code>, Two creates its own render surface (an SVG or canvas element) and inserts it into the page. From there, every shape we make is managed by Two’s internal scene graph."
+    },
+    {
+      "title": "shapes",
+      "focus": [
+        10,
+        11
+      ],
+      "text": "Inside <code>setup</code> we'll also create two shapes: a circle and a rectangle. We use <code>.makeCircle()</code> to create a circle, setting it's x position to <b>-70</b> and giving it a radius of <b>50</b>. We'll also adjust the default position of the rectangle we created with <code>.makeRectangle()</code> by <b>70</b> and set both it's width and height to <b>100</b>."
+    },
+    {
+      "title": "colors",
+      "focus": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "We set a fill color for each directly using hex and RGBA string values."
+    },
+    {
+      "title": "group",
+      "focus": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "text": "Next, we find the center of the scene using <code>two.width</code> and <code>two.height</code>, and create a <code>Group</code> containing both shapes. This group allows us to move, scale, and rotate the two shapes together as one. We position it in the center, set its <code>scale</code> to 0 (so it starts invisible), and remove its stroke with <code>group.noStroke()</code>."
+    },
+    {
+      "title": "bind animate",
+      "focus": [
+        23
+      ],
+      "text": "For animation, we bind our custom <code>animate</code> function to Two’s internal update event with <code>two.bind('update', animate)</code>. Every time Two updates (roughly 60 frames per second), it calls this function."
+    },
+    {
+      "title": "animate",
+      "focus": [
+        23,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "text": "Inside the <code>animate</code> function we gradually increase <code>group.scale</code> until it reaches 1, while also rotating it. When the scale reaches full size, we reset both the scale and rotation back to 0, creating a continuous pulsating spin."
+    },
+    {
+      "title": "call play",
+      "focus": [
+        23,
+        24
+      ],
+      "text": "The last line in our <code>setup</code> calls <code>two.play()</code> which starts the automatic update loop, driving our animation frame by frame."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        37
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded."
+    },
+    {
+      "title": null,
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"https://two.js.org/\" target=\"_blank\">Two.js</a> has excellent <a href=\"https://two.js.org/docs/two/\" target=\"_blank\">documentation</a> and <a href=\"https://two.js.org/examples/\" target=\"_blank\">examples</a>. Two.js supports paths, polygons, text, gradients, and custom shaders. You can animate along curves, switch renderers on the fly, or even export shapes to SVG for editing in other software.\n"
+    }
+  ]
+}

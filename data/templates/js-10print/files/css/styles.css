@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'Noto Serif 10print';
+  src: url('fonts/NotoSerifSC-boxes+fullwidth.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+2500-257F, /* Box Drawing */
+    U+2580-259F, /* Block Elements */
+    U+FF0F,      /* ／ */
+    U+FF3C,      /* ＼ */
+    U+002F,      /* / */
+    U+005C;      /* \ */
+}
+
+body {
+  margin: 0;
+  background: #0082c8;
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1;
+  word-wrap: anywhere;
+  font-family: 'Noto Serif 10print', system-ui, sans-serif;
+  user-select: none;
+}

@@ -1,14 +1,12 @@
 {
   "code": [
-    "what-is-code"
+    "orientation"
   ],
   "html": [
-    "html-crash-course",
     "net-art-1",
     "net-art-2"
   ],
   "css": [
-    "css-crash-course",
     "css-art-1",
     "css-art-2"
   ],

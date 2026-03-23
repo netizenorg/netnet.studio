@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list" role="navigation"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  bug report
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  code demos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
+                  tutorial maker
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>Dear Students,</h1>
+<p>If you&#39;re new to code and want to learn how to craft your own corner of the web, then netnet.studio is for you! You can start by going straight to <a href="https://netnet.studio" target="_blank">netnet.studio</a> and introducing yourself to netnet, you don&#39;t really need to read any of the stuff below (you&#39;ll learn it all on netnet.studio as you go). That said, if you&#39;re looking for a <strong>User Guide</strong> style manual, you&#39;ll find that here.</p>
+<h2>coding in netnet</h2>
+<p>netnet.studio is an interactive learning platform (see the <b>Learning Guide</b> section below) where you learn not only by reading docs or watching videos but by making. It&#39;s also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. Let netnet know you want to code as soon as it loads, or jump straight to a blank sketch by navigating to <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a>.</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/sketching.mp4"
+  poster="../images/poster-sketching.jpg">
+</video></p>
+<p>The code editor is intentionally simple, but has unique features designed specifically for creative folks learning to code for the first time. As shown in the video above, it provides familiar tools like syntax highlighting, line numbers, and auto-complete, along with a few extras designed to support learning. For instance, double-clicking any piece of code brings up an explanation and relevant documentation. If netnet detects a possible issue, it marks the line with an orange (warning) or red (error) dot that you can click to read more. There are a number of other widgets which netnet opens (or suggests) for you to use when it&#39;s relevant as it did with the Color Widget in the video above.</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/saving-sketch.mp4"
+  poster="../images/poster-saving-sketch.jpg">
+</video></p>
+<p> You can think of <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a> as an infinite sticky pad, pressing <b>CTRL+S</b> (or <b>CMD+S</b> on Mac) will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL). Sharing your code as a URL is like pulling a sticky note off the pad, you need to decide where to stick it: send it to a friend, post it online, or save it somewhere safe. Once it&#39;s pulled off, it&#39;s no longer part of the pad, so if you lose that link, you lose the sketch (we don&#39;t record/save what you make on netnet, your code is compressed into the URL itself). If you want to keep something you made long-term, save the share URL somewhere safe or download it as an HTML file (you can turn it into an online <strong>project</strong>, more on that below).</p>
+<h2>The Menu</h2>
+<p>You can open the menu at anytime by clicking on netnet&#39;s face...</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/netnet-menu.mp4"
+  poster="../images/poster-netnet-menu.jpg">
+</video></p>
+<h3><img src="/images/menu/hi.png" alt="Hi" style="width:50px; transform: translateY(10px);"> netnet</h3>
+<p>When you first visit netnet.studio you&#39;ll be greeted by netnet, a conversation <strong>passage</strong> will appear above netnet&#39;s face with options for your responses. These conversation passages appear throughout the experience, it&#39;s netnet&#39;s primary mode for explaining things and presenting you with options. Remember, netnet is <em>classical AI</em>, meaning every word netnet says was written by a human (one of us!) not generated by a large language model. We&#39;ve chosen it&#39;s words carefully, in order to be as clear and concise as possible and have designed netnet to communicate only what&#39;s absolutely necessary when it&#39;s necessary. So, if netnet says something, it&#39;s always worth taking a second to read what it has to say.</p>
+<h3><img src="/images/menu/code.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Coding Menu</h3>
+<p>The <strong>Coding Menu</strong> is where you can launch different conversations with netnet for coding related tasks like creating, saving, or publishing your work. You can also adjust <em>settings</em> that control the editor’s look and behavior, such as theme, layout, or motion preferences. In addition, the menu lets you open various <em>widgets</em>, pop-up windows that provide focused tools or information, like <strong>Share Sketch</strong>, <strong>Code Review</strong>, or <strong>Project Files</strong>. When writing your own code in netnet, you’ll be working in either a sketch or a project.</p>
+<ul>
+<li><p>A <em><strong>sketch</strong></em> is a single HTML file in netnet.studio. Because HTML can include CSS, JavaScript, and other languages, you can do a lot in one file (see <em>Code Demos</em> widget for guided examples).</p>
+</li>
+<li><p>A <em><strong>project</strong></em> is a full website or app with multiple code files (HTML, CSS, JS) and assets (images, videos, fonts, etc). Projects are stored as GitHub repositories (netnet walks you through the git process), giving you version control and free web hosting when you publish. (see <em>Template Starter Projects</em> widget for guided examples).</p>
+</li>
+</ul>
+<p>Visit the <a href="coding.html">coding docs</a> to learn more about this menu and how to create <strong>sketches</strong> and <strong>projects</strong>.</p>
+<h3><img src="/images/menu/search.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Search</h3>
+<p>On the surface netnet appears fairly simple, but as you start exploring the studio you&#39;ll come across different features, lessons and widgets. It can be hard to remember where exactly you came across a specific document or widget, which is why netnet also has a universal search bar. The search results color code different result types and lists where to find them. Clicking on a result will open up that widget, document, lesson, etc.</p>
+<h3><img src="/images/menu/tutorials.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Learning Guide</h3>
+<p>netnet’s <strong>Learning Guide</strong> is packed with educational content that starts from the basics and gradually builds toward more complex lessons and examples.  You can follow the Learning Guide from start to finish for a traditional progression, or explore it non-linearly based on your own interests and needs.</p>
+<ul>
+<li>Throughout the guide you&#39;ll find <strong>Docs</strong>, self-contained widgets that provide reference material or lessons. Some read like a textbook with explanations and diagrams; others work like an index for quick lookup of HTML elements, CSS properties, and similar topics.</li>
+</ul>
+<p>Because everyone learns differently, the Learning Guide offers several <em>learning modes</em>, some designed for students who prefer structured, step-by-step instruction, and others for those who learn best through exploration and experimentation. Some topics appear across multiple modes by design, allowing learners to approach the same concept in different ways.</p>
+<ul>
+<li><p><strong>Guided Intros</strong> are short, interactive lessons where netnet walks you through core web concepts like HTML, CSS, or JavaScript using conversational passages and slide-like widgets.</p>
+</li>
+<li><p><strong>Annotated Demos</strong> are example sketches for learning through remixing and experimentation. It’s a single HTML file with a Notes button, each note highlights a line or section of code you can explore or have netnet explain.</p>
+</li>
+<li><p><strong>Guided Templates</strong> are starter projects you can build from. netnet can generate and explain it line by line, sometimes asking for input along the way (like a code mad-lib). You can skip the walkthrough if you just want to start coding.</p>
+</li>
+<li><p><strong>Interactive Tutorials</strong> are hypermeida (video-based) lessons that blend history, theory, and practice. You can pause anytime to explore widgets or experiment with code directly in the editor.</p>
+</li>
+</ul>
+<p>Visit the <a href="learning.html">learning docs</a> to read more about this widget and it&#39;s various &quot;learning modes&quot; and educational resources.</p>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>

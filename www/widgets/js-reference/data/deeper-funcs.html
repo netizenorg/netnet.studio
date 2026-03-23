@@ -1,0 +1,61 @@
+<br><br>
+<svg-js-define-function colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+</svg-js-define-function>
+<br><br>
+
+<h2>Three common ways to write functions</h2>
+
+<p>
+  We've already met functions (<i>f you haven't, review the introduction to <span class="link" name="intro-funcs">Functions</span> in the main docs</i>), they're reusable sets of instructions. Whether it's one line or many, you can store those instructions in a function and call it as many times as you want anywhere in your program. The most common form is a <b>function declaration</b>:
+</p><br>
+
+<code-sample name="js-ex-0"></code-sample><br>
+
+<p>
+  There are other ways to create the same function. While there are <a href="https://www.freecodecamp.org/news/the-difference-between-arrow-functions-and-normal-functions/" target="_blank">technical differences</a> in how they behave, they all ultimately do the same thing: create a function. It's useful to recognize each syntax because you'll see all three in real code, examples, docs, and tutorials.
+</p><br>
+
+<p>
+  <b>Function expression</b> (a function stored in a variable):
+</p><br>
+
+<code-sample name="js-ex-1"></code-sample><br>
+
+<p>
+  <b>Arrow function</b> (uses the <code>=></code> "arrow"):
+</p><br>
+
+<code-sample name="js-ex-2"></code-sample><br>
+
+<p>
+  If a function's body is just a single <code>return</code>, arrow functions can be shortened with an <b>implicit return</b>. And if there's a single parameter, you can drop the parentheses:
+</p><br>
+
+<code-sample name="js-ex-3"></code-sample><br>
+
+
+<h2 name="callback">Passing functions as values</h2>
+
+<p>
+  Sometimes we pass a function into another function, these are sometimes called "higher-order functions". For example, <code>nn.on()</code> (a method on the <code>nn</code> object of the <a href="https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#netnet-standard-library" target="_blank">netnet standard library</a>) takes two arguments: the event name (like 'load' or 'click') and a reference to the function to run when that event happens.
+</p><br>
+
+<code-sample name="js-ex-4"></code-sample><br>
+
+<p>
+  The example above might be preferred by a developer who doesn't mind longer code in the interst of making the logic very clear. Others might prefer to keep they code shorter even if it's harder to read.
+</p><br>
+
+<code-sample name="js-ex-5"></code-sample><br>
+
+<p>
+  We're only using this function once, so we don't really need to store it in a variable, we can pass it directly into to the <code>nn.on()</code> method's second argument like this.
+</p><br>
+
+<code-sample name="js-ex-6"></code-sample><br>
+
+<p>
+  Ultimately, all three examples do the same thing, show an alert when the page loads. You're free to use whichever reads clearest in to you, but it's worth being comfortable with all three as it makes tutorials and documentation much easier to follow (you never know which approach other folks might prefer).
+</p>
+
+<br><br><br>

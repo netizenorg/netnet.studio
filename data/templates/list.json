@@ -1,0 +1,15 @@
+{
+  "published": [
+    "html-basic",
+    "html-meta-tags",
+    "css-basic",
+    "css-minimalist",
+    "css-art",
+    "css-landing-page"
+  ],
+  "build-on": {
+    "html-meta-tags": ["html-basic"],
+    "css-basic": ["html-basic"],
+    "css-landing-page": ["html-meta-tags"]
+  }
+}

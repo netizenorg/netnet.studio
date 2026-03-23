@@ -17,6 +17,10 @@ class Convo {
     if (data instanceof Array) this.data = this._mapData(data)
     else this.data = this._mapData([data])
     this.id = start || Object.keys(this.data)[0]
+    this.events = {
+      update: []
+    }
+
     this._update(this.id, ignoreFocus)
   }
 
@@ -64,6 +68,20 @@ class Convo {
     }
   }
 
+  on (eve, cb) {
+    if (!this.events[eve]) { this.events[eve] = [] }
+    this.events[eve].push(cb)
+  }
+
+  emit (eve, data) {
+    if (this.events[eve] instanceof Array) {
+      this.events[eve].forEach((cb, i) => {
+        data.unsubscribe = () => { this.events[eve].splice(i, 1) }
+        cb(data)
+      })
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -72,6 +90,11 @@ class Convo {
     this.id = id
     const time = utils.getVal('--menu-fades-time')
     const obj = this.data[this.id]
+
+    if (typeof obj === 'undefined') {
+      console.error('Convo: tried to load undefined convo object:', id)
+      return
+    }
 
     // pre hoook
     if (typeof obj.before === 'function') obj.before(this, obj.scope)
@@ -85,7 +108,9 @@ class Convo {
       scope: obj.scope
     })
 
-    if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
+    // const layoutLater = obj.layout === 'welcome' || obj.layout === 'separate-window'
+    const layoutLater = false
+    if (!layoutLater && (NNW.layout === 'welcome' || NNW.layout === 'separate-window')) {
       NNW.keepInFrame()
     }
 
@@ -95,6 +120,7 @@ class Convo {
         setTimeout(() => { NNE.cm.refresh() }, 10)
       }
 
+      // TODO: might need to update these cm calls into NNE calls
       if (typeof obj.edit === 'boolean') {
         if (obj.edit) NNE.cm.setOption('readOnly', false)
         else NNE.cm.setOption('readOnly', true)
@@ -110,10 +136,10 @@ class Convo {
         NNE.spotlight(obj.spotlight)
       }
 
-      if (typeof obj.layout === 'string') {
+      if (typeof obj.layout === 'string' && NNW.layout !== obj.layout) {
         NNW.layout = obj.layout
         if (NNW.layout === 'welcome' || NNW.layout === 'separate-window') {
-          NNW.keepInFrame()
+          utils.afterLayoutTransition(() => NNW.keepInFrame())
         }
       }
 
@@ -122,6 +148,8 @@ class Convo {
 
       // post hook
       if (typeof obj.after === 'function') obj.after(this, obj.scope)
+
+      this.emit('update', { id, ignoreFocus })
     }, time)
   }
 

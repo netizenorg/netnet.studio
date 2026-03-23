@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="js/code-mirror/codemirror.css">
+<link rel="stylesheet" href="css/graph-styles.css">
+<link rel="stylesheet" href="/core/styles/fonts.css">
+<link rel="stylesheet" href="/core/styles/buttons.css">
+<link rel="stylesheet" href="/core/styles/form-fields.css">
+<link rel="stylesheet" href="css/nn-range.css">
+
+<div class="menu-bar">
+  <div>
+    FILE :
+    <span id="new-file">new</span>
+    <span id="edit-file">edit</span>
+    <span id="open-file">upload</span>
+    <span id="save-file">download</span>
+  </div>
+  <div style="visibility: hidden;">
+    CONVO:
+    <input type="text" class="input" id="convo-name" placeholder="convo/widget name">
+    <button id="custom-code" class="pill-btn pill-btn--secondary" title="create variables/functons accessible to all passages">&lt;/&gt; Code</button> |
+    <button id="new" class="pill-btn pill-btn--secondary" title="create a new passage">+ New</button>
+    <button id="delete" class="pill-btn pill-btn--secondary" style="opacity:0.5" title="delete selected passage(s)">
+      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete
+    </button>
+    <label for="zoom">Zoom:</label>
+    <input type="range" id="zoom" class="range-slider__input">
+  </div>
+</div>
+
+<div id="modal">
+  <div></div>
+</div>
+
+<div id="graph-wrapper">
+  <div id="graph-container"></div>
+</div>
+
+<div id="editor">
+  <div class="nav">
+    <div id="FUNC-links">
+      <!-- buttons for FUNC edit links go here -->
+    </div>
+    <span class="name" contenteditable="true">Passage Name</span>
+    <div style="display: flex; align-items: center;">
+      <select class="func-btn layout" title="change netnet layout during this passage">
+        <option value="default">[default]</option>
+         <option value="welcome">welcome</option>
+         <option value="separate-window">separate-window</option>
+         <option value="dock-left">dock-left</option>
+         <option value="full-screen">full-screen</option>
+         <option value="dock-bottom">dock-bottom</option>
+      </select>
+      <span class="func-btn make-links" style="background: #e9e9ed;" title="generate missing passages from links">🔗</span>
+      <span class="func-btn preview" style="background: #e9e9ed;" title="preview this passage">💬</span>
+      <span class="close">×</span>
+    </div>
+  </div>
+  <textarea></textarea>
+</div>
+
+<!-- <script src="/core/utils.js"></script> -->
+<script src="/nn.min.js"></script>
+<script src="/netitor.min.js"></script>
+<!-- js libs -->
+<script src="js/code-mirror/codemirror.js"></script>
+<script src="js/code-mirror/simple.js"></script>
+<script src="js/code-mirror/nn-convo-mode.js"></script>
+<script src="js/libs/panzoom.min.js"></script>
+<script src="js/libs/extwee.web.min.js"></script>
+<script src="js/libs/quilt-graph.js"></script>
+<!-- core js code -->
+<script src="js/file-menu.js"></script>
+<script src="js/main.js"></script>

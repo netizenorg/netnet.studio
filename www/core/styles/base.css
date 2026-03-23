@@ -1,3 +1,9 @@
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   BASE STYLING!
+              ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
+
 /* vars */
 
 :root {
@@ -31,7 +37,7 @@ body {
   overflow: hidden;
 }
 
-* { 
+* {
   box-sizing: border-box;
 }
 
@@ -64,3 +70,18 @@ code::selection {
   background-color: var(--bg-color);
 }
 
+
+.print‑notice {
+  display: none;
+}
+
+@media print {
+  body *:not(.print‑notice) { display: none !important; }
+
+  .print‑notice {
+    display: block;
+    font-size: 2.2rem;
+    line-height: 2.8rem;
+    margin: 8rem 2rem;
+  }
+}

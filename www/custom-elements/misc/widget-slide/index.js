@@ -1,13 +1,15 @@
 /* global HTMLElement, utils */
 class WidgetSlide extends HTMLElement {
-  updateSlide (opts) {
+  updateSlide (opts, anchor) {
     /*
       updateSlide({
         name: 'new-slide',    // a unique name for this slide
         widget: wigInstance,  // the instance of the parent Widget
         back: prevOptsObject, // the options object of the slide to "return" to
         ele: htmlElement,     // an html element w/the slide's content
-        cb: function,         // optinal callback
+        class: className      // CSS class name for parent elemenet
+        onBack: function,     // runs when "back" is clicked
+        cb: function,         // optinal callback (once it renders)
         // ...or, a list of objects to create an index page from
         list: [
           { name: 'string', click: func, html: 'optional-html-string' },
@@ -16,7 +18,9 @@ class WidgetSlide extends HTMLElement {
       })
     */
     this._widget = opts.widget
-    this.className = 'reference-widget'
+    this.className = opts.class || 'reference-widget'
+    this.setAttribute('name', opts.name)
+    this._onBack = opts.onBack
 
     if (opts.list) {
       if (this._currentSlide) {
@@ -42,9 +46,18 @@ class WidgetSlide extends HTMLElement {
       }
     }
 
-    if (opts.cb) opts.cb()
+    if (!anchor) this.scrollTop = 0
+    else {
+      setTimeout(() => {
+        this.scrollTop = this.querySelector(`[name="${anchor}"]`).offsetTop - 50
+      }, utils.getVal('--menu-fades-time'))
+    }
 
-    this.scrollTop = 0
+    if (opts.cb) opts.cb()
+  }
+
+  getName () {
+    return this.getAttribute('name')
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS
@@ -75,7 +88,10 @@ class WidgetSlide extends HTMLElement {
     n.className = 'reference-widget__nav'
     const b = document.createElement('span')
     b.textContent = 'BACK'
-    b.addEventListener('click', () => this.updateSlide(backOpts))
+    b.addEventListener('click', () => {
+      if (typeof this._onBack === 'function') this._onBack()
+      this.updateSlide(backOpts)
+    })
     n.appendChild(b)
     parent.appendChild(n)
   }

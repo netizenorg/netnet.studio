@@ -1,0 +1,51 @@
+/* ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~ ~ ~  ~ ~  Timeline Styles ~ ~  ~ ~ ~ ~  ~ ~ */
+
+svg#timeline {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+use {
+  cursor: pointer;
+}
+
+.labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* let clicks through to SVG if needed */
+  font-family: system-ui, sans-serif;
+}
+
+.labels > div {
+  position: absolute;
+  left: 8px;
+  transform: translateY(12px);
+  font-size: 14px;
+  line-height: 1;
+}
+
+
+.labels > div:nth-child(1) {
+  color: var(--netizen-tag);
+}
+
+.labels > div:nth-child(2) {
+  color: var(--netizen-attribute);
+}
+
+#playhead-marker {
+  position: absolute;
+  top: 50px;
+  left: 0px;
+  z-index: 1;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid var(--netizen-meta);
+  transform: translateX(-10px);
+  cursor: grab;
+}

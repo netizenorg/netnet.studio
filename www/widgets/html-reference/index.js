@@ -1,4 +1,4 @@
-/* global Widget, Convo, NNE, NNW, utils */
+/* global Widget Convo NNE NNW utils nn WIDGETS */
 class HtmlReference extends Widget {
   constructor (opts) {
     super(opts)
@@ -7,11 +7,19 @@ class HtmlReference extends Widget {
     this.keywords = ['html', 'elements', 'attributes', 'reference']
     this.resizable = false
 
-    this.title = 'HTML Reference'
+    this.width = 638
+    this.height = 483
+
+    this.title = 'HTML Reference Docs'
 
     this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
 
-    utils.get('./widgets/html-reference/data/edu-supplement.json', (json) => { this.data = json })
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
+    utils.get('./widgets/html-reference/data/edu-supplement.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.data = json
+    })
 
     utils.get('./widgets/html-reference/data/main-slide.html', (html) => {
       // options objects for <widget-slide> .updateSlide() method
@@ -39,6 +47,16 @@ class HtmlReference extends Widget {
 
       NNW.on('theme-change', () => { this._createHTML() })
     }, true)
+  }
+
+  openDocs (opt, entry) {
+    let type
+    if (opt === 'eleListOpts') {
+      type = 'elements'
+    } else if (opt === 'attrListOpts') {
+      type = 'attributes'
+    }
+    this.goTo(type, entry)
   }
 
   goTo (type, name) {
@@ -92,8 +110,96 @@ class HtmlReference extends Widget {
     window.convo = new Convo({ content, options }, null, true)
   }
 
+  inPresentation () {
+    return this.slide.style.overflowY === 'hidden'
+  }
+
+  toggleIntroPresentation () {
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
+    }
+
+    const isStarterCode = NNE.code === utils.starterCode()
+    if (isStarterCode) return this._toggleIntroPresentation()
+
+    if (WIDGETS['project-files']?.projectData.name) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    const workingOnDemoOrTemplate = typeof utils.url.demo === 'string' ||
+      typeof utils.url.template === 'string'
+    if (workingOnDemoOrTemplate) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    this._toggleIntroPresentation()
+  }
+
+  togglePresentationConvo () {
+    const id = window.convo?.id
+    if (!id || id === '0' || !this.convos.map(c => c.id).includes(id)) {
+      window.convo = new Convo(this.convos, this._lastConvo)
+    } else {
+      this._lastConvo = window.convo.id
+      window.convo.hide(); window.convo = null
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  async _toggleIntroPresentation () {
+    const div = this.slide.querySelector('div')
+    const ntro = div.querySelector('.html-reference-widget--guided-intro')
+    const btn = div.querySelector('.html-reference-widget--intro-btn')
+    const p = div.querySelector('.html-reference-widget--intro-p')
+    const svg = div.querySelector('svg-tag-presentation')
+
+    if (this.inPresentation()) { // displaying presentation
+      //                             (toggle into regular HTML Reference page)
+      NNE.code = utils.starterCode()
+      NNE.update()
+      if (typeof this._prevUpdateState === 'boolean') {
+        WIDGETS['coding-menu'].autoUpdate(this._prevUpdateState)
+      }
+      svg.clearTimers()
+      window.convo.hide()
+      ntro.style.opacity = 0
+      await nn.sleep(1000)
+      ntro.style.display = 'none'
+      btn.style.display = 'block'
+      p.style.display = 'block'
+      svg.updateHTML(0)
+      this.update({ height: 483 }, 500)
+      this._prevSize.height = 483
+      this.slide.style.overflowY = 'auto'
+      await nn.sleep(100)
+      ntro.style.height = '0px'
+      btn.style.opacity = 1
+      p.style.opacity = 1
+    } else { // displaying ref (toggle into presentation)
+      utils.cancelAllNetitorUses('html-reference')
+      this.slide.style.overflowY = 'hidden'
+      svg.style.cursor = 'pointer'
+      btn.style.opacity = 0
+      p.style.opacity = 0
+      ntro.style.display = 'flex'
+      this.update({ height: 290, bottom: 20, right: 20 }, 500)
+      this._prevSize.height = 290
+      await nn.sleep(100)
+      ntro.style.height = '222px'
+      this._prevUpdateState = NNE.autoUpdate
+      WIDGETS['coding-menu'].autoUpdate(true)
+      window.convo = new Convo(this.convos, 'start-guide')
+      await nn.sleep(1000)
+      btn.style.display = 'none'
+      p.style.display = 'none'
+      await nn.sleep(100)
+      ntro.style.opacity = 1
+    }
+  }
 
   _createHTML () {
     if (!utils.customElementReady('widget-slide')) {
@@ -103,9 +209,6 @@ class HtmlReference extends Widget {
 
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
-
-    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
 
     this.slide.updateSlide(this.mainOpts)
   }
@@ -120,20 +223,43 @@ class HtmlReference extends Widget {
     div.querySelector('.html-reference-widget--sec-link[name="attributes"]')
       .addEventListener('click', () => this.slide.updateSlide(this.attrListOpts))
 
+    div.querySelector('.html-reference-widget--intro-btn')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('.html-reference-widget--guided-intro span.link')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('svg-tag-presentation')
+      .addEventListener('svg-click', e => this.togglePresentationConvo())
+
+    div.querySelector('svg-tag-presentation').addEventListener('svg-update', e => {
+      if (window.convo?.id && this.convos.map(c => c.id).includes(window.convo.id)) {
+        this._lastConvo = window.convo.id
+      }
+    })
+
     return div
   }
 
   _createList (type) {
     const list = []
-    Object.keys(NNE.edu.html[type]).sort().forEach(name => {
+    const names = [
+      ...new Set([
+        ...Object.keys(NNE.edu.html[type]),
+        ...Object.keys(NNE.edu.svg[type])
+      ])
+    ]
+    names.sort().forEach(name => {
       const item = { name }
+      const isSVG = !Object.keys(NNE.edu.html[type]).includes(name)
       if (type === 'elements') {
         item.html = `<span style="color:var(--netizen-tag-bracket);">&lt;</span><span style="color:var(--netizen-tag);">${name}</span><span style="color:var(--netizen-tag-bracket);">&gt;</span>`
       } else if (type === 'attributes') {
         item.html = `<span style="color:var(--netizen-attribute);">${name}</span>`
       }
+      if (isSVG) item.html += '<span class="html-ref__svg-label">SVG</span>'
       item.click = () => {
-        const nfo = NNE.edu.html[type][name]
+        const nfo = isSVG ? NNE.edu.svg[type][name] : NNE.edu.html[type][name]
         this._createInfoSlide(type, name, nfo)
       }
       list.push(item)
@@ -144,6 +270,8 @@ class HtmlReference extends Widget {
   _createInfoSlide (type, name, nfo) {
     const div = document.createElement('div')
     if (!nfo) nfo = NNE.edu.html[type][name]
+    if (!nfo) nfo = NNE.edu.svg[type][name]
+    if (!nfo) return
 
     const h1 = document.createElement('h1')
     h1.classList.add('hdr-highlight')
@@ -187,6 +315,13 @@ class HtmlReference extends Widget {
     }
     div.appendChild(description)
 
+    // if it's an SVG element
+    if (type === 'elements' && !Object.keys(NNE.edu.html.elements).includes(name)) {
+      nn.create('br').addTo(div)
+      const m = 'This is an <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorials/SVG_from_scratch/Getting_started" target="_blank">SVG element</a> so it must be placed within <code>&lt;svg&gt;</code> tags.'
+      nn.create('div').content(m).addTo(div)
+    }
+
     if (type === 'elements') this._createElementDetails(div, name, nfo)
     else if (type === 'attributes') this._createAttributeDetails(div, name, nfo)
 
@@ -214,31 +349,47 @@ class HtmlReference extends Widget {
     if (nfo.flow || nfo.singleton) {
       const d = document.createElement('div')
       d.innerHTML = ''
-      if (nfo.flow === 'inline') {
-        d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements" target="_blank">inline</a> element.`
-      } else if (nfo.flow === 'block') {
-        d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
-      }
+      // NOTE: don't think differentiating between inline/block is all that helpful here after all.
+      // ...but will leave it here in case we change our mind.
+      // if (nfo.flow === 'inline') {
+      //   d.innerHTML += `The <b>${name}</b> element is an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements" target="_blank">inline</a> element.`
+      // } else if (nfo.flow === 'block') {
+      //   d.innerHTML += `The <b>${name}</b> element is a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements" target="_blank">block</a> element.`
+      // }
       if (nfo.singleton) {
         d.innerHTML += `${nfo.flow ? ' ' : ''}The <b>${name}</b> element is${nfo.flow ? ' also' : ''} a "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">void element</a>" (aka "<a href="https://www.thoughtco.com/html-singleton-tags-3468620" target="_blank">singleton tag</a>"), which means it consists ony of an opening tag, it does not require a closing tag.`
       }
-      slide.appendChild(d)
-      slide.appendChild(document.createElement('br'))
+
+      if (d.innerHTML !== '') {
+        slide.appendChild(d)
+        slide.appendChild(document.createElement('br'))
+      }
     }
     if (nfo.attributes) {
       const d = document.createElement('div')
-      d.innerHTML = `The following attributes can be applied to the opening <code>&lt;${name}&gt;</code> tag:`
-      nfo.attributes.forEach(attr => {
-        const span = document.createElement('span')
-        span.className = 'inline-link inline-link--attr'
-        span.textContent = attr
-        span.addEventListener('click', () => this._createInfoSlide('attributes', attr))
-        d.appendChild(span)
-      })
+
+      const displayTxtWithAttrs = () => {
+        d.innerHTML = `The following attributes can be applied to the opening <code>&lt;${name}&gt;</code> tag:`
+        nfo.attributes.forEach(attr => {
+          const span = document.createElement('span')
+          span.className = 'inline-link inline-link--attr'
+          span.textContent = attr
+          span.addEventListener('click', () => this._createInfoSlide('attributes', attr))
+          d.appendChild(span)
+        })
+      }
+
+      if (nfo.attributes.length > 5) {
+        d.innerHTML = `This element can have ${nfo.attributes.length} different attributes applied to it's opening tag. `
+        nn.create('span')
+          .set('class', 'link').content('<span class="link">list attributes?')
+          .on('click', displayTxtWithAttrs).addTo(d)
+      } else displayTxtWithAttrs()
+
       slide.appendChild(d)
+      slide.appendChild(document.createElement('br'))
     }
     if (nfo.url) {
-      slide.appendChild(document.createElement('br'))
       const d = document.createElement('div')
       d.innerHTML = `Learn more about it at the <a href="${nfo.url}" target="_blank">Mozilla Developer Network</a> page.`
       slide.appendChild(d)
@@ -261,6 +412,8 @@ class HtmlReference extends Widget {
       slide.appendChild(document.createElement('br'))
     }
     if (nfo.elements) {
+      if (!nfo.note) slide.appendChild(document.createElement('br'))
+
       const d = document.createElement('div')
       if (nfo.elements.text === 'Global attribute') {
         d.innerHTML = `<b>${name}</b> is a global attribute, it can be applied to any element`

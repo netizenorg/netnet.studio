@@ -1,0 +1,119 @@
+{
+  "key": 1760323166556,
+  "name": "three-js",
+  "tags": [
+    "3d",
+    "three",
+    "webgl",
+    "cube",
+    "demoscene"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyNU1FvmzAQfs+vsLqHmA4ZoqmbNqWVtihrH9qpaif12djX4MjYzDZN0mn/fQcYGtY+DIFA3/fdd3e+Y+mFU3Ug3onzkzKE2n/JMiHN1jOhbSMfNXfAhK0yvuX7TKvCZ6F0AGzrs5wtPuIzAicXy6z3u5gthw9CslOy0bbgmvy8uluvyWmGoIZARFNAShwYCQ5cSrwAg4DgFTgeNTslQ0nO8W2k3TFlDLiHFot8CWpThn8EVx2ICrwfGyOCsoZ4CE1NaEJ+I0r6ZBhnYNfXxe5bhCYd29cwoW/B+RrQ6wlWHUs/naWxvizWkRI8j5Qs8jxPZp3R0N3E6gGKy+u7yMSMg5BhnSsN3K2sto7O333urvlr1b16BtrlT2P6XiOtaCowgRVWHhiva4xZlUpLOkZLW601tKK3Qnw4aGAVdxtlsO6870RY4wPZgK0guMOkn292fxlx2raPd3IUU/EATuH8j2NuwJc/rKu4von0cPS4Fa+UdMibjm7JyxgZl5K2cfHQ++mx2nrVjp49o98HZP7MjheCG9V6vayEg18N+PC1w1Hx3aEPjbLBGrMwZ0MnYHvyHs+H5Ys3uMPITSfXf9DJsidDcXGLsZ/1E87jWvmAMlwDbbmcp/0SJ/8hHKsef8m/Wp8/3A==",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://threejs.org/\" target=\"_blank\">Three.js</a> by creative technologist and demoscenster <a href=\"https://ricardocabello.com/\" target=\"_blank\">Ricardo Cabello</a> (aka <a href=\"https://mrdoob.com/\" target=\"_blank\">mr.doob</a>) and loads of other <a href=\"https://github.com/mrdoob/three.js/graphs/contributors\" target=\"_blank\">contributors</a>, a JS library that simplifies working with WebGL, the browser’s low-level 3D rendering system. WebGL is extremely powerful, but it can be <a href=\"https://netnet.studio/?layout=dock-left#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\" target=\"_blank\">verbose to work with directly</a>. Three.js abstracts away the boilerplate and lets you think in terms of familiar concepts like <em>scenes</em>, <em>cameras</em>, and <em>meshes</em>—the same building blocks used in professional 3D graphics software.",
+      "title": "getting started"
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        4,
+        5,
+        6
+      ],
+      "text": "At the top of our JS code I've created a few global variables, including a <code>width</code> and <code>height</code> matching the window's width and height, as well as a few others I need to be able to reference across different functions."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        8,
+        9,
+        10
+      ],
+      "text": "Like most our demos, we begin with a <code>setup</code> function, in it we'll create a <code>THREE.Scene()</code>, this is our virtual world, the container for every 3D object we’ll render. Next we create our <code>camera</code>, the <a href=\"https://threejs.org/docs/#api/en/cameras/PerspectiveCamera\" target=\"_blank\">Perspective Camera</a> is one of a few cameras we can create. We've set it up with with a 75-degree field of view and an aspect ratio matching our canvas. The near and far planes (0.1 and 1000) define the range of visible depth. Together, these settings define how the scene is projected from 3D space onto the 2D screen.\n"
+    },
+    {
+      "title": "renderer",
+      "focus": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "We then create a <code>THREE.WebGLRenderer()</code>, which handles the actual drawing. By setting its size to the desired width and height and then appending <code>renderer.domElement</code> (a <code>canvas</code>) to the page, we’ve created the visible viewport for our 3D scene."
+    },
+    {
+      "title": "other renderers",
+      "focus": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "I should note that while the <a href=\"https://threejs.org/docs/?q=renderer#api/en/renderers/WebGLRenderer\" target=\"_blank\">WebGL Renderer</a> is the most powerful, the Three.js API can also be used to transform HTML elements into 3D scenes using the <a href=\"https://threejs.org/docs/?q=renderer#examples/en/renderers/CSS2DRenderer\" target=\"_blank\">CSS 2D Renderer</a> and <a href=\"https://threejs.org/docs/?q=renderer#examples/en/renderers/CSS3DRenderer\" target=\"_blank\">CSS 3D Renderer</a>, as well as SVG using the <a href=\"https://threejs.org/docs/?q=renderer#examples/en/renderers/SVGRenderer\" target=\"_blank\">SVG Renderer</a>. It might seem crazy to transform markup documents into 3D scenes when WebGL exists, but it does allow for some <a href=\"https://threejs.org/examples/?q=css#css3d_periodictable\" target=\"_blank\">cool possabilities</a> and speaks to the values of the library's creators and their <a href=\"https://en.wikipedia.org/wiki/Demoscene\" target=\"_blank\">demoscene</a> roots."
+    },
+    {
+      "title": "cube",
+      "focus": [
+        18,
+        19,
+        20,
+        21
+      ],
+      "text": "Next, we construct a simple object: a cube. A <code>BoxGeometry</code> defines the cube’s shape (1×1×1 units), and a <code>MeshNormalMaterial()</code> gives it an automatically shaded, color-shifting surface that responds to its face orientation. Combining the geometry and material with <code>new THREE.Mesh()</code> gives us a renderable object that we add to the scene."
+    },
+    {
+      "title": "geometry + material",
+      "focus": [
+        18,
+        19
+      ],
+      "text": "We create 3D objects by pairing a shape and a surface. The shape comes from a <em>geometry</em>, a set of vertices, faces, and attributes that define form (see <a href=\"https://threejs.org/manual/#en/primitives\" target=\"_blank\">primitives</a> and <a href=\"https://threejs.org/manual/#en/custom-buffergeometry\" target=\"_blank\">custom geometry</a>). The surface comes from a <em>material</em>, rules for how light interacts with that shape, including color, shading model, textures, transparency, and more (see <a href=\"https://threejs.org/manual/#en/materials\" target=\"_blank\">Materials</a> and docs)."
+    },
+    {
+      "title": "meshes",
+      "focus": [
+        20,
+        21
+      ],
+      "text": "A <b>mesh</b> is the basic visible object in a Three.js scene which you can create by calling <code>new THREE.Mesh()</code> and passing a shape (geometry) and material you want Three.js to render. The resulting <a href=\"https://threejs.org/docs/#api/en/objects/Mesh\" target=\"_blank\">Mesh</a> is what you position, rotate, scale, and add to the scene."
+    },
+    {
+      "title": "adjusting the camera",
+      "focus": [
+        23
+      ],
+      "text": "Everything we add to the scene gets placed in the center of the scene, the <code>0, 0, 0</code> (x, y, z) position by default. This means our camera is placed directly inside our cube. In order to see the cube we either need to adjust the cube's position or the camera's which is why we're moving the camera slightly back here, so the cube appears in view."
+    },
+    {
+      "title": "animate",
+      "focus": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "text": "The <code>animate()</code> function provides the motion. Calling <code>requestAnimationFrame(animate)</code> schedules the next frame in the browser’s refresh loop, giving us smooth animation. On each frame, we increment the cube’s rotation on both the X and Y axes, then call <code>renderer.render(scene, camera)</code> to draw it. The result is a cube spinning continuously in 3D space."
+    },
+    {
+      "title": "on load",
+      "focus": null,
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded, as well as our <code>animate</code> loop"
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"https://threejs.org/\" target=\"_blank\">Three.js</a> has solid <a href=\"https://threejs.org/docs/\" target=\"_blank\">documentation</a> and lots of <a href=\"https://threejs.org/examples/\" target=\"_blank\">examples</a>. You can add <a href=\"https://threejs.org/manual/#en/lights\" target=\"_blank\">lights</a> and <a href=\"https://threejs.org/manual/#en/shadows\" target=\"_blank\">shadows</a>, load <a href=\"https://threejs.org/manual/#en/load-gltf\" target=\"_blank\">complex 3D models</a>, use canvas to create your own <a href=\"https://threejs.org/manual/#en/canvas-textures\" target=\"_blank\">dynamic materials</a>, or even write custom WebGL <a href=\"https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram\" target=\"_blank\">shaders</a> (if you've <a href=\"https://thebookofshaders.com/\" target=\"_blank\">learned how</a>) for advanced effects."
+    }
+  ]
+}

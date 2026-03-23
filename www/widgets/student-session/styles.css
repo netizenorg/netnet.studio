@@ -3,11 +3,11 @@
 
   flex-direction: column;
   align-items: flex-end;
-  
+
   max-height: 400px;
-  
+
   padding: 0px 15px;
-  
+
   overflow-y: scroll;
   scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
   scrollbar-width: thin;
@@ -20,7 +20,7 @@
   border: none;
   border-radius: 5px;
   margin: 6px;
-  
+
   color: var(--netizen-hint-color);
   background-color: var(--netizen-meta);
 
@@ -36,8 +36,19 @@
 
   align-items: center;
   justify-content: space-between;
-  
+
   width: 100%;
-  
+
   margin-top: 42px;
+}
+
+
+.student-session__d-icons {
+  width: 25px;
+
+  border-radius: 50%;
+  border: 4px solid var(--fg-color);
+  margin-bottom: -8px;
+
+  background: var(--fg-color);
 }

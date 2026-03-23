@@ -6,9 +6,11 @@ class CssReference extends Widget {
     this.listed = true
     this.keywords = ['css', 'properties', 'reference']
     this.resizable = false
-    this.title = 'CSS Reference'
+    this.title = 'CSS Reference Docs'
 
     this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
+
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     const init = (html) => {
       if (!utils.customElementReady('code-sample')) {
@@ -52,7 +54,15 @@ class CssReference extends Widget {
       NNW.on('theme-change', () => { this._createHTML() })
     }
 
-    utils.get('./widgets/css-reference/data/edu-supplement.json', (json) => { this.data = json })
+    this._boundEditWatcher = this._editWatcher.bind(this)
+    this.on('close', () => {
+      NNE.cm.off('keydown', this._boundEditWatcher)
+    })
+
+    utils.get('./widgets/css-reference/data/edu-supplement.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.data = json
+    })
     utils.get('./widgets/css-reference/data/main-slide.html', (html) => init(html), true)
   }
 
@@ -127,8 +137,113 @@ class CssReference extends Widget {
     window.convo = new Convo({ content, options }, null, true)
   }
 
+  inPresentation () {
+    return this.slide.style.overflowY === 'hidden'
+  }
+
+  toggleIntroPresentation () {
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
+    }
+
+    const isStarterCode = NNE.code === utils.starterCode()
+    if (isStarterCode) return this._toggleIntroPresentation()
+
+    if (WIDGETS['project-files']?.projectData.name) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    const workingOnDemoOrTemplate = typeof utils.url.demo === 'string' ||
+      typeof utils.url.template === 'string'
+    if (workingOnDemoOrTemplate) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    this._toggleIntroPresentation()
+  }
+
+  togglePresentationConvo () {
+    const id = window.convo?.id
+    if (!id || id === '0' || !this.convos.map(c => c.id).includes(id)) {
+      window.convo = new Convo(this.convos, this._lastConvo)
+    } else {
+      this._lastConvo = window.convo.id
+      window.convo.hide(); window.convo = null
+    }
+  }
+
+  openDocs (opt, anchor) {
+    if (!this.opened) this.open()
+    this._lastScrollTop = this.slide.scrollTop
+    this.slide.updateSlide(this[opt], anchor)
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  async _toggleIntroPresentation () {
+    const div = this.slide.querySelector('div')
+    const ntro = div.querySelector('.css-reference-widget--guided-intro')
+    const btn = div.querySelector('.css-reference-widget--intro-btn')
+    const p = div.querySelector('.css-reference-widget--intro-p')
+    const svg = div.querySelector('svg-css-presentation')
+
+    if (this.inPresentation()) { // displaying presentation
+      //                             (toggle into regular CSS Reference page)
+      NNE.code = utils.starterCode()
+      NNE.update()
+      if (typeof this._prevUpdateState === 'boolean') {
+        WIDGETS['coding-menu'].autoUpdate(this._prevUpdateState)
+      }
+      NNE.readOnly = false
+      NNE.cm.off('keydown', this._boundEditWatcher)
+      svg.clearTimers()
+      window.convo.hide()
+      ntro.style.opacity = 0
+      await nn.sleep(1000)
+      ntro.style.display = 'none'
+      btn.style.display = 'block'
+      p.style.display = 'block'
+      svg.updateHTML(0)
+      this.update({ height: 483 }, 500)
+      this._prevSize.height = 483
+      this.slide.style.overflowY = 'auto'
+      await nn.sleep(100)
+      ntro.style.height = '0px'
+      btn.style.opacity = 1
+      p.style.opacity = 1
+    } else { // displaying ref (toggle into presentation)
+      utils.cancelAllNetitorUses('css-reference')
+      NNE.readOnly = true
+      NNE.cm.on('keydown', this._boundEditWatcher)
+      this.slide.style.overflowY = 'hidden'
+      svg.style.cursor = 'pointer'
+      btn.style.opacity = 0
+      p.style.opacity = 0
+      ntro.style.display = 'flex'
+      this.update({ height: 290, bottom: 20, right: 20 }, 500)
+      this._prevSize.height = 290
+      await nn.sleep(100)
+      ntro.style.height = '222px'
+      this._prevUpdateState = NNE.autoUpdate
+      WIDGETS['coding-menu'].autoUpdate(true)
+      window.convo = new Convo(this.convos, 'start-guide')
+      await nn.sleep(1000)
+      btn.style.display = 'none'
+      p.style.display = 'none'
+      await nn.sleep(100)
+      ntro.style.opacity = 1
+    }
+  }
+
+  _editWatcher () {
+    if (this?.opened && NNE.readOnly) {
+      window.convo = new Convo(this.convos, 'no-edit')
+    }
+  }
+
   _selectCSSFunc () {
     setTimeout(() => {
       const from = NNE.cm.getCursor('from')
@@ -272,9 +387,6 @@ class CssReference extends Widget {
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
 
-    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.widget__inner-html').style.padding = '10px 0px'
-
     this.slide.updateSlide(this.mainOpts)
   }
 
@@ -290,6 +402,21 @@ class CssReference extends Widget {
 
     div.querySelector('.css-reference-widget--sec-link[name="cascade"]')
       .addEventListener('click', () => this.slide.updateSlide(this.cascadeOpts))
+
+    div.querySelector('.css-reference-widget--intro-btn')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('.css-reference-widget--guided-intro span.link')
+      .addEventListener('click', () => this.toggleIntroPresentation())
+
+    div.querySelector('svg-css-presentation')
+      .addEventListener('svg-click', e => this.togglePresentationConvo())
+
+    div.querySelector('svg-css-presentation').addEventListener('svg-update', e => {
+      if (window.convo?.id && this.convos.map(c => c.id).includes(window.convo.id)) {
+        this._lastConvo = window.convo.id
+      }
+    })
 
     const updateExamples = () => {
       if (div.querySelector('[name="css-ex-1"]').children.length < 1) {

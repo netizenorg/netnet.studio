@@ -1,0 +1,95 @@
+{
+  "key": 1760302442637,
+  "name": "gsap-js",
+  "tags": [
+    "gsap",
+    "animation",
+    "easeing",
+    "tween"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx1ks1u2zAQhO9+ikUusgOX9A/Sg+AECIIglwIt0CegyLVEh+YS5DK2UeTdS8mWgRjtjZr5luIMuUk62sCQon6865hDqqXUxu+S0I6y2ToVUWjaS7VTR+lsk2SbVJBrsVyJ1bAWe+vFLt09beR5t6fJZlwAyHtoHTXKQc/CvSzaNnvNljwk5BxgOoM/RS2shJeIihEUNHQEdLhHz4OnySce1EcwpHNvCD3Qr2dsWhn7Uc0GunAi8cmhOFjDXZmplotFOFY3boe27fi/dqP0exspe/NCjmLPRTS3VKBkhzjFVk0ilxlvGabQ2w//+InDLX/1rvkaMiehQsBygM46My1Ts8nY1bO3+74s7nAoJifrW3j7/fxrIIa7Yepn5peCy9Y5qv6sNazmF+lYw3qxGL8i8QVYf7+KSSuHNSzFwxXDUKqv4dtyVE50oho4ZhwVVKkMVYEOGJfC+p+Zz/k++0v67HMcrDd0EMqY148S+IdNjB7jtHKkTDU/P5DZ5Pqy/gL/us/g",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I’ve imported <a href=\"https://gsap.com/\" target=\"_blank\">GSAP</a> (GreenSock Animation Platform) by GreenSock (aka designer <a href=\"https://github.com/jackdoyle\" target=\"_blank\">Jack Doyle</a>) which was recently aquired by the company <a href=\"https://webflow.com/\" target=\"_blank\">Webflow</a>. It's a JS animation library popular among professional web developers.",
+      "title": "getting started"
+    },
+    {
+      "title": "create an element",
+      "focus": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "We start in a <code>setup</code> function by creating a simple red square: a <code>div</code> styled to be 100 by 100 pixels and positioned absolutely at <code>250px</code> from the top and <code>50px</code> from the left. We could also use GSAP to animate elements already defined in our HTML."
+    },
+    {
+      "title": "gsap.to()",
+      "focus": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "text": "The animation happens in one method call with <code>gsap.to()</code>. This will <i>tween</i> our initial properties <i>to</i> the given values. We pass the target element <code>box</code> and an object describing what should change over time."
+    },
+    {
+      "title": "duration and x",
+      "focus": [
+        17,
+        18
+      ],
+      "text": "First we've set the <code>duration</code> of the animation to <b>2</b> (seconds). The <code>x</code> property moves the box 300px to the right, it modifies the CSS <code>translateX</code> transform property behind the scenes."
+    },
+    {
+      "title": "rotation and scale",
+      "focus": [
+        19,
+        20
+      ],
+      "text": "Next, <code>rotation</code> spins the box one full turn (360 degrees), and <code>scale</code> grows it to 150% of its original size. GSAP also uses CSS transform properties for these behind the scenes and combines them all for us.\n"
+    },
+    {
+      "title": "repeat and yoyo",
+      "focus": [
+        21,
+        22
+      ],
+      "text": "We set <code>repeat</code> to <b>-1</b> loop the animation forever (or you can set a specific number of times to repeat). With <code>yoyo</code> set to <i>true</i>, the animation will run both forwards and backwards before repeating."
+    },
+    {
+      "title": "easing",
+      "focus": [
+        23
+      ],
+      "text": "Lastly, setting <code>ease</code> to <a href=\"https://easings.net/#easeInOutSine\" target=\"_blank\">'power1.inOut'</a> controls the speed curve, starting and ending gently with a slightly faster middle. GSAP includes a wide range of <a href=\"https://gsap.com/docs/v3/Eases/\" target=\"_blank\">eases</a> so you can dial in the exact feel of your motion.\n"
+    },
+    {
+      "title": "on load",
+      "focus": [
+        27
+      ],
+      "text": "As with many of our other demos, the last line in our code sets everything going by running our <code>setup</code> function as soon as our page has loaded."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There’s loads more you can do with this library, this is only the beginning. <a href=\"https://gsap.com/\" target=\"_blank\">GSAP</a> has excellent <a href=\"https://gsap.com/docs/v3/\" target=\"_blank\">docs</a>, and extra plugins like <a href=\"https://gsap.com/docs/v3/Plugins/ScrollTrigger/\" target=\"_blank\">ScrollTrigger</a> for scroll-based effects, <a href=\"https://gsap.com/docs/v3/Plugins/MotionPathPlugin/\" target=\"_blank\">MotionPathPlugin</a> for animating along curves, and <a href=\"https://gsap.com/docs/v3/Plugins/Draggable/\" target=\"_blank\">Draggable</a> for interactive elements. Though it's worth mentioning that some of GSAP's plugins are paid features which require a license for commercial use."
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "gui": {
+    "name": "GUI",
+    "definition": "or Graphical User Interface, is a way to interact with software using visual elements like windows, buttons, menus, and icons that you can point and click with a mouse or tap with your finger. Most websites, apps, and programs you use daily have a GUIs because it makes complex tasks more accessible.",
+    "see": ["cli"]
+  },
+  "cli": {
+    "name": "CLI",
+    "definition": "or Command Line Interface, is a text-based way to interact with software by typing commands instead of clicking buttons. It typically looks like a black or dark screen with a blinking cursor where you type instructions for the computer to execute. While it has a steeper learning curve than a GUI, many developers prefer the CLI because it can be faster and more powerful once you learn the commands.",
+    "see": ["gui"]
+  },
+  "tag": {
+    "name": "Tag",
+    "definition": "A piece of HTML code wrapped in angle brackets (like <code>&lt;p&gt;</code>) that tells the browser how to display or structure content. Tags usually come in pairs, an opening tag like <code>&lt;p&gt;</code> and a closing tag like <code>&lt;/p&gt;</code>, though some tags like <code>&lt;img&gt;</code> are self-closing.",
+    "see": ["element"]
+  },
+  "element": {
+    "name": "Element",
+    "definition": "A complete HTML component made up of an opening tag, content, and a closing tag, like <code>&lt;p&gt;Hello!&lt;/p&gt;</code>. Elements are the building blocks of web pages, everything you see on a page (paragraphs, images, buttons, etc.) is an element. Some elements can contain other elements nested inside them.",
+    "doc": ["html-reference", "eleListOpts"]
+  },
+  "attribute": {
+    "name": "Attribute",
+    "definition": "Extra information added inside an opening tag that modifies how the element behaves or appears. Attributes are written as name-value pairs, like <code>class=\"header\"</code> or <code>src=\"image.jpg\"</code>. Different tags accept different attributes, for example, <code>&lt;img&gt;</code> tags use the <code>src</code> attribute to specify which image to display, while <code>&lt;a&gt;</code> tags use <code>href</code> to specify where a link should go.",
+    "see": ["element", "tag"],
+    "doc": ["html-reference", "attrListOpts"]
+  },
+  "semantic-html": {
+    "name": "Semantic HTML",
+    "definition": "Using HTML tags that describe what content means or what role it plays, rather than just how it should look. For example, using <code>&lt;nav&gt;</code> for navigation menus, <code>&lt;article&gt;</code> for blog posts, or <code>&lt;header&gt;</code> for page headers. Technically speaking you could use <code>&lt;div&gt;</code> for all of the above, but semantic HTML makes your code more meaningful to browsers, screen readers, and search engines, improving accessibility and SEO."
+  },
+  "selector": {
+    "name": "Selector",
+    "definition": "The part of a CSS rule that specifies which HTML element(s) you want to style. Selectors can target elements by their tag name (like <code>p</code>), by class (like <code>.header</code>), by ID (like <code>#main</code>), or by more complex patterns.",
+    "see": ["element"],
+    "doc": ["css-reference", "selectorListOpts"]
+  },
+  "property": {
+    "name": "Property",
+    "definition": "The specific aspect or characteristic of an element you want to change with CSS. Properties define what you're styling, like <code>color</code> for text color, <code>font-size</code> for text size, <code>background</code> for background appearance, or <code>margin</code> for spacing around an element. Each property is followed by a colon and then its value.",
+    "doc": ["css-reference", "propsListOpts"]
+  },
+  "value": {
+    "name": "Value",
+    "definition": "The specific data or setting assigned to something. In CSS, it's what you set a property to (like <code>color: red</code>). In HTML, it could refer to the data inside an attribute (like <code>class=\"header\"</code>). In JavaScript, it often refers to data stored in a variable (like <code>x = 42</code>). In all cases, the value is the <em>thing</em> that gets assigned or stored."
+  },
+  "box-model": {
+    "name": "Box Model",
+    "definition": "Every HTML element is treated as a rectangular box made of four layers: the content itself (text, images, etc.), padding (space between content and border), border (a line around the padding), and margin (space between the border and other elements). Understanding the box model is crucial for controlling layout and spacing, for example, an element with <code>width: 100px</code> plus <code>padding: 10px</code> will actually take up 120px of space (100 + 10 on each side).",
+    "doc": ["demo-sketches", "1696291638151"]
+  },
+  "variable": {
+    "name": "Variable",
+    "definition": "A named container that stores a value you can reuse throughout your code. In JavaScript, you create them with <code>let</code>, <code>const</code>, or <code>var</code>, for example <code>let score = 10;</code>. In CSS, you create them with <code>--</code> syntax, like <code>--main-color: blue;</code>, and use them with <code>var()</code>. Variables let you define something once and use it multiple times, making updates easier.",
+    "doc": ["js-reference", "dataTypesOpts"]
+  },
+  "function": {
+    "name": "Function",
+    "definition": "A reusable block of code that performs a specific task. In JavaScript, you define functions with <code>function name() { }</code> and call them to run their code. In CSS, built-in functions like <code>calc()</code>, <code>rgb()</code>, or <code>var()</code> perform calculations or transformations on values. Functions help you organize code and avoid repetition.",
+    "doc": ["js-reference", "deeperFuncsOpts"]
+  },
+  "event": {
+    "name": "Event",
+    "definition": "Something that happens in the browser that JavaScript can detect and respond to. Events can be user actions like clicking a button, moving the mouse, or pressing a key, or they can be browser actions like the page finishing loading or a video ending. In JavaScript, you can write code that \"listens\" for specific events and runs in response to them, making your pages interactive."
+  },
+  "loop": {
+    "name": "Loop",
+    "definition": "A JavaScript structure that repeats a block of code multiple times. Common types include <code>for</code> loops (repeat a specific number of times), <code>while</code> loops (repeat as long as a condition is true), and <code>forEach</code> (repeat for each item in an array). For example, <code>for (let i = 0; i < 5; i++)</code> will run the code inside it 5 times. Loops save you from writing the same code over and over.",
+    "doc": ["js-reference", "mainOpts", "loops"]
+  },
+  "array": {
+    "name": "Array",
+    "definition": "A JavaScript data structure that stores multiple values in a single ordered list. Arrays are created with square brackets, like <code>let colors = ['red', 'blue', 'green'];</code>. Each item in an array has a numbered position (index) starting at 0, so <code>colors[0]</code> gives you 'red'. Arrays are useful when you need to store and work with collections of related data, like a list of names, numbers, or any other values.",
+    "doc": ["js-reference", "dataStructOpts", "arrays"]
+  },
+  "object": {
+    "name": "Object",
+    "definition": "A JavaScript data structure that groups related data and functions together using key-value pairs. Objects are created with curly braces, like <code>let person = { name: 'Ada', age: 36 };</code>. You access values using dot notation (<code>person.name</code>) or bracket notation (<code>person['age']</code>). Objects can contain any type of data, including other objects, arrays, and functions (called methods when inside an object). They're perfect for representing real-world things with multiple properties.",
+    "doc": ["js-reference", "dataStructOpts"]
+  },
+  "canvas": {
+    "name": "Canvas",
+    "definition": "Generally speaking, any blank creative space for making things. The browser window itself is often called a canvas. More specifically, the <code>&lt;canvas&gt;</code> element is a special HTML tag that creates a drawable area where you can use JavaScript to create graphics, animations, and interactive visuals pixel-by-pixel. This makes it popular for games, data visualizations, and generative art."
+  },
+  "keyframe": {
+    "name": "Keyframe",
+    "definition": "A specific point in an animation where you define how something should look or be positioned at that moment. The computer then automatically creates smooth transitions between keyframes. In CSS, you create keyframes using the <code>@keyframes</code> rule with percentages (like <code>0%</code>, <code>50%</code>, <code>100%</code>) or keywords (<code>from</code>, <code>to</code>) to mark different stages. This concept comes from traditional animation where artists drew key poses and assistants filled in the frames between them."
+  },
+  "dom": {
+    "name": "DOM",
+    "definition": "Document Object Model, the browser's realtime tree-like representation of your HTML that JavaScript can read and manipulate. When a page loads, the browser converts your HTML into the DOM, creating objects for each element. JavaScript can then access these objects to change content, styles, or structure dynamically. For example, <code>document.body.style.color = \"red\"</code> changes the HTML body element's text color to red",
+    "see": ["object"]
+  },
+  "console": {
+    "name": "Console",
+    "definition": "A built-in browser tool (part of Developer Tools) where you can see messages, errors, and warnings from your code. You can open it by pressing F12 or right-clicking and selecting \"Inspect.\" Developers use <code>console.log()</code> in JavaScript to print information to the console for debugging. It's also an interactive environment where you can type JavaScript commands and see results immediately."
+  },
+  "viewport": {
+    "name": "Viewport",
+    "definition": "The visible area of a web page within the browser window, essentially what you can see without scrolling. The viewport size changes based on the device and window size, which is why it's measured in viewport units like <code>vw</code> (viewport width) and <code>vh</code> (viewport height) in CSS. Understanding the viewport is crucial for creating responsive designs that work on different screen sizes.",
+    "see": ["responsive-design"]
+  },
+  "responsive-design": {
+    "name": "Responsive Design",
+    "definition": "An approach to web design that makes websites adapt and look good on any screen size, from phones to tablets to desktop monitors. This typically involves using flexible layouts (like CSS Grid or Flexbox), relative units (like percentages or <code>em</code>), and media queries that apply different styles based on screen width. The goal is to create one website that works well everywhere, rather than separate mobile and desktop versions.",
+    "see": ["viewport"]
+  },
+  "syntax": {
+    "name": "Syntax",
+    "definition": "The specific rules and structure for writing valid code in a given language, essentially the grammar and punctuation of code. Each language has its own syntax: JavaScript requires parenthesis and curly braces in certain places, HTML uses angle brackets for tags, CSS uses colons and semicolons. Even small syntax errors like a missing bracket or misspelled keyword will cause your code to break, so learning proper syntax is essential."
+  },
+  "library": {
+    "name": "Library",
+    "definition": "A collection of pre-written, reusable code that provides specific functionality you can add to your projects. Libraries like <code>Tone.js</code> (for music), <code>Three.js</code> (for 3D graphics), or <code>nn.min.js</code> (for DOM manipulation and other creative utilities) save you from writing complex features from scratch. You include a library in your project, then call its functions to use its capabilities, you're still in control of your code's structure and flow.",
+    "see": ["framework"],
+    "doc": ["js-reference", "apisAndLibsOpts", "libraries"]
+  },
+  "framework": {
+    "name": "Framework",
+    "definition": "A comprehensive set of pre-written code that provides structure and rules for building entire applications. Unlike libraries (which you call when needed), frameworks often control the flow of your application and require you to organize code in specific ways. Examples include React for building web apps, A-Frame for building XR experiences, and to some extenct p5.js for creative coding projects. Frameworks are more opinionated than libraries but can speed up development by providing common patterns and solutions.",
+    "see": ["library"],
+    "doc": ["js-reference", "apisAndLibsOpts", "frameworks"]
+  },
+  "api": {
+    "name": "API",
+    "definition": "Application Programming Interface, a set of rules and methods that let different software systems communicate with each other. APIs allow you to request data or functionality from external sources without knowing how they work internally. For example, a weather API lets you get current temperature data, or the Canvas API lets you draw graphics. You send a request to the API and it sends back the data or performs the action you asked for.",
+    "see": ["library", "request"],
+    "doc": ["js-reference", "apisAndLibsOpts", "web-apis"]
+  },
+  "callback": {
+    "name": "Callback",
+    "definition": "A function you pass as an argument to another function, which then gets called (executed) at a specific time, usually on a specific event or after something completes. Callbacks are common in JavaScript for handling asynchronous operations like waiting for user clicks or data to load.",
+    "see": ["function", "event"],
+    "doc": ["js-reference", "deeperFuncsOpts", "callback"]
+  },
+  "request": {
+    "name": "Request",
+    "definition": "The act of asking a server for data or resources. This happens automatically when you type a URL in your browser's address bar and press enter, the browser sends a request to the server asking for that web page. In JavaScript, you can also make requests programmatically using methods like <code>fetch()</code> or <code>XMLHttpRequest</code> to get data (like JSON, images, or API responses) without reloading the page. Requests are fundamental to how the web works and how dynamic pages load new content.",
+    "see": ["api"],
+    "doc": ["demo-sketches", "1760744714860"]
+  },
+  "vector-graphics": {
+    "name": "Vector Graphics",
+    "definition": "Images defined by mathematical equations that describe shapes, lines, and curves rather than individual pixels. Because they're based on math, vector graphics stay crisp and sharp at any size, you can scale them infinitely without losing quality. SVG (Scalable Vector Graphics) is the vector format used on the web. Vector graphics are ideal for logos, icons, illustrations, and anything that needs to scale cleanly across different screen sizes.",
+    "see": ["raster-graphics"],
+    "doc": ["open", "vector-graphics"]
+  },
+  "raster-graphics": {
+    "name": "Raster Graphics",
+    "definition": "Images made up of a grid of individual pixels, each with its own color value. Common formats include JPG, PNG, and GIF. Unlike vector graphics, raster images have a fixed resolution, if you scale them up too much, they become blurry or pixelated because you're stretching the same number of pixels over a larger area. Raster graphics are best for photographs and complex images with lots of color detail and gradients.",
+    "see": ["vector-graphics"]
+  },
+  "sketch": {
+    "name": "Sketch",
+    "definition": "In netnet.studio, a sketch is a single HTML file where you can quickly experiment with code and ideas. Because HTML is a polyglot format (meaning you can mix HTML, CSS, JavaScript, and other languages together), you can create complete interactive projects within one file. Sketches are perfect for capturing ideas quickly, learning new concepts, or creating self-contained experiments. You can save them by downloading the HTML file or sharing them as a netnet URL.",
+    "see": ["demo", "project", "template"]
+  },
+  "demo": {
+    "name": "Demo",
+    "definition": "In netnet.studio, a demo is an example sketch designed for learning through exploration and remixing. Many demos are annotated and include a <b>Guide</b> button that reveals explanations tied to specific lines or sections of code, marked with green dots. You can have netnet explain the entire demo sequentially or jump to any note to understand how a particular part works. Demos are meant to be studied, modified, and experimented with to learn by remixing.",
+    "see": ["sketch", "project", "template"],
+    "doc": ["open", "demo-sketches"]
+  },
+  "project": {
+    "name": "Project",
+    "definition": "In netnet.studio, a project is a complete website or application that can include multiple HTML, CSS and JavaScript files, and media assets like images, videos, or fonts. Projects are stored as GitHub repositories, which means they're versioned (you can create save points as you work) and can be published to the web for free using GitHub's hosting. netnet handles the technical Git details for you, but since your code lives on GitHub, you're never locked in and can use other editors anytime.",
+    "see": ["sketch", "demo", "template"]
+  },
+  "template": {
+    "name": "Template",
+    "definition": "In netnet.studio, a template is a starter project with pre-organized files and folders that you can build upon. When you launch a template, netnet can guide you through it step-by-step, generating and explaining the code line by line, sometimes asking for your input along the way (like a coding mad-lib). Templates provide a structured starting point for common types of web projects, helping you understand best practices for file organization and code structure while giving you room to customize and expand.",
+    "see": ["sketch", "demo", "project"],
+    "doc": ["open", "template-projects"]
+  },
+  "vibe-coding": {
+    "name": "Vibe Coding",
+    "definition": "A style of programming where you describe what you want in plain language and let an AI generate the code for you. Instead of writing every line yourself, you guide the AI by explaining your vision, reviewing what it produces, and nudging it in the right direction. It lowers the barrier to creating software, but skipping the fundamentals means becoming dependent on the AI, not just technically (even simple bugs can be hard to fix), but conceptually as well. You can only “vibe code” what you can describe, and your ideas are shaped by your understanding of the medium (or lack thereof)."
+  }
+}

@@ -2,6 +2,7 @@
 class LoadCurtain extends HTMLElement {
   show (filename, opts) {
     window.utils.get(`/custom-elements/misc/load-curtain/data/${filename}`, (html) => {
+      if (typeof html !== 'string') console.error('ERROR', html)
       this.setAttribute('id', 'curtain-loading-screen')
       if (opts) {
         for (const key in opts) {
@@ -14,6 +15,14 @@ class LoadCurtain extends HTMLElement {
 
   hide () {
     this.innerHTML = ''
+  }
+
+  set showing (val) {
+    console.warn('LoadCurtain: "showing" is read-only, use .show(filename, opts)')
+  }
+
+  get showing () {
+    return this.innerHTML !== ''
   }
 }
 

@@ -1,98 +1,102 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn */
+/* global Widget, WIDGETS, utils, Convo, NNW, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
-    this.title = 'Learning Guide (BETA-3.0)'
+    this.title = 'Learning Guide'
     this.key = 'learning-guide'
     this.keywords = [
       'tutorials', 'guide', 'lesson', 'how to', 'how', 'to', 'learn', 'reference'
     ]
-
-    this.update({ left: 40, top: 65 })
-
-    this.on('open', () => {
-      // this._openConvo()
-      if (this.width !== 638 || this.height !== 473) {
-        this.update({ width: 638, height: 473 })
-      }
-      this.update({ left: 40, top: 65 }, 500)
-    })
-
     this.resizable = false
-    // currently loaded tutorial data
-    this.metadata = null
-    this.data = null
-    this.loaded = null
 
-    if (!WIDGETS.loaded.includes('code-examples')) {
-      WIDGETS.load('code-examples')
-    }
+    // animation related props
+    this._runningStar = false
+    this._raf = 0
+    this._svgTimer = null
+
+    this.cards = [] // collect WidgetCards
+    this.tutCards = {} // collect current tutorial thumbnail cards
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
-    this._createPage('mainOpts', 'main-slide.html', null, (div) => {
-      // div.querySelector('#bf-submission').addEventListener('click', () => {
-      //   WIDGETS['functions-menu'].BrowserFest()
-      // })
+    // load widget card class
+    utils.loadFile('widgets/learning-guide/data/widget-card.js', () => {
+      this._createPage('mainOpts', 'main-slide.html', null, (div) => {
+        // div.querySelector('#bf-submission').addEventListener('click', () => {
+        //   WIDGETS['coding-menu'].BrowserFest()
+        // })
 
-      // create sub pages
-      this.subpages = [
-        { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
-        {
-          id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
-          subs: [
-            { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-            { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-            { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-          ]
-        },
-        { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
-      ]
-      this.subpages.forEach(p => {
-        this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
-          if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+        // create sub pages
+        this.subpages = [
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+          { id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts },
+          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts }
+          // {
+          //   id: 'theNetOpts',
+          //   file: 'the-internet.html',
+          //   back: this.mainOpts,
+          //   subs: [
+          //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
+          //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
+          //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
+          //   ]
+          // }
+        ]
+        this.subpages.forEach(p => {
+          this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
+            if (p.subs) p.subs.forEach(s => this._createPage(s.id, s.file, this[p.id]))
+          })
+        })
+
+        this._createHTML()
+
+        this.update({ left: 40, top: 65 })
+
+        this.on('close', () => this._applyVisibility())
+        this.on('open', () => {
+          if (this.width !== 638 || this.height !== 473) {
+            this.update({ width: 638, height: 473 })
+          }
+          this.update({ left: 40, top: 65 }, 500)
+          this._applyVisibility()
+          if (WIDGETS['hyper-video-player']) WIDGETS['hyper-video-player'].pause()
         })
       })
-
-
-      // initial HTML
-      this._createHTML()
-      const icon = '<img src="images/menu/tutorials.png" style="height:19px; margin-right: 11px;">'
-      this.title = `${icon} Learning Guide (BETA-3.0)`
     })
 
-    WIDGETS['functions-menu'].on('theme-change', () => {
-      const src = this.ele.querySelector('iframe').src
-      this.ele.querySelector('iframe').src = src
-    })
-  }
-
-  load (name, time) {
-    setTimeout(() => {
-      document.querySelector('load-curtain').show('tutorial.html')
-    }, 100)
-
-    utils.get(`tutorials/${name}/metadata.json`, (json) => {
-      this.metadata = json
-      this.loaded = name
-      utils.updateURL(`?tutorial=${this.metadata.id}`)
-      if (WIDGETS['student-session'].getData('opened-project')) {
-        WIDGETS['student-session'].clearProjectData()
+    WIDGETS['coding-menu'].on('theme-change', () => {
+      const srcs = [...WIDGETS['learning-guide'].ele.querySelectorAll('iframe')].map(f => f.src)
+      if (srcs.length > 0) {
+        srcs.forEach((src, i) => {
+          this.ele.querySelectorAll('iframe')[i].src = src
+        })
       }
-      NNE.addCustomRoot(`tutorials/${name}/`)
-      utils.get(`tutorials/${name}/data.json`, (json) => {
-        this.data = json
-        this._loadTutorial(name, time)
-      })
+    })
+
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (nomotion) {
+      this.ele.classList.add('no-motion')
+    }
+  }
+
+  loadTemplate (name) {
+    WIDGETS.load('template-projects', w => {
+      if (this.opened) this.close()
+      w.loadTemplate(name)
     })
   }
 
-  quit () { // quit tutorial
-    WIDGETS.list().filter(w => w.opened).forEach(w => w.close())
-    this.metadata = null
-    this.data = null
-    document.querySelector('load-curtain').hide()
-    utils.updateURL()
+  openDocs (opt, anchor) {
+    if (!this.opened) this.open()
+    const dict = {
+      ai: 'theAIOpts',
+      net: 'theNetOpts',
+      web: 'theWebOpts',
+      about: 'aboutOpts'
+    }
+    const name = dict[opt] || opt
+    this.slide.updateSlide(this[name], anchor)
   }
 
   scrollTo (sec) {
@@ -100,40 +104,23 @@ class LearningGuide extends Widget {
       return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
     }
 
-    const toc = {
-      'top': 0,
-      'toc': 624,
-      'the-net': 1042,
-      'the-craft': 1309,
-      'html': 1690,
-      'css': 2842,
-      'js': 4154,
-      'refs': 4634
-    }
-
-    const y = toc[sec]
-    const slide = this.ele.querySelector('widget-slide')
-    if (slide) slide.scrollTo({ top: y, behavior: 'smooth' })
+    const el = this.slide.querySelector(`#learning-guide-${sec}`)
+    const offset = 50
+    const top = el.getBoundingClientRect().top - this.slide.getBoundingClientRect().top + this.slide.scrollTop - offset
+    this.slide.scrollTo({ top, behavior: 'smooth' })
 
     if (sec === 'toc') {
       window.convo = new Convo(this.convos, 'toc')
       NNW.menu.switchFace('happy')
     } else {
-      window.convo.hide()
+      if (window.convo) window.convo.hide()
       NNW.menu.switchFace('default')
     }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
-
-  _openConvo () {
-    if (!this.convos) {
-      setTimeout(() => this._openConvo(), 100)
-      return
-    }
-    window.convo = new Convo(this.convos, 'guide-open')
-  }
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _createPage (type, page, b, cb) {
     utils.get(`./widgets/learning-guide/data/${page}`, (html) => {
@@ -158,10 +145,13 @@ class LearningGuide extends Widget {
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
         this.mainOpts.cb = () => setTimeout(() => {
-          this._createStarField()
-          // this._animateGlobe()
+          // this._createStarField()
+          // this._svgAnimations()
         }, utils.getVal('--menu-fades-time'))
+      } else if (type === 'theAIOpts') {
+        this.theAIOpts.cb = () => this._createAICards()
       }
+
       if (cb) cb(div)
     }, true)
   }
@@ -174,32 +164,273 @@ class LearningGuide extends Widget {
 
     this.slide = document.createElement('widget-slide')
     this.innerHTML = this.slide
-
-    // this.ele.style.padding = '8px 5px 10px'
-    this.ele.querySelector('.widget__top').style.padding = '0px 15px 0px'
-    this.ele.querySelector('.widget__inner-html').style.padding = '0 0 10px 0'
+    this.slide.addEventListener('scroll', () => this._applyVisibility())
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._listTutorials()
+    this._highlightTitles()
+    this._createTutorialCards()
+    this._createDemoTemplateCards()
+    this._enableSubPagesLinks()
     this._enableAppendixLinks()
 
-    // this._globeFrame = 0
-    // this._globeFrameCount = 124
-    // this._globeFrameRate = 1000 / 10
-    // this._animateGlobe()
-
-    this._createStarField()
-
-    this._highlightTitles()
+    this.slide.addEventListener('scroll', () => {
+      const t = this.slide.scrollTop
+      let select = null
+      this.slide.querySelectorAll('[id^="learning-guide-"]').forEach(el => {
+        const top = el.getBoundingClientRect().top - // 50 === scrollTo "offset"
+          this.slide.getBoundingClientRect().top + this.slide.scrollTop - 50
+        if (Math.abs(t - top) <= 25) { select = el }
+        el.classList.remove('is-hover')
+      })
+      if (select) select.classList.add('is-hover')
+    })
 
     this.slide.style.overflowX = 'hidden'
+  }
 
-    // this.ele.querySelectorAll('h3').forEach(e => {
-    //   e.addEventListener('click', () => {
-    //     window.convo = new Convo(this.convos, e.textContent)
-    //   })
-    // })
+  _jsIntroConvo () {
+    window.convo = new Convo(this.convos, 'js-intro')
+  }
+
+  _comingSoon (type) {
+    if (type === 'units') {
+      window.convo = new Convo(this.convos, 'coming-soon-units')
+    } else {
+      window.convo = new Convo(this.convos, 'coming-soon')
+    }
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _highlightTitles () {
+    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    this.ele.querySelectorAll('h2, h3').forEach(ele => {
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
+    })
+  }
+
+  _createTutThumb (sec, id, appear) {
+    const data = this.tutorials[sec].find(o => o.id === id)
+    const click = () => WIDGETS.load('hyper-video-player', w => w.load(data.id))
+    const ele = `.learning-guide__tut-thumbs-${sec}`
+    nn.get(ele).set('name', id).innerHTML = ''
+
+    this.tutCards[sec] = []
+    let delay = 0
+
+    const cards = []
+    const w = 549 // width of card stage (in leaerning guide)
+    const h = 300 // should match min-height of card-stage
+    const pos = [
+      { x: nn.random(0, w * 0.25), y: nn.random(0, h * 0.25) }, // top left
+      { x: nn.random(w / 2, w - 220), y: nn.random(0, h * 0.25) }, // top right
+      { x: nn.random(0, w * 0.25), y: nn.random(h / 2, h - 140) }, // bottom left
+      { x: nn.random(w / 2, w - 220), y: nn.random(h / 2, h - 140) } // bottom right
+    ]
+    for (let i = 0; i < 4; i++) {
+      const t = data.thumbnails[i]
+      if (t) {
+        const box = { w: 150, h: 100, x: pos[i].x, y: pos[i].y }
+        const thumbnail = `/tutorials/${data.id}/${t}`
+        cards.push({ ele, box, thumbnail, click, appear })
+      }
+    }
+    cards.forEach(c => { // create thumbnail cards
+      setTimeout(() => this.tutCards[sec].push(new WidgetCard(c)), delay)
+      delay += 100
+    })
+
+    const thumbnail = `/tutorials/${data.id}/${data.id}.jpg`
+    const vidCard = {
+      ele, box: { w: 220, h: 140 }, thumbnail, click, appear, main: true
+    } // create main video card
+    setTimeout(() => this.tutCards[sec].push(new WidgetCard(vidCard)), delay)
+  }
+
+  _createTutorialCards () {
+    this.tutorials = {}
+    const promises = []
+
+    // ........................
+    // next|title|prev control functions
+    // ........................
+
+    const getTut = (sec) => {
+      const sel = `.learning-guide__tut-thumbs-${sec}`
+      const id = nn.get(sel).getAttribute('name')
+      return WIDGETS['learning-guide'].tutorials[sec].find(t => t.id === id)
+    }
+
+    const updateTitle = (sec) => {
+      const tut = getTut(sec)
+      let title = tut.title
+      if (tut.subtitle) title += ` <div style="font-size: 18px;">${tut.subtitle}</div>`
+      if (tut.author) title += ` <div style="font-size: 14px;">by ${tut.author}</div>`
+      nn.get(`.learning-guide__tut-cntrl[name="${sec}"] span.highlight`)
+        .content(title)
+    }
+
+    const hoverOver = (sec) => {
+      if (this._descTO) clearTimeout(this._descTO)
+      const tut = getTut(sec)
+      const desc = tut.description
+        .replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\A')
+      utils.setVal('--tut-desc', `"${desc}"`)
+      utils.setVal('--tut-desc-display', 'block')
+      this._descTO = setTimeout(() => utils.setVal('--tut-desc-opac', 1), 100)
+    }
+
+    const hoverOut = (sec) => {
+      if (this._descTO) clearTimeout(this._descTO)
+      utils.setVal('--tut-desc-opac', 0)
+      this._descTO = setTimeout(() => {
+        utils.setVal('--tut-desc-display', 'none')
+        utils.setVal('--tut-desc', '')
+      }, 500)
+    }
+
+    const selectTut = (sec) => {
+      const tut = getTut(sec)
+      WIDGETS.load('hyper-video-player', w => w.load(tut.id))
+    }
+
+    const stepTut = async (sec, dir = 1) => {
+      const list = this.tutorials[sec]
+      const curIdx = list.indexOf(getTut(sec))
+      const nextIdx = (curIdx + dir + list.length) % list.length
+      const target = list[nextIdx]
+      // stagger-hide current cards
+      for (const card of this.tutCards[sec]) {
+        card.hide()
+        await nn.sleep(100)
+      }
+      // small pause before bringing in the new one
+      await nn.sleep(500)
+      this._createTutThumb(sec, target.id, true)
+      updateTitle(sec)
+    }
+
+    // ........................
+    // when all the data below is loaded...
+    // ........................
+    const ready = () => {
+      // ...create first set of thumbnail cards
+      Object.entries(this.tutorials).forEach(([s, tut]) => {
+        if (tut[0]) this._createTutThumb(s, tut[0].id)
+      })
+
+      // ...and setup controls
+      Object.entries(this.tutorials).forEach(([s, tut]) => {
+        if (tut.length > 1) {
+          const sec = `.learning-guide__tut-cntrl[name="${s}"] span`
+          nn.getAll(sec).forEach((span, i) => {
+            if (i === 0) span.addEventListener('click', () => stepTut(s, -1))
+            else if (i === 1) {
+              updateTitle(s)
+              span.addEventListener('click', () => selectTut(s))
+              span.addEventListener('mouseover', () => hoverOver(s))
+              span.addEventListener('mouseout', () => hoverOut(s))
+            } else if (i === 2) span.addEventListener('click', () => stepTut(s, +1))
+          })
+        }
+      })
+    }
+
+    // ........................
+    // Load all the Tutorial Data the Learning Guide needs
+    // ........................
+    utils.get('tutorials/list.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      Object.entries(json).forEach(([key, val]) => {
+        this.tutorials[key] = []
+        val.forEach(n => {
+          promises.push(new Promise(resolve => {
+            utils.get(`tutorials/${n}/tutorial.json`, t => {
+              this.tutorials[key].push(t.metadata); resolve()
+            })
+          }))
+        })
+      })
+      Promise.all(promises).then(ready)
+    })
+  }
+
+  _createAICards () {
+    if (this._setupAICards) return
+
+    setTimeout(() => {
+      // enable AI Notes WidgetCards
+      const cards = [
+        {
+          ele: '#learning-guide__ai-prompter',
+          box: { w: 220, h: 140, x: 290, y: 70 },
+          content: `<div>
+            <div style="text-align: center; font-size:32px">AI
+              <span style="font-size:32px; border-bottom: 2px solid;">Prompt</span>
+            </div>
+            <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-prompter')
+          click: () => window.alert('coming soon')
+        },
+        {
+          ele: '#learning-guide__ai-api',
+          box: { w: 220, h: 140, x: 10, y: 40 },
+          content: `<div>
+            <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
+            <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-api-tool')
+          click: () => window.alert('coming soon')
+        }
+      ]
+
+      cards.forEach(card => this.cards.push(new WidgetCard(card)))
+
+      this._setupAICards = true
+    }, 1000)
+  }
+
+  _createDemoTemplateCards () {
+    // enable WidgetCards
+    const cards = [
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 140, x: 0, y: 40 },
+        content: `<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;</div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">DEMOS<div>
+        </div>`,
+        click: () => WIDGETS.open('demo-sketches')
+      },
+      {
+        ele: '#learning-guide-demos',
+        box: { w: 220, h: 150, x: 270, y: 209 },
+        content: `<div>
+          <div class="lg-widget-folder-icon"></div>
+          <div style="text-align: center; font-size:24px; margin-top: 20px;">TEMPLATES<div>
+        </div>`,
+        click: () => WIDGETS.open('template-projects')
+      }
+    ]
+
+    cards.forEach(card => this.cards.push(new WidgetCard(card)))
+  }
+
+  _enableSubPagesLinks () {
+    this.subpages.forEach(p => {
+      // this is what happens when we click a <button> with a #page-* id
+      // assuming it's also been defined in this.subpages above
+      this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
+        this.slide.updateSlide({
+          ...this[p.id],
+          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
+        })
+        window.convo.hide()
+      })
+    })
   }
 
   _enableAppendixLinks () {
@@ -213,199 +444,87 @@ class LearningGuide extends Widget {
     })
   }
 
-  _listTutorials () {
-    const tutHTML = (t, i) => {
-      const div = document.createElement('div')
-      div.className = 'learning-guide__tut'
-      div.dataset.id = t.id
-      div.innerHTML = `
-        <div>
-          <div>
-            <h2>${t.title}</h2>
-            <b>${t.subtitle}</b>
-          </div>
-          <div class="learning-guide__dotted-line"></div>
-          <div>
-            <button class="pill-btn pill-btn--secondary" name="tut:${t.id}">play</button>
-            <button class="pill-btn pill-btn--secondary" name="i:${t.id}">i</button>
-          </div>
-        </div>
-        <p name="nfo:${t.id}">${t.description}</p>
-      `
-      return div
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸. star field background && other animations
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _applyVisibility () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
+
+    const visible = utils.isVisible(this.ele)
+    if (visible) {
+      this._startStarField()
+    } else {
+      this._stopStarField()
+      this._stopSvgAnimations()
     }
 
-    const tutorials = {}
-    const tutzReady = () => {
-      for (const sec in tutorials) {
-        tutorials[sec] // when all are loaded, append tutorial <div> to guide
-          .sort((a, b) => parseFloat(a.index) - parseFloat(b.index))
-          .forEach(obj => {
-            const div = document.querySelector(`.learning-guide__tut-${sec}`)
-            if (div) div.appendChild(obj.html)
-          })
-      }
-      this._enableLearningGuideEventListeners()
-    }
+    const animatedSvgs = [
+      'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
+    ]
 
-    utils.get('tutorials/list.json', (json) => {
-      let count = 0
-      let total = 0
-      for (const sec in json) { total += json[sec].length }
-      for (const sec in json) {
-        tutorials[sec] = []
-        json[sec].forEach((name, i) => {
-          utils.get(`tutorials/${name}/metadata.json`, (tut) => {
-            tutorials[sec].push({
-              index: json[sec].indexOf(name), html: tutHTML(tut, i)
-            })
-            count++
-            if (count === total) tutzReady()
-          })
-        })
-      }
+    animatedSvgs.forEach(eleStr => {
+      const svg = this.$(eleStr)
+      if (!svg) return
+      const v = utils.isVisible(svg)
+      if (v && !svg.looping) svg.start()
+      else if (!v) svg.stop()
     })
   }
 
-  _enableLearningGuideEventListeners () {
-    this.subpages.forEach(p => {
-      // this is what happens when we click a <button> with a #page-* id
-      // assuming it's also been defined in this.subpages above
-      this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
-        this.slide.updateSlide({
-          ...this[p.id],
-          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
-        })
-        window.convo.hide()
-      })
-    })
+  _stopSvgAnimations () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
 
-    // enable "play" buttons
-    this.ele.querySelectorAll('[name^="tut"]').forEach(ele => {
-      const tut = ele.getAttribute('name').split(':')[1]
-      ele.addEventListener('click', () => this.load(tut))
-    })
-
-    // hover over tutorials
-    this.ele.querySelectorAll('.learning-guide__tut')
-      .forEach(div => {
-        div.addEventListener('mouseover', () => {
-          const vid = document.createElement('video')
-          vid.id = 'tut-preview-video'
-          vid.src = `/tutorials/${div.dataset.id}/preview.mp4`
-          vid.style.position = 'absolute'
-          vid.style.left = 0
-          vid.style.top = 0
-          vid.style.zIndex = 1
-          vid.style.border = 'none'
-          vid.style.width = '600px'
-          vid.style.height = '440px'
-          vid.style.opacity = 0.15
-          this.slide.appendChild(vid)
-          vid.muted = true
-          vid.play()
-        })
-
-        div.addEventListener('mouseout', () => {
-          const vid = this.slide.querySelector('#tut-preview-video')
-          if (vid) vid.remove()
-        })
-      })
-
-    // calc <p> heights && hide them
-    this.ele.querySelectorAll('[name^="nfo"]').forEach(p => {
-      p.dataset.height = p.offsetHeight
-      p.style.height = '0px'
-      p.style.display = 'none'
-    })
-
-    // enable "info" buttons
-    this.ele.querySelectorAll('[name^="i"]').forEach(ele => {
-      const t = ele.getAttribute('name').split(':')[1]
-      ele.addEventListener('click', () => {
-        const p = this.ele.querySelector(`[name="nfo:${t}"]`)
-        if (ele.textContent === 'i') {
-          p.style.display = 'block'
-          ele.textContent = 'x'
-          setTimeout(() => {
-            p.style.height = p.dataset.height + 'px'
-            p.style.paddingTop = '8px'
-          }, 10)
-        } else {
-          p.style.height = '0px'
-          p.style.paddingTop = '0px'
-          ele.textContent = 'i'
-          setTimeout(() => { p.style.display = 'none' }, 1000)
-        }
-      })
-    })
+    const animatedSvgs = [
+      'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
+    ]
+    animatedSvgs.forEach(svg => this.$(svg).stop())
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. tutorial loading logic
-
-  _loadTutorial (name, time) {
-    WIDGETS.open('hyper-video-player', () => {
-      WIDGETS['hyper-video-player'].video.oncanplay = () => {
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'introducing-tutorial')
-        this.close() // close the tutorials guide && setup first keyframe
-        WIDGETS['hyper-video-player'].renderKeyframe()
-
-        setTimeout(() => {
-          document.querySelector('load-curtain').hide()
-          if (time) WIDGETS['hyper-video-player'].seek(time)
-          WIDGETS['hyper-video-player'].video.oncanplay = null
-        }, utils.getVal('--layout-transition-time'))
-      }
-
-      WIDGETS['hyper-video-player'].title = this.metadata.title
-      WIDGETS['hyper-video-player'].loadKeyframes(this.data.keyframes)
-      WIDGETS['hyper-video-player'].updateVideo(this.metadata.videofile, this.metadata.id)
-
-      for (const key in this.data.widgets) {
-        if (!WIDGETS.instantiated.includes(key)) {
-          WIDGETS.create(this.data.widgets[key])
-        }
-      }
-
-      if (this.metadata.duration) {
-        WIDGETS['hyper-video-player'].duration = Number(this.metadata.duration)
-      }
-
-      if (this.metadata.jsfile) {
-        const file = `tutorials/${name}/${this.metadata.jsfile}`
-        utils.loadFile(file, () => window.TUTORIAL.init())
-      }
-    })
+  /*
+    NOTE: this is an alternative approach to the "internet-globe.html"
+    apply this way:
+    // this._globeFrame = 0
+    // this._globeFrameCount = 124
+    // this._globeFrameRate = 1000 / 10
+    // this._animateGlobe()
+  */
+  // _animateGlobe () {
+  //   // at the moment only frames for "dark" theme exist
+  //   const img = this.slide.querySelector('#globe-animation-sequence')
+  //   if (!img) return
+  //   const f = this._globeFrame % this._globeFrameCount
+  //   img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
+  //   this._globeFrame++
+  //   setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  // }
+  _startStarField () {
+    if (!this.slide) { setTimeout(() => this._startStarField(), 250); return }
+    if (this._runningStar) return
+    this._runningStar = true
+    if (!this._canvas) this._initStarField()
+    this._tickStarField()
   }
 
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••. star field background
-
-  _animateGlobe () { // NOTE: this is an alternative approach to the "internet-globe.html"
-    // at the moment only frames for "dark" theme exist
-    const img = this.slide.querySelector('#globe-animation-sequence')
-    if (!img) return
-    const f = this._globeFrame % this._globeFrameCount
-    img.src = `widgets/learning-guide/data/assets/globes/${NNE.theme}/frame-${f}.png`
-    this._globeFrame++
-    setTimeout(() => this._animateGlobe(), this._globeFrameRate)
+  _stopStarField () {
+    if (!this._runningStar) return
+    this._runningStar = false
+    window.cancelAnimationFrame(this._raf)
   }
 
-  _createStarField () {
+  _initStarField () {
     const canvas = document.createElement('canvas')
-    const self = this
-
     canvas.style.position = 'absolute'
     canvas.style.top = 0
     canvas.style.left = 0
     canvas.style.zIndex = 0
-    canvas.width = self.ele.offsetWidth
-    canvas.height = self.ele.offsetHeight
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    canvas.width = this.ele.offsetWidth
+    canvas.height = this.ele.offsetHeight
+    this._canvas = canvas
+    this._ctx = canvas.getContext('2d')
+    this.slide.appendChild(canvas)
 
+    // your existing star setup
     const mkStar = (star = {}) => {
       const w = canvas.width
       const h = canvas.height
@@ -423,71 +542,65 @@ class LearningGuide extends Widget {
       return star
     }
 
-    // SETUP
-    const stars = []
-    const acc = 1 // acceleration
-    for (let i = 0; i < 100; i++) stars.push(mkStar())
-
-    // DRAW
-    const animate = () => {
-      setTimeout(() => animate(), 1000 / 60)
-      const w = canvas.width
-      const h = canvas.height
-      ctx.clearRect(0, 0, w, h)
-
-      let newStars = 0
-      stars.forEach((star, i) => {
-        ctx.fillStyle = utils.getVal('--netizen-text')
-
-        star.x += star.dx
-        star.y += star.dy
-        star.a++
-
-        const outdX = star.x < 0 || star.x > w
-        const outdY = star.y < 0 || star.y > h
-        if (outdX && outdY) {
-          star.x = w / 2 + star.dx * 2
-          star.y = h / 2 + star.dy * 2
-          star.dx += star.dx / (50 / acc)
-          star.dy += star.dy / (50 / acc)
-          const max = 4
-          if (star.dx < -max) star.dx = -max
-          if (star.dx > max) star.dx = max
-          if (star.dy < -max) star.dy = -max
-          if (star.dy > max) star.dy = max
-        }
-
-        if (star.a === Math.floor(50 / acc) |
-            star.a === Math.floor(150 / acc) |
-            star.a === Math.floor(300 / acc)) {
-          star.w++
-          star.h++
-        }
-
-        if (star.x + star.w < 0 || star.x > w ||
-        star.y + star.h < 0 | star.y > h) {
-          const idx = stars.indexOf(star)
-          stars.splice(idx, 1)
-          newStars++
-        }
-
-        if (isNaN(star.x)) console.log('nan', stars.indexOf(star))
-        ctx.fillRect(star.x, star.y, 1, 1)
-      })
-
-      for (let i = 0; i < newStars; i++) stars.push(mkStar())
-    }
-
-    this.slide.appendChild(canvas)
-    animate()
+    this._stars = []
+    this._acc = 1
+    for (let i = 0; i < 100; i++) this._stars.push(mkStar())
+    this._mkStar = mkStar
   }
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+  _tickStarField () {
+    if (!this._runningStar) return
+    const { _canvas: canvas, _ctx: ctx } = this
+    const w = canvas.width
+    const h = canvas.height
+
+    ctx.clearRect(0, 0, w, h)
+    ctx.fillStyle = utils.getVal('--netizen-text') // set once per frame
+
+    let newStars = 0
+    this._stars.forEach(star => {
+      star.x += star.dx
+      star.y += star.dy
+      star.a++
+
+      const outX = star.x < 0 || star.x > w
+      const outY = star.y < 0 || star.y > h
+      if (outX && outY) {
+        star.x = w / 2 + star.dx * 2
+        star.y = h / 2 + star.dy * 2
+        star.dx += star.dx / (50 / this._acc)
+        star.dy += star.dy / (50 / this._acc)
+        const max = 4
+        if (star.dx < -max) star.dx = -max
+        if (star.dx > max) star.dx = max
+        if (star.dy < -max) star.dy = -max
+        if (star.dy > max) star.dy = max
+      }
+
+      if (
+        star.a === Math.floor(50 / this._acc) ||
+        star.a === Math.floor(150 / this._acc) ||
+        star.a === Math.floor(300 / this._acc)
+      ) {
+        star.w++
+        star.h++
+      }
+
+      if (
+        star.x + star.w < 0 || star.x > w ||
+        star.y + star.h < 0 || star.y > h
+      ) {
+        const idx = this._stars.indexOf(star)
+        this._stars.splice(idx, 1)
+        newStars++
+      }
+
+      ctx.fillRect(star.x, star.y, 1, 1)
     })
+
+    for (let i = 0; i < newStars; i++) this._stars.push(this._mkStar())
+
+    this._raf = window.requestAnimationFrame(() => this._tickStarField())
   }
 }
 

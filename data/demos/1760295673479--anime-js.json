@@ -1,0 +1,140 @@
+{
+  "key": 1760295673479,
+  "name": "anime-js",
+  "tags": [
+    "anime.js",
+    "anime",
+    "animate",
+    "animation",
+    "lib",
+    "library"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJxdUjtv2zAQ3v0rrllkB4qkpokTCE6Gpt66tUCHogNNnmQGFEmQJz8a+L/39EodLwL1ve54vFWUQXuCGOTT1ZbIxzLPpbLZa1Ro9C5kFim3vsmF1Q2+xlzpSPmmtcpgHMCsbVTW6M5z9bzKh8Tn2Wo6AOTXUBu3EQZ6A1znM0ar1krSzkJEaj3MF/DGKIB0NhKggSdQTrYNWspkQEG4Ntj9zROld8miF6PJCA/04iwxw5bkFxrpGvyUTHyko8GsYsUP/Rc7yfLOHy7oRoRa2468vSv8AURL7kKy14q2naLSdCOHgoPkvc2NU8dMeI9WvWy1UXM0Q5tnF3sDuRUhwomjhvlFbzT95FuwPGW+FwPsXVCxhEqYiOkE9t4SKLTYI6ez/CGt+/Ks5r0yHWcKcCzh93gErkGuhOTmNnu4D9gkKaCIyIhraX3wjgHVBtG9TgnLooBTeuEtzi1fHT8lfjA9FqzgFRJc93MXMPr/TEHBEXdZclwVXNM182VZKKyTj7ZJPmLjwEjUNYb5fbGYeOOc//buK87hy2mduuXba6vcPhNKrXf8ct95q9FyZGKcUNxDv5OL2f91/gcFY/GV",
+  "info": [
+    {
+      "focus": [
+        1
+      ],
+      "text": "In this demo I've imported the <a href=\"https://animejs.com/\" target=\"_blank\">anime.js</a> library, a powerful animation library created by <a href=\"https://juliangarnier.com/\" target=\"_blank\">Julian Garnier</a> and <a href=\"https://github.com/juliangarnier/anime/graphs/contributors\" target=\"_blank\">others</a> with one of the nicest <a href=\"https://animejs.com/documentation/\" target=\"_blank\">docs</a> we've ever seen!",
+      "title": "getting started"
+    },
+    {
+      "title": "setup",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "The first thing I've done in this <code>setup</code> function is create a <code>div</code> element with some\ncontent and styles so that we've got something to animate."
+    },
+    {
+      "title": "versatile",
+      "focus": null,
+      "text": "We didn't have to create an element with JS though, <b>anime</b> lets you animate any SVGs or HTML/CSS that's already on your page. The library can also be used alongside other JavaScript libraries to animate anything you create with HTML5 Canvas or WebGL."
+    },
+    {
+      "title": "splitText",
+      "focus": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "text": "The first <b>anime</b> method we're using is <code>.splitText()</code> which takes two arguments, first a reference to an HTML element (this could also be a CSS query string) and second an object to set parameters."
+    },
+    {
+      "title": "split params",
+      "focus": [
+        14,
+        15
+      ],
+      "text": "This method is used to split a single HTML element's text into multiple HTML elements so we can animate them individually. Here I've chosen not to split the element into words, but to split them into \"chars\" (or characters). This will return an array with each letter placed in it's own <code>span</code> element."
+    },
+    {
+      "title": "animate",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "text": "Next we'll use <b>anime's</b> <code>.animate()</code> method, the library's central function. Here again we pass two arguments, the first being a reference to an HTML element (or in this case an array of elements), and the second is another parameters object."
+    },
+    {
+      "title": "y keyframes",
+      "focus": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "text": "We can use this object to define which properties we want to animate. The first parameter <code>y</code> is short for <b>translateY</b> (the CSS transform property) which we're going to animate by passing an array of keyframe objects."
+    },
+    {
+      "title": "y (first keyframe)",
+      "focus": [
+        20
+      ],
+      "text": "This first keyframe set's the <i>y</i> (vertical position) value \"<b>to</b>\" -2.75rem, which means they'll move upwards from their initial position. We've also set this keyframe's \"<b>ease</b>\" to '<a href=\"https://easings.net/#easeOutExpo\" target=\"_blank\">outExpo</a>', an animation which starts quickly and then decelerates exponentially toward the end. The time it'll take to reach this keyframe is set to 600 milliseconds, our \"<b>duration</b>\""
+    },
+    {
+      "title": "y (second keyframe)",
+      "focus": [
+        21
+      ],
+      "text": "After our letters move upwards and reach that -2.75rem offset, our next keyframe brings them back down to 0, their initial position. This one uses an <b>ease</b> of '<a href=\"https://easings.net/#easeOutBounce\" target=\"_blank\">outBounce</a>' which ends the animation with a series of decaying bounces, mimicking the way a ball loses energy after hitting a surface. The total <b>duration</b> for this one is 100 milliseconds."
+    },
+    {
+      "title": "rotate",
+      "focus": [
+        23
+      ],
+      "text": "Next we're animating another CSS property, <i>rotate</i>, but rather than passing an array of keyframes we're just defining a single keyframe object for it. This time instead of specifying what we want the value to animate <b>to</b>, we're stating where we want it to start <b>from</b>. The animation will start from a '-360deg' (degrees) which will then rotate back around to 0, the default. We've also decided to <b>delay</b> this so it starts rotating 100 milliseconds after our animation begins."
+    },
+    {
+      "title": "delay",
+      "focus": [
+        24
+      ],
+      "text": "This <b>delay</b> property on the parameters object effects the entire animation (rather than a specific property or keyframe), here we're using <b>anime</b>'s <code>stagger()</code> method so that each of the elements (the spans containing each letter) gets a different animation delay to start."
+    },
+    {
+      "title": "stagger",
+      "focus": [
+        24
+      ],
+      "text": "Setting <code>stagger(50)</code> always starts the first element's animation automatically (0s delay), but each subsequant letter gets an additional 50 milliseconds delay. This means the second letter's animation starts 50ms after the first, the third starts 100ms after the first, the fourth starts 150ms, and so on."
+    },
+    {
+      "title": "loop",
+      "focus": [
+        25,
+        26
+      ],
+      "text": "Here we've set the <b>loop</b> to <i>true</i> so that the animation replays after it finishes. We've also added a <b>loopDelay</b> so it pauses for a second (1000 milliseconds) after the animation finishes before starting again."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        30
+      ],
+      "text": "As with many of our other demos, the last line in our code gets everything going by running our <code>setup</code> function as soon as our page has loaded."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "There's loads more you can do with this library, this is only the beginning. <a href=\"https://animejs.com/\" target=\"_blank\">anime.js</a> is also great for animating <a href=\"https://animejs.com/documentation/svg\" target=\"_blank\">SVG Elements</a>, and animating on specific interactions like <a href=\"https://animejs.com/documentation/events/onscroll\" target=\"_blank\">scrolling</a> the page and <a href=\"https://animejs.com/documentation/draggable\" target=\"_blank\">dragging</a> elements."
+    }
+  ]
+}

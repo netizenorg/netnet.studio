@@ -19,13 +19,13 @@ const aliasRoutes = [
   { url: '/netitor.js', loc: '../www/core/netitor/build/netitor.js' },
   { url: '/netnet-standard-library.js', loc: '../www/core/netnet-standard-library/build/netnet-standard-library.js' },
   { url: '/nn.min.js', loc: '../www/core/netnet-standard-library/build/nn.min.js' },
-  { url: '/examples-index', loc: '../www/data/misc/examples-index.html' },
   { url: '/images/*', loc: '../www/assets/images/' },
   { url: '/audios/*', loc: '../www/assets/audios/' },
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
   { url: '/videos/*', loc: '../www/assets/videos/' },
   { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' },
   { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' }
+  // { url: '/templates/*', loc: '../data/templates/' }
 ]
 
 const images = fs.readdirSync(path.join(__dirname, '../www/assets/images'))
@@ -42,7 +42,6 @@ otherAssets.forEach(dir => {
   files.forEach(f => aliasRoutes.push({ url: `/${f}`, loc: `../www/assets/${dir}/${f}` }))
 })
 
-
 aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
@@ -57,20 +56,87 @@ aliasRoutes.forEach(dep => {
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 
 router.get('/tutorials/*', (req, res, next) => {
-  if (req.headers.host.includes(':1337')) { // for dev server
-    const file = `../../netnet.studio/www/${req.originalUrl}`
-    res.sendFile(path.join(__dirname, file))
-  } else if (req.originalUrl.includes('/list.json')) {
-    // if asking for tutorials that don't exist (ex: in local dev)
-    const list = path.join(__dirname, '../www/tutorials/list.json')
-    const file = fs.readFileSync(list)
-    const json = JSON.parse(file)
-    const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-    for (const sec in json) {
-      json[sec] = json[sec].filter(t => dirs.includes(t))
+  const host = req.hostname
+  // any subdomains (ex dev.netnet) should load tutorials from production server
+  if (host.endsWith('.netnet.studio') && !req.originalUrl.endsWith('/list.json')) {
+    const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
+    return res.sendFile(filePath)
+  }
+  // NOTE: v2 && v3 have a modified version of this route which returns the old
+  // tutorials, stored in ../../netnet.studio-v3/www
+  next()
+})
+
+// directory listing for /templates/*
+const templateListPage = (rel, upLink, rows) => {
+  const arr = rel.split('/').filter(s => s !== '')
+  arr.splice(0, 2)
+  rel = arr.join('/')
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Contents of ${rel}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; padding: 2rem; }
+      h1 { font-size: 1.25rem; margin: 0 0 1rem; }
+      li { padding: .25rem 0; }
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    ${arr.length > 1 ? upLink : ''}
+    <h1><span style="opacity: 0.5">Contents of:</span> ${rel}</h1>
+    <ul>${rows}</ul>
+  </body>
+</html>`
+}
+
+router.get('/templates/*', (req, res) => {
+  const baseDir = path.join(__dirname, '../data/templates')
+  const rel = req.params[0] || ''
+  const requestedPath = path.normalize(path.join(baseDir, rel))
+  // prevent path traversal outside of baseDir
+  if (!requestedPath.startsWith(baseDir)) {
+    return res.status(400).send('Invalid path')
+  }
+  fs.stat(requestedPath, (err, stats) => {
+    if (err) return res.status(404).send('Not found')
+    if (stats.isDirectory()) {
+      const indexPath = path.join(requestedPath, 'index.html')
+      fs.access(indexPath, fs.constants.F_OK, (indexErr) => {
+        if (!indexErr) return res.sendFile(indexPath)
+        // no index.html → list directory
+        fs.readdir(requestedPath, { withFileTypes: true }, (readErr, entries) => {
+          if (readErr) return res.status(500).send('Error reading directory')
+          // build breadcrumb path for links
+          const prefix = `/templates/${rel ? rel.replace(/\/+$/, '') + '/' : ''}`
+          const rows = entries
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(d => {
+              const href = prefix + encodeURIComponent(d.name) + (d.isDirectory() ? '/' : '')
+              const label = d.name + (d.isDirectory() ? '/' : '')
+              return `<li><a href="${href}">${label}</a></li>`
+            })
+            .join('')
+          const upLink = rel
+            ? (() => {
+              const parent = rel.replace(/\/+$/, '').split('/').slice(0, -1).join('/')
+              const href = '/templates/' + (parent ? encodeURI(parent) + '/' : '')
+              return `<p><a href="${href}" style="font-style: italic;">../ back up to parent directory</a></p>`
+            })()
+            : ''
+          const html = templateListPage(rel, upLink, rows)
+          res.set('Content-Type', 'text/html; charset=utf-8')
+          res.send(html)
+        })
+      })
+    } else { // it’s a file → serve it directly
+      res.sendFile(requestedPath)
     }
-    res.json(json)
-  } else next()
+  })
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -151,7 +217,6 @@ router.get('/api/custom-elements', async (req, res) => {
         return dirInfo
       })
     res.json(filteredDirectoriesInfo)
-
   } catch (error) { console.error(error); res.json([]) }
 })
 
@@ -174,6 +239,7 @@ router.get('/api/widgets', (req, res) => {
         const data = { title: null, key: null, keywords: [] }
         code.split('\n').forEach(line => {
           if (line.includes('this.title =') && !data.title) {
+            line = line.replace(/<[^>]+>/g, '')
             data.title = line.split('=')[1].trim()
             data.title = data.title.substr(1, data.title.length - 2)
           }
@@ -189,6 +255,36 @@ router.get('/api/widgets', (req, res) => {
           }
         })
         wigs.push(data)
+      }
+    })
+    res.json(wigs)
+  })
+})
+
+router.get('/api/convos', (req, res) => {
+  fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
+    if (err) return console.log(err)
+    const wigs = []
+    list.filter(f => f !== 'index.js' && f !== 'styles.css').forEach(dirname => {
+      const filepath = path.join(__dirname, `../www/widgets/${dirname}/index.js`)
+      const convpath = path.join(__dirname, `../www/widgets/${dirname}/convo.js`)
+      const opts = { encoding: 'utf8' }
+      const code = fs.readFileSync(filepath, opts)
+      if (fs.existsSync(convpath)) {
+        const convo = fs.readFileSync(convpath, opts)
+        const data = { title: null, key: null, code: convo }
+        code.split('\n').forEach(line => {
+          if (line.includes('this.title =') && !data.title) {
+            line = line.replace(/<[^>]+>/g, '')
+            data.title = line.split('=')[1].trim()
+            data.title = data.title.substr(1, data.title.length - 2)
+          }
+          if (line.includes('this.key =') && !data.key) {
+            data.key = line.split('=')[1].trim()
+            data.key = data.key.substr(1, data.key.length - 2)
+          }
+        })
+        if (data.key !== 'example-widget') wigs.push(data)
       }
     })
     res.json(wigs)
@@ -248,49 +344,102 @@ router.post('/api/expand-url', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
-function createExamplesDict () {
-  const dict = {
-    examples: {}, // examples by key
-    map: [] // sections in order
-  }
-  const exPath = path.join(__dirname, '../data/examples')
+router.get('/api/demo/:num', (req, res) => {
+  const num = req.params.num
+  const exPath = path.join(__dirname, '../data/demos')
+  const files = fs.readdirSync(exPath)
+  const file = files.filter(f => f.indexOf(`${num}--`) === 0)[0]
+  const str = fs.readFileSync(`${exPath}/${file}`)
+  const obj = JSON.parse(str)
+  obj.success = 'success'
+  if (typeof obj.code === 'string') res.json(obj)
+  else res.json({ error: `demo ${num} is not in the database.` })
+})
+
+router.get('/api/demos', (req, res) => {
+  const dict = {}
+  const exPath = path.join(__dirname, '../data/demos')
   const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
   files.forEach(file => {
-    const obj = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
-    dict.examples[obj.key] = obj
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    if (d.hide !== true) {
+      dict[d.key] = {
+        key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
+      }
+    }
   })
-  const mapPath = path.join(__dirname, '../data/examples-map.json')
-  dict.map = JSON.parse(fs.readFileSync(mapPath))
-  return dict
+  res.json({ success: 'success', data: dict })
+})
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES
+
+async function listFilesRecursive (dir, root = dir) {
+  const out = []
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true })
+  for (const e of entries) {
+    if (e.name === '.DS_Store') continue
+    const full = path.join(dir, e.name)
+    if (e.isDirectory()) {
+      out.push(...await listFilesRecursive(full, root))
+    } else if (e.isFile()) {
+      // make it relative to `root` and normalize to forward slashes
+      const rel = path.relative(root, full).replace(/\\/g, '/')
+      out.push(rel)
+    }
+  }
+  return out
 }
 
-router.get('/api/examples', (req, res) => {
-  const dict = createExamplesDict()
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
-  if (typeof dict === 'object' && typeof dict.examples === 'object') {
-    res.json({ success: 'success', data: dict.examples, sections: dict.map })
-  } else {
-    res.json({ error: 'there was an issue loading the database', data: dict })
+router.get('/api/templates', async (req, res) => {
+  try {
+    const base = path.join(__dirname, '../data/templates')
+    let order = []
+    let buildOn = {}
+    try {
+      const text = await fs.promises.readFile(path.join(base, 'list.json'), 'utf8')
+      const dict = JSON.parse(text)
+      order = Array.isArray(dict.published) ? dict.published : []
+      buildOn = dict['build-on'] || {}
+    } catch (err) {
+      console.log('Failed to find template list.json')
+    }
+
+    const list = {}
+    for (const name of order) {
+      try {
+        const file = path.join(base, name, 'data.json')
+        const text = await fs.promises.readFile(file, 'utf8')
+        const json = JSON.parse(text)
+        const filesDir = path.join(base, name, 'files')
+        const files = await listFilesRecursive(filesDir)
+        list[name] = { title: json.title, description: json.description, files }
+      } catch (err) { console.error('TEMPLATE ERROR', err) }
+    }
+
+    res.json({ success: true, data: { list, buildOn } })
+  } catch (err) {
+    console.error('Failed to list templates:', err)
+    res.status(500).json({ success: false, error: 'Failed to load template' })
   }
 })
 
-router.post('/api/example-data', (req, res) => {
-  const exPath = path.join(__dirname, '../data/examples')
-  const files = fs.readdirSync(exPath)
-  const file = files.filter(f => f.indexOf(`${req.body.key}--`) === 0)[0]
-  const str = fs.readFileSync(`${exPath}/${file}`)
-  const obj = JSON.parse(str)
-  const name = obj.name
-  const hash = obj.code
-  const info = obj.info
-  const layout = obj.layout
-  if (typeof hash === 'string') {
-    res.json({ success: 'success', name, hash, info, layout })
-  } else {
-    res.json({ error: `${req.body.key} is not in the database.` })
+router.get('/api/template/:template', async (req, res) => {
+  const name = req.params.template
+  try {
+    const base = path.join(__dirname, '../data/templates', name)
+    const text = await fs.promises.readFile(path.join(base, 'data.json'), 'utf8')
+    const data = JSON.parse(text)
+    const filesDir = path.join(base, 'files')
+    let files = []
+    try {
+      files = await listFilesRecursive(filesDir)
+    } catch (e) { /* folders missing "files" fail silently */ }
+
+    data.files = files
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('Failed to load template:', err)
+    res.status(500).json({ success: false, error: 'Failed to load templates' })
   }
 })
 
@@ -338,10 +487,11 @@ router.use(express.static(path.join(__dirname, '../data/browserfest-thumbnails')
 router.get('/api/browserfest/submissions', (req, res) => {
   const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
   const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET'
-  })
+  // NOTE: this will overwrite our "utils.corsGate" (leaving here for future ref)
+  // res.set({
+  //   'Access-Control-Allow-Origin': '*',
+  //   'Access-Control-Allow-Methods': 'GET'
+  // })
   const msg = 'welcome h4x0r! to BrowserFest\'s API, here\'s that R4W data!'
   if (bfsubs) res.json({ success: msg, data: bfsubs })
   else res.json({ error: 'there was an error with the database.' })

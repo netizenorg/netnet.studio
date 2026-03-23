@@ -1,0 +1,122 @@
+{
+  "key": 71,
+  "name": "Custom Fonts",
+  "tags": [
+    "css",
+    "font",
+    "fonts",
+    "type",
+    "typography",
+    "font-face",
+    "@font-face",
+    "import"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJytkU1PwzAMhu/9FVYOiImt1Tiu7fiSGAdu8Ae81F2ipWkVZ6AK7b+TZh8MbQcOSE4ky36fvHYKo+0alKO6FMr7jmdZVrfWc7pq25Uh7DSnsm0yyXx7V2OjTV8+buyK6OZNYUVXlebOYF/yJ3YCHJlSsO8NsSLyYp4kRUznCcC9brrWedg4c/0fr43yZKAOhEmNkuArpAD7fBDPQMh+Sa7qLYk8VtnJWXRwLKTe16OhuA0nhJpeAr2Q+SCvJY7hwWk0YxCvG6krhIVDW5EYA6PlCZPTdQ4RF650Ge1PeLB/0eBuPojzifyoO9r7w1TbpMj2W04KNZ2/K81AhhqyYdtMDAgiAtijXIsiC01DJ0iDzKU4NSl28hBeESzix8BzEINEY6iCU8NnpB9jvzCmDeI4w4HydGiMiG9Fd9Tv",
+  "info": [
+    {
+      "focus": [
+        11,
+        12,
+        13
+      ],
+      "text": "Generic <code>font-family</code> names like <code>serif</code>, <code>monospace</code> or <code>sans-serif</code> point to a general style of font, not one specific typeface. A name like Helvetica, on the other hand, is specific.",
+      "title": "font-family"
+    },
+    {
+      "title": "Helvetica",
+      "focus": [
+        11,
+        12,
+        13
+      ],
+      "text": "Helvetica is a very common font, there's even an entire <a href=\"https://www.imdb.com/title/tt0847817/\" target=\"_blank\">documentary</a> about it, but specific fonts like this will only load if the user already has them installed on their computer. Since not all operating systems come with Helvetica, it's best to follow it with a generic family name, like <code>sans-serif</code>, as a fallback."
+    },
+    {
+      "title": "font stacks",
+      "focus": [
+        11,
+        12,
+        13
+      ],
+      "text": "Adding a comma <code>,</code> after a font name followed by another font name is called a CSS <i>font stack</i>. You can include as many fonts in the stack as you want. The browser will always try the first one, and if it isn't available, move down the list. That's why you should always end with a generic family name. You can see more <a href=\"https://modernfontstacks.com/\" target=\"_blank\">examples of font stacks here</a>."
+    },
+    {
+      "title": "font service",
+      "focus": null,
+      "text": "If we want a font the user probably doesn't have, we need to load it explicitly. One common way is to import a stylesheet from a font service like <a href=\"https://fonts.google.com/\" target=\"_blank\">Google Fonts</a>. We can do this a couple of different ways."
+    },
+    {
+      "title": "link tag",
+      "focus": [
+        1
+      ],
+      "text": "We can use a <code>&lt;link&gt;</code> tag to import the stylesheet, as we would with our own stylesheets."
+    },
+    {
+      "title": "@import",
+      "focus": [
+        4
+      ],
+      "text": "Or we could use the CSS <code>@import</code> rule with a <code>url()</code> function that pulls in a stylesheet\n"
+    },
+    {
+      "title": "same url",
+      "focus": [
+        1,
+        4
+      ],
+      "text": "Both of these point to the same URL, the <code>@import</code> rule with the <code>url()</code> function happens to be how we import a stylesheet from another server in CSS, whereas the <code>&lt;link&gt;</code> tag with the <code>href</code> attribute is how we do it in HTML.\n"
+    },
+    {
+      "title": "use imported font",
+      "focus": [
+        15,
+        16,
+        17,
+        25
+      ],
+      "text": "Once imported, we can use it in any of our CSS rules. Here I've created a CSS <i>class</i>, which I've applied to one of the <code>h1</code> elements on my page, making use of <a href=\"https://fonts.google.com/specimen/Bungee+Shade?query=bungee+shade\" target=\"_blank\">this custom font</a>."
+    },
+    {
+      "title": "dependency",
+      "focus": null,
+      "text": "The downside of this approach is that it makes your site dependent on that service and its policies, which can change at any time. Surveillance capitalism services like Google also collect data such as the IP address and browser of everyone who visits your site when you use their hosted fonts."
+    },
+    {
+      "title": "local font",
+      "focus": null,
+      "text": "Some developers are fine with that trade-off, but I prefer protecting my visitors' privacy. So another approach is to import your own font, I've got a font file called \"cyberdyne.ttf\" saved locally. "
+    },
+    {
+      "title": "downloading fonts",
+      "focus": null,
+      "text": "You can find loads of free-to-use fonts from sites like <a href=\"https://www.fontsquirrel.com/\" target=\"_blank\">Font Squirrel</a> or <a href=\"https://www.dafont.com/\" target=\"_blank\">Dafont</a>, where I downloaded <a href=\"https://www.dafont.com/cyberdyne.font\" target=\"_blank\">this one</a>. Downloading <b>ttf</b> or <b>woff</b> font file types both work."
+    },
+    {
+      "title": "@font-face",
+      "focus": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "text": "Once we've downloaded a font and included it in our project we can create an <code>@font-face</code> rule for it where we use the <code>font-family</code> to name our loaded font and then the <code>src</code> with the <code>url()</code> function to load our font file."
+    },
+    {
+      "title": "use loaded font",
+      "focus": [
+        19,
+        20,
+        21,
+        26
+      ],
+      "text": "Once loaded, we can use it in any of our CSS rules just like we did our imported font. Here I've created a CSS <i>class</i> with our new font which I've applied to the last <code>h1</code> on my page."
+    },
+    {
+      "title": "quotes",
+      "focus": null,
+      "text": "I've wrapped \"cyberdyne\" in quotes, but because this font name is only one word I don't technically have to. That's why Helvetica and Arial don't have quotes, but \"Lucida Grande\" does."
+    }
+  ]
+}

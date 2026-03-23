@@ -1,0 +1,170 @@
+<br>
+
+<p>
+  A <b>variable</b>, like the one in the diagram below, is a named slot in memory where you store data. Variables can hold different kinds of data (which we call their <i>type</i>). Different programming langauges handle "types" differently, some are <i>strongly typed</i> which means we assign the type to the variable itself, like <code>string x = "hello"</code> or <code>boolean a = true</code>, other langauges, like JavaScript, are <i>loosly typed</i> (aka <i>dynamically typed</i>) which means the type belongs to the value, not the variable.
+</p>
+
+<svg-js-variable version="2" colors="var(--netizen-text),var(--netizen-keyword),var(--netizen-def),var(--netizen-operator),var(--netizen-string),var(--netizen-meta),var(--netizen-number),var(--netizen-variable),var(--netizen-variable-2),var(--netizen-variable-3),var(--netizen-property)">
+</svg-js-variable>
+<br><br><br>
+
+<p>
+  In the diagram above we've declared a new variable with the <code>let</code> keyword, which means we can change it's value later (unlike the <code>const</code>). In other langauges this variable could be reassigned to a different value, but would have to remain a string, but becuase JavaScript is <i>loosely</i> or <i>dynamically</i> typed we can change it to anything we want, even a value of a different type. At the moment, the this variable's type is a <i>string</i>, but we could later reassign it, for example if a user logged out, we might want to set it to <code>user = false</code>, which would now make it's type a <i>boolean</i>.
+</p>
+<br>
+
+<p>
+  In JavaScript we have a special operator called <code>typeof</code> which we could use to check the type of value stored in a variable. This can be used to branch behavior for example:
+</p><br>
+
+<br>
+<code-sample name="js-ex-0"></code-sample>
+<br>
+
+<p>
+  Strinctly speaking, JavaScript has 8 different data types. They're all unique and have their own quirks and behaviors, so it might be helpful to break things down systematically. The diagram below highlights in quotes all the different values you can check the <code>typeof</code>, and arranges them in different categories to better understand how they are related.
+</p>
+
+
+<br>
+<svg-js-data-types colors="var(--netizen-meta),var(--netizen-meta),var(--netizen-text),var(--netizen-tag),var(--netizen-string)">
+</svg-js-data-types>
+<br>
+
+
+<h1>Number Types</h1>
+
+<h3 name="number">"number"</h3>
+
+<p>
+  A <code>"number"</code> is one of the most fundamental JavaScript data types, almost any type of data can be broken down into numbers. The pixels in an image are represented by numbers, each pixel is typically defined by three numbers (each a value between 0 and 255), which specifies how bright to make each channel: red, green and blue (the primary colors of light). An audio file is also just a seris of numbers, usually between -1 an 1, each value representing the position of the speaker at that point in time (vibrating a speaker back and fourth is how we produce sounds). Even strings, characters of text which have their own data type (see below) can be brokendown into numbers, one for each character (or symbol) in the text. We also use numbers in our logic, to set thresholds in conditional statment and for automation when determining how many times to loop something. All of which is to say, numbers are important.
+</p>
+<br>
+
+<p>
+  In some programming languages numbers are broken up into two different types <i>integers</i> (whole numbers) like <code>1337</code> and <i>floats</i> (decimal numbers) like <code>3.14</code>, but in JavaScript these are both just <i>numbers</i>. While it's not important to understand all the technical details behind how JavaScript accomplishes this and stores our numbers in memory, it is worth knowing that it uses 64-bits of binary code to store each of our numbers. This means there's a limit to how big our number can be (~9 quadrillion) and it also means the decimal math is approximate, for example <code>0.1 + 0.2</code> won't come out to <i>exactly</i> <code>0.3</code>, it's actually <code>0.30000000000000004</code>, so treat fractions as very close estimates.
+</p>
+<br>
+
+<p>
+  JavaScript also has a very special values which also have a <code>typeof</code> <i>"number"</i>, including <code>Infinity</code> and <code>-Infinity</code>, which sounds odd at first, but can actually be pretty useful. For example, you might want to keep track of a "max" value in a variable, maybe this value changes based on user input, but we need to give it some value to start and just need it to be something really big, bigger than the user would reset it to, the biggest possible number, what should we pick? <code>let max = Infinity</code>. Another special value is <code>NaN</code>, which stands for "not a number", it's what you get when you do something like <code>0 / 0</code> or <code>Infinity - Infinity</code>, the value of both would be NaN. You could check if something is NaN using the <code>isNaN()</code> function.
+</p>
+
+<br>
+<code-sample name="js-ex-1"></code-sample>
+<br>
+
+<p style="border: 1px solid var(--fg-color); padding: 10px">
+  <b>JS Quirk:</b> keep in mind, even though <code>NaN</code> literally stands for "not a number", when a variable has that value, it is <i>technically</i> a <code>typeof</code> "number".
+</p>
+<br>
+
+<h3 name="bigint">"bigint"</h3>
+
+<p>
+  A BigInt, short for "big integer" is whole numbers of any size, written with an <code>n</code> suffix like <code>123n</code>. Use this when you need integers beyond what can be stored in our 64-bit <i>number</i> types. It's also ideal when you need perfectly exact integer math (like in cryptography). BigInts have no decimals and don't mix directly with numbers, so if you ever need to write expressions with variables of different number types you can use the <code>Number()</code> or <code>BigInt()</code> constructor functions to convert one to the other.
+</p>
+
+<br>
+<code-sample name="js-ex-2"></code-sample>
+<br>
+
+<h1>Non-Number Types</h1>
+
+<h3 name="undefined">"undefined"</h3>
+
+<p>
+  It's possible to declare a variable, giving it a name, but not assign it any value (no <code>=</code> with data after it), for example <code>let x</code>. In these instances the <code>typeof</code> this variable would be <code>"undefined"</code>. Our container (the space in memory) has a name, there's just nothing in it (yet). Another common situation where you'll encounter "undefined" is when you have a function that doesn't return any value, by default it will return <code>undefined</code>
+</p>
+
+<br>
+<code-sample name="js-ex-3"></code-sample>
+<br>
+
+<h3 name="boolean">"boolean"</h3>
+
+<p>
+  We often need to distinguish between two states, "is dark-mode one or off? Is the user logged in? Yes or no?" In these instances it's most effecient to use a "boolean" value. In the mid-1800s, mathematician <a href="https://en.wikipedia.org/wiki/George_Boole" target="_blank" class="link">George Boole</a> developed <b>Boolean algebra</b>, a way to express logic (previously seen as a purely philosophy concept) with mathematics using values that can be only one of two states: <code>true</code> or <code>false</code>. This idea later became central to digital computing: hardware represents these states as 1 and 0 (on/off). By combining this "binay code" we can build all higher-level computations. Deep down, everything a computer does reduces to these fundamental boolean choices.
+</p>
+<br>
+
+<h3 name="string">"string"</h3>
+
+<p>
+  Anytime we want to store a piece of text, be it a name or an entire story, we can store it as a string. Strings are made by placing the text we want to store within quotes. There are three different types of quote marks we can use, single quotes, double quotes and backticks.
+</p>
+
+<br>
+<code-sample name="js-ex-4"></code-sample>
+<br>
+
+<p>
+  When using single <code>'</code> or double <code>"</code> quotes, you'll need to <b>escape</b> that same quote using a <code>\</code> if it appears inside the string: <code>'It\'s fine'</code> or <code>"He said \"hi\""</code>. You can also switch quote types to avoid escaping: <code>"It's fine"</code>. A string can't be split across different lines of code, but you can use <code>\n</code> to insert a line break, for example <code>"first line\nsecond line"</code>). To combine strings (concatenation), you can use the <code>+</code> operator.
+</p>
+<br>
+
+<p>
+  Backticks <code>`</code> are special kinds of strings called <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blnak">template literals</a>. They allow actual line breaks right inside the string, and they support <b>interpolation</b>, which means you can insert values with <code>${...}</code>, which is often easier to read than lots of <code>+</code>.
+</p>
+
+<br>
+<code-sample name="js-ex-5"></code-sample>
+<br>
+
+<h3 name="symbol">"symbol"</h3>
+
+<p>
+  A symbol is a special kind of value that's guaranteed to be unique. You create one with the <code>Symbol()</code> constructor function, similar in vibe to calling <code>Number()</code> or <code>BigInt()</code> (which we discussed earlier), except every call to <code>Symbol()</code> gives you a brand-new, unique symbol. Two symbols with the same description are still different values.
+</p>
+
+<br>
+<code-sample name="js-ex-6"></code-sample>
+<br>
+
+<p>
+  If this feels niche, that's okay, symbols are there for the rare moments when uniqueness really matters. Most of the time, you can happily ignore them. In 99% of scenarios, strings, numbers, arrays, and objects cover almost everything you need. But if you ever need a value you can compare for identity and be absolutely sure it's the exact same token (and not accidentally collide with any other value), a symbol is perfect.
+</p>
+
+
+<h3 name="null">null</h3>
+
+<p>
+  Earlier we discussed <code>undefined</code>, which is the <code>teypof</code> value a variable has if you haven't assigned it anything, but say your variable does have a value and you want to remove it? When you want to make a variable intentionally empty, it's best practice to set it to <code>null</code>.
+</p>
+
+<br>
+<code-sample name="js-ex-7"></code-sample>
+<br>
+
+<p style="border: 1px solid var(--fg-color); padding: 10px">
+  <b>JS Quirk:</b> technically speaking <code>null</code> is it's own primitive type, which is why we included it on the list in the diagram at the top of these docs, but for historical reasons there is no <code>typeof</code> "null", instead when you check the type of a variable set to null it returns <code>"object"</code>. Important to keep in mind.
+</p>
+<br>
+
+<h1 name="objects">Objects</h1>
+
+<p>
+  It's possible to store more than one value in the same variable. These variables become "data structures" the most fundamental of which is called an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" target="_blank">object</a>. The simplest way to create an object is to write <code>key: value</code> pairs, each separated by a comma <code>,</code> within <code>{</code> curly braces <code>}</code>. You can then use the <code>.</code> dot notation to interact with specific values stored in that object. We call the variables (these keys) stored inside an object a <b>property</b>.
+</p>
+
+<br>
+<code-sample name="js-ex-8"></code-sample>
+<br>
+
+<p>
+  Objects are very special <i>type</i> in JavaScript, not just because they're in the <i>non-primitive</i> category, but because almost everything in JavaScript either is, or behaves like, an object. This is a topic that deserves it's own section. To dive deeper in the world of objects see the <span class="link" name="data-structs">Data Structure</span> docs.
+</p>
+
+<h4 name="functions">Functions</h4>
+
+<p>
+  Stricktly speaking, functions aren't a separate built-in data type in JavaScript, they're <i>callable objects</i> (objects that you can invoke or "run"). A function's body is a collection of statements, making the function itself a kind of value: you can store it in a variable and pass it around. Technically, JavaScript treats functions as objects with special behavior, but because they're so fundamentally different it's useful to know when a variable contians a function rather than another kind of object. For this reason, JavaScript's <code>typeof</code> operator has a handy special case, checking a variable that stores a function returns <code>"function"</code>, instead of "object" (even though, technically, that's what it is).
+</p>
+
+<br>
+<code-sample name="js-ex-9"></code-sample>
+<br>
+
+<p>
+  In practice we use functions to package actions, name and reuse code, and to participate in control flow. It's helpful to think of them as their own concept, things you can call (or run) rather than "just another object." You'll also see the word <i>method</i>, which simply means "a function stored on an object." Functions are an incredibly important part of programming so there's a lot <span class="link" name="more-funcs">more to say about them</span>.
+</p>

@@ -1,0 +1,127 @@
+.vector-graphics input[type="color"] {
+  width: 16px;
+  height: 16px;
+}
+
+.vector-graphics input[type="number"] {
+  width: 70px;
+  border-radius: 11px;
+}
+
+.vector-graphics [name="fill-block"],
+.vector-graphics [name="stroke-block"],
+.vector-graphics input[type="checkbox"] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.vector-graphics__menu,
+.vector-graphics__styling {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vector-graphics__menu > button {
+  font-size: 28px;
+  margin: 0 3px;
+  border-radius: 11px;
+  font-family: 'fira-mono-regular';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 32px;
+}
+
+.vector-graphics__views {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 300px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.vector-graphics__code {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.vector-graphics__svg {
+  border: 1px dashed var(--netizen-meta);
+  margin-left: 10px;
+}
+
+.vector-graphics__code {
+    width: 350px;
+    cursor: pointer !important;
+ }
+
+/* Show control points only when hovering the preview SVG */
+.vector-graphics__svg .vg-handles {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-in-out;
+}
+.vector-graphics__svg:hover .vg-handles {
+  opacity: 1;
+  pointer-events: all;
+}
+.vector-graphics__svg .vg-handles.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Style the handle symbol */
+.vector-graphics__svg .vg-handle {
+  fill: var(--netizen-meta);
+  font-size: 28px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: all;
+  user-select: none;
+}
+
+.vector-graphics__svg .vg-handle-bg {
+  fill: var(--bg-color);
+  pointer-events: none;
+  opacity: 0.25;
+  transform: translateY(2px);
+}
+
+/* Copy-to-clipboard overlay */
+.vector-graphics__code .code-copy-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  padding: 20px;
+  text-align: center;
+  transition: opacity 200ms ease;
+}
+.vector-graphics__code .code-copy-overlay.visible {
+  opacity: 1;
+}
+
+.vector-graphics__styling {
+  margin-top: 20px;
+}
+
+.vector-graphics__styling > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vector-graphics__styling > span > * {
+  margin: 0 4px;
+}

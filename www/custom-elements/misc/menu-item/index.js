@@ -1,4 +1,4 @@
-/* global HTMLElement, utils */
+/* global HTMLElement, utils, WIDGETS */
 class MenuItem extends HTMLElement {
   constructor () {
     super()
@@ -26,16 +26,17 @@ class MenuItem extends HTMLElement {
       boxShadow: '33px 33px 33px -9px rgba(0, 0, 0, 0.75)',
       display: 'none', /* or flex */
       justifyContent: 'center',
-      alignItems: 'center',
-      transition: `left ${time}ms, top ${time}ms, opacity ${time}ms`
+      alignItems: 'center'
+      // transition: `left ${time}ms, top ${time}ms, opacity ${time}ms`
     })
+    this._setupMotionListener(div, time) // determin whether or not to "transition" css
 
     this._oldPos = { left: div.style.left, top: div.style.top }
 
     const img = document.createElement('img')
     img.setAttribute('src', this.icon)
     img.setAttribute('alt', this.title)
-    img.style.width = '50%'
+    img.style.width = this.w ? this.w : '50%'
     div.appendChild(img)
 
     const tri = document.createElement('div')
@@ -48,7 +49,7 @@ class MenuItem extends HTMLElement {
       height: '15px',
       borderStyle: 'solid',
       borderWidth: '0px 10px 15px',
-      borderColor: 'transparent transparent var(--fg-color) transparent',
+      borderColor: 'transparent transparent var(--fg-color) transparent'
     })
 
     this.appendChild(div)
@@ -156,12 +157,32 @@ class MenuItem extends HTMLElement {
     this._positionTriangle(i)
   }
 
+  _setupMotionListener (div, time) {
+    if (!WIDGETS['coding-menu']) {
+      setTimeout(() => this._setupMotionListener(div, time), 250)
+      return
+    }
+
+    const updateMotion = () => {
+      const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+      if (!nomotion) {
+        div.style.transition = `left ${time}ms, top ${time}ms, opacity ${time}ms`
+      } else {
+        div.style.transition = 'none'
+      }
+    }
+
+    WIDGETS['coding-menu'].on('motion-change', updateMotion)
+
+    updateMotion()
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* attributes + properties
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   static get observedAttributes () {
-    return ['title', 'icon', 'offset']
+    return ['title', 'icon', 'offset', 'w']
   }
 
   syncProps2Attr () {

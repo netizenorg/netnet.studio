@@ -1,0 +1,111 @@
+{
+  "key": "6",
+  "name": "pixel art (box-shadow hack)",
+  "tags": [
+    "css art",
+    "pixel",
+    "box-shadow"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx1lMFqwzAQRO/5ij02EFGpSYPshv6LE6uVQa2MrcYOJf+eaJVCSmYPBvFmNbMLXu3GdArufUG0j+2Jfq8Hoqlrk6/JbPv5jYF33adP9yQNzff4EYevuhxDk9zTqz5OKzo04ZCPnhRtN/28XJYr+zir0TdtnGpS2Yn09et/hj64FVcQWX3Dxy4Gl/5wJnzjf3V2R7y4r18eBI2xVM4I8I3FnPsB3Aq5ihm7oQGAIHHJiBHg3BHgleCvmPF8aAQkcKtA0BhL5ZK/1BAjwK2QWwm5xkiDcbJ9/HfLxEDQGEvlPDHgUi73CLiVco0QUCarpH0CApsAXiKAwItshA1EAreEhLL7d0J+ZM6L3XN50C7fo0/d",
+  "info": [
+    {
+      "focus": null,
+      "text": "Instead of simply styling a web page or app, artists in the <a href=\"https://www.vice.com/en/article/painting-made-with-code-html-pure-css-browser-art-diana-smith/\" target=\"_blank\">CSS Art scene</a> use it to render creative compositions. The point isn't always the finished image but the challenge: pushing CSS beyond what it was designed for and, in the process, mastering the craft.",
+      "title": "CSS Art"
+    },
+    {
+      "title": "\"no div\"",
+      "focus": [
+        1
+      ],
+      "text": "Sometimes the only element in CSS Art is a <code>style</code> tag, meaning the artwork is generated entirely with CSS. This is called \"no div\" CSS art, where even the common <code>div</code> element is avoided, like in <a href=\"https://codepen.io/ShadowShahriar/pen/pobqepZ\" target=\"_blank\">this piece</a> by S. Shahriar.'"
+    },
+    {
+      "title": "body rule",
+      "focus": [
+        2
+      ],
+      "text": "This is possible because every page must have a <code>body</code>, and if you don't declare one, the browser creates it automatically. That means we can still style it, even if it's missing from the code."
+    },
+    {
+      "title": "pixel art trick",
+      "focus": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "text": "Here's a common CSS art trick: <code>box-shadow</code> can be written so it looks like a solid box of color. Since you can stack an unlimited number of shadows, you can use them like \"pixels\" to build pixel art."
+    },
+    {
+      "title": "pixel size",
+      "focus": [
+        3,
+        4
+      ],
+      "text": "The <code>width</code> and <code>height</code> of the body is used to set the pixel size."
+    },
+    {
+      "title": "pixel values",
+      "focus": [
+        7
+      ],
+      "text": "Then each shadow entry defines a new pixel, the first two values set the pixel's position. For example, on this line <code>80px</code> is the \"x\" or horizontal position and <code>0px</code> is the \"y\" or vertical position. The third value is the pixel's color, I've this one \"violet\" so that it stands out from the rest."
+    },
+    {
+      "title": "centering",
+      "focus": [
+        5
+      ],
+      "text": "I've set this <code>transform</code> property in order to center the whole composition. Without it our pixel art would be pinned to the top/left corner of the screen."
+    },
+    {
+      "title": "experiment",
+      "focus": null,
+      "text": "There are loads of tools out there for making pixel art, that's not really the point here. It's more about the creative and technical challenge of pushing CSS art beyond it's intended use, and learning more about the craft by experimenting with it."
+    }
+  ]
+}

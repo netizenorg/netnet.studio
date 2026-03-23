@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="/core/styles/fonts.css">
+<link rel="stylesheet" href="/core/styles/buttons.css">
+<link rel="stylesheet" href="/core/styles/form-fields.css">
+<link rel="stylesheet" href="/custom-elements/misc/reorderable-list/styles.css">
+<link rel="stylesheet" href="styles.css">
+
+<div class="menu">
+  <div>
+    <div>
+      <button id="new-demo" class="pill-btn pill-btn--secondary" title="edit a pre-existing demo">new</button>
+      <button id="edit" class="pill-btn pill-btn--secondary" title="edit a pre-existing demo">edit</button>
+      <button id="upload" class="pill-btn pill-btn--secondary" title="upload a demo file">upload</button>
+      <button class="pill-btn pill-btn--secondary" name="edit-info">?</button>
+    </div>
+    <h2>Demo Maker</h2>
+    <div>
+      <button id="download" class="pill-btn pill-btn--secondary" title="download demo as a json file">download</button>
+      <button id="gen-link" class="pill-btn pill-btn--secondary" title="generate a link for this demo">shareable link</button>
+      <button class="pill-btn pill-btn--secondary" name="save-info">?</button>
+    </div>
+  </div>
+</div>
+
+<main style="opacity: 0.1">
+  <div>
+    <input class="input" id="note-title" placeholder="note title">
+    <input class="input" id="note-nums" placeholder="focus (comma separated numbers and dashed ranges)">
+    <button class="pill-btn pill-btn--secondary" name="note-info">?</button>
+  </div>
+  <div id="note-info"></div>
+</main>
+
+<div id="demo-settings" class="menu" style="opacity: 0.1">
+  <div style="align-items: flex-start;">
+    <button id="new" class="pill-btn pill-btn--secondary" title="create a new annotation">+ New Note</button>
+    <button id="preview" class="pill-btn pill-btn--secondary" title="preview this annotation">💬 Preview Note</button>
+    <reorderable-list id="note-list"></reorderable-list>
+    <button id="delete" class="pill-btn pill-btn--secondary" title="delete selected annotation(s)">
+      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete Note
+    </button>
+  </div>
+  <div>
+    <div>
+      <input class="input" id="demo-name" placeholder="demo name">
+      <input class="input" id="tags" placeholder="tags (comma separated)" title="tags for indexing this demo in netnet's search bar">
+      <button class="pill-btn pill-btn--secondary" name="demo-info">?</button>
+    </div>
+    <div>
+      <span>layout</span>
+      <select id="layout" class="pill-btn pill-btn--secondary" title="the netnet layout you want for this demo">
+        <option value="dock-left">dock-left</option>
+        <option value="dock-bottom">dock-bottom</option>
+        <option value="separate-window">separate-window</option>
+        <option value="full-screen">full-screen</option>
+      </select>
+      <button class="pill-btn pill-btn--secondary" name="layout-info">?</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal">
+  <div></div>
+</div>
+
+<script src="/custom-elements/misc/reorderable-list/index.js"></script>
+<script src="/nn.min.js"></script>
+<script src="/netitor.min.js"></script>
+<script src="/core/utils.js"></script>
+<script src="modal.js"></script>
+<script src="main.js"></script>

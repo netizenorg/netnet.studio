@@ -9,32 +9,36 @@ class NetNetFaceMenu {
       animation: 'blink'
     }
     this.itemOpts = {
-      hi: {
+      'talk to netnet': {
         path: 'images/menu/hi.png',
         click: () => {
           WIDGETS['student-session'].greetStudent()
         }
       },
-      functions: {
-        path: 'images/menu/functions.png',
+      'Coding Menu': {
+        path: 'images/menu/code.png',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('functions-menu')
+          WIDGETS.open('coding-menu')
         }
       },
-      search: {
+      'Search Bar': {
         path: 'images/menu/search.png',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
           if (this.search.opened) this.search.close()
           else this.search.open()
         }
       },
-      guide: {
+      'Learning Guide': {
         path: 'images/menu/tutorials.png',
+        width: '73%',
         click: () => {
+          if (utils.warnSafari()) return WIDGETS['student-session'].greetStudent()
           NNW.menu.toggleMenu(false)
-          WIDGETS.open('learning-guide', w => w.scrollTo('top'))
+          WIDGETS.open('learning-guide', w => w.scrollTo(0))
         }
       }
     }
@@ -89,16 +93,15 @@ class NetNetFaceMenu {
     this.faceLoaded = true
     obj = obj || {}
 
-    if (obj.leftEye) this.face.leftEye = obj.leftEye
-    if (obj.mouth) this.face.mouth = obj.mouth
-    if (obj.rightEye) this.face.rightEye = obj.rightEye
-
-    if (obj.leftEye) this._updateFavicon(obj.leftEye)
+    if (obj.leftEye) this.face.leftEye = obj.leftEye.normalize('NFC')
+    if (obj.mouth) this.face.mouth = obj.mouth.normalize('NFC')
+    if (obj.rightEye) this.face.rightEye = obj.rightEye.normalize('NFC')
 
     this.face.lookAtCursor = typeof obj.lookAtCursor === 'boolean'
       ? obj.lookAtCursor : true
 
-    if (obj.animation) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (obj.animation && !nomotion) {
       this.face.animation = obj.animation
       this._runFaceAnimation()
     } else {
@@ -123,7 +126,10 @@ class NetNetFaceMenu {
         leftEye: '◉', mouth: '⌄', rightEye: '☉', lookAtCursor, animation: 'processing'
       },
       happy: {
-        leftEye: 'ᴖ', mouth: '◡', rightEye: 'ᴖ', lookAtCursor, animation: 'spring-up'
+        leftEye: 'ᴖ', mouth: '◡', rightEye: 'ᴖ', lookAtCursor, animation: 'big-nod'
+      },
+      surprise: {
+        leftEye: 'ŏ', mouth: '.', rightEye: 'ŏ', lookAtCursor: false, animation: 'spring-up'
       },
       upset: {
         leftEye: '⇀', mouth: '^', rightEye: '↼', lookAtCursor, animation: 'shake'
@@ -140,15 +146,14 @@ class NetNetFaceMenu {
   }
 
   toggleMenu (show) {
-    this.updatePosition()
     if (typeof show === 'undefined') show = !this.opened
-
-    if (show && this.textBubble.opened) window.convo.hide()
 
     if (typeof NNW !== 'undefined') {
       if (show) this.switchFace('menu')
       else this.switchFace('default')
     }
+
+    this.updatePosition()
 
     const radius = this.items.children.length * 25
     this.items.querySelectorAll('menu-item').forEach(item => {
@@ -166,6 +171,8 @@ class NetNetFaceMenu {
         item.toggle(false)
       }
     })
+
+    if (show && this.textBubble.opened) window.convo.hide()
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸ PRIVATE METHODS
@@ -187,10 +194,12 @@ class NetNetFaceMenu {
         return
       }
       for (const key in this.itemOpts) {
+        const o = this.itemOpts[key]
         const item = document.createElement('menu-item')
         item.setAttribute('title', key)
-        item.setAttribute('icon', this.itemOpts[key].path)
-        item.addEventListener('click', () => this.itemOpts[key].click())
+        item.setAttribute('icon', o.path)
+        item.addEventListener('click', () => o.click())
+        if (o.width) item.setAttribute('w', o.width)
         this.items.appendChild(item)
       }
     }
@@ -213,6 +222,8 @@ class NetNetFaceMenu {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸
 
   _updateFavicon (svg) {
+    // NOTE: this is no longer in use (was causing way too many HTTP reqs before)
+    // leaving it here in case we want to re-use in another context
     if (svg === '.') svg = 'mouth-dot'
     document.querySelector('link[rel="icon"]').href = `images/faces/${svg}.svg`
   }
@@ -221,9 +232,11 @@ class NetNetFaceMenu {
     this._faceAssets = { null: '' }
     let ready = false
     utils.get('api/face-assets', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
       json.forEach(svg => {
         const name = svg.split('.')[0]
-        const key = name === 'mouth-dot' ? '.' : name
+        let key = name === 'mouth-dot' ? '.' : name
+        key = key.normalize('NFC')
         utils.get(`images/faces/${svg}`, (code) => {
           let start = 0
           let end = 0
@@ -257,8 +270,8 @@ class NetNetFaceMenu {
     this._loadFaceAssets(() => this.updateFace({ animation: 'blink' }))
   }
 
-  _char2SVG (char) {
-    const fg = NNW.getThemeColors().fg
+  _char2SVG (char, altClr) {
+    const fg = altClr || NNW.getThemeColors().fg
     const sz = NNW.layout === 'welcome' ? '64px' : '20px'
     return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
        viewBox="0 0 200 200" xml:space="preserve" style="enable-background:new 0 0 200 200; fill: ${fg}; height: ${sz}">
@@ -279,10 +292,14 @@ class NetNetFaceMenu {
       if (this.face.leftEye === '-') {
         this._faceAnimTO = setTimeout(() => {
           this.updateFace({ leftEye: '◕', rightEye: '◕', lookAtCursor: true })
+          const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+          if (nomotion) return // stop blinking
           this._runFaceAnimation()
         }, 150)
       } else {
         this._faceAnimTO = setTimeout(() => {
+          const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+          if (nomotion) return // stop blinking
           this.updateFace({ leftEye: '-', rightEye: '-', lookAtCursor: false })
           this._runFaceAnimation()
         }, Math.random() * 6000 + 8000)
@@ -298,12 +315,14 @@ class NetNetFaceMenu {
       NNW.menu.ele.querySelector('#face').style.animation = 'bounce 1s'
       NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
       NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
+    } else if (this.face.animation === 'big-nod') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'big-nod 0.7s ease-in-out 0s 1'
     } else if (this.face.animation === 'spring-up') {
-      NNW.menu.ele.querySelector('#face').style.animation = 'spring-up 0.7s'
-      NNW.menu.ele.querySelector('#face').style.animationTimingFunction = 'easeInQuint'
-      NNW.menu.ele.querySelector('#face').style.animationIterationCount = 1
+      NNW.menu.ele.querySelector('#face').style.animation = 'spring-up 0.7s ease-out 0s 1 normal forwards'
     } else if (this.face.animation === 'shake') {
       NNW.menu.ele.querySelector('#face').style.animation = 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both'
+    } else if (this.face.animation === 'duck-down') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'duck-down 0.82s ease-out 0s 1 normal forwards'
     }
   }
 
@@ -323,7 +342,8 @@ class NetNetFaceMenu {
   _moveEyes (e) {
     const leftEye = this.ele.querySelector('#face > span:nth-child(1)')
     const rightEye = this.ele.querySelector('#face > span:nth-child(3)')
-    if (leftEye && rightEye && this.face.lookAtCursor) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    if (leftEye && rightEye && this.face.lookAtCursor && !nomotion) {
       this._lookAt(leftEye, e.clientX, e.clientY)
       this._lookAt(rightEye, e.clientX, e.clientY)
     } else if (leftEye && rightEye) {

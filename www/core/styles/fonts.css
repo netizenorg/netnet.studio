@@ -1,3 +1,8 @@
+/* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•
+   FONTS!
+        ( ◕ ◞˂)～ ☆
+•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• */
+
 @font-face {
     font-family: 'fira-sans-bold';
     src: url('/fonts/firasans-bold-webfont.woff2') format('woff2'),
@@ -20,4 +25,38 @@
          url('/fonts/FiraMono-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/press-start-2p-v15-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cyberdyne';
+  src: url('/fonts/cyberdyne.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* major-mono-display-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Major Mono Display';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/major-mono-display-v18-latin-regular.woff2') format('woff2');
+}
+
+/* libre-bodoni-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Libre Bodoni';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/libre-bodoni-v9-latin-regular.woff2') format('woff2');
 }

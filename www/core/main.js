@@ -1,4 +1,4 @@
-/* global Netitor, NetNet, utils, WIDGETS */
+/* global nn, Netitor, NetNet, utils, WIDGETS */
 
 const NNE = new Netitor({
   ele: '#nn-editor',
@@ -12,7 +12,7 @@ const NNE = new Netitor({
 window.NNW = new NetNet()
 
 const initWidgets = [
-  'functions-menu',
+  'coding-menu',
   'student-session',
   'html-reference',
   'css-reference',
@@ -20,7 +20,6 @@ const initWidgets = [
   'code-review',
   'keyboard-shortcuts'
 ]
-initWidgets.forEach(file => WIDGETS.load(file))
 
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
@@ -33,11 +32,10 @@ NNE.on('cursor-activity', (e) => {
 })
 
 NNE.on('lint-error', (e) => {
-  WIDGETS['code-review'].updateIssues(e)
+  WIDGETS['code-review'].review({ issues: e })
 })
 
 NNE.cm.on('keydown', (cm, e) => {
-  utils.netitorInput(e)
   utils.numChange(e)
 })
 
@@ -50,28 +48,46 @@ NNE.on('edu-info', (e, eve) => {
   }
 })
 
-window.addEventListener('resize', (e) => {
+// NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
+
+nn.on('resize', (e) => {
   utils.windowResize()
-  utils.keepWidgetsInFrame()
 })
 
-window.addEventListener('load', () => {
-  utils.get('/api/custom-elements', (elements) => {
-    elements.forEach(obj => {
-      utils.loadFile(`/custom-elements/${obj.path}/index.js`)
-      if (obj.css) utils.loadStyleSheet(`/custom-elements/${obj.path}/styles.css`)
-    })
-    // when everythings loaded...
-    utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
-      WIDGETS['student-session'].clearProjectData()
-      // ...check URL for params, && fade out load screen when ready
-      if (utils.checkURL() === 'none') utils.loadDefault()
-    })
+// the <iframe> messanger is injected into the rendered html pages, handled in:
+// setCustomRenderer or files-db-service-worker.js (when working on projects)
+nn.on('message', (e) => {
+  if (e.data.type === 'iframe-error') WIDGETS['code-review'].review({ error: e })
+  else if (e.data.type === 'netnet-bg') utils.updateAllShadows(e)
+})
+
+// update default background on mouse movement
+nn.on('mousemove', (e) => {
+  utils.netnetBGComms(e)
+})
+
+// warn the user about accidental navigation attempts
+nn.on('beforeunload', (e) => {
+  e.preventDefault(); e.returnValue = ''
+})
+
+nn.on('load', async () => {
+  await utils.loaderSetup(initWidgets)
+  // load custom elements
+  const elements = await utils.getSync('/api/custom-elements')
+  elements.forEach(ele => {
+    utils.loadFile(`/custom-elements/${ele.path}/index.js`)
+    if (ele.css) utils.loadStyleSheet(`/custom-elements/${ele.path}/styles.css`)
+    utils.loaderUpdate(ele.path.split('/')[1])
+  })
+  // load initial widgets
+  initWidgets.forEach(f => WIDGETS.load(f, w => utils.loaderUpdate(w.key)))
+  // when everythings loaded...
+  utils.whenLoaded(elements.map(e => e.path), initWidgets, () => {
+    utils.loaderUpdate('ready')
+    // setup custom renderer to catch errors (see on "message" below)
+    utils.setCustomRenderer(null)
+    // ...check URL for params, && fade out load screen when ready
+    if (utils.checkURL() === 'none') utils.loadDefault()
   })
 })
-
-window.addEventListener('beforeunload', () => {
-  WIDGETS['student-session'].clearProjectData()
-})
-
-// NOTE: KeyboardShortcuts Widget sets up keyboard event listeners
