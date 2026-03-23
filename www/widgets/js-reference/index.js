@@ -94,8 +94,15 @@ class JsReference extends Widget {
 
   openDocs (opt, anchor) {
     if (!this.opened) this.open()
+    const dict = {
+      'data-types': 'dataTypesOpts',
+      'data-structures': 'dataStructOpts',
+      functions: 'deeperFuncsOpts',
+      libraries: 'apisAndLibsOpts'
+    }
     this._lastScrollTop = this.slide.scrollTop
-    this.slide.updateSlide(this[opt], anchor)
+    const name = dict[opt] || opt
+    this.slide.updateSlide(this[name], anchor)
   }
 
   textBubble (eve) {
