@@ -55,23 +55,6 @@ aliasRoutes.forEach(dep => {
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 
-// router.get('/tutorials/*', (req, res, next) => {
-//   if (req.headers.host.includes(':1337')) { // for dev server
-//     const file = `../../netnet.studio/www/${req.originalUrl}`
-//     res.sendFile(path.join(__dirname, file))
-//   } else if (req.originalUrl.includes('/list.json')) {
-//     // if asking for tutorials that don't exist (ex: in local dev)
-//     const list = path.join(__dirname, '../www/tutorials/list.json')
-//     const file = fs.readFileSync(list)
-//     const json = JSON.parse(file)
-//     const dirs = fs.readdirSync(path.join(__dirname, '../www/tutorials/'))
-//     for (const sec in json) {
-//       json[sec] = json[sec].filter(t => dirs.includes(t))
-//     }
-//     res.json(json)
-//   } else next()
-// })
-
 router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
@@ -79,13 +62,8 @@ router.get('/tutorials/*', (req, res, next) => {
     const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
     return res.sendFile(filePath)
   }
-
-  // TODO: this works for now, b/c all the tutorials are on the main "netnet.studio" folder
-  // but when we launch v4 we'll need to migrate old tutorials from main to v3
-  // duplicate the onese we want to keep (net art && css art) into main
-  // and then updating the logic in this route so that v2 && v3 use the v3 folder
-  // where as main && dev use the main folder in '../../netnet.studio/www'
-
+  // NOTE: v2 && v3 have a modified version of this route which returns the old
+  // tutorials, stored in ../../netnet.studio-v3/www
   next()
 })
 

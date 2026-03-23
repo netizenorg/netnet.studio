@@ -1,0 +1,25 @@
+code-trace {
+  display: block;
+}
+
+.code-trace {
+  position: relative;
+  width: 100%;
+}
+
+.code-trace__base,
+.code-trace__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.code-trace__base {
+  opacity: 0.35;
+}
+
+.code-trace__overlay {
+  z-index: 1;
+  min-height: 100%;
+}

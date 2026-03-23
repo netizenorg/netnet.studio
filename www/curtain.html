@@ -63,7 +63,7 @@
       .widget {
         cursor: auto !important;
         box-shadow: rgba(0, 0, 0, 0.15) 17.8282px 32.5562px 6px;
-        height: 264px;
+        /* height: 264px; */
         width: 500px;
         left: calc(50vw - 250px);
         top: calc(50vh - 132px);
@@ -78,6 +78,7 @@
 
       .widget__inner-html {
         padding-top: 18px;
+        font-size: 1.4em;
       }
 
       .widget__inner-html code {
@@ -103,17 +104,12 @@
 
     <div class="widget">
       <div class="widget__top">
-        <div class="widget__top__title">404 - Page Not Found</div>
+        <div class="widget__top__title">netnet.studio</div>
       </div>
       <div class="widget__inner-html">
-        ( ◕ ◞ ◕ )つ oh hi! It appears the URL (uniform resource locator) aka "web address" which you've entered doesn't exist:<br>
-        <code></code>
-        <br><br>
-        Make sure you spelled everything correctly and have got all the slashes and dots in the correct places. If you think this is a mistake feel free to <a id="issues" href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">open an issue</a> on our GitHub page.
+        ( ◕ ◞ ◕ ) {{MESSAGE}}
       </div>
     </div>
-
-    <div class="print‑notice">⚠️ oops! (◕ ◞ ◕) This page isn't optimized for printing, it might be better to take a screen shot, or if there's something specific you're after let us know: hi@netizen.org</div>
 
     <!-- check out >> https://github.com/nbriz/StatsNotTracks -->
     <!-- to learn about our privacy-focused web analytics -->
@@ -121,34 +117,7 @@
     <!-- netizen.org libs -->
     <script src="/nn.min.js"></script>
     <script>
-      function setup () {
-        nn.get('.widget__inner-html code')
-          .content(window.location.toString())
 
-        const report = `${window.location.origin}/docs/contributors/bug-report.html`
-        nn.get('#issues').set('href', report)
-      }
-
-      function updateBG (mouse) {
-        if (reduceMotion() || window.nomotion) return
-        const d = -33 // max amount to shift background
-        const x = nn.map(mouse.x, 0, nn.width, 0, d)
-        const y = nn.map(mouse.y, 0, nn.height, 0, d)
-        const p = `${x}px ${y}px`
-        nn.get('body').css({
-          backgroundPosition: `${p}, ${p}, 0 0`
-        })
-      }
-
-      function reduceMotion () {
-        // check if user "prefers redueced motion"
-        const cssQuery = '(prefers-reduced-motion: reduce)'
-        const queryList = window.matchMedia(cssQuery)
-        return queryList.matches
-      }
-
-      nn.on('mousemove', updateBG)
-      nn.on('load', setup)
     </script>
   </body>
 </html>

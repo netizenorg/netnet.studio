@@ -24,7 +24,7 @@ class SvgJSConditional extends HTMLElement {
       <tspan x="74.3" y="0">d</tspan>
     </text>
     <text transform="translate(233.93 24.68)"
-      style="isolation:isolate;font-size:23.2268009185791px;fill:${this.c[5]};font-family:'fira-sans-regular', sans-serif">question</text>
+      style="isolation:isolate;font-size:23.2268009185791px;fill:${this.c[5]};font-family:'fira-sans-regular', sans-serif">condition (<tspan font-style="italic">the question</tspan>)</text>
     <text transform="translate(110.17 261.01)"
       style="isolation:isolate;font-size:57.13840103149414px;fill:${this.c[0]};font-family:'fira-sans-regular', sans-serif">}</text>
     <text transform="translate(140.36 192.45)"

@@ -1,4 +1,4 @@
-/* global Widget, Convo, nn, NNW, utils */
+/* global Widget, Convo, nn, NNW, utils, WIDGETS, NNE */
 class JsReference extends Widget {
   constructor (opts) {
     super(opts)
@@ -10,10 +10,16 @@ class JsReference extends Widget {
     this.title = 'JavaScript Reference Docs'
 
     // this.on('close', () => { this.slide.updateSlide(this.mainOpts) })
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     utils.get('./widgets/js-reference/data/edu-supplement.json', (json) => {
       if (json.success === false) return utils._Convo('oh-no-error', json)
       this.data = json
+    })
+
+    utils.get('./widgets/js-reference/data/basic-examples.json', (json) => {
+      if (json.success === false) return utils._Convo('oh-no-error', json)
+      this.exBasic = json // TODO: maybe other json files for other lessons?
     })
 
     utils.get('./widgets/js-reference/data/main-slide.html', (html) => {
@@ -23,6 +29,9 @@ class JsReference extends Widget {
         this._lastScrollTop = this.slide.scrollTop
         this.slide.updateSlide(opts)
       }
+
+      div.get('.js-reference-widget--intro-btn')
+        .addEventListener('click', () => this.toggleIntroPresentation())
 
       div.getAll('[name="data-types"]').forEach(ele => {
         ele.on('click', () => updateSlide(this.dataTypesOpts))
@@ -60,10 +69,40 @@ class JsReference extends Widget {
     // NNW.on('theme-change', () => { this._createHTML() })
   }
 
+  toggleIntroPresentation () {
+    if (WIDGETS['hyper-video-player']?.opened) {
+      WIDGETS['hyper-video-player'].close()
+    }
+
+    const isStarterCode = NNE.code === utils.starterCode()
+    if (isStarterCode) return this._toggleIntroPresentation()
+
+    if (WIDGETS['project-files']?.projectData.name) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    const workingOnDemoOrTemplate = typeof utils.url.demo === 'string' ||
+      typeof utils.url.template === 'string'
+    if (workingOnDemoOrTemplate) {
+      window.convo = new Convo(this.convos, 'confirm-start')
+      return
+    }
+
+    this._toggleIntroPresentation()
+  }
+
   openDocs (opt, anchor) {
     if (!this.opened) this.open()
+    const dict = {
+      'data-types': 'dataTypesOpts',
+      'data-structures': 'dataStructOpts',
+      functions: 'deeperFuncsOpts',
+      libraries: 'apisAndLibsOpts'
+    }
     this._lastScrollTop = this.slide.scrollTop
-    this.slide.updateSlide(this[opt], anchor)
+    const name = dict[opt] || opt
+    this.slide.updateSlide(this[name], anchor)
   }
 
   textBubble (eve) {
@@ -115,7 +154,7 @@ class JsReference extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   async _createHTML (div) {
-    if (!utils.customElementReady('widget-slide') || !utils.customElementReady('code-sample')) {
+    if (!utils.customElementReady('widget-slide') || !utils.customElementReady('code-sample') || !utils.customElementReady('code-trace')) {
       setTimeout(() => this._createHTML(div), 100)
       return
     }
@@ -184,6 +223,93 @@ class JsReference extends Widget {
       back: this.mainOpts,
       ele: sub3
     }
+
+    const html4 = await utils.getSync('./widgets/js-reference/data/intro-pres.html', true)
+    const sub4 = nn.create('div').content(html4)
+    this.introPresOpts = {
+      name: 'js-reference-intro-pres',
+      widget: this,
+      back: this.mainOpts,
+      ele: sub4,
+      onBack: () => this._toggleIntroPresentation(true),
+      cb: async () => {
+        await nn.sleep(utils.getVal('--menu-fades-time'))
+        this._setupTraceExamplesEvents()
+      }
+    }
+  }
+
+  async _toggleIntroPresentation (calledOnBack) {
+    const inPresentation = this.slide.getAttribute('name') === 'js-reference-intro-pres'
+    if (inPresentation) {
+      if (!calledOnBack) this.slide.updateSlide(this.mainOpts)
+      window.convo.hide()
+    } else {
+      utils.cancelAllNetitorUses('js-reference')
+      window.convo = new Convo(this.convos, 'start-guide')
+      this.slide.updateSlide(this.introPresOpts)
+      await nn.sleep(500)
+      this._displayTraceExample('variables', 'var')
+    }
+  }
+
+  _displayTraceExample (concept, key) {
+    // TODO: maybe other lessons beyond "Basic", ex: data structures
+    const ex = this.exBasic[concept][key]
+    this.$('code-trace').code = ex.code
+    if (ex.convo) this.$('code-trace').dataset.convo = ex.convo
+    else delete this.$('code-trace').dataset.convo
+    this.$('code-trace').dataset.concept = concept
+    this.$('code-trace').dataset.key = key
+    this.$('.js-reference-widget--console').style.color = 'var(--netizen-meta)'
+    this.$('.js-reference-widget--console').innerHTML = '...'
+  }
+
+  _setupTraceExamplesEvents () {
+    this.$('[name="run-code"]').addEventListener('click', () => {
+      window.convo.hide()
+      const check = this.$('code-trace').check()
+      const key = this.$('code-trace').dataset.key
+      const concept = this.$('code-trace').dataset.concept
+      const ex = this.exBasic[concept][key]
+      if (!check.matched) {
+        this.$('code-trace').showDiff('rgba(255, 0, 0, 0.4)')
+        this.$('.js-reference-widget--console').style.color = 'red'
+        this.$('.js-reference-widget--console').innerHTML = 'error (try again)'
+        if (!check.overlayCode) window.convo = new Convo(this.convos, 'no-code')
+        else window.convo = new Convo(this.convos, 'code-error')
+      } else {
+        this.$('code-trace').clearDiff()
+        if (ex.output) {
+          this.$('.js-reference-widget--console').style.color = 'var(--netizen-meta)'
+          this.$('.js-reference-widget--console').innerHTML = ex.output
+        } else {
+          this.$('.js-reference-widget--console').style.color = 'var(--netizen-meta)'
+          this.$('.js-reference-widget--console').innerHTML = 'correct (nothing to output)'
+        }
+      }
+    })
+    this.$('[name="explain-code"]').addEventListener('click', () => {
+      const convo = this.$('code-trace').dataset.convo
+      const key = this.$('code-trace').dataset.key
+      window.convo = new Convo(this.convos, convo || key)
+    })
+    this.$('[name="js-ref-concept-drop-down"]').addEventListener('change', () => {
+      const c = this.$('[name="js-ref-concept-drop-down"]').value
+      const keys = Object.keys(this.exBasic[c])
+      nn.get('[name="js-ref-example-drop-down"]').innerHTML = ''
+      nn.get('[name="js-ref-example-drop-down"]').set('options', keys)
+      this._displayTraceExample(c, keys[0])
+      const convo = this.$('code-trace').dataset.convo
+      window.convo = new Convo(this.convos, convo || keys[0])
+    })
+    this.$('[name="js-ref-example-drop-down"]').addEventListener('change', () => {
+      const concept = this.$('[name="js-ref-concept-drop-down"]').value
+      const key = nn.get('[name="js-ref-example-drop-down"]').value
+      this._displayTraceExample(concept, key)
+      const convo = this.$('code-trace').dataset.convo
+      window.convo = new Convo(this.convos, convo || key)
+    })
   }
 
   _loadCodeExamples (type, ele) {
@@ -248,16 +374,16 @@ if (first) { // empty strings are "falsey"
 alert(typeof b)`,
 `const b = new Object()
 alert(typeof b)`,
-`const a = { name: 'Nick', height: 5.9 }
+`const a = { name: 'Nick', height: 5.92 }
 alert(a.name)
 `,
-`const a = { name: 'Nick', height: 5.9 }
+`const a = { name: 'Nick', height: 5.92 }
 alert(a['height'])
 
 const prop = 'height'
 alert(a[prop])
 `,
-`const person = { name: 'Nick', height: 5.9 }
+`const person = { name: 'Nick', height: 5.92 }
 person.name = 'Nicholas'
 alert(person.name)
 
@@ -268,7 +394,7 @@ delete person.name
 `const person = {
   firstName: 'Nick',
   lastName: 'Briz',
-  height: 5.9,
+  height: 5.92,
   sleeping: false,
   location: {
     birth: 'Miami',
@@ -280,7 +406,7 @@ alert(person.location.current)`,
 `const person = {
   firstName: 'Nick',
   lastName: 'Briz',
-  height: 5.9,
+  height: 5.92,
   sleeping: false,
   location: {
     birth: 'Miami',

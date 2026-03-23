@@ -24,9 +24,9 @@ class NetNet {
     this.win = document.querySelector('#nn-window')
     this.edtr = document.querySelector('#nn-editor')
     this.menu = new NetNetFaceMenu(this.win) // document.querySelector('#nn-menu')
-    this.canv = this._createCanvas()
     this.title = this._createTitleBar()
-    // ...canvas background visible when theme { background: false }
+    this.fst = this._createLiveCodePanel() // fst = full-screen-toggle
+    this.canv = this._createCanvas() // canvas bg if themeConfig { background: false }
 
     this.layout = 'welcome'
 
@@ -194,6 +194,7 @@ class NetNet {
     this._canvasResize()
     this._canvasUpdate(0, 0)
     this.menu.updateFace()
+    this._liveCodeMode(this.layout === 'full-screen')
     this.emit('theme-change', { old, new: NNE.theme })
   }
 
@@ -358,7 +359,7 @@ class NetNet {
 
     const mv = this.cursor === 'move' || this.cursor === 'grab'
     if (e.target.id !== 'nn-window' && !mv) this.cursor = 'auto'
-    
+
     this.win.style.cursor = this.cursor
   }
 
@@ -613,6 +614,7 @@ class NetNet {
     this.win.style.borderRadius = o.win.borderRadius
     this.canv.style.borderRadius = o.canv
     this._showEditor(o.editor)
+    this._liveCodeMode(v === 'full-screen')
     utils.afterLayoutTransition(() => after())
   }
 
@@ -713,6 +715,72 @@ class NetNet {
     title.style.textAlign = 'center'
     this.win.prepend(title)
     return title
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ live coding panel / full-screen toggle
+
+  _createLiveCodePanel () {
+    // bg opacity slider ......
+    this.fso = 0.75
+    this.fss = nn.create('input')
+      .position(130, 24)
+      .set('class', 'code-slider__range')
+      .css({ display: 'none', width: 100, zIndex: 3 })
+      .set({ type: 'range', min: 0, max: 1, step: 0.01, value: this.fso })
+      .on('input', () => {
+        this.fso = Number(this.fss.value)
+        const o = nn.alpha2hex(this.fso)
+        this.fsb.style.background = NNE.themes[NNE.theme].background + o
+      })
+    this.win.prepend(this.fss)
+    // live coding bg ........
+    this.fsb = nn.create('div')
+      .position(0, 0)
+      .css({ display: 'none', width: '100%', height: '100%', zIndex: -10 })
+    const opac = nn.alpha2hex(0.75)
+    this.fsb.style.background = NNE.themes[NNE.theme].background + opac
+    this.win.prepend(this.fsb)
+    // code toggle button ....
+    const fst = nn.create('button')
+      .content('hide netnet')
+      .set('class', 'pill-btn pill-btn--secondary')
+      .set('id', 'full-screen-toggle')
+      .position(17, 17, 'fixed')
+      .css({ display: 'none', zIndex: 9000 })
+      .on('click', () => {
+        if (fst.textContent === 'hide netnet') {
+          fst.textContent = 'show netnet'
+          fst.style.opacity = 0.1
+          this.win.style.display = 'none'
+        } else { // show the netitor
+          fst.textContent = 'hide netnet'
+          fst.style.opacity = 1
+          this.win.style.display = 'block'
+        }
+      }).addTo('body')
+    return fst
+  }
+
+  _liveCodeMode (fullscreen) {
+    const theme = NNE.theme
+    const hasBG = this.themeConfig[theme].background
+    const bgClr = NNE.themes[theme].background + nn.alpha2hex(this.fso)
+    if (fullscreen) { // go into "live coding" mode
+      this.canv.style.display = 'none'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'block'
+      this.fss.value = this.fso
+      this.fss.style.display = 'block'
+      if (hasBG) NNE.background = false
+      this.fst.style.display = 'block'
+    } else { // revert to normal
+      this.canv.style.display = 'block'
+      this.fsb.style.background = bgClr
+      this.fsb.style.display = 'none'
+      this.fss.style.display = 'none'
+      if (hasBG) NNE.background = true
+      this.fst.style.display = 'none'
+    }
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• canvas gradient && window shadow

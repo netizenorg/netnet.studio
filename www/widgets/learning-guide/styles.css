@@ -513,7 +513,43 @@
   background: var(--fg-color);
 }
 
+/* AI slide titles */
+
+.learning-guide__tdivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'fira-mono-regular';
+  color: var(--netizen-hint-bg);
+  --line-color: var(--netizen-meta);
+  --line-width: 1px;
+  --line-style: solid;
+}
+
+.learning-guide__tdivider::before,
+.learning-guide__tdivider::after {
+  content: '';
+  flex: 1;
+  border-bottom: var(--line-width) var(--line-style) var(--line-color);
+}
+
+.learning-guide__tdivider::before {
+  margin-right: 0.5em;
+}
+
+.learning-guide__tdivider::after {
+  margin-left: 0.5em;
+}
+
 /* no motion */
 .no-motion .learning-guide__arrow {
   animation: none;
 }
+
+.learning-guide__ai-ch {
+   font-family: 'Libre Bodoni', serif;
+   font-size: 2em;
+   text-align: center;
+   margin: 10px auto 30px auto;
+ }

@@ -42,3 +42,21 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* major-mono-display-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Major Mono Display';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/major-mono-display-v18-latin-regular.woff2') format('woff2');
+}
+
+/* libre-bodoni-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Libre Bodoni';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/libre-bodoni-v9-latin-regular.woff2') format('woff2');
+}

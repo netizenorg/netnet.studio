@@ -12,6 +12,8 @@ const SOCKETS = require('./my_modules/sockets.js')
 const ERRORS = require('./my_modules/errors.js')
 const PORT = process.env.PORT || 8001
 
+const fs = require('fs')
+const path = require('path')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use(express.json({ limit: '50mb' })) // GitHub's limit is 100mb
@@ -27,6 +29,13 @@ ANALYTICS.setup(app, {
     hash: process.env.ANALYTICS_HASH
   }
 })
+
+if (process.env.CURTAIN) {
+  app.get('/', (req, res) => {
+    const curtain = fs.readFileSync(path.join(__dirname, 'www', 'curtain.html'), 'utf8')
+    res.send(curtain.replace('{{MESSAGE}}', process.env.CURTAIN))
+  })
+}
 
 app.use('/api', utils.corsGate)
 app.use(ROUTES)

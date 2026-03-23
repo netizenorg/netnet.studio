@@ -73,7 +73,7 @@ window.CONVOS['learning-guide'] = (self) => {
     }
   }, {
     id: 'coming-soon',
-    content: '...coming soon...',
+    content: '<b>This is Under Construction!</b> If you\'d like to help get this done, consider <a href="/docs" target="_blank">supporting us</a>! I\'m constantly evolving and always seeking financial support from individuals and institutions who benefit from open access to this platform and who support our mission!',
     options: {
       ok: (e) => e.hide()
     }

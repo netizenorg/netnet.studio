@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNE, NNW, nn, WidgetCard */
+/* global Widget, WIDGETS, utils, Convo, NNW, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -28,16 +28,20 @@ class LearningGuide extends Widget {
 
         // create sub pages
         this.subpages = [
-          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts }
+          { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
+          { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+          { id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts },
+          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts }
           // {
-          //   id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts,
+          //   id: 'theNetOpts',
+          //   file: 'the-internet.html',
+          //   back: this.mainOpts,
           //   subs: [
           //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
           //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
           //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
           //   ]
-          // },
-          // { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
+          // }
         ]
         this.subpages.forEach(p => {
           this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
@@ -62,8 +66,12 @@ class LearningGuide extends Widget {
     })
 
     WIDGETS['coding-menu'].on('theme-change', () => {
-      const src = this.ele.querySelector('iframe').src
-      this.ele.querySelector('iframe').src = src
+      const srcs = [...WIDGETS['learning-guide'].ele.querySelectorAll('iframe')].map(f => f.src)
+      if (srcs.length > 0) {
+        srcs.forEach((src, i) => {
+          this.ele.querySelectorAll('iframe')[i].src = src
+        })
+      }
     })
 
     const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
@@ -77,6 +85,18 @@ class LearningGuide extends Widget {
       if (this.opened) this.close()
       w.loadTemplate(name)
     })
+  }
+
+  openDocs (opt, anchor) {
+    if (!this.opened) this.open()
+    const dict = {
+      ai: 'theAIOpts',
+      net: 'theNetOpts',
+      web: 'theWebOpts',
+      about: 'aboutOpts'
+    }
+    const name = dict[opt] || opt
+    this.slide.updateSlide(this[name], anchor)
   }
 
   scrollTo (sec) {
@@ -128,7 +148,10 @@ class LearningGuide extends Widget {
           // this._createStarField()
           // this._svgAnimations()
         }, utils.getVal('--menu-fades-time'))
+      } else if (type === 'theAIOpts') {
+        this.theAIOpts.cb = () => this._createAICards()
       }
+
       if (cb) cb(div)
     }, true)
   }
@@ -184,7 +207,7 @@ class LearningGuide extends Widget {
     const c = nn.hex2rgb(utils.getVal('--netizen-number'))
     const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
     this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.6) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.6) 1px 1px 6px`
+      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
     })
   }
 
@@ -334,6 +357,42 @@ class LearningGuide extends Widget {
     })
   }
 
+  _createAICards () {
+    if (this._setupAICards) return
+
+    setTimeout(() => {
+      // enable AI Notes WidgetCards
+      const cards = [
+        {
+          ele: '#learning-guide__ai-prompter',
+          box: { w: 220, h: 140, x: 290, y: 70 },
+          content: `<div>
+            <div style="text-align: center; font-size:32px">AI
+              <span style="font-size:32px; border-bottom: 2px solid;">Prompt</span>
+            </div>
+            <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-prompter')
+          click: () => window.alert('coming soon')
+        },
+        {
+          ele: '#learning-guide__ai-api',
+          box: { w: 220, h: 140, x: 10, y: 40 },
+          content: `<div>
+            <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
+            <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
+          </div>`,
+          // click: () => WIDGETS.open('ai-api-tool')
+          click: () => window.alert('coming soon')
+        }
+      ]
+
+      cards.forEach(card => this.cards.push(new WidgetCard(card)))
+
+      this._setupAICards = true
+    }, 1000)
+  }
+
   _createDemoTemplateCards () {
     // enable WidgetCards
     const cards = [
@@ -341,7 +400,7 @@ class LearningGuide extends Widget {
         ele: '#learning-guide-demos',
         box: { w: 220, h: 140, x: 0, y: 40 },
         content: `<div>
-          <div style="text-align: center; font-size:50px">&lt;/&gt;<div>
+          <div style="text-align: center; font-size:50px">&lt;/&gt;</div>
           <div style="text-align: center; font-size:24px; margin-top: 20px;">DEMOS<div>
         </div>`,
         click: () => WIDGETS.open('demo-sketches')
@@ -390,6 +449,8 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _applyVisibility () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
+
     const visible = utils.isVisible(this.ele)
     if (visible) {
       this._startStarField()
@@ -404,6 +465,7 @@ class LearningGuide extends Widget {
 
     animatedSvgs.forEach(eleStr => {
       const svg = this.$(eleStr)
+      if (!svg) return
       const v = utils.isVisible(svg)
       if (v && !svg.looping) svg.start()
       else if (!v) svg.stop()
@@ -411,6 +473,8 @@ class LearningGuide extends Widget {
   }
 
   _stopSvgAnimations () {
+    if (this.slide.getAttribute('name') !== 'main-slide') return
+
     const animatedSvgs = [
       'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]

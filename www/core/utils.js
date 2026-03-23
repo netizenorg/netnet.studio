@@ -402,8 +402,13 @@ window.utils = {
     }
 
     // const hash = window.location.hash
-    if (url.widget) WIDGETS.open(url.widget)
     if (nn.isMobile()) return window.utils.mobile()
+    if (url.widget) {
+      if (url.widget.includes('/')) {
+        const arr = url.widget.split('/')
+        WIDGETS.open(arr[0], (wig) => wig.openDocs(arr[1], arr[2]))
+      } else WIDGETS.open(url.widget)
+    }
     if (typeof ghAuth === 'string') {
       window.utils.loadGHRedirect()
       return 'gh-redirect'
@@ -727,7 +732,7 @@ window.utils = {
       }
     }
 
-    const introGuides = ['html-reference', 'css-reference']
+    const introGuides = ['html-reference', 'css-reference', 'js-reference']
     introGuides.forEach(guide => {
       if (!hasException(guide)) {
         if (WIDGETS[guide]?.opened) WIDGETS[guide].close()

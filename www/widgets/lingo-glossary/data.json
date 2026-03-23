@@ -171,5 +171,9 @@
     "definition": "In netnet.studio, a template is a starter project with pre-organized files and folders that you can build upon. When you launch a template, netnet can guide you through it step-by-step, generating and explaining the code line by line, sometimes asking for your input along the way (like a coding mad-lib). Templates provide a structured starting point for common types of web projects, helping you understand best practices for file organization and code structure while giving you room to customize and expand.",
     "see": ["sketch", "demo", "project"],
     "doc": ["open", "template-projects"]
+  },
+  "vibe-coding": {
+    "name": "Vibe Coding",
+    "definition": "A style of programming where you describe what you want in plain language and let an AI generate the code for you. Instead of writing every line yourself, you guide the AI by explaining your vision, reviewing what it produces, and nudging it in the right direction. It lowers the barrier to creating software, but skipping the fundamentals means becoming dependent on the AI, not just technically (even simple bugs can be hard to fix), but conceptually as well. You can only “vibe code” what you can describe, and your ideas are shaped by your understanding of the medium (or lack thereof)."
   }
 }
