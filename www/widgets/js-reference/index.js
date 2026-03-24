@@ -98,7 +98,8 @@ class JsReference extends Widget {
       'data-types': 'dataTypesOpts',
       'data-structures': 'dataStructOpts',
       functions: 'deeperFuncsOpts',
-      libraries: 'apisAndLibsOpts'
+      libraries: 'apisAndLibsOpts',
+      intro: 'introPresOpts'
     }
     this._lastScrollTop = this.slide.scrollTop
     const name = dict[opt] || opt
@@ -271,6 +272,7 @@ class JsReference extends Widget {
       const check = this.$('code-trace').check()
       const key = this.$('code-trace').dataset.key
       const concept = this.$('code-trace').dataset.concept
+      console.log(this.$('code-trace'));
       const ex = this.exBasic[concept][key]
       if (!check.matched) {
         this.$('code-trace').showDiff('rgba(255, 0, 0, 0.4)')

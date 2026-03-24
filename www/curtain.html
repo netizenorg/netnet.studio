@@ -64,12 +64,13 @@
         cursor: auto !important;
         box-shadow: rgba(0, 0, 0, 0.15) 17.8282px 32.5562px 6px;
         /* height: 264px; */
-        width: 500px;
+        max-width: 500px;
         left: calc(50vw - 250px);
         top: calc(50vh - 132px);
         z-index: 108;
         transition: none;
         animation: 0.3s forwards openBounce;
+        transition: top 0.5s;
       }
 
       .widget__top {
@@ -117,7 +118,26 @@
     <!-- netizen.org libs -->
     <script src="/nn.min.js"></script>
     <script>
+      function resize () {
+        if (nn.width <= 530) {
+          nn.get('.widget__inner-html').css('font-size', '1em')
+          nn.get('.widget').css({
+            width: 'calc(100vw - 30px)',
+            left: 15,
+            top: 60
+          })
+        } else {
+          nn.get('.widget__inner-html').css('font-size', '1.4em')
+          nn.get('.widget').css({
+            width: 500,
+            left: 'calc(50vw - 250px)',
+            top: 'calc(50vh - 132px)'
+          })
+        }
+      }
 
+      nn.on('load', resize)
+      nn.on('resize', resize)
     </script>
   </body>
 </html>
