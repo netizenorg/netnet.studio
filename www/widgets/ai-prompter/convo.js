@@ -1,6 +1,5 @@
 /* global utils, NNW */
 window.CONVOS['ai-prompter'] = (self) => {
-
   return [{
     id: 'start',
     before: () => NNW.menu.switchFace('default'),
@@ -84,26 +83,43 @@ window.CONVOS['ai-prompter'] = (self) => {
   }, {
     id: 'ground-truth',
     before: () => NNW.menu.switchFace('default'),
-    content: 'AI\'s are known to "hallucinate", which means it can make stuff up that sounds plausible, but are actually untrue. Remember, it\'s not looking up any information, it\'s synthesizing text based on the patterns it\'s identified in it\'s training data. A question like <i>"How many r\'s are there in straberry?"</i> will always return a number, because it learned that questions starting with "How many" should always include a response with an amount... but there\'s no guarantee it\'ll guess the right amount because it\'s not actually counting the letters, it\'s synthesizing text based on probability.',
+    content: 'AI can "hallucinate," meaning it generates answers that sound correct but aren\'t. It doesn\'t actually verify facts or perform explicit tasks like counting or arithmetic, instead it predicts text based on patterns in its training data. Because of this, it can make mistakes when asked factual questions, simple math or other seemingly easy tasks.',
     options: {
-      'go on': (e) => e.goTo('ground-truth2')
+      'math?': (e) => e.goTo('ground-truth1'),
+      'facts?': (e) => e.goTo('ground-truth2'),
+      'what about code?': (e) => e.goTo('ground-truth3')
+    }
+  }, {
+    id: 'ground-truth1',
+    before: () => NNW.menu.switchFace('default'),
+    content: 'A classic example is asking <i>“How many r\'s are in strawberry?”</i>, the pattern in this particular sequence of tokens (pieces of words) suggests to the model that the answer should include an amount, so it will likely always give you a number, but not necessarily the right one. Because it\'s not actually counting letters, it\'s generating a likely-looking answer based on how similar questions are usually answered.',
+    options: {
+      'what about facts?': (e) => e.goTo('ground-truth2'),
+      'what about code?': (e) => e.goTo('ground-truth3')
     }
   }, {
     id: 'ground-truth2',
-    content: 'One of the most common instances of hallucinations when discussing code is made up function names. It leans the patterns of how any given library, like how Tone.js includes effects nodes which often start with <code>new Tone.EffectName</code> and so it might suggest a convincing sounding node like <code>new Tone.Fuzz()</code>, even though there\'s no effect node by that name.',
+    content: 'The same issue applies to factual questions. For example, there have been cases where AI generated legal citations to court cases that look convincing because they follow the pattern of a real citation (publication, author, date, etc.), but in reality don\'t exist.',
     options: {
-      'go on': (e) => e.goTo('ground-truth3')
+      'what about math?': (e) => e.goTo('ground-truth1'),
+      'what about code?': (e) => e.goTo('ground-truth3')
     }
   }, {
     id: 'ground-truth3',
-    content: 'To avoid this, it\'s best explicitly mention the libraries you\'re using, not only so that it\'s response includes the use of this library, but also so that it uses it\'s Web search tool (built into most modern LLM chat bots) to look up the library\'s documentation and include that data in the prompt as a "source of truth". ',
+    content: 'In code, this often shows up as made-up function names. For example, if you ask about creating a fuzzy guitar sound in Tone.js it might suggest something like <code>new Tone.Fuzz()</code> because it matches the pattern of the library\'s naming conventions, but in reality there is no "Fuzz" effect in Tone.js, the correct answer would be <code>new Tone.Distortion()</code>.',
     options: {
-      'I see': (e) => e.hide()
+      'I see': (e) => e.goTo('ground-truth4')
+    }
+  }, {
+    id: 'ground-truth4',
+    content: 'To avoid this, it\'s best to explicitly mention the libraries you\'re using, not only so that it\'s response includes the use of this library, but also so that it uses it\'s Web search tool (built into most modern LLM chat bots) to look up the library\'s documentation and include that data in the prompt as a "source of truth". This minimizes (but doesn\'t guarantee) the likelyhood of hallucinations.',
+    options: {
+      'go it': (e) => e.hide()
     }
   }, {
     id: 'constraints',
     before: () => NNW.menu.switchFace('default'),
-    content: '...',
+    content: 'AI chatbots are typically designed to give complete answers right away. While this can be efficient, it can also skip over the thinking process that leads to real understanding. By adding constraints to your prompts, our goal is to try and shift AI from a solution generator into more of a learning tool.',
     options: {
       'I see': (e) => e.hide()
     }
