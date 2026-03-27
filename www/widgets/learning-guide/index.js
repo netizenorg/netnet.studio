@@ -372,8 +372,7 @@ class LearningGuide extends Widget {
             </div>
             <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-prompter')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-prompter')
         },
         {
           ele: '#learning-guide__ai-api',

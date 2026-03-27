@@ -231,13 +231,14 @@ window.utils = {
     })
   },
 
-  copyLink: (ele) => {
+  copyLink: (ele, msg) => {
     ele.focus()
     ele.select()
     navigator.clipboard.writeText(ele.value)
     const pos = ele.getBoundingClientRect()
     const note = document.createElement('div')
-    note.innerHTML = '<span>Copied URL!</span>'
+    msg = msg || 'Copied URL!'
+    note.innerHTML = `<span>${msg}</span>`
     note.style.display = 'flex'
     note.style.justifyContent = 'center'
     note.style.alignItems = 'center'

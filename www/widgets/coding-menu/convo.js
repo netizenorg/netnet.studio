@@ -280,9 +280,13 @@ window.CONVOS['coding-menu'] = (self) => {
   // ... share gh project
   {
     id: 'share-project',
-    content: 'I can generate a share-link to netnet.studio, but I could also publish your project to the Web for you?',
+    content: 'I can generate a share-link to netnet.studio, but I could also publish your project to the Web for you? If you\'d like to upload it somewhere yourself you could also download your entire project as a zip file.',
     options: {
       'I\'ll take that share link': (e) => e.goTo('share-gh-url'),
+      'I\'ll download the zip': (e) => {
+        WIDGETS['project-files'].downloadProject()
+        e.hide()
+      },
       'publish on the Web?': (e) => e.goTo('publish-to-web?')
     }
   }, {
