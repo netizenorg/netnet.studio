@@ -224,6 +224,19 @@
   margin-bottom: 0;
 }
 
+.widget__inner-html *[onclick^="WIDGETS.open('lingo-glossary'"]::after {
+  content: "";
+  display: inline-block;
+  position: relative;
+  bottom: -0.05em;
+  margin-left: 0.3em;
+  margin-right: 0.2em;
+  width: 0.65em;
+  height: 0.8em;
+  background-color: var(--fg-color);
+  mask: url("/images/icons/document.svg") no-repeat center / contain;
+}
+
 
 /* •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* */
 /* styles shared by reference widgets && <widget-slide> custom element used in em */
