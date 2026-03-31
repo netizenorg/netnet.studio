@@ -158,7 +158,14 @@ class LearningGuide extends Widget {
       about: 'aboutOpts'
     }
     const name = dict[opt] || opt
-    this.slide.updateSlide(this[name], anchor)
+    const tryUpdate = () => {
+      if (this[name]) {
+        this.slide.updateSlide(this[name], anchor)
+      } else {
+        setTimeout(tryUpdate, 100)
+      }
+    }
+    tryUpdate()
   }
 
   scrollTo (sec) {
