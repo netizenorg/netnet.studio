@@ -120,6 +120,15 @@
 }
 
 
-.lingo-glossary__doc {
-
+.lingo-glossary__icon::before {
+  content: "";
+  display: inline-block;
+  position: relative;
+  bottom: -0.05em;
+  margin-left: 0.3em;
+  margin-right: 0.2em;
+  width: 0.65em;
+  height: 0.8em;
+  background-color: var(--bg-color);
+  mask: url("/images/icons/document.svg") no-repeat center / contain;
 }

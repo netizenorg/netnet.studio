@@ -1,0 +1,61 @@
+.ai-prompter__madlib-view,
+.ai-prompter__review-view {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-color: var(--netizen-meta) rgba(0,0,0,0);
+  scrollbar-width: thin;
+}
+
+
+.ai-prompter__madlib-label {
+  cursor: pointer;
+  display: inline-block;
+  color: var(--bg-color);
+  font-weight: bold;
+  background: var(--fg-color);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 3px 15px;
+}
+
+.ai-prompter__madlib-view > p,
+.ai-prompter__madlib-view > .ai-prompter__pdiv {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  border-top-left-radius: 0px;
+  padding: 5px;
+  margin-top: 0;
+  line-height: 1.6em;
+}
+
+.ai-prompter__madlib-view > [name="js-lib-p"] {
+  margin-bottom: 1.5em;
+}
+
+.ai-prompter__madlib-view > [name="js-lib-p"],
+.ai-prompter__madlib-view > [name="js-lib-label"] {
+  display: none;
+}
+
+.ai-prompter__madlib-view [name="js-lib-list"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr)
+}
+
+.ai-prompter__madlib-view > textarea,
+.ai-prompter__output {
+  width: 100%;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  border-top-left-radius: 0px;
+  padding: 5px;
+  background: transparent;
+  color: var(--netizen-meta);
+  display: block;
+}
+
+.ai-prompter__output {
+  height: 250px;
+  border-radius: 5px;
+  margin: 15px auto;
+}

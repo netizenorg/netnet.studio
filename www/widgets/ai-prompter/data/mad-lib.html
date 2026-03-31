@@ -1,0 +1,51 @@
+<div class="ai-prompter__madlib-view">
+  Fill out the details below to generate a prompt for your peferred LLM. To have netnet explain the goal of this widget <span class="link" onclick="WIDGETS['ai-prompter'].convo('start')">click here</span>, you can also click each section's tab to learn about each.
+
+  <br><br>
+
+  <div class="ai-prompter__madlib-label" onclick="WIDGETS['ai-prompter'].convo('context')">context</div>
+  <p>
+    I'm a <select name="level"></select> creative coder working on a web based <select name="file"></select> <span name="post-file">(a single HTML file)</span> and need help with my <select name="lang"></select> code. Please act as a patient coding tutor, helping me understand how to achieve my goals rather than achieving them for me. The <select name="question"></select> is...
+  </p>
+  <br>
+
+  <div class="ai-prompter__madlib-label" style="transform: translateY(2px);" onclick="WIDGETS['ai-prompter'].convo('question')">question</div>
+  <textarea name="user-question" rows="4" placeholder="...ask your question"></textarea>
+  <br>
+
+  <div name="js-lib-label" class="ai-prompter__madlib-label" onclick="WIDGETS['ai-prompter'].convo('ground-truth')">ground truth</div>
+  <div class="ai-prompter__pdiv" name="js-lib-p">
+    Below are the libraries I'm using, use their docs as your source of truth:
+    <div name="js-lib-list"></div>
+  </div>
+
+  <div class="ai-prompter__madlib-label" onclick="WIDGETS['ai-prompter'].convo('constraints')">constraints</div>
+  <div class="ai-prompter__pdiv">
+    Before you give me any code, I need you to:
+    <ul>
+      <li>Restate what you think my goal is, so I can confirm you understood me.</li>
+      <li>If my question is vague or you're missing details, ask me specific questions before answering.</li>
+      <li>If I'm using incorrect terminology, explain what the right term is and why, I'm trying to build good habits with technical language.</li>
+      <li>If something in my phrasing suggests I misunderstand a concept, correct that first with a short explanation and a tiny example.</li>
+    </ul>
+
+    When you do give me code:
+    <ul>
+      <li>Show me only the smallest snippet that illustrates the idea, no more than about 10 lines. Don't give me a complete working solution. I need to do the rest myself so I actually learn.</li>
+      <li>Explain every snippet in plain language. If you use a technical term for the first time, define it in parentheses.</li>
+    </ul>
+  </div>
+  <br>
+  <button onclick="WIDGETS['ai-prompter'].reviewPrompt()" class="pill-btn pill-btn--secondary">Generate Prompt</button>
+</div>
+
+<div class="ai-prompter__review-view" style="display: none;">
+  <div class="reference-widget__nav"><span>BACK</span></div>
+  <br>
+  <p class="ai-prompter__intro">Here's your complete prompt. You can edit any part of it before copying. Don't forget to <span>download your sketch as an HTML file so that you can attach it to your prompt.</span></p>
+  <textarea class="ai-prompter__output" spellcheck="false"></textarea>
+  <div class="ai-prompter__review-actions">
+    <button class="pill-btn pill-btn--secondary" name="download">Download Sketch</button>
+    <button class="pill-btn pill-btn--secondary" name="copy-prompt">Copy Prompt</button>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px;">
+
+  <select id="lg-sd-prompt-select" class="pill-btn pill-btn--secondary"
+    style="font-size: 1rem; padding: 6px 14px; cursor: pointer;">
+    <option value="ocean">ocean sunrise</option>
+    <option value="cow">a cow jumping over the moon</option>
+    <option value="no-prompt">[NO PROMPT]</option>
+  </select>
+
+  <img id="lg-sd-img"
+    src="/widgets/learning-guide/data/assets/sd-imgs/ocean/20.jpg"
+    style="width: 270px; border-radius: 10px; border: 2px solid var(--fg-color);"
+    alt="diffusion step">
+
+  <div style="display: flex; align-items: center; gap: 10px; width: 100%; max-width: 420px;">
+    <span id="lg-sd-step-label" style="font-size: 0.9rem; min-width: 60px;">step: 20</span>
+    <input id="lg-sd-slider" class="code-slider__range" type="range"
+      min="0" max="20" value="20" step="1" style="flex: 1;">
+  </div>
+
+</div>
+
+<script>
+  ;(function () {
+    const basePath = '/widgets/learning-guide/data/assets/sd-imgs'
+    const select = document.getElementById('lg-sd-prompt-select')
+    const img = document.getElementById('lg-sd-img')
+    const slider = document.getElementById('lg-sd-slider')
+    const label = document.getElementById('lg-sd-step-label')
+
+    function update () {
+      const folder = select.value
+      const step = slider.value
+      img.src = `${basePath}/${folder}/${step}.jpg`
+      label.textContent = `step: ${step}`
+    }
+
+    select.addEventListener('change', function () {
+      slider.value = 20
+      update()
+    })
+
+    slider.addEventListener('input', update)
+  })()
+</script>

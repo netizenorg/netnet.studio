@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNW, nn, WidgetCard */
+/* global Widget, WIDGETS, utils, Convo, NNW, NNE, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -31,17 +31,15 @@ class LearningGuide extends Widget {
           { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
           { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
           { id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts },
-          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts }
-          // {
-          //   id: 'theNetOpts',
-          //   file: 'the-internet.html',
-          //   back: this.mainOpts,
-          //   subs: [
-          //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-          //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-          //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-          //   ]
-          // }
+          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts },
+          {
+            id: 'theAIOpts',
+            file: 'the-ai-guide.html',
+            back: this.mainOpts,
+            subs: [
+              { id: 'theAIPres', file: 'the-ai-pres.html' }
+            ]
+          }
         ]
         this.subpages.forEach(p => {
           this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
@@ -85,6 +83,70 @@ class LearningGuide extends Widget {
       if (this.opened) this.close()
       w.loadTemplate(name)
     })
+  }
+
+  async convo (key) {
+    // make sure to save work in progress before switching to AI Notes mode
+    if (NNE.code !== utils.starterCode()) {
+      this._tempConvo = key
+      window.convo = new Convo(this.convos, 'confirm-convo-start')
+    } else { // switch into the AI Notes
+      this._tempConvo = null
+      window.convo = new Convo(this.convos, key)
+
+      await nn.sleep(500)
+      if (NNW.layout !== 'welcome') { NNW.layout = 'welcome' }
+
+      utils.afterLayoutTransition(() => {
+        if (NNW.right !== 20 || NNW.bottom !== 20) {
+          NNW.update({ bottom: 20, right: 20 }, 500)
+          WIDGETS['learning-guide'].update({ top: 20, left: 20 }, 500)
+        }
+      })
+      // if AI Notes convo has a slide, switch to presentation view
+      const aipres = {
+        'ch-one-metaphors1': 'quote-salvaggio',
+        'ch-one-ml1': 'ml-vs-cai',
+        'ch-one-process1': 'creative-process',
+        'ch-one-ui1': 'ui',
+        'ch-one-biz1': 'biz-model',
+        'ch-one-data1': 'train-data',
+        'ch-one-size1': 'size'
+      }
+      if (aipres[key]) this.updateAISlide(aipres[key])
+    }
+  }
+
+  async updateAISlide (key) {
+    // when netnet is giving any sort of lesson about AI and uses
+    // the Learning Guide window for it's presentation slides
+    function injectHtmlAndRunScripts (container, htmlString) {
+      container.innerHTML = htmlString
+      const scripts = container.querySelectorAll('script')
+      for (const oldScript of scripts) {
+        const newScript = document.createElement('script')
+        for (const attr of oldScript.attributes) {
+          newScript.setAttribute(attr.name, attr.value)
+        }
+        newScript.textContent = oldScript.textContent
+        oldScript.parentNode.replaceChild(newScript, oldScript)
+      }
+    }
+
+    if (this.slide.getAttribute('name') !== 'the-ai-pres') {
+      this.slide.updateSlide(this.theAIPres)
+      await nn.sleep(600)
+    }
+    const path = `/widgets/learning-guide/data/ai-ch-1/${key}.html`
+    const html = await utils.getSync(path, true)
+    const frame = this.slide.querySelector('main')
+    frame.style.opacity = 0
+    await nn.sleep(500)
+    frame.innerHTML = html
+    if (html.includes('<script>')) {
+      injectHtmlAndRunScripts(frame, html)
+    }
+    frame.style.opacity = 1
   }
 
   openDocs (opt, anchor) {
@@ -187,10 +249,6 @@ class LearningGuide extends Widget {
     })
 
     this.slide.style.overflowX = 'hidden'
-  }
-
-  _jsIntroConvo () {
-    window.convo = new Convo(this.convos, 'js-intro')
   }
 
   _comingSoon (type) {
@@ -372,8 +430,7 @@ class LearningGuide extends Widget {
             </div>
             <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-prompter')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-prompter')
         },
         {
           ele: '#learning-guide__ai-api',
