@@ -221,10 +221,7 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 24, x: 600, y: 1250 },
       content: 'We might ask <i>can AI feel pain?</i>, <i>should AI systems have rights?</i>, <i>should people be allowed to marry AI?</i>. Because advanced AI, like LLMs, are so convincing, it\'s no surprise to hear folks ask these questions. But if we take time to dig a little deeper into these systems, it becomes clear that these are the wrong questions.',
       options: {
-        'I see': (e) => {
-          e.goTo('ch-one-metaphors15')
-          self.updateAISlide('ml-vs-cai')
-        },
+        'I see': (e) => e.goTo('ch-one-metaphors15'),
         'dig deeper?': (e) => e.goTo('ch-one-metaphors12')
       }
     },
@@ -233,7 +230,10 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 25, x: 775, y: 1375 },
       content: 'Anthropomorphizing tech isn\'t inherently misleading, it depends on what and how that\'s being done. I myself am an anthropomorphized algorithm, but because I\'m a <i>classical</i> system I don\'t think I\'m fooling anyone into thinking I\'m sentient. Which brings us to the next section: machine learning systems vs symbolic ones, like myself.',
       options: {
-        'tell me more': (e) => e.goTo('ch-one-ml1')
+        'tell me more': (e) => {
+          e.goTo('ch-one-ml1')
+          self.updateAISlide('ml-vs-cai')
+        }
       }
     },
     {
@@ -499,7 +499,10 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 55, x: 1400, y: 900 },
       content: 'In practice, modern systems often blend both. A self-driving car might use ML for perception (recognizing a stop sign from pixel data) and more classical planning algorithms for deciding which route to take. The boundary between the two isn\'t always sharp, and the most effective systems tend to draw from both approaches.',
       options: {
-        'where should I start?': (e) => e.goTo('ch-one-process1')
+        'where should I start?': (e) => {
+          e.goTo('ch-one-process1')
+          self.updateAISlide('creative-process')
+        }
       }
     },
     {
@@ -1482,7 +1485,10 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 167, x: 4800, y: 2075 },
       content: 'Model cards include information like its intended use cases, how it performs across different demographic groups, its known limitations, and practical details like the model\'s size. Of course knowing this information isn\'t the same as understanding it\'s implications.',
       options: {
-        'implications?': (e) => e.goTo('ch-one-size1')
+        'implications?': (e) => {
+          e.goTo('ch-one-size1')
+          self.updateAISlide('size')
+        }
       }
     },
     {
