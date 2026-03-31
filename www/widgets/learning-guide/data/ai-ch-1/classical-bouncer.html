@@ -1,0 +1,30 @@
+<div>
+  <p style="text-align: center; font-style: italic; margin-bottom: 30px; color: var(--fg-color);">
+    This toy "classical AI" function is relatively self-explanatory
+  </p>
+  <main id="learning-guide-ai-demo-editor"></main>
+</div>
+<script>
+  window._lg_aiDemoEditor = new Netitor({
+    ele: '#learning-guide-ai-demo-editor',
+    renderWithErrors: true,
+    background: NNE.background,
+    autoUpdate: false,
+    hint: false,
+    lint: false,
+    readOnly: true,
+    theme: NNE.theme,
+    language: 'javascript',
+    code: `function classicalBouncer (age, country) {
+  if (country === 'United States' && age >= 21) {
+    return true
+  } else if (country === 'Japan' && age >= 20) {
+    return true
+  } else if (country === 'Australia' && age >= 18) {
+    return true
+  } else {
+    return false
+  }
+}`
+  })
+</script>

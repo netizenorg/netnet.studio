@@ -1,0 +1,335 @@
+<div>
+  <p style="text-align: center; font-style: italic; margin-bottom: 30px; color: var(--fg-color);">
+    A tiny RNN (Recurrent Neural Network) learning to write like Shakespeare
+  </p>
+  <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 16px;">
+    <button id="learning-guide-rnn-train-btn" style="
+      padding: 8px 18px; border: none; border-radius: 6px;
+      background: var(--netizen-tag, #111); color: var(--bg-color, #fff);
+      cursor: pointer; font: inherit;
+    ">Start Training</button>
+    <button id="learning-guide-rnn-sample-btn" style="
+      padding: 8px 18px; border: none; border-radius: 6px;
+      background: var(--netizen-tag, #111); color: var(--bg-color, #fff);
+      cursor: pointer; font: inherit;
+    ">Synthesize Text</button>
+  </div>
+  <pre id="learning-guide-rnn-output" style="
+    white-space: pre-wrap; word-break: break-word;
+    background: var(--netizen-hint-shadow);
+    border-radius: 8px; padding: 12px;
+    height: 240px; overflow-y: hidden;
+    width: 580px; box-sizing: border-box;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px; color: var(--netizen-attribute);
+    margin: 0;
+  "></pre>
+  <div id="learning-guide-rnn-status" style="
+    text-align: center; font-size: 14px; color: var(--fg-color);
+    margin-top: 12px; opacity: 0.7;
+  ">Click "Start Training" to begin</div>
+</div>
+<script>
+(function () {
+  const HIDDEN_SIZE = 64
+  const SEQ_LENGTH = 25
+  const LEARNING_RATE = 0.1
+  const ITERS_PER_TICK = 10
+  const SAMPLE_LENGTH = 200
+  const TEMPERATURE = 1
+
+  const zeros = n => Array(n).fill(0)
+
+  const randomMatrix = (rows, cols, scale = 0.01) => {
+    const out = []
+    for (let i = 0; i < rows; i++) {
+      const row = []
+      for (let j = 0; j < cols; j++) row.push((Math.random() * 2 - 1) * scale)
+      out.push(row)
+    }
+    return out
+  }
+
+  const zerosMatrix = (rows, cols) => {
+    const out = []
+    for (let i = 0; i < rows; i++) out.push(zeros(cols))
+    return out
+  }
+
+  const clipMatrix = (m, limit) => {
+    for (let i = 0; i < m.length; i++) {
+      for (let j = 0; j < m[i].length; j++) {
+        if (m[i][j] > limit) m[i][j] = limit
+        else if (m[i][j] < -limit) m[i][j] = -limit
+      }
+    }
+  }
+
+  const clipVector = (v, limit) => {
+    for (let i = 0; i < v.length; i++) {
+      if (v[i] > limit) v[i] = limit
+      else if (v[i] < -limit) v[i] = -limit
+    }
+  }
+
+  const softmax = logits => {
+    let max = -Infinity
+    for (let i = 0; i < logits.length; i++) {
+      if (logits[i] > max) max = logits[i]
+    }
+    const exps = zeros(logits.length)
+    let sum = 0
+    for (let i = 0; i < logits.length; i++) {
+      exps[i] = Math.exp(logits[i] - max)
+      sum += exps[i]
+    }
+    for (let i = 0; i < exps.length; i++) exps[i] /= sum
+    return exps
+  }
+
+  const sampleIndex = probs => {
+    const r = Math.random()
+    let acc = 0
+    for (let i = 0; i < probs.length; i++) {
+      acc += probs[i]
+      if (r <= acc) return i
+    }
+    return probs.length - 1
+  }
+
+  let text, chars, charToIx, ixToChar
+  let Wxh, Whh, Why, bh, by
+  let mWxh, mWhh, mWhy, mbh, mby
+  let pointer, iter, smoothLoss, hprev
+  let training = false
+  let loopHandle = null
+  let initialized = false
+
+  const statusEl = document.getElementById('learning-guide-rnn-status')
+  const outputEl = document.getElementById('learning-guide-rnn-output')
+  const trainBtn = document.getElementById('learning-guide-rnn-train-btn')
+  const sampleBtn = document.getElementById('learning-guide-rnn-sample-btn')
+
+  function buildVocab (t) {
+    text = t
+    chars = Array.from(new Set(text.split(''))).sort()
+    charToIx = {}
+    ixToChar = {}
+    chars.forEach((ch, i) => { charToIx[ch] = i; ixToChar[i] = ch })
+  }
+
+  function initModel () {
+    const v = chars.length
+    Wxh = randomMatrix(HIDDEN_SIZE, v, 0.01)
+    Whh = randomMatrix(HIDDEN_SIZE, HIDDEN_SIZE, 0.01)
+    Why = randomMatrix(v, HIDDEN_SIZE, 0.01)
+    bh = zeros(HIDDEN_SIZE)
+    by = zeros(v)
+    mWxh = zerosMatrix(HIDDEN_SIZE, v)
+    mWhh = zerosMatrix(HIDDEN_SIZE, HIDDEN_SIZE)
+    mWhy = zerosMatrix(v, HIDDEN_SIZE)
+    mbh = zeros(HIDDEN_SIZE)
+    mby = zeros(v)
+    pointer = 0
+    iter = 0
+    hprev = zeros(HIDDEN_SIZE)
+    smoothLoss = -Math.log(1 / chars.length) * SEQ_LENGTH
+    initialized = true
+  }
+
+  function lossFun (inputs, targets) {
+    const v = chars.length
+    const hs = [hprev.slice()]
+    const ps = []
+    let loss = 0
+
+    for (let t = 0; t < inputs.length; t++) {
+      const h = zeros(HIDDEN_SIZE)
+      for (let i = 0; i < HIDDEN_SIZE; i++) {
+        let sum = bh[i] + Wxh[i][inputs[t]]
+        for (let j = 0; j < HIDDEN_SIZE; j++) sum += Whh[i][j] * hs[t][j]
+        h[i] = Math.tanh(sum)
+      }
+      hs[t + 1] = h
+
+      const y = zeros(v)
+      for (let i = 0; i < v; i++) {
+        let sum = by[i]
+        for (let j = 0; j < HIDDEN_SIZE; j++) sum += Why[i][j] * h[j]
+        y[i] = sum
+      }
+      ps[t] = softmax(y)
+      loss += -Math.log(ps[t][targets[t]] + 1e-12)
+    }
+
+    // backprop
+    const dWxh = zerosMatrix(HIDDEN_SIZE, v)
+    const dWhh = zerosMatrix(HIDDEN_SIZE, HIDDEN_SIZE)
+    const dWhy = zerosMatrix(v, HIDDEN_SIZE)
+    const dbh = zeros(HIDDEN_SIZE)
+    const dby = zeros(v)
+    let dhnext = zeros(HIDDEN_SIZE)
+
+    for (let t = inputs.length - 1; t >= 0; t--) {
+      const dy = ps[t].slice()
+      dy[targets[t]] -= 1
+
+      for (let i = 0; i < v; i++) {
+        dby[i] += dy[i]
+        for (let j = 0; j < HIDDEN_SIZE; j++) dWhy[i][j] += dy[i] * hs[t + 1][j]
+      }
+
+      const dh = zeros(HIDDEN_SIZE)
+      for (let j = 0; j < HIDDEN_SIZE; j++) {
+        let sum = dhnext[j]
+        for (let i = 0; i < v; i++) sum += Why[i][j] * dy[i]
+        dh[j] = sum
+      }
+
+      const dhraw = zeros(HIDDEN_SIZE)
+      for (let i = 0; i < HIDDEN_SIZE; i++) {
+        dhraw[i] = (1 - hs[t + 1][i] * hs[t + 1][i]) * dh[i]
+        dbh[i] += dhraw[i]
+        dWxh[i][inputs[t]] += dhraw[i]
+        for (let j = 0; j < HIDDEN_SIZE; j++) dWhh[i][j] += dhraw[i] * hs[t][j]
+      }
+
+      dhnext = zeros(HIDDEN_SIZE)
+      for (let j = 0; j < HIDDEN_SIZE; j++) {
+        let sum = 0
+        for (let i = 0; i < HIDDEN_SIZE; i++) sum += Whh[i][j] * dhraw[i]
+        dhnext[j] = sum
+      }
+    }
+
+    clipMatrix(dWxh, 5); clipMatrix(dWhh, 5); clipMatrix(dWhy, 5)
+    clipVector(dbh, 5); clipVector(dby, 5)
+
+    return { loss, dWxh, dWhh, dWhy, dbh, dby, lastHidden: hs[inputs.length] }
+  }
+
+  function applyGradients (g) {
+    const v = chars.length
+    for (let i = 0; i < HIDDEN_SIZE; i++) {
+      for (let j = 0; j < v; j++) {
+        mWxh[i][j] += g.dWxh[i][j] * g.dWxh[i][j]
+        Wxh[i][j] -= LEARNING_RATE * g.dWxh[i][j] / Math.sqrt(mWxh[i][j] + 1e-8)
+      }
+    }
+    for (let i = 0; i < HIDDEN_SIZE; i++) {
+      for (let j = 0; j < HIDDEN_SIZE; j++) {
+        mWhh[i][j] += g.dWhh[i][j] * g.dWhh[i][j]
+        Whh[i][j] -= LEARNING_RATE * g.dWhh[i][j] / Math.sqrt(mWhh[i][j] + 1e-8)
+      }
+    }
+    for (let i = 0; i < v; i++) {
+      for (let j = 0; j < HIDDEN_SIZE; j++) {
+        mWhy[i][j] += g.dWhy[i][j] * g.dWhy[i][j]
+        Why[i][j] -= LEARNING_RATE * g.dWhy[i][j] / Math.sqrt(mWhy[i][j] + 1e-8)
+      }
+    }
+    for (let i = 0; i < HIDDEN_SIZE; i++) {
+      mbh[i] += g.dbh[i] * g.dbh[i]
+      bh[i] -= LEARNING_RATE * g.dbh[i] / Math.sqrt(mbh[i] + 1e-8)
+    }
+    for (let i = 0; i < v; i++) {
+      mby[i] += g.dby[i] * g.dby[i]
+      by[i] -= LEARNING_RATE * g.dby[i] / Math.sqrt(mby[i] + 1e-8)
+    }
+  }
+
+  function sample (seedIx, n) {
+    let x = seedIx
+    let hidden = hprev ? hprev.slice() : zeros(HIDDEN_SIZE)
+    let out = ''
+    for (let t = 0; t < n; t++) {
+      const newH = zeros(HIDDEN_SIZE)
+      for (let i = 0; i < HIDDEN_SIZE; i++) {
+        let sum = bh[i] + Wxh[i][x]
+        for (let j = 0; j < HIDDEN_SIZE; j++) sum += Whh[i][j] * hidden[j]
+        newH[i] = Math.tanh(sum)
+      }
+      hidden = newH
+      const y = zeros(chars.length)
+      for (let i = 0; i < chars.length; i++) {
+        let sum = by[i]
+        for (let j = 0; j < HIDDEN_SIZE; j++) sum += Why[i][j] * hidden[j]
+        y[i] = sum / TEMPERATURE
+      }
+      const p = softmax(y)
+      x = sampleIndex(p)
+      out += ixToChar[x]
+    }
+    return out
+  }
+
+  function step () {
+    if (pointer + SEQ_LENGTH + 1 >= text.length || iter === 0) {
+      hprev = zeros(HIDDEN_SIZE)
+      pointer = 0
+    }
+    const inputs = [], targets = []
+    for (let i = 0; i < SEQ_LENGTH; i++) {
+      inputs.push(charToIx[text[pointer + i]])
+      targets.push(charToIx[text[pointer + i + 1]])
+    }
+    const result = lossFun(inputs, targets)
+    applyGradients(result)
+    hprev = result.lastHidden
+    smoothLoss = smoothLoss * 0.999 + result.loss * 0.001
+    pointer += SEQ_LENGTH
+    iter++
+
+    if (iter % 25 === 0) {
+      statusEl.textContent = `training steps: ${iter} | error (lower is better): ${smoothLoss.toFixed(2)}`
+      outputEl.textContent = sample(inputs[0], SAMPLE_LENGTH)
+    }
+  }
+
+  function startTraining () {
+    if (!initialized) return
+    if (training) return
+    training = true
+    trainBtn.textContent = 'Stop Training'
+    const run = () => {
+      if (!training) return
+      if (!document.getElementById('learning-guide-rnn-status')) {
+        training = false
+        return
+      }
+      for (let i = 0; i < ITERS_PER_TICK; i++) step()
+      loopHandle = setTimeout(run, 0)
+    }
+    run()
+  }
+
+  function stopTraining () {
+    training = false
+    if (loopHandle) clearTimeout(loopHandle)
+    loopHandle = null
+    trainBtn.textContent = 'Start Training'
+  }
+
+  // load sonnets and init
+  fetch('widgets/learning-guide/data/assets/sonnets.txt')
+    .then(r => r.text())
+    .then(t => {
+      buildVocab(t)
+      initModel()
+      statusEl.textContent = `Training Data (Shakespeare Sonnets) Loaded — ${text.length} characters (${chars.length} unique)`
+    })
+    .catch(() => {
+      statusEl.textContent = 'Failed to load training data'
+    })
+
+  trainBtn.addEventListener('click', () => {
+    if (training) stopTraining()
+    else startTraining()
+  })
+
+  sampleBtn.addEventListener('click', () => {
+    if (!initialized) return
+    outputEl.textContent = sample(charToIx[text[0]], SAMPLE_LENGTH)
+  })
+})()
+</script>

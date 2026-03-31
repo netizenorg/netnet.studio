@@ -1,0 +1,36 @@
+<div>
+  <img
+    src="/widgets/learning-guide/data/assets/dalle.jpg"
+    style="border-radius: 10px; border: 4px solid var(--fg-color); width: 450px; cursor:pointer;
+      position: absolute; top: 20px; left: 20px;"
+    alt="OpenAI Dall-E UI"
+    onclick="window._lg_guiImgToggle()">
+
+  <img
+    src="/widgets/learning-guide/data/assets/a1111.jpg"
+    style="border-radius: 10px; border: 4px solid var(--fg-color); width: 380px; cursor:pointer;
+      position: absolute; top: 70px; right: 20px;"
+    alt="A1111 Stable Diffusion WebUI"
+    onclick="window._lg_guiImgToggle()">
+
+    <p style="font-style: italic; position: absolute; bottom: 4px; left: 40px;">
+    click the iamges to toggle between them and compare their UI
+  </p>
+
+  <script>
+
+    window._lg_guiImgToggle = function () {
+      const a = document.querySelector('[alt="OpenAI Dall-E UI"]')
+      const b = document.querySelector('[alt="A1111 Stable Diffusion WebUI"]')
+      if (a.style.zIndex === '2') {
+        a.style.zIndex = '1'
+        b.style.zIndex = '2'
+      } else {
+        a.style.zIndex = '2'
+        b.style.zIndex = '1'
+      }
+    }
+
+  </script>
+
+</div>
