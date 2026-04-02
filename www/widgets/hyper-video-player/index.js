@@ -360,6 +360,7 @@ class HyperVideoPlayer extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
   _loadTutorial (name, time) {
+    nn.get('load-curtain').show('tutorial.html')
     name = name || this.data.id || this.data.metadata.id
     time = time || this._startTime
 

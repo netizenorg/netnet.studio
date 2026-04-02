@@ -70,6 +70,15 @@ class CodeTrace extends HTMLElement {
     this._overlay.on('code-update', () => {
       this._checkMatch()
     })
+
+    this._overlay.cm.on('beforeChange', (cm, change) => {
+      if (!this._base) return
+      const baseLineCount = this._base.code.split('\n').length
+      const linesAdded = change.text.length - 1
+      const linesRemoved = change.to.line - change.from.line
+      const newLineCount = cm.lineCount() + linesAdded - linesRemoved
+      if (newLineCount > baseLineCount) change.cancel()
+    })
   }
 
   _normalizeLine (str) {

@@ -51,7 +51,13 @@ class LearningGuide extends Widget {
 
         this.update({ left: 40, top: 65 })
 
-        this.on('close', () => this._applyVisibility())
+        this.on('close', () => {
+          this._applyVisibility()
+          if (this.slide.getAttribute('name') !== 'main-slide') {
+            this.slide.updateSlide(this.mainOpts)
+          }
+        })
+
         this.on('open', () => {
           if (this.width !== 638 || this.height !== 473) {
             this.update({ width: 638, height: 473 })
@@ -169,14 +175,17 @@ class LearningGuide extends Widget {
   }
 
   scrollTo (sec) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    const behavior = nomotion ? 'instant' : 'smooth'
+
     if (typeof sec === 'number') {
-      return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
+      return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior })
     }
 
     const el = this.slide.querySelector(`#learning-guide-${sec}`)
     const offset = 50
     const top = el.getBoundingClientRect().top - this.slide.getBoundingClientRect().top + this.slide.scrollTop - offset
-    this.slide.scrollTo({ top, behavior: 'smooth' })
+    this.slide.scrollTo({ top, behavior })
 
     if (sec === 'toc') {
       window.convo = new Convo(this.convos, 'toc')
@@ -213,9 +222,12 @@ class LearningGuide extends Widget {
       // options objects for <widget-slide> .updateSlide() method
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
+        let firstCb = true
         this.mainOpts.cb = () => setTimeout(() => {
           // this._createStarField()
           // this._svgAnimations()
+          if (firstCb) { firstCb = false; return }
+          if (this._setupTutCards) this._setupTutCards()
         }, utils.getVal('--menu-fades-time'))
       } else if (type === 'theAIOpts') {
         this.theAIOpts.cb = () => this._createAICards()
@@ -237,7 +249,7 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._highlightTitles()
+    // this._highlightTitles()
     this._createTutorialCards()
     this._createDemoTemplateCards()
     this._enableSubPagesLinks()
@@ -268,19 +280,22 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
-    })
-  }
+  /* no longer using this title text-shadow, was inconsistent across browsers */
+  // _highlightTitles () {
+  //   const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+  //   const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+  //   this.ele.querySelectorAll('h2, h3').forEach(ele => {
+  //     ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
+  //   })
+  // }
 
   _createTutThumb (sec, id, appear) {
     const data = this.tutorials[sec].find(o => o.id === id)
     const click = () => WIDGETS.load('hyper-video-player', w => w.load(data.id))
     const ele = `.learning-guide__tut-thumbs-${sec}`
-    nn.get(ele).set('name', id).innerHTML = ''
+    const container = nn.get(ele)
+    if (!container) return
+    container.set('name', id).innerHTML = ''
 
     this.tutCards[sec] = []
     let delay = 0
@@ -381,12 +396,16 @@ class LearningGuide extends Widget {
     // when all the data below is loaded...
     // ........................
     const ready = () => {
+      this._setupTutCards = ready
+
       // ...create first set of thumbnail cards
       Object.entries(this.tutorials).forEach(([s, tut]) => {
         if (tut[0]) this._createTutThumb(s, tut[0].id)
       })
 
-      // ...and setup controls
+      // ...and setup controls (only once to avoid duplicate listeners)
+      if (this._tutControlsReady) return
+      this._tutControlsReady = true
       Object.entries(this.tutorials).forEach(([s, tut]) => {
         if (tut.length > 1) {
           const sec = `.learning-guide__tut-cntrl[name="${s}"] span`
@@ -489,8 +508,8 @@ class LearningGuide extends Widget {
       // assuming it's also been defined in this.subpages above
       this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
         this.slide.updateSlide({
-          ...this[p.id],
-          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
+          ...this[p.id]
+          // cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
         })
         window.convo.hide()
       })
