@@ -51,7 +51,13 @@ class LearningGuide extends Widget {
 
         this.update({ left: 40, top: 65 })
 
-        this.on('close', () => this._applyVisibility())
+        this.on('close', () => {
+          this._applyVisibility()
+          if (this.slide.getAttribute('name') !== 'main-slide') {
+            this.slide.updateSlide(this.mainOpts)
+          }
+        })
+
         this.on('open', () => {
           if (this.width !== 638 || this.height !== 473) {
             this.update({ width: 638, height: 473 })
