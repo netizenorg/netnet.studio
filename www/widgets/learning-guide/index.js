@@ -237,7 +237,7 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._highlightTitles()
+    // this._highlightTitles()
     this._createTutorialCards()
     this._createDemoTemplateCards()
     this._enableSubPagesLinks()
@@ -268,13 +268,14 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
-    })
-  }
+  /* no longer using this title text-shadow, was inconsistent across browsers */
+  // _highlightTitles () {
+  //   const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+  //   const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+  //   this.ele.querySelectorAll('h2, h3').forEach(ele => {
+  //     ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
+  //   })
+  // }
 
   _createTutThumb (sec, id, appear) {
     const data = this.tutorials[sec].find(o => o.id === id)
@@ -489,8 +490,8 @@ class LearningGuide extends Widget {
       // assuming it's also been defined in this.subpages above
       this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
         this.slide.updateSlide({
-          ...this[p.id],
-          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
+          ...this[p.id]
+          // cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
         })
         window.convo.hide()
       })
