@@ -236,7 +236,7 @@ class KeyboardShortcuts extends Widget {
     window.convo = new Convo(this.convos, this.selected)
   }
 
-  select (val) {
+  select (val, skipExplain) {
     const normalizeKey = s => {
       if (s === 'Left Arrow') return 'left'
       if (s === 'Right Arrow') return 'right'
@@ -263,7 +263,8 @@ class KeyboardShortcuts extends Widget {
       .split(' + ')
       .map(normalizeKey)
       .join('-')
-    this.explain()
+
+    if (!skipExplain) this.explain()
   }
 
   _updateSelectList (cat) {
@@ -275,14 +276,13 @@ class KeyboardShortcuts extends Widget {
     nn.get('#keyboard-shortcuts__sel-type')
       .set('options', keys)
       .on('change', e => this.select(e.target.value))
-    this.select(keys[0])
   }
 
   _createHTML () {
     utils.get(`./widgets/${this.key}/index.html`, html => {
       this.innerHTML = html
       this._updateSelectList('coding')
-      this.select(`${utils.hotKey()} + S`)
+      this.select(`${utils.hotKey()} + S`, true)
       nn.get('#keyboard-shortcuts__sel-cat')
         .on('change', e => this._updateSelectList(e.target.value))
     }, true)
