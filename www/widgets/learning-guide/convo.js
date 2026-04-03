@@ -425,7 +425,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ml20',
       graph: { id: 46, x: 1275, y: 1800 },
-      content: 'Today we see these fine-tuned neural network, the trained algorithm or "model", being used in various contexts. Often their anthropomorphized like chatbots, othertimes they\'re embeded in other systems, like facial recognition model used to unlock your phone or the spam-filtering model behind your email inbox.',
+      content: 'Today we see these fine-tuned neural networks, the trained algorithm or "model", being used in various contexts. Often they\'re anthropomorphized like chatbots, othertimes they\'re embeded in other systems, like a facial recognition model used to unlock your phone or the spam-filtering model behind your email inbox.',
       options: {
         'I see': (e) => e.goTo('ch-one-ml21')
       }
