@@ -282,7 +282,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ml3',
       graph: { id: 31, x: 1075, y: 350 },
-      content: 'Like me! Each line of code, from the text in my speach bubble to the logic that runs when you click my buttons, was written by a person. If my code was packaged with a different interface, like if I looked like an interactive <i>book</i> instead of a <i>bot</i>, you might not refer to me as AI.',
+      content: 'Like me! Each line of code, from the text in my speech bubbles to the logic that runs when you click my buttons, was written by a person. If my code was packaged with a different interface, like if I looked like an interactive <i>book</i> instead of a <i>bot</i>, you might not refer to me as AI.',
       options: {
         'i see': (e) => e.goTo('ch-one-ml5'),
         'different interface?': (e) => e.goTo('ch-one-ml4')
