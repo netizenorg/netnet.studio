@@ -154,7 +154,7 @@ When you do give me code:
   }
 
   _createHTML (opts) {
-    utils.get(`./widgets/${this.key}/data/mad-lib.html`, html => {
+    utils.get(`./widgets/${this.key}/mad-lib.html`, html => {
       this.innerHTML = html
       this._setupUI()
       this.convo('start')
