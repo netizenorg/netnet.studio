@@ -230,6 +230,9 @@ class KeyboardShortcuts extends Widget {
     this._createHTML()
     this._createShortcuts()
     this._preventCodeMirrorDefaults()
+
+    NNW.on('theme-change', () => this._createHTML())
+    WIDGETS['coding-menu'].on('theme-change', () => this._createHTML())
   }
 
   explain () {
@@ -267,7 +270,7 @@ class KeyboardShortcuts extends Widget {
     if (!skipExplain) this.explain()
   }
 
-  _updateSelectList (cat) {
+  _updateSelectList (cat, skipExplain) {
     const keys = this.shortcuts
       .filter(k => !k.hidden)
       .filter(k => k.category === cat)
@@ -276,13 +279,13 @@ class KeyboardShortcuts extends Widget {
     nn.get('#keyboard-shortcuts__sel-type')
       .set('options', keys)
       .on('change', e => this.select(e.target.value))
+    this.select(keys[0], skipExplain)
   }
 
   _createHTML () {
     utils.get(`./widgets/${this.key}/index.html`, html => {
       this.innerHTML = html
-      this._updateSelectList('coding')
-      this.select(`${utils.hotKey()} + S`, true)
+      this._updateSelectList('coding', true)
       nn.get('#keyboard-shortcuts__sel-cat')
         .on('change', e => this._updateSelectList(e.target.value))
     }, true)
