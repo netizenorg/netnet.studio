@@ -459,7 +459,7 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 50, x: 1400, y: 1650 },
       content: 'For example, modern AI systems can have billions of parameters, the weights and biases inside every neuron. We can test that the model works, but the parameters themselves still look like random numbers to us. This is why we call them "black boxes."',
       options: {
-        'I\'v heard': (e) => e.goTo('ch-one-ml23')
+        'I\'ve heard': (e) => e.goTo('ch-one-ml23')
       }
     },
     {
