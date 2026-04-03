@@ -465,8 +465,7 @@ class LearningGuide extends Widget {
             <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
             <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-api-tool')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-api-conduit')
         }
       ]
 

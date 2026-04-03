@@ -1,0 +1,37 @@
+<div class="ai-api-conduit__main">
+  <div class="ai-api-conduit__flex">
+    <p>
+      Choose an LLM provider:&nbsp;&nbsp;
+      <input type="radio" name="provider" value="openai" checked> OpenAI &nbsp;&nbsp;
+      <input type="radio" name="provider" value="anthropic"> Anthropic
+    </p>
+    <button class="pill-btn pill-btn--secondary">?</button>
+  </div>
+  <div style="margin-bottom: 17px;">
+    <p>
+      Your API Key: <input type="password" placeholder="included in the request header" style="width: 310px;">
+    </p>
+  </div>
+
+  <div class="ai-api-conduit__tabs">
+
+    <div class="ai-api-conduit__tab-label" onclick="WIDGETS['ai-api-conduit'].convo('req-body')">Request Body (JSON)</div>
+    <div class="ai-api-conduit__tab">
+      <pre>{
+  model: <input type="text" value="gpt-5.4-mini" placeholder="model-name">,
+  instructions: <span class="link">systemPrompt</span>,
+  input: <span class="link">userInput</span>,
+  text: {
+    format: {
+      type: 'json_schema',
+      name: 'coding_tutor_response',
+      schema:  <span class="link">schema</span>,,
+      strict: true
+    }
+  },
+  temperature: <input type="number" min="0.0" max="2.0" step="0.01" value="0.4">
+}</pre>
+    </div>
+
+  </div>
+</div>

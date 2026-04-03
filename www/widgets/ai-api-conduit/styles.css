@@ -1,0 +1,49 @@
+.ai-api-conduit__main {
+
+}
+
+.ai-api-conduit__flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-api-conduit__main pre,
+.ai-api-conduit__main input[type="text"],
+.ai-api-conduit__main input[type="number"],
+.ai-api-conduit__main input[type="password"] {
+  font-size: 1em;
+  line-height: 1.5em;
+  font-family: 'FiraMono', inconsolata, monospace;
+  letter-spacing: 0.3px;
+  word-spacing: 1px;
+  color: var(--netizen-text);
+  margin: 0;
+}
+
+.ai-api-conduit__main input[type="text"],
+.ai-api-conduit__main input[type="number"],
+.ai-api-conduit__main input[type="password"] {
+  background: transparent;
+  border: 1px solid var(--fg-color);
+}
+
+.ai-api-conduit__tab-label {
+  cursor: pointer;
+  display: inline-block;
+  color: var(--bg-color);
+  font-weight: bold;
+  background: var(--fg-color);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 3px 15px;
+}
+
+.ai-api-conduit__tab {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  border-top-left-radius: 0px;
+  padding: 5px;
+  margin-top: 0;
+  line-height: 1.6em;
+}
