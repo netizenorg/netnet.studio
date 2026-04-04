@@ -17,90 +17,7 @@ class AiPrompter extends Widget {
       question: ['question I have', 'issue I\'m having']
     }
 
-    this.libs = {
-      'anime.js': {
-        src: 'https://cdn.jsdelivr.net/npm/animejs/dist/bundles/anime.umd.min.js',
-        docs: [
-          'https://animejs.com/documentation/',
-          'https://animejs.com/documentation/getting-started/',
-          'https://animejs.com/documentation/animation/',
-          'https://animejs.com/documentation/web-animation-api/'
-        ]
-      },
-      'd3.js': {
-        src: 'https://cdn.jsdelivr.net/npm/d3@7',
-        docs: [
-          'https://d3js.org/getting-started',
-          'https://d3js.org/api',
-          'https://d3js.org/what-is-d3'
-        ]
-      },
-      'gsap.js': {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
-        docs: [
-          'https://gsap.com/resources/get-started/',
-          'https://gsap.com/docs/v3/',
-          'https://gsap.com/docs/v3/GSAP/'
-        ]
-      },
-      'hydra.js': {
-        src: 'https://unpkg.com/hydra-synth@1.3.29/dist/hydra-synth.js',
-        docs: [
-          'https://hydra.ojack.xyz/docs/',
-          'https://hydra.ojack.xyz/hydra-docs-v2/',
-          'https://hydra.ojack.xyz/docs/docs/learning/guides/how-to/hydra-in-a-webpage/',
-          'https://github.com/hydra-synth/hydra'
-        ]
-      },
-      'nn.js': {
-        src: 'https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js',
-        docs: [
-          'https://github.com/netizenorg/netnet-standard-library/blob/main/README.md',
-          'https://github.com/netizenorg/netnet-standard-library/blob/main/docs/examples.md'
-        ]
-      },
-      'p5.js': {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js',
-        docs: [
-          'https://p5js.org/reference/',
-          'https://p5js.org/tutorials/get-started/',
-          'https://p5js.org/tutorials/'
-        ]
-      },
-      'paper.js': {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js',
-        docs: [
-          'https://paperjs.org/reference/',
-          'https://paperjs.org/tutorials/',
-          'https://paperjs.org/tutorials/getting-started/',
-          'https://paperjs.org/tutorials/getting-started/using-javascript-directly/'
-        ]
-      },
-      'three.js': {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.js',
-        docs: [
-          'https://threejs.org/manual/',
-          'https://threejs.org/docs/',
-          'https://threejs.org/'
-        ]
-      },
-      'tone.js': {
-        src: 'https://unpkg.com/tone',
-        docs: [
-          'https://tonejs.github.io/',
-          'https://tonejs.github.io/docs/',
-          'https://tonejs.github.io/examples/'
-        ]
-      },
-      'two.js': {
-        src: 'https://cdn.jsdelivr.net/npm/two.js@latest/build/two.js',
-        docs: [
-          'https://two.js.org/docs/',
-          'https://two.js.org/examples/',
-          'https://two.js.org/'
-        ]
-      }
-    }
+    this.libs = null // dictionary of js lib documentation
 
     this.on('open', () => this._createHTML(opts))
   }
@@ -153,8 +70,9 @@ When you do give me code:
   - Explain every snippet in plain language. If you use a technical term for the first time, define it in parentheses.`
   }
 
-  _createHTML (opts) {
-    utils.get(`./widgets/${this.key}/mad-lib.html`, html => {
+  async _createHTML (opts) {
+    this.libs = await utils.getSync('/widgets/ai-api-conduit/data/js-libs.json')
+    utils.get(`/widgets/${this.key}/index.html`, html => {
       this.innerHTML = html
       this._setupUI()
       this.convo('start')
