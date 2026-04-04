@@ -5,33 +5,40 @@
       <input type="radio" name="provider" value="openai" checked> OpenAI &nbsp;&nbsp;
       <input type="radio" name="provider" value="anthropic"> Anthropic
     </p>
-    <button class="pill-btn pill-btn--secondary">?</button>
+    <button class="pill-btn pill-btn--secondary" name="help-btn">?</button>
   </div>
   <div style="margin-bottom: 17px;">
     <p>
-      Your API Key: <input type="password" placeholder="included in the request header" style="width: 310px;">
+      Your API Key: <input type="password" name="api-key" placeholder="included in the request header" style="width: 310px;">
     </p>
   </div>
 
   <div class="ai-api-conduit__tabs">
-
-    <div class="ai-api-conduit__tab-label" onclick="WIDGETS['ai-api-conduit'].convo('req-body')">Request Body (JSON)</div>
-    <div class="ai-api-conduit__tab">
-      <pre>{
-  model: <input type="text" value="gpt-5.4-mini" placeholder="model-name">,
-  instructions: <span class="link">systemPrompt</span>,
-  input: <span class="link">userInput</span>,
-  text: {
-    format: {
-      type: 'json_schema',
-      name: 'coding_tutor_response',
-      schema:  <span class="link">schema</span>,,
-      strict: true
-    }
-  },
-  temperature: <input type="number" min="0.0" max="2.0" step="0.01" value="0.4">
-}</pre>
+    <div class="ai-api-conduit__tab-labels">
+      <span class="ai-api-conduit__tab-label active" data-tab="request">Request Body</span>
+      <span class="ai-api-conduit__tab-label" data-tab="system">System Prompt</span>
+      <span class="ai-api-conduit__tab-label" data-tab="schema">Schema</span>
+      <span class="ai-api-conduit__tab-label" data-tab="test">Test</span>
     </div>
 
+    <div class="ai-api-conduit__tab" data-tab="request">
+      <pre name="request-body"></pre>
+    </div>
+
+    <div class="ai-api-conduit__tab" data-tab="system" style="display:none;">
+      <pre name="system-prompt"></pre>
+    </div>
+
+    <div class="ai-api-conduit__tab" data-tab="schema" style="display:none;">
+      <pre name="schema-display"></pre>
+    </div>
+
+    <div class="ai-api-conduit__tab" data-tab="test" style="display:none;">
+      <textarea name="user-input" placeholder="type your question or prompt for the LLM here..." spellcheck="false"></textarea>
+      <div class="ai-api-conduit__test-actions">
+        <button class="pill-btn" name="send-btn">send request</button>
+      </div>
+      <pre name="response-display"></pre>
+    </div>
   </div>
 </div>
