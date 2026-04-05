@@ -9,6 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 6px;
 }
 
 .ai-api-conduit__main pre,
@@ -100,19 +101,19 @@
   scrollbar-width: thin;
 }
 
-.ai-api-conduit__tab[data-tab="test"] {
+.ai-api-conduit__tab[data-tab="post"] {
   display: flex;
   flex-direction: column;
 }
 
-.ai-api-conduit__tab[data-tab="test"] textarea {
+.ai-api-conduit__tab[data-tab="post"] textarea {
   height: 100px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--fg-color);
   margin-bottom: 5px;
 }
 
-.ai-api-conduit__tab[data-tab="test"] pre {
+.ai-api-conduit__tab[data-tab="post"] pre {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -127,4 +128,35 @@
 .ai-api-conduit__tab .link {
   cursor: pointer;
   text-decoration: underline;
+}
+
+/* Include Code tab */
+
+.ai-api-conduit__file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-api-conduit__lib-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ai-api-conduit__file-item {
+  display: block;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+/* LLM possessed text-bubble styles */
+
+.text-bubble-llm {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  font-family: 'FiraMono', inconsolata, monospace;
+}
+
+.text-bubble-triangle-llm::after {
+  border-bottom: none;
 }

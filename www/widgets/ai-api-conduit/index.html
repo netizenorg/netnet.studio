@@ -2,14 +2,17 @@
   <div class="ai-api-conduit__flex">
     <p>
       Choose an LLM provider:&nbsp;&nbsp;
-      <input type="radio" name="provider" value="openai" checked> OpenAI &nbsp;&nbsp;
-      <input type="radio" name="provider" value="anthropic"> Anthropic
+      <select class="pill-btn pill-btn--secondary" name="provider">
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+      </select>
     </p>
     <button class="pill-btn pill-btn--secondary" name="help-btn">?</button>
   </div>
   <div style="margin-bottom: 17px;">
     <p>
-      Your API Key: <input type="password" name="api-key" placeholder="included in the request header" style="width: 310px;">
+      Your API Key: <input type="password" name="api-key" placeholder="sent in request header" style="width: 236px; padding: 0 5px;">
+      <button class="pill-btn pill-btn--secondary" name="save-key-btn">enable </button>
     </p>
   </div>
 
@@ -18,7 +21,8 @@
       <span class="ai-api-conduit__tab-label active" data-tab="request">Request Body</span>
       <span class="ai-api-conduit__tab-label" data-tab="system">System Prompt</span>
       <span class="ai-api-conduit__tab-label" data-tab="schema">Schema</span>
-      <span class="ai-api-conduit__tab-label" data-tab="test">Test</span>
+      <span class="ai-api-conduit__tab-label" data-tab="include-code">Include Code</span>
+      <span class="ai-api-conduit__tab-label" data-tab="post">POST Request</span>
     </div>
 
     <div class="ai-api-conduit__tab" data-tab="request">
@@ -33,9 +37,13 @@
       <pre name="schema-display"></pre>
     </div>
 
-    <div class="ai-api-conduit__tab" data-tab="test" style="display:none;">
+    <div class="ai-api-conduit__tab" data-tab="include-code" style="display:none;">
+      <div name="include-code-content"></div>
+    </div>
+
+    <div class="ai-api-conduit__tab" data-tab="post" style="display:none;">
       <textarea name="user-input" placeholder="type your question or prompt for the LLM here..." spellcheck="false"></textarea>
-      <div class="ai-api-conduit__test-actions">
+      <div class="ai-api-conduit__post-actions">
         <button class="pill-btn" name="send-btn">send request</button>
       </div>
       <pre name="response-display"></pre>

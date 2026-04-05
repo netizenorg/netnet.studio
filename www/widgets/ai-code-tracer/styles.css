@@ -1,0 +1,30 @@
+.ai-code-tracer__main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ai-code-tracer__main code-trace {
+  flex: 1;
+  min-height: 0;
+}
+
+.ai-code-tracer__actions {
+  flex-shrink: 0;
+  margin-top: 8px;
+  text-align: right;
+}
+
+.ai-code-tracer__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 10px;
+}
+
+.ai-code-tracer__counter {
+  font-size: 0.9em;
+  opacity: 0.7;
+}

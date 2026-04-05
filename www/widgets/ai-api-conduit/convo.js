@@ -1,4 +1,4 @@
-/* global utils, NNW */
+/* global utils, NNW, Convo  */
 window.CONVOS['ai-api-conduit'] = (self) => {
   return [{
     id: 'start',
@@ -23,11 +23,42 @@ window.CONVOS['ai-api-conduit'] = (self) => {
   }, {
     id: 'no-input',
     before: () => NNW.menu.switchFace('upset'),
-    content: 'You haven\'t written anything in the <b>Test</b> tab yet! That\'s where you type the question or prompt you want to send to the LLM. Switch to the <b>Test</b> tab and write something first.',
+    content: 'You haven\'t written anything in the <b>POST Request</b> tab yet! That\'s where you type the question or prompt you want to send to the LLM. Switch to the <b>POST Request</b> tab and write something first.',
     options: {
       ok: (e) => {
         e.hide()
-        self.switchTab('test')
+        self.switchTab('post')
+      }
+    }
+  }, {
+    id: 'llm-possessed-processing',
+    content: '...LLM taking over...',
+    after: () => self._getPossessed(),
+    options: {}
+  }, {
+    id: 'restate-query',
+    content: 'Try restating your question differently in the <b>Post Request</b> tab, then press "send request" to try agian.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'oh-no-error',
+    after: () => {
+      NNW.menu.updateFace({
+        leftEye: 'ŏ', mouth: '︵', rightEye: 'ŏ', lookAtCursor: false
+      })
+    },
+    content: 'Oh dang! seems your LLM provider had a server error...',
+    options: {
+      'it\'s ok, errors are a part of the process': (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      },
+      'what was the error?': (e) => {
+        Convo.load('/core/utils-convo.js', () => {
+          const convos = window.CONVOS['utils-misc'](window.utils)
+          window.convo = new Convo(convos, 'explain-error')
+        })
       }
     }
   }]

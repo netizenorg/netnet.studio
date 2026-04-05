@@ -19,11 +19,8 @@
         "required": ["code", "language", "explanation"],
         "additionalProperties": false
       }
-    },
-    "summary": {
-      "type": "string"
     }
   },
-  "required": ["restatement", "snippets", "summary"],
+  "required": ["restatement", "snippets"],
   "additionalProperties": false
 }

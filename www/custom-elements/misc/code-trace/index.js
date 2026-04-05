@@ -41,6 +41,7 @@ class CodeTrace extends HTMLElement {
     this._base = new Netitor({
       ele: div,
       renderWithErrors: true,
+      wrap: true,
       background: NNE.background,
       autoUpdate: false,
       hint: false,
@@ -57,6 +58,7 @@ class CodeTrace extends HTMLElement {
     this._overlay = new Netitor({
       ele: div,
       renderWithErrors: true,
+      wrap: true,
       background: false,
       autoUpdate: false,
       hint: false,
@@ -152,7 +154,7 @@ class CodeTrace extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   static get observedAttributes () {
-    return ['code', 'language']
+    return ['code', 'language', 'bright']
   }
 
   syncProps2Attr () {
@@ -182,6 +184,42 @@ class CodeTrace extends HTMLElement {
         if (this._base) this._base.language = newVal
         if (this._overlay) this._overlay.language = newVal
       }
+      if (attrName === 'bright') {
+        this._updateBright()
+      }
+    }
+  }
+
+  _updateBright () {
+    const baseEl = this.querySelector('.code-trace__base')
+    if (!baseEl) return
+
+    const isBright = this.getAttribute('bright') === 'true'
+
+    if (isBright) {
+      baseEl.style.opacity = '1'
+
+      if (!this._brightListenersAdded) {
+        this._brightListenersAdded = true
+
+        this._onBrightEnter = () => {
+          if (this.getAttribute('bright') === 'true') {
+            baseEl.style.opacity = '0.35'
+          }
+        }
+        this._onBrightLeave = () => {
+          if (this.getAttribute('bright') === 'true') {
+            baseEl.style.opacity = '1'
+          }
+        }
+
+        this.addEventListener('mouseenter', this._onBrightEnter)
+        this.addEventListener('mouseleave', this._onBrightLeave)
+        this.addEventListener('focusin', this._onBrightEnter)
+        this.addEventListener('focusout', this._onBrightLeave)
+      }
+    } else {
+      baseEl.style.opacity = ''
     }
   }
 }
