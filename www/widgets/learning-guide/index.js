@@ -560,7 +560,10 @@ class LearningGuide extends Widget {
     const animatedSvgs = [
       'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]
-    animatedSvgs.forEach(svg => this.$(svg).stop())
+    animatedSvgs.forEach(svg => {
+      const ele = this.$(svg)
+      if (ele) ele.stop()
+    })
   }
 
   /*

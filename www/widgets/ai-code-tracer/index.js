@@ -3,7 +3,7 @@ class AiCodeTracer extends Widget {
   constructor (opts) {
     super(opts)
     this.key = 'ai-code-tracer'
-    this.title = 'LLM Responses'
+    this.title = 'LLM Code Snippets'
     this.listed = false
 
     this.width = 530
@@ -12,6 +12,7 @@ class AiCodeTracer extends Widget {
     this.snippets = []
     this.currentIndex = 0
 
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
     this.on('open', () => this._createHTML())
   }
 
@@ -147,18 +148,12 @@ class AiCodeTracer extends Widget {
     if (check.matched) {
       trace.clearDiff()
       navigator.clipboard.writeText(check.baseCode)
-      window.convo = new Convo({
-        id: 'llm-possessed-snippet',
-        content: 'Copied to clipboard!',
-        options: { ok: (e) => e.hide() }
-      })
+      window.convo = new Convo(this.convos, 'llm-possessed-snippet-copied')
+    } else if (check.overlayCode === '') {
+      window.convo = new Convo(this.convos, 'llm-possessed-snippet-no-code')
     } else {
       trace.showDiff('rgba(255, 0, 0, 0.4)')
-      window.convo = new Convo({
-        id: 'llm-possessed-snippet',
-        content: 'The code you typed doesn\'t match the snippet. The differences are highlighted in <span style="color:red">red</span>. Fix the highlighted sections and try again.',
-        options: { ok: (e) => e.hide() }
-      })
+      window.convo = new Convo(this.convos, 'llm-possessed-snippet-not-copied')
     }
   }
 

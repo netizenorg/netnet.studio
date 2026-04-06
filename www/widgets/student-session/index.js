@@ -37,9 +37,11 @@ class StudentSession extends Widget {
         repos: ls.getItem('repos')
       },
       llm: {
+        provider: ls.getItem('llm-provider'),
         keyOpenai: ls.getItem('llm-key-openai'),
         keyAnthropic: ls.getItem('llm-key-anthropic'),
-        model: ls.getItem('llm-model'),
+        modelOpenai: ls.getItem('llm-model-openai'),
+        modelAnthropic: ls.getItem('llm-model-anthropic'),
         temperature: ls.getItem('llm-temperature'),
         maxTokens: ls.getItem('llm-max-tokens')
       },
@@ -402,6 +404,10 @@ class StudentSession extends Widget {
           <button class="pill-btn pill-btn--secondary" name="llm-data">?</button>
         </h2>
         <div>
+          provider:
+          <input value="${this.data.llm.provider || ''}" readonly="readonly">
+        </div>
+        <div>
           OpenAI key:
           <input type="password" value="${this.data.llm.keyOpenai || ''}" readonly="readonly">
         </div>
@@ -410,8 +416,12 @@ class StudentSession extends Widget {
           <input type="password" value="${this.data.llm.keyAnthropic || ''}" readonly="readonly">
         </div>
         <div>
-          model:
-          <input value="${this.data.llm.model || ''}" readonly="readonly">
+          OpenAI model:
+          <input value="${this.data.llm.modelOpenai || ''}" readonly="readonly">
+        </div>
+        <div>
+          Anthropic model:
+          <input value="${this.data.llm.modelAnthropic || ''}" readonly="readonly">
         </div>
         <div>
           temperature:

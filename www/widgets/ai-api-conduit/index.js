@@ -13,7 +13,7 @@ class AiApiConduit extends Widget {
     this.provider = 'openai' // or 'anthropic'
     this.systemPrompt = '' // see data/system-prompt.txt
     this.schema = null // see data/schema.json
-    this.libs = null // dictionary of js lib documentation
+    this.nnDocs = null // see data/nn-docs-for-llm.md
 
     this._setupConvoListener()
 
@@ -39,7 +39,7 @@ class AiApiConduit extends Widget {
     this.systemPromptSketch = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch.txt`, true)
     this.systemPromptProject = await utils.getSync(`/widgets/${w}/data/system-prompt-project.txt`, true)
     this.schema = await utils.getSync(`/widgets/${w}/data/schema.json`)
-    this.libs = await utils.getSync(`/widgets/${w}/data/js-libs.json`)
+    this.nnDocs = await utils.getSync(`/widgets/${w}/data/nn-docs-for-llm.md`, true)
     this._setupTabs()
     this._setupProviderToggle()
     this._setupRequestBody()
@@ -179,7 +179,7 @@ class AiApiConduit extends Widget {
       }
 
       container.appendChild(list)
-      container.appendChild(this._createLibList())
+      if (this._usesNnLib()) container.appendChild(this._createNnCheckbox())
     } else if (isSketch) {
       // SKETCH MODE
       container.innerHTML = ''
@@ -194,47 +194,27 @@ class AiApiConduit extends Widget {
       sketchLabel.appendChild(document.createTextNode(' include code from current sketch'))
       container.appendChild(sketchLabel)
 
-      container.appendChild(this._createLibList())
+      if (this._usesNnLib()) container.appendChild(this._createNnCheckbox())
     } else {
       container.innerHTML = '<p style="margin-top:0"><i>No sketch or project is currently open.</i></p>'
     }
   }
 
-  _createLibList () {
-    const detected = this._checkForLibs()
-    const frag = document.createDocumentFragment()
-
-    const libHeader = document.createElement('p')
-    libHeader.innerHTML = '<b>Detected Libraries</b> — include documentation links:'
-    frag.appendChild(libHeader)
-
-    const libList = document.createElement('div')
-    libList.setAttribute('name', 'lib-list')
-    libList.className = 'ai-api-conduit__lib-list'
-
-    for (const [name] of Object.entries(this.libs)) {
-      const label = document.createElement('label')
-      label.className = 'ai-api-conduit__file-item'
-      const cb = document.createElement('input')
-      cb.type = 'checkbox'
-      cb.name = 'include-lib'
-      cb.value = name
-      if (detected.includes(name)) cb.checked = true
-      label.appendChild(cb)
-      label.appendChild(document.createTextNode(' ' + name))
-      libList.appendChild(label)
-    }
-
-    frag.appendChild(libList)
-    return frag
+  _createNnCheckbox () {
+    const label = document.createElement('label')
+    label.className = 'ai-api-conduit__file-item'
+    const cb = document.createElement('input')
+    cb.type = 'checkbox'
+    cb.name = 'include-nn-docs'
+    cb.checked = true
+    label.appendChild(cb)
+    label.appendChild(document.createTextNode(' include nn.min.js docs'))
+    return label
   }
 
-  _checkForLibs () {
-    const matches = []
-    for (const [name, lib] of Object.entries(this.libs)) {
-      if (NNE.code.includes(lib.src)) matches.push(name)
-    }
-    return matches
+  _usesNnLib () {
+    const nnSrc = 'cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js'
+    return NNE.code.includes(nnSrc)
   }
 
   getIncludedCode () {
@@ -257,20 +237,12 @@ class AiApiConduit extends Widget {
       if (sketchCb && sketchCb.checked) {
         parts.push(`--- sketch code ---\n${NNE.code}`)
       }
+    }
 
-      // gather checked library docs
-      const libCbs = this.ele.querySelectorAll('[name="include-lib"]:checked')
-      if (libCbs.length > 0) {
-        let docSection = 'Relevant library documentation:\n'
-        libCbs.forEach(cb => {
-          const lib = this.libs[cb.value]
-          if (lib) {
-            docSection += `\n${cb.value}:\n`
-            lib.docs.forEach(url => { docSection += `- ${url}\n` })
-          }
-        })
-        parts.push(docSection)
-      }
+    // include nn.js documentation if checked
+    const nnCb = this.ele.querySelector('[name="include-nn-docs"]')
+    if (nnCb && nnCb.checked && this.nnDocs) {
+      parts.push(`--- nn.js library documentation ---\n${this.nnDocs}`)
     }
 
     return parts.length > 0 ? parts.join('\n\n') : ''
