@@ -4,7 +4,7 @@ class AiApiConduit extends Widget {
     super(opts)
     this.key = 'ai-api-conduit'
     this.keywords = ['ai', 'artificial', 'intelligence', 'api', 'llm', 'conduit']
-    this.title = 'LLM-API Conduit'
+    this.title = 'LLM-API Conduit <span style="opacity: 0.5;margin-left:10px">(EXPERIMENTAL BETA)</span>'
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this.width = 638
@@ -49,7 +49,6 @@ class AiApiConduit extends Widget {
     this._populateSchema()
     this._populateIncludeCode()
     this._setupSendButton()
-    this._setupSaveKey()
     this.$('[name="help-btn"]').addEventListener('click', () => this.convo('start'))
     if (this._pendingQuery) {
       this.$('[name="user-input"]').value = this._pendingQuery
@@ -66,14 +65,30 @@ class AiApiConduit extends Widget {
         }
         if (label.dataset.tab === 'include-code') this._populateIncludeCode()
         this.switchTab(label.dataset.tab)
+        window.convo = new Convo(this.convos, label.dataset.tab)
       })
     })
   }
 
   _setupProviderToggle () {
+    const ss = WIDGETS['student-session']
     const select = this.$('[name="provider"]')
+
+    // restore last selected provider
+    const storedProvider = ss.getData('llm-provider')
+    if (storedProvider) {
+      this.provider = storedProvider
+      select.value = storedProvider
+    }
+
+    select.addEventListener('blur', () => {
+      window.convo = new Convo(this.convos, `create-${select.value}-key`)
+    })
+
     select.addEventListener('change', () => {
+      window.convo = new Convo(this.convos, `create-${select.value}-key`)
       this.provider = select.value
+      ss.setData('llm-provider', select.value)
       this._setupRequestBody()
       this.$('[name="api-key"]').value = ''
       this._loadStoredSettings()
@@ -261,20 +276,6 @@ class AiApiConduit extends Widget {
     return parts.length > 0 ? parts.join('\n\n') : ''
   }
 
-  _setupSaveKey () {
-    this.$('[name="save-key-btn"]').addEventListener('click', () => {
-      const ss = WIDGETS['student-session']
-      const key = this.$('[name="api-key"]').value.trim()
-      if (key) ss.setData(`llm-key-${this.provider}`, key)
-      const model = this.$('[name="model"]').value.trim()
-      if (model) ss.setData('llm-model', model)
-      const temp = this.$('[name="temperature"]').value
-      if (temp) ss.setData('llm-temperature', temp)
-      const maxTokens = this.ele.querySelector('[name="max-tokens"]')
-      if (maxTokens) ss.setData('llm-max-tokens', maxTokens.value)
-    })
-  }
-
   _loadStoredSettings () {
     const ss = WIDGETS['student-session']
 
@@ -282,9 +283,9 @@ class AiApiConduit extends Widget {
     if (key) this.$('[name="api-key"]').value = key
 
     const modelEl = this.$('[name="model"]')
-    const storedModel = ss.getData('llm-model')
+    const storedModel = ss.getData(`llm-model-${this.provider}`)
     if (storedModel) modelEl.value = storedModel
-    else ss.setData('llm-model', modelEl.value)
+    else ss.setData(`llm-model-${this.provider}`, modelEl.value)
 
     const tempEl = this.$('[name="temperature"]')
     const storedTemp = ss.getData('llm-temperature')
@@ -302,8 +303,20 @@ class AiApiConduit extends Widget {
   _setupSettingsSync () {
     const ss = WIDGETS['student-session']
 
+    this.$('[name="api-key"]').addEventListener('click', async (e) => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'paste-key')
+      await nn.sleep(utils.getVal('--menu-fades-time'))
+      this.$('[name="api-key"]').focus()
+    })
+
+    this.$('[name="api-key"]').addEventListener('change', (e) => {
+      const val = e.target.value.trim()
+      ss.setData(`llm-key-${this.provider}`, val || null)
+    })
+
     this.$('[name="model"]').addEventListener('change', (e) => {
-      ss.setData('llm-model', e.target.value.trim() || null)
+      ss.setData(`llm-model-${this.provider}`, e.target.value.trim() || null)
     })
 
     this.$('[name="temperature"]').addEventListener('change', (e) => {
