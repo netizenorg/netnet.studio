@@ -465,8 +465,7 @@ class LearningGuide extends Widget {
             <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
             <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-api-tool')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-api-conduit')
         }
       ]
 
@@ -561,7 +560,10 @@ class LearningGuide extends Widget {
     const animatedSvgs = [
       'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]
-    animatedSvgs.forEach(svg => this.$(svg).stop())
+    animatedSvgs.forEach(svg => {
+      const ele = this.$(svg)
+      if (ele) ele.stop()
+    })
   }
 
   /*

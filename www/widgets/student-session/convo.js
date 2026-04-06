@@ -10,6 +10,8 @@ window.CONVOS['student-session'] = (self) => {
       self.checkForSavePoint()
     }
 
+    const hasLLM = self.data.llm.keyAnthropic || self.data.llm.keyOpenai
+
     if (type === 'new-name') {
       o['where? how?'] = (e) => e.goTo('how-to')
       o['classical AI?'] = (e) => e.goTo('classical-ai')
@@ -17,11 +19,22 @@ window.CONVOS['student-session'] = (self) => {
     } else if (type === 'no-greet') {
       o['let\'s code!'] = letsCode
       o['where? how?'] = (e) => e.goTo('how-to')
-    } else {
+    } else if (NNW.layout === 'welcome') {
       o['let\'s code!'] = letsCode
       o['who? what?'] = (e) => e.goTo('confirm-diff-user')
+    } else {
+      o['I need help!'] = (e) => e.goTo('i-need-help')
+      if (hasLLM) o['ask an LLM'] = (e) => self.askAnLLM()
+      o['never mind'] = (e) => e.hide()
     }
     return o
+  }
+
+  const postLLM = (e, o) => {
+    const q = o.querySelector('input').value.trim()
+    if (!q) return e.goTo('ask-llm-missing')
+    WIDGETS['ai-api-conduit']._pendingQuery = q
+    e.goTo('confirm-llm')
   }
 
   return [
@@ -63,6 +76,52 @@ window.CONVOS['student-session'] = (self) => {
       graph: { id: 4, x: 800, y: 450 },
       content: 'Shall we get started?',
       options: firstOpts('no-greet')
+    },
+    {
+      id: 'i-need-help',
+      content: 'I\'m here to help! Double-click any piece of code and I\'ll explain it. If I spot an issue, I\'ll mark the line with a <span class="student-session__red-dot"></span> red or <span class="student-session__org-dot"></span> orange dot you can click for info. You can also click on my face to open the <img src="images/menu/code.png" class="student-session__d-icons"> <b>Coding Menu</b> to save or start new code, or the <img src="images/menu/tutorials.png" class="student-session__d-icons"> <b>Learning Guide</b> to explore different topics and learn something new!',
+      options: {
+        ok: (e) => e.hide()
+      }
+    },
+    {
+      id: 'ask-llm',
+      content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. Would you like me to pass a query along to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
+      options: {
+        send: (e, o) => postLLM(e, o),
+        'never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'ask-llm-missing',
+      content: 'The <b class="link" onclick="WIDGETS.open(\'ai-api-conduit\')">LLM-API Conduit</b> widget needs some user input before it can post a request. Type something below.<br><input style="width:350px" placeholder="ask an LLM a question">',
+      options: {
+        send: (e, o) => postLLM(e, o),
+        'never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'ask-llm-restate',
+      content: 'Try restating your question another way. <br><input style="width:350px" placeholder="ask an LLM a question">',
+      options: {
+        send: (e, o) => postLLM(e, o),
+        'never mind': (e) => e.hide()
+      }
+    },
+    {
+      id: 'confirm-llm',
+      content: 'Would you like to edit any of the <b>LLM-API Conduit</b> widget settings like your API key, model settings or attached files first?',
+      options: {
+        'no, send now': (e) => {
+          const w = WIDGETS['ai-api-conduit']
+          w.$('[name="user-input"]').value = w._pendingQuery
+          w._pendingQuery = null
+          w._sendRequest()
+        },
+        'yes, let\'s edit first': (e) => {
+          WIDGETS.open('ai-api-conduit')
+        }
+      }
     },
     {
       id: 'prior-github-login',
@@ -441,6 +500,13 @@ window.CONVOS['student-session'] = (self) => {
       id: 'what-is-github',
       graph: { id: 41, x: 400, y: 1475 },
       content: '<a href="https://github.com/" target="_blank">GitHub</a> is a platform where coders share their open source projects and collaborate with each other. Your GitHub account is sort of like your code "portfolio".',
+      options: {
+        'got it': (e) => e.hide()
+      }
+    },
+    {
+      id: 'llm-keys-data-info',
+      content: 'If you\'re using the <b class="link" onclick="WIDGETS.open(\'ai-api-conduit\')">LLM-API Conduit</b> widget, you can store your API keys and other settings locally in your browser so you don\'t have to re-enter them every time. These keys are saved in your browser\'s localStorage and are never sent to our server.',
       options: {
         'got it': (e) => e.hide()
       }

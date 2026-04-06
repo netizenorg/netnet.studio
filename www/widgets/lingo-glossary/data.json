@@ -124,7 +124,7 @@
   "api": {
     "name": "API",
     "definition": "Application Programming Interface, a set of rules and methods that let different software systems communicate with each other. APIs allow you to request data or functionality from external sources without knowing how they work internally. For example, a weather API lets you get current temperature data, or the Canvas API lets you draw graphics. You send a request to the API and it sends back the data or performs the action you asked for.",
-    "see": ["library", "request"],
+    "see": ["library", "request", "json"],
     "doc": ["js-reference", "apisAndLibsOpts", "web-apis"]
   },
   "callback": {
@@ -136,8 +136,13 @@
   "request": {
     "name": "Request",
     "definition": "The act of asking a server for data or resources. This happens automatically when you type a URL in your browser's address bar and press enter, the browser sends a request to the server asking for that web page. In JavaScript, you can also make requests programmatically using methods like <code>fetch()</code> or <code>XMLHttpRequest</code> to get data (like JSON, images, or API responses) without reloading the page. Requests are fundamental to how the web works and how dynamic pages load new content.",
-    "see": ["api"],
+    "see": ["api", "json"],
     "doc": ["demo-sketches", "1760744714860"]
+  },
+  "json": {
+    "name": "JSON (JavaScript Object Notatin)",
+    "definition": "JSON is a simple way to organize and share data using plain text. It's built from key–value pairs (like labels and their values) and lists, so it's easy for both humans and computers to read and write. You can think of it like a lightweight version of a spreadsheet or a dictionary, commonly used to send data between apps and APIs.",
+    "see": ["api", "request"]
   },
   "vector-graphics": {
     "name": "Vector Graphics",

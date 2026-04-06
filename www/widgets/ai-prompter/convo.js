@@ -92,14 +92,14 @@ window.CONVOS['ai-prompter'] = (self) => {
   }, {
     id: 'ground-truth1',
     before: () => NNW.menu.switchFace('default'),
-    content: 'A classic example is asking <i>“How many r\'s are in strawberry?”</i>, the pattern in this particular sequence of tokens (pieces of words) suggests to the model that the answer should include an amount, so it will likely always give you a number, but not necessarily the right one. Because it\'s not actually counting letters, it\'s generating a likely-looking answer based on how similar questions are usually answered.',
+    content: 'A classic example is asking <a href="https://techcrunch.com/2024/08/27/why-ai-cant-spell-strawberry/" target="_blank"><i>“How many r\'s are in strawberry?”</i></a>, the pattern in this particular sequence of tokens (pieces of words) suggests to the model that the answer should include an amount, so it will likely always give you a number, but not necessarily the right one. Because it\'s not actually counting letters, it\'s generating a likely-looking answer based on how similar questions are usually answered.',
     options: {
       'what about facts?': (e) => e.goTo('ground-truth2'),
       'what about code?': (e) => e.goTo('ground-truth3')
     }
   }, {
     id: 'ground-truth2',
-    content: 'The same issue applies to factual questions. For example, there have been cases where AI generated legal citations to court cases that look convincing because they follow the pattern of a real citation (publication, author, date, etc.), but in reality don\'t exist.',
+    content: 'The same issue applies to factual questions. For example, there have been cases where <a href="https://www.forbes.com/sites/jayadkisson/2025/10/27/lawyers-caught-submitting-ai-briefs-face-worse-than-the-courts-monetary-sanctions/" target="_blank">AI generated legal citations</a> to court cases that look convincing because they follow the pattern of a real citation (publication, author, date, etc.), but in reality don\'t exist.',
     options: {
       'what about math?': (e) => e.goTo('ground-truth1'),
       'what about code?': (e) => e.goTo('ground-truth3')

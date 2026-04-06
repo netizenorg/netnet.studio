@@ -125,6 +125,9 @@ class NetNetFaceMenu {
       processing: {
         leftEye: '◉', mouth: '⌄', rightEye: '☉', lookAtCursor, animation: 'processing'
       },
+      conduit: {
+        leftEye: '◉', mouth: '﹏', rightEye: '☉', lookAtCursor, animation: 'processing'
+      },
       happy: {
         leftEye: 'ᴖ', mouth: '◡', rightEye: 'ᴖ', lookAtCursor, animation: 'big-nod'
       },
@@ -323,6 +326,8 @@ class NetNetFaceMenu {
       NNW.menu.ele.querySelector('#face').style.animation = 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both'
     } else if (this.face.animation === 'duck-down') {
       NNW.menu.ele.querySelector('#face').style.animation = 'duck-down 0.82s ease-out 0s 1 normal forwards'
+    } else if (this.face.animation === 'possessed') {
+      NNW.menu.ele.querySelector('#face').style.animation = 'possessed 4s ease-out infinite'
     }
   }
 

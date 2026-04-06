@@ -36,6 +36,15 @@ class StudentSession extends Widget {
         owner: ls.getItem('owner'),
         repos: ls.getItem('repos')
       },
+      llm: {
+        provider: ls.getItem('llm-provider'),
+        keyOpenai: ls.getItem('llm-key-openai'),
+        keyAnthropic: ls.getItem('llm-key-anthropic'),
+        modelOpenai: ls.getItem('llm-model-openai'),
+        modelAnthropic: ls.getItem('llm-model-anthropic'),
+        temperature: ls.getItem('llm-temperature'),
+        maxTokens: ls.getItem('llm-max-tokens')
+      },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
         layout: ls.getItem('last-saved-layout'),
@@ -284,6 +293,14 @@ class StudentSession extends Widget {
     })
   }
 
+  askAnLLM () {
+    WIDGETS.load('ai-api-conduit', async (w) => {
+      await w._createHTML('no-convo')
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'ask-llm')
+    })
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -382,6 +399,38 @@ class StudentSession extends Widget {
           repositories:
           <input  value="${this.data.github.repos}" readonly="readonly">
         </div>
+        <h2>
+          <span>LLM API Settings</span>
+          <button class="pill-btn pill-btn--secondary" name="llm-data">?</button>
+        </h2>
+        <div>
+          provider:
+          <input value="${this.data.llm.provider || ''}" readonly="readonly">
+        </div>
+        <div>
+          OpenAI key:
+          <input type="password" value="${this.data.llm.keyOpenai || ''}" readonly="readonly">
+        </div>
+        <div>
+          Anthropic key:
+          <input type="password" value="${this.data.llm.keyAnthropic || ''}" readonly="readonly">
+        </div>
+        <div>
+          OpenAI model:
+          <input value="${this.data.llm.modelOpenai || ''}" readonly="readonly">
+        </div>
+        <div>
+          Anthropic model:
+          <input value="${this.data.llm.modelAnthropic || ''}" readonly="readonly">
+        </div>
+        <div>
+          temperature:
+          <input value="${this.data.llm.temperature || ''}" readonly="readonly">
+        </div>
+        <div>
+          max tokens:
+          <input value="${this.data.llm.maxTokens || ''}" readonly="readonly">
+        </div>
       </div>
     `
 
@@ -402,6 +451,8 @@ class StudentSession extends Widget {
         window.convo = new Convo(this.convos, 'save-point-data-info')
       } else if (e.target.name === 'github-data') {
         window.convo = new Convo(this.convos, 'github-data-info')
+      } else if (e.target.name === 'llm-data') {
+        window.convo = new Convo(this.convos, 'llm-keys-data-info')
       }
     }))
 
