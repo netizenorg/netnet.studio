@@ -1561,7 +1561,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-size9',
       graph: { id: 176, x: 4900, y: 1100 },
-      content: 'Our local Shakespeare RNN might not seem that impressive, but not every model needs trillions of parameters to be useful. There are all sorts of smaller models that work remarkably well, from audio models trained to produce new musical timbres to visual models that can track our bodies, which I\'ll demo in Chatper 5.',
+      content: 'Our local Shakespeare RNN might not seem that impressive, but not every model needs trillions of parameters to be useful. There are all sorts of smaller models that work remarkably well, from audio models trained to produce new musical timbres to visual models that can track our bodies, which I\'ll demo in Chapter 5.',
       options: {
         'so why are LLMs so big?': (e) => e.goTo('ch-one-size10')
       }
