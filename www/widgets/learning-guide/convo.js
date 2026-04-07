@@ -282,7 +282,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ml3',
       graph: { id: 31, x: 1075, y: 350 },
-      content: 'Like me! Each line of code, from the text in my speach bubble to the logic that runs when you click my buttons, was written by a person. If my code was packaged with a different interface, like if I looked like an interactive <i>book</i> instead of a <i>bot</i>, you might not refer to me as AI.',
+      content: 'Like me! Each line of code, from the text in my speech bubbles to the logic that runs when you click my buttons, was written by a person. If my code was packaged with a different interface, like if I looked like an interactive <i>book</i> instead of a <i>bot</i>, you might not refer to me as AI.',
       options: {
         'i see': (e) => e.goTo('ch-one-ml5'),
         'different interface?': (e) => e.goTo('ch-one-ml4')
@@ -425,7 +425,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ml20',
       graph: { id: 46, x: 1275, y: 1800 },
-      content: 'Today we see these fine-tuned neural network, the trained algorithm or "model", being used in various contexts. Often their anthropomorphized like chatbots, othertimes they\'re embeded in other systems, like facial recognition model used to unlock your phone or the spam-filtering model behind your email inbox.',
+      content: 'Today we see these fine-tuned neural networks, the trained algorithm or "model", being used in various contexts. Often they\'re anthropomorphized like chatbots, othertimes they\'re embeded in other systems, like a facial recognition model used to unlock your phone or the spam-filtering model behind your email inbox.',
       options: {
         'I see': (e) => e.goTo('ch-one-ml21')
       }
@@ -459,7 +459,7 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 50, x: 1400, y: 1650 },
       content: 'For example, modern AI systems can have billions of parameters, the weights and biases inside every neuron. We can test that the model works, but the parameters themselves still look like random numbers to us. This is why we call them "black boxes."',
       options: {
-        'I\'v heard': (e) => e.goTo('ch-one-ml23')
+        'I\'ve heard': (e) => e.goTo('ch-one-ml23')
       }
     },
     {
@@ -520,7 +520,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-process1',
       graph: { id: 57, x: 1800, y: 100 },
-      content: 'There are a number of different ways we could incorporate <b style="text-decoration:underline">AI into our creative process</b>, here again I\'m specifically referring to Machine Learning (ML), artificial neural networks molded in response to patterns found in large data sets.',
+      content: 'There are a number of different ways we could incorporate <b style="text-decoration:underline">AI into our creative process</b>. Here I\'m specifically referring to Machine Learning (ML), artificial neural networks molded in response to patterns found in large data sets.',
       options: {
         'go on': (e) => e.goTo('ch-one-process2')
       }
@@ -603,7 +603,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-process8',
       graph: { id: 66, x: 2100, y: 850 },
-      content: 'In a sense, it\'s all hallucination, every response is synthesized text, some (or most) of it just happens to be accurate. Once you understand that the model is only ever predicting what token comes next, hallucinations stop being surprising.',
+      content: 'In a sense, it\'s all hallucination. Every response is synthesized text, and some (or most) of it just happens to be accurate. Once you understand that the model is only ever predicting what token comes next, hallucinations stop being surprising.',
       options: {
         'I see': (e) => e.goTo('ch-one-process9')
       }
@@ -698,7 +698,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-process19',
       graph: { id: 77, x: 2125, y: 1575 },
-      content: 'It can, but keep in mind that LLMs synthesize from patterns in existing data, their output tends toward the average. For code, that\'s often exactly what you want. The most efficient way to parse JSON data is probably the same way everyone else does it.',
+      content: 'It can, but keep in mind that because LLMs synthesize from patterns in existing data, their output tends toward the average. For code, that\'s often exactly what you want. The most efficient way to parse JSON data is probably the same way everyone else does it.',
       options: {
         ok: (e) => e.goTo('ch-one-process20')
       }
@@ -885,7 +885,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ui16',
       graph: { id: 97, x: 2725, y: 1925 },
-      content: 'Here\'s an example of an image generated with Stabe Diffusion using A1111 with the prompt "ocean sunrise", with the default setting of 20 "sampling steps" or denoising passes. Adjust the slider below the image to see what the same prompt looks like with less denoising.',
+      content: 'Here\'s an example of an image generated with Stable Diffusion using A1111 with the prompt "ocean sunrise", with the default setting of 20 "sampling steps" or denoising passes. Adjust the slider below the image to see what the same prompt looks like with less denoising.',
       options: {
         'I see': (e) => e.goTo('ch-one-ui17')
       }
@@ -904,7 +904,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ui19',
       graph: { id: 99, x: 2750, y: 1475 },
-      content: 'It also demystifies the model. When apps like DALL-E randomize the seed behind the scenes, each result feels spontaneous, as if the model is making creative choices. But when we\'re given an interface to control this value, we quickly realize how deterministic these systems are. Any illusion of the model being "concious" quickly breaks down soon as we lock that seed.',
+      content: 'It also demystifies the model. When apps like DALL-E randomize the seed behind the scenes, each result feels spontaneous, as if the model is making creative choices. But when we\'re given an interface to control this value, we quickly realize how deterministic these systems are. Any illusion of the model being "conscious" quickly breaks down soon as we lock that seed.',
       options: {
         'so A1111 is better?': (e) => e.goTo('ch-one-ui20')
       }
@@ -930,7 +930,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-ui21',
       graph: { id: 102, x: 2875, y: 1350 },
-      content: 'Oh have you not gone through it yet? That\'s the first interactive tutorial listed in my <img src="images/menu/tutorials.png" class="learning-guide__d-icons"> <b>Learning Guide</b>. Definetely, worth a watch later.',
+      content: 'Oh have you not gone through it yet? That\'s the first interactive tutorial listed in my <img src="images/menu/tutorials.png" class="learning-guide__d-icons"> <b>Learning Guide</b>. Definitely worth a watch later.',
       options: {
         'will do': (e) => e.goTo('ch-one-ui22')
       }
@@ -1290,13 +1290,13 @@ window.CONVOS['learning-guide'] = (self) => {
       graph: { id: 143, x: 4425, y: 350 },
       content: 'When this incident occurred, most of the public had never heard of "machine learning" or "AI", these were early days, so they didn\'t understand that Google couldn\'t just "fix" the algorithm by editing some code. They would need to retrain the entire model, a very time-consuming and costly endeavor.',
       options: {
-        'what they do?': (e) => e.goTo('ch-one-data6')
+        'what did they do?': (e) => e.goTo('ch-one-data6')
       }
     },
     {
       id: 'ch-one-data6',
       graph: { id: 144, x: 4425, y: 475 },
-      content: 'Instead, Google simply blocked the words "gorilla," "chimpanzee," "monkey," and all related tags from the system entirely. Essentially making it "gorilla-blind." Nearly a decade later, that fix remains in place, it has remained <a href="https://www.wired.com/story/when-it-comes-to-gorillas-google-photos-remains-blind/" target="_blank">a cautionary tale</a> ever since.',
+      content: 'Instead, Google simply blocked the words "gorilla," "chimpanzee," "monkey," and all related tags from the system entirely. Essentially making it "gorilla-blind." Nearly a decade later, that fix remains in place, and it has remained <a href="https://www.wired.com/story/when-it-comes-to-gorillas-google-photos-remains-blind/" target="_blank">a cautionary tale</a> ever since.',
       options: {
         'I see': (e) => e.goTo('ch-one-data7')
       }
@@ -1320,7 +1320,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-data11',
       graph: { id: 147, x: 4050, y: 800 },
-      content: 'Some bias problems can be improved, image recognition has gotten much better as datasets have become more representative. But when the data itself is a product of systemic inequality, no amount of tuning will fix it. When the stakes are as high as someone\'s freedom, it\'s likely best to keep AI out of it entirely.',
+      content: 'Some bias problems can be improved; image recognition has gotten much better as datasets have become more representative. But when the data itself is a product of systemic inequality, no amount of tuning will fix it. When the stakes are as high as someone\'s freedom, it\'s likely best to keep AI out of it entirely.',
       options: {
         'got it': (e) => e.goTo('ch-one-data12')
       }
@@ -1378,7 +1378,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-data24',
       graph: { id: 154, x: 4425, y: 1700 },
-      content: 'The frustration artists are feeling about generative AI is understandable, but if they lead with claims of itellectual property, they may quickly find themselves hitting a hypocritical deadend.',
+      content: 'The frustration artists are feeling about generative AI is understandable, but if they lead with claims of intellectual property, they may quickly find themselves hitting a hypocritical dead-end.',
       options: {
         'I see': (e) => e.goTo('ch-one-data25')
       }
@@ -1561,7 +1561,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'ch-one-size9',
       graph: { id: 176, x: 4900, y: 1100 },
-      content: 'Our local Shakespeare RNN might not seem that impressive, but not every model needs trillions of parameters to be useful. There are all sorts of smaller models that work remarkably well, from audio models trained to produce new musical timbres to visual models that can track our bodies, which I\'ll demo in Chatper 5.',
+      content: 'Our local Shakespeare RNN might not seem that impressive, but not every model needs trillions of parameters to be useful. There are all sorts of smaller models that work remarkably well, from audio models trained to produce new musical timbres to visual models that can track our bodies, which I\'ll demo in Chapter 5.',
       options: {
         'so why are LLMs so big?': (e) => e.goTo('ch-one-size10')
       }
