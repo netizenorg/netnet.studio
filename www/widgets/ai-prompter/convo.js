@@ -62,14 +62,14 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'copied-prompt',
-    content: `Great, I've copied the prompt to your clipboard, you can paste it with <code>${utils.hotKey()} + V</code> into the prompt box of a web based LLM like <a href="https://chatgpt.com/" target="_blank">ChatGPT</a>, <a href="https://claude.ai/" target="_blank">Claude</a>, <a href="https://gemini.google.com/" target="_blank">Gemini</a> or the privacy concious <a href="https://lumo.proton.me/guest" target="_blank">Lumo</a>. Dont't forget to also download your code so you can attach it with your prompt.`,
+    content: `Great, I've copied the prompt to your clipboard. You can paste it with <code>${utils.hotKey()} + V</code> into the prompt box of a web-based LLM like <a href="https://chatgpt.com/" target="_blank">ChatGPT</a>, <a href="https://claude.ai/" target="_blank">Claude</a>, <a href="https://gemini.google.com/" target="_blank">Gemini</a>, or the privacy-concious <a href="https://lumo.proton.me/guest" target="_blank">Lumo</a>. Dont't forget to also download your code so you can attach it with your prompt.`,
     options: {
       'Ok, thanks!': (e) => e.hide()
     }
   }, {
     id: 'context',
     before: () => NNW.menu.switchFace('default'),
-    content: 'It\'s important to give AI the right context up front. Without that, the model has to assume things about the level your at and the coding language your working in from the way you worded your question. If it guesses incorrectly the answer might be unhelpful or worse, it might <i>seem</i> helpful at first, but you could end up going down a conversational route that leads to a frustrating dead end.',
+    content: 'It\'s important to give AI the right context up front. Without that, the model has to assume things about the level you\'re at and the coding language you\'re working in from the way you worded your question. If it guesses incorrectly, the answer might be unhelpful or worse: it might <i>seem</i> helpful at first, but you could end up going down a conversational route that leads to a frustrating dead end.',
     options: {
       'dead end? It\'ll stop?': (e) => e.goTo('context2'),
       'I see': (e) => e.hide()
@@ -83,7 +83,7 @@ window.CONVOS['ai-prompter'] = (self) => {
   }, {
     id: 'question',
     before: () => NNW.menu.switchFace('default'),
-    content: 'Here\'s where you\'ll ask your question or explain your issue. Use it as an excuse to practice the lingo you\'ve been learning by writing your question with proper coding terminology. Remember, LLMs respond to patterns in your text prompt, the more text with the right terminology the more likely it hones in on the right patterns and produces helpful results.',
+    content: 'Here\'s where you\'ll ask your question or explain your issue. Use it as an excuse to practice the lingo you\'ve been learning by writing your question with proper coding terminology. Remember, LLMs respond to patterns in your text prompt, so the more text with the right terminology the more likely it hones in on the right patterns and produces helpful results.',
     options: {
       'I see': (e) => e.hide()
     }
