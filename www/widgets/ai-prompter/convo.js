@@ -3,7 +3,7 @@ window.CONVOS['ai-prompter'] = (self) => {
   return [{
     id: 'start',
     before: () => NNW.menu.switchFace('default'),
-    content: 'AI is now part of modern programming, but not all uses support learning. For beginners, many of these tools can undermine our learning goals, robbing us of the opportunity to master the fundamentals. Which is why we need to choose the right AI tool and craft deliberate prompts.',
+    content: 'AI is now part of modern programming, but not all uses support learning. For beginners, many of these tools can undermine our learning goals, robbing us of the opportunity to master the fundamentals. This is why we need to choose the right AI tool and craft deliberate prompts.',
     options: {
       'how do I choose?': (e) => e.goTo('choose'),
       'deliberate prompts?': (e) => e.goTo('prompts')
@@ -17,14 +17,14 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'why-chat',
-    content: 'Our aim is AI literacy that supports learning, not automation that replaces it. A coding agent works great for experienced coders, but for those of us still learning conversational models, like chat bots, which operate outside your coding environment usually provide a lot more context. You also don\'t need to install anything on your computer, you can use them just by opening a new tab.',
+    content: 'Our aim is AI literacy that supports learning, not automation that replaces it. A coding agent works great for experienced coders, but for those of us still learning, conversational models (like chatbots, which operate outside your coding environment) usually provide more context and less autocompletion. You also don\'t need to install anything on your computer; you can use them just by opening a new tab.',
     options: {
       'Then I copy the code?': (e) => e.goTo('transcribe1'),
       'How should I prompt it?': (e) => e.goTo('prompts')
     }
   }, {
     id: 'transcribe1',
-    content: 'You could always copy+paste, but I would recommend that you actually retype the code yourself, doing so ensures that you\'ve read every line closely which will deepen your understanding and also gives you the chance to rewrite code in your own voice/style. If we prompt the model correctly we should only ever get small snippets that are easy to retype.',
+    content: 'You could always copy+paste, but I would recommend that you actually retype the code yourself. Doing so ensures that you\'ve read every line closely which will deepen your understanding and also gives you the chance to rewrite code in your own voice/style. If we prompt the model correctly we should only ever get small snippets that are easy to retype.',
     options: {
       'I see': (e) => e.goTo('transcribe2')
     }
@@ -36,22 +36,29 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'prompts',
-    content: 'If we ask a short question like <i>"why doesn\'t my code work?"</i> AI models tend to solve your problem for you by default, but with the right prompt we can instead get them to help us grow as creative coders. The goal of this widget is to teach you how best to prompt models for this purpose and to do so quickly. We want it to help us, not do the work for us.',
+    content: 'If we ask a short question like <i>"why doesn\'t my code work?"</i> AI models tend to solve your problem for you by default. With the right prompt we can instead get them to help us grow as creative coders. The goal of this widget is to teach you how best to prompt models for this purpose and to do so quickly. We want it to help us, not do the work for us.',
     options: {
       'I see': (e) => e.goTo('struggle1')
     }
   }, {
     id: 'struggle1',
-    content: 'Before you ask AI for help, try to solve it yourself. Struggling through a hard problem is key to learning, <a href="https://www.media.mit.edu/publications/your-brain-on-chatgpt/" target="_blank">recent research</a> suggests that early AI reliance can weaken understanding and memory, while late, targeted use can actually help reinforce what you’ve learned.',
+    content: 'First things first: before you ask AI for help with a problem, try to solve it yourself. It\'s ok to turn to AI for help, but remember that struggling through a hard problem is key to learning. <a href="https://www.media.mit.edu/publications/your-brain-on-chatgpt/" target="_blank">Recent research</a> suggests that early AI reliance can weaken understanding and memory, while late, targeted use can actually help reinforce what you’ve learned.',
     options: {
       'Too early? How can I tell?': (e) => e.goTo('struggle2'),
       'Ok, will do!': (e) => e.hide()
     }
   }, {
     id: 'struggle2',
-    content: 'It\'s ok to turn to AI for help, but if you run into a new issue try to solve it yourself first. Start by isolating the problem, create a separate <a href="/sketch" target="_blank">sketch</a> with the least amount of code possible that still produces the same bug. Attempting to create an isolated example of the issue often helps you identify why it\'s happening, and if it doesn\'t, now you\'ve got a much simpler sketch to share with AI for help.',
+    content: 'If you run into a new issue, start by isolating the problem. Create a separate <a href="/sketch" target="_blank">sketch</a> with the least amount of code possible that still produces the same bug. Attempting to create an isolated example of the issue often helps identify why it\'s happening. If it doesn\'t, now you\'ve got a much simpler sketch to share with AI for help.',
     options: {
+      'Any other ideas?': (e) => e.goTo('struggle3'),
       'Ok, will do!': (e) => e.hide()
+    }
+  }, {
+    id: 'struggle3',
+    content: 'Have you heard of <a href="http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html">rubber duck debugging</a>? It\'s exactly as it sounds: you\'re explaining what your code does line by line to a nonjudgemental third party (in this case, a rubber duck). Much like code isolation, but a little less conversatinoal than AI, the idea is that by vocalizing your problem, you may just come a conclusion on your own.',
+    options: {
+      'Cool, but I\'m ready to prompt!': (e) => e.hide()
     }
   }, {
     id: 'copied-prompt',
