@@ -42,21 +42,21 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'struggle1',
-    content: 'First things first: before you ask AI for help with a problem, try to solve it yourself. It\'s ok to turn to AI for help, but remember that struggling through a hard problem is key to learning. <a href="https://www.media.mit.edu/publications/your-brain-on-chatgpt/" target="_blank">Recent research</a> suggests that early AI reliance can weaken understanding and memory, while late, targeted use can actually help reinforce what you’ve learned.',
+    content: 'Before you begin prompting, try to solve the problem yourself. It\'s ok to turn to AI, but remember that struggling through a hard problem is key to learning. <a href="https://www.media.mit.edu/publications/your-brain-on-chatgpt/" target="_blank">Recent research</a> suggests that early AI reliance can weaken understanding and memory, while late, targeted use can actually help reinforce what you’ve learned.',
     options: {
       'Too early? How can I tell?': (e) => e.goTo('struggle2'),
       'Ok, will do!': (e) => e.hide()
     }
   }, {
     id: 'struggle2',
-    content: 'If you run into a new issue, start by isolating the problem. Create a separate <a href="/sketch" target="_blank">sketch</a> with the least amount of code possible that still produces the same bug. Attempting to create an isolated example of the issue often helps identify why it\'s happening. If it doesn\'t, now you\'ve got a much simpler sketch to share with AI for help.',
+    content: 'You can start by isolating the problem. Create a separate <a href="/sketch" target="_blank">sketch</a> with the least amount of code possible that still produces the same bug. Attempting to create an isolated example of the issue often helps identify why it\'s happening. If it doesn\'t, now you\'ve got a much simpler sketch to share with AI for help.',
     options: {
       'Any other ideas?': (e) => e.goTo('struggle3'),
       'Ok, will do!': (e) => e.hide()
     }
   }, {
     id: 'struggle3',
-    content: 'Have you heard of <a href="http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html">rubber duck debugging</a>? It\'s exactly as it sounds: you\'re explaining what your code does line by line to a nonjudgemental third party (in this case, a rubber duck). Much like code isolation, but a little less conversatinoal than AI, the idea is that by vocalizing your problem, you may just come a conclusion on your own.',
+    content: 'Have you heard of <a href="http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html" target="_blank">rubber duck debugging</a>? It\'s exactly as it sounds: you\'re explaining what your code does line by line to a nonjudgemental third party (in this case, a rubber duck). Much like code isolation, but a bit less conversational than AI, the idea is that by vocalizing your problem, you may just come a conclusion on your own.',
     options: {
       'Cool, but I\'m ready to prompt!': (e) => e.hide()
     }
