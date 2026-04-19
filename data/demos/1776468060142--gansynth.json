@@ -1,0 +1,116 @@
+{
+  "key": 1776468060142,
+  "name": "GANSynth",
+  "tags": [
+    "ai",
+    "timbre",
+    "machine",
+    "learning",
+    "sound",
+    "music"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJytVO9v0zAQ/Z6/wuxLnNHZLUITQts0GL8mxEBaP4Ncx0ndOedgO+s6tP+ds5Omm9gEH5AqNc69e/fu3TlHXjrdBuKdPN5bhtD615zLEtjKl8roa8dABV4vOf7pWwXW1fERfwc+CCiFKw+MXjjhNnzRaVNyANbomL93csR79pPs6LEyHbRXNZO24cGC+iscVa08k8Z2ZWWEUylTrMQNRwGeBwXeusrYNZ+xF+wVD9W/CvmjX2gbftqIWkEQvOm8lqffZ2zKplz5Qy4tFv//tLUAv4GwfJz6JOP7pDZ2IQwBmJA5WjYh2xyyz7PMqEAai/UmZNEF9HRCjPYhy6oOZNAWiFehawktyC9CMkKkBR/I2af3Z5+/fT2/mJNjkm/F+2AdKmW1tbVRotU++T2oLwV2sPJcLpW8aq2G4Ef9XEjb+aDlDwtmk2OdJArJQa1Hxezjm4vL+EB39YssyYqiIxqYdEoERXOvjJIhj3FCGHZBc9vGjnw+iTiwQfkhKspybmm+sOUmHwh7Nx5S9u+2lOgE7g/StkZsyFqjow632zYk6GbhVP4EOb6yQHNptLxCKTF721eR3cXqAruVZJzAfUQaxChvp4ExlixSXt9qqPGItRAn1kKHNHiGd88FGhXoitBnyWCm/TnooIXBi1rSohgShuAYor3wcf6VUz97b6KNc/sBz50CuaFxEOxamE6R5+RlMWZEXJ9RbbFz+0WXmsbzDudbJRHXC+j9vBRNaxSNDKmnAegQNjucTqeEc+ITBgcQ1IgQXaktgu63FOlrJxo/t29imMYXu+qLrqpUJE6OJXdvwjD/tylGZ5OemBkFdVhOUEiRBhKjmNJiX2dLAaAMTcAJmT6QLYetTiV60kvbOaloz1GwYN8pvAwg4viT9Zh1b36PzP/pHbzLMjQ9bpyxosSFSxe6yMavxW8Y9PHW",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll use <a href=\"https://magenta.tensorflow.org/gansynth\" target=\"_blank\">GANSynth</a> a generative model by <a href=\"https://magenta.tensorflow.org/\" target=\"_blank\">Google Magenta</a> to synthesize musical instrument sounds (ie \"timbre\") entirely in the browser. GANSynth uses a <a href=\"https://en.wikipedia.org/wiki/Generative_adversarial_network\" target=\"_blank\">GAN</a> (Generative Adversarial Network) trained on audio spectrograms of acoustic instruments. Rather than playing back recorded samples, it <i>generates</i> new audio textures from scratch, each with a randomly generated timbre."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "text": "We import five libraries. <code>nn</code> handles the DOM work. <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a> manages the Web Audio API and lets us play back audio buffers. <a href=\"https://www.tensorflow.org/js\" target=\"_blank\">TensorFlow.js</a> powers the model's inference. The two Magenta music imports, core.js and gansynth.js, give us the <code>gansynth</code> global with the <code>GANSynth</code> class."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        9
+      ],
+      "text": "We'll create three global variables, <code>model</code> will hold the GANSynth instance, <code>button</code> is the play button (kept as a reference so we can update its label during synthesis), and <code>list</code> is the note selector dropdown."
+    },
+    {
+      "title": "setup: model and UI",
+      "focus": [
+        11,
+        12,
+        13,
+        15,
+        16,
+        17,
+        19,
+        20,
+        21,
+        22,
+        23,
+        46
+      ],
+      "text": "In <code>setup</code> (which runs on page load) we create the GANSynth model by pointing it at a checkpoint URL, this is a folder of pre-trained weights on Google's servers. The model isn't downloaded yet at this point, it loads later when first used. We also create a <code>select</code> dropdown and a button."
+    },
+    {
+      "title": "nn.notes",
+      "focus": [
+        11,
+        15,
+        16,
+        17,
+        23
+      ],
+      "text": "The dropdown is populated with <code>nn.notes</code>, a pre-defined array in the nn library containing all 12 note names (<code>'C'</code>, <code>'C#'</code>, <code>'D'</code>, etc). This gives the user a way to choose a pitch for the synthesized sound."
+    },
+    {
+      "title": "Tone.start and lazy init",
+      "focus": [
+        25,
+        26,
+        28,
+        29,
+        44
+      ],
+      "text": "The <code>playGANSynth</code> function handles synthesis and playback. We first update the button label as feedback. Then <code>await Tone.start()</code> resumes the browser's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API\" target=\"_blank\">AudioContext</a>, browsers suspend audio until a user interaction, so this must be called inside a click handler. If the model hasn't been initialized yet, we initialize it now."
+    },
+    {
+      "title": "generating audio",
+      "focus": [
+        25,
+        31,
+        32,
+        33,
+        44
+      ],
+      "text": "We convert the selected note name to a frequency using <code>nn.noteToFrequency(list.value + 4)</code>, the <code>+ 4</code> appends an octave number. Then we convert that to a MIDI note (which the model expects) using <code>nn.frequencyToMidi(freq)</code>. Then we generate a spectorgram for that pitch with a randomly chosen timbre <code>model.randomSample(note)</code>, every call produces a different instrument-like texture."
+    },
+    {
+      "title": "specgram to audio",
+      "focus": [
+        35,
+        36,
+        37,
+        38,
+        44
+      ],
+      "text": "The model works in the frequency domain (spectrograms), so we need to convert its output to actual audio samples. To do this we call <code>model.specgramsToAudio(spec)</code>. We set the <code>sr</code> (sample rate) to 16000 Hz, that's the rate GANSynth was trained at. We then wrap the samples in a Tone.js audio <code>buffer</code> using the Web Audio API's <code>createBuffer</code>."
+    },
+    {
+      "title": "playing the buffer",
+      "focus": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "text": "We create a <code>Tone.BufferSource</code> connect it to the default audio output with <code>.toDestination()</code>, and call <code>.start()</code> to play it. Once the button label is restored the function is done. Each click generates and plays an entirely new sound."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "GANSynth can do more than random timbres, the model works in a continuous <i>latent space</i>, so you can interpolate between two points to smoothly morph one timbre into another. The Magenta team's <a href=\"https://magenta.tensorflow.org/gansynth\" target=\"_blank\">GANSynth blog post</a> and <a href=\"https://github.com/magenta/magenta-js/tree/master/music\" target=\"_blank\">magenta-js documentation</a> cover the full API, including <code>sampleZVectors</code> for exploring the latent space directly."
+    }
+  ]
+}

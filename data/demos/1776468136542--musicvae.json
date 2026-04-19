@@ -1,0 +1,162 @@
+{
+  "key": 1776468136542,
+  "name": "MusicVAE",
+  "tags": [
+    "ai",
+    "machine",
+    "learning",
+    "vae",
+    "music",
+    "melody"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyNVVFPIzcQfs+vcK+V4oVgb9D1dKKADqk8XlUV1JfqCs7a2Th47a3tBVLEf++MvcluIGorBa2xZ76Z8Xzf+DxUXreRBF9dfFjF2IYzzitp2TpIZfSjZ1ZFXq84fPTfyjpf4xJ+JyEKK4WXJ0YvvPAbvui0kdxa1mj0/3B5zjP65eT8UJjOtg81q1zDo7PqP80hq3VglXGdXBrhVfIUa/HMIYHAo7LB+aVxT3zOTtlnHpf/N5F39dq24V8aUSsbBW+6oKsvf85ZyUquwqe8cfco1GHsywk/IrVxC2GItTNyC8XNyM6JHPHJxKhIGvhnRsLGxhV8KufVZLLsbBW1sySo2LWEFuRlQpIluSBWPQ0w7Cuufr+6ptNtGSE6Dzmz2rnaKNHqkK6or0MKqGUdeLVS1UPrtI1hqIQ3ytydLoS/C40wZlpMIGxKrY+LRbBfndnc4CYtWHQ/qxC1FZguLcAcftD7yisRFZ0uughdneIBIZCHhf5EOm2N2JBt6ttTIeWtAxcnN9stwJxWRlcP0xlBn61LTgwvCxMbwkn9+C7Wk9CQYE2WzhOsnjG2swmBTpdgeBKA1RDj4+fxyZMDWi8AGsNP0+IkX8uBfF9HbRNy3YV4E4WPhFoXVcgdhJxCJG65hL5i4njyR/mN/dUJi7qSyeUmqhaMPfTe22zEGtFSSy4uCX1Jwd97nJGvIq7A8JmWM2IPYJKTPnQx28e4tvJfEfrzwR/cX4v9kpGct+5WNwoqHldr3ROUmogDy0SRfBBUBQclm5/+SDgnn8pAOJmflou2gcXHBXQ0DMbpLi8S2jFEOFTeEUIO+LLz4EAP1nHIv8gAw82/IMSsD/0K1QK5d/V2LXBJ3SQKphbPiJbPufARIUMr3rEfrfstuEw61RLodY+7P7wAxuv9mIMtsAzYCxbzco93if3Fm6xWul4Z+Iu/ABqhWo474VWmHeaEVMJvDlI54zxyvPYqay+hs1rFK2O2VTBQ0LWoVjQB7VlhpDdQC9OpLAsBE6QiuxzHOt6ONr0k9DukENMW1CoMdqYgArVL3uzTJP5cUlRNCxXBUEYKSbUUnYkDaUTTGhXAYASUN+l8lpxHWEloeD3ZC3WZtvKl7wSYHjapbx1eMbCr1bFaFf3k2yL5JpeAekjxh4FA3+IPjI299Rv/FHvQVx8q3/1uysHkhjl0RlL38szYtmtE1VQuDkKKT49G/f0En/PewyhbxxXsHB/nvozvZjew9LfRCeYMJyn17Ul6MVj0uq6Vv4pRVA+/KXiKguqVgtYsiSutksIyuUfI8BDDIwEKHmxAucMgQb3Oy7IcuWgJ9vff91J6vc/ZqIjX5rpI9+QxyxFQt2mgIVWhufjkGCdQk+n1LSa7p/0fMAr70A==",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll use <a href=\"https://magenta.tensorflow.org/music-vae\" target=\"_blank\">MusicVAE</a>, a <a href=\"https://en.wikipedia.org/wiki/Variational_autoencoder\" target=\"_blank\">VAE</a> (Variational Autoencoder) model by <a href=\"https://magenta.tensorflow.org/\" target=\"_blank\">Google Magenta</a> that has learned a continuous latent space of melodies. When we sample from it, we get a short two-bar melody that sounds like something a human might hum. We'll play it back through a Tone.js synth and display each note on screen, highlighting it as it plays."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "text": "We'll need four libraries, the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">nn</a> library, <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a> for audio scheduling and synthesis, <a href=\"https://www.tensorflow.org/js\" target=\"_blank\">TensorFlow.js</a> for running the model, and the MusicVAE module from <code>@magenta/music</code> which exposes the <code>music_vae</code> global variable."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        8
+      ],
+      "text": "We'll create three other global variables, <code>mvae</code> holds the MusicVAE model instance, <code>synth</code> is the Tone.js polyphonic synthesizer (polyphonic so it can play multiple notes at the same time if needed), and <code>score</code> is the div where we'll display the note names visually."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        10,
+        11,
+        13,
+        15,
+        16,
+        17,
+        18,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        83
+      ],
+      "text": "In <code>setup</code> (which runs on page load) we create the MusicVAE model pointing at a small two-bar melody checkpoint, and a <code>Tone.PolySynth</code> routed to the audio output. We also create a button wired to <code>playMusicVAE</code> and a score display div styled for large readable text."
+    },
+    {
+      "title": "lazy init and sample",
+      "focus": [
+        57,
+        58,
+        60,
+        61
+      ],
+      "text": "When the button is clicked, <code>playMusicVAE</code> initializes the model on the first call if needed. Then <code>mvae.sample(1, temp)</code> generates one melody at the given <code>temp</code> (temperature). Like with SketchRNN, temperature controls randomness: <code>1.0</code> is the default and gives varied but coherent results. The model returns samples in a quantized format, notes expressed as step numbers rather than real time."
+    },
+    {
+      "title": "extract note names",
+      "focus": [
+        57,
+        63,
+        64
+      ],
+      "text": "Each note in <code>samples[0].notes</code> is a MIDI-format object with a <code>pitch</code> property. We map those to human-readable note names using <code>nn.midiToNote()</code>, producing an array like <code>['C4', 'E4', 'G4', ...]</code>."
+    },
+    {
+      "title": "adjustStart",
+      "focus": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        66
+      ],
+      "text": "MusicVAE can sometimes return melodies that don't start at step zero. The <code>adjustStart</code> function normalizes this by subtracting the offset of the first note's start step from all notes, so playback always begins immediately rather than with an initial silence."
+    },
+    {
+      "title": "mvaeToTime",
+      "focus": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        67
+      ],
+      "text": "The <code>mvaeToTime</code> function converts from quantized step numbers to real seconds. We use a tempo of 120 BPM: each beat is 0.5 seconds, and each step is a sixteenth note (so <code>0.125</code> seconds per step). We compute a <code>start</code> time relative to <code>Tone.now()</code> and a <code>dur</code> (duration) from the difference between the start and end steps."
+    },
+    {
+      "title": "score display",
+      "focus": [
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        69,
+        70
+      ],
+      "text": "The <code>updateScore</code> function creates a <code>span</code> for each note name, gives it a unique <code>id</code> (like <code>note0</code>, <code>note1</code>...) and adds it to the score div. We call <code>notes.forEach(updateScore)</code> to build the full visual sequence before playback begins."
+    },
+    {
+      "title": "scheduling playback",
+      "focus": [
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "text": "Back in our <code>playMusicVAE</code> function we loop over every note and schedule two things: <code>synth.triggerAttackRelease()</code> queues the audio event at the precise start time in Tone.js's scheduler, and <code>setTimeout(highlightNote, delay, id)</code> queues the visual highlight at the same moment. We convert the Tone time to milliseconds for <code>setTimeout</code> by subtracting <code>Tone.now()</code> and multiplying by 1000."
+    },
+    {
+      "title": "highlightNote",
+      "focus": [
+        51,
+        52,
+        53,
+        54,
+        55
+      ],
+      "text": "The <code>highlightNote</code> function first resets all note spans to grey, then colors the one matching the given <code>id</code> blue. This creates a simple \"scrolling score\" effect where the active note is highlighted in sync with the audio, making it easy to follow along."
+    },
+    {
+      "title": "when to use",
+      "focus": null,
+      "text": "These days it's clear that we can train all sorts of neural networks to synthesize all sorts of data, from text to images to musical sequances. As amazing and impressive as this is, we should think carefully about when writing logic ourselves is preferred over using a machine learning model."
+    },
+    {
+      "title": "closing thoughts",
+      "focus": null,
+      "text": "For example, part of the joy in composing algorithmic music is defining the musical logic ourselves, for many algorithmic composers this logic <i>is</i> the art. MusicVAE is a fascinating model with some interesting use cases, but don't forget that you can write you own musical logic as well, <a href=\"/?demo=1776540993368\" target=\"_blank\">check out this demo</a> for example."
+    }
+  ]
+}

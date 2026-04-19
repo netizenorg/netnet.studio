@@ -76,7 +76,10 @@
       <br><br>
 
       <div class="learning-guide__tdivider" style="width: 50%; margin: 0 auto;">CHAPTER 2</div>
-      <div class="learning-guide__ai-ch">AI as Coding Assistants</div>
+      <div class="learning-guide__ai-ch">
+        AI as Coding Assistants:
+        <span class="learning-guide__ai-ch-sub">Crafting the Right Prompt</span>
+      </div>
 
       <p>
         It’s tempting, with coding assistants at hand, to “<span class="link" onclick="WIDGETS.open('lingo-glossary', w => w.showVocab('vibe-coding'))">vibe-code</span>” your  way to something interesting. But your imagination is bounded by your understanding of the medium. If we turn to AI coding assistants too early and too often, our ideas become constrained by what a chatbot suggests, and while they're very profficient coders, they're not very creative thinkers.
@@ -92,7 +95,10 @@
       <br><br>
 
       <div class="learning-guide__tdivider" style="width: 50%; margin: 0 auto;">CHAPTER 3</div>
-      <div class="learning-guide__ai-ch">Going Deeper with APIs</div>
+      <div class="learning-guide__ai-ch">
+        AI as Coding Assistants:
+        <span class="learning-guide__ai-ch-sub">Editor Integration with APIs</span>
+      </div>
 
       <p>
         As explained in chapter 1, an app's graphical user interface (<span class="link" onclick="WIDGETS.open('lingo-glossary', w => w.showVocab('gui'))">GUI</span>) controls how you interact with the model behind it, limiting not only what you can do, but what you think to do, often in ways you might not realize. When we interact with an AI model directly, as code, we expand the creative possibilities beyond what the desginers of an app's GUI imagined for us. The first step we can take in that direction is to communicate directly with a model's "application programming interface" or <span class="link" onclick="WIDGETS.open('lingo-glossary', w => w.showVocab('api'))">API</span>.
@@ -116,30 +122,100 @@
       <div class="learning-guide__tdivider" style="width: 50%; margin: 0 auto;">CHAPTER 4</div>
       <div class="learning-guide__ai-ch">
         AI as Creative Materials:
-        <span class="learning-guide__ai-ch-sub">Using Local Models in our Code</span>
+        <span class="learning-guide__ai-ch-sub">Using Local Models in our Work</span>
       </div>
 
       <p>
-        In Chapter 1 we discussed the difference between the hand-written code behind classical AI systems and the trained parameters behind artificial neural networks, but we also learned that modern systems often blend both. When we understand the strengths and weaknesses of both approaches, we can make informed and creative decisions about how to produce work that combines the two. Below are a series of annotated demos which do just that.
+        In chapter 3 we connected netnet to an LLM through a REST API, something you can also do in your own projects using models running in a datacenter or locally on your computer (as <span class="link" onclick="WIDGETS['learning-guide'].loadDemo(1776609162365)">this demo</span> explains). While popular LLMs are still large and resource-intensive, they're just one type of neural network.
       </p>
 
-      <div class="learning-guide__ai-demo-grid">
-        <div>1</div><div>2</div><div>3</div>
-        <div>4</div><div>5</div><div>6</div>
-        <div>7</div><div>8</div><div>9</div>
+      <div id="learning-guide__ai-tfjs"></div>
+
+      <p style="width: 320px; margin: -205px 0 0 240px;">
+        Machine learning (ML) is about finding patterns in data to make predictions or generate output, and many smaller models with creative potential can now run directly in the browser. This comes with many advantages: they can be packaged with your project, require far less energy than datacenter models, and keep user data on-device to ensure privacy.
+      </p>
+      <br>
+
+      <p>
+        <span class="learning-guide__ai-ch-sub">Transformers.js</span>
+        <br>
+        One of the newest browser-based ML libraries is called <a href="https://huggingface.co/docs/transformers.js" target="_blank">Transformers.js</a> by <a href="https://www.youtube.com/watch?v=qN20OgertA8" target="_blank">Hugging Face</a>, it can be used to run pretrained transformer models (like LLMs and other NLP, vision and audio models). The demo below is a basic example using a sentiment analysis model, but keep in mind there are loads of <a href="https://huggingface.co/models?library=transformers&sort=trending" target="_blank">other models</a> you can use with this library.
+      </p>
+
+      <div class="learning-guide__ai-demo-grid" style="grid-template-columns: repeat(1, 1fr); grid-template-rows: repeat(1, 1fr);">
+        <div style="width: 310px; margin: 0 auto;">
+          <span style="color: var(--fg-color)">1.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776467593134)">Text Sentiment Analysis</span>
+        </div>
+      </div>
+      <br>
+      <br>
+
+      <p>
+        <span class="learning-guide__ai-ch-sub">TensorFlow.js</span>
+        <br>
+        Another popular library for running and training ML models in the browser is <a href="https://www.tensorflow.org/js" target="_blank">TensorFlow.js</a> by Google, it supports different neural network architectures. The examples below show creative uses of Convolutional Neural Networks (CNNs), one of the earliest and most widely used ML architectures. CNNs are typically trained to recognize patterns and predict "labels" from input data. In the following examples, they’re used to interpret images and audio in real time, detecting body and hand positions, as well as recognizing simple spoken commands, turning our cameras and mics into interactive controls.
+      </p>
+
+      <div class="learning-guide__ai-demo-grid" style="  grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(1, 1fr);">
+        <div>
+          <span style="color: var(--fg-color)">2.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776467513611)">Face Tracking</span>
+        </div>
+        <div>
+          <span style="color: var(--fg-color)">3.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776466852675)">Hand Tracking</span>
+        </div>
+        <div>
+          <span style="color: var(--fg-color)">4.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776467696852)">Voice Detect</span>
+        </div>
+      </div>
+      <br>
+      <br>
+
+      <p>
+        <span class="learning-guide__ai-ch-sub">Magenta.js</span>
+        <br>
+        The following examples come from <a href="https://magenta.tensorflow.org/" target="_blank">Magenta</a>, a research team at Google that was among the first to explore how machine learning could be used creatively in art and music. These demos use earlier neural network architectures like Recurrent Neural Networks (RNNs), Generative Adversarial Networks (GANs), and Variational Autoencoders (VAEs). While much of today’s attention is on large transformer-based models, these older architectures are far from obsolete, they're lightweight and full of creative potential, especially for use directly in the browser.
+      </p>
+
+      <div class="learning-guide__ai-demo-grid" style="  grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr);">
+        <div>
+          <span style="color: var(--fg-color)">5.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776467777197)">SketchRNN (part 1)</span>
+        </div>
+        <div>
+          <span style="color: var(--fg-color)">6.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776467973494)">SketchRNN (part 2)</span>
+        </div>
+        <div>
+          <span style="color: var(--fg-color)">7.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776468060142)">GANSynth (AI timbres)</span>
+        </div>
+        <div>
+          <span style="color: var(--fg-color)">8.</span>
+          <span class="highlight" onclick="WIDGETS['learning-guide'].loadDemo(1776468136542)">MusicVAE (AI melodies)</span>
+        </div>
       </div>
 
       <br><br>
       <br><br>
 
-      <div class="lg-soon learning-guide__tdivider" style="width: 50%; margin: 0 auto;">CHAPTER 5</div>
-      <div class="lg-soon learning-guide__ai-ch">
+      <div class="learning-guide__tdivider" style="width: 50%; margin: 0 auto;">CHAPTER 5</div>
+      <div class="learning-guide__ai-ch">
         AI as Art:
         <span class="learning-guide__ai-ch-sub">Crafting Neural Networks from Scratch</span>
       </div>
 
-      <p class="lg-soon">
-        In earlier chapters we talked about how neural networks learn from data rather than following hand-written rules, but we kept things at a high level. In this chapter, we're going to look under the hood and walk through the process of creating a neural network from the ground up. The goal isn't to become machine learning engineers, it's to develop a grounded understanding of this technology that informs our creative instincts when critiquing, embracing or otherwise working with AI.
+      <p>
+        In earlier chapters we talked about how neural networks learn from data rather than following hand-written rules, but we kept things at a high level, using pre-trained models. In this chapter, we’ll look under the hood and walk through the process of creating a neural network from the ground up. The goal isn't to become machine learning engineers, but to develop a grounded understanding of the technology and to approach neural networks as creative material in their own right. While we won't be building cutting-edge models, you'll gain enough insight to experiment with and treat neural networks themselves as a form of artistic expression.
+      </p>
+
+      <p>
+        <span class="learning-guide__ai-ch-sub link" style="margin: 30px auto; text-align: center;" onclick="new Convo(WIDGETS['learning-guide'].convos, 'coming-soon')">
+          ...coming soon...
+        </span>
       </p>
 
       <br><br>

@@ -1,0 +1,233 @@
+{
+  "key": 1776467973494,
+  "name": "SketchRNN Continue",
+  "tags": [
+    "ai",
+    "machine",
+    "learning",
+    "draw",
+    "doodle",
+    "sketch"
+  ],
+  "layout": "dock-left",
+  "code": "#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",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "This demo builds on the <span class=\"link\" onclick=\"window.open('/?demo=1776467777197', '_blank')\">SketchRNN</span> demo. Rather than having the model draw from scratch, here the <i>user</i> starts the drawing and the AI continues from where you left off. The model has learned the shape and structure of many different subjects, so when you hand it your incomplete sketch it tries to finish it in a recognizable way."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2
+      ],
+      "text": "Same setup as the previous SketchRNN demo, we import the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">netnet standard library</a> (<code>nn</code>) and <a href=\"https://magenta.tensorflow.org/get-started/#magenta-js\" target=\"_blank\">@magenta/sketch</a> (available as <code>ms</code>)."
+    },
+    {
+      "title": "global state",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "text": "This demo needs more state variables than the auto-drawing version. <code>drawing</code> tracks whether the mouse is currently pressed, <code>hasDrawn</code> ensures we only trigger the AI if the user actually drew something, and <code>modelIsDrawing</code> prevents new mouse input while the AI is generating. <code>lastX</code> / <code>lastY</code> track the previous mouse position for computing stroke deltas, <code>strokes</code> accumulates everything the user drew in a format the model understands, and <code>currentType</code> tracks which model subject is currently loaded."
+    },
+    {
+      "title": "the types array",
+      "focus": [
+        6
+      ],
+      "text": "Line 6 is a long array of all the subject names the model knows how to draw. These map directly to pre-trained checkpoint files on Google Cloud Storage. The dropdown we build in <code>setup</code> is populated from this array, letting the user pick which subject the AI will try to finish."
+    },
+    {
+      "title": "setup: canvas and controls",
+      "focus": [
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152
+      ],
+      "text": "The <code>setup</code> function creates a status paragraph, a bordered canvas with <code>mousedown</code> and <code>mousemove</code> handlers, drawing styles, a subject dropdown populated with the <code>types</code> array, and a restart button. The <code>mouseup</code> event is registered on <code>nn</code> (the window) rather than the canvas so strokes aren't lost if the mouse is released outside the canvas boundary. Finally <code>loadModel()</code> is called to fetch the initial model."
+    },
+    {
+      "title": "loadModel",
+      "focus": [
+        17,
+        18,
+        20,
+        21,
+        22,
+        24,
+        25
+      ],
+      "text": "The <code>loadModel</code> function builds the checkpoint URL dynamically using the current subject name. If the model is already loaded for the current subject we return early to avoid re-downloading. Otherwise we create a new <code>SketchRNN</code> instance and <code>await model.initialize()</code>, which actually fetches the weights."
+    },
+    {
+      "title": "startDrawing",
+      "focus": [
+        42,
+        43,
+        45,
+        46,
+        47,
+        49,
+        50,
+        51
+      ],
+      "text": "When the user presses the mouse button, <code>startDrawing</code> fires. If the AI is currently generating we ignore the event. Otherwise we set <code>drawing = true</code>, reset <code>hasDrawn</code> and <code>strokes</code> to start fresh, and capture the current mouse position as the starting point."
+    },
+    {
+      "title": "drawStroke",
+      "focus": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71
+      ],
+      "text": "While the mouse is moving with the button held, <code>drawStroke</code> draws a line on the canvas from the last position to the current one and records the stroke as a delta vector. We store each stroke as <code>[dx, dy, 1, 0, 0]</code>, relative movement plus three pen-state flags: pen-down, pen-up, pen-end. This is the exact format SketchRNN was trained on."
+    },
+    {
+      "title": "endDrawing",
+      "focus": [
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "text": "When the mouse button is released, <code>endDrawing</code> fires. If the user didn't actually draw anything we bail out. Otherwise we push a final <code>[0, 0, 0, 1, 0]</code> stroke (which encodes a \"pen up\" event) and call <code>continueDrawing()</code> to hand things over to the model."
+    },
+    {
+      "title": "priming the model",
+      "focus": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "text": "Inside <code>continueDrawing</code> we set <code>modelIsDrawing = true</code> to block new mouse input, then replay the user's strokes through <code>model.update()</code> to build up the model's hidden state. This is how the model \"reads\" what the user drew, by stepping through each stroke, it accumulates context that influences what it generates next."
+    },
+    {
+      "title": "AI generation",
+      "focus": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126
+      ],
+      "text": "The generation loop is nearly identical to the standalone SketchRNN demo. We start from the user's last pen position and sample up to 120 strokes using <code>getPDF</code> and <code>sample</code>, drawing each one to the canvas. The lower temperature of <code>0.1</code> (vs <code>0.2</code> in the other demo) makes the AI's continuation more predictable and likely to stay on-topic."
+    },
+    {
+      "title": "reset",
+      "focus": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "text": "The <code>reset</code> function clears the canvas and all drawing state. If the user has switched to a different subject in the dropdown, it also triggers a model reload before clearing. This is called both by the restart button and by the dropdown's <code>change</code> event."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "Try drawing just a few strokes, a single curve or an eye, and see how the AI interprets them differently depending on the selected subject. The model's \"imagination\" is constrained by the subject but still samples from a distribution, so each completion is unique. Lower temperatures give more typical results; raise it toward <code>0.5</code> or <code>0.8</code> for stranger, more creative completions."
+    }
+  ]
+}

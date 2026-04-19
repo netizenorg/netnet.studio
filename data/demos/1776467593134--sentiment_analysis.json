@@ -1,0 +1,119 @@
+{
+  "key": 1776467593134,
+  "name": "Sentiment Analysis",
+  "tags": [
+    "sentiment",
+    "analysis",
+    "ai",
+    "machine",
+    "learning"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx9k8GO0zAQhu95ilEvTldtUq6oKVw47AGBxIoL4uDEk8Tg2JbttGRX+wJcuO6N14DX4QWWR2CSTVJKd5GixHFmvv+fGWfrCydtAO+KbFGHYP3zNC2ETj55gUruXaIxpFWd0kNeozau6pd0rX3gWnAn1krmjrsuzVupRKp10sg+f7Hbpg/0XRRtR53QWcwWjRGtwsUuko01LsANWGlJTiPcQulMA+xJL9o26cu6rSqpq5IXmAbHtS+Na9B5Fh2kFuaQzLxsRkfndnZRegGVMjlXoPXq6OIijSKF1BbUQTZ0e23IwgoCfgkrcMiLII2OIu47XUDZ6uEduOaqu0aIl3ATAfQEh75VwZMPfuDyX2LcA5M9Vy0uKaEw2geoubUdJYypHzYfE8VzVJBlGbC3b95dXl2+f8UoXpYQD9HL2VNCjED4mP3+fveV9VRUHh/5/uvu5/2PbxRxe1aHx9DaqYoHU8pwQR0nWzTggmgBY2YHPsARmiTJGEmr6SsX4srELDeiG7boOm3D3J1pADGbA9ZDU730U+rEd9iYPcbjbt/IU3NS2zZMFqgisqvovNRGCXRsRUfMHIA7hM60UGKvW734j+W/0HkbgtFnxY/jf4pBW0bHrFCy+Ez6Y/RIn+ZzWoOQ+1nF+5iVJLX29CNS/rPN5lEhGicReqW+UxQ4THN5PP5/AJ/oTBU=",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll use <a href=\"https://huggingface.co/docs/transformers.js\" target=\"_blank\">Transformers.js</a>, a JavaScript library by <a href=\"https://www.youtube.com/watch?v=qN20OgertA8\" target=\"_blank\">Joshua Lochner</a> (aka xenova) who works at Hugging Face, to run a pre-trained sentiment analysis model directly in the browser. We'll build a little tool that reads a line of text and tells you whether the feeling behind it is positive or negative."
+    },
+    {
+      "title": "hugging face import",
+      "focus": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "text": "We load the library using a <code>type=\"module\"</code> script block, which lets us use the modern JavaScript <code>import</code> syntax to pull in the <code>pipeline</code> function from the Transformers.js CDN. Because module scripts have their own scope, we assign it to <code>window.pipeline</code> so it's accessible from the regular <code>&lt;script&gt;</code> block below."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        11
+      ],
+      "text": "Three globals: <code>sentimentModel</code> will hold the loaded pipeline once it's ready, <code>text</code> will be the input element the user types into, and <code>reaction</code> will be the element that displays the emoji result."
+    },
+    {
+      "title": "on load",
+      "focus": [
+        43
+      ],
+      "text": "We start by calling <code>setup</code> directly when the page loads using <code>nn.on('load', setup)</code>."
+    },
+    {
+      "title": "loading message",
+      "focus": [
+        20,
+        21,
+        22,
+        23,
+        41
+      ],
+      "text": "The <code>setup</code> function is <code>async</code> because loading the model takes a moment. While we wait, we create a temporary paragraph element with a loading message so the user knows something is happening."
+    },
+    {
+      "title": "loading the model",
+      "focus": [
+        20,
+        25,
+        27,
+        41
+      ],
+      "text": "The <code>pipeline('sentiment-analysis')</code> call downloads a pre-trained NLP model from the Hugging Face model hub and returns a function we can call to run inference (aka make a prediction). The <code>await</code> blocks until it's ready, then we remove the loading message with <code>loading.remove()</code>."
+    },
+    {
+      "title": "the UI",
+      "focus": [
+        20,
+        29,
+        30,
+        31,
+        33,
+        34,
+        35,
+        36,
+        38,
+        39,
+        40,
+        41
+      ],
+      "text": "Once the model is loaded we build the interface: a text <code>input</code> for the user to type in, a button wired to the <code>analyze</code> function, and a <code>div</code> that will display the emoji reaction at a large font size."
+    },
+    {
+      "title": "running the model",
+      "focus": [
+        13,
+        14,
+        18
+      ],
+      "text": "The <code>analyze</code> function is also <code>async</code> because calling <code>sentimentModel()</code> is asynchronous. We pass it <code>text.value</code> (what the use typed in the input), and <code>await</code> the results. The model returns an array of objects, each with a <code>label</code> (<code>'POSITIVE'</code> or <code>'NEGATIVE'</code>) and a <code>score</code> (its confidence)."
+    },
+    {
+      "title": "positive or negative",
+      "focus": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "We check if <code>results[0].label === 'POSITIVE'</code> and update the <code>reaction</code> element's content to a smile or a frown accordingly. That's all it takes, a single boolean check turns the model's output into visual feedback."
+    },
+    {
+      "title": "other pipelines",
+      "focus": null,
+      "text": "Sentiment analysis is just one of many machine learning <a href=\"https://huggingface.co/tasks\" target=\"_blank\">pipelines</a> available through Transformers.js, including translation, text generation, question answering, and more. These all run locally in the browser, keeping data private on-device and reducing the need for energy-intensive datacenter processing."
+    },
+    {
+      "title": "memory warning",
+      "focus": null,
+      "text": "Keep in mind that this editor re-runs your code on every change, so the model may be loaded into memory multiple times before the browser can clean up the previous one. With larger models (like LLMs), this can quickly consume memory and even crash the browser."
+    },
+    {
+      "title": "closing advise",
+      "focus": null,
+      "text": "You can avoid this by using a native code editor, where refreshing the page clears memory. In web-based editors, it’s a good idea to monitor your browser’s memory with Task Manager (Windows) or Activity Monitor (Mac), if it gets too high, save your progress then close the tab to free up the memory."
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "key": 1776609162365,
+  "name": "LLM API",
+  "tags": [
+    "ai",
+    "ml",
+    "llm",
+    "api",
+    "connection"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJzVVlFv2zYQfvevuBUDJBe2FG/ei5AUyPa0DVgCJG9BgNLSWWJLkRxJxVUD//cdKUq2ihRt0KcBhi3zyPu+++7j2Ze2NFw7sKa8etM4p22R52Ulsw+2QsGfTCbR5XWT0wf/jFKZ2j/Sa20dkxUz1VrwnWGmz3cdF1UuZdZyf/7Nu8t8yP5ucTk+5G+hFmrHBEgJb/MFwEKgA9drXIHDT24FH7Ffwa5zTskVqM7pzoU9THO4guRGo7z+M1ksmO1lCftOlo4rCdqoVrshCukSnil3qaR10BnhD47VUZ5M0TbGs1K1+dMmN2g17USbTGcaZBUaS+d8HoDkDyUdSre+J6ZJAQnTWvCSeej8g1UyWYV9151rlOGfQ6CA978jM2jg52eqKntiosPje9p4nIB2quonlFaR6JS81m79W7Zdk5A8JuaSdCiCREOeYdlhq9Ew1xks4CLbhtxTciqMcrMD4w4OXFbqkO3RlU1KkqxGTCTGFYHe3tzdR7BY/fDFMyzgr7ubfzLrDJc13/epX1x6sOUJzcswwRF05hfSZYwrgZlQdeoX/do5yU44Ougj2dDwh4tHak5Q3D/6qmn/EBsD6XBwuTh+zQtCsJZ91QtkBaFKJhplXbHZbH/demvkZcPcj/jgO7qLbcu2Bf6yi3KTrMjaAvZM2NjXFq1lNdoCHp4hrAAYkpCOdxZNshoXoxjnzgiR4+OQSGlPjfI8xwMvOGZg/P/2TRRsNMer3EIGuA2OGb3yxdEkyzKyVEkQVAZ9STwRZ/ooBd9DGqbT1Wk+LWM952Mp1ASA1OV5NBiVsH1xRyA3lQ2kaMwyArzAh6LKwIkVyfFvh9ZRCCziKF0yQJ4L6fOGdvumLyYV7IET7PXtNDyHeesabidbjYX+NCvUj7bS2jSpuNWC9WTORCo5YIdiX9rBpeB+D/iOnFig6/T8ytqGRmh153qBp3sYE5H9dnSJP0b/tczUnMbu5iLeQt8muqh0jH6WSrplDtPEosDSRWUyQkyTeEuI18NYF1EM42GtQneSx7jf13FOKS6zqrpXaeL9PWYmEyc0TWSNlGySdwjSG4ky5xVG/IyW5+6JaGbtQZlqFqT6S2yUqMI4iLTBN/BvnDh8J1uvE82Pb/H5AtJPomjhV+IFxOE3fo45rE3ZRsNblNWrIYYG0HQme5xd8ljvcKfm6Pocg1IZKnTtlPbFbvQnoDvEJx5zQDIxJfKIQrHKN9w7mabc9CfoP0cL6zU=",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll look at two different ways to connect your web page to an <a href=\"https://en.wikipedia.org/wiki/Large_language_model\" target=\"_blank\">LLM</a> (Large Language Model) via a <a href=\"https://www.ibm.com/cloud/learn/rest-apis\" target=\"_blank\">REST API</a>: one talks to <a href=\"https://platform.openai.com/docs/overview\" target=\"_blank\">OpenAI's</a> servers in the cloud, the other talks to <a href=\"https://ollama.com/\" target=\"_blank\">Ollama</a> running locally on your own machine. Both use the same <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API\" target=\"_blank\">Fetch API</a> pattern from the <span class=\"link\" onclick=\"window.open('/?demo=1760744714860', '_blank')\">Fetch demo</span>, the difference is <i>where</i> the model is running."
+    },
+    {
+      "title": "cloud vs local",
+      "focus": null,
+      "text": "When you send a request to OpenAI, your prompt travels over the internet to a data center somewhere, gets processed by a large model running on specialized hardware, and the response travels back. It's powerful but your data leaves your machine, it costs money per request, and it requires an internet connection."
+    },
+    {
+      "title": "local vs cloud",
+      "focus": null,
+      "text": "When you use Ollama, the model runs entirely on your own computer, your data never leaves, there's no per-request cost, and it works offline. The tradeoff is that local models are generally smaller and less capable than frontier cloud models. In this demo we'll integrate both."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        5,
+        6
+      ],
+      "text": "First, we track five UI elements as global variables so they're accessible across functions. <code>api</code> starts as <code>'OpenAI'</code> and switches to <code>'local-ollama'</code> when the user changes the dropdown. This single string is all we need to decide which function to call when the user submits a prompt."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112
+      ],
+      "text": "The <code>setup</code> function builds the UI: a dropdown to choose between the two APIs, a password input for the OpenAI key (hidden text so it doesn't appear on screen), a text input for the prompt, a send button, and a paragraph for the output. A <code>sharedStyles</code> object keeps the layout tidy without repeating the same CSS properties on each element."
+    },
+    {
+      "title": "switchAPI",
+      "focus": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "text": "When the dropdown changes, <code>switchAPI</code> updates the <code>api</code> variable and hides or shows the API key input. The key field only makes sense for OpenAI, Ollama runs locally and requires no authentication, so there's nothing to enter."
+    },
+    {
+      "title": "postPrompt",
+      "focus": [
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72
+      ],
+      "text": "When the button is clicked, <code>postPrompt</code> first shows a loading message, then calls either <code>promptOpenAI</code> or <code>promptOllama</code> based on the current <code>api</code> value. Both are <code>async</code>, so we <code>await</code> them. The whole thing is wrapped in a <code>try/catch</code>, if either request fails (wrong key, model not running, network error) we display a message and log the error rather than letting it crash silently."
+    },
+    {
+      "title": "promptOpenAI: headers",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "text": "The OpenAI function starts by defining the request URL and <code>headers</code>. The <code>Authorization</code> header is how OpenAI verifies your identity, it expects a <code>Bearer</code> token which is your API key. Without a valid key the request will be rejected. You can get one from <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\">platform.openai.com/api-keys</a> after creating an account."
+    },
+    {
+      "title": "promptOpenAI: body",
+      "focus": [
+        8,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "text": "The request <code>body</code> specifies which model to use, the user's input, and a <code>temperature</code>. Temperature controls how creative vs. focused the response is: <code>0</code> is fully deterministic, <code>1</code> is more \"hallucinatory\" or \"creative\". <code>0.4</code> is a reasonable middle ground for factual or task-based prompts. Check <a href=\"https://platform.openai.com/docs/models\" target=\"_blank\">OpenAI's model list</a> for available options."
+    },
+    {
+      "title": "promptOpenAI: fetch",
+      "focus": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        26,
+        27,
+        29,
+        30,
+        31
+      ],
+      "text": "We send the request with <code>window.fetch()</code> as a <code>POST</code> with the headers and the body serialized to a JSON string. Once the response arrives we parse it with <code>.json()</code> and log it, always worth doing the first time so you can see the full structure of what came back. The response text can be found inside <code>json.output[0].content[0].text</code>, which we set as the content of our output element."
+    },
+    {
+      "title": "promptOllama: local URL",
+      "focus": [
+        33,
+        34
+      ],
+      "text": "The Ollama function is almost identical in structure, notice the URL: <code>http://localhost:11434/api/chat</code>. This is not a remote server, it's your own machine. <code>localhost</code> always refers to the computer you're currently on, and <code>11434</code> is the port Ollama listens on by default. The request never leaves your machine. To use this, you'll need to <a href=\"https://ollama.com/download\" target=\"_blank\">install Ollama</a> and run <code>ollama pull gemma4:e2b</code> in your terminal first."
+    },
+    {
+      "title": "promptOllama: body",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ],
+      "text": "The Ollama body uses a slightly different shape than OpenAI's. The prompt goes inside a <code>messages</code> array with a <code>role</code> of <code>'user'</code>, this is the <a href=\"https://platform.openai.com/docs/guides/text?api-mode=chat\" target=\"_blank\">chat format</a> used by most modern LLM APIs, where conversations are a list of messages with roles like <code>'user'</code>, <code>'assistant'</code>, and <code>'system'</code>. Setting <code>stream: false</code> means we wait for the complete response rather than receiving it word-by-word."
+    },
+    {
+      "title": "promptOllama: response",
+      "focus": [
+        50,
+        51,
+        52,
+        53,
+        54,
+        56,
+        57,
+        59,
+        60,
+        61
+      ],
+      "text": "The fetch call itself is identical to OpenAI's. But the response JSON has a different structure, the text lives at <code>json.message.content</code> rather than OpenAI's <code>json.output[0].content[0].text</code>. This is typical when working with different APIs: the HTTP mechanics are the same, but each provider chooses their own response shape, which is why reading the documentation matters."
+    },
+    {
+      "title": "which to use",
+      "focus": null,
+      "text": "There are tradeoffs between cloud-based and local models. Cloud APIs like OpenAI’s are often more capable, but can be costly (money, energy, etc) and offer less privacy. Local models (with Ollama or similar) give you more control and keep data private, but their performance is limited by model size and your hardware."
+    }
+  ]
+}

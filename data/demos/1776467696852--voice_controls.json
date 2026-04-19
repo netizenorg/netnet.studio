@@ -1,0 +1,187 @@
+{
+  "key": 1776467696852,
+  "name": "Voice Controls",
+  "tags": [
+    "ai",
+    "machine learning",
+    "voice",
+    "interface",
+    "control"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJytVd1u2zYUvtdTHPiiUhpZMgoEBTI7WFcsQICsBZoMuyiKghJpmQlNCiRlR1tzs7fYVV9xj7BDUj9WnAy7GGBD1Dnf+eV3jpaFou3FMvePaGlKzWsLRper2cba2pzneUlldmcoE3ynM8lsXm1yfPDfmVS6ckf8zY0lkhJN54IXmug2LxouaC5ltuXOfoZBgvf/GkbW2/xHy6RRei3UPrfrO5NTbiye/i+n861CpclNzVi5mZdqu8UyujBPhC/HvIjy11AJVRABUqYQDN93dvA6jyLBLPhYKZRKrnmVAtuqO55C0VirZAQQrRtZWq4kbBg28kZtmd1wWUGimWmEPYE/EIXWxsJeaXS8Ci4z93ZNCiwkORkgplRoh5hgnYX3CPUul4IZeyUpe0DA4kB241Aom19hkpLb1hmslYbEIbhD/4CPZec+E0xWdoOi09OQHwBfQxK0n/kXuBjd9gCYRBqgB7o+M+5lj5H7T2pHnW/B5wH9xQFc6NH3EhbZ27MTbIBttOzUwXq1grgg5X2lVSPpV6m4YTF8+wajupH3Uu1lPNgfOWhqVPpbzCixJGthvoI3iyMcDW4myNNnkYKt7RT58IJPzavNEbR3OrTK9fAQMSjaqaJFRXitleGOg8lDCu1J9DjhpVVVJRgk4SJdQp5/8OpVx+LgTeDwMInM7S88sNRYVV/3Kk9UeN4Mc1sTYdghAtNGpU1i3DPawoCNnZ9HQOqzSbAASKaT1M/ev8e2unkptKqfRsYORcS0soShSwbpUvdNwrhm9JBlmVCEojWe0AEC8rwzeHcFv/hu7ojmpBA4q9Dli0mF2mqNO6bgAufydoNTs1GCnnuWp2H05E7ds/dECEfuj/KD4/U7SX8NXD4PfQ1YtWNakPqSlFZp5+QsCqMW7nT1ZItlpWbEsiT+6dPH325+/vT18vLWt4DsCe92W4Z7tdHMl3GNdTLqrzlUGewDzXq6YRT8QPSeKd/F4WrGjv39/a8/e6EpiWDJWfc2MPXNYpEi7xednFB6q5LYfdBChycj4iZkMRW2gzAkqlG3Y4CtHXezv8ag8CWN9Ui2H2HhMK0qyI4Ke47HR9l7EZYYl4KX93HaTWDX1IMg/Mg/GNLCrKlnKczcAnJPt15mgMt85tfH7KWgrmAfKHEbIIrGagNVu3qfL3JMQTfdMAT50yiTwjwOr2v4tv4DVjq6zw==",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll use the TensorFlow.js <a href=\"https://github.com/tensorflow/tfjs-models/tree/master/speech-commands\" target=\"_blank\">Speech Commands</a> model to recognize spoken words in real time and use them to move an emoji around the page. It's been trained to recognize 18 words including directions like \"up\", \"down\", \"left\", and \"right\"."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        2,
+        3,
+        4
+      ],
+      "text": "We're importing three libraries. The first is the familiar <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">nn</a> library, then the core <a href=\"https://www.tensorflow.org/js\" target=\"_blank\">TensorFlow.js</a> and lastly the speech-commands model which wraps TensorFlow with a microphone-based audio classifier."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        8
+      ],
+      "text": "We setup four global variables, <code>model</code> will hold the speech recognizer, <code>config</code> for the model settings, <code>emoji</code> is the element we'll move around the page, and <code>button</code> is the toggle control, we keep a reference to it so we can update its label."
+    },
+    {
+      "title": "the setup button",
+      "focus": [
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "text": "Rather than running immediately on page load, we create a <code>button</code> with the <code>nn</code> library and wire it to call <code>setup</code> on click. This matters because requesting microphone access, which happens inside <code>setup</code>, requires a user gesture in all modern browsers. The button provides that gesture."
+    },
+    {
+      "title": "loading feedback",
+      "focus": [
+        51,
+        52
+      ],
+      "text": "The first thing <code>setup</code> does is call <code>this.content('...loading...')</code>. Here <code>this</code> refers to the button, because that's what called <code>setup()</code>. Updating the button's label right away gives the user immediate feedback that something is happening while the model downloads in the background."
+    },
+    {
+      "title": "model config",
+      "focus": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "text": "The <code>config</code> object sets how the model runs: the probability threshold (0.75) means we'll only act on predictions where the model is at least 75% confident, we avoid running our callback function for background noise, lastly our overlap factor controls how often the audio window is re-evaluated. We'll make use of this <code>config</code> object later when we run our model."
+    },
+    {
+      "title": "model loading",
+      "focus": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "text": "Then we call <code>speechCommands.create()</code> to create the model with 'BROWSER_FFT' which uses the browser's built-in Fast Fourier Transform for audio analysis. We await <code>model.ensureModelLoaded()</code> to download the model's weights locally."
+    },
+    {
+      "title": "emoji and position state",
+      "focus": [
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        70,
+        71
+      ],
+      "text": "Once the model is loaded we create the emoji element and position it at <code>(200, 200)</code>. We also store the current position in <code>emoji.data.x</code> and <code>emoji.data.y</code>. The <code>.data</code> object is a plain JavaScript object the <code>nn</code> library attaches to each element, giving us a convenient place to stash state without using separate global variables."
+    },
+    {
+      "title": "new button and hint",
+      "focus": [
+        73,
+        74,
+        76,
+        77,
+        78,
+        79,
+        81,
+        82,
+        83,
+        85
+      ],
+      "text": "<code>this.remove()</code> deletes the setup button (<code>this</code> is the button, as before), then we create a new <code>button</code> for toggling the listener on and off, add a hint in italics about which words to say, and immediately call <code>toggle()</code> to start listening right away."
+    },
+    {
+      "title": "toggle function",
+      "focus": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49
+      ],
+      "text": "The <code>toggle</code> function starts/stops the microphone listener. If the model is currently listening (tracked in the button's <code>.listening</code> data property), it calls <code>model.stopListening()</code> and updates the button's text. Otherwise it calls <code>model.listen()</code> which gets passed a callback function: <code>heardSomething</code> (the function to run everytime it hears something) and our config from earlier."
+    },
+    {
+      "title": "the callback",
+      "focus": [
+        10,
+        11,
+        12,
+        37
+      ],
+      "text": "The <code>heardSomething</code> function is called by the model every time it classifies a new audio window. It receives a <code>result</code> object containing <code>scores</code>: an array of confidence values, one per word in the vocabulary. We also call <code>model.wordLabels()</code> to get the matching array of word strings."
+    },
+    {
+      "title": "finding the best match",
+      "focus": [
+        10,
+        11,
+        12,
+        14,
+        15,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        24,
+        37
+      ],
+      "text": "We find the word with the highest confidence score using a simple loop, this pattern is sometimes called an \"argmax\". We track both the best score and its index, then use that index to look up the matching word name from the <code>words</code> array."
+    },
+    {
+      "title": "filtering results",
+      "focus": [
+        24,
+        26,
+        27,
+        37
+      ],
+      "text": "Even though we set a threshold in the config, we also guard here with an explicit check: if the best score is below <code>0.75</code> we bail out early. We also skip <code>'background_noise'</code> and <code>'unknown'</code>, these are special categories the model uses when it doesn't hear a recognized word."
+    },
+    {
+      "title": "moving the emoji",
+      "focus": [
+        29,
+        30,
+        31,
+        32,
+        34,
+        35,
+        36,
+        37
+      ],
+      "text": "If a confident directional word was heard, we adjust <code>emoji.data.x</code> or <code>emoji.data.y</code> by 20 pixels in the corresponding direction, then call <code>.position(x, y)</code> to move the element. Storing the position in <code>.data</code> means we always have the current coordinates ready to update."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "The Speech Commands model recognizes <a href=\"https://github.com/tensorflow/tfjs-models/tree/master/speech-commands#vocabularies\" target=\"_blank\">18 words</a> by default, not just directions but also numbers zero through nine and other short words. You could map each word to a different action, sound, or visual change to build a fully voice-driven interface."
+    }
+  ]
+}

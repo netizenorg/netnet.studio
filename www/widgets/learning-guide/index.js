@@ -91,6 +91,11 @@ class LearningGuide extends Widget {
     })
   }
 
+  loadDemo (id) {
+    this._tempDemo = id
+    window.convo = new Convo(this.convos, 'confirm-demo')
+  }
+
   async convo (key) {
     // make sure to save work in progress before switching to AI Notes mode
     if (NNE.code !== utils.starterCode()) {

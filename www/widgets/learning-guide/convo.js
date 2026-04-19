@@ -1600,6 +1600,24 @@ window.CONVOS['learning-guide'] = (self) => {
           self.slide.updateSlide(self.theAIOpts)
         }
       }
+    },
+    {
+      id: 'confirm-demo',
+      graph: { id: 181, x: 400, y: 300 },
+      content: 'Would you like me to close this Learning Guide and launch the demo here, or would you prefer to open it on a new tab?',
+      options: {
+        'open it here': (e) => {
+          e.hide()
+          utils.loadDemo(self._tempDemo)
+          self._tempDemo = null
+        },
+        'open in a new tab': (e) => {
+          e.hide()
+          window.open(`/?demo=${self._tempDemo}`, '_blank')
+          self._tempDemo = null
+        },
+        'never mind': (e) => e.hide()
+      }
     }
   ]
 }

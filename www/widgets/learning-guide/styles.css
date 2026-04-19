@@ -557,13 +557,21 @@
 
  .learning-guide__ai-ch-sub {
    display: block;
-   font-size: 1.7rem;
+   font-size: 1.5rem;
  }
+
+#learning-guide__ai-tfjs {
+  background-image: url('/widgets/learning-guide/data/assets/tfjs.gif');
+  background-size: cover;
+  width: 220px;
+  height: 170px;
+  border: 1px solid var(--netizen-meta);
+  border-radius: 5px;
+  margin: 20px 0;
+}
 
 .learning-guide__ai-demo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
   gap: 1rem;
   margin-top: 20px;
 }
@@ -571,7 +579,7 @@
 .learning-guide__ai-demo-grid > div {
   border: 1px solid var(--netizen-meta);
   text-align: center;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
 }
 
