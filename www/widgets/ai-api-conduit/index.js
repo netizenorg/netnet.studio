@@ -11,6 +11,7 @@ class AiApiConduit extends Widget {
     this.height = 535
 
     this.provider = 'openai' // or 'anthropic'
+    this.useSchema = false // no schema by default
     this.systemPrompt = '' // see data/system-prompt.txt
     this.schema = null // see data/schema.json
     this.nnDocs = null // see data/nn-docs-for-llm.md
@@ -38,10 +39,15 @@ class AiApiConduit extends Widget {
     this.innerHTML = await utils.getSync(`/widgets/${w}/index.html`, true)
     this.systemPromptSketch = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch.txt`, true)
     this.systemPromptProject = await utils.getSync(`/widgets/${w}/data/system-prompt-project.txt`, true)
+    this.systemPromptSketchPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch-plain.txt`, true)
+    this.systemPromptProjectPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-project-plain.txt`, true)
     this.schema = await utils.getSync(`/widgets/${w}/data/schema.json`)
     this.nnDocs = await utils.getSync(`/widgets/${w}/data/nn-docs-for-llm.md`, true)
     this._setupTabs()
     this._setupProviderToggle()
+    // restore useSchema before _setupRequestBody so the body renders correctly
+    const storedSchema = WIDGETS['student-session'].getData('llm-use-schema')
+    if (storedSchema !== null) this.useSchema = storedSchema !== 'false'
     this._setupRequestBody()
     this._loadStoredSettings()
     this._setupSettingsSync()
@@ -70,6 +76,11 @@ class AiApiConduit extends Widget {
     })
   }
 
+  _toggleApiKeySection () {
+    const hideKey = this.provider === 'local-ollama' || this.provider === 'disabled'
+    this.$('[name="api-key-section"]').style.display = hideKey ? 'none' : ''
+  }
+
   _setupProviderToggle () {
     const ss = WIDGETS['student-session']
     const select = this.$('[name="provider"]')
@@ -81,25 +92,24 @@ class AiApiConduit extends Widget {
       select.value = storedProvider
     }
 
-    select.addEventListener('blur', () => {
-      window.convo = new Convo(this.convos, `create-${select.value}-key`)
-    })
+    this._toggleApiKeySection()
 
     select.addEventListener('change', () => {
-      window.convo = new Convo(this.convos, `create-${select.value}-key`)
       this.provider = select.value
       ss.setData('llm-provider', select.value)
+      this._toggleApiKeySection()
       this._setupRequestBody()
       this.$('[name="api-key"]').value = ''
       this._loadStoredSettings()
       this._setupSettingsSync()
+      window.convo = new Convo(this.convos, `create-${select.value}-key`)
     })
   }
 
   _setupRequestBody () {
     const pre = this.$('[name="request-body"]')
     if (this.provider === 'openai') {
-      pre.innerHTML = `{
+      pre.innerHTML = this.useSchema ? `{
   model: <input type="text" name="model" value="gpt-5.4-mini" placeholder="model-name">,
   instructions: <span class="link" data-tab="system">systemPrompt</span>,
   input: <span class="link" data-tab="post">userInput</span>,
@@ -112,9 +122,14 @@ class AiApiConduit extends Widget {
     }
   },
   temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+}` : `{
+  model: <input type="text" name="model" value="gpt-5.4-mini" placeholder="model-name">,
+  instructions: <span class="link" data-tab="system">systemPrompt</span>,
+  input: <span class="link" data-tab="post">userInput</span>,
+  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
 }`
-    } else {
-      pre.innerHTML = `{
+    } else if (this.provider === 'anthropic') {
+      pre.innerHTML = this.useSchema ? `{
   model: <input type="text" name="model" value="claude-haiku-4-5" placeholder="model-name">,
   system: <span class="link" data-tab="system">systemPrompt</span>,
   messages: [
@@ -128,7 +143,40 @@ class AiApiConduit extends Widget {
     }
   },
   temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+}` : `{
+  model: <input type="text" name="model" value="claude-haiku-4-5" placeholder="model-name">,
+  system: <span class="link" data-tab="system">systemPrompt</span>,
+  messages: [
+    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
+  ],
+  max_tokens: <input type="number" name="max-tokens" min="1" max="8192" step="1" value="4096">,
+  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
 }`
+    } else if (this.provider === 'local-ollama') {
+      pre.innerHTML = this.useSchema ? `{
+  model: <input type="text" name="model" value="gemma4:e4b" placeholder="model-name">,
+  messages: [
+    { role: 'system', content: <span class="link" data-tab="system">systemPrompt</span> },
+    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
+  ],
+  stream: false,
+  format: <span class="link" data-tab="schema">schema</span>,
+  options: {
+    temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+  }
+}` : `{
+  model: <input type="text" name="model" value="gemma4:e4b" placeholder="model-name">,
+  messages: [
+    { role: 'system', content: <span class="link" data-tab="system">systemPrompt</span> },
+    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
+  ],
+  stream: false,
+  options: {
+    temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+  }
+}`
+    } else if (this.provider === 'disabled') {
+      pre.innerHTML = ''
     }
     pre.querySelectorAll('.link').forEach(link => {
       link.addEventListener('click', () => this.switchTab(link.dataset.tab))
@@ -137,12 +185,27 @@ class AiApiConduit extends Widget {
 
   _populateSystemPrompt () {
     const isProject = !!WIDGETS['project-files']?.projectData?.name
-    this.systemPrompt = isProject ? this.systemPromptProject : this.systemPromptSketch
+    if (this.useSchema) {
+      this.systemPrompt = isProject ? this.systemPromptProject : this.systemPromptSketch
+    } else {
+      this.systemPrompt = isProject ? this.systemPromptProjectPlain : this.systemPromptSketchPlain
+    }
     this.$('[name="system-prompt"]').textContent = this.systemPrompt
   }
 
   _populateSchema () {
-    this.$('[name="schema-display"]').textContent = JSON.stringify(this.schema, null, 2)
+    const display = this.$('[name="schema-display"]')
+    display.textContent = JSON.stringify(this.schema, null, 2)
+    display.style.display = this.useSchema ? '' : 'none'
+    const cb = this.$('[name="use-schema"]')
+    cb.checked = this.useSchema
+    cb.addEventListener('change', () => {
+      this.useSchema = cb.checked
+      display.style.display = this.useSchema ? '' : 'none'
+      WIDGETS['student-session'].setData('llm-use-schema', String(cb.checked))
+      this._populateSystemPrompt()
+      this._setupRequestBody()
+    })
   }
 
   _populateIncludeCode () {
@@ -251,24 +314,30 @@ class AiApiConduit extends Widget {
   _loadStoredSettings () {
     const ss = WIDGETS['student-session']
 
-    const key = ss.getData(`llm-key-${this.provider}`)
+    const storedSchema = ss.getData('llm-use-schema')
+    if (storedSchema !== null) this.useSchema = storedSchema !== 'false'
+
+    const key = this.provider !== 'local-ollama' && this.provider !== 'disabled'
+      ? ss.getData(`llm-key-${this.provider}`) : null
     if (key) this.$('[name="api-key"]').value = key
 
-    const modelEl = this.$('[name="model"]')
-    const storedModel = ss.getData(`llm-model-${this.provider}`)
-    if (storedModel) modelEl.value = storedModel
-    else ss.setData(`llm-model-${this.provider}`, modelEl.value)
+    if (this.provider !== 'disabled') {
+      const modelEl = this.$('[name="model"]')
+      const storedModel = ss.getData(`llm-model-${this.provider}`)
+      if (storedModel) modelEl.value = storedModel
+      else ss.setData(`llm-model-${this.provider}`, modelEl.value)
 
-    const tempEl = this.$('[name="temperature"]')
-    const storedTemp = ss.getData('llm-temperature')
-    if (storedTemp) tempEl.value = storedTemp
-    else ss.setData('llm-temperature', tempEl.value)
+      const tempEl = this.$('[name="temperature"]')
+      const storedTemp = ss.getData('llm-temperature')
+      if (storedTemp) tempEl.value = storedTemp
+      else ss.setData('llm-temperature', tempEl.value)
 
-    const maxEl = this.ele.querySelector('[name="max-tokens"]')
-    if (maxEl) {
-      const storedMax = ss.getData('llm-max-tokens')
-      if (storedMax) maxEl.value = storedMax
-      else ss.setData('llm-max-tokens', maxEl.value)
+      const maxEl = this.ele.querySelector('[name="max-tokens"]')
+      if (maxEl) {
+        const storedMax = ss.getData('llm-max-tokens')
+        if (storedMax) maxEl.value = storedMax
+        else ss.setData('llm-max-tokens', maxEl.value)
+      }
     }
   }
 
@@ -287,19 +356,21 @@ class AiApiConduit extends Widget {
       ss.setData(`llm-key-${this.provider}`, val || null)
     })
 
-    this.$('[name="model"]').addEventListener('change', (e) => {
-      ss.setData(`llm-model-${this.provider}`, e.target.value.trim() || null)
-    })
-
-    this.$('[name="temperature"]').addEventListener('change', (e) => {
-      ss.setData('llm-temperature', e.target.value || null)
-    })
-
-    const maxEl = this.ele.querySelector('[name="max-tokens"]')
-    if (maxEl) {
-      maxEl.addEventListener('change', (e) => {
-        ss.setData('llm-max-tokens', e.target.value || null)
+    if (this.provider !== 'disabled') {
+      this.$('[name="model"]').addEventListener('change', (e) => {
+        ss.setData(`llm-model-${this.provider}`, e.target.value.trim() || null)
       })
+
+      this.$('[name="temperature"]').addEventListener('change', (e) => {
+        ss.setData('llm-temperature', e.target.value || null)
+      })
+
+      const maxEl = this.ele.querySelector('[name="max-tokens"]')
+      if (maxEl) {
+        maxEl.addEventListener('change', (e) => {
+          ss.setData('llm-max-tokens', e.target.value || null)
+        })
+      }
     }
   }
 
@@ -308,10 +379,13 @@ class AiApiConduit extends Widget {
   }
 
   async _sendRequest () {
-    window.convo = new Convo(this.convos, 'llm-possessed-processing')
+    const pconvo = this.useSchema ? 'llm-possessed-takeover' : 'llm-possessed-processing'
+    window.convo = new Convo(this.convos, pconvo)
+
+    if (this.provider === 'disabled') return this.convo('provider-disabled')
 
     const apiKey = this.$('[name="api-key"]').value.trim()
-    if (!apiKey) return this.convo('no-key')
+    if (!apiKey && this.provider !== 'local-ollama') return this.convo('no-key')
 
     const rawInput = this.$('[name="user-input"]').value.trim()
     if (!rawInput) return this.convo('no-input')
@@ -340,19 +414,16 @@ class AiApiConduit extends Widget {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`
         }
-        body = {
-          model,
-          instructions: systemPrompt,
-          input: userInput,
-          text: {
+        body = { model, instructions: systemPrompt, input: userInput, temperature }
+        if (this.useSchema) {
+          body.text = {
             format: {
               type: 'json_schema',
               name: 'coding_tutor_response',
               schema: this.schema,
               strict: true
             }
-          },
-          temperature
+          }
         }
       } else if (this.provider === 'anthropic') {
         url = 'https://api.anthropic.com/v1/messages'
@@ -368,14 +439,26 @@ class AiApiConduit extends Widget {
           system: systemPrompt,
           messages: [{ role: 'user', content: userInput }],
           max_tokens: maxTokens,
-          output_config: {
-            format: {
-              type: 'json_schema',
-              schema: this.schema
-            }
-          },
           temperature
         }
+        if (this.useSchema) {
+          body.output_config = {
+            format: { type: 'json_schema', schema: this.schema }
+          }
+        }
+      } else if (this.provider === 'local-ollama') {
+        url = 'http://localhost:11434/api/chat'
+        headers = { 'Content-Type': 'application/json' }
+        body = {
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userInput }
+          ],
+          stream: false,
+          options: { temperature }
+        }
+        if (this.useSchema) body.format = this.schema
       }
 
       const response = await window.fetch(url, {
@@ -385,7 +468,7 @@ class AiApiConduit extends Widget {
       })
 
       const data = await response.json()
-      let result
+      let rawText
 
       if (this.provider === 'openai') {
         if (data.error) throw new Error(data.error.message)
@@ -393,17 +476,39 @@ class AiApiConduit extends Widget {
         if (!msg?.content?.[0]) throw new Error('Unexpected OpenAI response structure')
         const content = msg.content[0]
         if (content.type !== 'output_text') throw new Error(`Expected output_text, got ${content.type}`)
-        result = JSON.parse(content.text)
+        rawText = content.text
       } else if (this.provider === 'anthropic') {
         if (data.error) throw new Error(data.error.message)
         if (data.type === 'error') throw new Error(data.error?.message || 'Unknown error')
         const content = data.content?.[0]
         if (!content || content.type !== 'text') throw new Error('Unexpected Anthropic response structure')
-        result = JSON.parse(content.text)
+        rawText = content.text
+      } else if (this.provider === 'local-ollama') {
+        if (data.error) throw new Error(data.error)
+        if (!data.message?.content) throw new Error('Unexpected Ollama response structure')
+        rawText = typeof data.message.content === 'object'
+          ? JSON.stringify(data.message.content)
+          : data.message.content
       }
 
-      this.$('[name="response-display"]').textContent = JSON.stringify(result, null, 2)
-      this._shareResult(result)
+      this.$('[name="response-display"]').textContent = rawText
+
+      if (this.useSchema) {
+        const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
+        let result
+        try {
+          result = JSON.parse(cleaned)
+        } catch (e) {
+          throw new Error(`The model "${model}" did not return valid JSON. Try disabling the schema for this model.`)
+        }
+        if (typeof result.restatement !== 'string' || !Array.isArray(result.snippets) || result.snippets.length === 0) {
+          console.warn('[llm] unexpected result structure:', result)
+          throw new Error(`The model "${model}" returned JSON but did not follow the required schema. Try disabling the schema for this model.`)
+        }
+        this._shareResult(result)
+      } else {
+        this._showRawReply(rawText)
+      }
     } catch (err) {
       this.$('[name="response-display"]').textContent = `Error: ${err.message}`
       console.error('ŏ︵ŏ error from LLM provider:', err)
@@ -412,6 +517,13 @@ class AiApiConduit extends Widget {
 
     btn.textContent = 'send request'
     btn.disabled = false
+  }
+
+  _showRawReply (text) {
+    WIDGETS.open('ai-llm-reply', (w) => {
+      w.loadReply(text)
+      window.convo = new Convo(this.convos, 'llm-reply-wig')
+    })
   }
 
   _shareResult (json) {

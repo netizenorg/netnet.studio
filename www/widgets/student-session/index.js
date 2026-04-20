@@ -42,8 +42,10 @@ class StudentSession extends Widget {
         keyAnthropic: ls.getItem('llm-key-anthropic'),
         modelOpenai: ls.getItem('llm-model-openai'),
         modelAnthropic: ls.getItem('llm-model-anthropic'),
+        modelOllama: ls.getItem('llm-model-local-ollama'),
         temperature: ls.getItem('llm-temperature'),
-        maxTokens: ls.getItem('llm-max-tokens')
+        maxTokens: ls.getItem('llm-max-tokens'),
+        useSchema: ls.getItem('llm-use-schema')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -424,12 +426,20 @@ class StudentSession extends Widget {
           <input value="${this.data.llm.modelAnthropic || ''}" readonly="readonly">
         </div>
         <div>
+          Ollama model:
+          <input value="${this.data.llm.modelOllama || ''}" readonly="readonly">
+        </div>
+        <div>
           temperature:
           <input value="${this.data.llm.temperature || ''}" readonly="readonly">
         </div>
         <div>
           max tokens:
           <input value="${this.data.llm.maxTokens || ''}" readonly="readonly">
+        </div>
+        <div>
+          use schema:
+          <input value="${this.data.llm.useSchema !== null ? this.data.llm.useSchema : ''}" readonly="readonly">
         </div>
       </div>
     `

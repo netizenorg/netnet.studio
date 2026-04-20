@@ -20,6 +20,7 @@ class CodeTrace extends HTMLElement {
       this._createBaseEditor()
       this._createOverlayEditor()
       this._updateHeight()
+      if (this.getAttribute('bright') === 'true') this._updateBright()
     } else {
       window.requestAnimationFrame(() => this._initWhenReady())
     }
