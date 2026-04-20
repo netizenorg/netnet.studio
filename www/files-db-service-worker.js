@@ -535,6 +535,9 @@ self.addEventListener('fetch', (event) => {
       const url = new URL(request.url)
       const filePath = normalizePath(url.pathname)
 
+      // bypass localhost (e.g. local Ollama API)
+      if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return fetch(request)
+
       // bypass sockets && analytics
       const accept = request.headers.get('accept') || ''
       const isRealtimeOrAnalytics = url.pathname === '/socket.io' ||
