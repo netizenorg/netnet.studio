@@ -524,6 +524,10 @@ self.addEventListener('message', event => {
 })
 
 self.addEventListener('fetch', (event) => {
+  // bypass localhost entirely (e.g. local Ollama API) — must be before respondWith
+  const reqUrl = new URL(event.request.url)
+  if (reqUrl.hostname === 'localhost' || reqUrl.hostname === '127.0.0.1') return
+
   event.respondWith((async () => {
     try {
       const request = event.request
@@ -534,9 +538,6 @@ self.addEventListener('fetch', (event) => {
 
       const url = new URL(request.url)
       const filePath = normalizePath(url.pathname)
-
-      // bypass localhost (e.g. local Ollama API)
-      if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return fetch(request)
 
       // bypass sockets && analytics
       const accept = request.headers.get('accept') || ''
