@@ -10,7 +10,7 @@ window.CONVOS['student-session'] = (self) => {
       self.checkForSavePoint()
     }
 
-    const hasLLM = self.data.llm.keyAnthropic || self.data.llm.keyOpenai
+    const hasLLM = self.data.llm.provider && self.data.llm.provider !== 'disabled'
 
     if (type === 'new-name') {
       o['where? how?'] = (e) => e.goTo('how-to')
@@ -110,7 +110,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'confirm-llm',
-      content: 'Would you like to edit any of the <b>LLM-API Conduit</b> widget settings like your API key, model settings or attached files first?',
+      content: 'Would you like to edit any of the <b>LLM-API Conduit</b> widget settings like model settings or attached files first?',
       options: {
         'no, send now': (e) => {
           const w = WIDGETS['ai-api-conduit']

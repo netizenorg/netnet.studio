@@ -5,11 +5,13 @@
       <select class="pill-btn pill-btn--secondary" name="provider">
         <option value="openai">OpenAI</option>
         <option value="anthropic">Anthropic</option>
+        <option value="local-ollama">Local (Ollama)</option>
+        <option value="disabled">Disabled</option>
       </select>
     </p>
     <button class="pill-btn pill-btn--secondary" name="help-btn">?</button>
   </div>
-  <div style="margin-bottom: 17px;">
+  <div name="api-key-section" style="margin-bottom: 17px;">
     <p>
       Your API Key: <input type="password" name="api-key" placeholder="sent in request header" style="width: 340px; padding: 0 5px;">
     </p>
@@ -33,6 +35,9 @@
     </div>
 
     <div class="ai-api-conduit__tab" data-tab="schema" style="display:none;">
+      <label class="ai-api-conduit__file-item" style="margin-bottom:12px;display:block">
+        <input type="checkbox" name="use-schema" checked> include schema in request (<i>experimental</i>)
+      </label>
       <pre name="schema-display"></pre>
     </div>
 

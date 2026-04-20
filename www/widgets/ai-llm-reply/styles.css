@@ -1,0 +1,27 @@
+.ai-llm-reply__main {
+  padding: 16px;
+  box-sizing: border-box;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ai-llm-reply__main h1 { margin: 14px 0 4px; }
+.ai-llm-reply__main h2 { margin: 12px 0 4px; }
+.ai-llm-reply__main h3 { margin: 10px 0 4px; }
+.ai-llm-reply__main p  { margin: 6px 0; }
+.ai-llm-reply__main ul,
+.ai-llm-reply__main ol { margin: 6px 0; padding-left: 20px; }
+
+.ai-llm-reply__block {
+  margin: 12px 0;
+}
+
+.ai-llm-reply__block code-trace {
+  display: block;
+}
+
+.ai-llm-reply__copy {
+  margin-top: 6px;
+  text-align: right;
+}
