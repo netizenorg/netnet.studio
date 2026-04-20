@@ -5,7 +5,8 @@ const { marked } = require('marked')
 const fldrDict = {
   students: 'Dear Students',
   educators: 'Dear Educators',
-  contributors: 'Dear Contributors'
+  contributors: 'Dear Contributors',
+  misc: 'Other Notes'
 }
 const skipFldrs = ['images']
 

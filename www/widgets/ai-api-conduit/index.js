@@ -21,7 +21,10 @@ class AiApiConduit extends Widget {
     this.on('open', () => this._createHTML(opts))
   }
 
-  convo (key) {
+  convo (key, rerun) {
+    if (rerun) {
+      this.convos = window.CONVOS[this.key](this)
+    }
     window.convo = new Convo(this.convos, key)
   }
 
@@ -179,7 +182,10 @@ class AiApiConduit extends Widget {
       pre.innerHTML = ''
     }
     pre.querySelectorAll('.link').forEach(link => {
-      link.addEventListener('click', () => this.switchTab(link.dataset.tab))
+      link.addEventListener('click', () => {
+        this.switchTab(link.dataset.tab)
+        window.convo = new Convo(this.convos, link.dataset.tab)
+      })
     })
   }
 
@@ -512,7 +518,12 @@ class AiApiConduit extends Widget {
     } catch (err) {
       this.$('[name="response-display"]').textContent = `Error: ${err.message}`
       console.error('ŏ︵ŏ error from LLM provider:', err)
-      window.convo = new Convo(this.convos, 'oh-no-error')
+      if (this.provider === 'local-ollama' && err.message.includes('Failed to fetch')) {
+        const isChrome = nn.browserInfo().name === 'Chrome'
+        window.convo = new Convo(this.convos, isChrome ? 'ollama-cors-error-chrome' : 'ollama-cors-error')
+      } else {
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      }
     }
 
     btn.textContent = 'send request'

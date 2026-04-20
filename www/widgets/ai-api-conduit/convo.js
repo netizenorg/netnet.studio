@@ -1,5 +1,17 @@
 /* global WIDGETS, NNW, Convo  */
 window.CONVOS['ai-api-conduit'] = (self) => {
+  const providerInfo = () => {
+    const dict = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic',
+      'local-ollama': 'Ollama'
+    }
+
+    return self.provider === 'disabled'
+      ? 'This widget is currently disabled because you haven\'t chosen an LLM provider, but you can change that at anytime by picking a one from the drop down list.'
+      : `You currently have <b>${dict[self.provider]}</b> set as your chosen provider, but you can change that at anytime by picking a different one from the drop down list.`
+  }
+
   return [{
     id: 'start',
     before: () => NNW.menu.switchFace('default'),
@@ -34,15 +46,24 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       ok: (e) => e.hide()
     }
   }, {
+    id: 'choose-provider2',
+    content: providerInfo(),
+    options: {
+      'I see': (e) => {
+        if (self.provider === 'disabled') e.hide()
+        else e.goTo(`create-${self.provider}-key`)
+      }
+    }
+  }, {
     id: 'create-openai-key',
-    content: 'To create an API Key first <a href="https://platform.openai.com/" target="_blank">create an OpenAI account</a>, then go to <b>Settings → Billing</b> and add a credit card. Then click <b>API keys</b> in the sidebar to <b>Create new secret key</b>.',
+    content: 'To use OpenAI as a provider you\'ll first need to <a href="https://platform.openai.com/" target="_blank">create an OpenAI account</a>, then go to <b>Settings → Billing</b> and add a credit card. Then click <b>API keys</b> in the sidebar to <b>Create new secret key</b>.',
     options: {
       ok: (e) => e.hide(),
       'how much will it cost?': (e) => e.goTo('api-cost')
     }
   }, {
     id: 'create-anthropic-key',
-    content: 'To create an API Key first <a href="https://platform.anthropic.com/" target="_blank">create an Anthropic account</a>, then go to <b>Settings → Billing</b> and add a credit card. Then click <b>API keys</b> in the sidebar to <b>Create new secret key</b>.',
+    content: 'To use Anthropic as a provider you\'ll first need to  <a href="https://platform.anthropic.com/" target="_blank">create an Anthropic account</a>, then go to <b>Settings → Billing</b> and add a credit card. Then click <b>API keys</b> in the sidebar to <b>Create new secret key</b>.',
     options: {
       ok: (e) => e.hide(),
       'how much will it cost?': (e) => e.goTo('api-cost')
@@ -76,7 +97,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     id: 'ollama3',
     content: 'Ollama doesn\'t come with any models, so you\'ll need to <a href="https://ollama.com/search" target="_blank">choose</a> and download the LLM you want. You can do this in the Ollama app or in your terminal.',
     options: {
-      'and then?': (e) => e.goTo('ollama5'),
+      'and then?': (e) => e.goTo('ollama6'),
       'terminal? how?': (e) => e.goTo('ollama4')
     }
   }, {
@@ -94,29 +115,9 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'ollama6',
-    content: 'After installing Ollama and downloading a model, you\'ll need to make sure the API is running and that you\'ve given me permission to connect to it. This step varies slightly depending on your OS, what are you using?',
+    content: 'The last step is to make sure the API is running and that you\'ve given me permission to connect to it. This step varies slightly depending on your OS, but we\'ve documented it all in detail on our <a href="/docs/misc/ai-integration.html" target="_blank">Connecting netnet to a local LLM</a> docs.',
     options: {
-      Mac: (e) => e.goTo('ollama-mac'),
-      Windows: (e) => e.goTo('ollama-windows'),
-      Linux: (e) => e.goTo('ollama-linux')
-    }
-  }, {
-    id: 'ollama-mac',
-    content: `On Mac, open a Terminal and run: <code>launchctl setenv OLLAMA_HOST "0.0.0.0:11434"</code> and then <code>launchctl setenv OLLAMA_ORIGINS "${window.location.origin}"</code>. Then restart Ollama and you should be good to go.`,
-    options: {
-      'great!': (e) => e.hide()
-    }
-  }, {
-    id: 'ollama-windows',
-    content: `On Windows, open a Command Prompt and run <code>setx OLLAMA_HOST "0.0.0.0:11434"</code> then run <code>setx OLLAMA_ORIGINS "${window.location.origin}"</code> Then restart Ollama and you should be good to go.`,
-    options: {
-      'great!': (e) => e.hide()
-    }
-  }, {
-    id: 'ollama-linux',
-    content: `On Linux, open a terminal and run: <code>export OLLAMA_HOST="0.0.0.0:11434"</code> and then <code>export OLLAMA_ORIGINS="${window.location.origin}"</code>. Then restart Ollama and you should be good to go.`,
-    options: {
-      'great!': (e) => e.hide()
+      ok: (e) => e.hide()
     }
   }, {
     id: 'api-cost',
@@ -341,6 +342,30 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     content: 'Try restating your question differently in the <b>Post Request</b> tab, then press "send request" to try agian.',
     options: {
       ok: (e) => e.hide()
+    }
+  }, {
+    id: 'ollama-cors-error',
+    before: () => NNW.menu.switchFace('upset'),
+    content: 'I wasn\'t able to reach your local Ollama server. This is a known limitation in Chrome — it blocks requests from HTTPS pages to local addresses for security reasons. Try using <b>Firefox</b> instead, which doesn\'t have this restriction.',
+    options: {
+      ok: (e) => {
+        e.hide()
+        NNW.menu.switchFace('default')
+      }
+    }
+  }, {
+    id: 'ollama-cors-error-chrome',
+    before: () => NNW.menu.switchFace('upset'),
+    content: 'I wasn\'t able to reach your local Ollama server. This is a known limitation in Chrome — it blocks requests from HTTPS pages to local addresses for security reasons. Try using <b>Firefox</b> instead, which doesn\'t have this restriction.',
+    options: {
+      ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
+    }
+  }, {
+    id: 'ollama-cors-error',
+    before: () => NNW.menu.switchFace('upset'),
+    content: 'I wasn\'t able to reach your local Ollama server. This might be a browser security restriction blocking requests from HTTPS pages to local addresses. Try a different browser, or check that Ollama is running and configured to allow requests from this origin.',
+    options: {
+      ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
     }
   }, {
     id: 'oh-no-error',
