@@ -233,6 +233,7 @@ class LearningGuide extends Widget {
           // this._svgAnimations()
           if (firstCb) { firstCb = false; return }
           if (this._setupTutCards) this._setupTutCards()
+          this._applyVisibility()
         }, utils.getVal('--menu-fades-time'))
       } else if (type === 'theAIOpts') {
         this.theAIOpts.cb = () => this._createAICards()
@@ -536,7 +537,10 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _applyVisibility () {
-    if (this.slide.getAttribute('name') !== 'main-slide') return
+    if (this.slide.getAttribute('name') !== 'main-slide') {
+      this._stopStarField()
+      return
+    }
 
     const visible = utils.isVisible(this.ele)
     if (visible) {
@@ -592,7 +596,7 @@ class LearningGuide extends Widget {
     if (!this.slide) { setTimeout(() => this._startStarField(), 250); return }
     if (this._runningStar) return
     this._runningStar = true
-    if (!this._canvas) this._initStarField()
+    if (!this._canvas || !this._canvas.isConnected) this._initStarField()
     this._tickStarField()
   }
 
