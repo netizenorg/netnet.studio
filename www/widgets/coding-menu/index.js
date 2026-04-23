@@ -161,6 +161,7 @@ class CodingMenu extends Widget {
   }
 
   _newSketch () {
+    utils.cancelAllNetitorUses()
     WIDGETS['student-session'].newSketch()
   }
 
