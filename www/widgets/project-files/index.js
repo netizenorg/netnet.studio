@@ -1022,6 +1022,9 @@ class ProjectFiles extends Widget {
 
   saveCurrentFile (skipUpdate) {
     this._updateFile(this.viewing, NNE.code)
+    // force iframe reload via NNE.update() since customRender otherwise
+    // skips reassigning src when target URL is unchanged.
+    this._forceRender = true
     if (!skipUpdate) NNE.update()
     this._updateViewingFile()
     console.clear()
@@ -1277,9 +1280,16 @@ class ProjectFiles extends Widget {
           return
         }
 
-        eve.iframe.src = `${swPath}/${page}`
-
-        if (this.log) console.log('rendered via SW path')
+        // avoid reassigning src on every keystroke (would force a full
+        // iframe reload and re-fetch all assets, e.g. big images flicker).
+        // saveCurrentFile triggers an explicit reload when the rendered
+        // file is saved.
+        const target = new URL(`${swPath}/${page}`, window.location.origin).href
+        if (eve.iframe.src !== target || this._forceRender) {
+          eve.iframe.src = `${swPath}/${page}`
+          this._forceRender = false
+          if (this.log) console.log('rendered via SW path')
+        }
 
         if (!this.files[page]?.code) {
           eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${page}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
@@ -1594,17 +1604,24 @@ class ProjectFiles extends Widget {
       const reader = new window.FileReader()
       reader.onloadend = async () => {
         // console.log({ name: file.name, type: type, data })
-        let data = reader.result
-        if (!isTextType && type !== 'image/svg+xml') {
-          data = this._base64ToBlob(data.split(',')[1], type)
-        } else if (type === 'image/svg+xml') {
-          data = utils.atob(data.split(',')[1])
+        try {
+          let data = reader.result
+          if (!isTextType && type !== 'image/svg+xml') {
+            data = this._base64ToBlob(data.split(',')[1], type)
+          } else if (type === 'image/svg+xml') {
+            data = utils.atob(data.split(',')[1])
+          }
+          const filepath = path ? `${path}/${file.name}` : file.name
+          await this._updateFile(filepath, data)
+          this._updateFilesGUI()
+        } catch (err) {
+          console.error('ProjectFiles: upload failed:', err)
+          utils._Convo('oh-no-error', err)
+        } finally {
+          // always hide the curtain so a thrown error doesn't strand the user
+          setTimeout(() => nn.get('load-curtain').hide(), 200)
+          this._uploadedFile = {}
         }
-        const filepath = path ? `${path}/${file.name}` : file.name
-        await this._updateFile(filepath, data)
-        this._updateFilesGUI()
-        setTimeout(() => nn.get('load-curtain').hide(), 200)
-        this._uploadedFile = {}
       }
       reader.onerror = (err) => {
         utils._Convo('oh-no-error', err)

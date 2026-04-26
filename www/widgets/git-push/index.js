@@ -179,17 +179,22 @@ class GitPush extends Widget {
           nn.get('load-curtain').show('github.html', { filename: repo })
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
-            if (json.success) {
-              const changes = await WIDGETS['project-files'].resetChanges()
-              WIDGETS['project-files']._updateFilesGUI(changes)
-              nn.get('load-curtain').hide()
-              this._nextCmd('finished')
-            } else {
-              console.log('GIT SERVER ERROR:', json)
-              nn.get('load-curtain').hide()
+            try {
+              if (json.success) {
+                const changes = await WIDGETS['project-files'].resetChanges()
+                WIDGETS['project-files']._updateFilesGUI(changes)
+                this._nextCmd('finished')
+              } else {
+                console.log('GIT SERVER ERROR:', json)
+                window.convo = new Convo(this.convos, 'oh-no-error')
+              }
+            } catch (err) {
+              console.error('GitPush: error after push response:', err)
               window.convo = new Convo(this.convos, 'oh-no-error')
+            } finally {
+              nn.get('load-curtain').hide()
             }
-          })
+          }, 180000)
         },
         back: () => this._nextCmd('commit')
       },
