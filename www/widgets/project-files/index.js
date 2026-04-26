@@ -1492,6 +1492,8 @@ class ProjectFiles extends Widget {
           WIDGETS['student-session'].setData('repos', names.join(', '))
         })
 
+        this._setupCodeUpdateListener()
+
         // update student session data
         this.projectData = {
           name: res.repo,
