@@ -524,9 +524,9 @@ self.addEventListener('message', event => {
 })
 
 self.addEventListener('fetch', (event) => {
-  // bypass localhost entirely (e.g. local Ollama API) — must be before respondWith
+  // bypass local Ollama API — must be before respondWith
   const reqUrl = new URL(event.request.url)
-  if (reqUrl.hostname === 'localhost' || reqUrl.hostname === '127.0.0.1') return
+  if ((reqUrl.hostname === 'localhost' || reqUrl.hostname === '127.0.0.1') && reqUrl.port === '11434') return
 
   event.respondWith((async () => {
     try {

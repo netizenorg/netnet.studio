@@ -172,7 +172,7 @@ window.CONVOS['project-files'] = (self) => {
   // ------------- explain title bar
   {
     id: 'netnet-title-bar',
-    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder.<br><br>Keep in mind, this widget is still in "beta" (there may be bugs!).',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder. <b style="color:var(--netizen-variable)">Keep in mind, this widget is still in <i>beta</i> (there may be bugs! we\'re still working on it).</b>',
     options: {
       ok: (e) => e.hide(),
       'help, I\'m confused!': (e) => e.goTo('help-info'),
@@ -183,7 +183,7 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'help-info',
-    content: `You're currently working on a project called <b>${self.projectData.name}</b>, this is also the name of the folder which stores all your website's files. The file you are currently viewing in my editor is <code>${self.viewing}</code>, as noted in the file path at the top of my editor next to the "Files" button which opens this widget.<br><br>You can visit the <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a> to learn more. I'm also happy to explain any of this in more depth?`,
+    content: `You're currently working on a project called <b>${self.projectData.name}</b>, this is also the name of the folder which stores all your website's files. The file you are currently viewing in my editor is <code>${self.viewing}</code>, as noted in the file path at the top of my editor next to the "Files" button which opens this widget. Visit the <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a> to learn more.`,
     options: helpInfoOptions(),
     after: () => addCircleToBubble()
   }, {
@@ -335,7 +335,10 @@ window.CONVOS['project-files'] = (self) => {
     id: 'clear-code?',
     content: 'It appears you\'ve got some code in the editor, do you want this to be the start of your new project or should we delete this and start from scratch?',
     options: {
-      'I want to keep it': (e) => e.goTo('create-new-project'),
+      'I want to keep it': (e) => {
+        self._keepCode = NNE.code
+        e.goTo('create-new-project')
+      },
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
@@ -347,6 +350,8 @@ window.CONVOS['project-files'] = (self) => {
     before: () => {
       self.closeProject()
       NNW.menu.switchFace('default')
+      if (self._keepCode) NNE.code = self._keepCode
+      self._keepCode = null
     },
     after: () => {
       nn.get('text-bubble input').focus()
