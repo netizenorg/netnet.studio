@@ -418,6 +418,28 @@ window.CONVOS['project-files'] = (self) => {
       'actually, never mind': (e) => e.hide()
     }
   }, {
+    id: 'open-from-local-or-github',
+    content: `I noticed you have unpushed local changes for <b>${self._pendingOpenRepo}</b>. Would you like me to open your most recent local save, or pull this fresh copy from GitHub? <br><br><i>Heads up: pulling from GitHub will discard your unpushed local changes.</i>`,
+    options: {
+      'open my local save': (e) => {
+        const repo = self._pendingOpenRepo
+        self._pendingOpenRepo = null
+        self._openFromLocal(repo)
+      },
+      'pull fresh from GitHub': (e) => {
+        const repo = self._pendingOpenRepo
+        self._pendingOpenRepo = null
+        self._openFromGitHub(repo)
+      },
+      'never mind': (e) => { self._pendingOpenRepo = null; e.hide() }
+    }
+  }, {
+    id: 'project-opened-from-local',
+    content: 'Welcome back! I\'ve loaded your most recent local save for this project. You have unpushed changes — don\'t forget to push to GitHub when you\'re ready to back them up.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
     id: 'opening-project',
     before: () => NNW.menu.switchFace('processing'),
     content: '...asking GitHub for data...',

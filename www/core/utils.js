@@ -15,13 +15,18 @@ window.utils = {
       })
   },
 
-  post: (url, data, cb) => {
+  post: (url, data, cb, timeoutMs = 60000) => {
+    // timeoutMs guards against silent hangs (slow network, stalled server) which
+    // would otherwise leave callers (eg. load-curtain) waiting forever.
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
     const opts = {
       method: 'POST',
       headers: {
         Accept: 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
-      }
+      },
+      signal: controller.signal
     }
     opts.body = data ? JSON.stringify(data) : undefined
     window.fetch(url, opts)
@@ -32,6 +37,7 @@ window.utils = {
         const errObj = { success: false, error: err }
         if (cb) cb(errObj)
       })
+      .finally(() => clearTimeout(timer))
   },
 
   getSync: async (url, text = false) => {

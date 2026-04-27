@@ -35,3 +35,6 @@ data/temp-gh-user-data/*
 # ignoring submodules
 # www/core/netitor
 # www/core/netnet-standard-library
+
+# local audit/refactor scratchpads (not project history)
+**/AUDIT.md
