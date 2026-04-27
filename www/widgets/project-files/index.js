@@ -460,9 +460,12 @@ class ProjectFiles extends Widget {
           this.projectData = { url, branch, name: repo }
           this.dbName = repo
 
+          // wipe any stale local DB for this repo before re-initializing
+          // with the freshly-fetched GitHub state. Phase 3 will gate this
+          // behind an "open from local?" check.
+          await this._destroyProjectDB(repo)
           this._swControl = this._initServiceWorker() // setup service worker
           this.db = await this._initIndexedDB() // setup indexedDB
-          await this._clearIndexedDB() // clear this store for fresh project state
           await this._saveFilesToIndexedDB()
 
           // update netnet URL
@@ -516,8 +519,13 @@ class ProjectFiles extends Widget {
   }
 
   closeProject () {
-    // reset this widget
-    this._clearIndexedDB(true)
+    // reset this widget — keep the project's IndexedDB intact so unpushed
+    // local work survives close. just release the connection.
+    if (this.db) {
+      try { this.db.close() } catch (e) { /* already closed */ }
+      this.db = null
+    }
+    this.files = {}
     this._createHTML()
     this.viewing = null
     this.rendering = null
@@ -701,12 +709,14 @@ class ProjectFiles extends Widget {
             projName = stripRoot || file.name.replace(/\.zip$/i, '')
             this.projectData = { name: projName, branch: 'local', url: null }
             this.dbName = projName
+            // wipe any stale local DB with this name before init
+            await this._destroyProjectDB(projName)
             this._swControl = this._initServiceWorker()
             this.db = await this._initIndexedDB()
-            await this._clearIndexedDB()
           } else {
-            // replacing current project contents
-            await this._clearIndexedDB()
+            // replacing current project contents — destroy + re-init
+            await this._destroyProjectDB(this.dbName)
+            this.db = await this._initIndexedDB()
           }
 
           // load each entry
@@ -1513,9 +1523,10 @@ class ProjectFiles extends Widget {
         }
         this.dbName = res.repo
 
+        // wipe any stale local DB with this name before init
+        await this._destroyProjectDB(res.repo)
         this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
-        await this._clearIndexedDB() // clear this store for fresh project state
         await this._saveFilesToIndexedDB()
 
         // update netnet URL
@@ -1755,14 +1766,18 @@ class ProjectFiles extends Widget {
 
     if (this.log) console.log('ProjectFiles: service worker loading')
 
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('SW now controlling')
-    })
-
-    navigator.serviceWorker.addEventListener('message', event => {
-      if (this.log) console.log('ProjectFiles: Message from SW:', event.data)
-      this._handleServiceWorkerMessage(event.data)
-    })
+    // attach controllerchange + message listeners only once per page load,
+    // not on every project open (was leaking listeners with each reopen).
+    if (!this._swListenersAttached) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('SW now controlling')
+      })
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (this.log) console.log('ProjectFiles: Message from SW:', event.data)
+        this._handleServiceWorkerMessage(event.data)
+      })
+      this._swListenersAttached = true
+    }
 
     try {
       const reg = await navigator.serviceWorker.register('/files-db-service-worker.js', { scope: '/' })
@@ -1856,38 +1871,29 @@ class ProjectFiles extends Widget {
     }
   }
 
-  async _clearIndexedDB () {
-    if (!this.db) {
-      if (this.log) console.log('ProjectFiles: IndexedDB hasn\'t been not initialized yet.')
-      return
+  // Delete an IndexedDB database entirely. Use this only when the intent
+  // is "wipe and start fresh" — e.g. creating a new project that happens
+  // to collide with a stale local DB of the same name. closeProject does
+  // NOT call this — local unpushed work must survive close.
+  async _destroyProjectDB (name) {
+    if (!window.indexedDB) return
+    if (this.db && this.dbName === name) {
+      try { this.db.close() } catch (e) { /* already closed */ }
+      this.db = null
     }
-
-    try {
-      if (!this.db.objectStoreNames.contains(this.storeName)) {
-        if (this.log) console.log('ProjectFiles: store not found, nothing to clear.')
-        this.files = {}
-        return
+    this.files = {}
+    return new Promise((resolve) => {
+      const req = window.indexedDB.deleteDatabase(name)
+      req.onsuccess = () => resolve()
+      req.onerror = (e) => {
+        console.error('ProjectFiles: deleteDatabase error:', e.target.error)
+        resolve()
       }
-
-      const tx = this.db.transaction([this.storeName], 'readwrite')
-      const store = tx.objectStore(this.storeName)
-      const req = store.clear()
-
-      await new Promise((resolve, reject) => {
-        req.onerror = e => {
-          console.error('ProjectFiles: IndexedDB clear error:', e.target.error)
-          reject(e.target.error)
-        }
-        tx.oncomplete = () => resolve()
-        tx.onerror = e => reject(e.target.error)
-        tx.onabort = e => reject(e.target.error)
-      })
-
-      if (this.log) console.log('ProjectFiles: All data cleared from IndexedDB successfully.')
-      this.files = {}
-    } catch (error) {
-      console.error('ProjectFiles: Error while clearing IndexedDB:', error)
-    }
+      req.onblocked = () => {
+        console.warn('ProjectFiles: deleteDatabase blocked (open connections elsewhere)')
+        resolve()
+      }
+    })
   }
 
   // save the "code" in this.files into indexedDB (avoids storing all other GH data)
