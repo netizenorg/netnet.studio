@@ -610,6 +610,7 @@ class ProjectFiles extends Widget {
     this.viewing = null
     this.rendering = null
     this.lastCommitFiles = {}
+    this.changes = []
     this.projectData = {}
 
     if (dbName && !hasUnpushed) {
