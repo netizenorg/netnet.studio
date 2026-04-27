@@ -2082,7 +2082,7 @@ class ProjectFiles extends Widget {
     try {
       const dbs = await Promise.race([
         window.indexedDB.databases(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+        new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
       ])
       exists = dbs.some(d => d.name === repo)
     } catch (e) {
