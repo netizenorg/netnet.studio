@@ -434,12 +434,6 @@ window.CONVOS['project-files'] = (self) => {
       'never mind': (e) => { self._pendingOpenRepo = null; e.hide() }
     }
   }, {
-    id: 'project-opened-from-local',
-    content: 'Welcome back! I\'ve loaded your most recent local save for this project. You have unpushed changes — don\'t forget to push to GitHub when you\'re ready to back them up.',
-    options: {
-      ok: (e) => e.hide()
-    }
-  }, {
     id: 'opening-project',
     before: () => NNW.menu.switchFace('processing'),
     content: '...asking GitHub for data...',
