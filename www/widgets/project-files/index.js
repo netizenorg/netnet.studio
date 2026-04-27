@@ -594,8 +594,13 @@ class ProjectFiles extends Widget {
   }
 
   closeProject () {
-    // reset this widget — keep the project's IndexedDB intact so unpushed
-    // local work survives close. just release the connection.
+    // if there are no unpushed changes, drop the local DB on close —
+    // the GitHub copy is the source of truth, the local copy is just
+    // cache. Only projects with unpushed work are kept locally so the
+    // student can come back and finish them.
+    const dbName = this.dbName
+    const hasUnpushed = Object.keys(this._buildBaselines()).length > 0
+
     if (this.db) {
       try { this.db.close() } catch (e) { /* already closed */ }
       this.db = null
@@ -606,6 +611,11 @@ class ProjectFiles extends Widget {
     this.rendering = null
     this.lastCommitFiles = {}
     this.projectData = {}
+
+    if (dbName && !hasUnpushed) {
+      // fire-and-forget; callers don't need to wait for the delete
+      this._destroyProjectDB(dbName).catch(() => {})
+    }
     // remove github path from URL + clear title bar
     utils.updateURL()
     NNW.updateTitleBar(null)

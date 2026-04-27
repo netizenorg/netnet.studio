@@ -260,10 +260,13 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'confirm-quit-changes',
-    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. If you don\'t commit and "git push" those changes before quitting then you\'ll loose that progress.',
+    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. Do you want to push your local changes to GitHub first?',
     options: {
-      'oh, never mind': (e) => e.hide(),
-      'yes, quit project anyways': (e) => {
+      'oh, sure!': (e) => {
+        e.hide()
+        self._launchGit()
+      },
+      'no, just quit': (e) => {
         self.closeProject()
         e.hide()
       }
