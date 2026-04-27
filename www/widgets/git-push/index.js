@@ -222,6 +222,8 @@ class GitPush extends Widget {
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')
     a.setAttribute('href', url)
+    a.setAttribute('target', '_blank')
+    a.setAttribute('rel', 'noopener noreferrer')
     a.click()
     a.remove()
   }
