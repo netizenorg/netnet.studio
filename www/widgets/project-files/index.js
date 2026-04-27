@@ -467,6 +467,7 @@ class ProjectFiles extends Widget {
           this._swControl = this._initServiceWorker() // setup service worker
           this.db = await this._initIndexedDB() // setup indexedDB
           await this._saveFilesToIndexedDB()
+          await this._saveProjectMetaToIndexedDB()
 
           // update netnet URL
           const ghStr = branch === 'main'
@@ -500,6 +501,7 @@ class ProjectFiles extends Widget {
           })
 
           this.lastCommitFiles = this._snapshotFiles(this.files)
+          await this._saveBaselinesToIndexedDB()
 
           this._updateFilesGUI()
 
@@ -1141,6 +1143,7 @@ class ProjectFiles extends Widget {
 
   async resetChanges () {
     this.lastCommitFiles = this._snapshotFiles(this.files)
+    await this._saveBaselinesToIndexedDB()
     this.changes = await this.computeChanges()
     return this.changes
   }
@@ -1528,6 +1531,7 @@ class ProjectFiles extends Widget {
         this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
         await this._saveFilesToIndexedDB()
+        await this._saveProjectMetaToIndexedDB()
 
         // update netnet URL
         const ghStr = res.branch === 'main'
@@ -1546,6 +1550,7 @@ class ProjectFiles extends Widget {
         })
 
         this.lastCommitFiles = this._snapshotFiles(this.files)
+        await this._saveBaselinesToIndexedDB()
 
         this._updateFilesGUI()
 
@@ -1897,27 +1902,136 @@ class ProjectFiles extends Widget {
   }
 
   // save the "code" in this.files into indexedDB (avoids storing all other GH data)
+  // atomically also persists baselines so unpushed-changes detection
+  // survives reload (used by Phase 3's "open from local?" convo).
   _saveFilesToIndexedDB () {
+    if (!this.db) return Promise.resolve()
     const filesDict = {}
     Object.values(this.files).forEach(file => {
       if (file.code) filesDict[file.path] = file.code
     })
+    const baselines = this._buildBaselines()
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
-      const objectStore = transaction.objectStore(this.storeName)
-      const request = objectStore.put(filesDict, this.objName)
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      store.put(filesDict, this.objName)
+      store.put(baselines, 'baselines')
 
-      request.onerror = (event) => {
+      tx.oncomplete = () => {
+        if (this.log) console.log('ProjectFiles: Files+baselines saved.', this.dbName)
+        resolve()
+      }
+      tx.onerror = (event) => {
         console.error('ProjectFiles: IndexedDB save error:', event.target.error)
         reject(event.target.error)
       }
-
-      request.onsuccess = () => {
-        if (this.log) console.log('ProjectFiles: Files saved to IndexedDB successfully.', this.dbName)
-        resolve()
-      }
+      tx.onabort = (event) => reject(event.target.error)
     })
+  }
+
+  // Build the persisted baselines map: only paths where current files
+  // diverge from lastCommitFiles. Sentinel `null` means "didn't exist
+  // at last push" (newly created since); a value (string|Blob) means
+  // "existed at last push with this content" (modified or deleted).
+  _buildBaselines () {
+    const baselines = {}
+    const lastCommit = this.lastCommitFiles || {}
+    const allPaths = new Set([
+      ...Object.keys(lastCommit),
+      ...Object.keys(this.files || {})
+    ])
+    for (const path of allPaths) {
+      const prev = lastCommit[path]?.code
+      const curr = this.files[path]?.code
+      if (prev === curr) continue
+      baselines[path] = (prev === undefined) ? null : prev
+    }
+    return baselines
+  }
+
+  // Explicit baselines write — call after lastCommitFiles is reset to
+  // a fresh snapshot (openProject, _postNewRepo, resetChanges) to clear
+  // any drift left by intermediate saves during the load loop.
+  _saveBaselinesToIndexedDB () {
+    if (!this.db) return Promise.resolve()
+    const baselines = this._buildBaselines()
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.put(baselines, 'baselines')
+      req.onerror = e => {
+        console.error('ProjectFiles: baselines save error:', e.target.error)
+        reject(e.target.error)
+      }
+      req.onsuccess = () => resolve()
+    })
+  }
+
+  _loadBaselinesFromIndexedDB () {
+    if (!this.db) return Promise.resolve(null)
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get('baselines')
+      req.onerror = () => resolve(null)
+      req.onsuccess = () => resolve(req.result || {})
+    })
+  }
+
+  _saveProjectMetaToIndexedDB () {
+    if (!this.db) return Promise.resolve()
+    const owner = WIDGETS['student-session']?.getData('owner') || null
+    const meta = {
+      owner,
+      repo: this.projectData?.name || null,
+      branch: this.projectData?.branch || null,
+      url: this.projectData?.url || null,
+      lastPushSHA: this.projectData?.lastPushSHA || null
+    }
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.put(meta, 'projectMeta')
+      req.onerror = e => {
+        console.error('ProjectFiles: meta save error:', e.target.error)
+        reject(e.target.error)
+      }
+      req.onsuccess = () => resolve()
+    })
+  }
+
+  _loadProjectMetaFromIndexedDB () {
+    if (!this.db) return Promise.resolve(null)
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get('projectMeta')
+      req.onerror = () => resolve(null)
+      req.onsuccess = () => resolve(req.result || null)
+    })
+  }
+
+  // Used in Phase 3 to rebuild lastCommitFiles from working copy +
+  // persisted baselines, so computeChanges keeps working after reload.
+  _reconstructLastCommitFiles (files, baselines) {
+    const result = {}
+    baselines = baselines || {}
+    for (const path of Object.keys(files || {})) {
+      if (baselines[path] === null) continue // newly created — wasn't in last commit
+      if (Object.prototype.hasOwnProperty.call(baselines, path)) {
+        result[path] = { path, code: baselines[path] }
+      } else {
+        result[path] = { path, code: files[path].code }
+      }
+    }
+    // include deleted files (in baselines but not in working copy)
+    for (const [path, baseCode] of Object.entries(baselines)) {
+      if (files[path] !== undefined) continue
+      if (baseCode === null) continue
+      result[path] = { path, code: baseCode }
+    }
+    return result
   }
 }
 
