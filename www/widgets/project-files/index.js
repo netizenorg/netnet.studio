@@ -432,92 +432,163 @@ class ProjectFiles extends Widget {
     if (!repo) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
-    } else {
-      utils.cancelAllNetitorUses('project-files')
-      WIDGETS['student-session'].clearSaveState()
-      const owner = WIDGETS['student-session'].getData('owner')
-      if (this.projectData.name) this.closeProject()
-      nn.get('load-curtain').show('folder.html', { filename: repo })
-      this.open()
-
-      // load data for all the files
-      utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-        if (res.success === 'false') {
-          nn.get('load-curtain').hide()
-          return this._ohNoErr(res)
-        }
-
-        if (Object.keys(res.data).includes('index.html')) {
-          utils.setCustomRenderer(null)
-
-          this._setupCodeUpdateListener()
-
-          // update student session data
-          const htmlUrl = res.data['index.html'].html_url
-          const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
-          const url = (htmlUrl.includes('/blob/master'))
-            ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
-          this.projectData = { url, branch, name: repo }
-          this.dbName = repo
-
-          // wipe any stale local DB for this repo before re-initializing
-          // with the freshly-fetched GitHub state. Phase 3 will gate this
-          // behind an "open from local?" check.
-          await this._destroyProjectDB(repo)
-          this._swControl = this._initServiceWorker() // setup service worker
-          this.db = await this._initIndexedDB() // setup indexedDB
-          await this._saveFilesToIndexedDB()
-          await this._saveProjectMetaToIndexedDB()
-
-          // update netnet URL
-          const ghStr = branch === 'main'
-            ? `?gh=${owner}/${repo}`
-            : `?gh=${owner}/${repo}/${branch}`
-          utils.updateURL(ghStr)
-
-          // setup netitor's custom renderer to work with service worker
-          this._setCustomRenderer()
-
-          // load all the data
-
-          Object.entries(res.data).forEach((arr) => {
-            const name = arr[0]
-            const data = arr[1]
-            const mt = this._getMimeType(name)
-            const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
-            const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
-            this.files[name] = { path: data.path }
-            let code // store plain-text/code
-            if (name.split('/').includes('.gitkeep') || isTxt) {
-              code = (data.content === '') ? data.download_url : utils.atob(data.content)
-              // exception for empty index.html files
-              if (name === 'index.html' && data.content === '') code = ''
-            } else { // otherwise assume binary file && store blob-url (or github URL)
-              // b/c github sends back empty strings for large binary files's content
-              code = (data.content === '')
-                ? data.download_url : this._base64ToBlob(data.content, mt)
-            }
-            this._updateFile(name, code)
-          })
-
-          this.lastCommitFiles = this._snapshotFiles(this.files)
-          await this._saveBaselinesToIndexedDB()
-
-          this._updateFilesGUI()
-
-          // open the index.html file by default
-          this.openFile('index.html')
-          this.convos = window.CONVOS[this.key](this)
-          window.convo = new Convo(this.convos, 'project-opened')
-          // NOTE: load-curtain is hidden after index.html file is opened
-        } else {
-          this.files = {}
-          nn.get('load-curtain').hide()
-          this.convos = window.CONVOS[this.key](this)
-          window.convo = new Convo(this.convos, 'not-a-web-project')
-        }
-      })
+      return
     }
+
+    // Phase 3: if we have unpushed local changes for this repo, ask the
+    // student which copy to open before destroying anything.
+    const hasLocal = await this._peekUnpushedLocal(repo)
+    if (hasLocal) {
+      this._pendingOpenRepo = repo
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'open-from-local-or-github')
+      return
+    }
+
+    await this._openFromGitHub(repo)
+  }
+
+  async _openFromGitHub (repo) {
+    utils.cancelAllNetitorUses('project-files')
+    WIDGETS['student-session'].clearSaveState()
+    const owner = WIDGETS['student-session'].getData('owner')
+    if (this.projectData.name) this.closeProject()
+    nn.get('load-curtain').show('folder.html', { filename: repo })
+    this.open()
+
+    // load data for all the files
+    utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
+      if (res.success === 'false') {
+        nn.get('load-curtain').hide()
+        return this._ohNoErr(res)
+      }
+
+      if (Object.keys(res.data).includes('index.html')) {
+        utils.setCustomRenderer(null)
+
+        this._setupCodeUpdateListener()
+
+        // update student session data
+        const htmlUrl = res.data['index.html'].html_url
+        const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
+        const url = (htmlUrl.includes('/blob/master'))
+          ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
+        this.projectData = { url, branch, name: repo }
+        this.dbName = repo
+
+        // wipe any stale local DB for this repo before re-initializing
+        // with the freshly-fetched GitHub state. Phase 3 will gate this
+        // behind an "open from local?" check.
+        await this._destroyProjectDB(repo)
+        this._swControl = this._initServiceWorker() // setup service worker
+        this.db = await this._initIndexedDB() // setup indexedDB
+        await this._saveFilesToIndexedDB()
+        await this._saveProjectMetaToIndexedDB()
+
+        // update netnet URL
+        const ghStr = branch === 'main'
+          ? `?gh=${owner}/${repo}`
+          : `?gh=${owner}/${repo}/${branch}`
+        utils.updateURL(ghStr)
+
+        // setup netitor's custom renderer to work with service worker
+        this._setCustomRenderer()
+
+        // load all the data
+
+        Object.entries(res.data).forEach((arr) => {
+          const name = arr[0]
+          const data = arr[1]
+          const mt = this._getMimeType(name)
+          const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
+          const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
+          this.files[name] = { path: data.path }
+          let code // store plain-text/code
+          if (name.split('/').includes('.gitkeep') || isTxt) {
+            code = (data.content === '') ? data.download_url : utils.atob(data.content)
+            // exception for empty index.html files
+            if (name === 'index.html' && data.content === '') code = ''
+          } else { // otherwise assume binary file && store blob-url (or github URL)
+            // b/c github sends back empty strings for large binary files's content
+            code = (data.content === '')
+              ? data.download_url : this._base64ToBlob(data.content, mt)
+          }
+          this._updateFile(name, code)
+        })
+
+        this.lastCommitFiles = this._snapshotFiles(this.files)
+        await this._saveBaselinesToIndexedDB()
+
+        this._updateFilesGUI()
+
+        // open the index.html file by default
+        this.openFile('index.html')
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'project-opened')
+        // NOTE: load-curtain is hidden after index.html file is opened
+      } else {
+        this.files = {}
+        nn.get('load-curtain').hide()
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'not-a-web-project')
+      }
+    })
+  }
+
+  // Phase 3: open a project from its local IDB without touching GitHub.
+  // Used when the student picks "open local copy" in response to the
+  // open-from-local-or-github convo.
+  async _openFromLocal (repo) {
+    utils.cancelAllNetitorUses('project-files')
+    WIDGETS['student-session'].clearSaveState()
+    if (this.projectData.name) this.closeProject()
+    nn.get('load-curtain').show('folder.html', { filename: repo })
+    this.open()
+
+    this.dbName = repo
+    this._swControl = this._initServiceWorker()
+    this.db = await this._initIndexedDB()
+
+    const filesDict = await this._loadFilesFromIndexedDB()
+    const baselines = await this._loadBaselinesFromIndexedDB()
+    const meta = await this._loadProjectMetaFromIndexedDB()
+
+    if (!meta || !filesDict || Object.keys(filesDict).length === 0) {
+      // local data is incomplete somehow — fall back to GitHub
+      console.warn('ProjectFiles: local data incomplete, falling back to GitHub')
+      nn.get('load-curtain').hide()
+      return this._openFromGitHub(repo)
+    }
+
+    utils.setCustomRenderer(null)
+    this._setupCodeUpdateListener()
+
+    this.projectData = {
+      name: meta.repo || repo,
+      branch: meta.branch || 'main',
+      url: meta.url || null,
+      ghpages: null
+    }
+
+    // populate this.files from the IDB working copy
+    for (const [path, code] of Object.entries(filesDict)) {
+      this.files[path] = { path, code }
+    }
+    // reconstruct lastCommitFiles so computeChanges keeps working
+    this.lastCommitFiles = this._reconstructLastCommitFiles(this.files, baselines)
+
+    const owner = meta.owner || WIDGETS['student-session'].getData('owner')
+    const ghStr = (this.projectData.branch === 'main')
+      ? `?gh=${owner}/${repo}`
+      : `?gh=${owner}/${repo}/${this.projectData.branch}`
+    utils.updateURL(ghStr)
+
+    this._setCustomRenderer()
+    this._updateFilesGUI()
+
+    this.openFile('index.html')
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, 'project-opened-from-local')
   }
 
   closeProject () {
@@ -1965,6 +2036,61 @@ class ProjectFiles extends Widget {
         reject(e.target.error)
       }
       req.onsuccess = () => resolve()
+    })
+  }
+
+  _loadFilesFromIndexedDB () {
+    if (!this.db) return Promise.resolve({})
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get(this.objName)
+      req.onerror = () => resolve({})
+      req.onsuccess = () => resolve(req.result || {})
+    })
+  }
+
+  // Check whether a local IDB for this repo has unpushed changes (a
+  // non-empty 'baselines' map). Used by openProject to decide whether
+  // to fire the "open from local?" convo before fetching from GitHub.
+  // Avoids creating an empty DB shell for repos that have never been
+  // opened locally — only opens if the DB already exists.
+  async _peekUnpushedLocal (repo) {
+    if (!window.indexedDB) return false
+    if (!window.indexedDB.databases) return false // Safari pre-2023; skip peek
+    let exists = false
+    try {
+      const dbs = await window.indexedDB.databases()
+      exists = dbs.some(d => d.name === repo)
+    } catch (e) { return false }
+    if (!exists) return false
+
+    return new Promise(resolve => {
+      const req = window.indexedDB.open(repo, this.dbVersion)
+      req.onerror = () => resolve(false)
+      req.onupgradeneeded = e => {
+        const d = e.target.result
+        if (!d.objectStoreNames.contains(this.storeName)) {
+          d.createObjectStore(this.storeName)
+        }
+      }
+      req.onsuccess = e => {
+        const db = e.target.result
+        try {
+          const tx = db.transaction([this.storeName], 'readonly')
+          const store = tx.objectStore(this.storeName)
+          const r = store.get('baselines')
+          r.onsuccess = () => {
+            const baselines = r.result || {}
+            db.close()
+            resolve(Object.keys(baselines).length > 0)
+          }
+          r.onerror = () => { db.close(); resolve(false) }
+        } catch (err) {
+          db.close()
+          resolve(false)
+        }
+      }
     })
   }
 
