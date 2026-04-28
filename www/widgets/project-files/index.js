@@ -221,7 +221,12 @@ class ProjectFiles extends Widget {
   }
 
   _launchGit () {
-    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => w.open())
+    const preConvo = (w) => {
+      if (!w.convos) return setTimeout(preConvo, 100, w)
+      window.convo = new Convo(w.convos, 'pre-start')
+    }
+    // instead of oppening widget, show it's pre-start convo
+    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => preConvo(w))
     else { window.convo = new Convo(this.convos, 'git-push-not-ready') }
   }
 
@@ -435,8 +440,8 @@ class ProjectFiles extends Widget {
       return
     }
 
-    // Phase 3: if we have unpushed local changes for this repo, ask the
-    // student which copy to open before destroying anything.
+    // if there are unpushed local changes, ask which copy to open before
+    // destroying anything; otherwise go straight to GitHub.
     const hasLocal = await this._peekUnpushedLocal(repo)
     if (hasLocal) {
       this._pendingOpenRepo = repo
@@ -454,7 +459,10 @@ class ProjectFiles extends Widget {
     const owner = WIDGETS['student-session'].getData('owner')
     if (this.projectData.name) this.closeProject()
     nn.get('load-curtain').show('folder.html', { filename: repo })
-    this.open()
+    // calling open() on an already-open widget re-fires the 'explain'
+    // convo via a 300ms setTimeout, which clobbers the convo we set
+    // after the project loads.
+    if (!this.opened) this.open()
 
     // load data for all the files
     utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
@@ -476,9 +484,7 @@ class ProjectFiles extends Widget {
         this.projectData = { url, branch, name: repo }
         this.dbName = repo
 
-        // wipe any stale local DB for this repo before re-initializing
-        // with the freshly-fetched GitHub state. Phase 3 will gate this
-        // behind an "open from local?" check.
+        // wipe any stale local DB before re-init with fresh GitHub data
         await this._destroyProjectDB(repo)
         this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
@@ -494,7 +500,9 @@ class ProjectFiles extends Widget {
         // setup netitor's custom renderer to work with service worker
         this._setCustomRenderer()
 
-        // load all the data
+        // load all the data — suppress baselines writes during the loop
+        // since lastCommitFiles is empty until after the loop completes
+        this._suppressBaselinesWrite = true
 
         Object.entries(res.data).forEach((arr) => {
           const name = arr[0]
@@ -516,6 +524,7 @@ class ProjectFiles extends Widget {
           this._updateFile(name, code)
         })
 
+        this._suppressBaselinesWrite = false
         this.lastCommitFiles = this._snapshotFiles(this.files)
         await this._saveBaselinesToIndexedDB()
 
@@ -535,9 +544,9 @@ class ProjectFiles extends Widget {
     })
   }
 
-  // Phase 3: open a project from its local IDB without touching GitHub.
-  // Used when the student picks "open local copy" in response to the
-  // open-from-local-or-github convo.
+  // Open a project from its local IDB (working copy + baselines + meta)
+  // without touching GitHub. Used when the student has unpushed local
+  // changes and chooses to keep working on them.
   async _openFromLocal (repo) {
     utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
@@ -587,13 +596,16 @@ class ProjectFiles extends Widget {
     this._updateFilesGUI()
 
     this.openFile('index.html')
-    this.convos = window.CONVOS[this.key](this)
-    window.convo = new Convo(this.convos, 'project-opened-from-local')
   }
 
   closeProject () {
-    // reset this widget — keep the project's IndexedDB intact so unpushed
-    // local work survives close. just release the connection.
+    // if there are no unpushed changes, drop the local DB on close —
+    // the GitHub copy is the source of truth, the local copy is just
+    // cache. Only projects with unpushed work are kept locally so the
+    // student can come back and finish them.
+    const dbName = this.dbName
+    const hasUnpushed = Object.keys(this._buildBaselines()).length > 0
+
     if (this.db) {
       try { this.db.close() } catch (e) { /* already closed */ }
       this.db = null
@@ -603,7 +615,13 @@ class ProjectFiles extends Widget {
     this.viewing = null
     this.rendering = null
     this.lastCommitFiles = {}
+    this.changes = []
     this.projectData = {}
+
+    if (dbName && !hasUnpushed) {
+      // fire-and-forget; callers don't need to wait for the delete
+      this._destroyProjectDB(dbName).catch(() => {})
+    }
     // remove github path from URL + clear title bar
     utils.updateURL()
     NNW.updateTitleBar(null)
@@ -1613,13 +1631,15 @@ class ProjectFiles extends Widget {
         // setup netitor's custom renderer to work with service worker
         this._setCustomRenderer()
 
-        // load all the data
+        // load all the data — suppress baselines writes during the loop
+        this._suppressBaselinesWrite = true
         res.data.forEach((arr) => {
           const name = arr[0]
           this.files[name] = { path: name }
           this._updateFile(name, arr[1])
         })
 
+        this._suppressBaselinesWrite = false
         this.lastCommitFiles = this._snapshotFiles(this.files)
         await this._saveBaselinesToIndexedDB()
 
@@ -1731,6 +1751,7 @@ class ProjectFiles extends Widget {
         URL.revokeObjectURL(this.files[filepath].code) // for memory management
       }
       delete this.files[filepath]
+      this._dropPathRefs(filepath)
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: File '${filepath}' deleted successfully.`)
       this._updateFilesGUI()
@@ -1740,6 +1761,35 @@ class ProjectFiles extends Widget {
       console.warn(`FilesDB: File '${filepath}' not found.`)
       // setTimeout(() => nn.get('load-curtain').hide(), 100)
     }
+  }
+
+  // Keep sibling state keyed by file path in sync when a file is renamed
+  // or moved. Without this the next save after a rename writes to the
+  // old path (recreating it as a phantom file) and silently loses edits.
+  // Intentionally does NOT migrate lastCommitFiles — leaving the old path
+  // in the baseline lets computeChanges produce delete(old) + create(new),
+  // which is how the rename gets encoded for GitHub.
+  _migratePathRefs (oldPath, newPath) {
+    if (!oldPath || !newPath || oldPath === newPath) return
+    if (this.viewing === oldPath) {
+      this.viewing = newPath
+      const repo = this.projectData?.name
+      if (repo) NNW.updateTitleBar(`${repo}/${newPath}`)
+    }
+    if (this.rendering === oldPath) this.rendering = newPath
+    if (this.history.stack[oldPath]) {
+      this.history.stack[newPath] = this.history.stack[oldPath]
+      delete this.history.stack[oldPath]
+    }
+    if (this.history.redoStack[oldPath]) {
+      this.history.redoStack[newPath] = this.history.redoStack[oldPath]
+      delete this.history.redoStack[oldPath]
+    }
+  }
+
+  _dropPathRefs (path) {
+    delete this.history.stack[path]
+    delete this.history.redoStack[path]
   }
 
   async _postMoveFile (newSubPath) {
@@ -1757,6 +1807,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     let errConvo
@@ -1802,6 +1853,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     if (dup) {
@@ -1972,22 +2024,26 @@ class ProjectFiles extends Widget {
     })
   }
 
-  // save the "code" in this.files into indexedDB (avoids storing all other GH data)
-  // atomically also persists baselines so unpushed-changes detection
-  // survives reload (used by Phase 3's "open from local?" convo).
+  // Persist working copy + baselines atomically. Writing both in one tx
+  // keeps the unpushed-changes signal in sync with the file contents on
+  // disk, so a reload can detect what's diverged from the last push.
   _saveFilesToIndexedDB () {
     if (!this.db) return Promise.resolve()
     const filesDict = {}
     Object.values(this.files).forEach(file => {
       if (file.code) filesDict[file.path] = file.code
     })
-    const baselines = this._buildBaselines()
 
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction([this.storeName], 'readwrite')
       const store = tx.objectStore(this.storeName)
       store.put(filesDict, this.objName)
-      store.put(baselines, 'baselines')
+      // when bulk-loading from GitHub, lastCommitFiles is empty until the
+      // load finishes; building baselines mid-load would mark every file
+      // as "newly created" and persist a wrong state if interrupted.
+      if (!this._suppressBaselinesWrite) {
+        store.put(this._buildBaselines(), 'baselines')
+      }
 
       tx.oncomplete = () => {
         if (this.log) console.log('ProjectFiles: Files+baselines saved.', this.dbName)
@@ -2001,10 +2057,10 @@ class ProjectFiles extends Widget {
     })
   }
 
-  // Build the persisted baselines map: only paths where current files
-  // diverge from lastCommitFiles. Sentinel `null` means "didn't exist
-  // at last push" (newly created since); a value (string|Blob) means
-  // "existed at last push with this content" (modified or deleted).
+  // Persisted divergence map keyed by path: a value (string|Blob) is the
+  // content at last push (file modified or deleted since); a `null`
+  // sentinel means the file didn't exist at last push (created since).
+  // Paths absent from the map are unchanged since last push.
   _buildBaselines () {
     const baselines = {}
     const lastCommit = this.lastCommitFiles || {}
@@ -2021,9 +2077,8 @@ class ProjectFiles extends Widget {
     return baselines
   }
 
-  // Explicit baselines write — call after lastCommitFiles is reset to
-  // a fresh snapshot (openProject, _postNewRepo, resetChanges) to clear
-  // any drift left by intermediate saves during the load loop.
+  // Explicit baselines-only write. Use after resetting lastCommitFiles
+  // to a clean snapshot so the persisted divergence map matches.
   _saveBaselinesToIndexedDB () {
     if (!this.db) return Promise.resolve()
     const baselines = this._buildBaselines()
@@ -2050,46 +2105,71 @@ class ProjectFiles extends Widget {
     })
   }
 
-  // Check whether a local IDB for this repo has unpushed changes (a
-  // non-empty 'baselines' map). Used by openProject to decide whether
-  // to fire the "open from local?" convo before fetching from GitHub.
-  // Avoids creating an empty DB shell for repos that have never been
-  // opened locally — only opens if the DB already exists.
+  // Returns true if a local DB for this repo exists and has a non-empty
+  // baselines map (i.e. unpushed changes). Avoids creating empty DB
+  // shells for repos that have never been opened locally — checks
+  // databases() first and only opens if it's already there. Fails
+  // closed (returns false) on any timeout or error.
   async _peekUnpushedLocal (repo) {
     if (!window.indexedDB) return false
     if (!window.indexedDB.databases) return false // Safari pre-2023; skip peek
+
+    // databases() with a timeout so the UI can never hang here
     let exists = false
     try {
-      const dbs = await window.indexedDB.databases()
+      const dbs = await Promise.race([
+        window.indexedDB.databases(),
+        new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+      ])
       exists = dbs.some(d => d.name === repo)
-    } catch (e) { return false }
+    } catch (e) {
+      console.warn('ProjectFiles: indexedDB.databases() failed/timed out — skipping peek')
+      return false
+    }
     if (!exists) return false
 
     return new Promise(resolve => {
-      const req = window.indexedDB.open(repo, this.dbVersion)
-      req.onerror = () => resolve(false)
-      req.onupgradeneeded = e => {
-        const d = e.target.result
-        if (!d.objectStoreNames.contains(this.storeName)) {
-          d.createObjectStore(this.storeName)
-        }
+      let settled = false
+      const settle = (v) => { if (!settled) { settled = true; resolve(v) } }
+      // hard timeout fallback — no peek path should hang the UI
+      const timer = setTimeout(() => {
+        console.warn('ProjectFiles: _peekUnpushedLocal timed out')
+        settle(false)
+      }, 3000)
+      const finish = (v, db) => {
+        clearTimeout(timer)
+        if (db) { try { db.close() } catch (e) {} }
+        settle(v)
       }
-      req.onsuccess = e => {
-        const db = e.target.result
-        try {
-          const tx = db.transaction([this.storeName], 'readonly')
-          const store = tx.objectStore(this.storeName)
-          const r = store.get('baselines')
-          r.onsuccess = () => {
-            const baselines = r.result || {}
-            db.close()
-            resolve(Object.keys(baselines).length > 0)
+
+      try {
+        const req = window.indexedDB.open(repo, this.dbVersion)
+        req.onerror = () => finish(false)
+        req.onblocked = () => finish(false)
+        req.onupgradeneeded = e => {
+          const d = e.target.result
+          if (!d.objectStoreNames.contains(this.storeName)) {
+            d.createObjectStore(this.storeName)
           }
-          r.onerror = () => { db.close(); resolve(false) }
-        } catch (err) {
-          db.close()
-          resolve(false)
         }
+        req.onsuccess = e => {
+          const db = e.target.result
+          try {
+            const tx = db.transaction([this.storeName], 'readonly')
+            const store = tx.objectStore(this.storeName)
+            const r = store.get('baselines')
+            r.onsuccess = () => {
+              const baselines = r.result || {}
+              finish(Object.keys(baselines).length > 0, db)
+            }
+            r.onerror = () => finish(false, db)
+            tx.onerror = () => finish(false, db)
+          } catch (err) {
+            finish(false, db)
+          }
+        }
+      } catch (err) {
+        finish(false)
       }
     })
   }
@@ -2138,8 +2218,9 @@ class ProjectFiles extends Widget {
     })
   }
 
-  // Used in Phase 3 to rebuild lastCommitFiles from working copy +
-  // persisted baselines, so computeChanges keeps working after reload.
+  // Rebuild the in-memory lastCommitFiles snapshot from the working
+  // copy + persisted baselines map, so computeChanges keeps working
+  // after a reload (when the in-memory snapshot is gone).
   _reconstructLastCommitFiles (files, baselines) {
     const result = {}
     baselines = baselines || {}

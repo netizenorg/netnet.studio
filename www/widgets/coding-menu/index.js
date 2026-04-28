@@ -158,6 +158,7 @@ class CodingMenu extends Widget {
   _newProject () {
     if (WIDGETS['project-files']) WIDGETS['project-files'].newProject()
     else WIDGETS.load('project-files', (w) => w.newProject())
+    if (!NNE.autoUpdate) NNE.update()
   }
 
   _newSketch () {

@@ -208,16 +208,8 @@ class DemoSketches extends Widget {
 
   _openInNewTab (o) {
     if (!o) o = this._tempObj
-    const openProj = WIDGETS['project-files']?.projectData.name
-    if (openProj) {
-      this._tempObj = o
-      this.convos = window.CONVOS[this.key](this)
-      const unSaved = WIDGETS['project-files'].changes.length > 0
-      if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
-      else window.convo = new Convo(this.convos, 'working-on-project')
-      return
-    }
-
+    // opening in a new tab leaves the current tab's project untouched,
+    // so no need to gate on an open project here.
     const l = window.location
     const url = `${l.protocol}//${l.host}?demo=${o.key}`
     window.open(url, '_blank', 'noopener,noreferrer')

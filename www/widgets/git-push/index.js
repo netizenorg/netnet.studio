@@ -121,6 +121,45 @@ class GitPush extends Widget {
     }
   }
 
+  _autoCommit () {
+    // similar to on-open logic (update if that changes)
+    const op = WIDGETS['project-files']?.projectData.name
+    const ch = WIDGETS['project-files']?.changes
+    if (op && ch.length === 0) {
+      window.convo = new Convo(this.convos, 'start-not-ready2')
+      return
+    } else if (!op) {
+      window.convo = new Convo(this.convos, 'start-not-ready')
+      return
+    }
+    // similar to 'git push' logic (update if that chaanges)
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    const branch = WIDGETS['project-files']?.projectData.branch
+    const commitMessage = '( ◕ ◞ ◕ ) auto commit'
+    const changes = WIDGETS['project-files'].changes
+    nn.get('load-curtain').show('github.html', { filename: repo })
+    const data = { owner, repo, branch, commitMessage, changes }
+    window.utils.post('/api/github/push', data, async (json) => {
+      this.convos = window.CONVOS[this.key](this)
+      try {
+        if (json.success) {
+          const changes = await WIDGETS['project-files'].resetChanges()
+          WIDGETS['project-files']._updateFilesGUI(changes)
+          this._nextCmd('finished')
+        } else {
+          console.log('GIT SERVER ERROR:', json)
+          window.convo = new Convo(this.convos, 'oh-no-error')
+        }
+      } catch (err) {
+        console.error('GitPush: error after push response:', err)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      } finally {
+        nn.get('load-curtain').hide()
+      }
+    }, 180000)
+  }
+
   _createSteps () {
     return {
       status: {
@@ -179,6 +218,7 @@ class GitPush extends Widget {
           nn.get('load-curtain').show('github.html', { filename: repo })
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
+            this.convos = window.CONVOS[this.key](this)
             try {
               if (json.success) {
                 const changes = await WIDGETS['project-files'].resetChanges()
@@ -222,6 +262,8 @@ class GitPush extends Widget {
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')
     a.setAttribute('href', url)
+    a.setAttribute('target', '_blank')
+    a.setAttribute('rel', 'noopener noreferrer')
     a.click()
     a.remove()
   }
