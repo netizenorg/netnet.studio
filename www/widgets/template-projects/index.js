@@ -104,6 +104,7 @@ class TemplateProjects extends Widget {
   }
 
   loadTemplate (name) {
+    if (this._checkOpenProject(name, 'load')) return
     this.state = { name }
     this._tempName = name
 
@@ -126,6 +127,7 @@ class TemplateProjects extends Widget {
     // or when choosing "new project from template" in widget list
     // or when called at the end of a template's convo
     const name = n || this.state.name
+    if (this._checkOpenProject(name, 'skip-guide')) return
     const res = await utils.getSync(`/api/template/${name}`)
     const multifile = res.data.files.length > 1
     const owner = WIDGETS['student-session'].getData('owner')
@@ -198,6 +200,7 @@ class TemplateProjects extends Widget {
   }
 
   async startGuide (name) {
+    if (this._checkOpenProject(name || this.state?.name, 'guide')) return
     utils.cancelAllNetitorUses('template-projects')
 
     if (!name) name = this.state.name
@@ -420,6 +423,30 @@ class TemplateProjects extends Widget {
       //   setTimeout(() => utils.autoType(opts), 500)
       // } else utils.autoType(opts)
     }
+  }
+
+  // Returns true (and fires a confirm convo) if the user has a project
+  // open. The convo's "go ahead" path closes the project and re-calls
+  // the original public method, which finds no open project and proceeds.
+  // Defers the convo if this widget's convo file hasn't loaded yet —
+  // first-time external launches arrive before Convo.load resolves.
+  _checkOpenProject (name, type) {
+    const openProj = WIDGETS['project-files']?.projectData.name
+    if (!openProj) return false
+    this._tempName = name
+    this._tempType = type
+    const fire = () => {
+      this.convos = window.CONVOS[this.key](this)
+      const unSaved = WIDGETS['project-files'].changes.length > 0
+      const id = unSaved ? 'clear-code-unsaved-proj' : 'clear-code-opened-proj'
+      window.convo = new Convo(this.convos, id)
+    }
+    if (typeof window.CONVOS[this.key] !== 'function') {
+      Convo.load(this.key, fire)
+    } else {
+      fire()
+    }
+    return true
   }
 
   _preCodeCheckConvo (name, type) {

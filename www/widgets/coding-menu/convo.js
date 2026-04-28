@@ -124,16 +124,37 @@ window.CONVOS['coding-menu'] = (self) => {
     options: {
       'new sketch': (e) => {
         if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-sketch')
-        WIDGETS['project-files'].closeProject()
-        if (NNE.code === '') e.goTo('already-blank-sketch')
-        else self._newSketch()
+        e.goTo('confirm-close-clean-b4-sketch')
       },
       'new project': (e) => {
         if (WIDGETS['project-files'].changes.length > 0) return e.goTo('save-reminder-b4-proj')
+        e.goTo('confirm-close-clean-b4-proj')
+      },
+      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew')
+    }
+  }, {
+    id: 'confirm-close-clean-b4-sketch',
+    content: 'I\'ll have to close the project your currently working on before we start a new sketch, is that what you want?',
+    options: {
+      'yes, switch to sketch': (e) => {
+        WIDGETS['project-files'].closeProject()
+        self._newSketch()
+      },
+      'actually, open sketch in new tab': (e) => {
+        e.hide()
+        window.open(window.location.origin + '/sketch', '_blank')
+      },
+      'no, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'confirm-close-clean-b4-proj',
+    content: 'I\'ll have to close the project your currently working before starting a new one, is that what you want?',
+    options: {
+      'yes, new project': (e) => {
         WIDGETS['project-files'].closeProject()
         self._newProject()
       },
-      'what\'s the difference?': (e) => e.goTo('proj-or-sketch-diff-optNew')
+      'no, never mind': (e) => e.hide()
     }
   }, {
     id: 'save-reminder-b4-sketch',
@@ -142,8 +163,7 @@ window.CONVOS['coding-menu'] = (self) => {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {
         WIDGETS['project-files'].closeProject()
-        if (NNE.code === '') e.goTo('already-blank-sketch')
-        else self._newSketch()
+        self._newSketch()
       }
     }
   }, {
