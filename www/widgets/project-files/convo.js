@@ -188,7 +188,7 @@ window.CONVOS['project-files'] = (self) => {
     after: () => addCircleToBubble()
   }, {
     id: 'where-is-this-saved',
-    content: 'When you create a new project, the initial files get created on your GitHub account before getting loaded here. As you work on your project, any changes you make and new files you create or upload get stored right here in your browser. Keep in mind this is only <b>temporary</b>, as you make changes I will color-code these temporary <span style="color: var(--netizen-attribute);">new</span> and <span style="color: var(--netizen-number);">edited</span> files to remind you that these will eventually need to get "pushed" to your Github in order to save these changes permanently on your account. Alternatively, you can <span class="link" onclick="WIDGETS[\'project-files\'].downloadProject()">download</span> your project locally at anytime.',
+    content: `When you create a new project, the initial files get created on your <a href="https://github.com/${a[0]}" target="_blank">GitHub account</a>, in the repo you named <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>, before getting loaded here. As you work on your project, any changes you make and new files you create or upload get stored right here in your browser. Keep in mind this is only <b>temporary</b>, as you make changes I will color-code these temporary <span style="color: var(--netizen-attribute);">new</span> and <span style="color: var(--netizen-number);">edited</span> files to remind you that these will eventually need to get "pushed" to your Github in order to save these changes permanently on your account. Alternatively, you can <span class="link" onclick="WIDGETS['project-files'].downloadProject()">download</span> your project locally at anytime.`,
     options: {
       'got it.': (e) => e.hide(),
       'ok, download it now': (e) => self.downloadProject(),
@@ -880,7 +880,7 @@ window.CONVOS['project-files'] = (self) => {
   // -------------------------- misc ----------
   {
     id: 'git-push-not-ready',
-    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">GitHub repo</a>. Try saving your changes locally first.`,
+    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">GitHub repo</a>. Try saving changes locally first <code>${utils.hotKey()} + S</code>.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }

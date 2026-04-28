@@ -221,7 +221,12 @@ class ProjectFiles extends Widget {
   }
 
   _launchGit () {
-    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => w.open())
+    const preConvo = (w) => {
+      if (!w.convos) return setTimeout(preConvo, 100, w)
+      window.convo = new Convo(w.convos, 'pre-start')
+    }
+    // instead of oppening widget, show it's pre-start convo
+    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => preConvo(w))
     else { window.convo = new Convo(this.convos, 'git-push-not-ready') }
   }
 
