@@ -1746,6 +1746,7 @@ class ProjectFiles extends Widget {
         URL.revokeObjectURL(this.files[filepath].code) // for memory management
       }
       delete this.files[filepath]
+      this._dropPathRefs(filepath)
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: File '${filepath}' deleted successfully.`)
       this._updateFilesGUI()
@@ -1755,6 +1756,35 @@ class ProjectFiles extends Widget {
       console.warn(`FilesDB: File '${filepath}' not found.`)
       // setTimeout(() => nn.get('load-curtain').hide(), 100)
     }
+  }
+
+  // Keep sibling state keyed by file path in sync when a file is renamed
+  // or moved. Without this the next save after a rename writes to the
+  // old path (recreating it as a phantom file) and silently loses edits.
+  // Intentionally does NOT migrate lastCommitFiles — leaving the old path
+  // in the baseline lets computeChanges produce delete(old) + create(new),
+  // which is how the rename gets encoded for GitHub.
+  _migratePathRefs (oldPath, newPath) {
+    if (!oldPath || !newPath || oldPath === newPath) return
+    if (this.viewing === oldPath) {
+      this.viewing = newPath
+      const repo = this.projectData?.name
+      if (repo) NNW.updateTitleBar(`${repo}/${newPath}`)
+    }
+    if (this.rendering === oldPath) this.rendering = newPath
+    if (this.history.stack[oldPath]) {
+      this.history.stack[newPath] = this.history.stack[oldPath]
+      delete this.history.stack[oldPath]
+    }
+    if (this.history.redoStack[oldPath]) {
+      this.history.redoStack[newPath] = this.history.redoStack[oldPath]
+      delete this.history.redoStack[oldPath]
+    }
+  }
+
+  _dropPathRefs (path) {
+    delete this.history.stack[path]
+    delete this.history.redoStack[path]
   }
 
   async _postMoveFile (newSubPath) {
@@ -1772,6 +1802,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     let errConvo
@@ -1817,6 +1848,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     if (dup) {
