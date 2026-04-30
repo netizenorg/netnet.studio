@@ -1390,7 +1390,8 @@ class ProjectFiles extends Widget {
       const controlled = await this.waitForSWControl(1200)
 
       if (this.listAllFiles().length > 0) {
-        const page = (this.rendering || 'index.html').replace(/^\/+/, '')
+        const startFile = this._pickStartFile(Object.keys(this.files))
+        const page = (this.rendering || startFile || 'index.html').replace(/^\/+/, '')
         const swPath = `/PROJ__${encodeURIComponent(this.dbName)}`
 
         if (!controlled) {
