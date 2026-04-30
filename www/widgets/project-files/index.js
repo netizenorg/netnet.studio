@@ -1411,7 +1411,7 @@ class ProjectFiles extends Widget {
         }
 
         if (!this.files[page]?.code) {
-          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${page}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
+          eve.update(`<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5"><h1>⚠️ 404: file not found</h1><p>The file <code>${page}</code> could not be found.</p><p>If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.</p></body></html>`)
         }
       } else {
         // eve.iframe.srcdoc = eve.code
