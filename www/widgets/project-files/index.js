@@ -1457,8 +1457,10 @@ class ProjectFiles extends Widget {
   }
 
   _isTxt (name, type) {
-    const mimeType = type || this.mimeTypes[name.split('.')[1]]
-    return mimeType.split('/')[0] === 'text' ||
+    const ext = (name || '').split('.').pop().toLowerCase()
+    const mimeType = type || this.mimeTypes[ext]
+    if (typeof mimeType !== 'string') return false // unknown ext → treat as binary
+    return mimeType.startsWith('text/') ||
       mimeType === 'application/json' ||
       mimeType === 'model/gltf+json' ||
       mimeType === 'application/x-javascript' ||
