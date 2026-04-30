@@ -471,13 +471,17 @@ class ProjectFiles extends Widget {
         return this._ohNoErr(res)
       }
 
-      if (Object.keys(res.data).includes('index.html')) {
+      // a "web project" needs at least one HTML file at the root —
+      // usually index.html, but a project may have been renamed (e.g.
+      // home.html) and pushed without index.html still present.
+      const refFile = this._pickStartFile(Object.keys(res.data))
+      if (refFile && refFile.endsWith('.html')) {
         utils.setCustomRenderer(null)
 
         this._setupCodeUpdateListener()
 
         // update student session data
-        const htmlUrl = res.data['index.html'].html_url
+        const htmlUrl = res.data[refFile].html_url
         const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
         const url = (htmlUrl.includes('/blob/master'))
           ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
@@ -530,8 +534,8 @@ class ProjectFiles extends Widget {
 
         this._updateFilesGUI()
 
-        // open the index.html file by default
-        this.openFile('index.html')
+        // open the project's start file (index.html or fallback)
+        this.openFile(refFile)
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'project-opened')
         // NOTE: load-curtain is hidden after index.html file is opened
@@ -595,7 +599,20 @@ class ProjectFiles extends Widget {
     this._setCustomRenderer()
     this._updateFilesGUI()
 
-    this.openFile('index.html')
+    const startFile = this._pickStartFile(Object.keys(this.files))
+    if (startFile) this.openFile(startFile)
+    else nn.get('load-curtain').hide()
+  }
+
+  // Pick a default file to open when entering a project. Prefers
+  // index.html, falls back to any root-level HTML file, then any file.
+  // Tolerates projects where index.html has been renamed.
+  _pickStartFile (paths) {
+    if (!paths || paths.length === 0) return null
+    if (paths.includes('index.html')) return 'index.html'
+    const rootHtml = paths.find(p => p.endsWith('.html') && !p.includes('/'))
+    if (rootHtml) return rootHtml
+    return paths[0]
   }
 
   closeProject () {
