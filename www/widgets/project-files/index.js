@@ -201,10 +201,8 @@ class ProjectFiles extends Widget {
     this.keepInFrame()
   }
 
-  async _colorizeChanges () {
-    if (nn.get('load-curtain').showing) return
-
-    this.changes = await this.computeChanges()
+  _colorizeChanges () {
+    this.changes = this.computeChanges()
     if (WIDGETS['git-push']) WIDGETS['git-push']._createHTML()
 
     if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
@@ -466,7 +464,10 @@ class ProjectFiles extends Widget {
 
     // load data for all the files
     utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-      if (res.success === 'false') {
+      // success can be either boolean false (utils.post timeout / network
+      // failure) or string 'false' (legacy backend shape). guard both,
+      // plus a defensive check that res.data is actually present.
+      if (!res || !res.success || res.success === 'false' || !res.data) {
         nn.get('load-curtain').hide()
         return this._ohNoErr(res)
       }
@@ -1247,43 +1248,39 @@ class ProjectFiles extends Widget {
     return snap
   }
 
-  async resetChanges () {
-    this.lastCommitFiles = this._snapshotFiles(this.files)
+  // Refresh lastCommitFiles after a push. If `pushedItems` is provided
+  // (manifest entries for the files actually sent to GitHub), only those
+  // baselines are advanced — unstaged files keep their pre-push baseline
+  // so their unpushed local changes stay visible. Without an arg, all
+  // baselines are reset (used by auto-commit which pushes everything).
+  async resetChanges (pushedItems) {
+    if (Array.isArray(pushedItems)) {
+      for (const item of pushedItems) {
+        if (item.action === 'delete') {
+          delete this.lastCommitFiles[item.path]
+        } else {
+          const curr = this.files[item.path]
+          if (curr) {
+            this.lastCommitFiles[item.path] = { path: item.path, code: curr.code }
+          }
+        }
+      }
+    } else {
+      this.lastCommitFiles = this._snapshotFiles(this.files)
+    }
     await this._saveBaselinesToIndexedDB()
-    this.changes = await this.computeChanges()
+    this.changes = this.computeChanges()
     return this.changes
   }
 
-  async computeChanges () {
+  // Build a lightweight manifest of which paths have changed since the
+  // last push. Returns [{action, path, isBinary?}]. No content is read
+  // or encoded here, so this stays cheap on every save — even for
+  // projects with multi-MB binary assets. Use hydrateChanges() to fill
+  // in `content` only when it's actually needed (i.e. at push-time).
+  computeChanges () {
     const oldFiles = this.lastCommitFiles || {}
     const newFiles = this.files || {}
-
-    const toBase64 = async (src) => {
-      if (src instanceof window.Blob) {
-        const buf = await src.arrayBuffer()
-        // fast btoa for big arrays
-        let binary = ''
-        const bytes = new Uint8Array(buf)
-        const chunk = 0x8000
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
-        }
-        return window.btoa(binary)
-      }
-      if (typeof src === 'string' && src.startsWith('blob:')) {
-        const r = await window.fetch(src)
-        return toBase64(await r.blob())
-      }
-      if (typeof src === 'string' && src.startsWith('data:')) {
-        return src.split('base64,')[1] || ''
-      }
-      return '' // or throw if you prefer
-    }
-
-    const isBinary = (v) =>
-      v instanceof window.Blob ||
-      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
-
     const changes = []
     const allPaths = new Set([...Object.keys(oldFiles), ...Object.keys(newFiles)])
 
@@ -1292,36 +1289,67 @@ class ProjectFiles extends Widget {
       const curr = newFiles[path]
 
       if (!prev && curr) {
-        const change = { action: 'create', path }
-        change.isBinary = isBinary(curr.code)
-        change.content = change.isBinary ? await toBase64(curr.code) : (curr.code || '')
-        changes.push(change)
+        changes.push({ action: 'create', path, isBinary: this._isBinary(curr.code) })
         continue
       }
-
       if (prev && !curr) {
         changes.push({ action: 'delete', path })
         continue
       }
-
       if (prev && curr) {
         const a = prev.code
         const b = curr.code
-
         let same = false
         if (typeof a === 'string' && typeof b === 'string') same = a === b
-        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b // Blob identity
-
+        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b
         if (!same) {
-          const change = { action: 'update', path }
-          change.isBinary = isBinary(b)
-          change.content = change.isBinary ? await toBase64(b) : (b || '')
-          changes.push(change)
+          changes.push({ action: 'update', path, isBinary: this._isBinary(b) })
         }
       }
     }
-
     return changes
+  }
+
+  // Fill in `content` for a list of manifest entries. Only base64-encodes
+  // the binaries the user actually staged for push, not every binary in
+  // the project. Called by git-push right before posting to the backend.
+  async hydrateChanges (items) {
+    const out = []
+    for (const item of items) {
+      if (item.action === 'delete') { out.push({ ...item }); continue }
+      const code = this.files[item.path]?.code
+      const content = item.isBinary
+        ? await this._toBase64(code)
+        : (code || '')
+      out.push({ ...item, content })
+    }
+    return out
+  }
+
+  _isBinary (v) {
+    return v instanceof window.Blob ||
+      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
+  }
+
+  async _toBase64 (src) {
+    if (src instanceof window.Blob) {
+      const buf = await src.arrayBuffer()
+      let binary = ''
+      const bytes = new Uint8Array(buf)
+      const chunk = 0x8000
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+      }
+      return window.btoa(binary)
+    }
+    if (typeof src === 'string' && src.startsWith('blob:')) {
+      const r = await window.fetch(src)
+      return this._toBase64(await r.blob())
+    }
+    if (typeof src === 'string' && src.startsWith('data:')) {
+      return src.split('base64,')[1] || ''
+    }
+    return ''
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
