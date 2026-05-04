@@ -1724,7 +1724,7 @@ class ProjectFiles extends Widget {
     }
   }
 
-  _postUpload () {
+  _postUpload (replace) {
     const cpath = this._rightClicked.dataset.path
     const fof = this._fpathExists(cpath)
     const path = fof === 'folder' ? cpath : this._getSubPath(cpath)
@@ -1744,15 +1744,17 @@ class ProjectFiles extends Widget {
     else if (ext === 'gltf') type = this.mimeTypes.gltf
     else if (ext === 'glb') type = this.mimeTypes.glb
     // ....
+    const filepath = path ? `${path}/${file.name}` : file.name
     if (allowedTypes.length > 0 && !allowedTypes.includes(type)) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unknown-format')
       this._uploadedFile = {}
-    } else if (this.files[file.name]) {
-      this._duplicate = file.name
+    } else if (!replace && this.files[filepath]) {
+      // duplicate detected — offer to replace. Keep this._uploadedFile
+      // around so the convo's "yes, replace it" can call _postUpload(true).
+      this._duplicate = filepath
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'duplicate-file')
-      this._uploadedFile = {}
+      window.convo = new Convo(this.convos, 'duplicate-upload-file')
     } else {
       nn.get('load-curtain').show('upload.html', { filename: file.name })
       const isTextType = this._isTxt(file.name, type)
@@ -1766,9 +1768,18 @@ class ProjectFiles extends Widget {
           } else if (type === 'image/svg+xml') {
             data = utils.atob(data.split(',')[1])
           }
-          const filepath = path ? `${path}/${file.name}` : file.name
           await this._updateFile(filepath, data)
           this._updateFilesGUI()
+          // if the replaced file is currently open in the editor, sync
+          // NNE.code so the user sees the new content (only meaningful
+          // for text — binaries open in the media viewer, not the editor).
+          if (replace && this.viewing === filepath && typeof data === 'string') {
+            NNE.code = data
+          }
+          // force the iframe to re-render so any rendered page or asset
+          // reference picks up the freshly-uploaded content.
+          this._forceRender = true
+          NNE.update()
         } catch (err) {
           console.error('ProjectFiles: upload failed:', err)
           utils._Convo('oh-no-error', err)
