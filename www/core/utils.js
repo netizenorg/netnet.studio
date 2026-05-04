@@ -18,7 +18,7 @@ window.utils = {
   post: (url, data, cb, timeoutMs = 60000) => {
     // timeoutMs guards against silent hangs (slow network, stalled server) which
     // would otherwise leave callers (eg. load-curtain) waiting forever.
-    const controller = new AbortController()
+    const controller = new window.AbortController()
     const timer = setTimeout(() => controller.abort(), timeoutMs)
     const opts = {
       method: 'POST',
