@@ -735,6 +735,19 @@ window.CONVOS['project-files'] = (self) => {
     content: `You already have a file called <code>${self._duplicate}</code> in that folder. You must either delete the older <i>${self._duplicate}</i> or give this new file another name.`,
     options: { ok: (e) => e.hide() }
   }, {
+    id: 'duplicate-upload-file',
+    content: `You already have a file called <code>${self._duplicate}</code> in your project. Uploading this file will replace the one you currently have, is that what you want?`,
+    options: {
+      'yes, replace it': (e) => {
+        e.hide()
+        self._postUpload(true)
+      },
+      'no, never mind': (e) => {
+        self._uploadedFile = {}
+        e.hide()
+      }
+    }
+  }, {
     id: 'duplicate-folder',
     content: `There is already a folder named <code>${self._duplicate}</code> in that parent folder. You must either delete the older <i>${self._duplicate}</i> folder or give this folder another name.`,
     options: { ok: (e) => e.hide() }

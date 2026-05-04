@@ -201,10 +201,8 @@ class ProjectFiles extends Widget {
     this.keepInFrame()
   }
 
-  async _colorizeChanges () {
-    if (nn.get('load-curtain').showing) return
-
-    this.changes = await this.computeChanges()
+  _colorizeChanges () {
+    this.changes = this.computeChanges()
     if (WIDGETS['git-push']) WIDGETS['git-push']._createHTML()
 
     if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
@@ -466,18 +464,25 @@ class ProjectFiles extends Widget {
 
     // load data for all the files
     utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-      if (res.success === 'false') {
+      // success can be either boolean false (utils.post timeout / network
+      // failure) or string 'false' (legacy backend shape). guard both,
+      // plus a defensive check that res.data is actually present.
+      if (!res || !res.success || res.success === 'false' || !res.data) {
         nn.get('load-curtain').hide()
         return this._ohNoErr(res)
       }
 
-      if (Object.keys(res.data).includes('index.html')) {
+      // a "web project" needs at least one HTML file at the root —
+      // usually index.html, but a project may have been renamed (e.g.
+      // home.html) and pushed without index.html still present.
+      const refFile = this._pickStartFile(Object.keys(res.data))
+      if (refFile && refFile.endsWith('.html')) {
         utils.setCustomRenderer(null)
 
         this._setupCodeUpdateListener()
 
         // update student session data
-        const htmlUrl = res.data['index.html'].html_url
+        const htmlUrl = res.data[refFile].html_url
         const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
         const url = (htmlUrl.includes('/blob/master'))
           ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
@@ -530,8 +535,8 @@ class ProjectFiles extends Widget {
 
         this._updateFilesGUI()
 
-        // open the index.html file by default
-        this.openFile('index.html')
+        // open the project's start file (index.html or fallback)
+        this.openFile(refFile)
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'project-opened')
         // NOTE: load-curtain is hidden after index.html file is opened
@@ -595,7 +600,20 @@ class ProjectFiles extends Widget {
     this._setCustomRenderer()
     this._updateFilesGUI()
 
-    this.openFile('index.html')
+    const startFile = this._pickStartFile(Object.keys(this.files))
+    if (startFile) this.openFile(startFile)
+    else nn.get('load-curtain').hide()
+  }
+
+  // Pick a default file to open when entering a project. Prefers
+  // index.html, falls back to any root-level HTML file, then any file.
+  // Tolerates projects where index.html has been renamed.
+  _pickStartFile (paths) {
+    if (!paths || paths.length === 0) return null
+    if (paths.includes('index.html')) return 'index.html'
+    const rootHtml = paths.find(p => p.endsWith('.html') && !p.includes('/'))
+    if (rootHtml) return rootHtml
+    return paths[0]
   }
 
   closeProject () {
@@ -1230,43 +1248,39 @@ class ProjectFiles extends Widget {
     return snap
   }
 
-  async resetChanges () {
-    this.lastCommitFiles = this._snapshotFiles(this.files)
+  // Refresh lastCommitFiles after a push. If `pushedItems` is provided
+  // (manifest entries for the files actually sent to GitHub), only those
+  // baselines are advanced — unstaged files keep their pre-push baseline
+  // so their unpushed local changes stay visible. Without an arg, all
+  // baselines are reset (used by auto-commit which pushes everything).
+  async resetChanges (pushedItems) {
+    if (Array.isArray(pushedItems)) {
+      for (const item of pushedItems) {
+        if (item.action === 'delete') {
+          delete this.lastCommitFiles[item.path]
+        } else {
+          const curr = this.files[item.path]
+          if (curr) {
+            this.lastCommitFiles[item.path] = { path: item.path, code: curr.code }
+          }
+        }
+      }
+    } else {
+      this.lastCommitFiles = this._snapshotFiles(this.files)
+    }
     await this._saveBaselinesToIndexedDB()
-    this.changes = await this.computeChanges()
+    this.changes = this.computeChanges()
     return this.changes
   }
 
-  async computeChanges () {
+  // Build a lightweight manifest of which paths have changed since the
+  // last push. Returns [{action, path, isBinary?}]. No content is read
+  // or encoded here, so this stays cheap on every save — even for
+  // projects with multi-MB binary assets. Use hydrateChanges() to fill
+  // in `content` only when it's actually needed (i.e. at push-time).
+  computeChanges () {
     const oldFiles = this.lastCommitFiles || {}
     const newFiles = this.files || {}
-
-    const toBase64 = async (src) => {
-      if (src instanceof window.Blob) {
-        const buf = await src.arrayBuffer()
-        // fast btoa for big arrays
-        let binary = ''
-        const bytes = new Uint8Array(buf)
-        const chunk = 0x8000
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
-        }
-        return window.btoa(binary)
-      }
-      if (typeof src === 'string' && src.startsWith('blob:')) {
-        const r = await window.fetch(src)
-        return toBase64(await r.blob())
-      }
-      if (typeof src === 'string' && src.startsWith('data:')) {
-        return src.split('base64,')[1] || ''
-      }
-      return '' // or throw if you prefer
-    }
-
-    const isBinary = (v) =>
-      v instanceof window.Blob ||
-      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
-
     const changes = []
     const allPaths = new Set([...Object.keys(oldFiles), ...Object.keys(newFiles)])
 
@@ -1275,36 +1289,67 @@ class ProjectFiles extends Widget {
       const curr = newFiles[path]
 
       if (!prev && curr) {
-        const change = { action: 'create', path }
-        change.isBinary = isBinary(curr.code)
-        change.content = change.isBinary ? await toBase64(curr.code) : (curr.code || '')
-        changes.push(change)
+        changes.push({ action: 'create', path, isBinary: this._isBinary(curr.code) })
         continue
       }
-
       if (prev && !curr) {
         changes.push({ action: 'delete', path })
         continue
       }
-
       if (prev && curr) {
         const a = prev.code
         const b = curr.code
-
         let same = false
         if (typeof a === 'string' && typeof b === 'string') same = a === b
-        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b // Blob identity
-
+        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b
         if (!same) {
-          const change = { action: 'update', path }
-          change.isBinary = isBinary(b)
-          change.content = change.isBinary ? await toBase64(b) : (b || '')
-          changes.push(change)
+          changes.push({ action: 'update', path, isBinary: this._isBinary(b) })
         }
       }
     }
-
     return changes
+  }
+
+  // Fill in `content` for a list of manifest entries. Only base64-encodes
+  // the binaries the user actually staged for push, not every binary in
+  // the project. Called by git-push right before posting to the backend.
+  async hydrateChanges (items) {
+    const out = []
+    for (const item of items) {
+      if (item.action === 'delete') { out.push({ ...item }); continue }
+      const code = this.files[item.path]?.code
+      const content = item.isBinary
+        ? await this._toBase64(code)
+        : (code || '')
+      out.push({ ...item, content })
+    }
+    return out
+  }
+
+  _isBinary (v) {
+    return v instanceof window.Blob ||
+      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
+  }
+
+  async _toBase64 (src) {
+    if (src instanceof window.Blob) {
+      const buf = await src.arrayBuffer()
+      let binary = ''
+      const bytes = new Uint8Array(buf)
+      const chunk = 0x8000
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+      }
+      return window.btoa(binary)
+    }
+    if (typeof src === 'string' && src.startsWith('blob:')) {
+      const r = await window.fetch(src)
+      return this._toBase64(await r.blob())
+    }
+    if (typeof src === 'string' && src.startsWith('data:')) {
+      return src.split('base64,')[1] || ''
+    }
+    return ''
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -1373,7 +1418,8 @@ class ProjectFiles extends Widget {
       const controlled = await this.waitForSWControl(1200)
 
       if (this.listAllFiles().length > 0) {
-        const page = (this.rendering || 'index.html').replace(/^\/+/, '')
+        const startFile = this._pickStartFile(Object.keys(this.files))
+        const page = (this.rendering || startFile || 'index.html').replace(/^\/+/, '')
         const swPath = `/PROJ__${encodeURIComponent(this.dbName)}`
 
         if (!controlled) {
@@ -1394,7 +1440,7 @@ class ProjectFiles extends Widget {
         }
 
         if (!this.files[page]?.code) {
-          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${page}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
+          eve.update(`<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5"><h1>⚠️ 404: file not found</h1><p>The file <code>${page}</code> could not be found.</p><p>If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.</p></body></html>`)
         }
       } else {
         // eve.iframe.srcdoc = eve.code
@@ -1440,8 +1486,10 @@ class ProjectFiles extends Widget {
   }
 
   _isTxt (name, type) {
-    const mimeType = type || this.mimeTypes[name.split('.')[1]]
-    return mimeType.split('/')[0] === 'text' ||
+    const ext = (name || '').split('.').pop().toLowerCase()
+    const mimeType = type || this.mimeTypes[ext]
+    if (typeof mimeType !== 'string') return false // unknown ext → treat as binary
+    return mimeType.startsWith('text/') ||
       mimeType === 'application/json' ||
       mimeType === 'model/gltf+json' ||
       mimeType === 'application/x-javascript' ||
@@ -1676,7 +1724,7 @@ class ProjectFiles extends Widget {
     }
   }
 
-  _postUpload () {
+  _postUpload (replace) {
     const cpath = this._rightClicked.dataset.path
     const fof = this._fpathExists(cpath)
     const path = fof === 'folder' ? cpath : this._getSubPath(cpath)
@@ -1696,15 +1744,17 @@ class ProjectFiles extends Widget {
     else if (ext === 'gltf') type = this.mimeTypes.gltf
     else if (ext === 'glb') type = this.mimeTypes.glb
     // ....
+    const filepath = path ? `${path}/${file.name}` : file.name
     if (allowedTypes.length > 0 && !allowedTypes.includes(type)) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unknown-format')
       this._uploadedFile = {}
-    } else if (this.files[file.name]) {
-      this._duplicate = file.name
+    } else if (!replace && this.files[filepath]) {
+      // duplicate detected — offer to replace. Keep this._uploadedFile
+      // around so the convo's "yes, replace it" can call _postUpload(true).
+      this._duplicate = filepath
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'duplicate-file')
-      this._uploadedFile = {}
+      window.convo = new Convo(this.convos, 'duplicate-upload-file')
     } else {
       nn.get('load-curtain').show('upload.html', { filename: file.name })
       const isTextType = this._isTxt(file.name, type)
@@ -1718,9 +1768,18 @@ class ProjectFiles extends Widget {
           } else if (type === 'image/svg+xml') {
             data = utils.atob(data.split(',')[1])
           }
-          const filepath = path ? `${path}/${file.name}` : file.name
           await this._updateFile(filepath, data)
           this._updateFilesGUI()
+          // if the replaced file is currently open in the editor, sync
+          // NNE.code so the user sees the new content (only meaningful
+          // for text — binaries open in the media viewer, not the editor).
+          if (replace && this.viewing === filepath && typeof data === 'string') {
+            NNE.code = data
+          }
+          // force the iframe to re-render so any rendered page or asset
+          // reference picks up the freshly-uploaded content.
+          this._forceRender = true
+          NNE.update()
         } catch (err) {
           console.error('ProjectFiles: upload failed:', err)
           utils._Convo('oh-no-error', err)

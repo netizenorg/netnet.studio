@@ -121,7 +121,7 @@ class GitPush extends Widget {
     }
   }
 
-  _autoCommit () {
+  async _autoCommit () {
     // similar to on-open logic (update if that changes)
     const op = WIDGETS['project-files']?.projectData.name
     const ch = WIDGETS['project-files']?.changes
@@ -137,8 +137,11 @@ class GitPush extends Widget {
     const repo = WIDGETS['project-files']?.projectData.name
     const branch = WIDGETS['project-files']?.projectData.branch
     const commitMessage = '( ◕ ◞ ◕ ) auto commit'
-    const changes = WIDGETS['project-files'].changes
     nn.get('load-curtain').show('github.html', { filename: repo })
+    // hydrate at push-time so we only base64 the binaries we're sending
+    const changes = await WIDGETS['project-files'].hydrateChanges(
+      WIDGETS['project-files'].changes
+    )
     const data = { owner, repo, branch, commitMessage, changes }
     window.utils.post('/api/github/push', data, async (json) => {
       this.convos = window.CONVOS[this.key](this)
@@ -209,19 +212,23 @@ class GitPush extends Widget {
       push: {
         cli: 'git push',
         convo: 'git-push',
-        next: () => {
+        next: async () => {
           const owner = WIDGETS['student-session'].getData('owner')
           const repo = WIDGETS['project-files']?.projectData.name
           const branch = WIDGETS['project-files']?.projectData.branch
           const commitMessage = this._commitMessage
-          const changes = this.include
           nn.get('load-curtain').show('github.html', { filename: repo })
+          // hydrate at push-time only — base64-encode just the staged
+          // binaries instead of every binary in the project on every save.
+          const changes = await WIDGETS['project-files'].hydrateChanges(this.include)
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
             this.convos = window.CONVOS[this.key](this)
             try {
               if (json.success) {
-                const changes = await WIDGETS['project-files'].resetChanges()
+                // pass the staged subset so unstaged files keep their pre-push
+                // baseline and their unpushed changes remain visible.
+                const changes = await WIDGETS['project-files'].resetChanges(this.include)
                 WIDGETS['project-files']._updateFilesGUI(changes)
                 this._nextCmd('finished')
               } else {

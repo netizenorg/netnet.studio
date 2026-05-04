@@ -631,8 +631,28 @@ self.addEventListener('fetch', (event) => {
           return generateResponse(lookup, body)
         }
 
-        // miss inside project → network
-        return fetch(request, { cache: 'no-store' })
+        // miss inside project → return a real 404 instead of letting the
+        // request fall through to the dev server, which would respond with
+        // the SPA's index.html and silently fail to parse as CSS / JS / an
+        // image. Surfacing a 404 puts a clear error in DevTools and, for
+        // HTML navigations, renders a helpful page in the iframe.
+        const missExt = lookup.split('.').pop().toLowerCase()
+        const isHtmlLike = missExt === 'html' || missExt === 'htm' || missExt === 'md'
+        const safe = String(lookup)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        const missBody = isHtmlLike
+          ? `<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5">
+               <h1>⚠️ 404: file not found</h1>
+               <p>The file <code>${safe}</code> isn't in this project.</p>
+               <p>Check your Project Files tree and the path in your code.</p>
+             </body></html>`
+          : `Not found in project: ${lookup}`
+        return new Response(missBody, {
+          status: 404,
+          headers: {
+            'Content-Type': (isHtmlLike ? 'text/html' : 'text/plain') + '; charset=utf-8'
+          }
+        })
       }
 
       // ------------------------------------------- else, pass request through
