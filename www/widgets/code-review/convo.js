@@ -91,6 +91,19 @@ window.CONVOS['code-review'] = (self) => {
   },
   // console error convos
   {
+    id: 'sandbox-security-error',
+    content: 'It looks like you\'re trying to use browser storage (like <code>localStorage</code>, <code>sessionStorage</code>, or <code>indexedDB</code>). In this studio your sketches get rendered into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, but that also means browser storage APIs won\'t work in sketches. If you want to use browser storage, try switching to a <b>Project</b>!',
+    options: {
+      'ok, got it': (e) => e.hide(),
+      'what\'s a project?': (e) => e.goTo('sandbox-security-error-project')
+    }
+  }, {
+    id: 'sandbox-security-error-project',
+    content: 'Unlike sketches, a <b>Project</b> can have multiple files and can be published to the Web using GitHub. Click on my face to open the <b>Coding Menu</b> and connect your GitHub account to start creating projects. When a project renders its result, the iframe (the rendered output) isn\'t sandboxed, so browser storage APIs like <code>localStorage</code> work as expected.',
+    options: {
+      'ok thanks': (e) => e.hide()
+    }
+  }, {
     id: 'custom-renderer-error',
     content: `<i>Your browser passed me this error</i>:<br><span style="font-family: fira-code, inconsolata, monospace">${self.error.message}</span>`,
     options: {

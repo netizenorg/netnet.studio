@@ -27,7 +27,7 @@ class CodeReview extends Widget {
     NOTE: this has gone through a lot of upates/changes over time, it may need
     some refactoring at some point, when we do that, lets use this to test:
 
-    http://localhost:8001/?layout=dock-left#code/eJxlUc1yhCAMvvsUGS+60y7cd9QH6KE9bF8AISqtgg1x3Z2dvntB2+l0ygFCku+HULXe3JosA6js1EMgXecD8xxOUq7rKqz2LphWaD/JLZYz4cXiKtfBMkpzMcfrdRSz63NQI9c5Y+B8Z5yUdY0QYlWWretjVMktt+t1pCb8lYyK6eh8FEDaFPOmknvbDgma7MwNxJWlLRliSJRQg/F6mdCx+FiQbmccUbOnskjl4rD1d8h6KAupZit7y8PSyiUguShQPMIdNKGJDFaN4QRFiOmjJ9tHPHzuDACCB3QlQd0AibfgXXn4WzKKVaomXWGdQ3rFK0eDT+eXZxGY4ihsd9v6fqFaJWuYgPf/0KIdvX5HE13BA+CPm/1R3pfpWsnv8WSV3H71Cw/vlGE=
+    http://localhost:8001/?layout=dock-left#code/eJxlkrFy3CAQhvt7ih0a6cY29B5JTaq4sIvzC3CwkkgEyLCy7saTd88iObE9bgSz+///foCac7TX7nAAaJwfICfTipFozvdKresqnYkh27M00attr+aErw5XtY6OUNlXe3e5THIOgwA9USu8y9mFAZzXA4qOk0u4hjFh3wpj5eB6ATauYYratoLSwjLCTP+LjdI7ktcudFLKVTviTN41aqvtwH3SHj+YGbksfWRCTBuy6Bq1y3ZLNsnN1AFsVADlRAQlEloebxaPgeTLgul6wgkNxVRXpV0dN32PZMa6Unp2anA0Lme1ZEyBB1S38AYmoeUEp6d8D1Xm8l1MbmA//NkTACSNGOoEbQdJ/sox1MevLatJl26ZK10ImJ7xQgz4cHp6lJkSX4Xrr5vuw2p0QcNifPturc5TNL/RMhXcAP6j2T7c0dOJj8oPJjPST0JfC3/9oUncgniOXnxS9zHWx/dXVe/3eWjU9h/9BaGZtzM=
 
     for security purposes, we've updated the way the render iframe works so that
     it's now sandboxed (see main.js) which had some side-effects and required
@@ -36,10 +36,14 @@ class CodeReview extends Widget {
     still in place, the fetch request in the test sketch should update <main>
     with the "blocked" message (NOT a GitHub payload)
 
-    we should also see 3 error markers in this sketch:
+    we should also see 4 error markers in this sketch:
     1. a CORS error on line 3 for the <img>
-    2. a mixed-content warning for the <iframe> on line 7
-    3. a browser/console reference error for foo() on line 16
+    2. a warning about download attributes on line 5
+    3. a mixed-content warning for the <iframe> on line 9
+    4. a localStorage warning on line 18
+
+    also, if we address the localStorage error we should see:
+    5. a browser/console reference error for foo() on line 20
 
   */
 
@@ -57,6 +61,7 @@ class CodeReview extends Widget {
     else NNE.marker(null)
     // check for any custom issues
     this._checkForMixedContent()
+    this._checkForDownloadLinks()
     // update errors passed to .review({ error }) from main.js
     // must run before _checkForResourceErrors (may push to this._resourceErrors)
     this._updateError(obj.error)
@@ -112,18 +117,21 @@ class CodeReview extends Widget {
         if (!file.endsWith('.html')) line += diff
       }
 
+      // detect sandbox security errors (localStorage, sessionStorage, indexedDB, etc.)
+      const isSandboxErr = message.includes('allow-same-origin') || message.toLowerCase().includes('sandboxed')
       // store so review() can re-apply the marker after _markIssues clears markers
-      this._runtimeError = { message, line, file }
+      this._runtimeError = { message, line, file, isSandboxErr }
     }
   }
 
   _applyRuntimeMarker () {
     if (!this._runtimeError) return
-    const { message, line, file } = this._runtimeError
+    const { message, line, file, isSandboxErr } = this._runtimeError
+    const convoId = isSandboxErr ? 'sandbox-security-error' : 'custom-renderer-error'
     const m = NNE.marker(line, 'red', () => {
       this.error = { message, line, file }
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'custom-renderer-error')
+      window.convo = new Convo(this.convos, convoId)
     })
     m.setAttribute('title', message)
     m.dataset.err = JSON.stringify({ message, line, file })
@@ -246,6 +254,25 @@ class CodeReview extends Widget {
           const obj = { type, language, message, friendly, line, col }
           this.issues.push(obj)
         }
+      }
+    }
+  }
+
+  _checkForDownloadLinks () {
+    if (NNE.language !== 'html') return
+    if (WIDGETS['project-files']?.projectData?.name) return // sandbox removed for projects
+    const lines = NNE.code.split(/\r?\n/)
+    for (let i = 0; i < lines.length; i++) {
+      const LINE = lines[i]
+      if (LINE.includes('<a') && /\bdownload\b/.test(LINE)) {
+        this.issues.push({
+          type: 'warning',
+          language: 'html',
+          message: 'download attribute blocked by sandbox',
+          friendly: 'It seems you\'re using the <code>download</code> attribute on an anchor tag. In this studio your sketches get rendered into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which prevents file downloads from being triggered.',
+          line: i + 1,
+          col: LINE.indexOf('download')
+        })
       }
     }
   }
