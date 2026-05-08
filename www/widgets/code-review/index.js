@@ -13,6 +13,8 @@ class CodeReview extends Widget {
     this.tempCode = null
     this.issues = [] // issues netnet catches via linting
     this.error = {} // last error passed by browser console
+    this._resourceErrors = [] // failed resource URLs from iframe capture listener
+    this._runtimeError = null // last JS runtime error; persists across review() calls
     this._createHTML()
 
     this.on('open', () => this._opened())
@@ -21,18 +23,48 @@ class CodeReview extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
 
+  /*
+    NOTE: this has gone through a lot of upates/changes over time, it may need
+    some refactoring at some point, when we do that, lets use this to test:
+
+    http://localhost:8001/?layout=dock-left#code/eJxlUc1yhCAMvvsUGS+60y7cd9QH6KE9bF8AISqtgg1x3Z2dvntB2+l0ygFCku+HULXe3JosA6js1EMgXecD8xxOUq7rKqz2LphWaD/JLZYz4cXiKtfBMkpzMcfrdRSz63NQI9c5Y+B8Z5yUdY0QYlWWretjVMktt+t1pCb8lYyK6eh8FEDaFPOmknvbDgma7MwNxJWlLRliSJRQg/F6mdCx+FiQbmccUbOnskjl4rD1d8h6KAupZit7y8PSyiUguShQPMIdNKGJDFaN4QRFiOmjJ9tHPHzuDACCB3QlQd0AibfgXXn4WzKKVaomXWGdQ3rFK0eDT+eXZxGY4ihsd9v6fqFaJWuYgPf/0KIdvX5HE13BA+CPm/1R3pfpWsnv8WSV3H71Cw/vlGE=
+
+    for security purposes, we've updated the way the render iframe works so that
+    it's now sandboxed (see main.js) which had some side-effects and required
+    updates to this widget and how it handled these special error cases. If we
+    update things in the future we need to first confirm that the sandbox is
+    still in place, the fetch request in the test sketch should update <main>
+    with the "blocked" message (NOT a GitHub payload)
+
+    we should also see 3 error markers in this sketch:
+    1. a CORS error on line 3 for the <img>
+    2. a mixed-content warning for the <iframe> on line 7
+    3. a browser/console reference error for foo() on line 16
+
+  */
+
   review (obj = {}) {
     // update issues passed to .review({ issues }) from main.js
-    if (obj.issues) this.issues = obj.issues
-    // check for any custom issues
-    this._checkForMixedContent()
-    // mark all linted issues
+    if (obj.issues) {
+      this.issues = obj.issues
+      this._resourceErrors = [] // code changed — clear stale resource errors
+      this._runtimeError = null // code changed — clear stale runtime error
+    }
     const c = WIDGETS['student-session']
       ? WIDGETS['student-session'].getData('chattiness') : null
-    if (c && c !== 'low') this._markIssues(this.issues, true)
+    // clear markers before _updateError adds its runtime error marker so it isn't wiped
+    if (c && c !== 'low') NNE.clearMarkers(['orange', 'red'])
     else NNE.marker(null)
+    // check for any custom issues
+    this._checkForMixedContent()
     // update errors passed to .review({ error }) from main.js
+    // must run before _checkForResourceErrors (may push to this._resourceErrors)
     this._updateError(obj.error)
+    this._checkForResourceErrors()
+    // mark all linted issues (false = don't clear, _applyRuntimeMarker handles that)
+    if (c && c !== 'low') this._markIssues(this.issues, false)
+    // re-apply runtime error marker last so _markIssues can't clear it
+    this._applyRuntimeMarker()
     // update this code review widget's view
     this._reviewIssues()
   }
@@ -60,12 +92,17 @@ class CodeReview extends Widget {
     const c = ss ? ss.getData('chattiness') : null
     // event object from 'onerror' event injected into iframe either via
     // utils.setCustomRenderer (sketch) or files-db-service-worker.js (project)
+    if (event?.data?.type === 'iframe-error' && event.data.src) {
+      // resource load failure (img, script, link) — queue for _checkForResourceErrors
+      this._resourceErrors.push(event.data.src)
+      return
+    }
     if (c && c !== 'low' && event?.data && event?.data.type === 'iframe-error') {
       // these are the number of lines added to the top of the file before rendering
       // (see errMsgr in utils.setCustomRenderer)
-      const diff = 4
+      const diff = 9
       const message = event.data.message
-      let file = event.data.source.includes('.') ? event.data.source : null
+      let file = event.data.source?.includes('.') ? event.data.source : null
       let line = event.data.lineno - diff
 
       // if project, ensure only showing errors on current file
@@ -75,16 +112,21 @@ class CodeReview extends Widget {
         if (!file.endsWith('.html')) line += diff
       }
 
-      // add error markers (aka _markErrors)
-      const m = NNE.marker(line, 'red', () => {
-        // _explainError
-        this.error = { message, line, file }
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'custom-renderer-error')
-      })
-      m.setAttribute('title', message)
-      m.dataset.err = JSON.stringify({ message, line, file })
+      // store so review() can re-apply the marker after _markIssues clears markers
+      this._runtimeError = { message, line, file }
     }
+  }
+
+  _applyRuntimeMarker () {
+    if (!this._runtimeError) return
+    const { message, line, file } = this._runtimeError
+    const m = NNE.marker(line, 'red', () => {
+      this.error = { message, line, file }
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'custom-renderer-error')
+    })
+    m.setAttribute('title', message)
+    m.dataset.err = JSON.stringify({ message, line, file })
   }
 
   _findErrors () { // list console error objects
@@ -163,6 +205,27 @@ class CodeReview extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ CUSTOM ERRORS
+
+  _checkForResourceErrors () {
+    if (!this._resourceErrors.length) return
+    const lines = NNE.cm.getValue().split('\n')
+    this._resourceErrors.forEach(src => {
+      const parts = src.split('/')
+      const filename = parts[parts.length - 1]
+      lines.forEach((str, i) => {
+        if (!str.includes(src)) return
+        this.issues.push({
+          type: 'error',
+          language: 'html',
+          message: 'Failed to load: ' + src,
+          friendly: 'The file <b>' + filename + '</b> failed to load, it may be blocked by the server\'s <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">CORS policy</a> or the URL may be incorrect.',
+          line: i + 1,
+          col: 0
+        })
+      })
+    })
+    this._resourceErrors = []
+  }
 
   _checkForMixedContent () {
     if (NNE.language !== 'html') return

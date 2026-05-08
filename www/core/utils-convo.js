@@ -77,9 +77,17 @@ window.CONVOS['utils-misc'] = (self) => {
   }, {
     before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
     id: 'agree-to-fork',
-    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
+    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy in your account. One thing to keep in mind is that I\'ll be downloading this project\'s code and running it in your browser, so make sure you trust the creator of this repo. Sounds good?',
     options: {
-      'let\'s do it!': (e) => utils.forkRepo(),
+      'I trust it, let\'s do it!': (e) => utils.forkRepo(),
+      'trust?': (e) => e.goTo('trust-code'),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'trust-code',
+    content: 'You didn\'t write this code, so it\'s important to trust the person who did. This is true anytime you run someone else\'s code in your environment, this could mean importing a library someone else wrote into your own project, installing a new extention in your browser or even installing an app you downloaded to your computer. If you didn\'t write the code, always make sure it\'s coming from a tusted source!',
+    options: {
+      'I trust it, let\'s fork!': (e) => utils.forkRepo(),
       'oh, never mind': (e) => e.hide()
     }
   }, {

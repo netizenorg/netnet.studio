@@ -40,8 +40,9 @@ if (process.env.CURTAIN) {
 app.use('/api', utils.corsGate)
 app.use(ROUTES)
 app.use(GITHUB)
-app.use(express.static(`${__dirname}/www`))
-app.use('/docs', express.static(`${__dirname}/docs`))
+const staticCORS = (res) => res.setHeader('Access-Control-Allow-Origin', '*')
+app.use(express.static(`${__dirname}/www`, { setHeaders: staticCORS }))
+app.use('/docs', express.static(`${__dirname}/docs`, { setHeaders: staticCORS }))
 app.use(ERRORS.notFound)
 app.use(ERRORS.errorHandler)
 

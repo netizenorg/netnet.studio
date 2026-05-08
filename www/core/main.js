@@ -87,6 +87,8 @@ nn.on('load', async () => {
     utils.loaderUpdate('ready')
     // setup custom renderer to catch errors (see on "message" below)
     utils.setCustomRenderer(null)
+    // sandbox for security
+    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     // ...check URL for params, && fade out load screen when ready
     if (utils.checkURL() === 'none') utils.loadDefault()
   })

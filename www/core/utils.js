@@ -180,10 +180,11 @@ window.utils = {
 
   function bgmovement (e) {
     // send mousemovments back up to netnet
+    // '*' required: iframe may be sandboxed (null origin)
     window.top.postMessage({
       type: 'netnet-bg',
       data: { x: e.x, y: e.y }
-    })
+    }, '*')
   }
 
   function reduceMotion () {
@@ -209,7 +210,7 @@ window.utils = {
     NNE.iframe.contentWindow.postMessage({
       type: 'netnet',
       data: { x: e.x, y: e.y, nomotion }
-    })
+    }, '*')
   },
 
   forkRepo: () => {
@@ -756,9 +757,14 @@ window.utils = {
   // main.js listens for these errors + sends them to 'code-review' widget
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
-      window.onerror = function (message, source, lineno) {
-        window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
-      }
+      window.addEventListener('error', function (e) {
+        if (e.target && e.target !== window) {
+          var src = e.target.src || e.target.href || ''
+          if (src) window.parent.postMessage({ type: 'iframe-error', src: src }, '*')
+        } else {
+          window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
+        }
+      }, true)
     </script>`
     if (!base) {
       NNE.customRender = function (event) { event.update(errMsgr + event.code) }

@@ -659,6 +659,8 @@ class ProjectFiles extends Widget {
     NNE.code = ''
     NNE.language = 'html'
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    // restore sandbox now that we're back in sketch mode
+    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     // close widget
     this.close()
   }
@@ -1950,6 +1952,8 @@ class ProjectFiles extends Widget {
       console.error('ProjectFiles: no service worker support in this browser')
       return
     }
+    // project files need same-origin iframe so the SW can intercept requests
+    NNE.iframe.removeAttribute('sandbox')
 
     if (this.log) console.log('ProjectFiles: service worker loading')
 

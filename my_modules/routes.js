@@ -46,10 +46,14 @@ aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
       const filePath = path.join(__dirname, dep.loc, req.params[0])
+      res.setHeader('Access-Control-Allow-Origin', '*')
       res.sendFile(filePath)
     })
   } else { // for exact routes
-    router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+    router.get(dep.url, (req, res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.sendFile(path.join(__dirname, dep.loc))
+    })
   }
 })
 
@@ -133,7 +137,8 @@ router.get('/templates/*', (req, res) => {
           res.send(html)
         })
       })
-    } else { // it’s a file → serve it directly
+    } else { // it's a file → serve it directly
+      res.setHeader('Access-Control-Allow-Origin', '*')
       res.sendFile(requestedPath)
     }
   })
