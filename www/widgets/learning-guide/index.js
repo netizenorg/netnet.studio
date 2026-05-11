@@ -22,10 +22,6 @@ class LearningGuide extends Widget {
     // load widget card class
     utils.loadFile('widgets/learning-guide/data/widget-card.js', () => {
       this._createPage('mainOpts', 'main-slide.html', null, (div) => {
-        // div.querySelector('#bf-submission').addEventListener('click', () => {
-        //   WIDGETS['coding-menu'].BrowserFest()
-        // })
-
         // create sub pages
         this.subpages = [
           { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },

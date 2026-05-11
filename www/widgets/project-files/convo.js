@@ -463,19 +463,7 @@ window.CONVOS['project-files'] = (self) => {
     options: {
       ok: (e) => e.hide(),
       'beta?': (e) => e.goTo('beta')
-      // 'submit to BrowserFest': (e) => {
-      //   if (WIDGETS['browser-fest']) {
-      //     WIDGETS['browser-fest'].submit()
-      //   } else {
-      //     WIDGETS.load('browser-fest', (w) => w.submit())
-      //   }
-      // }
     }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
   }, {
     id: 'beta',
     content: `This is the first version of the <b>Project Files</b> widget, it's still in "beta", meaning we're still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">submit an issue!</a>`,

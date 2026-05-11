@@ -778,7 +778,7 @@ window.utils = {
   },
 
   hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'how-to-code', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'how-to-code', 'demo-example', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }

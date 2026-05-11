@@ -35,10 +35,6 @@ class CodingMenu extends Widget {
         key: 'tidy code',
         alts: ['tidy', 'format', 'clean', 'indent']
       }
-      // {
-      //   key: 'BrowserFest',
-      //   alts: []
-      // }
     ]
 
     this.editorSettingsMenu = [
@@ -91,15 +87,6 @@ class CodingMenu extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
-
-  // TEMPORARY
-  // BrowserFest () {
-  //   if (WIDGETS['browser-fest']) {
-  //     WIDGETS['browser-fest'].submit()
-  //   } else {
-  //     WIDGETS.load('browser-fest', (w) => w.submit())
-  //   }
-  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
