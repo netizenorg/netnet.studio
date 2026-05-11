@@ -5,7 +5,6 @@ const fs = require('fs')
 const { promisify } = require('util')
 const readdir = promisify(fs.readdir)
 const stat = promisify(fs.stat)
-const exec = require('child_process').exec
 const utils = require('./utils.js')
 const axios = require('axios')
 const os = require('os')
@@ -296,12 +295,17 @@ router.get('/api/convos', (req, res) => {
   })
 })
 
-router.get('/api/user-geo', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-  exec(`curl http://ip-api.com/json/${ip}`, (err, stdout) => {
-    if (err) res.json({ success: false, error: err })
-    else res.json({ success: true, data: JSON.parse(stdout) })
-  })
+router.get('/api/user-geo', async (req, res) => {
+  const raw = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  const ip = raw ? raw.split(',')[0].trim() : ''
+  const validIP = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^[0-9a-fA-F:]+$/.test(ip)
+  if (!validIP) return res.json({ success: false, error: 'invalid IP' })
+  try {
+    const { data } = await axios.get(`http://ip-api.com/json/${ip}`)
+    res.json({ success: true, data })
+  } catch (err) {
+    res.json({ success: false, error: err.message })
+  }
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
