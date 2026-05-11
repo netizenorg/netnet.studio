@@ -62,8 +62,10 @@ router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
   if (host.endsWith('.netnet.studio') && !req.originalUrl.endsWith('/list.json')) {
-    const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
-    return res.sendFile(filePath)
+    const root = path.resolve(__dirname, '../../netnet.studio/www')
+    return res.sendFile(req.params[0], { root }, (err) => {
+      if (err) res.status(404).end()
+    })
   }
   // NOTE: v2 && v3 have a modified version of this route which returns the old
   // tutorials, stored in ../../netnet.studio-v3/www
@@ -71,6 +73,8 @@ router.get('/tutorials/*', (req, res, next) => {
 })
 
 // directory listing for /templates/*
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+
 const templateListPage = (rel, upLink, rows) => {
   const arr = rel.split('/').filter(s => s !== '')
   arr.splice(0, 2)
@@ -79,7 +83,7 @@ const templateListPage = (rel, upLink, rows) => {
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Contents of ${rel}</title>
+    <title>Contents of ${escapeHtml(rel)}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; padding: 2rem; }
@@ -91,7 +95,7 @@ const templateListPage = (rel, upLink, rows) => {
   </head>
   <body>
     ${arr.length > 1 ? upLink : ''}
-    <h1><span style="opacity: 0.5">Contents of:</span> ${rel}</h1>
+    <h1><span style="opacity: 0.5">Contents of:</span> ${escapeHtml(rel)}</h1>
     <ul>${rows}</ul>
   </body>
 </html>`
@@ -411,6 +415,7 @@ router.get('/api/templates', async (req, res) => {
 
 router.get('/api/template/:template', async (req, res) => {
   const name = req.params.template
+  if (!/^[a-z0-9-]+$/i.test(name)) return res.status(400).json({ success: false, error: 'invalid template name' })
   try {
     const base = path.join(__dirname, '../data/templates', name)
     const text = await fs.promises.readFile(path.join(base, 'data.json'), 'utf8')
