@@ -1,4 +1,3 @@
-const axios = require('axios')
 const triplesec = require('triplesec')
 const { Octokit } = require('@octokit/core')
 const express = require('express')
@@ -104,17 +103,25 @@ function reWriteCSSPaths (req, data) { // HACK!!!
   return str
 }
 
-router.get('/api/github/proxy', (req, res) => {
+router.get('/api/github/proxy', async (req, res) => {
+  if (!req.query.url) return res.status(400).json({ error: 'missing url param' })
+  // fix single-slash typo that can come from the redbird proxy
   const url = req.query.url.replace('https:/raw', 'https://raw')
-  // HACK: the purpose of this proxy to get around this issue:
+  // only allow raw.githubusercontent.com — no open SSRF
+  let parsed
+  try { parsed = new URL(url) } catch { return res.status(400).json({ error: 'invalid url' }) }
+  if (parsed.hostname !== 'raw.githubusercontent.com') {
+    return res.status(403).json({ error: 'host not allowed' })
+  }
+  // HACK: proxy exists to get around MIME-type mismatch issue with raw.githubusercontent.com
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
-  axios.get(url, { responseType: 'arraybuffer' })
-    .then(r => {
-      if (req.query.url.includes('.css')) {
-        res.end(reWriteCSSPaths(req, r.data))
-      } else res.end(r.data)
-    })
-    .catch(err => console.log(err))
+  try {
+    const r = await fetch(url)
+    const buf = await r.arrayBuffer()
+    if (req.query.url.includes('.css')) {
+      res.end(reWriteCSSPaths(req, Buffer.from(buf)))
+    } else res.end(Buffer.from(buf))
+  } catch (err) { console.log(err) }
 })
 
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ * Auth Token
@@ -141,11 +148,10 @@ router.get('/user/signin/callback', (req, res) => {
   const root = 'https://github.com/login/oauth/access_token'
   const id = `client_id=${process.env.GITHUB_CLIENT_ID}`
   const sec = `client_secret=${process.env.GITHUB_CLIENT_SECRET}`
-  axios.post(`${root}?${id}&${sec}&${code}`, { // ask GitHub for Auth Token
-    method: 'post',
+  fetch(`${root}?${id}&${sec}&${code}`, { // ask GitHub for Auth Token
+    method: 'POST',
     headers: { Accept: 'application/json' }
-  }).then(response => {
-    const token = response.data
+  }).then(response => response.text()).then(token => {
     const ermsg = '◕ ︵ ◕ oh no! looks like something went wrong with GitHub'
     if (token.indexOf('error') === 0) return res.send(ermsg)
     // ...assuming we don't get an error back, let's encrypt the token

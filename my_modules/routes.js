@@ -6,7 +6,6 @@ const { promisify } = require('util')
 const readdir = promisify(fs.readdir)
 const stat = promisify(fs.stat)
 const utils = require('./utils.js')
-const axios = require('axios')
 const os = require('os')
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -156,30 +155,6 @@ router.get('/api/videos/:video', (req, res) => {
   })
 })
 
-router.get('/api/nn-proxy', async (req, res) => {
-  let URL = req.query.url
-  for (const key in req.query) {
-    if (key !== 'url') URL += `&${key}=${req.query[key]}`
-  }
-  const request = await axios.get(URL)
-  res.send(request.data)
-})
-
-router.get('/api/proxy', (req, res) => {
-  let URL = Object.keys(req.query)[0]
-  // accont for redbird proxy bug
-  if (URL.includes('http:/')) {
-    URL = URL.replace('http:/', 'http://')
-  }
-  if (URL.includes('http:///')) {
-    URL = URL.replace('http:///', 'http://')
-  }
-  // proxy request
-  axios.get(URL)
-    .then(r => res.end(r.data))
-    .catch(err => console.log(err))
-})
-
 function getSubdirectories (directory, depth = 0) {
   if (depth >= 2) return Promise.resolve([])
   return readdir(directory)
@@ -302,7 +277,8 @@ router.get('/api/user-geo', async (req, res) => {
   const validIP = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^[0-9a-fA-F:]+$/.test(ip)
   if (!validIP) return res.json({ success: false, error: 'invalid IP' })
   try {
-    const { data } = await axios.get(`http://ip-api.com/json/${ip}`)
+    const r = await fetch(`http://ip-api.com/json/${ip}`)
+    const data = await r.json()
     res.json({ success: true, data })
   } catch (err) {
     res.json({ success: false, error: err.message })
