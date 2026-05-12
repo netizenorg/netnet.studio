@@ -27,7 +27,7 @@ class CodeReview extends Widget {
     NOTE: this has gone through a lot of upates/changes over time, it may need
     some refactoring at some point, when we do that, lets use this to test:
 
-    http://localhost:8001/?layout=dock-left#code/eJxlkrFy3CAQhvt7ih0a6cY29B5JTaq4sIvzC3CwkkgEyLCy7saTd88iObE9bgSz+///foCac7TX7nAAaJwfICfTipFozvdKresqnYkh27M00attr+aErw5XtY6OUNlXe3e5THIOgwA9USu8y9mFAZzXA4qOk0u4hjFh3wpj5eB6ATauYYratoLSwjLCTP+LjdI7ktcudFLKVTviTN41aqvtwH3SHj+YGbksfWRCTBuy6Bq1y3ZLNsnN1AFsVADlRAQlEloebxaPgeTLgul6wgkNxVRXpV0dN32PZMa6Unp2anA0Lme1ZEyBB1S38AYmoeUEp6d8D1Xm8l1MbmA//NkTACSNGOoEbQdJ/sox1MevLatJl26ZK10ImJ7xQgz4cHp6lJkSX4Xrr5vuw2p0QcNifPturc5TNL/RMhXcAP6j2T7c0dOJj8oPJjPST0JfC3/9oUncgniOXnxS9zHWx/dXVe/3eWjU9h/9BaGZtzM=
+    http://localhost:8001/?layout=dock-left#code/eJxlks1SgzAQx+99ip1coKMm9w5w8aQHPdQXSMMCsSTBzaJ2Or67CdSv8QIzu/+PHwnVIbSnZrMBqKzrIZKpxcA8xZ1SBwpH9DczjdIEp5yN0fpeTr4XoEeuxWUC1ukeRZNCco6GgbCrhWllbzsBbXjzY9BtLZjmJGOM/D2slF7bnba+kVK+acu5RcpKLbOVrSPt8Acv0eVXFwhfkRY80VRqla2WaMhO3AAsVAAm+NSbI6FO9WZ26Fm+zEinPY5oOFBZ5HWxXfQdshnKQunJqt7yMB/UHJF8Kiiu4QyGsE0JVo9xB0VM45tAtk9++FgTACQP6EuCugGSzzH4cvt31WrWeZt7pfUe6QnfOQHe7x8fZGRKR2G706L7sRqd0TAbz/+txWEM5ohtooIrwC+a5ZE2etynT00XJiPyHaMrhTvdahbXIJ6CE7/UXQjl9nKr6nKem0otv8wnjiKvJg==
 
     for security purposes, we've updated the way the render iframe works so that
     when loading external/third-party code (shortcode URLs, #code/ hashes,
@@ -115,7 +115,7 @@ class CodeReview extends Widget {
     if (c && c !== 'low' && event?.data && event?.data.type === 'iframe-error') {
       // these are the number of lines added to the top of the file before rendering
       // (see errMsgr in utils.setCustomRenderer)
-      const diff = 14
+      const diff = 12
       const message = event.data.message
       let file = event.data.source?.includes('.') ? event.data.source : null
       let line = event.data.lineno - diff

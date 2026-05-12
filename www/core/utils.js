@@ -770,15 +770,13 @@ window.utils = {
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
       window.addEventListener('error', function (e) {
-        if (e.target && e.target !== window) {
-          const src = e.target.src || e.target.href || ''
-          if (src) window.parent.postMessage({ type: 'iframe-error', src: src }, '*')
-        } else {
-          window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
-        }
+        if (e.message) window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
       }, true)
+      var _nnW = new WeakSet()
+      function _nnRes (n) { if (n.nodeType !== 1 || _nnW.has(n)) return; var s = n.src || n.href; if (!s) return; _nnW.add(n); n.addEventListener('error', function () { window.parent.postMessage({ type: 'iframe-error', src: n.src || n.href }, '*') }) }
+      new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.type === 'childList') m.addedNodes.forEach(_nnRes); else _nnRes(m.target) }) }).observe(document.documentElement || document, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'href'] })
       window.addEventListener('unhandledrejection', function (e) {
-        if (e.reason && e.reason.name === 'NotAllowedError') {
+        if (e.reason && (e.reason.name === 'NotAllowedError' || e.reason.name === 'SecurityError')) {
           window.parent.postMessage({ type: 'iframe-sensor-blocked' }, '*')
         }
       })

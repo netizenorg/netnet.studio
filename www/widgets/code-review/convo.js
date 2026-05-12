@@ -113,7 +113,7 @@ window.CONVOS['code-review'] = (self) => {
         NNE.update()
         e.goTo('sensor-remove-sandbox')
       },
-      'oh, never mind': (e) => e.hide()
+      'oh, never mind': (e) => { e.hide(); window.convo = null }
     }
   }, {
     id: 'sensor-sandbox-trust',
