@@ -92,14 +92,43 @@ window.CONVOS['code-review'] = (self) => {
   // console error convos
   {
     id: 'sandbox-security-error',
-    content: 'It looks like you\'re trying to use browser storage (like <code>localStorage</code>, <code>sessionStorage</code>, or <code>indexedDB</code>). In this studio your sketches get rendered into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, but that also means browser storage APIs won\'t work in sketches. If you want to use browser storage, try switching to a <b>Project</b>!',
+    content: 'It looks like you\'re trying to use browser storage (like <code>localStorage</code>, <code>sessionStorage</code>, or <code>indexedDB</code>). This sketch was loaded from an external source, so it runs in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which blocks browser storage APIs. If you\'d like to use this API start a new sketch or open your own project.',
     options: {
       'ok, got it': (e) => e.hide(),
       'what\'s a project?': (e) => e.goTo('sandbox-security-error-project')
     }
   }, {
     id: 'sandbox-security-error-project',
-    content: 'Unlike sketches, a <b>Project</b> can have multiple files and can be published to the Web using GitHub. Click on my face to open the <b>Coding Menu</b> and connect your GitHub account to start creating projects. When a project renders its result, the iframe (the rendered output) isn\'t sandboxed, so browser storage APIs like <code>localStorage</code> work as expected.',
+    content: 'Unlike a sketch (which is a single HTML file) a project is a folder that can hold unlimited files, including code, images, fonts, and sounds. To get started, click my face to open the <b>Coding Menu</b> and connect your GitHub account. Browser storage APIs like localStorage will work as expected in projects',
+    options: {
+      'ok thanks': (e) => e.hide()
+    }
+  }, {
+    id: 'sensor-sandbox-blocked',
+    content: 'It looks like this sketch tried to access the camera, microphone, or location. This sketch was loaded from an external source, so it runs in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which blocks some browser APIs. If you trust the author of this sketch I can remove those protections?',
+    options: {
+      'trust?': (e) => e.goTo('sensor-sandbox-trust'),
+      'yes, I trust the author': (e) => {
+        NNE.iframe.removeAttribute('sandbox')
+        NNE.update()
+        e.goTo('sensor-remove-sandbox')
+      },
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'sensor-sandbox-trust',
+    content: 'If you didn\'t write this code it\'s important to trust the person who did. This is true anytime you run someone else\'s code in your environment, this could mean importing a library someone else wrote into your own sketch, installing a new extention in your browser or even installing an app you downloaded to your computer. If you didn\'t write the code, always make sure it\'s coming from a tusted source!',
+    options: {
+      'Oh, never mind': (e) => e.hide(),
+      'I see, yes I trust this!': (e) => {
+        NNE.iframe.removeAttribute('sandbox')
+        NNE.update()
+        e.goTo('sensor-remove-sandbox')
+      }
+    }
+  }, {
+    id: 'sensor-remove-sandbox',
+    content: 'Great! I\'ve removed the security sandbox, you should now be able to access the camera, microphone, location and other previously blocked browser APIs.',
     options: {
       'ok thanks': (e) => e.hide()
     }

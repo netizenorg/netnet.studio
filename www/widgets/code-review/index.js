@@ -30,8 +30,10 @@ class CodeReview extends Widget {
     http://localhost:8001/?layout=dock-left#code/eJxlkrFy3CAQhvt7ih0a6cY29B5JTaq4sIvzC3CwkkgEyLCy7saTd88iObE9bgSz+///foCac7TX7nAAaJwfICfTipFozvdKresqnYkh27M00attr+aErw5XtY6OUNlXe3e5THIOgwA9USu8y9mFAZzXA4qOk0u4hjFh3wpj5eB6ATauYYratoLSwjLCTP+LjdI7ktcudFLKVTviTN41aqvtwH3SHj+YGbksfWRCTBuy6Bq1y3ZLNsnN1AFsVADlRAQlEloebxaPgeTLgul6wgkNxVRXpV0dN32PZMa6Unp2anA0Lme1ZEyBB1S38AYmoeUEp6d8D1Xm8l1MbmA//NkTACSNGOoEbQdJ/sox1MevLatJl26ZK10ImJ7xQgz4cHp6lJkSX4Xrr5vuw2p0QcNifPturc5TNL/RMhXcAP6j2T7c0dOJj8oPJjPST0JfC3/9oUncgniOXnxS9zHWx/dXVe/3eWjU9h/9BaGZtzM=
 
     for security purposes, we've updated the way the render iframe works so that
-    it's now sandboxed (see main.js) which had some side-effects and required
-    updates to this widget and how it handled these special error cases. If we
+    when loading external/third-party code (shortcode URLs, #code/ hashes,
+    non-owned GitHub repos) the iframe gets sandboxed. while working on these
+    updats I ran into a number of side-effects, which then required updates to
+    this widget and how it handled a set of special error cases. And so, if we
     update things in the future we need to first confirm that the sandbox is
     still in place, the fetch request in the test sketch should update <main>
     with the "blocked" message (NOT a GitHub payload)
@@ -87,6 +89,14 @@ class CodeReview extends Widget {
     this._markIssues(this.issues, false)
   }
 
+  handleSensorBlocked () {
+    const c = 'sensor-sandbox-blocked'
+    if (NNE.iframe.hasAttribute('sandbox') && window.convo?.id !== c) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, c)
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -105,7 +115,7 @@ class CodeReview extends Widget {
     if (c && c !== 'low' && event?.data && event?.data.type === 'iframe-error') {
       // these are the number of lines added to the top of the file before rendering
       // (see errMsgr in utils.setCustomRenderer)
-      const diff = 9
+      const diff = 14
       const message = event.data.message
       let file = event.data.source?.includes('.') ? event.data.source : null
       let line = event.data.lineno - diff
@@ -269,7 +279,7 @@ class CodeReview extends Widget {
           type: 'warning',
           language: 'html',
           message: 'download attribute blocked by sandbox',
-          friendly: 'It seems you\'re using the <code>download</code> attribute on an anchor tag. In this studio your sketches get rendered into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which prevents file downloads from being triggered.',
+          friendly: 'This sketch was loaded from an external source, so it runs in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which blocks some browser APIs, including the <code>download</code> attribute on an anchor tag. However, if you use this attribute in your own sketch or project it will work as expected.',
           line: i + 1,
           col: LINE.indexOf('download')
         })

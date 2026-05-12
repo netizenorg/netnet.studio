@@ -59,6 +59,7 @@ nn.on('resize', (e) => {
 nn.on('message', (e) => {
   if (e.data.type === 'iframe-error') WIDGETS['code-review'].review({ error: e })
   else if (e.data.type === 'netnet-bg') utils.updateAllShadows(e)
+  else if (e.data.type === 'iframe-sensor-blocked') WIDGETS['code-review'].handleSensorBlocked()
 })
 
 // update default background on mouse movement
@@ -87,8 +88,6 @@ nn.on('load', async () => {
     utils.loaderUpdate('ready')
     // setup custom renderer to catch errors (see on "message" below)
     utils.setCustomRenderer(null)
-    // sandbox for security
-    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     // ...check URL for params, && fade out load screen when ready
     if (utils.checkURL() === 'none') utils.loadDefault()
   })

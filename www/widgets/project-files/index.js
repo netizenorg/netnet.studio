@@ -659,8 +659,6 @@ class ProjectFiles extends Widget {
     NNE.code = ''
     NNE.language = 'html'
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
-    // restore sandbox now that we're back in sketch mode
-    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     // close widget
     this.close()
   }

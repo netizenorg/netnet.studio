@@ -449,7 +449,7 @@ window.utils = {
       return 'demo'
     } else if (url.template) {
       window.utils.loadTemplate(url.template)
-      return 'demo'
+      return 'template'
     } else {
       return 'none'
     }
@@ -492,6 +492,7 @@ window.utils = {
   },
 
   loadFromCodeHash: (layout) => {
+    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     NNE.code = ''
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
@@ -549,6 +550,14 @@ window.utils = {
         window.utils._Convo('oh-no-error')
         return
       }
+      // sandbox only when the repo belongs to someone else
+      const o = WIDGETS['student-session'].getData('owner')
+      const isOwner = o && o === a[0]
+      if (isOwner) {
+        NNE.iframe.removeAttribute('sandbox')
+      } else {
+        NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
+      }
       window.utils.setCustomRenderer(base, proxy)
 
       NNE.code = ''
@@ -560,8 +569,7 @@ window.utils = {
           if (!NNE.autoUpdate) NNE.update()
         }, 10)
         window.utils.fadeOutLoader(false)
-        const o = WIDGETS['student-session'].getData('owner')
-        if (o && o === a[0]) {
+        if (isOwner) {
           window.utils._Convo('remix-github-project-logged-in-as-owner')
         } else if (o) {
           window.utils._Convo('remix-github-project-logged-in')
@@ -588,6 +596,7 @@ window.utils = {
       // before they got redirected over to GitHub to auth...
       const decoded = NNE._decode(code.substr(6))
       window.utils.setCustomRenderer(null)
+      NNE.iframe.removeAttribute('sandbox')
       NNE.code = decoded
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
@@ -710,6 +719,9 @@ window.utils = {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   cancelAllNetitorUses: (exception) => {
+    // remove security (would have been added if they loaded external sketch)
+    NNE.iframe.removeAttribute('sandbox')
+
     const hasException = (s) => {
       if (exception instanceof Array) {
         return exception.includes(s)
@@ -759,12 +771,17 @@ window.utils = {
     const errMsgr = `<script>
       window.addEventListener('error', function (e) {
         if (e.target && e.target !== window) {
-          var src = e.target.src || e.target.href || ''
+          const src = e.target.src || e.target.href || ''
           if (src) window.parent.postMessage({ type: 'iframe-error', src: src }, '*')
         } else {
           window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
         }
       }, true)
+      window.addEventListener('unhandledrejection', function (e) {
+        if (e.reason && e.reason.name === 'NotAllowedError') {
+          window.parent.postMessage({ type: 'iframe-sensor-blocked' }, '*')
+        }
+      })
     </script>`
     if (!base) {
       NNE.customRender = function (event) { event.update(errMsgr + event.code) }
