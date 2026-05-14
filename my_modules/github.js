@@ -1,8 +1,64 @@
 const crypto = require('crypto')
 const triplesec = require('triplesec')
-const { Octokit } = require('@octokit/core')
 const express = require('express')
 const router = express.Router()
+
+// NOTE: this ghRequest helper function created by Claude in order to replace
+// the old gh/core module (and it's corresponding vulnerabilities)
+function ghRequest (atok, endpoint, params) {
+  // Parses 'METHOD /path/{template}' endpoint strings, substitutes {params} into
+  // the URL path (preserving slashes within values so multi-segment paths like
+  // 'src/js/app.js' and refs like 'heads/main' are not double-encoded), puts
+  // remaining params in the query string (GET) or JSON body (other methods),
+  // and adds the required auth + versioning headers. Octokit-specific keys
+  // (mediaType) are stripped from POST bodies.
+  const spaceIdx = endpoint.indexOf(' ')
+  const method = endpoint.slice(0, spaceIdx)
+  const template = endpoint.slice(spaceIdx + 1)
+
+  const used = new Set()
+  const urlPath = template.replace(/\{(\w+)\}/g, (_, k) => {
+    used.add(k)
+    const v = params[k]
+    // encode each segment individually to preserve intentional slashes
+    return v !== undefined ? String(v).split('/').map(encodeURIComponent).join('/') : ''
+  })
+
+  const rest = {}
+  for (const [k, v] of Object.entries(params || {})) {
+    if (!used.has(k) && k !== 'mediaType') rest[k] = v
+  }
+
+  const isGet = method === 'GET'
+  let url = `https://api.github.com${urlPath}`
+  if (isGet && Object.keys(rest).length > 0) {
+    url += '?' + new URLSearchParams(rest).toString()
+  }
+
+  const opts = {
+    method,
+    headers: {
+      Authorization: `Bearer ${atok}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    }
+  }
+  if (!isGet && Object.keys(rest).length > 0) {
+    opts.body = JSON.stringify(rest)
+    opts.headers['Content-Type'] = 'application/json'
+  }
+
+  return fetch(url, opts).then(async r => {
+    const data = await r.json().catch(() => null)
+    if (!r.ok) {
+      const err = new Error((data && data.message) || r.statusText)
+      err.status = r.status
+      err.response = { data }
+      throw err
+    }
+    return { data }
+  })
+}
 
 const README_TEMPLATE = `# [project-title]
 
@@ -30,23 +86,23 @@ function decryptToken (req, res, cb) {
     data: triplesec.Buffer.from(token, 'hex'),
     key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
   }, (err, buff) => {
-    if (err) return res.json(err)
-    else {
-      const auth = buff.toString()
-      const atok = auth.split('&scope')[0].split('=')[1]
-      const octokit = new Octokit({ auth: atok })
-      cb(octokit)
+    if (err) {
+      console.error('token decrypt error:', err)
+      return res.status(500).json({ success: false, message: 'token decrypt failed' })
     }
+    const atok = buff.toString().split('&scope')[0].split('=')[1]
+    const gh = { request: (endpoint, params) => ghRequest(atok, endpoint, params) }
+    cb(gh)
   })
 }
 
 // Helper function to recursively fetch files.
 // It starts at the given path (empty string means repository root),
 // and returns an object mapping file paths to their content data.
-async function fetchFiles (octokit, owner, repo, path) {
+async function fetchFiles (gh, owner, repo, path) {
   const result = {}
   // Request the contents of the current path.
-  const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+  const response = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
     owner, repo, path: path || '' // if path is empty, use the repo root
   })
   const data = response.data
@@ -58,14 +114,14 @@ async function fetchFiles (octokit, owner, repo, path) {
     for (const item of data) {
       if (item.type === 'file') {
         // Retrieve the file content.
-        const fileResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        const fileResponse = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
           owner, repo, path: item.path
         })
         // Save the file data using its path as the key.
         result[item.path] = fileResponse.data
       } else if (item.type === 'dir') {
         // Recursively fetch files inside subdirectories.
-        const nestedFiles = await fetchFiles(octokit, owner, repo, item.path)
+        const nestedFiles = await fetchFiles(gh, owner, repo, item.path)
         Object.assign(result, nestedFiles)
       }
     }
@@ -211,8 +267,8 @@ const dict = {
 }
 
 function makeRequest (req, res, query, obj) {
-  decryptToken(req, res, (octokit) => {
-    octokit.request(dict[query], obj).then(gitRes => {
+  decryptToken(req, res, (gh) => {
+    gh.request(dict[query], obj).then(gitRes => {
       res.json({ success: true, message: `${query} success`, data: gitRes.data })
     }).catch(err => {
       res.json({ success: false, message: `${query} error`, error: err })
@@ -261,9 +317,9 @@ router.post('/api/github/fork', (req, res) => {
 router.post('/api/github/open-all-files', (req, res) => {
   const owner = req.body.owner
   const repo = req.body.repo
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try { // Start at the repo root by passing an empty string.
-      const files = await fetchFiles(octokit, owner, repo, '')
+      const files = await fetchFiles(gh, owner, repo, '')
       res.json({ success: true, message: 'open-all-files success', data: files })
     } catch (error) {
       res.json({ success: false, message: 'open-all-files error', error })
@@ -277,8 +333,8 @@ router.post('/api/github/new-repo', (req, res) => {
     return res.json({ success: false, message: 'Missing name, user or indexData' })
   }
 
-  decryptToken(req, res, octokit => {
-    octokit.request('POST /user/repos', {
+  decryptToken(req, res, gh => {
+    gh.request('POST /user/repos', {
       name,
       description: '◕ ◞ ◕ This project was made using https://netnet.studio',
       auto_init: false
@@ -294,11 +350,11 @@ router.post('/api/github/new-repo', (req, res) => {
       const indexContent = Buffer.from(indexData, 'utf8').toString('base64')
       const readmeContent = Buffer.from(readmeData, 'utf8').toString('base64')
 
-      return octokit.request(
+      return gh.request(
         'PUT /repos/{owner}/{repo}/contents/index.html',
         { owner, repo, path: 'index.html', message: 'created index.html', content: indexContent, branch }
       ).then(() => {
-        return octokit.request(
+        return gh.request(
           'PUT /repos/{owner}/{repo}/contents/README.md',
           { owner, repo, path: 'README.md', message: 'created README.md', content: readmeContent, branch }
         )
@@ -328,22 +384,22 @@ router.post('/api/github/push', (req, res) => {
     return res.json({ success: false, message: 'Missing required data' })
   }
 
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try {
       // 1. Get the latest commit SHA on the branch
-      const refResponse = await octokit.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
+      const refResponse = await gh.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
         owner, repo, ref: `heads/${branch}`
       })
       const latestCommitSha = refResponse.data.object.sha
 
       // 2. Get the base commit tree SHA
-      const baseCommitResponse = await octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
+      const baseCommitResponse = await gh.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
         owner, repo, commit_sha: latestCommitSha
       })
       const baseTreeSha = baseCommitResponse.data.tree.sha
 
       // 3. Retrieve the full base tree recursively
-      const baseTreeResponse = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+      const baseTreeResponse = await gh.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
         owner, repo, tree_sha: baseTreeSha, recursive: '1'
       })
       const baseTree = baseTreeResponse.data.tree
@@ -364,7 +420,7 @@ router.post('/api/github/push', (req, res) => {
         } else if (change.action === 'update' || change.action === 'create') {
           if (change.isBinary) {
             // Create a blob for binary content using Base64 encoding
-            const blobResponse = await octokit.request('POST /repos/{owner}/{repo}/git/blobs', {
+            const blobResponse = await gh.request('POST /repos/{owner}/{repo}/git/blobs', {
               owner, repo, content: change.content, encoding: 'base64'
             })
             treeMap[change.path] = {
@@ -392,19 +448,19 @@ router.post('/api/github/push', (req, res) => {
       })
 
       // 7. Create the new tree with the updated items
-      const treeResponse = await octokit.request('POST /repos/{owner}/{repo}/git/trees', {
+      const treeResponse = await gh.request('POST /repos/{owner}/{repo}/git/trees', {
         owner, repo, tree: newTreeItems, base_tree: baseTreeSha
       })
       const newTreeSha = treeResponse.data.sha
 
       // 8. Create a new commit referencing the new tree and the previous commit as parent
-      const commitResponse = await octokit.request('POST /repos/{owner}/{repo}/git/commits', {
+      const commitResponse = await gh.request('POST /repos/{owner}/{repo}/git/commits', {
         owner, repo, message: commitMessage, tree: newTreeSha, parents: [latestCommitSha]
       })
       const newCommitSha = commitResponse.data.sha
 
       // 9. Update the branch reference to point to the new commit
-      await octokit.request('PATCH /repos/{owner}/{repo}/git/refs/{ref}', {
+      await gh.request('PATCH /repos/{owner}/{repo}/git/refs/{ref}', {
         owner, repo, ref: `heads/${branch}`, sha: newCommitSha
       })
 
@@ -417,21 +473,21 @@ router.post('/api/github/push', (req, res) => {
 
 // POST PUBLISH PROJECT
 router.post('/api/github/gh-pages', (req, res) => {
-  decryptToken(req, res, (octokit) => {
+  decryptToken(req, res, (gh) => {
     // https://docs.github.com/en/rest/reference/repos#get-a-repository
-    octokit.request('GET /repos/{owner}/{repo}', {
+    gh.request('GET /repos/{owner}/{repo}', {
       owner: req.body.owner,
       repo: req.body.repo
     }).then(gitRes => {
       if (gitRes.data.has_pages) {
         // https://docs.github.com/en/rest/reference/repos#get-a-github-pages-site
-        return octokit.request('GET /repos/{owner}/{repo}/pages', {
+        return gh.request('GET /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo
         })
       } else {
         // https://docs.github.com/en/rest/reference/repos#create-a-github-pages-site
-        return octokit.request('POST /repos/{owner}/{repo}/pages', {
+        return gh.request('POST /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo,
           source: { branch: req.body.branch, path: '/' },
@@ -453,10 +509,10 @@ router.post('/api/github/new-repo-from-template', (req, res) => {
     return res.json({ success: false, message: 'Missing or invalid name, user, or files' })
   }
 
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try {
       // 1) create empty repo
-      const repoRes = await octokit.request('POST /user/repos', {
+      const repoRes = await gh.request('POST /user/repos', {
         name,
         description: '◕ ◞ ◕ This project was made using https://netnet.studio',
         auto_init: false
@@ -481,7 +537,7 @@ router.post('/api/github/new-repo-from-template', (req, res) => {
           base64 = Buffer.from(String(contentVal), 'utf8').toString('base64')
         }
 
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        await gh.request('PUT /repos/{owner}/{repo}/contents/{path}', {
           owner, repo, path: pathRel, message, content: base64, branch
         })
       }
