@@ -121,6 +121,19 @@ class GitPush extends Widget {
     }
   }
 
+  _pushPayloadTooLarge (changes, convoId) {
+    // if server.js limit for /api/github/push ever changes (currently 50mb),
+    // update MAX_PUSH_MB to match (keeping a few MB of headroom below it)
+    const MAX_PUSH_MB = 45
+    const bytes = changes.reduce((sum, c) => sum + (c.content ? c.content.length : 0), 0)
+    if (bytes <= MAX_PUSH_MB * 1024 * 1024) return false
+    this.pushSizeMB = Math.round(bytes / 1024 / 1024)
+    nn.get('load-curtain').hide()
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, convoId)
+    return true
+  }
+
   async _autoCommit () {
     // similar to on-open logic (update if that changes)
     const op = WIDGETS['project-files']?.projectData.name
@@ -142,6 +155,7 @@ class GitPush extends Widget {
     const changes = await WIDGETS['project-files'].hydrateChanges(
       WIDGETS['project-files'].changes
     )
+    if (this._pushPayloadTooLarge(changes, 'payload-too-large-auto')) return
     const data = { owner, repo, branch, commitMessage, changes }
     window.utils.post('/api/github/push', data, async (json) => {
       this.convos = window.CONVOS[this.key](this)
@@ -221,6 +235,7 @@ class GitPush extends Widget {
           // hydrate at push-time only — base64-encode just the staged
           // binaries instead of every binary in the project on every save.
           const changes = await WIDGETS['project-files'].hydrateChanges(this.include)
+          if (this._pushPayloadTooLarge(changes, 'payload-too-large')) return
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
             this.convos = window.CONVOS[this.key](this)
@@ -259,7 +274,6 @@ class GitPush extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   downloadProject () {
     const p = WIDGETS['project-files']?.projectData.name

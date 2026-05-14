@@ -16,9 +16,14 @@ const fs = require('fs')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-app.use(express.json({ limit: '50mb' })) // GitHub's limit is 100mb
+// we need a largest limit for users upload assets (Note: GitHub limit is 100mb)
+app.use('/api/github/push', express.json({ limit: '50mb' }))
+// templates can include binary assets so we also need a lerger limit here
+app.use('/api/github/new-repo-from-template', express.json({ limit: '10mb' }))
+// otherwise we ust 256kb as default POST limit
 // our /etc/nginx/sites-available/default should also reflect this:
 // client_max_body_size 50M;
+app.use(express.json({ limit: '256kb' }))
 
 ANALYTICS.setup(app, {
   path: `${__dirname}/data/analytics`,
@@ -37,6 +42,7 @@ if (process.env.CURTAIN) {
   })
 }
 
+// security headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff')
   res.setHeader('X-Frame-Options', 'SAMEORIGIN')
