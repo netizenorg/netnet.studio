@@ -511,7 +511,7 @@ class TemplateProjects extends Widget {
         const path = paths[i]
         const dict = this.state.templates || this.state.files
         if (typeof dict[path] === 'string') {
-          if (path === this.state.editor.selected) { // use current verstion
+          if (path === this.state.editor?.selected) { // use current verstion
             files[path] = NNE.code
           } else { // used the template or state version
             files[path] = dict[path].includes('\t') // clean up tabs (if present)
@@ -573,6 +573,7 @@ class TemplateProjects extends Widget {
     }
     // create new hydrated state from original data
     const obj = this._originalData[type]
+    if (!this.state[type]) this.state[type] = {}
     for (const tmp in obj) {
       let str = obj[tmp]
       Object.entries(this.state.vars).forEach(([key, val]) => {
