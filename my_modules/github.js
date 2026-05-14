@@ -90,7 +90,8 @@ function decryptToken (req, res, cb) {
       console.error('token decrypt error:', err)
       return res.status(500).json({ success: false, message: 'token decrypt failed' })
     }
-    const atok = buff.toString().split('&scope')[0].split('=')[1]
+    const atok = new URLSearchParams(buff.toString()).get('access_token')
+    if (!atok) return res.status(500).json({ success: false, message: 'token parse failed' })
     const gh = { request: (endpoint, params) => ghRequest(atok, endpoint, params) }
     cb(gh)
   })
