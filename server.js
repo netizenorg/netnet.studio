@@ -51,7 +51,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/api', utils.corsGate)
+app.use('/api', utils.corsMiddleware)
 app.use(ROUTES)
 app.use(GITHUB)
 const staticCORS = (res) => res.setHeader('Access-Control-Allow-Origin', '*')

@@ -61,7 +61,7 @@ const allowedOrigins = [
   'http://localhost:' + process.env.PORT
 ]
 
-function corsGate (req, res, next) {
+function corsMiddleware (req, res, next) {
   const origin = req.headers.origin
   if (origin && allowedOrigins.includes(origin)) {
     res.set('Access-Control-Allow-Origin', origin)
@@ -76,4 +76,4 @@ function corsGate (req, res, next) {
   next()
 }
 
-module.exports = { b10tob64, b64tob10, checkForJSONFile, checkForJSONArrayFile, corsGate }
+module.exports = { b10tob64, b64tob10, checkForJSONFile, checkForJSONArrayFile, corsMiddleware }
