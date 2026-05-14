@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const triplesec = require('triplesec')
 const { Octokit } = require('@octokit/core')
 const express = require('express')
@@ -128,7 +129,14 @@ router.get('/api/github/proxy', async (req, res) => {
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *
 
 router.get('/api/github/client-id', (req, res) => {
-  res.json({ success: true, message: process.env.GITHUB_CLIENT_ID })
+  const state = crypto.randomBytes(16).toString('hex')
+  res.cookie('nn-oauth-state', state, {
+    maxAge: 5 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true
+  })
+  res.json({ success: true, message: process.env.GITHUB_CLIENT_ID, state })
 })
 
 router.get('/api/github/auth-status', (req, res) => {
@@ -143,14 +151,20 @@ router.get('/api/github/clear-cookie', (req, res) => {
 })
 
 router.get('/user/signin/callback', (req, res) => {
+  // validate OAuth state to prevent login CSRF (H-1)
+  const { code, state } = req.query
+  const stored = req.cookies['nn-oauth-state']
+  if (!state || !stored || state !== stored) {
+    return res.status(403).send('(✖ _ ✖) Invalid OAuth state (possible CSRF attempt)')
+  }
+  res.clearCookie('nn-oauth-state')
   // assuming user was redirected here from GitHub Auth Page...
-  const code = `code=${req.query.code}` // ...we should have a user ?code=...
+  const codeParam = `code=${code}` // ...we should have a user ?code=...
   const root = 'https://github.com/login/oauth/access_token'
   const id = `client_id=${process.env.GITHUB_CLIENT_ID}`
   const sec = `client_secret=${process.env.GITHUB_CLIENT_SECRET}`
-  fetch(`${root}?${id}&${sec}&${code}`, { // ask GitHub for Auth Token
-    method: 'POST',
-    headers: { Accept: 'application/json' }
+  fetch(`${root}?${id}&${sec}&${codeParam}`, { // ask GitHub for Auth Token
+    method: 'POST'
   }).then(response => response.text()).then(token => {
     const ermsg = '◕ ︵ ◕ oh no! looks like something went wrong with GitHub'
     if (token.indexOf('error') === 0) return res.send(ermsg)

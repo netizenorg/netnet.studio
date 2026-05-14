@@ -183,7 +183,8 @@ class StudentSession extends Widget {
       if (json.success === false) return utils._Convo('oh-no-error', json)
       const id = `client_id=${json.message}`
       const scope = 'scope=public_repo'
-      const url = `https://github.com/login/oauth/authorize?${id}&${scope}`
+      const state = `state=${json.state}`
+      const url = `https://github.com/login/oauth/authorize?${id}&${scope}&${state}`
       const a = document.createElement('a')
       a.setAttribute('download', 'index.html')
       a.setAttribute('href', url)
