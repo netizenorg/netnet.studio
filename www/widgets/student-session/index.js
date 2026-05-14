@@ -150,7 +150,7 @@ class StudentSession extends Widget {
   }
 
   deleteGitHubSession (skipDialogue, callback) {
-    utils.get('./api/github/clear-cookie', (res) => {
+    utils.post('./api/github/clear-cookie', {}, (res) => {
       this.authStatus = false
       if (WIDGETS['project-files']?.projectData.name) {
         WIDGETS['project-files'].closeProject()

@@ -201,7 +201,7 @@ router.get('/api/github/auth-status', (req, res) => {
   else return res.json({ success: true, message: 'has access token' })
 })
 
-router.get('/api/github/clear-cookie', (req, res) => {
+router.post('/api/github/clear-cookie', (req, res) => {
   res.cookie('AuthTok', null, { maxAge: 500, httpOnly: true })
     .json({ message: 'cookie cleared' })
 })
