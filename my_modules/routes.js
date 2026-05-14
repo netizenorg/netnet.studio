@@ -292,7 +292,12 @@ router.get('/api/user-geo', async (req, res) => {
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
 
 function shortenURL (req, res, dbPath) {
-  const urlsDict = require(dbPath)
+  let urlsDict
+  try {
+    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  } catch (err) {
+    return res.json({ success: false, error: 'failed to read URL database' })
+  }
   const index = Object.keys(urlsDict).length
   const key = (index === 0) ? '0' : utils.b10tob64(index)
   let repeatEntry = false
@@ -323,7 +328,12 @@ router.post('/api/shorten-url', (req, res) => {
 
 router.post('/api/expand-url', (req, res) => {
   const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  const urlsDict = require(dbPath)
+  let urlsDict
+  try {
+    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  } catch (err) {
+    return res.json({ error: 'failed to read URL database' })
+  }
   const hash = urlsDict[req.body.key]
   if (typeof hash === 'string') {
     res.json({ success: 'success', hash })
