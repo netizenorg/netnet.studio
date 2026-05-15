@@ -49,6 +49,7 @@ window.CONVOS['utils-misc'] = (self) => {
         e.hide(); WIDGETS.load('project-files', (w) => w.openProject(a[1]))
       },
       'I\'m just experimenting': (e) => {
+        utils.updateURL()
         e.hide()
       }
     }
