@@ -1,7 +1,39 @@
 const crypto = require('crypto')
-const triplesec = require('triplesec')
 const express = require('express')
 const router = express.Router()
+
+// Fail hard at startup if required env vars are missing.
+// Better to crash immediately than to run with a broken/insecure configuration.
+if (!process.env.TOKEN_PASSWORD) throw new Error('Missing required env var: TOKEN_PASSWORD')
+if (!process.env.GITHUB_CLIENT_ID) throw new Error('Missing required env var: GITHUB_CLIENT_ID')
+if (!process.env.GITHUB_CLIENT_SECRET) throw new Error('Missing required env var: GITHUB_CLIENT_SECRET')
+
+// Derive a 32-byte AES key from TOKEN_PASSWORD at startup.
+// SHA-256 is appropriate here because TOKEN_PASSWORD is a server-managed
+// secret (not a user-supplied password), so a dedicated KDF like scrypt
+// isn't necessary.
+const _aesKey = crypto.createHash('sha256').update(process.env.TOKEN_PASSWORD).digest()
+
+function _aesEncrypt (plaintext) {
+  const iv = crypto.randomBytes(12)
+  const cipher = crypto.createCipheriv('aes-256-gcm', _aesKey, iv)
+  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
+  const authTag = cipher.getAuthTag()
+  // format: iv:authTag:ciphertext (all hex, colon-separated)
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`
+}
+
+function _aesDecrypt (cookieVal) {
+  const parts = cookieVal.split(':')
+  if (parts.length !== 3) throw new Error('invalid token format')
+  const [ivHex, authTagHex, encHex] = parts
+  const decipher = crypto.createDecipheriv('aes-256-gcm', _aesKey, Buffer.from(ivHex, 'hex'))
+  decipher.setAuthTag(Buffer.from(authTagHex, 'hex'))
+  return Buffer.concat([
+    decipher.update(Buffer.from(encHex, 'hex')),
+    decipher.final()
+  ]).toString('utf8')
+}
 
 // NOTE: this ghRequest helper function created by Claude in order to replace
 // the old gh/core module (and it's corresponding vulnerabilities)
@@ -81,20 +113,16 @@ When you're ready to publish your work on the Web click on netnet's face and ope
 // Helper function for decrypting token
 function decryptToken (req, res, cb) {
   const token = req.cookies.AuthTok
-  if (!token) return res.json({ success: false, message: 'no access token' })
-  triplesec.decrypt({
-    data: triplesec.Buffer.from(token, 'hex'),
-    key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
-  }, (err, buff) => {
-    if (err) {
-      console.error('token decrypt error:', err)
-      return res.status(500).json({ success: false, message: 'token decrypt failed' })
-    }
-    const atok = new URLSearchParams(buff.toString()).get('access_token')
-    if (!atok) return res.status(500).json({ success: false, message: 'token parse failed' })
+  if (!token) return res.status(401).json({ success: false, message: 'no access token' })
+  try {
+    const atok = new URLSearchParams(_aesDecrypt(token)).get('access_token')
+    if (!atok) return res.status(401).json({ success: false, message: 'invalid token payload' })
     const gh = { request: (endpoint, params) => ghRequest(atok, endpoint, params) }
     cb(gh)
-  })
+  } catch (err) {
+    console.error('token decrypt error:', err)
+    return res.status(401).json({ success: false, message: 'invalid token' })
+  }
 }
 
 // MAX FILES/DEPTH in place to prevent large repo from making us crash.
@@ -193,21 +221,39 @@ router.get('/api/github/proxy', async (req, res) => {
   if (!req.query.url) return res.status(400).json({ error: 'missing url param' })
   // fix single-slash typo that can come from the redbird proxy
   const url = req.query.url.replace('https:/raw', 'https://raw')
-  // only allow raw.githubusercontent.com — no open SSRF
+  // only allow HTTPS requests to raw.githubusercontent.com — no open SSRF
   let parsed
   try { parsed = new URL(url) } catch { return res.status(400).json({ error: 'invalid url' }) }
-  if (parsed.hostname !== 'raw.githubusercontent.com') {
+  if (parsed.protocol !== 'https:' || parsed.hostname !== 'raw.githubusercontent.com') {
     return res.status(403).json({ error: 'host not allowed' })
   }
   // HACK: proxy exists to get around MIME-type mismatch issue with raw.githubusercontent.com
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
+  const PROXY_MAX_BYTES = 5 * 1024 * 1024 // 5MB
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 8000)
   try {
-    const r = await fetch(url)
-    const buf = await r.arrayBuffer()
-    if (req.query.url.includes('.css')) {
-      res.end(reWriteCSSPaths(req, Buffer.from(buf)))
-    } else res.end(Buffer.from(buf))
-  } catch (err) { console.log(err) }
+    const r = await fetch(url, { signal: controller.signal })
+    if (!r.ok) return res.status(r.status).json({ error: 'proxy request failed' })
+    // check content-length header first to avoid buffering oversized responses
+    const contentLength = Number(r.headers.get('content-length') || 0)
+    if (contentLength > PROXY_MAX_BYTES) return res.status(413).json({ error: 'file too large' })
+    const buf = Buffer.from(await r.arrayBuffer())
+    if (buf.length > PROXY_MAX_BYTES) return res.status(413).json({ error: 'file too large' })
+    // Set Content-Type explicitly — raw.githubusercontent.com sends text/plain for
+    // CSS and JS, which nosniff blocks. This is the whole reason this proxy exists.
+    const ext = parsed.pathname.split('.').pop()
+    if (ext === 'css') res.setHeader('Content-Type', 'text/css')
+    else if (ext === 'js') res.setHeader('Content-Type', 'application/javascript')
+    if (ext === 'css') {
+      res.end(reWriteCSSPaths(req, buf))
+    } else res.end(buf)
+  } catch (err) {
+    console.error('proxy error:', err)
+    res.status(502).json({ error: 'proxy request failed' })
+  } finally {
+    clearTimeout(timeout)
+  }
 })
 
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ * Auth Token
@@ -224,14 +270,37 @@ router.get('/api/github/client-id', (req, res) => {
   res.json({ success: true, message: process.env.GITHUB_CLIENT_ID, state })
 })
 
-router.get('/api/github/auth-status', (req, res) => {
+router.get('/api/github/auth-status', async (req, res) => {
   const token = req.cookies.AuthTok
   if (!token) return res.json({ success: false, message: 'no access token' })
-  else return res.json({ success: true, message: 'has access token' })
+  // Decrypt and verify the token is still valid on GitHub's side.
+  // A corrupt/undecryptable cookie is definitely invalid; a GitHub network
+  // error is not — don't log the user out if GitHub is temporarily down.
+  let atok
+  try {
+    atok = new URLSearchParams(_aesDecrypt(token)).get('access_token')
+    if (!atok) return res.json({ success: false, message: 'invalid token' })
+  } catch (e) {
+    return res.json({ success: false, message: 'invalid token' })
+  }
+  try {
+    const r = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `Bearer ${atok}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+    if (r.status === 401) return res.json({ success: false, message: 'token revoked' })
+    return res.json({ success: true, message: 'token valid' })
+  } catch (e) {
+    // Network error — treat as still logged in rather than falsely clearing the session
+    return res.json({ success: true, message: 'token unverified' })
+  }
 })
 
 router.post('/api/github/clear-cookie', (req, res) => {
-  res.cookie('AuthTok', null, { maxAge: 500, httpOnly: true })
+  res.clearCookie('AuthTok', { httpOnly: true, sameSite: 'lax', secure: true })
     .json({ message: 'cookie cleared' })
 })
 
@@ -242,7 +311,7 @@ router.get('/user/signin/callback', (req, res) => {
   if (!state || !stored || state !== stored) {
     return res.status(403).send('(✖ _ ✖) Invalid OAuth state (possible CSRF attempt)')
   }
-  res.clearCookie('nn-oauth-state')
+  res.clearCookie('nn-oauth-state', { httpOnly: true, sameSite: 'lax', secure: true })
   // assuming user was redirected here from GitHub Auth Page...
   const codeParam = `code=${code}` // ...we should have a user ?code=...
   const root = 'https://github.com/login/oauth/access_token'
@@ -253,22 +322,19 @@ router.get('/user/signin/callback', (req, res) => {
   }).then(response => response.text()).then(token => {
     const ermsg = '◕ ︵ ◕ oh no! looks like something went wrong with GitHub'
     if (token.indexOf('error') === 0) return res.send(ermsg)
-    // ...assuming we don't get an error back, let's encrypt the token
-    triplesec.encrypt({
-      data: triplesec.Buffer.from(token),
-      key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
-    }, (err, buff) => {
-      if (err) return res.json(err)
-      else { // ...now let's create cookie w/encrypted token
-        const oneYear = 365 * 24 * 60 * 60 * 1000
-        res.cookie('AuthTok', buff.toString('hex'), {
-          maxAge: oneYear,
-          secure: true,
-          sameSite: true,
-          httpOnly: true
-        }).redirect('/')
-      }
-    })
+    // ...assuming we don't get an error back, let's encrypt and store the token
+    try {
+      const oneYear = 365 * 24 * 60 * 60 * 1000
+      res.cookie('AuthTok', _aesEncrypt(token), {
+        maxAge: oneYear,
+        secure: true,
+        sameSite: 'lax',
+        httpOnly: true
+      }).redirect('/')
+    } catch (err) {
+      console.error('token encrypt error:', err)
+      res.status(500).send('◕ ︵ ◕ oh no! something went wrong with the login')
+    }
   }).catch(err => console.log(err))
 })
 

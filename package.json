@@ -30,8 +30,7 @@
     "express": "^4.22.2",
     "marked": "^15.0.6",
     "socket.io": "^4.8.3",
-    "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git",
-    "triplesec": "^4.0.3"
+    "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git"
   },
   "devDependencies": {
     "standard": "^14.3.3"
