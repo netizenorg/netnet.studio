@@ -97,10 +97,22 @@ function decryptToken (req, res, cb) {
   })
 }
 
+// MAX FILES/DEPTH in place to prevent large repo from making us crash.
+// NOTE: if we change these values, make sure to update convo in project-files
+// 'files-truncated', 'max-files-reached' and 'max-depth-reached'
+const FETCH_FILES_MAX_DEPTH = 5
+const FETCH_FILES_MAX_FILES = 300
 // Helper function to recursively fetch files.
 // It starts at the given path (empty string means repository root),
 // and returns an object mapping file paths to their content data.
-async function fetchFiles (gh, owner, repo, path) {
+// depth, fileCount, and state are internal — callers should omit them.
+async function fetchFiles (gh, owner, repo, path, depth = 0, fileCount = { n: 0 }, state = { truncated: false, reason: null }) {
+  // Stop recursing if we've gone too deep into nested folders.
+  if (depth > FETCH_FILES_MAX_DEPTH) {
+    state.truncated = true
+    state.reason = 'depth'
+    return {}
+  }
   const result = {}
   // Request the contents of the current path.
   const response = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
@@ -110,10 +122,26 @@ async function fetchFiles (gh, owner, repo, path) {
 
   // If data is an array, it represents a directory listing.
   if (Array.isArray(data)) {
+    // Sort so HTML files come first — this ensures index.html (or any root
+    // .html file) is always fetched before the file cap kicks in, so the
+    // client can still identify the project as a web project even when truncated.
+    const items = [...data].sort((a, b) => {
+      const aHtml = a.name.endsWith('.html')
+      const bHtml = b.name.endsWith('.html')
+      if (aHtml !== bHtml) return aHtml ? -1 : 1
+      return a.name.localeCompare(b.name)
+    })
     // Process each item (file or directory) in the listing.
     // For simplicity, process items sequentially.
-    for (const item of data) {
+    for (const item of items) {
+      // Stop fetching if we've hit the total file cap.
+      if (fileCount.n >= FETCH_FILES_MAX_FILES) {
+        state.truncated = true
+        state.reason = 'files'
+        break
+      }
       if (item.type === 'file') {
+        fileCount.n++
         // Retrieve the file content.
         const fileResponse = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
           owner, repo, path: item.path
@@ -122,7 +150,7 @@ async function fetchFiles (gh, owner, repo, path) {
         result[item.path] = fileResponse.data
       } else if (item.type === 'dir') {
         // Recursively fetch files inside subdirectories.
-        const nestedFiles = await fetchFiles(gh, owner, repo, item.path)
+        const nestedFiles = await fetchFiles(gh, owner, repo, item.path, depth + 1, fileCount, state)
         Object.assign(result, nestedFiles)
       }
     }
@@ -320,8 +348,9 @@ router.post('/api/github/open-all-files', (req, res) => {
   const repo = req.body.repo
   decryptToken(req, res, async gh => {
     try { // Start at the repo root by passing an empty string.
-      const files = await fetchFiles(gh, owner, repo, '')
-      res.json({ success: true, message: 'open-all-files success', data: files })
+      const state = { truncated: false, reason: null }
+      const files = await fetchFiles(gh, owner, repo, '', 0, { n: 0 }, state)
+      res.json({ success: true, message: 'open-all-files success', data: files, truncated: state.truncated, truncatedReason: state.reason })
     } catch (error) {
       res.json({ success: false, message: 'open-all-files error', error })
     }

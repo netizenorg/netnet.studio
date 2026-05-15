@@ -48,6 +48,10 @@ class ProjectFiles extends Widget {
 
     this.codeEdit = null // runs on code update when proj is open
 
+    // NOTE: must match values in github.js && convo files
+    this.FETCH_FILES_MAX_DEPTH = 5
+    this.FETCH_FILES_MAX_FILES = 300
+
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
     this.mimeTypes = {
       md: 'text/markdown',
@@ -470,6 +474,18 @@ class ProjectFiles extends Widget {
       if (!res || !res.success || res.success === 'false' || !res.data) {
         nn.get('load-curtain').hide()
         return this._ohNoErr(res)
+      }
+
+      // if the repo is too large (too many files or too deeply nested) don't
+      // open it at all (see fetchFiles() in github.js) imit is in place to
+      // prevent an attacker with intentionally massive repo from crashing us
+      if (res.truncated) {
+        nn.get('load-curtain').hide()
+        this.truncatedReason = res.truncatedReason
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'files-truncated')
+        this.close()
+        return
       }
 
       // a "web project" needs at least one HTML file at the root —
@@ -1091,15 +1107,35 @@ class ProjectFiles extends Widget {
 
   newFolder () {
     this.convos = window.CONVOS[this.key](this)
+    // Check if the right-clicked target is already at max nesting depth.
+    // Any new folder created there would put its contents one level deeper,
+    // which fetchFiles would skip (see FETCH_FILES_MAX_DEPTH in github.js).
+    const fldr = this._rightClicked.classList.contains('folder')
+    const pathParts = (!this._rightClicked.dataset.path)
+      ? [] : this._rightClicked.dataset.path.split('/')
+    if (pathParts.length !== 0 && !fldr) pathParts.pop() // clicked a file, use its parent
+    if (pathParts.filter(Boolean).length >= this.FETCH_FILES_MAX_DEPTH) {
+      window.convo = new Convo(this.convos, 'max-depth-reached')
+      return
+    }
     window.convo = new Convo(this.convos, 'new-folder')
   }
 
   newFile () {
     this.convos = window.CONVOS[this.key](this)
+    if (Object.keys(this.files).length >= this.FETCH_FILES_MAX_FILES) {
+      window.convo = new Convo(this.convos, 'max-files-reached')
+      return
+    }
     window.convo = new Convo(this.convos, 'new-file')
   }
 
   async uploadFile () {
+    if (Object.keys(this.files).length >= this.FETCH_FILES_MAX_FILES) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'max-files-reached')
+      return
+    }
     const bytesToMB = (bytes) => {
       if (bytes === 0) return 0
       const mb = bytes / (1024 * 1024)

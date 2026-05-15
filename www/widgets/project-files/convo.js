@@ -465,6 +465,26 @@ window.CONVOS['project-files'] = (self) => {
       'beta?': (e) => e.goTo('beta')
     }
   }, {
+    id: 'files-truncated',
+    content: self.truncatedReason === 'depth'
+      ? 'Sorry, I wasn\'t able to open this project because its folder structure is nested more than <b>5 levels deep</b>, which is beyond what I can safely work with here. You can still access and edit this project directly on GitHub, just keep in mind that deeply nested folders can make web projects tricky to manage. Consider reorganizing your project so there aren\'t as many folders in folders in folders.'
+      : 'Sorry, I wasn\'t able to open this project because it contains more than <b>300 files</b>, which is beyond what I can safely work with here. You can still access and edit this project directly on GitHub. This limit is in place for security, but feel free to open up an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a> if you think we should reconsider this limit/approach.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'max-files-reached',
+    content: 'Your project has reached the <b>300 file limit</b> for netnet.studio. You won\'t be able to add any more files here, though you can still add files directly on GitHub and/or work in another code editor. This limit is in place for security, but feel free to open up an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a> if you think we should reconsider this limit/approach.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'max-depth-reached',
+    content: 'Your project\'s folders are already nested <b>5 levels deep</b>, which is the limit for netnet.studio. You can\'t create another folder here, though you can still add folders elsewhere, like in the root (aka main project folder). Consider reorganizing your folder structure if you need more depth.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
     id: 'beta',
     content: `This is the first version of the <b>Project Files</b> widget, it's still in "beta", meaning we're still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">submit an issue!</a>`,
     options: {
