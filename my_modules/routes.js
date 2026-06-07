@@ -58,6 +58,9 @@ aliasRoutes.forEach(dep => {
 
 router.get('/sketch', (req, res) => res.redirect('/#sketch'))
 
+// fallback for /js/visits.js on localhost (nginx proxies this to Plausible in production)
+router.get('/js/visits.js', (req, res) => res.type('js').send(''))
+
 router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
