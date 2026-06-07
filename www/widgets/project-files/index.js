@@ -118,9 +118,9 @@ class ProjectFiles extends Widget {
     const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'coding-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
 
     const loggedIn = WIDGETS['student-session'].getData('owner')
-    const c1 = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    const c1 = nn.toRGB(utils.getVal('--netizen-meta'))
     const fileClr = `rgb(${c1.r},${c1.g},${c1.b})`
-    const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+    const c2 = nn.toRGB(utils.getVal('--fg-color'))
     const fldrClr = `rgb(${c2.r},${c2.g},${c2.b})`
 
     this.innerHTML = `
@@ -264,7 +264,7 @@ class ProjectFiles extends Widget {
     const hover = (e, type) => {
       if (type === 'over') {
         e.stopPropagation()
-        const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+        const c2 = nn.toRGB(utils.getVal('--fg-color'))
         e.target.style.background = `rgba(${c2.r},${c2.g},${c2.b}, 0.25)`
       } else if (type === 'out') {
         e.stopPropagation()
