@@ -62,7 +62,7 @@ router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
   if (host.endsWith('.netnet.studio') && !req.originalUrl.endsWith('/list.json')) {
-    const root = path.resolve(__dirname, '../../netnet.studio/www')
+    const root = path.resolve(__dirname, '../../netnet.studio/www/tutorials')
     return res.sendFile(req.params[0], { root }, (err) => {
       if (err) res.status(404).end()
     })
