@@ -32,16 +32,14 @@ window.CONVOS['utils-misc'] = (self) => {
     content: `Check out this project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a>. If you connect me to your GitHub I can create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you so you can create your own remix from it.`,
     options: {
       'no thanks': (e) => e.hide(),
-      'GitHub account?': (e) => { WIDGETS['student-session'].chatGitHubAuth() },
-      'something looks off...': (e) => e.goTo('remix-github-path-issues')
+      'GitHub account?': (e) => { WIDGETS['student-session'].chatGitHubAuth() }
     }
   }, {
     id: 'remix-github-project-logged-in',
     content: `Check out this project <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a> by <a href="https://github.com/${a[0]}" target="_blank">${a[0]}</a>. If you want to remix this project I can create a "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" for you?`,
     options: {
       'no thanks': (e) => e.hide(),
-      'let\'s remix it!': (e) => e.goTo('agree-to-fork'),
-      'something looks off...': (e) => e.goTo('remix-github-path-issues')
+      'let\'s remix it!': (e) => e.goTo('agree-to-fork')
     }
   }, {
     id: 'remix-github-project-logged-in-as-owner',
@@ -50,21 +48,10 @@ window.CONVOS['utils-misc'] = (self) => {
       'let\'s open it!': (e) => {
         e.hide(); WIDGETS.load('project-files', (w) => w.openProject(a[1]))
       },
-      'something looks off...': (e) => e.goTo('remix-github-path-issues'),
       'I\'m just experimenting': (e) => {
+        utils.updateURL()
         e.hide()
       }
-    }
-  }, {
-    id: 'remix-github-path-issues',
-    content: `That could mean this project contains relative paths to assets in sub-folders I'm having trouble requesting. In these instances I might not render the output properly when previewing the project this way, but you can ${gh.o === a[0] ? 'open' : 'fork'} it in order to access all the files and appropriate paths which should fix that.`,
-    options: {
-      'ok, let\'s do it': (e) => {
-        if (gh.o === a[0]) {
-          e.hide(); WIDGETS.load('project-files', (w) => w.openProject(a[1]))
-        } else e.goTo('agree-to-fork')
-      },
-      'no thanks, I\'m just experimenting': (e) => e.hide()
     }
   }, {
     id: 'remix-github-project-auth-redirect',
@@ -77,9 +64,17 @@ window.CONVOS['utils-misc'] = (self) => {
   }, {
     before: () => { if (NNW.layout === 'welcome') NNW.layout = 'dock-left' },
     id: 'agree-to-fork',
-    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy onto your account. Sounds good?',
+    content: 'How exciting! In order to create your own remix of this project I\'m going to "<a href="https://guides.github.com/activities/forking/" target="_blank">fork</a>" it to your GitHub. Forking creates an associated copy in your account. One thing to keep in mind is that I\'ll be downloading this project\'s code and running it in your browser, so make sure you trust the creator of this repo. Sounds good?',
     options: {
-      'let\'s do it!': (e) => utils.forkRepo(),
+      'I trust it, let\'s do it!': (e) => utils.forkRepo(),
+      'trust?': (e) => e.goTo('trust-code'),
+      'oh, never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'trust-code',
+    content: 'You didn\'t write this code, so it\'s important to trust the person who did. This is true anytime you run someone else\'s code in your environment, this could mean importing a library someone else wrote into your own project, installing a new extention in your browser or even installing an app you downloaded to your computer. If you didn\'t write the code, always make sure it\'s coming from a tusted source!',
+    options: {
+      'I trust it, let\'s fork!': (e) => utils.forkRepo(),
       'oh, never mind': (e) => e.hide()
     }
   }, {

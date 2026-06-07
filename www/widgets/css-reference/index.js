@@ -323,7 +323,7 @@ class CssReference extends Widget {
       type = 'keyword'
       val = k.name
       r.keyword = k.name; r.hex = k.hex; r.rgb = k.rgb
-      const hsl = nn.hex2hsl(k.hex)
+      const hsl = nn.toHSL(k.hex)
       r.hsl = `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`
     } else {
       type = c[0]
@@ -335,17 +335,17 @@ class CssReference extends Widget {
             : val
       } else if (type === 'rgb' || type === 'hsl') {
         r.hex = type === 'rgb'
-          ? nn.rgb2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
-          : nn.hsl2hex(parseInt(c[2]), parseInt(c[3]), parseInt(c[4]))
+          ? nn.toHex({ r: parseInt(c[2]), g: parseInt(c[3]), b: parseInt(c[4]) })
+          : nn.toHex({ h: parseInt(c[2]), s: parseInt(c[3]), l: parseInt(c[4]) })
         if (alpha) r.hex += nn.alpha2hex(alpha)
       }
 
-      const rgb = nn.hex2rgb(r.hex)
+      const rgb = nn.toRGB(r.hex)
       r.rgb = type === 'rgb' ? val
         : alpha ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
           : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 
-      const hsl = nn.hex2hsl(r.hex)
+      const hsl = nn.toHSL(r.hex)
       r.hsl = type === 'hsl' ? val
         : alpha ? `hsla(${hsl.h}, ${hsl.s}, ${hsl.l}, ${alpha})`
           : `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`

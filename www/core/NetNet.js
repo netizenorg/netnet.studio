@@ -804,11 +804,11 @@ class NetNet {
   _calcCanvasColors () {
     const bg = window.getComputedStyle(document.documentElement)
       .getPropertyValue('--netizen-background').substr(0, 7)
-    const c = nn.hex2hsv(bg)
-    const v0 = c.v + 10 <= 100 ? c.v + 10 : 100
-    const v1 = c.v - 10 >= 0 ? c.v - 10 : 0
-    this.grad0 = nn.hsv2hex(c.h, c.s, v0)
-    this.grad1 = nn.hsv2hex(c.h, c.s, v1)
+    const c = nn.toHSL(bg)
+    const l0 = Math.min(c.l + 10, 100)
+    const l1 = Math.max(c.l - 10, 0)
+    this.grad0 = nn.toHex({ h: c.h, s: c.s, l: l0 })
+    this.grad1 = nn.toHex({ h: c.h, s: c.s, l: l1 })
   }
 
   _canvasUpdate (x, y) {

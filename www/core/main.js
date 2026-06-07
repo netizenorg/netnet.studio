@@ -59,6 +59,7 @@ nn.on('resize', (e) => {
 nn.on('message', (e) => {
   if (e.data.type === 'iframe-error') WIDGETS['code-review'].review({ error: e })
   else if (e.data.type === 'netnet-bg') utils.updateAllShadows(e)
+  else if (e.data.type === 'iframe-sensor-blocked') WIDGETS['code-review'].handleSensorBlocked()
 })
 
 // update default background on mouse movement

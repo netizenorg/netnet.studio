@@ -416,29 +416,25 @@ function markdownToHtml (md) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-  // Code blocks
-  md = md.replace(/```([\s\S]*?)```/g, (_, code) => {
-    return '<pre><code>' + escapeHtml(code) + '</code></pre>'
-  })
-  // Inline code
-  md = md.replace(/`([^`]+)`/g, (_, code) => {
-    return '<code>' + escapeHtml(code) + '</code>'
-  })
-  // Headers (h1 to h6)
-  md = md.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
-  md = md.replace(/^##### (.*)$/gm, '<h5>$1</h5>')
-  md = md.replace(/^#### (.*)$/gm, '<h4>$1</h4>')
-  md = md.replace(/^### (.*)$/gm, '<h3>$1</h3>')
-  md = md.replace(/^## (.*)$/gm, '<h2>$1</h2>')
-  md = md.replace(/^# (.*)$/gm, '<h1>$1</h1>')
-  // Bold and italic
+  // block dangerous URL schemes in links and images
+  const safeUrl = url => /^(javascript|data|vbscript):/i.test(url.trim()) ? '#' : url.trim()
+  // pull code blocks and inline code into placeholders before escaping so
+  // their already-escaped content isn't double-escaped
+  const slots = []
+  const slot = html => { const id = `\x00${slots.length}\x00`; slots.push(html); return id }
+  md = md.replace(/```([\s\S]*?)```/g, (_, code) => slot('<pre><code>' + escapeHtml(code) + '</code></pre>'))
+  md = md.replace(/`([^`]+)`/g, (_, code) => slot('<code>' + escapeHtml(code) + '</code>'))
+  // escape all remaining raw text — headers, bold, italic, paragraphs are now safe
+  md = escapeHtml(md)
+  // Headers (h1–h6) — content already escaped above
+  md = md.replace(/^(#{1,6}) (.*)$/gm, (_, h, content) => `<h${h.length}>${content}</h${h.length}>`)
+  // Bold and italic — content already escaped above
   md = md.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
   md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
   md = md.replace(/\*(.*?)\*/g, '<em>$1</em>')
-  // Images
-  md = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-  // Links
-  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+  // Images and links — text/alt already escaped; validate URL scheme
+  md = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => `<img src="${safeUrl(src)}" alt="${alt}">`)
+  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, href) => `<a href="${safeUrl(href)}">${text}</a>`)
   // Unordered lists
   md = md.replace(/(?:^|\n)([-+*]) (.*?)(?=\n[^-*+]|$)/gs, match => {
     const items = match.trim().split('\n').map(item => {
@@ -446,6 +442,8 @@ function markdownToHtml (md) {
     }).join('')
     return '<ul>' + items + '</ul>'
   })
+  // restore placeholders before paragraphs so <pre> lines are excluded below
+  md = md.replace(/\x00(\d+)\x00/g, (_, i) => slots[parseInt(i)])
   // Paragraphs (very naive — do this last)
   md = md.replace(/^(?!<(h\d|ul|li|pre|code|blockquote|\/)).+/gm, line => {
     return '<p>' + line + '</p>'

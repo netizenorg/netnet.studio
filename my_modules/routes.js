@@ -5,9 +5,7 @@ const fs = require('fs')
 const { promisify } = require('util')
 const readdir = promisify(fs.readdir)
 const stat = promisify(fs.stat)
-const exec = require('child_process').exec
 const utils = require('./utils.js')
-const axios = require('axios')
 const os = require('os')
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -45,11 +43,16 @@ otherAssets.forEach(dir => {
 aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
-      const filePath = path.join(__dirname, dep.loc, req.params[0])
-      res.sendFile(filePath)
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.sendFile(req.params[0], { root: path.join(__dirname, dep.loc) }, (err) => {
+        if (err) res.status(404).end()
+      })
     })
   } else { // for exact routes
-    router.get(dep.url, (req, res) => res.sendFile(path.join(__dirname, dep.loc)))
+    router.get(dep.url, (req, res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.sendFile(path.join(__dirname, dep.loc))
+    })
   }
 })
 
@@ -59,8 +62,10 @@ router.get('/tutorials/*', (req, res, next) => {
   const host = req.hostname
   // any subdomains (ex dev.netnet) should load tutorials from production server
   if (host.endsWith('.netnet.studio') && !req.originalUrl.endsWith('/list.json')) {
-    const filePath = path.join(__dirname, '../../netnet.studio/www', req.originalUrl)
-    return res.sendFile(filePath)
+    const root = path.resolve(__dirname, '../../netnet.studio/www')
+    return res.sendFile(req.params[0], { root }, (err) => {
+      if (err) res.status(404).end()
+    })
   }
   // NOTE: v2 && v3 have a modified version of this route which returns the old
   // tutorials, stored in ../../netnet.studio-v3/www
@@ -68,6 +73,8 @@ router.get('/tutorials/*', (req, res, next) => {
 })
 
 // directory listing for /templates/*
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+
 const templateListPage = (rel, upLink, rows) => {
   const arr = rel.split('/').filter(s => s !== '')
   arr.splice(0, 2)
@@ -76,7 +83,7 @@ const templateListPage = (rel, upLink, rows) => {
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Contents of ${rel}</title>
+    <title>Contents of ${escapeHtml(rel)}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; padding: 2rem; }
@@ -88,7 +95,7 @@ const templateListPage = (rel, upLink, rows) => {
   </head>
   <body>
     ${arr.length > 1 ? upLink : ''}
-    <h1><span style="opacity: 0.5">Contents of:</span> ${rel}</h1>
+    <h1><span style="opacity: 0.5">Contents of:</span> ${escapeHtml(rel)}</h1>
     <ul>${rows}</ul>
   </body>
 </html>`
@@ -133,7 +140,8 @@ router.get('/templates/*', (req, res) => {
           res.send(html)
         })
       })
-    } else { // it’s a file → serve it directly
+    } else { // it's a file → serve it directly
+      res.setHeader('Access-Control-Allow-Origin', '*')
       res.sendFile(requestedPath)
     }
   })
@@ -149,30 +157,6 @@ router.get('/api/videos/:video', (req, res) => {
   fs.stat(path.join(__dirname, `../data/videos/${v}`), (err, stat) => {
     if (err === null) res.sendFile(path.join(__dirname, `../data/videos/${v}`))
   })
-})
-
-router.get('/api/nn-proxy', async (req, res) => {
-  let URL = req.query.url
-  for (const key in req.query) {
-    if (key !== 'url') URL += `&${key}=${req.query[key]}`
-  }
-  const request = await axios.get(URL)
-  res.send(request.data)
-})
-
-router.get('/api/proxy', (req, res) => {
-  let URL = Object.keys(req.query)[0]
-  // accont for redbird proxy bug
-  if (URL.includes('http:/')) {
-    URL = URL.replace('http:/', 'http://')
-  }
-  if (URL.includes('http:///')) {
-    URL = URL.replace('http:///', 'http://')
-  }
-  // proxy request
-  axios.get(URL)
-    .then(r => res.end(r.data))
-    .catch(err => console.log(err))
 })
 
 function getSubdirectories (directory, depth = 0) {
@@ -291,18 +275,29 @@ router.get('/api/convos', (req, res) => {
   })
 })
 
-router.get('/api/user-geo', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-  exec(`curl http://ip-api.com/json/${ip}`, (err, stdout) => {
-    if (err) res.json({ success: false, error: err })
-    else res.json({ success: true, data: JSON.parse(stdout) })
-  })
+router.get('/api/user-geo', async (req, res) => {
+  const raw = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  const ip = raw ? raw.split(',')[0].trim() : ''
+  const validIP = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^[0-9a-fA-F:]+$/.test(ip)
+  if (!validIP) return res.json({ success: false, error: 'invalid IP' })
+  try {
+    const r = await fetch(`http://ip-api.com/json/${ip}`)
+    const data = await r.json()
+    res.json({ success: true, data })
+  } catch (err) {
+    res.json({ success: false, error: err.message })
+  }
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
 
 function shortenURL (req, res, dbPath) {
-  const urlsDict = require(dbPath)
+  let urlsDict
+  try {
+    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  } catch (err) {
+    return res.json({ success: false, error: 'failed to read URL database' })
+  }
   const index = Object.keys(urlsDict).length
   const key = (index === 0) ? '0' : utils.b10tob64(index)
   let repeatEntry = false
@@ -333,7 +328,12 @@ router.post('/api/shorten-url', (req, res) => {
 
 router.post('/api/expand-url', (req, res) => {
   const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  const urlsDict = require(dbPath)
+  let urlsDict
+  try {
+    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  } catch (err) {
+    return res.json({ error: 'failed to read URL database' })
+  }
   const hash = urlsDict[req.body.key]
   if (typeof hash === 'string') {
     res.json({ success: 'success', hash })
@@ -425,6 +425,7 @@ router.get('/api/templates', async (req, res) => {
 
 router.get('/api/template/:template', async (req, res) => {
   const name = req.params.template
+  if (!/^[a-z0-9-]+$/i.test(name)) return res.status(400).json({ success: false, error: 'invalid template name' })
   try {
     const base = path.join(__dirname, '../data/templates', name)
     const text = await fs.promises.readFile(path.join(base, 'data.json'), 'utf8')
@@ -441,60 +442,6 @@ router.get('/api/template/:template', async (req, res) => {
     console.error('Failed to load template:', err)
     res.status(500).json({ success: false, error: 'Failed to load templates' })
   }
-})
-
-// ************************
-// BROWSERFEST SUBMISSIONS
-// ************************
-
-const multer = require('multer')
-const bfimgs = path.join(__dirname, '../data/browserfest-thumbnails')
-const uploadImgStorage = multer.diskStorage({
-  destination: function (req, file, cb) { cb(null, bfimgs) },
-  filename: function (req, file, cb) { cb(null, file.originalname) }
-})
-const uploadImg = multer({ storage: uploadImgStorage }).single('image')
-
-// POST.......
-
-router.post('/api/browserfest/upload-image', async (req, res) => {
-  uploadImg(req, res, function (err) {
-    if (err) res.json({ success: false, error: err })
-    else res.json({ success: 'success', message: `${req.file.filename} uploaded` })
-  })
-})
-
-router.post('/api/browserfest/submission', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
-  utils.checkForJSONArrayFile(req, res, dbPath, () => {
-    const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-    if (bfsubs) {
-      bfsubs.push(req.body)
-      fs.writeFile(dbPath, JSON.stringify(bfsubs, null, 2), (err) => {
-        if (err) res.json({ success: false, error: err })
-        else res.json({ success: 'success' })
-      })
-    } else {
-      res.json({ error: 'there was an error with the database.' })
-    }
-  })
-})
-
-// GET ........
-
-router.use(express.static(path.join(__dirname, '../data/browserfest-thumbnails')))
-
-router.get('/api/browserfest/submissions', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/browserfest-submissions.json')
-  const bfsubs = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  // NOTE: this will overwrite our "utils.corsGate" (leaving here for future ref)
-  // res.set({
-  //   'Access-Control-Allow-Origin': '*',
-  //   'Access-Control-Allow-Methods': 'GET'
-  // })
-  const msg = 'welcome h4x0r! to BrowserFest\'s API, here\'s that R4W data!'
-  if (bfsubs) res.json({ success: msg, data: bfsubs })
-  else res.json({ error: 'there was an error with the database.' })
 })
 
 module.exports = router

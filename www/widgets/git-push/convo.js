@@ -139,6 +139,19 @@ window.CONVOS['git-push'] = (self) => {
       // 'clone to my own editor?': (e) => e.hide() // TODO
     }
   }, {
+    id: 'payload-too-large',
+    content: `The files you've selected total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Go back to the staging step and deselect some of the larger files. Make sure that the total  size of the files being committed does not exceed 45MB.`,
+    options: {
+      'go back to staging': (e) => { e.hide(); self._nextCmd('stage') },
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'payload-too-large-auto',
+    content: `The changes you're trying to push total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Click <b>git push</b> again, and then <i>"show me how"</i> so you can manually stage and push your files in smaller batches.`,
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
     id: 'oh-no-error',
     after: () => errorFace(),
     content: 'Oh dang! seems there was a server error... sorry about that...',

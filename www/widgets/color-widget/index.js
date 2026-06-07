@@ -10,11 +10,11 @@ class ColorWidget extends Widget {
 
     this._SubWin = 'hsl'
     const clr = utils.getVal('--netizen-tag')
-    const hsl = nn.hex2hsl(clr)
+    const hsl = nn.toHSL(clr)
     this.hue = hsl.h
     this.sat = hsl.s
     this.lit = hsl.l
-    const rgb = nn.hex2rgb(clr)
+    const rgb = nn.toRGB(clr)
     this.red = rgb.r
     this.green = rgb.g
     this.blue = rgb.b
@@ -74,7 +74,7 @@ class ColorWidget extends Widget {
       if (c[3]) c[3] = Number(c[3]) || parseInt(c[3])
       if (c[4]) c[4] = Number(c[4]) || parseInt(c[4])
       if (c[0] === 'hex') {
-        const rgb = nn.hex2rgb(c[1])
+        const rgb = nn.toRGB(c[1])
         this.red = rgb.r
         this.green = rgb.g
         this.blue = rgb.b
@@ -164,8 +164,8 @@ class ColorWidget extends Widget {
     this.rgbField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
 
     this.hexField.value = this.alpha < 1
-      ? nn.rgb2hex(this.red, this.green, this.blue) + nn.alpha2hex(this.alpha)
-      : nn.rgb2hex(this.red, this.green, this.blue)
+      ? nn.toHex({ r: this.red, g: this.green, b: this.blue }) + nn.alpha2hex(this.alpha)
+      : nn.toHex({ r: this.red, g: this.green, b: this.blue })
     this.hexField.ele.querySelector('input').style.background = 'var(--netizen-meta)'
   }
 
@@ -187,12 +187,12 @@ class ColorWidget extends Widget {
 
     // syncronize colors
     if (type === 'hsl' && this._SubWin !== type) {
-      const hsl = nn.rgb2hsl(this.red, this.green, this.blue)
+      const hsl = nn.toHSL({ r: this.red, g: this.green, b: this.blue })
       this.hue = hsl.h
       this.sat = hsl.s
       this.lit = hsl.l
     } else if (type !== 'hsl' && this._SubWin === 'hsl') {
-      const rgb = nn.hsl2rgb(this.hue, this.sat, this.lit)
+      const rgb = nn.toRGB({ h: this.hue, s: this.sat, l: this.lit })
       this.red = rgb.r
       this.green = rgb.g
       this.blue = rgb.b
@@ -263,11 +263,11 @@ class ColorWidget extends Widget {
     }
 
     this.hexField = this.createCodeField({
-      value: nn.hsl2hex(this.hue, this.sat, this.lit),
+      value: nn.toHex({ h: this.hue, s: this.sat, l: this.lit }),
       change: (e) => fieldUpdate(e)
     })
 
-    const rgb = nn.hsl2rgb(this.hue, this.sat, this.lit)
+    const rgb = nn.toRGB({ h: this.hue, s: this.sat, l: this.lit })
     this.rgbField = this.createCodeField({
       value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
       change: (e) => fieldUpdate(e)
