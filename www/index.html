@@ -55,7 +55,12 @@
     <!-- check out >> https://github.com/nbriz/StatsNotTracks -->
     <!-- to learn about our privacy-focused web analytics -->
     <script src="/stats-not-tracks.min.js"></script>
-    <!-- PLAUSIBLE -->
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="/js/visits.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init({ endpoint: '/api/event' })
+    </script>
     <!-- netizen.org libs -->
     <script src="./nn.min.js"></script>
     <script src="./netitor.min.js"></script>
