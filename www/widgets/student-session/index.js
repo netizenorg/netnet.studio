@@ -36,6 +36,17 @@ class StudentSession extends Widget {
         owner: ls.getItem('owner'),
         repos: ls.getItem('repos')
       },
+      llm: {
+        provider: ls.getItem('llm-provider'),
+        keyOpenai: ls.getItem('llm-key-openai'),
+        keyAnthropic: ls.getItem('llm-key-anthropic'),
+        modelOpenai: ls.getItem('llm-model-openai'),
+        modelAnthropic: ls.getItem('llm-model-anthropic'),
+        modelOllama: ls.getItem('llm-model-local-ollama'),
+        temperature: ls.getItem('llm-temperature'),
+        maxTokens: ls.getItem('llm-max-tokens'),
+        useSchema: ls.getItem('llm-use-schema')
+      },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
         layout: ls.getItem('last-saved-layout'),
@@ -139,7 +150,7 @@ class StudentSession extends Widget {
   }
 
   deleteGitHubSession (skipDialogue, callback) {
-    utils.get('./api/github/clear-cookie', (res) => {
+    utils.post('./api/github/clear-cookie', {}, (res) => {
       this.authStatus = false
       if (WIDGETS['project-files']?.projectData.name) {
         WIDGETS['project-files'].closeProject()
@@ -172,7 +183,8 @@ class StudentSession extends Widget {
       if (json.success === false) return utils._Convo('oh-no-error', json)
       const id = `client_id=${json.message}`
       const scope = 'scope=public_repo'
-      const url = `https://github.com/login/oauth/authorize?${id}&${scope}`
+      const state = `state=${json.state}`
+      const url = `https://github.com/login/oauth/authorize?${id}&${scope}&${state}`
       const a = document.createElement('a')
       a.setAttribute('download', 'index.html')
       a.setAttribute('href', url)
@@ -284,6 +296,14 @@ class StudentSession extends Widget {
     })
   }
 
+  askAnLLM () {
+    WIDGETS.load('ai-api-conduit', async (w) => {
+      await w._createHTML('no-convo')
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'ask-llm')
+    })
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -382,6 +402,46 @@ class StudentSession extends Widget {
           repositories:
           <input  value="${this.data.github.repos}" readonly="readonly">
         </div>
+        <h2>
+          <span>LLM API Settings</span>
+          <button class="pill-btn pill-btn--secondary" name="llm-data">?</button>
+        </h2>
+        <div>
+          provider:
+          <input value="${this.data.llm.provider || ''}" readonly="readonly">
+        </div>
+        <div>
+          OpenAI key:
+          <input type="password" value="${this.data.llm.keyOpenai || ''}" readonly="readonly">
+        </div>
+        <div>
+          Anthropic key:
+          <input type="password" value="${this.data.llm.keyAnthropic || ''}" readonly="readonly">
+        </div>
+        <div>
+          OpenAI model:
+          <input value="${this.data.llm.modelOpenai || ''}" readonly="readonly">
+        </div>
+        <div>
+          Anthropic model:
+          <input value="${this.data.llm.modelAnthropic || ''}" readonly="readonly">
+        </div>
+        <div>
+          Ollama model:
+          <input value="${this.data.llm.modelOllama || ''}" readonly="readonly">
+        </div>
+        <div>
+          temperature:
+          <input value="${this.data.llm.temperature || ''}" readonly="readonly">
+        </div>
+        <div>
+          max tokens:
+          <input value="${this.data.llm.maxTokens || ''}" readonly="readonly">
+        </div>
+        <div>
+          use schema:
+          <input value="${this.data.llm.useSchema !== null ? this.data.llm.useSchema : ''}" readonly="readonly">
+        </div>
       </div>
     `
 
@@ -402,6 +462,8 @@ class StudentSession extends Widget {
         window.convo = new Convo(this.convos, 'save-point-data-info')
       } else if (e.target.name === 'github-data') {
         window.convo = new Convo(this.convos, 'github-data-info')
+      } else if (e.target.name === 'llm-data') {
+        window.convo = new Convo(this.convos, 'llm-keys-data-info')
       }
     }))
 

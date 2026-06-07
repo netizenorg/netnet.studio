@@ -35,10 +35,6 @@ class CodingMenu extends Widget {
         key: 'tidy code',
         alts: ['tidy', 'format', 'clean', 'indent']
       }
-      // {
-      //   key: 'BrowserFest',
-      //   alts: []
-      // }
     ]
 
     this.editorSettingsMenu = [
@@ -91,15 +87,6 @@ class CodingMenu extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
-
-  // TEMPORARY
-  // BrowserFest () {
-  //   if (WIDGETS['browser-fest']) {
-  //     WIDGETS['browser-fest'].submit()
-  //   } else {
-  //     WIDGETS.load('browser-fest', (w) => w.submit())
-  //   }
-  // }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
@@ -158,9 +145,11 @@ class CodingMenu extends Widget {
   _newProject () {
     if (WIDGETS['project-files']) WIDGETS['project-files'].newProject()
     else WIDGETS.load('project-files', (w) => w.newProject())
+    if (!NNE.autoUpdate) NNE.update()
   }
 
   _newSketch () {
+    utils.cancelAllNetitorUses()
     WIDGETS['student-session'].newSketch()
   }
 

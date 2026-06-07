@@ -416,29 +416,25 @@ function markdownToHtml (md) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-  // Code blocks
-  md = md.replace(/```([\s\S]*?)```/g, (_, code) => {
-    return '<pre><code>' + escapeHtml(code) + '</code></pre>'
-  })
-  // Inline code
-  md = md.replace(/`([^`]+)`/g, (_, code) => {
-    return '<code>' + escapeHtml(code) + '</code>'
-  })
-  // Headers (h1 to h6)
-  md = md.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
-  md = md.replace(/^##### (.*)$/gm, '<h5>$1</h5>')
-  md = md.replace(/^#### (.*)$/gm, '<h4>$1</h4>')
-  md = md.replace(/^### (.*)$/gm, '<h3>$1</h3>')
-  md = md.replace(/^## (.*)$/gm, '<h2>$1</h2>')
-  md = md.replace(/^# (.*)$/gm, '<h1>$1</h1>')
-  // Bold and italic
+  // block dangerous URL schemes in links and images
+  const safeUrl = url => /^(javascript|data|vbscript):/i.test(url.trim()) ? '#' : url.trim()
+  // pull code blocks and inline code into placeholders before escaping so
+  // their already-escaped content isn't double-escaped
+  const slots = []
+  const slot = html => { const id = `\x00${slots.length}\x00`; slots.push(html); return id }
+  md = md.replace(/```([\s\S]*?)```/g, (_, code) => slot('<pre><code>' + escapeHtml(code) + '</code></pre>'))
+  md = md.replace(/`([^`]+)`/g, (_, code) => slot('<code>' + escapeHtml(code) + '</code>'))
+  // escape all remaining raw text — headers, bold, italic, paragraphs are now safe
+  md = escapeHtml(md)
+  // Headers (h1–h6) — content already escaped above
+  md = md.replace(/^(#{1,6}) (.*)$/gm, (_, h, content) => `<h${h.length}>${content}</h${h.length}>`)
+  // Bold and italic — content already escaped above
   md = md.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
   md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
   md = md.replace(/\*(.*?)\*/g, '<em>$1</em>')
-  // Images
-  md = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-  // Links
-  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+  // Images and links — text/alt already escaped; validate URL scheme
+  md = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => `<img src="${safeUrl(src)}" alt="${alt}">`)
+  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, href) => `<a href="${safeUrl(href)}">${text}</a>`)
   // Unordered lists
   md = md.replace(/(?:^|\n)([-+*]) (.*?)(?=\n[^-*+]|$)/gs, match => {
     const items = match.trim().split('\n').map(item => {
@@ -446,6 +442,8 @@ function markdownToHtml (md) {
     }).join('')
     return '<ul>' + items + '</ul>'
   })
+  // restore placeholders before paragraphs so <pre> lines are excluded below
+  md = md.replace(/\x00(\d+)\x00/g, (_, i) => slots[parseInt(i)])
   // Paragraphs (very naive — do this last)
   md = md.replace(/^(?!<(h\d|ul|li|pre|code|blockquote|\/)).+/gm, line => {
     return '<p>' + line + '</p>'
@@ -524,6 +522,10 @@ self.addEventListener('message', event => {
 })
 
 self.addEventListener('fetch', (event) => {
+  // bypass local Ollama API — must be before respondWith
+  const reqUrl = new URL(event.request.url)
+  if ((reqUrl.hostname === 'localhost' || reqUrl.hostname === '127.0.0.1') && reqUrl.port === '11434') return
+
   event.respondWith((async () => {
     try {
       const request = event.request
@@ -627,8 +629,28 @@ self.addEventListener('fetch', (event) => {
           return generateResponse(lookup, body)
         }
 
-        // miss inside project → network
-        return fetch(request, { cache: 'no-store' })
+        // miss inside project → return a real 404 instead of letting the
+        // request fall through to the dev server, which would respond with
+        // the SPA's index.html and silently fail to parse as CSS / JS / an
+        // image. Surfacing a 404 puts a clear error in DevTools and, for
+        // HTML navigations, renders a helpful page in the iframe.
+        const missExt = lookup.split('.').pop().toLowerCase()
+        const isHtmlLike = missExt === 'html' || missExt === 'htm' || missExt === 'md'
+        const safe = String(lookup)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        const missBody = isHtmlLike
+          ? `<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5">
+               <h1>⚠️ 404: file not found</h1>
+               <p>The file <code>${safe}</code> isn't in this project.</p>
+               <p>Check your Project Files tree and the path in your code.</p>
+             </body></html>`
+          : `Not found in project: ${lookup}`
+        return new Response(missBody, {
+          status: 404,
+          headers: {
+            'Content-Type': (isHtmlLike ? 'text/html' : 'text/plain') + '; charset=utf-8'
+          }
+        })
       }
 
       // ------------------------------------------- else, pass request through

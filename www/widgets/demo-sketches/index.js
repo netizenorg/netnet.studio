@@ -113,7 +113,7 @@ class DemoSketches extends Widget {
         <!-- demos listed here -->
       </div>
     `
-    const c = nn.hex2rgb(utils.getVal('--bg-color'))
+    const c = nn.toRGB(utils.getVal('--bg-color'))
     const ts = `-4px -2px 3px rgba(${c.r},${c.g},${c.b},0.8)`
     ele.querySelector('.demo-title').style.textShadow = ts
     return ele
@@ -187,7 +187,7 @@ class DemoSketches extends Widget {
       else if (e.language === 'javascript') WIDGETS['js-reference'].textBubble(e)
     })
 
-    const c = nn.hex2rgb(utils.getVal('--bg-color'))
+    const c = nn.toRGB(utils.getVal('--bg-color'))
     const bg = `rgba(${c.r}, ${c.g}, ${c.b}, 0.9)`
     this.$('.demo-preview--editor').style.background = bg
   }
@@ -208,16 +208,8 @@ class DemoSketches extends Widget {
 
   _openInNewTab (o) {
     if (!o) o = this._tempObj
-    const openProj = WIDGETS['project-files']?.projectData.name
-    if (openProj) {
-      this._tempObj = o
-      this.convos = window.CONVOS[this.key](this)
-      const unSaved = WIDGETS['project-files'].changes.length > 0
-      if (unSaved) window.convo = new Convo(this.convos, 'working-on-unsaved-project')
-      else window.convo = new Convo(this.convos, 'working-on-project')
-      return
-    }
-
+    // opening in a new tab leaves the current tab's project untouched,
+    // so no need to gate on an open project here.
     const l = window.location
     const url = `${l.protocol}//${l.host}?demo=${o.key}`
     window.open(url, '_blank', 'noopener,noreferrer')
@@ -375,7 +367,7 @@ class DemoSketches extends Widget {
     this._bgAnimation = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      const c = nn.hex2rgb(utils.getVal('--netizen-meta'))
+      const c = nn.toRGB(utils.getVal('--netizen-meta'))
       ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, 0.25)`
       ctx.lineWidth = 1
       ctx.translate(canvas.width / 2, canvas.height / 2)

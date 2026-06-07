@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "restatement": {
+      "type": "string"
+    },
+    "snippets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+              "description": "A complete, self-contained code snippet that would run without errors if pasted into a file. Never split a statement across snippets."
+          },
+          "language": { "type": "string" },
+          "explanation": { "type": "string" }
+        },
+        "required": ["code", "language", "explanation"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["restatement", "snippets"],
+  "additionalProperties": false
+}

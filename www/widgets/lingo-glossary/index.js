@@ -55,6 +55,9 @@ class LingoGlossary extends Widget {
     this.$('[name="general-info"]').addEventListener('click', () => this._startConvo())
     this.$('[placeholder="search/filter glossary"]').addEventListener('input', e => this._filterResults(e))
     this.$('.lingo-glossary__back span').addEventListener('click', () => this._displayList())
+
+    const docIcon = nn.create('span').set('class', 'lingo-glossary__icon')
+    this.ele.querySelector('.widget__top').prepend(docIcon)
   }
 
   _startConvo () {

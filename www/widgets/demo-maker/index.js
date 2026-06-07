@@ -93,6 +93,7 @@ class DemoMaker extends Widget {
   _loadData (demo) {
     NNE.code = NNE._decode(demo.code.split('#code/').pop())
     NNW.layout = demo.layout || 'dock-left'
+    if (!NNE.autoUpdate) NNE.update()
     if (window.convo) window.convo.hide()
   }
 

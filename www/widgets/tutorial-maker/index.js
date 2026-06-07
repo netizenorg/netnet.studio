@@ -296,7 +296,7 @@ class TutorialMaker extends Widget {
 
   _openPopup (type, payload) {
     const url = 'widgets/tutorial-maker/popups/index.html'
-    this.popup = window.open(url, 'tut-mkr-widget', 'width=485,height=167')
+    this.popup = window.open(url, 'tut-mkr-widget', 'width=485,height=234')
     // keep an eye on the pop up to see if it closed
     this.popupWatcher = setInterval(() => {
       if (this.popup && this.popup.closed) {
@@ -330,6 +330,8 @@ class TutorialMaker extends Widget {
   _setCustomRenderer () {
     // custom renderer so that the iframe gets resolved by the ServiceWorker
     const ready = navigator.serviceWorker.controller && this.hvp?.data
+    // tutorial files need same-origin iframe so the SW can intercept requests
+    if (ready) NNE.iframe.removeAttribute('sandbox')
     NNE.customRender = (eve) => {
       if (ready) {
         eve.iframe.src = `/TUTORIAL_MAKER/${this.hvp.data.id}/index.html`

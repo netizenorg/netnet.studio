@@ -98,7 +98,8 @@ class JsReference extends Widget {
       'data-types': 'dataTypesOpts',
       'data-structures': 'dataStructOpts',
       functions: 'deeperFuncsOpts',
-      libraries: 'apisAndLibsOpts'
+      libraries: 'apisAndLibsOpts',
+      intro: 'introPresOpts'
     }
     this._lastScrollTop = this.slide.scrollTop
     const name = dict[opt] || opt

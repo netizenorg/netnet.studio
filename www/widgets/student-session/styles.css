@@ -52,3 +52,20 @@
 
   background: var(--fg-color);
 }
+
+.student-session__red-dot,
+.student-session__org-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+}
+
+.student-session__red-dot {
+  background: red;
+}
+
+.student-session__org-dot {
+  background: orange;
+}

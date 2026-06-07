@@ -1,4 +1,4 @@
-/* global Widget, WIDGETS, utils, Convo, NNW, nn, WidgetCard */
+/* global Widget, WIDGETS, utils, Convo, NNW, NNE, nn, WidgetCard */
 class LearningGuide extends Widget {
   constructor (opts) {
     super(opts)
@@ -22,26 +22,20 @@ class LearningGuide extends Widget {
     // load widget card class
     utils.loadFile('widgets/learning-guide/data/widget-card.js', () => {
       this._createPage('mainOpts', 'main-slide.html', null, (div) => {
-        // div.querySelector('#bf-submission').addEventListener('click', () => {
-        //   WIDGETS['coding-menu'].BrowserFest()
-        // })
-
         // create sub pages
         this.subpages = [
           { id: 'aboutOpts', file: 'about.html', back: this.mainOpts },
           { id: 'theWebOpts', file: 'the-web.html', back: this.mainOpts },
           { id: 'theNetOpts', file: 'the-internet.html', back: this.mainOpts },
-          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts }
-          // {
-          //   id: 'theNetOpts',
-          //   file: 'the-internet.html',
-          //   back: this.mainOpts,
-          //   subs: [
-          //     { id: 'theNetCultOpts', file: 'the-internet-cultural.html' },
-          //     { id: 'theNetHistOpts', file: 'the-internet-historical.html' },
-          //     { id: 'theNetTechOpts', file: 'the-internet-technical.html' }
-          //   ]
-          // }
+          { id: 'theAIOpts', file: 'the-ai-guide.html', back: this.mainOpts },
+          {
+            id: 'theAIOpts',
+            file: 'the-ai-guide.html',
+            back: this.mainOpts,
+            subs: [
+              { id: 'theAIPres', file: 'the-ai-pres.html' }
+            ]
+          }
         ]
         this.subpages.forEach(p => {
           this._createPage(p.id, p.file, p.back, () => { // create sub-subpages
@@ -53,7 +47,13 @@ class LearningGuide extends Widget {
 
         this.update({ left: 40, top: 65 })
 
-        this.on('close', () => this._applyVisibility())
+        this.on('close', () => {
+          this._applyVisibility()
+          if (this.slide.getAttribute('name') !== 'main-slide') {
+            this.slide.updateSlide(this.mainOpts)
+          }
+        })
+
         this.on('open', () => {
           if (this.width !== 638 || this.height !== 473) {
             this.update({ width: 638, height: 473 })
@@ -87,6 +87,75 @@ class LearningGuide extends Widget {
     })
   }
 
+  loadDemo (id) {
+    this._tempDemo = id
+    window.convo = new Convo(this.convos, 'confirm-demo')
+  }
+
+  async convo (key) {
+    // make sure to save work in progress before switching to AI Notes mode
+    if (NNE.code !== utils.starterCode()) {
+      this._tempConvo = key
+      window.convo = new Convo(this.convos, 'confirm-convo-start')
+    } else { // switch into the AI Notes
+      this._tempConvo = null
+      window.convo = new Convo(this.convos, key)
+
+      await nn.sleep(500)
+      if (NNW.layout !== 'welcome') { NNW.layout = 'welcome' }
+
+      utils.afterLayoutTransition(() => {
+        if (NNW.right !== 20 || NNW.bottom !== 20) {
+          NNW.update({ bottom: 20, right: 20 }, 500)
+          WIDGETS['learning-guide'].update({ top: 20, left: 20 }, 500)
+        }
+      })
+      // if AI Notes convo has a slide, switch to presentation view
+      const aipres = {
+        'ch-one-metaphors1': 'quote-salvaggio',
+        'ch-one-ml1': 'ml-vs-cai',
+        'ch-one-process1': 'creative-process',
+        'ch-one-ui1': 'ui',
+        'ch-one-biz1': 'biz-model',
+        'ch-one-data1': 'train-data',
+        'ch-one-size1': 'size'
+      }
+      if (aipres[key]) this.updateAISlide(aipres[key])
+    }
+  }
+
+  async updateAISlide (key) {
+    // when netnet is giving any sort of lesson about AI and uses
+    // the Learning Guide window for it's presentation slides
+    function injectHtmlAndRunScripts (container, htmlString) {
+      container.innerHTML = htmlString
+      const scripts = container.querySelectorAll('script')
+      for (const oldScript of scripts) {
+        const newScript = document.createElement('script')
+        for (const attr of oldScript.attributes) {
+          newScript.setAttribute(attr.name, attr.value)
+        }
+        newScript.textContent = oldScript.textContent
+        oldScript.parentNode.replaceChild(newScript, oldScript)
+      }
+    }
+
+    if (this.slide.getAttribute('name') !== 'the-ai-pres') {
+      this.slide.updateSlide(this.theAIPres)
+      await nn.sleep(600)
+    }
+    const path = `/widgets/learning-guide/data/ai-ch-1/${key}.html`
+    const html = await utils.getSync(path, true)
+    const frame = this.slide.querySelector('main')
+    frame.style.opacity = 0
+    await nn.sleep(500)
+    frame.innerHTML = html
+    if (html.includes('<script>')) {
+      injectHtmlAndRunScripts(frame, html)
+    }
+    frame.style.opacity = 1
+  }
+
   openDocs (opt, anchor) {
     if (!this.opened) this.open()
     const dict = {
@@ -96,18 +165,28 @@ class LearningGuide extends Widget {
       about: 'aboutOpts'
     }
     const name = dict[opt] || opt
-    this.slide.updateSlide(this[name], anchor)
+    const tryUpdate = () => {
+      if (this[name]) {
+        this.slide.updateSlide(this[name], anchor)
+      } else {
+        setTimeout(tryUpdate, 100)
+      }
+    }
+    tryUpdate()
   }
 
   scrollTo (sec) {
+    const nomotion = WIDGETS['student-session']?.getData('nomotion') === 'true'
+    const behavior = nomotion ? 'instant' : 'smooth'
+
     if (typeof sec === 'number') {
-      return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior: 'smooth' })
+      return this.ele.querySelector('widget-slide').scrollTo({ top: sec, behavior })
     }
 
     const el = this.slide.querySelector(`#learning-guide-${sec}`)
     const offset = 50
     const top = el.getBoundingClientRect().top - this.slide.getBoundingClientRect().top + this.slide.scrollTop - offset
-    this.slide.scrollTo({ top, behavior: 'smooth' })
+    this.slide.scrollTo({ top, behavior })
 
     if (sec === 'toc') {
       window.convo = new Convo(this.convos, 'toc')
@@ -144,9 +223,13 @@ class LearningGuide extends Widget {
       // options objects for <widget-slide> .updateSlide() method
       this[type] = { name: name, widget: this, back: b, ele: div }
       if (type === 'mainOpts') {
+        let firstCb = true
         this.mainOpts.cb = () => setTimeout(() => {
           // this._createStarField()
           // this._svgAnimations()
+          if (firstCb) { firstCb = false; return }
+          if (this._setupTutCards) this._setupTutCards()
+          this._applyVisibility()
         }, utils.getVal('--menu-fades-time'))
       } else if (type === 'theAIOpts') {
         this.theAIOpts.cb = () => this._createAICards()
@@ -168,7 +251,7 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    this._highlightTitles()
+    // this._highlightTitles()
     this._createTutorialCards()
     this._createDemoTemplateCards()
     this._enableSubPagesLinks()
@@ -189,10 +272,6 @@ class LearningGuide extends Widget {
     this.slide.style.overflowX = 'hidden'
   }
 
-  _jsIntroConvo () {
-    window.convo = new Convo(this.convos, 'js-intro')
-  }
-
   _comingSoon (type) {
     if (type === 'units') {
       window.convo = new Convo(this.convos, 'coming-soon-units')
@@ -203,19 +282,22 @@ class LearningGuide extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
-  _highlightTitles () {
-    const c = nn.hex2rgb(utils.getVal('--netizen-number'))
-    const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
-    this.ele.querySelectorAll('h2, h3').forEach(ele => {
-      ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
-    })
-  }
+  /* no longer using this title text-shadow, was inconsistent across browsers */
+  // _highlightTitles () {
+  //   const c = nn.hex2rgb(utils.getVal('--netizen-number'))
+  //   const m = nn.hex2rgb(utils.getVal('--netizen-meta'))
+  //   this.ele.querySelectorAll('h2, h3').forEach(ele => {
+  //     ele.style.textShadow = `rgba(${c.r}, ${c.g}, ${c.b}, 0.2) -1px -1px 6px, rgba(${m.r}, ${m.g}, ${m.b}, 0.2) 1px 1px 6px`
+  //   })
+  // }
 
   _createTutThumb (sec, id, appear) {
     const data = this.tutorials[sec].find(o => o.id === id)
     const click = () => WIDGETS.load('hyper-video-player', w => w.load(data.id))
     const ele = `.learning-guide__tut-thumbs-${sec}`
-    nn.get(ele).set('name', id).innerHTML = ''
+    const container = nn.get(ele)
+    if (!container) return
+    container.set('name', id).innerHTML = ''
 
     this.tutCards[sec] = []
     let delay = 0
@@ -316,12 +398,16 @@ class LearningGuide extends Widget {
     // when all the data below is loaded...
     // ........................
     const ready = () => {
+      this._setupTutCards = ready
+
       // ...create first set of thumbnail cards
       Object.entries(this.tutorials).forEach(([s, tut]) => {
         if (tut[0]) this._createTutThumb(s, tut[0].id)
       })
 
-      // ...and setup controls
+      // ...and setup controls (only once to avoid duplicate listeners)
+      if (this._tutControlsReady) return
+      this._tutControlsReady = true
       Object.entries(this.tutorials).forEach(([s, tut]) => {
         if (tut.length > 1) {
           const sec = `.learning-guide__tut-cntrl[name="${s}"] span`
@@ -372,8 +458,7 @@ class LearningGuide extends Widget {
             </div>
             <div style="text-align: center; font-size:32px; margin-top: 8px;">Generator<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-prompter')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-prompter')
         },
         {
           ele: '#learning-guide__ai-api',
@@ -382,8 +467,7 @@ class LearningGuide extends Widget {
             <div style="text-align: center; font-size:55px; color:var(--fg-color);">☉﹏☉</div>
             <div style="text-align: center; font-size:20px; margin-top: 28px;">netnet LLM conduit<div>
           </div>`,
-          // click: () => WIDGETS.open('ai-api-tool')
-          click: () => window.alert('coming soon')
+          click: () => WIDGETS.open('ai-api-conduit')
         }
       ]
 
@@ -425,8 +509,8 @@ class LearningGuide extends Widget {
       // assuming it's also been defined in this.subpages above
       this.slide.querySelector(`#page-${p.id}`).addEventListener('click', () => {
         this.slide.updateSlide({
-          ...this[p.id],
-          cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
+          ...this[p.id]
+          // cb: () => setTimeout(() => this._highlightTitles(), utils.getVal('--menu-fades-time'))
         })
         window.convo.hide()
       })
@@ -449,7 +533,10 @@ class LearningGuide extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   _applyVisibility () {
-    if (this.slide.getAttribute('name') !== 'main-slide') return
+    if (this.slide.getAttribute('name') !== 'main-slide') {
+      this._stopStarField()
+      return
+    }
 
     const visible = utils.isVisible(this.ele)
     if (visible) {
@@ -478,7 +565,10 @@ class LearningGuide extends Widget {
     const animatedSvgs = [
       'svg-tag-animated', 'svg-css-animated', 'svg-js-animated'
     ]
-    animatedSvgs.forEach(svg => this.$(svg).stop())
+    animatedSvgs.forEach(svg => {
+      const ele = this.$(svg)
+      if (ele) ele.stop()
+    })
   }
 
   /*
@@ -502,7 +592,7 @@ class LearningGuide extends Widget {
     if (!this.slide) { setTimeout(() => this._startStarField(), 250); return }
     if (this._runningStar) return
     this._runningStar = true
-    if (!this._canvas) this._initStarField()
+    if (!this._canvas || !this._canvas.isConnected) this._initStarField()
     this._tickStarField()
   }
 

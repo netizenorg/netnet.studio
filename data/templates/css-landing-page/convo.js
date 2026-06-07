@@ -84,7 +84,7 @@ window.CONVOS['template-css-landing-page'] = (self) => {
     const colorUpdateListener = (c) => {
       const t = WIDGETS['template-projects']?.state?.name
       if (t === 'css-landing-page') {
-        let hex = nn.rgb2hex(c.r, c.g, c.b)
+        let hex = nn.toHex({ r: c.r, g: c.g, b: c.b })
         const a = nn.alpha2hex(c.a)
         if (a < 1) hex += a
         WIDGETS['template-projects'].state.vars[curColorWig] = hex

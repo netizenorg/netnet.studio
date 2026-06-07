@@ -191,8 +191,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 29px;
+  /* padding-right: 29px; */
   padding-bottom: 30px;
+  padding-top: 7px;
 }
 
 .demo-sec-title {

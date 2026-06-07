@@ -125,7 +125,7 @@ window.CONVOS['template-projects'] = (self) => {
     {
       id: 'clear-code-unsaved-proj',
       graph: { id: 7, x: 275, y: 150 },
-      content: 'It appears you\'re working on a project and have some changes which have not been committed. Are you sure you don\'t want to push those changes to your GitHub first before opening this template? These changes will be lost otherwise.',
+      content: 'It appears you\'re working on a project and have some changes which have not been committed. Are you sure you don\'t want to push those changes to your GitHub first before opening this template?',
       options: {
         'yes, let\'s save it first': (e) => {
           WIDGETS.open('git-push')
@@ -133,6 +133,7 @@ window.CONVOS['template-projects'] = (self) => {
         'no, we can discard my changes': (e) => {
           WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
+          else if (self._tempType === 'load') self.loadTemplate(self._tempName)
           else self.preNewRepoFromTemplate(self._tempName)
         },
         'oh, never mind': (e) => e.hide()
@@ -146,6 +147,7 @@ window.CONVOS['template-projects'] = (self) => {
         'yes, let\'s go ahead': (e) => {
           WIDGETS['project-files'].closeProject()
           if (self._tempType === 'guide') self.startGuide(self._tempName)
+          else if (self._tempType === 'load') self.loadTemplate(self._tempName)
           else self.preNewRepoFromTemplate(self._tempName)
         },
         'oh, never mind': (e) => e.hide()

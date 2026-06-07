@@ -15,13 +15,18 @@ window.utils = {
       })
   },
 
-  post: (url, data, cb) => {
+  post: (url, data, cb, timeoutMs = 60000) => {
+    // timeoutMs guards against silent hangs (slow network, stalled server) which
+    // would otherwise leave callers (eg. load-curtain) waiting forever.
+    const controller = new window.AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
     const opts = {
       method: 'POST',
       headers: {
         Accept: 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
-      }
+      },
+      signal: controller.signal
     }
     opts.body = data ? JSON.stringify(data) : undefined
     window.fetch(url, opts)
@@ -32,6 +37,7 @@ window.utils = {
         const errObj = { success: false, error: err }
         if (cb) cb(errObj)
       })
+      .finally(() => clearTimeout(timer))
   },
 
   getSync: async (url, text = false) => {
@@ -174,10 +180,11 @@ window.utils = {
 
   function bgmovement (e) {
     // send mousemovments back up to netnet
+    // '*' required: iframe may be sandboxed (null origin)
     window.top.postMessage({
       type: 'netnet-bg',
       data: { x: e.x, y: e.y }
-    })
+    }, '*')
   }
 
   function reduceMotion () {
@@ -203,7 +210,7 @@ window.utils = {
     NNE.iframe.contentWindow.postMessage({
       type: 'netnet',
       data: { x: e.x, y: e.y, nomotion }
-    })
+    }, '*')
   },
 
   forkRepo: () => {
@@ -231,13 +238,14 @@ window.utils = {
     })
   },
 
-  copyLink: (ele) => {
+  copyLink: (ele, msg) => {
     ele.focus()
     ele.select()
     navigator.clipboard.writeText(ele.value)
     const pos = ele.getBoundingClientRect()
     const note = document.createElement('div')
-    note.innerHTML = '<span>Copied URL!</span>'
+    msg = msg || 'Copied URL!'
+    note.innerHTML = `<span>${msg}</span>`
     note.style.display = 'flex'
     note.style.justifyContent = 'center'
     note.style.alignItems = 'center'
@@ -441,7 +449,7 @@ window.utils = {
       return 'demo'
     } else if (url.template) {
       window.utils.loadTemplate(url.template)
-      return 'demo'
+      return 'template'
     } else {
       return 'none'
     }
@@ -484,6 +492,7 @@ window.utils = {
   },
 
   loadFromCodeHash: (layout) => {
+    NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
     NNE.code = ''
     if (layout) NNW.layout = layout
     window.utils.afterLayoutTransition(() => {
@@ -541,6 +550,14 @@ window.utils = {
         window.utils._Convo('oh-no-error')
         return
       }
+      // sandbox only when the repo belongs to someone else
+      const o = WIDGETS['student-session'].getData('owner')
+      const isOwner = o && o === a[0]
+      if (isOwner) {
+        NNE.iframe.removeAttribute('sandbox')
+      } else {
+        NNE.iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock')
+      }
       window.utils.setCustomRenderer(base, proxy)
 
       NNE.code = ''
@@ -552,8 +569,7 @@ window.utils = {
           if (!NNE.autoUpdate) NNE.update()
         }, 10)
         window.utils.fadeOutLoader(false)
-        const o = WIDGETS['student-session'].getData('owner')
-        if (o && o === a[0]) {
+        if (isOwner) {
           window.utils._Convo('remix-github-project-logged-in-as-owner')
         } else if (o) {
           window.utils._Convo('remix-github-project-logged-in')
@@ -580,6 +596,7 @@ window.utils = {
       // before they got redirected over to GitHub to auth...
       const decoded = NNE._decode(code.substr(6))
       window.utils.setCustomRenderer(null)
+      NNE.iframe.removeAttribute('sandbox')
       NNE.code = decoded
       NNW.layout = 'dock-left'
       window.utils.afterLayoutTransition(() => {
@@ -702,6 +719,9 @@ window.utils = {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   cancelAllNetitorUses: (exception) => {
+    // remove security (would have been added if they loaded external sketch)
+    NNE.iframe.removeAttribute('sandbox')
+
     const hasException = (s) => {
       if (exception instanceof Array) {
         return exception.includes(s)
@@ -749,9 +769,17 @@ window.utils = {
   // main.js listens for these errors + sends them to 'code-review' widget
   setCustomRenderer: (base, proxy) => {
     const errMsgr = `<script>
-      window.onerror = function (message, source, lineno) {
-        window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
-      }
+      window.addEventListener('error', function (e) {
+        if (e.message) window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
+      }, true)
+      var _nnW = new WeakSet()
+      function _nnRes (n) { if (n.nodeType !== 1 || _nnW.has(n)) return; var s = n.src || n.href; if (!s) return; _nnW.add(n); n.addEventListener('error', function () { window.parent.postMessage({ type: 'iframe-error', src: n.src || n.href }, '*') }) }
+      new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.type === 'childList') m.addedNodes.forEach(_nnRes); else _nnRes(m.target) }) }).observe(document.documentElement || document, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'href'] })
+      window.addEventListener('unhandledrejection', function (e) {
+        if (e.reason && (e.reason.name === 'NotAllowedError' || e.reason.name === 'SecurityError')) {
+          window.parent.postMessage({ type: 'iframe-sensor-blocked' }, '*')
+        }
+      })
     </script>`
     if (!base) {
       NNE.customRender = function (event) { event.update(errMsgr + event.code) }
@@ -765,7 +793,7 @@ window.utils = {
   },
 
   hideConvoIf: () => { // on cursor activity, hide convo if it's one of these
-    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'how-to-code', 'demo-example', 'browserfest', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
+    const ids = ['returning-student', 'what-to-do', 'blank-canvas-ready', 'how-to-code', 'demo-example', 'remix-github-project-logged-in', 'remix-github-project-logged-in-as-owner', 'remix-github-project-logged-out', 'remix-github-project-auth-redirect', 'gh-redirected']
     if (window.convo && ids.includes(window.convo.id)) {
       window.convo.hide()
     }

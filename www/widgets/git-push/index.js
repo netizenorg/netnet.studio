@@ -121,6 +121,62 @@ class GitPush extends Widget {
     }
   }
 
+  _pushPayloadTooLarge (changes, convoId) {
+    // if server.js limit for /api/github/push ever changes (currently 50mb),
+    // update MAX_PUSH_MB to match (keeping a few MB of headroom below it)
+    const MAX_PUSH_MB = 45
+    const bytes = changes.reduce((sum, c) => sum + (c.content ? c.content.length : 0), 0)
+    if (bytes <= MAX_PUSH_MB * 1024 * 1024) return false
+    this.pushSizeMB = Math.round(bytes / 1024 / 1024)
+    nn.get('load-curtain').hide()
+    this.convos = window.CONVOS[this.key](this)
+    window.convo = new Convo(this.convos, convoId)
+    return true
+  }
+
+  async _autoCommit () {
+    // similar to on-open logic (update if that changes)
+    const op = WIDGETS['project-files']?.projectData.name
+    const ch = WIDGETS['project-files']?.changes
+    if (op && ch.length === 0) {
+      window.convo = new Convo(this.convos, 'start-not-ready2')
+      return
+    } else if (!op) {
+      window.convo = new Convo(this.convos, 'start-not-ready')
+      return
+    }
+    // similar to 'git push' logic (update if that chaanges)
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    const branch = WIDGETS['project-files']?.projectData.branch
+    const commitMessage = '( ◕ ◞ ◕ ) auto commit'
+    nn.get('load-curtain').show('github.html', { filename: repo })
+    // hydrate at push-time so we only base64 the binaries we're sending
+    const changes = await WIDGETS['project-files'].hydrateChanges(
+      WIDGETS['project-files'].changes
+    )
+    if (this._pushPayloadTooLarge(changes, 'payload-too-large-auto')) return
+    const data = { owner, repo, branch, commitMessage, changes }
+    window.utils.post('/api/github/push', data, async (json) => {
+      this.convos = window.CONVOS[this.key](this)
+      try {
+        if (json.success) {
+          const changes = await WIDGETS['project-files'].resetChanges()
+          WIDGETS['project-files']._updateFilesGUI(changes)
+          this._nextCmd('finished')
+        } else {
+          console.log('GIT SERVER ERROR:', json)
+          window.convo = new Convo(this.convos, 'oh-no-error')
+        }
+      } catch (err) {
+        console.error('GitPush: error after push response:', err)
+        window.convo = new Convo(this.convos, 'oh-no-error')
+      } finally {
+        nn.get('load-curtain').hide()
+      }
+    }, 180000)
+  }
+
   _createSteps () {
     return {
       status: {
@@ -170,26 +226,37 @@ class GitPush extends Widget {
       push: {
         cli: 'git push',
         convo: 'git-push',
-        next: () => {
+        next: async () => {
           const owner = WIDGETS['student-session'].getData('owner')
           const repo = WIDGETS['project-files']?.projectData.name
           const branch = WIDGETS['project-files']?.projectData.branch
           const commitMessage = this._commitMessage
-          const changes = this.include
           nn.get('load-curtain').show('github.html', { filename: repo })
+          // hydrate at push-time only — base64-encode just the staged
+          // binaries instead of every binary in the project on every save.
+          const changes = await WIDGETS['project-files'].hydrateChanges(this.include)
+          if (this._pushPayloadTooLarge(changes, 'payload-too-large')) return
           const data = { owner, repo, branch, commitMessage, changes }
           window.utils.post('/api/github/push', data, async (json) => {
-            if (json.success) {
-              const changes = await WIDGETS['project-files'].resetChanges()
-              WIDGETS['project-files']._updateFilesGUI(changes)
-              nn.get('load-curtain').hide()
-              this._nextCmd('finished')
-            } else {
-              console.log('GIT SERVER ERROR:', json)
-              nn.get('load-curtain').hide()
+            this.convos = window.CONVOS[this.key](this)
+            try {
+              if (json.success) {
+                // pass the staged subset so unstaged files keep their pre-push
+                // baseline and their unpushed changes remain visible.
+                const changes = await WIDGETS['project-files'].resetChanges(this.include)
+                WIDGETS['project-files']._updateFilesGUI(changes)
+                this._nextCmd('finished')
+              } else {
+                console.log('GIT SERVER ERROR:', json)
+                window.convo = new Convo(this.convos, 'oh-no-error')
+              }
+            } catch (err) {
+              console.error('GitPush: error after push response:', err)
               window.convo = new Convo(this.convos, 'oh-no-error')
+            } finally {
+              nn.get('load-curtain').hide()
             }
-          })
+          }, 180000)
         },
         back: () => this._nextCmd('commit')
       },
@@ -207,7 +274,6 @@ class GitPush extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
-  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   downloadProject () {
     const p = WIDGETS['project-files']?.projectData.name
@@ -217,6 +283,8 @@ class GitPush extends Widget {
     const a = document.createElement('a')
     a.setAttribute('download', 'index.html')
     a.setAttribute('href', url)
+    a.setAttribute('target', '_blank')
+    a.setAttribute('rel', 'noopener noreferrer')
     a.click()
     a.remove()
   }

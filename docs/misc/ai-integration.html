@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <span class="docs__panel__intro">
+        <a href="/">
+          ( ◕ ◞ ◕ )
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+        <span class="ver">vBETA 3.0</span>
+      </span>
+      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+      </button>
+      <div class="docs__panel__search">
+        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+        <input id="search-input" class="search-input" placeholder="search">
+      </div>
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  learning
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list" role="navigation"></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  bug report
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  code demos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  contributor workflow
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  editing convos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  manual setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/support.html">
+                  support
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  the docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
+                  tutorial maker
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  widgets
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/#">Other Notes</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/misc/ai-integration.html">
+                  ai integration
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>Connecting netnet to a local LLM</h1>
+<p>If you choose to connect netnet to an LLM and you would prefer to use a local model, the info below guides you through the setup process.</p>
+<h2>netnet&#39;s AI lessons</h2>
+<p>In netnet&#39;s Learning Guide there&#39;s a section devoted to <strong>Artificial &quot;Intelligence&quot;</strong> which begins with Ch.1 &quot;When Choosing to Use AI&quot; where netnet guides you through a presentation introducing core concepts of machine learning, then in Ch.2 &quot;AI as Coding Assistants: Crafting the Right Prompt&quot; netnet introduces the the AI Prompt Generator widget which guides you through crafting prompts that help steer mainstream LLM chat bots (ChatGPT, Claude, Gemeni, etc) away from their default behavior (solving your coding bugs for you) and towards behaving more like a tutor (teaching you how to solve it yourself). Then, in Ch.3, we go deeper by connecting netnet to an LLM through a REST API by choosing a commercial provider (OpenAI or Anthropic) or choosing to connect it to an LLM running on your computer using Ollama. Ch.4 &quot;AI as Creative Materials&quot; goes even deeper, netnet teaches you about other types of neural networks (beyond transformer based LLMs) and how we can use small local models directly into our own projects before diving to the deepest level, Ch.5 &quot;AI as Art&quot; where netnet teaches you to craft your own neural network from scratch.</p>
+<p>The notes on this page are specifically for <strong>Ch.3 &quot;AI as Coding Assistants: Editor Integration with APIs&quot;</strong> when you decide to connect netnet to an open source LLM you have running locally on your computer using Ollama. While it&#39;s easier to connect netnet to a commercial provider (OpenAI, Anthropic) that requires you sign-up and pay that company. It also means sending your data back/fourth to that company&#39;s datacenter (where they run large energy hungry models). Connecting to a locally run model might not be as performant and does require a bit more of a setup, but comes with the benefit of keeping your data private and running a more energy efficient model.</p>
+<h2>DISCLAIMER</h2>
+<p>The <strong>LLM-API Conduit</strong> widget supports connecting to a locally running Ollama instance. Beyond a basic install, Ollama requires environment variable configuration before it will accept requests from the app. This is still a fairly experimental widget so you may have mixed success (but if you like experimenting it&#39;s worth a shot! We&#39;ve had fun playing with this).</p>
+<p><strong>Chrome incompatibility (Private Network Access policy)</strong></p>
+<p>If you&#39;re using <strong>Google Chrome</strong>, this feature currently won’t work, even if everything is set up correctly. Chrome has additional security rules that blocks encrypted websites (like <a href="https://netnet.studio" target="_blank">https://netnet.studio</a>) from communicating with programs running on your computer (like <strong>Ollama</strong>). Because of this, you’ll need to use <strong>Mozilla <a href="https://www.firefox.com/en-US/?redirect_source=mozilla-org" target="_blank">Firefox</a></strong> if you want to connect netnet to local models.</p>
+<p>This isn’t an issue with netnet, and it may be resolved in the future if Ollama updates how it handles these requests. Still, Firefox is a great browser that aligns with our mission (much more so than Chrome), but if you really want to use netnet&#39;s LLM integration on Chrome you still can, you&#39;ll just need to connect it to a commercial provider like OpenAI or Anthropic instead of a local model.</p>
+<h2>Step 1: Download + Install Ollama</h2>
+<p>Visit <a href="https://ollama.com/download" target="_blank">https://ollama.com/download</a> to download and install Ollama. After you&#39;ve installed Ollama, you&#39;ll also need to download a model, Ollama is just the app that runs models locally and provides the REST API so that netnet can communicate with your local models.</p>
+<p>You can download models using the Ollama app&#39;s interface, but you can also download them via the terminal:</p>
+<pre><code>ollama pull gemma4:e2b</code></pre>
+<p>This will automatically download the 2-billion parameter version of <a href="https://deepmind.google/models/gemma/gemma-4/" target="_blank">gemma4</a> the newest/smallest open source model by Google&#39;s DeepMind (as of early 2026). If you have a more powerful machine (16GB+ RAM), you can try a slightly larger model:</p>
+<pre><code>ollama pull gemma4:e4b</code></pre>
+<p>There are <a href="https://ollama.com/search" target="_blank">loads of models</a> to choose from, it&#39;s worth experimenting with a few, just make sure you have enough storage space on your hard drive (even these local LLMs are still fairly big, we&#39;re talking multiple Gigs) to download them, as well as enough memory (your RAM) to run them.</p>
+<h2>Step 2: Verfiy it&#39;s working</h2>
+<p>You can test that Ollama is running by visiting <a href="http://localhost:11434/api/tags" target="_blank">http://localhost:11434/api/tags</a>. You should see a JSON response listing your installed models. If your browser can&#39;t seem to connect to the page, then Ollama might not be running (double check). If it does connect, but you don&#39;t see any models listed, then you might not have successfully downloaded a local model yet (return to step 1)</p>
+<h2>Step 3: Allow netnet to connect to Ollama</h2>
+<p>After installing Ollama and downloading a model, two environment variables must be set in order for netnet (running in your browser) to communicate with Ollama: <code>OLLAMA_HOST</code> (to expose the API) and <code>OLLAMA_ORIGINS</code> (to allow requests from netnet). The commands differ by OS:</p>
+<h3>macOS</h3>
+<p>The simplest way is to open a Terminal and run:</p>
+<pre><code>launchctl setenv OLLAMA_HOST "0.0.0.0:11434"
+launchctl setenv OLLAMA_ORIGINS "https://netnet.studio"</code></pre>
+<p>Then restart Ollama and you should be good to go. However, this won&#39;t persist after rebooting your computer. To avoid having to run this command after every restart, you could go with a more persistent approach by creating a LaunchAgent plist that sets the variables automatically at every login. In Terminal, run:</p>
+<pre><code>cat &gt; ~/Library/LaunchAgents/com.user.ollama-env.plist &lt;&lt; 'EOF'
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;com.user.ollama-env&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/bin/sh&lt;/string&gt;
+    &lt;string&gt;-c&lt;/string&gt;
+    &lt;string&gt;launchctl setenv OLLAMA_HOST "0.0.0.0:11434" &amp;amp;&amp;amp; launchctl setenv OLLAMA_ORIGINS "https://netnet.studio"&lt;/string&gt;
+  &lt;/array&gt;
+  &lt;key&gt;RunAtLoad&lt;/key&gt;
+  &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+EOF
+launchctl load ~/Library/LaunchAgents/com.user.ollama-env.plist</code></pre>
+<p>This loads immediately and will re-run at every login. Restart Ollama once after running this.</p>
+<h3>Windows</h3>
+<p>Open Command Prompt and run:</p>
+<pre><code>setx OLLAMA_HOST "0.0.0.0:11434"
+setx OLLAMA_ORIGINS "https://netnet.studio"</code></pre>
+<p>Restart Ollama after running these. The variables will persist across reboots.</p>
+<h3>Linux</h3>
+<p>If running Ollama manually from the terminal, add the variables to <code>~/.bashrc</code> (or <code>~/.profile</code> for login shells):</p>
+<pre><code>echo 'export OLLAMA_HOST="0.0.0.0:11434"' &gt;&gt; ~/.bashrc
+echo 'export OLLAMA_ORIGINS="https://netnet.studio"' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<p>If Ollama is installed as a <strong>systemd service</strong>, <code>~/.bashrc</code> won&#39;t affect it. Instead, create a systemd drop-in:</p>
+<pre><code>sudo systemctl edit ollama</code></pre>
+<p>Add the following and save:</p>
+<pre><code>[Service]
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+Environment="OLLAMA_ORIGINS=https://netnet.studio"</code></pre>
+<p>Then reload and restart:</p>
+<pre><code>sudo systemctl daemon-reload
+sudo systemctl restart ollama</code></pre>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/custom-elements/misc/search-bar/index.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>

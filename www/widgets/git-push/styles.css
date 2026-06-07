@@ -9,17 +9,19 @@
 .git-push-widget__terminal::before {
   content: "Terminal";
   position: absolute;
-  top: 15px;
+  top: -15px;
   left: 10px;
   background: var(--fg-color);
   color: var(--bg-color);
   padding: 0px 8px;
+  border-radius: 5px;
 }
 
 .git-push-widget__terminal {
   font-family: "FiraMono", inconsolata, monospace;
   color: var(--netizen-text);
   padding: 12px;
+  transform: translateY(9px);
   border: 2px solid var(--netizen-tag);
   border-radius: 10px;
 }

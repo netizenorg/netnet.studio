@@ -1,8 +1,96 @@
-const axios = require('axios')
-const triplesec = require('triplesec')
-const { Octokit } = require('@octokit/core')
+const crypto = require('crypto')
 const express = require('express')
 const router = express.Router()
+
+// Fail hard at startup if required env vars are missing.
+// Better to crash immediately than to run with a broken/insecure configuration.
+if (!process.env.TOKEN_PASSWORD) throw new Error('Missing required env var: TOKEN_PASSWORD')
+if (!process.env.GITHUB_CLIENT_ID) throw new Error('Missing required env var: GITHUB_CLIENT_ID')
+if (!process.env.GITHUB_CLIENT_SECRET) throw new Error('Missing required env var: GITHUB_CLIENT_SECRET')
+
+// Derive a 32-byte AES key from TOKEN_PASSWORD at startup.
+// SHA-256 is appropriate here because TOKEN_PASSWORD is a server-managed
+// secret (not a user-supplied password), so a dedicated KDF like scrypt
+// isn't necessary.
+const _aesKey = crypto.createHash('sha256').update(process.env.TOKEN_PASSWORD).digest()
+
+function _aesEncrypt (plaintext) {
+  const iv = crypto.randomBytes(12)
+  const cipher = crypto.createCipheriv('aes-256-gcm', _aesKey, iv)
+  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
+  const authTag = cipher.getAuthTag()
+  // format: iv:authTag:ciphertext (all hex, colon-separated)
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`
+}
+
+function _aesDecrypt (cookieVal) {
+  const parts = cookieVal.split(':')
+  if (parts.length !== 3) throw new Error('invalid token format')
+  const [ivHex, authTagHex, encHex] = parts
+  const decipher = crypto.createDecipheriv('aes-256-gcm', _aesKey, Buffer.from(ivHex, 'hex'))
+  decipher.setAuthTag(Buffer.from(authTagHex, 'hex'))
+  return Buffer.concat([
+    decipher.update(Buffer.from(encHex, 'hex')),
+    decipher.final()
+  ]).toString('utf8')
+}
+
+// NOTE: this ghRequest helper function created by Claude in order to replace
+// the old gh/core module (and it's corresponding vulnerabilities)
+function ghRequest (atok, endpoint, params) {
+  // Parses 'METHOD /path/{template}' endpoint strings, substitutes {params} into
+  // the URL path (preserving slashes within values so multi-segment paths like
+  // 'src/js/app.js' and refs like 'heads/main' are not double-encoded), puts
+  // remaining params in the query string (GET) or JSON body (other methods),
+  // and adds the required auth + versioning headers. Octokit-specific keys
+  // (mediaType) are stripped from POST bodies.
+  const spaceIdx = endpoint.indexOf(' ')
+  const method = endpoint.slice(0, spaceIdx)
+  const template = endpoint.slice(spaceIdx + 1)
+
+  const used = new Set()
+  const urlPath = template.replace(/\{(\w+)\}/g, (_, k) => {
+    used.add(k)
+    const v = params[k]
+    // encode each segment individually to preserve intentional slashes
+    return v !== undefined ? String(v).split('/').map(encodeURIComponent).join('/') : ''
+  })
+
+  const rest = {}
+  for (const [k, v] of Object.entries(params || {})) {
+    if (!used.has(k) && k !== 'mediaType') rest[k] = v
+  }
+
+  const isGet = method === 'GET'
+  let url = `https://api.github.com${urlPath}`
+  if (isGet && Object.keys(rest).length > 0) {
+    url += '?' + new URLSearchParams(rest).toString()
+  }
+
+  const opts = {
+    method,
+    headers: {
+      Authorization: `Bearer ${atok}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    }
+  }
+  if (!isGet && Object.keys(rest).length > 0) {
+    opts.body = JSON.stringify(rest)
+    opts.headers['Content-Type'] = 'application/json'
+  }
+
+  return fetch(url, opts).then(async r => {
+    const data = await r.json().catch(() => null)
+    if (!r.ok) {
+      const err = new Error((data && data.message) || r.statusText)
+      err.status = r.status
+      err.response = { data }
+      throw err
+    }
+    return { data }
+  })
+}
 
 const README_TEMPLATE = `# [project-title]
 
@@ -25,47 +113,72 @@ When you're ready to publish your work on the Web click on netnet's face and ope
 // Helper function for decrypting token
 function decryptToken (req, res, cb) {
   const token = req.cookies.AuthTok
-  if (!token) return res.json({ success: false, message: 'no access token' })
-  triplesec.decrypt({
-    data: triplesec.Buffer.from(token, 'hex'),
-    key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
-  }, (err, buff) => {
-    if (err) return res.json(err)
-    else {
-      const auth = buff.toString()
-      const atok = auth.split('&scope')[0].split('=')[1]
-      const octokit = new Octokit({ auth: atok })
-      cb(octokit)
-    }
-  })
+  if (!token) return res.status(401).json({ success: false, message: 'no access token' })
+  try {
+    const atok = new URLSearchParams(_aesDecrypt(token)).get('access_token')
+    if (!atok) return res.status(401).json({ success: false, message: 'invalid token payload' })
+    const gh = { request: (endpoint, params) => ghRequest(atok, endpoint, params) }
+    cb(gh)
+  } catch (err) {
+    console.error('token decrypt error:', err)
+    return res.status(401).json({ success: false, message: 'invalid token' })
+  }
 }
 
+// MAX FILES/DEPTH in place to prevent large repo from making us crash.
+// NOTE: if we change these values, make sure to update convo in project-files
+// 'files-truncated', 'max-files-reached' and 'max-depth-reached'
+const FETCH_FILES_MAX_DEPTH = 5
+const FETCH_FILES_MAX_FILES = 300
 // Helper function to recursively fetch files.
 // It starts at the given path (empty string means repository root),
 // and returns an object mapping file paths to their content data.
-async function fetchFiles (octokit, owner, repo, path) {
+// depth, fileCount, and state are internal — callers should omit them.
+async function fetchFiles (gh, owner, repo, path, depth = 0, fileCount = { n: 0 }, state = { truncated: false, reason: null }) {
+  // Stop recursing if we've gone too deep into nested folders.
+  if (depth > FETCH_FILES_MAX_DEPTH) {
+    state.truncated = true
+    state.reason = 'depth'
+    return {}
+  }
   const result = {}
   // Request the contents of the current path.
-  const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+  const response = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
     owner, repo, path: path || '' // if path is empty, use the repo root
   })
   const data = response.data
 
   // If data is an array, it represents a directory listing.
   if (Array.isArray(data)) {
+    // Sort so HTML files come first — this ensures index.html (or any root
+    // .html file) is always fetched before the file cap kicks in, so the
+    // client can still identify the project as a web project even when truncated.
+    const items = [...data].sort((a, b) => {
+      const aHtml = a.name.endsWith('.html')
+      const bHtml = b.name.endsWith('.html')
+      if (aHtml !== bHtml) return aHtml ? -1 : 1
+      return a.name.localeCompare(b.name)
+    })
     // Process each item (file or directory) in the listing.
     // For simplicity, process items sequentially.
-    for (const item of data) {
+    for (const item of items) {
+      // Stop fetching if we've hit the total file cap.
+      if (fileCount.n >= FETCH_FILES_MAX_FILES) {
+        state.truncated = true
+        state.reason = 'files'
+        break
+      }
       if (item.type === 'file') {
+        fileCount.n++
         // Retrieve the file content.
-        const fileResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        const fileResponse = await gh.request('GET /repos/{owner}/{repo}/contents/{path}', {
           owner, repo, path: item.path
         })
         // Save the file data using its path as the key.
         result[item.path] = fileResponse.data
       } else if (item.type === 'dir') {
         // Recursively fetch files inside subdirectories.
-        const nestedFiles = await fetchFiles(octokit, owner, repo, item.path)
+        const nestedFiles = await fetchFiles(gh, owner, repo, item.path, depth + 1, fileCount, state)
         Object.assign(result, nestedFiles)
       }
     }
@@ -104,66 +217,124 @@ function reWriteCSSPaths (req, data) { // HACK!!!
   return str
 }
 
-router.get('/api/github/proxy', (req, res) => {
+router.get('/api/github/proxy', async (req, res) => {
+  if (!req.query.url) return res.status(400).json({ error: 'missing url param' })
+  // fix single-slash typo that can come from the redbird proxy
   const url = req.query.url.replace('https:/raw', 'https://raw')
-  // HACK: the purpose of this proxy to get around this issue:
+  // only allow HTTPS requests to raw.githubusercontent.com — no open SSRF
+  let parsed
+  try { parsed = new URL(url) } catch { return res.status(400).json({ error: 'invalid url' }) }
+  if (parsed.protocol !== 'https:' || parsed.hostname !== 'raw.githubusercontent.com') {
+    return res.status(403).json({ error: 'host not allowed' })
+  }
+  // HACK: proxy exists to get around MIME-type mismatch issue with raw.githubusercontent.com
   // https://stackoverflow.com/questions/40728554/resource-blocked-due-to-mime-type-mismatch-x-content-type-options-nosniff/41309463#41309463
-  axios.get(url, { responseType: 'arraybuffer' })
-    .then(r => {
-      if (req.query.url.includes('.css')) {
-        res.end(reWriteCSSPaths(req, r.data))
-      } else res.end(r.data)
-    })
-    .catch(err => console.log(err))
+  const PROXY_MAX_BYTES = 5 * 1024 * 1024 // 5MB
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 8000)
+  try {
+    const r = await fetch(url, { signal: controller.signal })
+    if (!r.ok) return res.status(r.status).json({ error: 'proxy request failed' })
+    // check content-length header first to avoid buffering oversized responses
+    const contentLength = Number(r.headers.get('content-length') || 0)
+    if (contentLength > PROXY_MAX_BYTES) return res.status(413).json({ error: 'file too large' })
+    const buf = Buffer.from(await r.arrayBuffer())
+    if (buf.length > PROXY_MAX_BYTES) return res.status(413).json({ error: 'file too large' })
+    // Set Content-Type explicitly — raw.githubusercontent.com sends text/plain for
+    // CSS and JS, which nosniff blocks. This is the whole reason this proxy exists.
+    const ext = parsed.pathname.split('.').pop()
+    if (ext === 'css') res.setHeader('Content-Type', 'text/css')
+    else if (ext === 'js') res.setHeader('Content-Type', 'application/javascript')
+    if (ext === 'css') {
+      res.end(reWriteCSSPaths(req, buf))
+    } else res.end(buf)
+  } catch (err) {
+    console.error('proxy error:', err)
+    res.status(502).json({ error: 'proxy request failed' })
+  } finally {
+    clearTimeout(timeout)
+  }
 })
 
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ * Auth Token
 // ~ * ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *  ~ . _ . ~ *
 
 router.get('/api/github/client-id', (req, res) => {
-  res.json({ success: true, message: process.env.GITHUB_CLIENT_ID })
+  const state = crypto.randomBytes(16).toString('hex')
+  res.cookie('nn-oauth-state', state, {
+    maxAge: 5 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true
+  })
+  res.json({ success: true, message: process.env.GITHUB_CLIENT_ID, state })
 })
 
-router.get('/api/github/auth-status', (req, res) => {
+router.get('/api/github/auth-status', async (req, res) => {
   const token = req.cookies.AuthTok
   if (!token) return res.json({ success: false, message: 'no access token' })
-  else return res.json({ success: true, message: 'has access token' })
+  // Decrypt and verify the token is still valid on GitHub's side.
+  // A corrupt/undecryptable cookie is definitely invalid; a GitHub network
+  // error is not — don't log the user out if GitHub is temporarily down.
+  let atok
+  try {
+    atok = new URLSearchParams(_aesDecrypt(token)).get('access_token')
+    if (!atok) return res.json({ success: false, message: 'invalid token' })
+  } catch (e) {
+    return res.json({ success: false, message: 'invalid token' })
+  }
+  try {
+    const r = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `Bearer ${atok}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+    if (r.status === 401) return res.json({ success: false, message: 'token revoked' })
+    return res.json({ success: true, message: 'token valid' })
+  } catch (e) {
+    // Network error — treat as still logged in rather than falsely clearing the session
+    return res.json({ success: true, message: 'token unverified' })
+  }
 })
 
-router.get('/api/github/clear-cookie', (req, res) => {
-  res.cookie('AuthTok', null, { maxAge: 500, httpOnly: true })
+router.post('/api/github/clear-cookie', (req, res) => {
+  res.clearCookie('AuthTok', { httpOnly: true, sameSite: 'lax', secure: true })
     .json({ message: 'cookie cleared' })
 })
 
 router.get('/user/signin/callback', (req, res) => {
+  // validate OAuth state to prevent login CSRF (H-1)
+  const { code, state } = req.query
+  const stored = req.cookies['nn-oauth-state']
+  if (!state || !stored || state !== stored) {
+    return res.status(403).send('(✖ _ ✖) Invalid OAuth state (possible CSRF attempt)')
+  }
+  res.clearCookie('nn-oauth-state', { httpOnly: true, sameSite: 'lax', secure: true })
   // assuming user was redirected here from GitHub Auth Page...
-  const code = `code=${req.query.code}` // ...we should have a user ?code=...
+  const codeParam = `code=${code}` // ...we should have a user ?code=...
   const root = 'https://github.com/login/oauth/access_token'
   const id = `client_id=${process.env.GITHUB_CLIENT_ID}`
   const sec = `client_secret=${process.env.GITHUB_CLIENT_SECRET}`
-  axios.post(`${root}?${id}&${sec}&${code}`, { // ask GitHub for Auth Token
-    method: 'post',
-    headers: { Accept: 'application/json' }
-  }).then(response => {
-    const token = response.data
+  fetch(`${root}?${id}&${sec}&${codeParam}`, { // ask GitHub for Auth Token
+    method: 'POST'
+  }).then(response => response.text()).then(token => {
     const ermsg = '◕ ︵ ◕ oh no! looks like something went wrong with GitHub'
     if (token.indexOf('error') === 0) return res.send(ermsg)
-    // ...assuming we don't get an error back, let's encrypt the token
-    triplesec.encrypt({
-      data: triplesec.Buffer.from(token),
-      key: triplesec.Buffer.from(process.env.TOKEN_PASSWORD)
-    }, (err, buff) => {
-      if (err) return res.json(err)
-      else { // ...now let's create cookie w/encrypted token
-        const oneYear = 365 * 24 * 60 * 60 * 1000
-        res.cookie('AuthTok', buff.toString('hex'), {
-          maxAge: oneYear,
-          secure: true,
-          sameSite: true,
-          httpOnly: true
-        }).redirect('/')
-      }
-    })
+    // ...assuming we don't get an error back, let's encrypt and store the token
+    try {
+      const oneYear = 365 * 24 * 60 * 60 * 1000
+      res.cookie('AuthTok', _aesEncrypt(token), {
+        maxAge: oneYear,
+        secure: true,
+        sameSite: 'lax',
+        httpOnly: true
+      }).redirect('/')
+    } catch (err) {
+      console.error('token encrypt error:', err)
+      res.status(500).send('◕ ︵ ◕ oh no! something went wrong with the login')
+    }
   }).catch(err => console.log(err))
 })
 
@@ -191,8 +362,8 @@ const dict = {
 }
 
 function makeRequest (req, res, query, obj) {
-  decryptToken(req, res, (octokit) => {
-    octokit.request(dict[query], obj).then(gitRes => {
+  decryptToken(req, res, (gh) => {
+    gh.request(dict[query], obj).then(gitRes => {
       res.json({ success: true, message: `${query} success`, data: gitRes.data })
     }).catch(err => {
       res.json({ success: false, message: `${query} error`, error: err })
@@ -241,10 +412,11 @@ router.post('/api/github/fork', (req, res) => {
 router.post('/api/github/open-all-files', (req, res) => {
   const owner = req.body.owner
   const repo = req.body.repo
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try { // Start at the repo root by passing an empty string.
-      const files = await fetchFiles(octokit, owner, repo, '')
-      res.json({ success: true, message: 'open-all-files success', data: files })
+      const state = { truncated: false, reason: null }
+      const files = await fetchFiles(gh, owner, repo, '', 0, { n: 0 }, state)
+      res.json({ success: true, message: 'open-all-files success', data: files, truncated: state.truncated, truncatedReason: state.reason })
     } catch (error) {
       res.json({ success: false, message: 'open-all-files error', error })
     }
@@ -257,8 +429,8 @@ router.post('/api/github/new-repo', (req, res) => {
     return res.json({ success: false, message: 'Missing name, user or indexData' })
   }
 
-  decryptToken(req, res, octokit => {
-    octokit.request('POST /user/repos', {
+  decryptToken(req, res, gh => {
+    gh.request('POST /user/repos', {
       name,
       description: '◕ ◞ ◕ This project was made using https://netnet.studio',
       auto_init: false
@@ -274,11 +446,11 @@ router.post('/api/github/new-repo', (req, res) => {
       const indexContent = Buffer.from(indexData, 'utf8').toString('base64')
       const readmeContent = Buffer.from(readmeData, 'utf8').toString('base64')
 
-      return octokit.request(
+      return gh.request(
         'PUT /repos/{owner}/{repo}/contents/index.html',
         { owner, repo, path: 'index.html', message: 'created index.html', content: indexContent, branch }
       ).then(() => {
-        return octokit.request(
+        return gh.request(
           'PUT /repos/{owner}/{repo}/contents/README.md',
           { owner, repo, path: 'README.md', message: 'created README.md', content: readmeContent, branch }
         )
@@ -308,22 +480,22 @@ router.post('/api/github/push', (req, res) => {
     return res.json({ success: false, message: 'Missing required data' })
   }
 
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try {
       // 1. Get the latest commit SHA on the branch
-      const refResponse = await octokit.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
+      const refResponse = await gh.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
         owner, repo, ref: `heads/${branch}`
       })
       const latestCommitSha = refResponse.data.object.sha
 
       // 2. Get the base commit tree SHA
-      const baseCommitResponse = await octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
+      const baseCommitResponse = await gh.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
         owner, repo, commit_sha: latestCommitSha
       })
       const baseTreeSha = baseCommitResponse.data.tree.sha
 
       // 3. Retrieve the full base tree recursively
-      const baseTreeResponse = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+      const baseTreeResponse = await gh.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
         owner, repo, tree_sha: baseTreeSha, recursive: '1'
       })
       const baseTree = baseTreeResponse.data.tree
@@ -344,7 +516,7 @@ router.post('/api/github/push', (req, res) => {
         } else if (change.action === 'update' || change.action === 'create') {
           if (change.isBinary) {
             // Create a blob for binary content using Base64 encoding
-            const blobResponse = await octokit.request('POST /repos/{owner}/{repo}/git/blobs', {
+            const blobResponse = await gh.request('POST /repos/{owner}/{repo}/git/blobs', {
               owner, repo, content: change.content, encoding: 'base64'
             })
             treeMap[change.path] = {
@@ -372,19 +544,19 @@ router.post('/api/github/push', (req, res) => {
       })
 
       // 7. Create the new tree with the updated items
-      const treeResponse = await octokit.request('POST /repos/{owner}/{repo}/git/trees', {
+      const treeResponse = await gh.request('POST /repos/{owner}/{repo}/git/trees', {
         owner, repo, tree: newTreeItems, base_tree: baseTreeSha
       })
       const newTreeSha = treeResponse.data.sha
 
       // 8. Create a new commit referencing the new tree and the previous commit as parent
-      const commitResponse = await octokit.request('POST /repos/{owner}/{repo}/git/commits', {
+      const commitResponse = await gh.request('POST /repos/{owner}/{repo}/git/commits', {
         owner, repo, message: commitMessage, tree: newTreeSha, parents: [latestCommitSha]
       })
       const newCommitSha = commitResponse.data.sha
 
       // 9. Update the branch reference to point to the new commit
-      await octokit.request('PATCH /repos/{owner}/{repo}/git/refs/{ref}', {
+      await gh.request('PATCH /repos/{owner}/{repo}/git/refs/{ref}', {
         owner, repo, ref: `heads/${branch}`, sha: newCommitSha
       })
 
@@ -397,21 +569,21 @@ router.post('/api/github/push', (req, res) => {
 
 // POST PUBLISH PROJECT
 router.post('/api/github/gh-pages', (req, res) => {
-  decryptToken(req, res, (octokit) => {
+  decryptToken(req, res, (gh) => {
     // https://docs.github.com/en/rest/reference/repos#get-a-repository
-    octokit.request('GET /repos/{owner}/{repo}', {
+    gh.request('GET /repos/{owner}/{repo}', {
       owner: req.body.owner,
       repo: req.body.repo
     }).then(gitRes => {
       if (gitRes.data.has_pages) {
         // https://docs.github.com/en/rest/reference/repos#get-a-github-pages-site
-        return octokit.request('GET /repos/{owner}/{repo}/pages', {
+        return gh.request('GET /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo
         })
       } else {
         // https://docs.github.com/en/rest/reference/repos#create-a-github-pages-site
-        return octokit.request('POST /repos/{owner}/{repo}/pages', {
+        return gh.request('POST /repos/{owner}/{repo}/pages', {
           owner: req.body.owner,
           repo: req.body.repo,
           source: { branch: req.body.branch, path: '/' },
@@ -433,10 +605,10 @@ router.post('/api/github/new-repo-from-template', (req, res) => {
     return res.json({ success: false, message: 'Missing or invalid name, user, or files' })
   }
 
-  decryptToken(req, res, async octokit => {
+  decryptToken(req, res, async gh => {
     try {
       // 1) create empty repo
-      const repoRes = await octokit.request('POST /user/repos', {
+      const repoRes = await gh.request('POST /user/repos', {
         name,
         description: '◕ ◞ ◕ This project was made using https://netnet.studio',
         auto_init: false
@@ -461,7 +633,7 @@ router.post('/api/github/new-repo-from-template', (req, res) => {
           base64 = Buffer.from(String(contentVal), 'utf8').toString('base64')
         }
 
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        await gh.request('PUT /repos/{owner}/{repo}/contents/{path}', {
           owner, repo, path: pathRel, message, content: base64, branch
         })
       }

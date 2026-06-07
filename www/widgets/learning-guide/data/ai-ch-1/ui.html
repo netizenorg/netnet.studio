@@ -1,0 +1,23 @@
+<h1 style="text-align: center; font-size: 3rem;">
+  <div style="font-size: 1.2rem; padding: 1rem;">the</div>
+  <div style="margin-bottom: 2rem;">
+    Graphical <img id="cursor-anim" src="/images/cursors/minis/0.gif">
+  </div>
+   User Interfaces
+   <div style="font-size: 1.2rem; padding: 1rem;">more than just aesthetics</div>
+</h1>
+<script>
+  if (window._lg_cursorAnimTO) clearTimeout(window._lg_cursorAnimTO)
+  window._lg_cursorAnimFrame = 0
+  window._lg_cursorAnim = function () {
+    const img = document.getElementById('cursor-anim')
+    if (!img || !document.contains(img)) {
+      clearTimeout(window._lg_cursorAnimTO)
+      return
+    }
+    window._lg_cursorAnimFrame = (window._lg_cursorAnimFrame + 1) % 7
+    img.src = `/images/cursors/minis/${window._lg_cursorAnimFrame}.gif`
+    window._lg_cursorAnimTO = setTimeout(window._lg_cursorAnim, 100)
+  }
+  window._lg_cursorAnimTO = setTimeout(window._lg_cursorAnim, 100)
+</script>

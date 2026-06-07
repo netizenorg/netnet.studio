@@ -423,23 +423,6 @@
     box-sizing: border-box;
   }
 
-
-
-/* BROWSERFEST BUTTON */
-.rainbow-bg {
-  background-image: linear-gradient(to right, #ffa50066, #ffff0066, #00800066, #00ffff66, #0000ff66, #ee82ee66) !important;
-  background-position-x: 0;
-
-  animation: pan-rainbow 5s infinite;
-  animation-timing-function: linear;
-}
-
-@keyframes pan-rainbow {
-  0% { background-position-x: 0px; }
-  100% { background-position-x: 182px; }
-}
-
-
 /*ARPANET SCANLINES EFFECT*/
 
 @keyframes scan {
@@ -550,6 +533,55 @@
 .learning-guide__ai-ch {
    font-family: 'Libre Bodoni', serif;
    font-size: 2em;
+   line-height: 1em;
    text-align: center;
    margin: 10px auto 30px auto;
+ }
+
+ .learning-guide__ai-ch-sub {
+   display: block;
+   font-size: 1.5rem;
+ }
+
+#learning-guide__ai-tfjs {
+  background-image: url('/widgets/learning-guide/data/assets/tfjs.gif');
+  background-size: cover;
+  width: 220px;
+  height: 170px;
+  border: 1px solid var(--netizen-meta);
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.learning-guide__ai-demo-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 20px;
+}
+
+.learning-guide__ai-demo-grid > div {
+  border: 1px solid var(--netizen-meta);
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+ .lg-soon {
+   opacity: 0.25;
+ }
+
+ .learning-guide__ai-presentation {
+   height: 406px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+
+ .learning-guide__ai-presentation > main {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   transition: opacity 0.5s;
  }

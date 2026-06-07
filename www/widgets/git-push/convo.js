@@ -18,6 +18,20 @@ window.CONVOS['git-push'] = (self) => {
 
   // return the actual array of conversation objects
   return [{
+    id: 'pre-start',
+    content: 'I can push all your locally saved changes to GitHub for you with a generic commit message, or I can teach you how to version a project with <a href="https://en.wikipedia.org/wiki/Git" target="_blank">git</a> so you can create that commit yourself?',
+    options: {
+      'do it for me': (e) => {
+        e.hide()
+        // self.open()
+        self._autoCommit()
+      },
+      'show me how': (e) => {
+        if (!self.opened) self.open()
+        e.goTo('start-ready')
+      }
+    }
+  }, {
     id: 'start-not-ready',
     content: 'You\'ll need to create a new "project" before using this widget.',
     options: {
@@ -109,7 +123,7 @@ window.CONVOS['git-push'] = (self) => {
     }
   }, {
     id: 'explain-publish',
-    content: `Of course! To publish your project on the World Wide Web, click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
+    content: `Of course! To publish your project on the World Wide Web, click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project (<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files'].projectData.name}/settings/pages" target="_blank">click here to check</a>) you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
     options: {
       'got it!': (e) => e.hide()
     }
@@ -123,6 +137,19 @@ window.CONVOS['git-push'] = (self) => {
         e.hide()
       }
       // 'clone to my own editor?': (e) => e.hide() // TODO
+    }
+  }, {
+    id: 'payload-too-large',
+    content: `The files you've selected total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Go back to the staging step and deselect some of the larger files. Make sure that the total  size of the files being committed does not exceed 45MB.`,
+    options: {
+      'go back to staging': (e) => { e.hide(); self._nextCmd('stage') },
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'payload-too-large-auto',
+    content: `The changes you're trying to push total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Click <b>git push</b> again, and then <i>"show me how"</i> so you can manually stage and push your files in smaller batches.`,
+    options: {
+      ok: (e) => e.hide()
     }
   }, {
     id: 'oh-no-error',

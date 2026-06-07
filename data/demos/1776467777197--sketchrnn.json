@@ -1,0 +1,143 @@
+{
+  "key": 1776467777197,
+  "name": "SketchRNN",
+  "tags": [
+    "ai",
+    "machine",
+    "learning",
+    "doodle",
+    "draw",
+    "sketch"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJyNVN9P2zAQfs9fceMlDhSn7cTLBggJhrQ9IDQmbWjag2ub1MO1M9ulDRP/+852UtpqkyZVTXLf3X3347NPPXeqDeAdPzuYh9D6d3XNhaE/vZBaPTlqZKibeY0P9SyNdU18xd+xD8wI5sSxVjPHXFfPlkqL2hi6UDH+4Py0ztnPi9P/ojHtor5YsEaawGr/KAOfX4zplI5roXyoeyQDewQDw3lRH0Kj7YxpMGYECw+HdVFoGWBhkWoEs2UIFhHOzBPzRfGwNDwoa8DLsGyBVPC7AODW+ABLp+EMyqFgH6zDGmhjbaMla5Wn3C7qX0vFH4Vjq+NE4fvSP9/c1L2Bs0CxdqzZmhKz4y8hmNzIFRZJ74YQgpxVgQ65zuhhKHeSBUnKbCsrhAGQ2wQcCCkjNzDsKAxQa72KTZHJeASTcW9lQnyxmMWKbnBEl5JrrL8cQUxzyUJiz9PZZc+28t/JnPSoEXIyRlL820pEfXD2Ud6FTss40ZlmSPkKa2XkVyXCHMG3u+ZL1sYIZ5dG7EV8sspsYS9FwXxnOGxW2nc0LFU9AMkjpEGuw2WeH5ydYQ5KafRWpsG3sgKHanBms4fXYe85Uu49KW3LuAodDnFMT6q84cj2Jq2ZKv/R4D6YxvEIUlXAVkz1iqRqA5HtiXFUmCPVIBWK8rxVa6mvGUcZkmnyjbpe4wj6mFUaYQ3THupeoblUzTxsYXh8Q9xFzv4snb2LlsQY8dbJp1tpruwqzngS2R6sAxIxhZbxe3ycwmQaX46O8oSHg9OKh03qBgu/uiaJL85nWm05Zl1sfD1btFoSDE/twV6Vy1bEEnPQKIO9Y073XaxRx90I2lz5CNLrByN+YJIct+1vUAbfEFnDEYj1HnCPQBeBLofEhe5MBXUzGfreESbBKrCIlD0/7nPTLznTOh18BNNX13/dp6/dufd9bBWQuhm4Z3g0HzOYJYXH1WspWzJNh/6l+IuCt6+LfflOqniMMEu8GLRlAm3pYqyKzWX7B581748=",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "In this demo we'll use <a href=\"https://magenta.tensorflow.org/sketch-rnn-demo\" target=\"_blank\">SketchRNN</a> an <a href=\"https://en.wikipedia.org/wiki/Recurrent_neural_network\" target=\"_blank\">RNN</a> (Recurrent Neural Network) created by <a href=\"https://magenta.tensorflow.org/\" target=\"_blank\">Google Magenta</a> trained on millions of <a href=\"https://quickdraw.withgoogle.com/data/\" target=\"_blank\">Quick Draw</a> doodles, to generate drawings stroke by stroke in the browser. Each time you click the button, the model samples a new, unique doodle from what it learned."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2
+      ],
+      "text": "We import the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">netnet standard library</a> <code>nn</code>, and <a href=\"https://magenta.tensorflow.org/get-started/#magenta-js\" target=\"_blank\">@magenta/sketch</a>, which exposes the <code>ms</code> global."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        7
+      ],
+      "text": "We create a few global variables, <code>model</code> holds the SketchRNN instance, <code>button</code> is the draw button (we keep a reference so we can update its label and disable it while drawing), and <code>canvas</code> is where the strokes are rendered."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        9,
+        10,
+        12,
+        28,
+        74
+      ],
+      "text": "The <code>setup</code> function runs on page load. It points the model at a pre-trained checkpoint of model weights for <b>cat</b> doodles hosted on Google Cloud Storage. The model will get downloaded to our browser and run locally the first time we call <code>drawCat</code>"
+    },
+    {
+      "title": "canvas styles",
+      "focus": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        24,
+        25,
+        26,
+        27,
+        28,
+        74
+      ],
+      "text": "We create a button wired to <code>drawCat</code> and a 500×500 canvas. We configure the canvas drawing style: black strokes with a <code>lineWidth</code> of 3, and rounded <code>lineCap</code> and <code>lineJoin</code> so the stroke ends and corners look natural, like a pen or pencil rather than sharp geometric line segments (which is how canvas draws lines by default)"
+    },
+    {
+      "title": "guard and lazy init",
+      "focus": [
+        30,
+        31,
+        32,
+        34,
+        72
+      ],
+      "text": "The <code>drawCat</code> function first checks whether it's already running: if the button already says <code>'...drawing...'</code> we return early to prevent stacking multiple generations. Otherwise we update the button and call <code>model.initialize()</code> if the model hasn't been loaded yet, waiting for it before continuing."
+    },
+    {
+      "title": "starting state",
+      "focus": [
+        36,
+        37,
+        39,
+        40,
+        41,
+        42,
+        72
+      ],
+      "text": "We call <code>model.setPixelFactor(2)</code>, after clearing the canvas, to scale the coordinates up so the drawing isn't tiny. The starting pen position is set to the center of the canvas. <code>model.zeroState()</code> returns the initial hidden state of the model, an empty \"memory\" the model will build on as it generates each stroke. <code>prevPenDown</code> starts at <code>1</code> (pen down) so the first stroke is drawn."
+    },
+    {
+      "title": "the generation loop",
+      "focus": [
+        44,
+        45,
+        46,
+        72
+      ],
+      "text": "We loop up to 120 times, generating one stroke per iteration. <code>model.getPDF(state, 0.2)</code> computes a probability distribution over possible next strokes given the current state. The <code>0.2</code> is the <i>temperature</i>: lower values make the model more conservative (closer to the most likely strokes), higher values add more randomness and variety. <code>model.sample(pdf)</code> then picks a stroke from the distribution list of possible next strokes."
+    },
+    {
+      "title": "update state",
+      "focus": [
+        44,
+        45,
+        46,
+        48,
+        50,
+        72
+      ],
+      "text": "We pass the sampled stroke back to <code>model.update(stroke, state)</code>, which advances the model's hidden state so the next iteration knows what happened before. The stroke is then destructured into its components: <code>dx</code> and <code>dy</code> are the relative movement from the current position, <code>penDown</code> tells us whether the pointer is touching the canvas, and <code>penEnd</code> signals the model wants to stop."
+    },
+    {
+      "title": "drawing the stroke",
+      "focus": [
+        52,
+        53,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "text": "We compute the next position by adding the deltas to the current position. If <code>prevPenDown</code> was <code>1</code> (pointer was down on the <i>previous</i> step), we draw a line from the old position to the new one. Then we update the current position and save the current <code>penDown</code> state for the next iteration."
+    },
+    {
+      "title": "end condition and sleep",
+      "focus": [
+        63,
+        64,
+        65
+      ],
+      "text": "If <code>penEnd === 1</code> the model is signaling that the drawing is complete and we break out of the loop. Otherwise we <code>await nn.sleep(20)</code> (a 20 millisecond pause) before the next stroke. This slows down the rendering just enough to give the drawing a satisfying animated quality rather than snapping in all at once."
+    },
+    {
+      "title": "lots more",
+      "focus": null,
+      "text": "The Quick Draw dataset contains <a href=\"https://github.com/magenta/magenta/tree/main/magenta/models/sketch_rnn#sketch-rnn-model\" target=\"_blank\">over 100 subjects</a>, cats are just one of them. Try changing the URL to point at a different model (e.g. <code>dog.gen.json</code>, <code>bicycle.gen.json</code>). You can also experiment with the temperature value: try <code>0.6</code> or <code>0.9</code> to see how randomness changes the character of the drawings."
+    }
+  ]
+}

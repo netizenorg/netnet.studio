@@ -1,0 +1,58 @@
+<div>
+  <p style="text-align: center; font-style: italic; margin-bottom: 30px; color: var(--fg-color);">
+    This toy "neural network" function is getting "trained"
+  </p>
+  <main id="learning-guide-ai-demo-editor-ml"></main>
+</div>
+<script>
+  window._lg_aiDemoCode = function () {
+    const nums = nn.times(9, () => Math.round(nn.random(0.1, 0.9) * 10) / 10)
+    const [
+      w1, w2, b1,
+      w3, w4, b2,
+      w5, w6, b3
+    ] = nums
+
+    const code = `function machineLearningBouncer (x) {
+    let l1 // neuron layer 1
+    if (x[0] * ${w1} + x[1] * ${w2} + ${b1} > 0) l1 = 1
+    else l1 = 0
+
+    let l2 // neuron layer 2
+    if (x[0] * ${w3} + x[1] * ${w4} + ${b2} > 0) l2 = 1
+    else l2 = 0
+
+    const output = l1 * ${w5} + l2 * ${w6} + ${b3}
+    if (output > 0) return true
+    else return false
+  }`
+    return code
+  }
+
+  window._lg_aiDemoEditor = new Netitor({
+    ele: '#learning-guide-ai-demo-editor-ml',
+    renderWithErrors: true,
+    background: NNE.background,
+    autoUpdate: false,
+    hint: false,
+    lint: false,
+    readOnly: true,
+    theme: NNE.theme,
+    language: 'javascript',
+    code: window._lg_aiDemoCode()
+  })
+
+  window._lg_aiDemoAnim = function () {
+    const el = document.getElementById('learning-guide-ai-demo-editor-ml')
+    if (!el || !document.contains(el)) {
+      clearTimeout(window._lg_aiDemoAnimTO)
+      return
+    }
+    window._lg_aiDemoEditor.code = window._lg_aiDemoCode()
+    window._lg_aiDemoAnimTO = setTimeout(window._lg_aiDemoAnim, 100)
+  }
+
+  if (window._lg_aiDemoAnimTO) clearTimeout(window._lg_aiDemoAnimTO)
+  window._lg_aiDemoAnimTO = setTimeout(window._lg_aiDemoAnim, 100)
+
+</script>

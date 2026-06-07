@@ -13,6 +13,8 @@ class CodeReview extends Widget {
     this.tempCode = null
     this.issues = [] // issues netnet catches via linting
     this.error = {} // last error passed by browser console
+    this._resourceErrors = [] // failed resource URLs from iframe capture listener
+    this._runtimeError = null // last JS runtime error; persists across review() calls
     this._createHTML()
 
     this.on('open', () => this._opened())
@@ -21,18 +23,55 @@ class CodeReview extends Widget {
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
   }
 
+  /*
+    NOTE: this has gone through a lot of upates/changes over time, it may need
+    some refactoring at some point, when we do that, lets use this to test:
+
+    http://localhost:8001/?layout=dock-left#code/eJxlks1SgzAQx+99ip1coKMm9w5w8aQHPdQXSMMCsSTBzaJ2Or67CdSv8QIzu/+PHwnVIbSnZrMBqKzrIZKpxcA8xZ1SBwpH9DczjdIEp5yN0fpeTr4XoEeuxWUC1ukeRZNCco6GgbCrhWllbzsBbXjzY9BtLZjmJGOM/D2slF7bnba+kVK+acu5RcpKLbOVrSPt8Acv0eVXFwhfkRY80VRqla2WaMhO3AAsVAAm+NSbI6FO9WZ26Fm+zEinPY5oOFBZ5HWxXfQdshnKQunJqt7yMB/UHJF8Kiiu4QyGsE0JVo9xB0VM45tAtk9++FgTACQP6EuCugGSzzH4cvt31WrWeZt7pfUe6QnfOQHe7x8fZGRKR2G706L7sRqd0TAbz/+txWEM5ohtooIrwC+a5ZE2etynT00XJiPyHaMrhTvdahbXIJ6CE7/UXQjl9nKr6nKem0otv8wnjiKvJg==
+
+    for security purposes, we've updated the way the render iframe works so that
+    when loading external/third-party code (shortcode URLs, #code/ hashes,
+    non-owned GitHub repos) the iframe gets sandboxed. while working on these
+    updats I ran into a number of side-effects, which then required updates to
+    this widget and how it handled a set of special error cases. And so, if we
+    update things in the future we need to first confirm that the sandbox is
+    still in place, the fetch request in the test sketch should update <main>
+    with the "blocked" message (NOT a GitHub payload)
+
+    we should also see 4 error markers in this sketch:
+    1. a CORS error on line 3 for the <img>
+    2. a warning about download attributes on line 5
+    3. a mixed-content warning for the <iframe> on line 9
+    4. a localStorage warning on line 18
+
+    also, if we address the localStorage error we should see:
+    5. a browser/console reference error for foo() on line 20
+
+  */
+
   review (obj = {}) {
     // update issues passed to .review({ issues }) from main.js
-    if (obj.issues) this.issues = obj.issues
-    // check for any custom issues
-    this._checkForMixedContent()
-    // mark all linted issues
+    if (obj.issues) {
+      this.issues = obj.issues
+      this._resourceErrors = [] // code changed — clear stale resource errors
+      this._runtimeError = null // code changed — clear stale runtime error
+    }
     const c = WIDGETS['student-session']
       ? WIDGETS['student-session'].getData('chattiness') : null
-    if (c && c !== 'low') this._markIssues(this.issues, true)
+    // clear markers before _updateError adds its runtime error marker so it isn't wiped
+    if (c && c !== 'low') NNE.clearMarkers(['orange', 'red'])
     else NNE.marker(null)
+    // check for any custom issues
+    this._checkForMixedContent()
+    this._checkForDownloadLinks()
     // update errors passed to .review({ error }) from main.js
+    // must run before _checkForResourceErrors (may push to this._resourceErrors)
     this._updateError(obj.error)
+    this._checkForResourceErrors()
+    // mark all linted issues (false = don't clear, _applyRuntimeMarker handles that)
+    if (c && c !== 'low') this._markIssues(this.issues, false)
+    // re-apply runtime error marker last so _markIssues can't clear it
+    this._applyRuntimeMarker()
     // update this code review widget's view
     this._reviewIssues()
   }
@@ -50,6 +89,14 @@ class CodeReview extends Widget {
     this._markIssues(this.issues, false)
   }
 
+  handleSensorBlocked () {
+    const c = 'sensor-sandbox-blocked'
+    if (NNE.iframe.hasAttribute('sandbox') && window.convo?.id !== c) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, c)
+    }
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
@@ -60,12 +107,17 @@ class CodeReview extends Widget {
     const c = ss ? ss.getData('chattiness') : null
     // event object from 'onerror' event injected into iframe either via
     // utils.setCustomRenderer (sketch) or files-db-service-worker.js (project)
+    if (event?.data?.type === 'iframe-error' && event.data.src) {
+      // resource load failure (img, script, link) — queue for _checkForResourceErrors
+      this._resourceErrors.push(event.data.src)
+      return
+    }
     if (c && c !== 'low' && event?.data && event?.data.type === 'iframe-error') {
       // these are the number of lines added to the top of the file before rendering
       // (see errMsgr in utils.setCustomRenderer)
-      const diff = 4
+      const diff = 12
       const message = event.data.message
-      let file = event.data.source.includes('.') ? event.data.source : null
+      let file = event.data.source?.includes('.') ? event.data.source : null
       let line = event.data.lineno - diff
 
       // if project, ensure only showing errors on current file
@@ -75,16 +127,24 @@ class CodeReview extends Widget {
         if (!file.endsWith('.html')) line += diff
       }
 
-      // add error markers (aka _markErrors)
-      const m = NNE.marker(line, 'red', () => {
-        // _explainError
-        this.error = { message, line, file }
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'custom-renderer-error')
-      })
-      m.setAttribute('title', message)
-      m.dataset.err = JSON.stringify({ message, line, file })
+      // detect sandbox security errors (localStorage, sessionStorage, indexedDB, etc.)
+      const isSandboxErr = message.includes('allow-same-origin') || message.toLowerCase().includes('sandboxed')
+      // store so review() can re-apply the marker after _markIssues clears markers
+      this._runtimeError = { message, line, file, isSandboxErr }
     }
+  }
+
+  _applyRuntimeMarker () {
+    if (!this._runtimeError) return
+    const { message, line, file, isSandboxErr } = this._runtimeError
+    const convoId = isSandboxErr ? 'sandbox-security-error' : 'custom-renderer-error'
+    const m = NNE.marker(line, 'red', () => {
+      this.error = { message, line, file }
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, convoId)
+    })
+    m.setAttribute('title', message)
+    m.dataset.err = JSON.stringify({ message, line, file })
   }
 
   _findErrors () { // list console error objects
@@ -164,6 +224,27 @@ class CodeReview extends Widget {
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸ CUSTOM ERRORS
 
+  _checkForResourceErrors () {
+    if (!this._resourceErrors.length) return
+    const lines = NNE.cm.getValue().split('\n')
+    this._resourceErrors.forEach(src => {
+      const parts = src.split('/')
+      const filename = parts[parts.length - 1]
+      lines.forEach((str, i) => {
+        if (!str.includes(src)) return
+        this.issues.push({
+          type: 'error',
+          language: 'html',
+          message: 'Failed to load: ' + src,
+          friendly: 'The file <b>' + filename + '</b> failed to load, it may be blocked by the server\'s <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">CORS policy</a> or the URL may be incorrect.',
+          line: i + 1,
+          col: 0
+        })
+      })
+    })
+    this._resourceErrors = []
+  }
+
   _checkForMixedContent () {
     if (NNE.language !== 'html') return
     const before = ['src="', 'href="']
@@ -183,6 +264,25 @@ class CodeReview extends Widget {
           const obj = { type, language, message, friendly, line, col }
           this.issues.push(obj)
         }
+      }
+    }
+  }
+
+  _checkForDownloadLinks () {
+    if (NNE.language !== 'html') return
+    if (WIDGETS['project-files']?.projectData?.name) return // sandbox removed for projects
+    const lines = NNE.code.split(/\r?\n/)
+    for (let i = 0; i < lines.length; i++) {
+      const LINE = lines[i]
+      if (LINE.includes('<a') && /\bdownload\b/.test(LINE)) {
+        this.issues.push({
+          type: 'warning',
+          language: 'html',
+          message: 'download attribute blocked by sandbox',
+          friendly: 'This sketch was loaded from an external source, so it runs in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox" target="_blank">sandboxed</a> iframe for security, which blocks some browser APIs, including the <code>download</code> attribute on an anchor tag. However, if you use this attribute in your own sketch or project it will work as expected.',
+          line: i + 1,
+          col: LINE.indexOf('download')
+        })
       }
     }
   }

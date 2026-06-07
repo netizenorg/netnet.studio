@@ -1,4 +1,4 @@
-/* global WIDGETS */
+/* global WIDGETS, NNE */
 window.CONVOS['demo-toc'] = (self) => {
   return [
     {
@@ -65,7 +65,22 @@ window.CONVOS['demo-toc'] = (self) => {
           if (self.code && self.info && self.info[0]) {
             self._explainerClick(self.info[0])
           }
+        },
+        'I want to quit this guide': (e) => {
+          self.cancel()
+          e.goTo('quit-demo')
         }
+      }
+    }, {
+      id: 'quit-demo',
+      graph: { id: 3, x: 225, y: 250 },
+      content: 'Sure thing! Would you like me to leave the code so you can experiment with it, or should we start from scratch with a blank canvas?',
+      options: {
+        'start from scratch': (e) => {
+          NNE.code = ''
+          e.hide()
+        },
+        'keep the code': (e) => e.hide()
       }
     }
   ]

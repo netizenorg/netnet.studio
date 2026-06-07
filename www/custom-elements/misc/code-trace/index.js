@@ -20,6 +20,7 @@ class CodeTrace extends HTMLElement {
       this._createBaseEditor()
       this._createOverlayEditor()
       this._updateHeight()
+      if (this.getAttribute('bright') === 'true') this._updateBright()
     } else {
       window.requestAnimationFrame(() => this._initWhenReady())
     }
@@ -41,6 +42,7 @@ class CodeTrace extends HTMLElement {
     this._base = new Netitor({
       ele: div,
       renderWithErrors: true,
+      wrap: true,
       background: NNE.background,
       autoUpdate: false,
       hint: false,
@@ -57,6 +59,7 @@ class CodeTrace extends HTMLElement {
     this._overlay = new Netitor({
       ele: div,
       renderWithErrors: true,
+      wrap: true,
       background: false,
       autoUpdate: false,
       hint: false,
@@ -69,6 +72,15 @@ class CodeTrace extends HTMLElement {
 
     this._overlay.on('code-update', () => {
       this._checkMatch()
+    })
+
+    this._overlay.cm.on('beforeChange', (cm, change) => {
+      if (!this._base) return
+      const baseLineCount = this._base.code.split('\n').length
+      const linesAdded = change.text.length - 1
+      const linesRemoved = change.to.line - change.from.line
+      const newLineCount = cm.lineCount() + linesAdded - linesRemoved
+      if (newLineCount > baseLineCount) change.cancel()
     })
   }
 
@@ -143,7 +155,7 @@ class CodeTrace extends HTMLElement {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   static get observedAttributes () {
-    return ['code', 'language']
+    return ['code', 'language', 'bright']
   }
 
   syncProps2Attr () {
@@ -173,6 +185,42 @@ class CodeTrace extends HTMLElement {
         if (this._base) this._base.language = newVal
         if (this._overlay) this._overlay.language = newVal
       }
+      if (attrName === 'bright') {
+        this._updateBright()
+      }
+    }
+  }
+
+  _updateBright () {
+    const baseEl = this.querySelector('.code-trace__base')
+    if (!baseEl) return
+
+    const isBright = this.getAttribute('bright') === 'true'
+
+    if (isBright) {
+      baseEl.style.opacity = '1'
+
+      if (!this._brightListenersAdded) {
+        this._brightListenersAdded = true
+
+        this._onBrightEnter = () => {
+          if (this.getAttribute('bright') === 'true') {
+            baseEl.style.opacity = '0.35'
+          }
+        }
+        this._onBrightLeave = () => {
+          if (this.getAttribute('bright') === 'true') {
+            baseEl.style.opacity = '1'
+          }
+        }
+
+        this.addEventListener('mouseenter', this._onBrightEnter)
+        this.addEventListener('mouseleave', this._onBrightLeave)
+        this.addEventListener('focusin', this._onBrightEnter)
+        this.addEventListener('focusout', this._onBrightLeave)
+      }
+    } else {
+      baseEl.style.opacity = ''
     }
   }
 }

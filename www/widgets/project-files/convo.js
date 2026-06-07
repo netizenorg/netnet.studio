@@ -172,7 +172,7 @@ window.CONVOS['project-files'] = (self) => {
   // ------------- explain title bar
   {
     id: 'netnet-title-bar',
-    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder.<br><br>Keep in mind, this widget is still in "beta" (there may be bugs!).',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder. <b style="color:var(--netizen-variable)">Keep in mind, this widget is still in <i>beta</i> (there may be bugs! we\'re still working on it).</b>',
     options: {
       ok: (e) => e.hide(),
       'help, I\'m confused!': (e) => e.goTo('help-info'),
@@ -183,12 +183,12 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'help-info',
-    content: `You're currently working on a project called <b>${self.projectData.name}</b>, this is also the name of the folder which stores all your website's files. The file you are currently viewing in my editor is <code>${self.viewing}</code>, as noted in the file path at the top of my editor next to the "Files" button which opens this widget.<br><br>You can visit the <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a> to learn more. I'm also happy to explain any of this in more depth?`,
+    content: `You're currently working on a project called <b>${self.projectData.name}</b>, this is also the name of the folder which stores all your website's files. The file you are currently viewing in my editor is <code>${self.viewing}</code>, as noted in the file path at the top of my editor next to the "Files" button which opens this widget. Visit the <a href="${window.location.origin}/docs/students/coding.html" target="_blank">docs</a> to learn more.`,
     options: helpInfoOptions(),
     after: () => addCircleToBubble()
   }, {
     id: 'where-is-this-saved',
-    content: 'When you create a new project, the initial files get created on your GitHub account before getting loaded here. As you work on your project, any changes you make and new files you create or upload get stored right here in your browser. Keep in mind this is only <b>temporary</b>, as you make changes I will color-code these temporary <span style="color: var(--netizen-attribute);">new</span> and <span style="color: var(--netizen-number);">edited</span> files to remind you that these will eventually need to get "pushed" to your Github in order to save these changes permanently on your account. Alternatively, you can <span class="link" onclick="WIDGETS[\'project-files\'].downloadProject()">download</span> your project locally at anytime.',
+    content: `When you create a new project, the initial files get created on your <a href="https://github.com/${a[0]}" target="_blank">GitHub account</a>, in the repo you named <a href="https://github.com/${a[0]}/${a[1]}" target="_blank">${a[1]}</a>, before getting loaded here. As you work on your project, any changes you make and new files you create or upload get stored right here in your browser. Keep in mind this is only <b>temporary</b>, as you make changes I will color-code these temporary <span style="color: var(--netizen-attribute);">new</span> and <span style="color: var(--netizen-number);">edited</span> files to remind you that these will eventually need to get "pushed" to your Github in order to save these changes permanently on your account. Alternatively, you can <span class="link" onclick="WIDGETS['project-files'].downloadProject()">download</span> your project locally at anytime.`,
     options: {
       'got it.': (e) => e.hide(),
       'ok, download it now': (e) => self.downloadProject(),
@@ -260,10 +260,13 @@ window.CONVOS['project-files'] = (self) => {
   },
   {
     id: 'confirm-quit-changes',
-    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. If you don\'t commit and "git push" those changes before quitting then you\'ll loose that progress.',
+    content: 'It looks like you have some changes that you\'ve saved locally, but haven\'t yet backed up to GitHub. Do you want to push your local changes to GitHub first?',
     options: {
-      'oh, never mind': (e) => e.hide(),
-      'yes, quit project anyways': (e) => {
+      'oh, sure!': (e) => {
+        e.hide()
+        self._launchGit()
+      },
+      'no, just quit': (e) => {
         self.closeProject()
         e.hide()
       }
@@ -335,7 +338,10 @@ window.CONVOS['project-files'] = (self) => {
     id: 'clear-code?',
     content: 'It appears you\'ve got some code in the editor, do you want this to be the start of your new project or should we delete this and start from scratch?',
     options: {
-      'I want to keep it': (e) => e.goTo('create-new-project'),
+      'I want to keep it': (e) => {
+        self._keepCode = NNE.code
+        e.goTo('create-new-project')
+      },
       'let\'s start from scratch': (e) => {
         NNE.code = ''
         e.goTo('create-new-project')
@@ -347,6 +353,8 @@ window.CONVOS['project-files'] = (self) => {
     before: () => {
       self.closeProject()
       NNW.menu.switchFace('default')
+      if (self._keepCode) NNE.code = self._keepCode
+      self._keepCode = null
     },
     after: () => {
       nn.get('text-bubble input').focus()
@@ -413,6 +421,22 @@ window.CONVOS['project-files'] = (self) => {
       'actually, never mind': (e) => e.hide()
     }
   }, {
+    id: 'open-from-local-or-github',
+    content: `I noticed you have unpushed local changes for <b>${self._pendingOpenRepo}</b>. Would you like me to open your most recent local save, or pull this fresh copy from GitHub? <br><br><i>Heads up: pulling from GitHub will discard your unpushed local changes.</i>`,
+    options: {
+      'open my local save': (e) => {
+        const repo = self._pendingOpenRepo
+        self._pendingOpenRepo = null
+        self._openFromLocal(repo)
+      },
+      'pull fresh from GitHub': (e) => {
+        const repo = self._pendingOpenRepo
+        self._pendingOpenRepo = null
+        self._openFromGitHub(repo)
+      },
+      'never mind': (e) => { self._pendingOpenRepo = null; e.hide() }
+    }
+  }, {
     id: 'opening-project',
     before: () => NNW.menu.switchFace('processing'),
     content: '...asking GitHub for data...',
@@ -439,19 +463,27 @@ window.CONVOS['project-files'] = (self) => {
     options: {
       ok: (e) => e.hide(),
       'beta?': (e) => e.goTo('beta')
-      // 'submit to BrowserFest': (e) => {
-      //   if (WIDGETS['browser-fest']) {
-      //     WIDGETS['browser-fest'].submit()
-      //   } else {
-      //     WIDGETS.load('browser-fest', (w) => w.submit())
-      //   }
-      // }
     }
-    // ,
-    // after: () => {
-    //   document.querySelector('.text-bubble-options > button:nth-child(2)')
-    //     .classList.add('opt-rainbow-bg')
-    // }
+  }, {
+    id: 'files-truncated',
+    content: self.truncatedReason === 'depth'
+      ? 'Sorry, I wasn\'t able to open this project because its folder structure is nested more than <b>5 levels deep</b>, which is beyond what I can safely work with here. You can still access and edit this project directly on GitHub, just keep in mind that deeply nested folders can make web projects tricky to manage. Consider reorganizing your project so there aren\'t as many folders in folders in folders.'
+      : 'Sorry, I wasn\'t able to open this project because it contains more than <b>300 files</b>, which is beyond what I can safely work with here. You can still access and edit this project directly on GitHub. This limit is in place for security, but feel free to open up an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a> if you think we should reconsider this limit/approach.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'max-files-reached',
+    content: 'Your project has reached the <b>300 file limit</b> for netnet.studio. You won\'t be able to add any more files here, though you can still add files directly on GitHub and/or work in another code editor. This limit is in place for security, but feel free to open up an <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issue</a> if you think we should reconsider this limit/approach.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'max-depth-reached',
+    content: 'Your project\'s folders are already nested <b>5 levels deep</b>, which is the limit for netnet.studio. You can\'t create another folder here, though you can still add folders elsewhere, like in the root (aka main project folder). Consider reorganizing your folder structure if you need more depth.',
+    options: {
+      ok: (e) => e.hide()
+    }
   }, {
     id: 'beta',
     content: `This is the first version of the <b>Project Files</b> widget, it's still in "beta", meaning we're still actively developing it, so keep any eye out for bugs. If you run into issues or have any thoughts or suggestions, we appreciate constructive feedback, <a href="${window.location.origin}/docs/contributors/bug-report.html" target="_blank">submit an issue!</a>`,
@@ -711,6 +743,19 @@ window.CONVOS['project-files'] = (self) => {
     content: `You already have a file called <code>${self._duplicate}</code> in that folder. You must either delete the older <i>${self._duplicate}</i> or give this new file another name.`,
     options: { ok: (e) => e.hide() }
   }, {
+    id: 'duplicate-upload-file',
+    content: `You already have a file called <code>${self._duplicate}</code> in your project. Uploading this file will replace the one you currently have, is that what you want?`,
+    options: {
+      'yes, replace it': (e) => {
+        e.hide()
+        self._postUpload(true)
+      },
+      'no, never mind': (e) => {
+        self._uploadedFile = {}
+        e.hide()
+      }
+    }
+  }, {
     id: 'duplicate-folder',
     content: `There is already a folder named <code>${self._duplicate}</code> in that parent folder. You must either delete the older <i>${self._duplicate}</i> folder or give this folder another name.`,
     options: { ok: (e) => e.hide() }
@@ -856,7 +901,7 @@ window.CONVOS['project-files'] = (self) => {
   // -------------------------- misc ----------
   {
     id: 'git-push-not-ready',
-    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">GitHub repo</a>. Try saving your changes locally first.`,
+    content: `Nothing has changed since your last "commit", which means we have nothing to "push" (aka back up) to your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/network" target="_blank">timeline</a> on your <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">GitHub repo</a>. Try saving changes locally first <code>${utils.hotKey()} + S</code>.`,
     options: {
       'ok thanks!': (e) => e.hide()
     }

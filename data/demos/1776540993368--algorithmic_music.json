@@ -1,0 +1,136 @@
+{
+  "key": 1776540993368,
+  "name": "Algorithmic Music",
+  "tags": [
+    "algo",
+    "music"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJx9VcFu2zgQvesriLSAqFiW7NRdFFnbQNB0Fz20KJrcggChJUbmhiYFkkrWG/jfO0NKluQGC8iUzJl58ziPQy5tYUTtiDXF6mzrXG0v87woVfaPLbkUzyZT3OXVNoeX+I8rbSr8hGdqHVMlM+VUio1hZp9vGiHLXKlsJzD+bL3MA/o6Wr6VplH1U5UVepc7rfgb7usoPyeV1BsmiVIpuQU3cp5HkeQAtVdumxJbaMOj6LFRhRNaEctdUxOakNeIBB+yIoq/+ODsh5b7G5ykSeb0NbdOKIZxNAF3eIB9YThznMabxgGvGA2EAE3luHI0riXbe8Adl7rcd3ZWlrcaggZTgBoXUhRPcUow6psPSCIkhqyRWJ+uFM+/5XphAghW5FEbUjLHsiw7+lhL40dwnFrQBTIsPg0tLxqE2QA0Jo/9x5RJ+TbbQzQoYFNDJn7jCVKlHU+JKP8N9RzQtTX7rTbo3U6BDDQWJSR/wNn3r4BxeBgyrIEDrA085rMRK18bJAWCHFltRbWV8HPfAY1QUQZCkNk6Yjikg2oiJ7Ja+3dIUmipDVagMjzo4tGzirsrKbtVZFDfL6zYUg808sJMJ1Ab2fD4lF/FFTdQmKBxt/9aelo7C/Tu4s8LBLj24xc//uXHv/14tYjvR0FhgxhoM72jHiU52ne65EP7N/hPe7MtmBxtsBuc8CCpj/XbMPiiQJ91o0b5voKei3T+xwDS8fq6MeA0yy4+DqJfYMp3F3zCwidoR3Ts0pJD5fkp8CwNBDPJVQUdOiXzEz6+Xn01nNh1U0d1jl0SGvGSxB4De4ViaoFM/4TXsl8h/J1MgjZ9IZ9H/Ojd9CIl03n4AdO5fy7uwyZtFzRZ+cDIz4lHQtv5JZkl/aJnp+b1arTwgetpPaIBRaTfudyFiPuBufSiDBYA9U+9SDh+wGHRsu+UZMaLDdJNoJnIeSduEtJ6BbK6sdtBT3sNwuQr5kxbnEMwD86N7thAwwERDRzKRpHXAJy2ch7w4GFwRhfk2Ef9OTnuodNQYD9uOfq/4tu2sm/o3xbXe92JYV0xFVh8xs7ib5TMGVFV3Fw5x4qnn1xyZrtFo3fmq+O/fIlCgYaKcbxEVoT2PqB530MJKDKfzWaDEFGC/8O79jA9PAQ23N0Cgm4cHR2QaciAJ3fQAAoN+wMvJKkZnsr+mkyi45X7C0bEea4=",
+  "info": [
+    {
+      "focus": null,
+      "title": "getting started",
+      "text": "This demo is a companion to the <span class=\"link\" onclick=\"window.open('/?demo=1776468136542', '_blank')\">MusicVAE</span> demo. Both generate a short melody and play it back with a highlighted score display. The difference is that MusicVAE uses a machine learning model to do it, while here we write the musical logic ourselves. The goal is to show that sometimes the <i>handwritten</i> approach is not only simpler, it can also be more expressive and intentional."
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2
+      ],
+      "text": "We only need two libraries: the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">nn</a> library and <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a>. Compare this to MusicVAE which required four imports including TensorFlow.js and a Magenta module. Writing the logic ourselves means less to download and no dependency on external model weights."
+    },
+    {
+      "title": "global vars",
+      "focus": [
+        6
+      ],
+      "text": "We only need two global variables: <code>synth</code> for the Tone.js polyphonic synthesizer, and <code>score</code> for the div that displays the notes."
+    },
+    {
+      "title": "setup",
+      "focus": [
+        8,
+        9,
+        11,
+        12,
+        13,
+        14,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "text": "The <code>setup</code> function runs on page load. We create a <code>Tone.PolySynth</code> routed to the audio output, a button wired to <code>playMelody</code>, and a score display div. This is essentially the same setup as MusicVAE, the playback infrastructure is identical."
+    },
+    {
+      "title": "root and scale",
+      "focus": [
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "text": "The heart of this demo is the <code>generateMelody</code> function. We start by picking a random root note from a set of notes in the fourth octave, then a random <code>mode</code> using <code>nn.randomMode()</code>. A <a href=\"https://en.wikipedia.org/wiki/Musical_mode\" target=\"_blank\">mode</a> is a pattern of intervals (like major, minor, dorian, etc.) that gives a scale its character. <code>nn.createScale(root, mode)</code> builds the full ordered array of note names for that combination, this is the list of notes our melody will draw from."
+    },
+    {
+      "title": "timing and starting position",
+      "focus": [
+        44,
+        45,
+        46,
+        48,
+        50,
+        51
+      ],
+      "text": "<code>noteCount</code> is a random integer between 4 and 16, so each melody has a different length. <code>stepDur</code> is <code>0.25</code> seconds per step (quarter notes at 120 BPM), and <code>now</code> sets a small lookahead offset so Tone.js has time to schedule reliably. <code>degree</code> is our current position in the scale, we start at a random index and will move from there."
+    },
+    {
+      "title": "random walk",
+      "focus": [
+        55,
+        56,
+        57,
+        59,
+        60
+      ],
+      "text": "For each note in the melody we pick a <code>move</code> from the array <code>[-2, -1, -1, 0, 1, 1, 2]</code> and add it to <code>degree</code>. This is a <a href=\"https://en.wikipedia.org/wiki/Random_walk\" target=\"_blank\">random walk</a>, the melody steps up or down the scale by one or two degrees at a time, with some chance of repeating a note (value <code>0</code>). The weighted array makes steps of one more common than leaps of two, which tends to sound more melodic. The clamping ensures <code>degree</code> never goes out of bounds."
+    },
+    {
+      "title": "note and timing per step",
+      "focus": [
+        62,
+        63,
+        64,
+        66,
+        67,
+        68
+      ],
+      "text": "We look up the actual note name at the current <code>degree</code> in the scale, pick a random duration from a small set of short values, and compute the absolute <code>start</code> time by adding the step index multiplied by <code>stepDur</code>. We push both the note and its timing into arrays, and call <code>updateScore</code> to add it to the visual display as we go."
+    },
+    {
+      "title": "updateScore and highlightNote",
+      "focus": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "text": "These two helper functions are identical to the ones in the MusicVAE demo. <code>updateScore</code> creates a <code>span</code> for each note with a unique <code>id</code> and adds it to the score div. <code>highlightNote</code> resets all spans to grey then colors the active one blue. Reusing the same display logic across both demos makes the comparison cleaner, any difference in output comes purely from how the melody was generated."
+    },
+    {
+      "title": "scheduling playback",
+      "focus": [
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85
+      ],
+      "text": "The <code>playMelody</code> function is also structurally identical to MusicVAE's: we loop over the notes, schedule each one with <code>synth.triggerAttackRelease()</code>, and queue the visual highlight with <code>setTimeout</code> at the matching delay. The only difference is our timing data came from simple arithmetic rather than a model's quantized step format."
+    },
+    {
+      "title": "algorithmic vs ML",
+      "focus": null,
+      "text": "Both demos produce a melody and play it back the same way, but the source of that melody is completely different. The ML approach (MusicVAE) learned patterns from a large dataset and samples from a latent space, it produces melodies that \"sound human\" but you have limited control over <i>why</i> they sound that way. The algorithmic approach gives you full authorship: you decide the scale, the rhythm, the motion rules. For many composers this directness <i>is</i> the art. Neither is better, the right choice depends on what you're trying to make."
+    }
+  ]
+}

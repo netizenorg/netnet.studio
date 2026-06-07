@@ -8,11 +8,8 @@ class SvgTagAnimated extends HTMLElement {
   }
 
   _restartAnim () {
+    this.updateHTML()
     const anim = this.querySelector('#svgTagAnim')
-    anim.endElement()
-    const svg = this.querySelector('svg')
-    if (svg && typeof svg.setCurrentTime === 'function') svg.setCurrentTime(0)
-    svg.unpauseAnimations()
     anim.beginElement()
   }
 

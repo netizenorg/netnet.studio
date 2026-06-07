@@ -48,6 +48,10 @@ class ProjectFiles extends Widget {
 
     this.codeEdit = null // runs on code update when proj is open
 
+    // NOTE: must match values in github.js && convo files
+    this.FETCH_FILES_MAX_DEPTH = 5
+    this.FETCH_FILES_MAX_FILES = 300
+
     // NOTE: this method needs to stay in sync with the method in the files-db-service-worker.js
     this.mimeTypes = {
       md: 'text/markdown',
@@ -114,9 +118,9 @@ class ProjectFiles extends Widget {
     const loggedOutMsg = 'You\'re currently working on a "<b>sketch</b>", that\'s what we call a web page made from a single HTML file. To create a "<b>project</b>" consisting of multiple files/assets which can be published on the web you\'ll need to <span class="inline-link" onclick="WIDGETS[\'coding-menu\']._login()">authenticate your GitHub account</span>. This is because we don\'t store any data on our servers, instead your projects are stored as repositories in your own GitHub account. If you\'re not familiar with <a href="https://github.com/" target="_blank">GitHub</a>, don\'t worry, you won\'t need to interact with it directly, we\'ll walk you through all the steps here in the studio.'
 
     const loggedIn = WIDGETS['student-session'].getData('owner')
-    const c1 = nn.hex2rgb(utils.getVal('--netizen-meta'))
+    const c1 = nn.toRGB(utils.getVal('--netizen-meta'))
     const fileClr = `rgb(${c1.r},${c1.g},${c1.b})`
-    const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+    const c2 = nn.toRGB(utils.getVal('--fg-color'))
     const fldrClr = `rgb(${c2.r},${c2.g},${c2.b})`
 
     this.innerHTML = `
@@ -201,10 +205,8 @@ class ProjectFiles extends Widget {
     this.keepInFrame()
   }
 
-  async _colorizeChanges () {
-    if (nn.get('load-curtain').showing) return
-
-    this.changes = await this.computeChanges()
+  _colorizeChanges () {
+    this.changes = this.computeChanges()
     if (WIDGETS['git-push']) WIDGETS['git-push']._createHTML()
 
     if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
@@ -221,7 +223,12 @@ class ProjectFiles extends Widget {
   }
 
   _launchGit () {
-    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => w.open())
+    const preConvo = (w) => {
+      if (!w.convos) return setTimeout(preConvo, 100, w)
+      window.convo = new Convo(w.convos, 'pre-start')
+    }
+    // instead of oppening widget, show it's pre-start convo
+    if (this.changes.length > 0) WIDGETS.load('git-push', (w) => preConvo(w))
     else { window.convo = new Convo(this.convos, 'git-push-not-ready') }
   }
 
@@ -257,7 +264,7 @@ class ProjectFiles extends Widget {
     const hover = (e, type) => {
       if (type === 'over') {
         e.stopPropagation()
-        const c2 = nn.hex2rgb(utils.getVal('--fg-color'))
+        const c2 = nn.toRGB(utils.getVal('--fg-color'))
         e.target.style.background = `rgba(${c2.r},${c2.g},${c2.b}, 0.25)`
       } else if (type === 'out') {
         e.stopPropagation()
@@ -432,97 +439,223 @@ class ProjectFiles extends Widget {
     if (!repo) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
-    } else {
-      utils.cancelAllNetitorUses('project-files')
-      WIDGETS['student-session'].clearSaveState()
-      const owner = WIDGETS['student-session'].getData('owner')
-      if (this.projectData.name) this.closeProject()
-      nn.get('load-curtain').show('folder.html', { filename: repo })
-      this.open()
-
-      // load data for all the files
-      utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
-        if (res.success === 'false') {
-          nn.get('load-curtain').hide()
-          return this._ohNoErr(res)
-        }
-
-        if (Object.keys(res.data).includes('index.html')) {
-          utils.setCustomRenderer(null)
-
-          this._setupCodeUpdateListener()
-
-          // update student session data
-          const htmlUrl = res.data['index.html'].html_url
-          const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
-          const url = (htmlUrl.includes('/blob/master'))
-            ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
-          this.projectData = { url, branch, name: repo }
-          this.dbName = repo
-
-          this._swControl = this._initServiceWorker() // setup service worker
-          this.db = await this._initIndexedDB() // setup indexedDB
-          await this._clearIndexedDB() // clear this store for fresh project state
-          await this._saveFilesToIndexedDB()
-
-          // update netnet URL
-          const ghStr = branch === 'main'
-            ? `?gh=${owner}/${repo}`
-            : `?gh=${owner}/${repo}/${branch}`
-          utils.updateURL(ghStr)
-
-          // setup netitor's custom renderer to work with service worker
-          this._setCustomRenderer()
-
-          // load all the data
-
-          Object.entries(res.data).forEach((arr) => {
-            const name = arr[0]
-            const data = arr[1]
-            const mt = this._getMimeType(name)
-            const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
-            const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
-            this.files[name] = { path: data.path }
-            let code // store plain-text/code
-            if (name.split('/').includes('.gitkeep') || isTxt) {
-              code = (data.content === '') ? data.download_url : utils.atob(data.content)
-              // exception for empty index.html files
-              if (name === 'index.html' && data.content === '') code = ''
-            } else { // otherwise assume binary file && store blob-url (or github URL)
-              // b/c github sends back empty strings for large binary files's content
-              code = (data.content === '')
-                ? data.download_url : this._base64ToBlob(data.content, mt)
-            }
-            this._updateFile(name, code)
-          })
-
-          this.lastCommitFiles = this._snapshotFiles(this.files)
-
-          this._updateFilesGUI()
-
-          // open the index.html file by default
-          this.openFile('index.html')
-          this.convos = window.CONVOS[this.key](this)
-          window.convo = new Convo(this.convos, 'project-opened')
-          // NOTE: load-curtain is hidden after index.html file is opened
-        } else {
-          this.files = {}
-          nn.get('load-curtain').hide()
-          this.convos = window.CONVOS[this.key](this)
-          window.convo = new Convo(this.convos, 'not-a-web-project')
-        }
-      })
+      return
     }
+
+    // if there are unpushed local changes, ask which copy to open before
+    // destroying anything; otherwise go straight to GitHub.
+    const hasLocal = await this._peekUnpushedLocal(repo)
+    if (hasLocal) {
+      this._pendingOpenRepo = repo
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'open-from-local-or-github')
+      return
+    }
+
+    await this._openFromGitHub(repo)
+  }
+
+  async _openFromGitHub (repo) {
+    utils.cancelAllNetitorUses('project-files')
+    WIDGETS['student-session'].clearSaveState()
+    const owner = WIDGETS['student-session'].getData('owner')
+    if (this.projectData.name) this.closeProject()
+    nn.get('load-curtain').show('folder.html', { filename: repo })
+    // calling open() on an already-open widget re-fires the 'explain'
+    // convo via a 300ms setTimeout, which clobbers the convo we set
+    // after the project loads.
+    if (!this.opened) this.open()
+
+    // load data for all the files
+    utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
+      // success can be either boolean false (utils.post timeout / network
+      // failure) or string 'false' (legacy backend shape). guard both,
+      // plus a defensive check that res.data is actually present.
+      if (!res || !res.success || res.success === 'false' || !res.data) {
+        nn.get('load-curtain').hide()
+        return this._ohNoErr(res)
+      }
+
+      // if the repo is too large (too many files or too deeply nested) don't
+      // open it at all (see fetchFiles() in github.js) imit is in place to
+      // prevent an attacker with intentionally massive repo from crashing us
+      if (res.truncated) {
+        nn.get('load-curtain').hide()
+        this.truncatedReason = res.truncatedReason
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'files-truncated')
+        this.close()
+        return
+      }
+
+      // a "web project" needs at least one HTML file at the root —
+      // usually index.html, but a project may have been renamed (e.g.
+      // home.html) and pushed without index.html still present.
+      const refFile = this._pickStartFile(Object.keys(res.data))
+      if (refFile && refFile.endsWith('.html')) {
+        utils.setCustomRenderer(null)
+
+        this._setupCodeUpdateListener()
+
+        // update student session data
+        const htmlUrl = res.data[refFile].html_url
+        const branch = (htmlUrl.includes('/blob/master')) ? 'master' : 'main'
+        const url = (htmlUrl.includes('/blob/master'))
+          ? htmlUrl.split('/blob/master')[0] : htmlUrl.split('/blob/main')[0]
+        this.projectData = { url, branch, name: repo }
+        this.dbName = repo
+
+        // wipe any stale local DB before re-init with fresh GitHub data
+        await this._destroyProjectDB(repo)
+        this._swControl = this._initServiceWorker() // setup service worker
+        this.db = await this._initIndexedDB() // setup indexedDB
+        await this._saveFilesToIndexedDB()
+        await this._saveProjectMetaToIndexedDB()
+
+        // update netnet URL
+        const ghStr = branch === 'main'
+          ? `?gh=${owner}/${repo}`
+          : `?gh=${owner}/${repo}/${branch}`
+        utils.updateURL(ghStr)
+
+        // setup netitor's custom renderer to work with service worker
+        this._setCustomRenderer()
+
+        // load all the data — suppress baselines writes during the loop
+        // since lastCommitFiles is empty until after the loop completes
+        this._suppressBaselinesWrite = true
+
+        Object.entries(res.data).forEach((arr) => {
+          const name = arr[0]
+          const data = arr[1]
+          const mt = this._getMimeType(name)
+          const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
+          const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
+          this.files[name] = { path: data.path }
+          let code // store plain-text/code
+          if (name.split('/').includes('.gitkeep') || isTxt) {
+            code = (data.content === '') ? data.download_url : utils.atob(data.content)
+            // exception for empty index.html files
+            if (name === 'index.html' && data.content === '') code = ''
+          } else { // otherwise assume binary file && store blob-url (or github URL)
+            // b/c github sends back empty strings for large binary files's content
+            code = (data.content === '')
+              ? data.download_url : this._base64ToBlob(data.content, mt)
+          }
+          this._updateFile(name, code)
+        })
+
+        this._suppressBaselinesWrite = false
+        this.lastCommitFiles = this._snapshotFiles(this.files)
+        await this._saveBaselinesToIndexedDB()
+
+        this._updateFilesGUI()
+
+        // open the project's start file (index.html or fallback)
+        this.openFile(refFile)
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'project-opened')
+        // NOTE: load-curtain is hidden after index.html file is opened
+      } else {
+        this.files = {}
+        nn.get('load-curtain').hide()
+        this.convos = window.CONVOS[this.key](this)
+        window.convo = new Convo(this.convos, 'not-a-web-project')
+      }
+    })
+  }
+
+  // Open a project from its local IDB (working copy + baselines + meta)
+  // without touching GitHub. Used when the student has unpushed local
+  // changes and chooses to keep working on them.
+  async _openFromLocal (repo) {
+    utils.cancelAllNetitorUses('project-files')
+    WIDGETS['student-session'].clearSaveState()
+    if (this.projectData.name) this.closeProject()
+    nn.get('load-curtain').show('folder.html', { filename: repo })
+    this.open()
+
+    this.dbName = repo
+    this._swControl = this._initServiceWorker()
+    this.db = await this._initIndexedDB()
+
+    const filesDict = await this._loadFilesFromIndexedDB()
+    const baselines = await this._loadBaselinesFromIndexedDB()
+    const meta = await this._loadProjectMetaFromIndexedDB()
+
+    if (!meta || !filesDict || Object.keys(filesDict).length === 0) {
+      // local data is incomplete somehow — fall back to GitHub
+      console.warn('ProjectFiles: local data incomplete, falling back to GitHub')
+      nn.get('load-curtain').hide()
+      return this._openFromGitHub(repo)
+    }
+
+    utils.setCustomRenderer(null)
+    this._setupCodeUpdateListener()
+
+    this.projectData = {
+      name: meta.repo || repo,
+      branch: meta.branch || 'main',
+      url: meta.url || null,
+      ghpages: null
+    }
+
+    // populate this.files from the IDB working copy
+    for (const [path, code] of Object.entries(filesDict)) {
+      this.files[path] = { path, code }
+    }
+    // reconstruct lastCommitFiles so computeChanges keeps working
+    this.lastCommitFiles = this._reconstructLastCommitFiles(this.files, baselines)
+
+    const owner = meta.owner || WIDGETS['student-session'].getData('owner')
+    const ghStr = (this.projectData.branch === 'main')
+      ? `?gh=${owner}/${repo}`
+      : `?gh=${owner}/${repo}/${this.projectData.branch}`
+    utils.updateURL(ghStr)
+
+    this._setCustomRenderer()
+    this._updateFilesGUI()
+
+    const startFile = this._pickStartFile(Object.keys(this.files))
+    if (startFile) this.openFile(startFile)
+    else nn.get('load-curtain').hide()
+  }
+
+  // Pick a default file to open when entering a project. Prefers
+  // index.html, falls back to any root-level HTML file, then any file.
+  // Tolerates projects where index.html has been renamed.
+  _pickStartFile (paths) {
+    if (!paths || paths.length === 0) return null
+    if (paths.includes('index.html')) return 'index.html'
+    const rootHtml = paths.find(p => p.endsWith('.html') && !p.includes('/'))
+    if (rootHtml) return rootHtml
+    return paths[0]
   }
 
   closeProject () {
-    // reset this widget
-    this._clearIndexedDB(true)
+    // if there are no unpushed changes, drop the local DB on close —
+    // the GitHub copy is the source of truth, the local copy is just
+    // cache. Only projects with unpushed work are kept locally so the
+    // student can come back and finish them.
+    const dbName = this.dbName
+    const hasUnpushed = Object.keys(this._buildBaselines()).length > 0
+
+    if (this.db) {
+      try { this.db.close() } catch (e) { /* already closed */ }
+      this.db = null
+    }
+    this.files = {}
     this._createHTML()
     this.viewing = null
     this.rendering = null
     this.lastCommitFiles = {}
+    this.changes = []
     this.projectData = {}
+
+    if (dbName && !hasUnpushed) {
+      // fire-and-forget; callers don't need to wait for the delete
+      this._destroyProjectDB(dbName).catch(() => {})
+    }
     // remove github path from URL + clear title bar
     utils.updateURL()
     NNW.updateTitleBar(null)
@@ -701,12 +834,14 @@ class ProjectFiles extends Widget {
             projName = stripRoot || file.name.replace(/\.zip$/i, '')
             this.projectData = { name: projName, branch: 'local', url: null }
             this.dbName = projName
+            // wipe any stale local DB with this name before init
+            await this._destroyProjectDB(projName)
             this._swControl = this._initServiceWorker()
             this.db = await this._initIndexedDB()
-            await this._clearIndexedDB()
           } else {
-            // replacing current project contents
-            await this._clearIndexedDB()
+            // replacing current project contents — destroy + re-init
+            await this._destroyProjectDB(this.dbName)
+            this.db = await this._initIndexedDB()
           }
 
           // load each entry
@@ -972,15 +1107,35 @@ class ProjectFiles extends Widget {
 
   newFolder () {
     this.convos = window.CONVOS[this.key](this)
+    // Check if the right-clicked target is already at max nesting depth.
+    // Any new folder created there would put its contents one level deeper,
+    // which fetchFiles would skip (see FETCH_FILES_MAX_DEPTH in github.js).
+    const fldr = this._rightClicked.classList.contains('folder')
+    const pathParts = (!this._rightClicked.dataset.path)
+      ? [] : this._rightClicked.dataset.path.split('/')
+    if (pathParts.length !== 0 && !fldr) pathParts.pop() // clicked a file, use its parent
+    if (pathParts.filter(Boolean).length >= this.FETCH_FILES_MAX_DEPTH) {
+      window.convo = new Convo(this.convos, 'max-depth-reached')
+      return
+    }
     window.convo = new Convo(this.convos, 'new-folder')
   }
 
   newFile () {
     this.convos = window.CONVOS[this.key](this)
+    if (Object.keys(this.files).length >= this.FETCH_FILES_MAX_FILES) {
+      window.convo = new Convo(this.convos, 'max-files-reached')
+      return
+    }
     window.convo = new Convo(this.convos, 'new-file')
   }
 
   async uploadFile () {
+    if (Object.keys(this.files).length >= this.FETCH_FILES_MAX_FILES) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'max-files-reached')
+      return
+    }
     const bytesToMB = (bytes) => {
       if (bytes === 0) return 0
       const mb = bytes / (1024 * 1024)
@@ -1022,6 +1177,9 @@ class ProjectFiles extends Widget {
 
   saveCurrentFile (skipUpdate) {
     this._updateFile(this.viewing, NNE.code)
+    // force iframe reload via NNE.update() since customRender otherwise
+    // skips reassigning src when target URL is unchanged.
+    this._forceRender = true
     if (!skipUpdate) NNE.update()
     this._updateViewingFile()
     console.clear()
@@ -1126,42 +1284,39 @@ class ProjectFiles extends Widget {
     return snap
   }
 
-  async resetChanges () {
-    this.lastCommitFiles = this._snapshotFiles(this.files)
-    this.changes = await this.computeChanges()
+  // Refresh lastCommitFiles after a push. If `pushedItems` is provided
+  // (manifest entries for the files actually sent to GitHub), only those
+  // baselines are advanced — unstaged files keep their pre-push baseline
+  // so their unpushed local changes stay visible. Without an arg, all
+  // baselines are reset (used by auto-commit which pushes everything).
+  async resetChanges (pushedItems) {
+    if (Array.isArray(pushedItems)) {
+      for (const item of pushedItems) {
+        if (item.action === 'delete') {
+          delete this.lastCommitFiles[item.path]
+        } else {
+          const curr = this.files[item.path]
+          if (curr) {
+            this.lastCommitFiles[item.path] = { path: item.path, code: curr.code }
+          }
+        }
+      }
+    } else {
+      this.lastCommitFiles = this._snapshotFiles(this.files)
+    }
+    await this._saveBaselinesToIndexedDB()
+    this.changes = this.computeChanges()
     return this.changes
   }
 
-  async computeChanges () {
+  // Build a lightweight manifest of which paths have changed since the
+  // last push. Returns [{action, path, isBinary?}]. No content is read
+  // or encoded here, so this stays cheap on every save — even for
+  // projects with multi-MB binary assets. Use hydrateChanges() to fill
+  // in `content` only when it's actually needed (i.e. at push-time).
+  computeChanges () {
     const oldFiles = this.lastCommitFiles || {}
     const newFiles = this.files || {}
-
-    const toBase64 = async (src) => {
-      if (src instanceof window.Blob) {
-        const buf = await src.arrayBuffer()
-        // fast btoa for big arrays
-        let binary = ''
-        const bytes = new Uint8Array(buf)
-        const chunk = 0x8000
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
-        }
-        return window.btoa(binary)
-      }
-      if (typeof src === 'string' && src.startsWith('blob:')) {
-        const r = await window.fetch(src)
-        return toBase64(await r.blob())
-      }
-      if (typeof src === 'string' && src.startsWith('data:')) {
-        return src.split('base64,')[1] || ''
-      }
-      return '' // or throw if you prefer
-    }
-
-    const isBinary = (v) =>
-      v instanceof window.Blob ||
-      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
-
     const changes = []
     const allPaths = new Set([...Object.keys(oldFiles), ...Object.keys(newFiles)])
 
@@ -1170,36 +1325,67 @@ class ProjectFiles extends Widget {
       const curr = newFiles[path]
 
       if (!prev && curr) {
-        const change = { action: 'create', path }
-        change.isBinary = isBinary(curr.code)
-        change.content = change.isBinary ? await toBase64(curr.code) : (curr.code || '')
-        changes.push(change)
+        changes.push({ action: 'create', path, isBinary: this._isBinary(curr.code) })
         continue
       }
-
       if (prev && !curr) {
         changes.push({ action: 'delete', path })
         continue
       }
-
       if (prev && curr) {
         const a = prev.code
         const b = curr.code
-
         let same = false
         if (typeof a === 'string' && typeof b === 'string') same = a === b
-        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b // Blob identity
-
+        else if (a instanceof window.Blob && b instanceof window.Blob) same = a === b
         if (!same) {
-          const change = { action: 'update', path }
-          change.isBinary = isBinary(b)
-          change.content = change.isBinary ? await toBase64(b) : (b || '')
-          changes.push(change)
+          changes.push({ action: 'update', path, isBinary: this._isBinary(b) })
         }
       }
     }
-
     return changes
+  }
+
+  // Fill in `content` for a list of manifest entries. Only base64-encodes
+  // the binaries the user actually staged for push, not every binary in
+  // the project. Called by git-push right before posting to the backend.
+  async hydrateChanges (items) {
+    const out = []
+    for (const item of items) {
+      if (item.action === 'delete') { out.push({ ...item }); continue }
+      const code = this.files[item.path]?.code
+      const content = item.isBinary
+        ? await this._toBase64(code)
+        : (code || '')
+      out.push({ ...item, content })
+    }
+    return out
+  }
+
+  _isBinary (v) {
+    return v instanceof window.Blob ||
+      (typeof v === 'string' && (v.startsWith('blob:') || v.startsWith('data:')))
+  }
+
+  async _toBase64 (src) {
+    if (src instanceof window.Blob) {
+      const buf = await src.arrayBuffer()
+      let binary = ''
+      const bytes = new Uint8Array(buf)
+      const chunk = 0x8000
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+      }
+      return window.btoa(binary)
+    }
+    if (typeof src === 'string' && src.startsWith('blob:')) {
+      const r = await window.fetch(src)
+      return this._toBase64(await r.blob())
+    }
+    if (typeof src === 'string' && src.startsWith('data:')) {
+      return src.split('base64,')[1] || ''
+    }
+    return ''
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -1268,7 +1454,8 @@ class ProjectFiles extends Widget {
       const controlled = await this.waitForSWControl(1200)
 
       if (this.listAllFiles().length > 0) {
-        const page = (this.rendering || 'index.html').replace(/^\/+/, '')
+        const startFile = this._pickStartFile(Object.keys(this.files))
+        const page = (this.rendering || startFile || 'index.html').replace(/^\/+/, '')
         const swPath = `/PROJ__${encodeURIComponent(this.dbName)}`
 
         if (!controlled) {
@@ -1277,12 +1464,19 @@ class ProjectFiles extends Widget {
           return
         }
 
-        eve.iframe.src = `${swPath}/${page}`
-
-        if (this.log) console.log('rendered via SW path')
+        // avoid reassigning src on every keystroke (would force a full
+        // iframe reload and re-fetch all assets, e.g. big images flicker).
+        // saveCurrentFile triggers an explicit reload when the rendered
+        // file is saved.
+        const target = new URL(`${swPath}/${page}`, window.location.origin).href
+        if (eve.iframe.src !== target || this._forceRender) {
+          eve.iframe.src = `${swPath}/${page}`
+          this._forceRender = false
+          if (this.log) console.log('rendered via SW path')
+        }
 
         if (!this.files[page]?.code) {
-          eve.update(`<h1>⚠️ 404</h1> <h3>the file <i>${page}</i> could not be found.</h3> If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.`)
+          eve.update(`<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5"><h1>⚠️ 404: file not found</h1><p>The file <code>${page}</code> could not be found.</p><p>If you're still working on this file, you'll need to write some code to your file first and then <i>save</i> it (${utils.hotKey()} + S) before it can be rendered.</p></body></html>`)
         }
       } else {
         // eve.iframe.srcdoc = eve.code
@@ -1328,8 +1522,10 @@ class ProjectFiles extends Widget {
   }
 
   _isTxt (name, type) {
-    const mimeType = type || this.mimeTypes[name.split('.')[1]]
-    return mimeType.split('/')[0] === 'text' ||
+    const ext = (name || '').split('.').pop().toLowerCase()
+    const mimeType = type || this.mimeTypes[ext]
+    if (typeof mimeType !== 'string') return false // unknown ext → treat as binary
+    return mimeType.startsWith('text/') ||
       mimeType === 'application/json' ||
       mimeType === 'model/gltf+json' ||
       mimeType === 'application/x-javascript' ||
@@ -1492,6 +1688,8 @@ class ProjectFiles extends Widget {
           WIDGETS['student-session'].setData('repos', names.join(', '))
         })
 
+        this._setupCodeUpdateListener()
+
         // update student session data
         this.projectData = {
           name: res.repo,
@@ -1501,10 +1699,12 @@ class ProjectFiles extends Widget {
         }
         this.dbName = res.repo
 
+        // wipe any stale local DB with this name before init
+        await this._destroyProjectDB(res.repo)
         this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
-        await this._clearIndexedDB() // clear this store for fresh project state
         await this._saveFilesToIndexedDB()
+        await this._saveProjectMetaToIndexedDB()
 
         // update netnet URL
         const ghStr = res.branch === 'main'
@@ -1515,14 +1715,17 @@ class ProjectFiles extends Widget {
         // setup netitor's custom renderer to work with service worker
         this._setCustomRenderer()
 
-        // load all the data
+        // load all the data — suppress baselines writes during the loop
+        this._suppressBaselinesWrite = true
         res.data.forEach((arr) => {
           const name = arr[0]
           this.files[name] = { path: name }
           this._updateFile(name, arr[1])
         })
 
+        this._suppressBaselinesWrite = false
         this.lastCommitFiles = this._snapshotFiles(this.files)
+        await this._saveBaselinesToIndexedDB()
 
         this._updateFilesGUI()
 
@@ -1557,7 +1760,7 @@ class ProjectFiles extends Widget {
     }
   }
 
-  _postUpload () {
+  _postUpload (replace) {
     const cpath = this._rightClicked.dataset.path
     const fof = this._fpathExists(cpath)
     const path = fof === 'folder' ? cpath : this._getSubPath(cpath)
@@ -1577,32 +1780,50 @@ class ProjectFiles extends Widget {
     else if (ext === 'gltf') type = this.mimeTypes.gltf
     else if (ext === 'glb') type = this.mimeTypes.glb
     // ....
+    const filepath = path ? `${path}/${file.name}` : file.name
     if (allowedTypes.length > 0 && !allowedTypes.includes(type)) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'unknown-format')
       this._uploadedFile = {}
-    } else if (this.files[file.name]) {
-      this._duplicate = file.name
+    } else if (!replace && this.files[filepath]) {
+      // duplicate detected — offer to replace. Keep this._uploadedFile
+      // around so the convo's "yes, replace it" can call _postUpload(true).
+      this._duplicate = filepath
       this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'duplicate-file')
-      this._uploadedFile = {}
+      window.convo = new Convo(this.convos, 'duplicate-upload-file')
     } else {
       nn.get('load-curtain').show('upload.html', { filename: file.name })
       const isTextType = this._isTxt(file.name, type)
       const reader = new window.FileReader()
       reader.onloadend = async () => {
         // console.log({ name: file.name, type: type, data })
-        let data = reader.result
-        if (!isTextType && type !== 'image/svg+xml') {
-          data = this._base64ToBlob(data.split(',')[1], type)
-        } else if (type === 'image/svg+xml') {
-          data = utils.atob(data.split(',')[1])
+        try {
+          let data = reader.result
+          if (!isTextType && type !== 'image/svg+xml') {
+            data = this._base64ToBlob(data.split(',')[1], type)
+          } else if (type === 'image/svg+xml') {
+            data = utils.atob(data.split(',')[1])
+          }
+          await this._updateFile(filepath, data)
+          this._updateFilesGUI()
+          // if the replaced file is currently open in the editor, sync
+          // NNE.code so the user sees the new content (only meaningful
+          // for text — binaries open in the media viewer, not the editor).
+          if (replace && this.viewing === filepath && typeof data === 'string') {
+            NNE.code = data
+          }
+          // force the iframe to re-render so any rendered page or asset
+          // reference picks up the freshly-uploaded content.
+          this._forceRender = true
+          NNE.update()
+        } catch (err) {
+          console.error('ProjectFiles: upload failed:', err)
+          utils._Convo('oh-no-error', err)
+        } finally {
+          // always hide the curtain so a thrown error doesn't strand the user
+          setTimeout(() => nn.get('load-curtain').hide(), 200)
+          this._uploadedFile = {}
         }
-        const filepath = path ? `${path}/${file.name}` : file.name
-        await this._updateFile(filepath, data)
-        this._updateFilesGUI()
-        setTimeout(() => nn.get('load-curtain').hide(), 200)
-        this._uploadedFile = {}
       }
       reader.onerror = (err) => {
         utils._Convo('oh-no-error', err)
@@ -1625,6 +1846,7 @@ class ProjectFiles extends Widget {
         URL.revokeObjectURL(this.files[filepath].code) // for memory management
       }
       delete this.files[filepath]
+      this._dropPathRefs(filepath)
       await this._saveFilesToIndexedDB()
       if (this.log) console.log(`FilesDB: File '${filepath}' deleted successfully.`)
       this._updateFilesGUI()
@@ -1634,6 +1856,35 @@ class ProjectFiles extends Widget {
       console.warn(`FilesDB: File '${filepath}' not found.`)
       // setTimeout(() => nn.get('load-curtain').hide(), 100)
     }
+  }
+
+  // Keep sibling state keyed by file path in sync when a file is renamed
+  // or moved. Without this the next save after a rename writes to the
+  // old path (recreating it as a phantom file) and silently loses edits.
+  // Intentionally does NOT migrate lastCommitFiles — leaving the old path
+  // in the baseline lets computeChanges produce delete(old) + create(new),
+  // which is how the rename gets encoded for GitHub.
+  _migratePathRefs (oldPath, newPath) {
+    if (!oldPath || !newPath || oldPath === newPath) return
+    if (this.viewing === oldPath) {
+      this.viewing = newPath
+      const repo = this.projectData?.name
+      if (repo) NNW.updateTitleBar(`${repo}/${newPath}`)
+    }
+    if (this.rendering === oldPath) this.rendering = newPath
+    if (this.history.stack[oldPath]) {
+      this.history.stack[newPath] = this.history.stack[oldPath]
+      delete this.history.stack[oldPath]
+    }
+    if (this.history.redoStack[oldPath]) {
+      this.history.redoStack[newPath] = this.history.redoStack[oldPath]
+      delete this.history.redoStack[oldPath]
+    }
+  }
+
+  _dropPathRefs (path) {
+    delete this.history.stack[path]
+    delete this.history.redoStack[path]
   }
 
   async _postMoveFile (newSubPath) {
@@ -1651,6 +1902,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     let errConvo
@@ -1696,6 +1948,7 @@ class ProjectFiles extends Widget {
       delete this.files[oldPath]
       entry.path = newPath
       this.files[newPath] = entry
+      this._migratePathRefs(oldPath, newPath)
     }
 
     if (dup) {
@@ -1733,17 +1986,23 @@ class ProjectFiles extends Widget {
       console.error('ProjectFiles: no service worker support in this browser')
       return
     }
+    // project files need same-origin iframe so the SW can intercept requests
+    NNE.iframe.removeAttribute('sandbox')
 
     if (this.log) console.log('ProjectFiles: service worker loading')
 
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('SW now controlling')
-    })
-
-    navigator.serviceWorker.addEventListener('message', event => {
-      if (this.log) console.log('ProjectFiles: Message from SW:', event.data)
-      this._handleServiceWorkerMessage(event.data)
-    })
+    // attach controllerchange + message listeners only once per page load,
+    // not on every project open (was leaking listeners with each reopen).
+    if (!this._swListenersAttached) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('SW now controlling')
+      })
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (this.log) console.log('ProjectFiles: Message from SW:', event.data)
+        this._handleServiceWorkerMessage(event.data)
+      })
+      this._swListenersAttached = true
+    }
 
     try {
       const reg = await navigator.serviceWorker.register('/files-db-service-worker.js', { scope: '/' })
@@ -1837,62 +2096,246 @@ class ProjectFiles extends Widget {
     }
   }
 
-  async _clearIndexedDB () {
-    if (!this.db) {
-      if (this.log) console.log('ProjectFiles: IndexedDB hasn\'t been not initialized yet.')
-      return
+  // Delete an IndexedDB database entirely. Use this only when the intent
+  // is "wipe and start fresh" — e.g. creating a new project that happens
+  // to collide with a stale local DB of the same name. closeProject does
+  // NOT call this — local unpushed work must survive close.
+  async _destroyProjectDB (name) {
+    if (!window.indexedDB) return
+    if (this.db && this.dbName === name) {
+      try { this.db.close() } catch (e) { /* already closed */ }
+      this.db = null
     }
-
-    try {
-      if (!this.db.objectStoreNames.contains(this.storeName)) {
-        if (this.log) console.log('ProjectFiles: store not found, nothing to clear.')
-        this.files = {}
-        return
+    this.files = {}
+    return new Promise((resolve) => {
+      const req = window.indexedDB.deleteDatabase(name)
+      req.onsuccess = () => resolve()
+      req.onerror = (e) => {
+        console.error('ProjectFiles: deleteDatabase error:', e.target.error)
+        resolve()
       }
-
-      const tx = this.db.transaction([this.storeName], 'readwrite')
-      const store = tx.objectStore(this.storeName)
-      const req = store.clear()
-
-      await new Promise((resolve, reject) => {
-        req.onerror = e => {
-          console.error('ProjectFiles: IndexedDB clear error:', e.target.error)
-          reject(e.target.error)
-        }
-        tx.oncomplete = () => resolve()
-        tx.onerror = e => reject(e.target.error)
-        tx.onabort = e => reject(e.target.error)
-      })
-
-      if (this.log) console.log('ProjectFiles: All data cleared from IndexedDB successfully.')
-      this.files = {}
-    } catch (error) {
-      console.error('ProjectFiles: Error while clearing IndexedDB:', error)
-    }
+      req.onblocked = () => {
+        console.warn('ProjectFiles: deleteDatabase blocked (open connections elsewhere)')
+        resolve()
+      }
+    })
   }
 
-  // save the "code" in this.files into indexedDB (avoids storing all other GH data)
+  // Persist working copy + baselines atomically. Writing both in one tx
+  // keeps the unpushed-changes signal in sync with the file contents on
+  // disk, so a reload can detect what's diverged from the last push.
   _saveFilesToIndexedDB () {
+    if (!this.db) return Promise.resolve()
     const filesDict = {}
     Object.values(this.files).forEach(file => {
       if (file.code) filesDict[file.path] = file.code
     })
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
-      const objectStore = transaction.objectStore(this.storeName)
-      const request = objectStore.put(filesDict, this.objName)
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      store.put(filesDict, this.objName)
+      // when bulk-loading from GitHub, lastCommitFiles is empty until the
+      // load finishes; building baselines mid-load would mark every file
+      // as "newly created" and persist a wrong state if interrupted.
+      if (!this._suppressBaselinesWrite) {
+        store.put(this._buildBaselines(), 'baselines')
+      }
 
-      request.onerror = (event) => {
+      tx.oncomplete = () => {
+        if (this.log) console.log('ProjectFiles: Files+baselines saved.', this.dbName)
+        resolve()
+      }
+      tx.onerror = (event) => {
         console.error('ProjectFiles: IndexedDB save error:', event.target.error)
         reject(event.target.error)
       }
+      tx.onabort = (event) => reject(event.target.error)
+    })
+  }
 
-      request.onsuccess = () => {
-        if (this.log) console.log('ProjectFiles: Files saved to IndexedDB successfully.', this.dbName)
-        resolve()
+  // Persisted divergence map keyed by path: a value (string|Blob) is the
+  // content at last push (file modified or deleted since); a `null`
+  // sentinel means the file didn't exist at last push (created since).
+  // Paths absent from the map are unchanged since last push.
+  _buildBaselines () {
+    const baselines = {}
+    const lastCommit = this.lastCommitFiles || {}
+    const allPaths = new Set([
+      ...Object.keys(lastCommit),
+      ...Object.keys(this.files || {})
+    ])
+    for (const path of allPaths) {
+      const prev = lastCommit[path]?.code
+      const curr = this.files[path]?.code
+      if (prev === curr) continue
+      baselines[path] = (prev === undefined) ? null : prev
+    }
+    return baselines
+  }
+
+  // Explicit baselines-only write. Use after resetting lastCommitFiles
+  // to a clean snapshot so the persisted divergence map matches.
+  _saveBaselinesToIndexedDB () {
+    if (!this.db) return Promise.resolve()
+    const baselines = this._buildBaselines()
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.put(baselines, 'baselines')
+      req.onerror = e => {
+        console.error('ProjectFiles: baselines save error:', e.target.error)
+        reject(e.target.error)
+      }
+      req.onsuccess = () => resolve()
+    })
+  }
+
+  _loadFilesFromIndexedDB () {
+    if (!this.db) return Promise.resolve({})
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get(this.objName)
+      req.onerror = () => resolve({})
+      req.onsuccess = () => resolve(req.result || {})
+    })
+  }
+
+  // Returns true if a local DB for this repo exists and has a non-empty
+  // baselines map (i.e. unpushed changes). Avoids creating empty DB
+  // shells for repos that have never been opened locally — checks
+  // databases() first and only opens if it's already there. Fails
+  // closed (returns false) on any timeout or error.
+  async _peekUnpushedLocal (repo) {
+    if (!window.indexedDB) return false
+    if (!window.indexedDB.databases) return false // Safari pre-2023; skip peek
+
+    // databases() with a timeout so the UI can never hang here
+    let exists = false
+    try {
+      const dbs = await Promise.race([
+        window.indexedDB.databases(),
+        new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+      ])
+      exists = dbs.some(d => d.name === repo)
+    } catch (e) {
+      console.warn('ProjectFiles: indexedDB.databases() failed/timed out — skipping peek')
+      return false
+    }
+    if (!exists) return false
+
+    return new Promise(resolve => {
+      let settled = false
+      const settle = (v) => { if (!settled) { settled = true; resolve(v) } }
+      // hard timeout fallback — no peek path should hang the UI
+      const timer = setTimeout(() => {
+        console.warn('ProjectFiles: _peekUnpushedLocal timed out')
+        settle(false)
+      }, 3000)
+      const finish = (v, db) => {
+        clearTimeout(timer)
+        if (db) { try { db.close() } catch (e) {} }
+        settle(v)
+      }
+
+      try {
+        const req = window.indexedDB.open(repo, this.dbVersion)
+        req.onerror = () => finish(false)
+        req.onblocked = () => finish(false)
+        req.onupgradeneeded = e => {
+          const d = e.target.result
+          if (!d.objectStoreNames.contains(this.storeName)) {
+            d.createObjectStore(this.storeName)
+          }
+        }
+        req.onsuccess = e => {
+          const db = e.target.result
+          try {
+            const tx = db.transaction([this.storeName], 'readonly')
+            const store = tx.objectStore(this.storeName)
+            const r = store.get('baselines')
+            r.onsuccess = () => {
+              const baselines = r.result || {}
+              finish(Object.keys(baselines).length > 0, db)
+            }
+            r.onerror = () => finish(false, db)
+            tx.onerror = () => finish(false, db)
+          } catch (err) {
+            finish(false, db)
+          }
+        }
+      } catch (err) {
+        finish(false)
       }
     })
+  }
+
+  _loadBaselinesFromIndexedDB () {
+    if (!this.db) return Promise.resolve(null)
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get('baselines')
+      req.onerror = () => resolve(null)
+      req.onsuccess = () => resolve(req.result || {})
+    })
+  }
+
+  _saveProjectMetaToIndexedDB () {
+    if (!this.db) return Promise.resolve()
+    const owner = WIDGETS['student-session']?.getData('owner') || null
+    const meta = {
+      owner,
+      repo: this.projectData?.name || null,
+      branch: this.projectData?.branch || null,
+      url: this.projectData?.url || null,
+      lastPushSHA: this.projectData?.lastPushSHA || null
+    }
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.put(meta, 'projectMeta')
+      req.onerror = e => {
+        console.error('ProjectFiles: meta save error:', e.target.error)
+        reject(e.target.error)
+      }
+      req.onsuccess = () => resolve()
+    })
+  }
+
+  _loadProjectMetaFromIndexedDB () {
+    if (!this.db) return Promise.resolve(null)
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get('projectMeta')
+      req.onerror = () => resolve(null)
+      req.onsuccess = () => resolve(req.result || null)
+    })
+  }
+
+  // Rebuild the in-memory lastCommitFiles snapshot from the working
+  // copy + persisted baselines map, so computeChanges keeps working
+  // after a reload (when the in-memory snapshot is gone).
+  _reconstructLastCommitFiles (files, baselines) {
+    const result = {}
+    baselines = baselines || {}
+    for (const path of Object.keys(files || {})) {
+      if (baselines[path] === null) continue // newly created — wasn't in last commit
+      if (Object.prototype.hasOwnProperty.call(baselines, path)) {
+        result[path] = { path, code: baselines[path] }
+      } else {
+        result[path] = { path, code: files[path].code }
+      }
+    }
+    // include deleted files (in baselines but not in working copy)
+    for (const [path, baseCode] of Object.entries(baselines)) {
+      if (files[path] !== undefined) continue
+      if (baseCode === null) continue
+      result[path] = { path, code: baseCode }
+    }
+    return result
   }
 }
 
