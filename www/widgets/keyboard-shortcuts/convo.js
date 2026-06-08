@@ -39,6 +39,11 @@ window.CONVOS['keyboard-shortcuts'] = (self) => {
       options: { thanks: (e) => e.hide() }
     },
     {
+      id: 'hotkey-f',
+      content: 'This shortcut opens a search bar at the bottom of the code editor so you can find any text in your code. Type something to highlight all matches, then press <code>Enter</code> or use the <code>↑</code> and <code>↓</code> buttons to jump between them. Press <code>Esc</code> or <code>✕</code> to close it.',
+      options: { thanks: (e) => e.hide() }
+    },
+    {
       id: 'hotkey-left',
       content: 'This shortcut jumps your cursor to the very start of the current line. It\'s a quick way to navigate without reaching for the Home key or clicking with your mouse.',
       options: { thanks: (e) => e.hide() }

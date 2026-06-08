@@ -50,6 +50,16 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
+        key: `${utils.hotKey()} + F`,
+        nfo: 'find / search in code editor',
+        category: 'coding',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'f',
+        callback: (e) => {
+          e.preventDefault()
+          NNW.openCodeSearch()
+        }
+      },
+      {
         key: `${utils.hotKey()} + C`,
         nfo: 'copy selected text',
         category: 'coding'
@@ -180,7 +190,8 @@ class KeyboardShortcuts extends Widget {
         condition: (e) => e.key === 'Escape',
         callback: (e) => {
           e.preventDefault()
-          if (NNW.menu.search.opened) NNW.menu.search.close()
+          if (NNW.codeSearchBar?.opened) NNW.closeCodeSearch()
+          else if (NNW.menu.search.opened) NNW.menu.search.close()
           else utils.closeTopMostWidget()
         }
       },
