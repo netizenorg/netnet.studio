@@ -630,6 +630,8 @@ class HyperVideoPlayer extends Widget {
 
   _setupListeners () {
     this.$('.hvp-toggle').addEventListener('click', () => this.toggle())
+    this.video.addEventListener('click', () => this.toggle())
+    this.$('.hvp-pause-screen').addEventListener('click', () => this.toggle())
 
     this.$('.hvp-vol').addEventListener('change', () => {
       this.video.volume = this.$('.hvp-vol').value
