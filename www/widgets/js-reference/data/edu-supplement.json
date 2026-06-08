@@ -10,5 +10,11 @@
   },
   "if": {
     "bubble": "Sometimes we only want code to run <i>if</i> a certain condition is <i>true</i>. That's where <b>conditional statements</b> come in. If the code within the <code>(</code> parentheses <code>)</code> is <i>true</i> then the code within the <code>{</code> curly braces <code>}</code> runs, otherwise it does not."
+  },
+  "load": {
+    "bubble": "A page or element receives a <code>load</code> event when it and all its dependent resources (like images, stylesheets, and scripts) have finished loading completely in the browser."
+  },
+  "Object": {
+    "bubble": "Curly braces <code>{ }</code> have two main jobs in JavaScript. First, they create an <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('dataStructOpts')\">Object</span>, a collection of related values stored as <i>key: value</i> pairs, for example <code>let person = { name: \"Ada\", age: 27 }</code>. Access a value with dot notation: <code>person.name</code> gives you <code>\"Ada\"</code>. Second, they wrap the body of <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('mainOpts', 'functions')\">functions</span>, <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('mainOpts', 'loops')\">loops</span>, and <span class=\"link\" onclick=\"WIDGETS['js-reference'].openDocs('mainOpts', 'conditionals')\">if-statements</span>, everything between the braces is the block of code that runs together."
   }
 }

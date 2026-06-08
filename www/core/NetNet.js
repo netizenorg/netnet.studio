@@ -42,6 +42,7 @@ class NetNet {
     })
 
     this._preventAccidentalExit() // for Mac
+    this._createCodeSearch()
   }
 
   err (m) {
@@ -599,6 +600,7 @@ class NetNet {
 
     const tbWasOpened = this.menu.textBubble && this.menu.textBubble.opened
     if (tbWasOpened) this.menu.textBubble.fadeOut(10)
+    if (v === 'welcome' && this.codeSearchBar?.opened) this.closeCodeSearch()
 
     const o = layouts[v]
     this.title.style.display = o.title
@@ -613,6 +615,10 @@ class NetNet {
     this.win.style.bottom = o.win.bottom
     this.win.style.borderRadius = o.win.borderRadius
     this.canv.style.borderRadius = o.canv
+    if (this.codeSearchBar) {
+      this.codeSearchBar.style.borderRadius = v === 'dock-left'
+        ? `0 0 ${o.win.borderRadius.split(' ')[2]} 0` : ''
+    }
     this._showEditor(o.editor)
     this._liveCodeMode(v === 'full-screen')
     utils.afterLayoutTransition(() => after())
@@ -850,6 +856,111 @@ class NetNet {
     if (ey < this.win.offsetTop) y = 0
     else if (ey > this.win.offsetTop + this.win.offsetHeight) y = this.canv.height
     this._canvasUpdate(x, y)
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• code search
+
+  openCodeSearch () {
+    if (this._layout === 'welcome') return // no editor in welcome layout
+    if (this.edtr.style.display === 'none') return // editor not visible
+    // pre-fill with any selected text
+    const sel = NNE.cm.getSelection()
+    if (sel) {
+      this.codeSearchInput.value = sel
+      this._codeSearchResults = NNE.search(sel)
+      this._updateCodeSearchCount()
+    }
+    this.codeSearchBar.style.display = 'flex'
+    this.codeSearchBar.opened = true
+    this.codeSearchInput.focus()
+    this.codeSearchInput.select()
+  }
+
+  closeCodeSearch () {
+    this.codeSearchBar.style.display = 'none'
+    this.codeSearchBar.opened = false
+    if (this._codeSearchResults) {
+      this._codeSearchResults.clear()
+      this._codeSearchResults = null
+    }
+    this.codeSearchInput.value = ''
+    this.codeSearchCount.textContent = ''
+    NNE.cm.focus()
+  }
+
+  _updateCodeSearchCount () {
+    const r = this._codeSearchResults
+    if (!r || r.count === 0) {
+      this.codeSearchCount.textContent = r ? 'no results' : ''
+      this.codeSearchCount.style.color = r ? 'var(--netizen-tag)' : 'var(--netizen-meta)'
+    } else {
+      const cur = r.current < 0 ? 1 : r.current + 1
+      this.codeSearchCount.textContent = `${cur} of ${r.count}`
+      this.codeSearchCount.style.color = 'var(--netizen-meta)'
+    }
+  }
+
+  _createCodeSearch () {
+    const mkBtn = (label) => nn.create('button').content(label)
+
+    const closeBtn = mkBtn('✕')
+      .set('id', 'nn-code-search__close')
+      .on('click', () => this.closeCodeSearch())
+
+    const count = nn.create('span')
+      .set('id', 'nn-code-search__count')
+
+    const input = nn.create('input')
+      .set('type', 'text')
+      .set('placeholder', 'find in code...')
+      .on('input', () => {
+        if (!input.value) {
+          if (this._codeSearchResults) this._codeSearchResults.clear()
+          this._codeSearchResults = null
+          count.textContent = ''
+          return
+        }
+        this._codeSearchResults = NNE.search(input.value)
+        this._updateCodeSearchCount()
+      })
+      .on('keydown', (e) => {
+        if (e.key === 'Escape') this.closeCodeSearch()
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          if (!this._codeSearchResults) return
+          this._codeSearchResults.next()
+          this._updateCodeSearchCount()
+        }
+      })
+
+    const prevBtn = mkBtn('↑')
+      .on('click', () => {
+        if (!this._codeSearchResults) return
+        this._codeSearchResults.prev()
+        this._updateCodeSearchCount()
+      })
+
+    const nextBtn = mkBtn('↓')
+      .on('click', () => {
+        if (!this._codeSearchResults) return
+        this._codeSearchResults.next()
+        this._updateCodeSearchCount()
+      })
+
+    const bar = nn.create('div')
+      .set('id', 'nn-code-search')
+
+    closeBtn.addTo(bar)
+    input.addTo(bar)
+    prevBtn.addTo(bar)
+    nextBtn.addTo(bar)
+    count.addTo(bar)
+    bar.addTo(this.win)
+
+    bar.opened = false
+    this.codeSearchBar = bar
+    this.codeSearchInput = input
+    this.codeSearchCount = count
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.• misc

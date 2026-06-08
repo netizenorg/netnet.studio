@@ -251,10 +251,14 @@ class Widget {
   }
 
   open (func) {
-    if (this._hidden) this.events.open.forEach(func => func())
+    if (this._hidden) {
+      this.events.open.forEach(cb => cb())
+      if (func) func(this)
+      return
+    }
     this._display('visible', () => {
       this.keepInFrame()
-      this.events.open.forEach(func => func())
+      this.events.open.forEach(cb => cb())
       if (func) return func(this)
     })
   }
