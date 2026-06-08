@@ -11,7 +11,6 @@
       "example": "CLOUD PIECE<br>\nby Yoko Ono<br>\n<br>\nImagine the clouds dripping.<br>\nDig a hole in your garden to<br>\nput them in.<br>\n<br>\n1963 spring\n"
     },
     "datalist": {
-      "bubble": "Used in combintion with the <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'input')\">&lt;input&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'option')\">&lt;option&gt;</a> elements, the <code>&lt;datalist&gt;</code> element is used to create a text field with auto-suggestions (based on it's <code>&lt;option&gt;</code> elements) that drop down as the user types into it.",
       "example": "<!-- text field with auto-suggestions -->\n<input list=\"ice-cream-flavors\" placeholder=\"ice-cream flavor\">\n<datalist id=\"ice-cream-flavors\">\n  <option value=\"Chocolate\"></option>\n  <option value=\"Coconut\"></option>\n  <option value=\"Mint\"></option>\n  <option value=\"Strawberry\"></option>\n  <option value=\"Vanilla\"></option>\n</datalist>"
     },
     "h1": {
@@ -43,7 +42,6 @@
       "example": "<!-- importing a CSS stylesheet -->\n<link href=\"path/to/styles.css\" rel=\"stylesheet\">\n<!-- adding a favicon (appears in browser tab) to a page -->\n<link rel=\"icon\" href=\"favicon.ico\">\n<!-- adding icon for mobile apps -->\n<link rel=\"apple-touch-icon\" href=\"icon.png\">\n<!-- preloading fonts -->\n<link rel=\"preload\" href=\"myFont.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\">\n<!-- to learn more about \"preloading\" assets see: -->\n<!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload -->\n"
     },
     "option": {
-      "bubble": "As the name implies, the <code>&lt;option&gt;</code> element is used to define a selectable item in a <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'select')\">&lt;select&gt;</a> (dropdown menu) or <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'datalist')\">&lt;datalist&gt;</a> (auto-suggestion search field) element.",
       "example": "<!-- text field with auto-suggestions -->\n<input list=\"ice-cream-flavors\" placeholder=\"ice-cream flavor\">\n<datalist id=\"ice-cream-flavors\">\n  <option value=\"Chocolate\"></option>\n  <option value=\"Coconut\"></option>\n  <option value=\"Mint\"></option>\n  <option value=\"Strawberry\"></option>\n  <option value=\"Vanilla\"></option>\n</datalist>\n\n<!-- a drop-down list -->\n<select id=\"pet-select\">\n  <option value=\"\">--Please choose a pet--</option>\n  <option value=\"dog\">Dog</option>\n  <option value=\"cat\">Cat</option>\n  <option value=\"hamster\">Hamster</option>\n  <option value=\"parrot\">Parrot</option>\n  <option value=\"spider\">Spider</option>\n  <option value=\"goldfish\">Goldfish</option>\n</select>"
     },
     "ol": {
@@ -59,11 +57,9 @@
       "example": "<pre>\nASCII Art by Blazej Kozlowski\n       _                        \n       \\`*-.                    \n        )  _`-.                 \n       .  : `. .                \n       : _   '  \\               \n       ; *` _.   `*-._          \n       `-.-'          `-.       \n         ;       `       `.     \n         :.       .        \\    \n         . \\  .   :   .-'   .   \n         '  `+.;  ;  '      :   \n         :  '  |    ;       ;-. \n         ; '   : :`-:     _.`* ;\n[bug] .*' /  .*' ; .*`- +'  `*' \n      `*-*   `*-*  `*-*'\n</pre>"
     },
     "select": {
-      "bubble": "Used in combintion with the <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'option')\">&lt;option&gt;</a> element, the <code>&lt;select&gt;</code> element is used to create a dropdown menu.",
       "example": "<!-- a drop-down list -->\n<select id=\"pet-select\">\n  <option value=\"\">--Please choose a pet--</option>\n  <option value=\"dog\">Dog</option>\n  <option value=\"cat\">Cat</option>\n  <option value=\"hamster\">Hamster</option>\n  <option value=\"parrot\">Parrot</option>\n  <option value=\"spider\">Spider</option>\n  <option value=\"goldfish\">Goldfish</option>\n</select>"
     },
     "source": {
-      "bubble": "The <code>&lt;source&gt;</code> element specifies multiple media resources for it's parent element, for example <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'picture')\">&lt;picture&gt;</a>, <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'video')\">&lt;video&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'audio')\">&lt;audio&gt;</a>. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
       "example": "<video controls>\n  <source src=\"videos/screen-saver.mp4\" type=\"video/mp4\">\n  <source src=\"videos/screen-saver.webm\" type=\"video/webm\">\n  <source src=\"videos/screen-saver.ogv\" type=\"video/ogg\">\n</video>\n\n<audio controls>\n  <source src=\"audios/katy.mp3\" type=\"audio/mpeg\">\n  <source src=\"audios/katy.ogg\" type=\"audio/ogg\">\n</audio>"
     },
     "video": {
@@ -75,7 +71,6 @@
       "example": "<img src=\"images/gifs/cd.gif\" alt=\"an 8bit compact disk\">"
     },
     "href": {
-      "bubble": "The <code>href</code> attribute is used to create a <i>hyperlink</i> to another <i>reference</i> (resource, file, page, etc), by assigning a URL as it's value. This can be an <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#examples\" target=\"_blank\">absolute/relative URL</a> or any other URL scheme supported by browsers. Check out more examples in the <code>&lt;a&gt;</code> <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'a')\">reference page</a>.",
       "example": "<!-- absolute URL to another web page -->\n<a href=\"https://netizen.org\">home page</a>\n<!-- relative URL to another page on the same site -->\n<a href=\"pages/about.html\">about us</a>\n<!-- link to another section on the same page -->\n<a href=\"#info\">more info below</a>\n\n<!-- adding a favicon (appears in browser tab) to a page -->\n<link rel=\"icon\" href=\"favicon.ico\">\n<!-- importing a CSS stylesheet  -->\n<link href=\"path/to/styles.css\" rel=\"stylesheet\">\n"
     },
     "src": {
@@ -85,7 +80,6 @@
       "example": "<!-- open link in new tab -->\n<a href=\"https://netize.org\" target=\"_blank\">home page</a>"
     },
     "type": {
-      "bubble": "The <code>type</code> attribute is used to change the default <i>type</i> of elements like <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'input')\">&lt;input&gt;</a> and <a href=\"#\" onclick=\"javascript:WIDGETS['html-reference'].goTo('elements', 'source')\">&lt;source&gt;</a> which can have different control, media or other types.",
       "exmaple": "<!-- different \"types\" of inputs -->\n<input type=\"text\" placeholder=\"your username\">\n<!-- slider -->\n<input type=\"range\">\n<!-- color selector -->\n<input type=\"color\">\n\n<!-- different \"types\" of videos -->\n<video controls>\n  <source src=\"videos/screen-saver.mp4\" type=\"video/mp4\">\n  <source src=\"videos/screen-saver.webm\" type=\"video/webm\">\n  <source src=\"videos/screen-saver.ogv\" type=\"video/ogg\">\n</video>\n"
     }
   }

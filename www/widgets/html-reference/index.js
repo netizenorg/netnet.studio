@@ -99,11 +99,12 @@ class HtmlReference extends Widget {
     }
 
     const eduSup = this.data[eve.type] ? this.data[eve.type][eve.data] : null
+    const desc = this._linkifyElementRefs(eve.nfo.description.html)
     const content = (eduSup && eduSup.bubble)
       ? `<p>${eduSup.bubble}</p>`
       : (eduSup && eduSup.extra)
-        ? `<p>${eve.nfo.description.html}${eduSup.extra}</p>`
-        : `<p>${eve.nfo.description.html}</p>`
+        ? `<p>${desc}${eduSup.extra}</p>`
+        : `<p>${desc}</p>`
 
     this._createInfoSlide(eve.type + 's', eve.data, eve.nfo)
 
@@ -148,6 +149,16 @@ class HtmlReference extends Widget {
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
+
+  _linkifyElementRefs (html) {
+    // Replace <code>&lt;tagname&gt;</code> with a clickable link that opens
+    // the html-reference widget to that element's page.
+    return html.replace(/<code>&lt;(\w+)&gt;<\/code>/g, (match, name) => {
+      const isKnown = NNE.edu.html.elements[name] || NNE.edu.svg.elements[name]
+      if (!isKnown) return match
+      return `<a href="#" onclick="WIDGETS['html-reference'].goTo('elements','${name}');return false;">&lt;${name}&gt;</a>`
+    })
+  }
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 
   async _toggleIntroPresentation () {
