@@ -580,6 +580,7 @@ class HyperVideoPlayer extends Widget {
         <span class="pause"></span>
       </div>
       <progress class="progress" min="0" max="100" value="0">0%</progress>
+      <div class="hvp-seek-tooltip"></div>
       <div class="hvp-vol-wrap">
         <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="500" height="500" viewBox="0 0 75 75">
           <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" style="stroke:white;stroke-width:5;stroke-linejoin:round;fill:white;transition:all .5s ease;"/>
@@ -676,10 +677,28 @@ class HyperVideoPlayer extends Widget {
       this.$('.hvp-buffer').style.display = 'block'
     })
 
+    this.$('.progress').addEventListener('mousemove', (e) => {
+      const rect = this.$('.progress').getBoundingClientRect()
+      const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+      const time = pos * this.duration
+      let m = Math.floor(time / 60)
+      let s = Math.floor(time % 60)
+      if (m < 10) m = '0' + m
+      if (s < 10) s = '0' + s
+      const tooltip = this.$('.hvp-seek-tooltip')
+      tooltip.textContent = `${m}:${s}`
+      const ctrlRect = this.$('.hvp-controls').getBoundingClientRect()
+      tooltip.style.left = `${e.clientX - ctrlRect.left}px`
+      tooltip.style.opacity = '1'
+    })
+
+    this.$('.progress').addEventListener('mouseleave', () => {
+      this.$('.hvp-seek-tooltip').style.opacity = '0'
+    })
+
     this.$('.progress').addEventListener('click', (e) => {
-      const margin = 30
-      const off = this.ele.offsetLeft + this.$('.progress').offsetLeft + margin
-      const pos = (e.clientX - off) / this.$('.progress').offsetWidth
+      const rect = this.$('.progress').getBoundingClientRect()
+      const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
       this.video.currentTime = pos * this.duration
       this.pause()
       this._updateProgressBar()
