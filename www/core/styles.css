@@ -241,3 +241,76 @@
   scrollbar-color: var(--fg-color) rgba(0,0,0,0);
   scrollbar-width: thin;
 }
+
+/* .............................................................. code search bar */
+
+#nn-code-search {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+
+  display: none;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  background: var(--bg-color);
+  border-top: 4px solid var(--fg-color);
+}
+
+#nn-code-search input {
+  flex: 1;
+
+  background: none;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--netizen-meta);
+
+  color: var(--netizen-text);
+  font-family: 'fira-mono-regular', monospace;
+  font-size: 13px;
+
+  padding: 2px 4px;
+  margin: 0 6px;
+}
+
+#nn-code-search input::placeholder {
+  color: var(--netizen-meta);
+  opacity: 0.6;
+}
+
+#nn-code-search button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  color: var(--netizen-meta);
+  font-family: 'fira-mono-regular', monospace;
+  font-size: 13px;
+
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+#nn-code-search button:hover {
+  color: var(--fg-color);
+}
+
+#nn-code-search__close {
+  margin-right: 6px;
+}
+
+#nn-code-search__count {
+  color: var(--netizen-meta);
+  font-family: 'fira-mono-regular', monospace;
+  font-size: 12px;
+
+  min-width: 72px;
+  text-align: right;
+  padding-left: 6px;
+  flex-shrink: 0;
+}

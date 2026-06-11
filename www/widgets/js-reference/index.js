@@ -118,7 +118,17 @@ class JsReference extends Widget {
       if: () => this.openDocs('mainOpts', 'conditionals'),
       for: () => this.openDocs('mainOpts', 'for-loop'),
       while: () => this.openDocs('mainOpts', 'loops'),
-      'Arrow function expression': () => this.openDocs('deeperFuncsOpts')
+      'Arrow function expression': () => this.openDocs('deeperFuncsOpts'),
+      Array: () => this.openDocs('dataStructOpts', 'arrays'),
+      parentheses: () => this.openDocs('mainOpts', 'functions'),
+      Object: () => this.openDocs('mainOpts', 'functions')
+    }
+
+    // add extra text to nn methods info
+    if (eve.nfo?.note === 'nn' && !this.data[eve.data]) {
+      this.data[eve.data] = {
+        extra: ' This is part of the <a href="https://netizenorg.github.io/netnet-standard-library/" target="_blank">nn library</a>, so make sure you\'ve added it.'
+      }
     }
 
     const more = () => {

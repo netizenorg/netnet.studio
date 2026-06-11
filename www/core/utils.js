@@ -1,8 +1,12 @@
 /* global WIDGETS, nn, Convo, NNW, NNE  */
 window.utils = {
 
-  get: (url, cb, text) => {
-    window.fetch(url, { method: 'GET' })
+  get: (url, cb, text, timeoutMs = 60000) => {
+    // timeoutMs guards against silent hangs (slow network, stalled server) which
+    // would otherwise leave callers (eg. loadGithub) waiting forever.
+    const controller = new window.AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    window.fetch(url, { method: 'GET', signal: controller.signal })
       .then(res => {
         if (text) return res.text()
         else return res.json()
@@ -13,6 +17,7 @@ window.utils = {
         const errObj = { success: false, error: err }
         if (cb) cb(errObj)
       })
+      .finally(() => clearTimeout(timer))
   },
 
   post: (url, data, cb, timeoutMs = 60000) => {
@@ -40,23 +45,36 @@ window.utils = {
       .finally(() => clearTimeout(timer))
   },
 
-  getSync: async (url, text = false) => {
-    const res = await window.fetch(url, { method: 'GET' })
-    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`)
-    return text ? res.text() : res.json()
+  getSync: async (url, text = false, timeoutMs = 60000) => {
+    const controller = new window.AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const res = await window.fetch(url, { method: 'GET', signal: controller.signal })
+      if (!res.ok) throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`)
+      return text ? res.text() : res.json()
+    } finally {
+      clearTimeout(timer)
+    }
   },
 
-  postSync: async (url, data, text = false) => {
-    const res = await window.fetch(url, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: data != null ? JSON.stringify(data) : undefined
-    })
-    if (!res.ok) throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`)
-    return text ? res.text() : res.json()
+  postSync: async (url, data, text = false, timeoutMs = 60000) => {
+    const controller = new window.AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const res = await window.fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: data != null ? JSON.stringify(data) : undefined,
+        signal: controller.signal
+      })
+      if (!res.ok) throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`)
+      return text ? res.text() : res.json()
+    } finally {
+      clearTimeout(timer)
+    }
   },
 
   btoa: (str) => {
@@ -387,11 +405,12 @@ window.utils = {
     } else if (url.shortCode) {
       window.utils.loadShortCode(url.shortCode)
     } else {
-      const ld = document.querySelector('#loader > div:nth-child(1)')
-      ld.style.maxWidth = '1200px'
-      ld.style.padding = '10px'
-      ld.style.lineHeight = '32px'
-      ld.innerHTML = 'It appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly.<br><br>Learn more about <a href="http://netizen.org/netnet/" style="color: #fff;">netnet here</a>, or email us at h<span></span>i@net<span></span>izen.org'
+      const msg = 'It appears you\'re on a mobile device. netnet.studio requires a computer with a mouse, keyboard and a reasonably sized screen in order to work properly. Please come back on your laptop or desktop computer!'
+      window.utils.get('/curtain.html', (html) => {
+        document.open()
+        document.write(html.replace('{{MESSAGE}}', msg))
+        document.close()
+      }, true)
     }
   },
 
@@ -404,13 +423,14 @@ window.utils = {
     const ghAuth = window.localStorage.getItem('gh-auth-temp-code')
     const url = window.utils.url
 
+    // const hash = window.location.hash
+    if (nn.isMobile()) return window.utils.mobile()
+
     if (nn.browserInfo().name === 'Safari' && !window.utils._acceptSafari) {
       window.utils.loadDefault()
       return 'safari'
     }
 
-    // const hash = window.location.hash
-    if (nn.isMobile()) return window.utils.mobile()
     if (url.widget) {
       if (url.widget.includes('/')) {
         const arr = url.widget.split('/')
