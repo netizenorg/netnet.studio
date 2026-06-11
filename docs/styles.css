@@ -681,6 +681,35 @@ div > a:not(.pill-btn):not(.highlight):hover,
   opacity: 1;
 }
 
+.docs__viewer-inner table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 15px;
+}
+
+.docs__viewer-inner th,
+.docs__viewer-inner td {
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid var(--netizen-comment);
+}
+
+.docs__viewer-inner table:has(tbody tr) th {
+  font-family: 'fira-mono-regular', monospace;
+  font-weight: 400;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--netizen-text);
+  background-color: var(--netizen-comment);
+  border-color: var(--netizen-comment);
+}
+
+.docs__viewer-inner tr:nth-child(even) td {
+  background-color: rgba(81, 81, 153, 0.15);
+}
+
 .docs__viewer-inner .warning {
   border: 4px solid var(--netizen-hint-color);
   padding: var(--doc-padding);
