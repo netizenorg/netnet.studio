@@ -1,14 +1,8 @@
 # Institutional Support
 
-netnet.studio is a free, open-source, browser-based creative coding platform used in classrooms at institutions across the world. This page outlines what institutional support means, what it covers, and how the arrangement works, including answers to common questions from IT and procurement departments.
+netnet.studio is a **web application**. It runs entirely in a standard web browser (Chrome, Firefox, Edge, etc) and requires no software installation, no accounts, no plugins, and no configuration on institutional devices or networks. Students access it the same way they access any website, by navigating to [netnet.studio](https://netnet.studio) in a browser they already have. The source code is publicly available at [github.com/netizenorg/netnet.studio](https://github.com/netizenorg/netnet.studio).
 
----
-
-## What is netnet.studio?
-
-netnet.studio is a **web application**. It runs entirely in a standard web browser (Chrome, Firefox, Edge, etc) and requires no software installation, no accounts, no plugins, and no configuration on institutional devices or networks. Students access it the same way they access any website, by navigating to [netnet.studio](https://netnet.studio) in a browser they already have.
-
-The platform is **free and open source**. The source code is publicly available at [github.com/netizenorg/netnet.studio](https://github.com/netizenorg/netnet.studio). There is no proprietary software license. There is no paywall. Any student anywhere can use it at no cost.
+The information below is provided to support appropraite review of its use as a web-based teaching and learning platform, including common IT, privacy, data handling, and procurement considerations.
 
 ---
 
@@ -42,10 +36,10 @@ Payment is made to **netizen.org** via vendor invoice. As a 501(c)3 nonprofit, n
 
 ## For IT and Procurement Departments
 
-Because netnet.studio is a web application rather than installed software, it falls outside the scope of standard software procurement policies. The following addresses common institutional IT requirements directly.
+The following addresses common institutional IT questions directly, if you have additional questions contact [hi@netizen.org](mailto:hi@netizen.org).
 
 ### Data, Privacy and Encryption
-netnet.studio is served exclusively over HTTPS (TLS encryption). All student work is processed locally in the user's browser: no code, files, or personal data are transmitted to netnet.studio servers during normal use. There is nothing to encrypt on the institution's end because nothing passes through institutional infrastructure.
+netnet.studio is served exclusively over HTTPS (TLS encryption). All student work is processed locally in the user's browser: no code, files, or personal data is stored on netnet.studio servers during typical use. On rare occasions, students may opt in to our URL shortener, which stores the code to a sketch on our server to generate a shorter link; students are notified and must confirm each time before any data is stored. There is nothing to encrypt on the institution's end because nothing passes through institutional infrastructure.
 
 netnet.studio has no user accounts and collects no personal data. Students do not register, log in, or create profiles. The only optional third-party connection is GitHub: students may connect their own personal GitHub account to save and version their work, this uses their own credentials and is entirely under their control.
 
@@ -82,4 +76,4 @@ It has been tested with hundreds of students over five years of active classroom
 
 ## Questions?
 
-Get in touch at [hi@netizen.org](mailto:hi@netizen.org) or visit [netizen.org](https://netizen.org) for more information about the fiscal sponsor organization.
+Get in touch at [hi@netizen.org](mailto:hi@netizen.org) or visit [netizen.org](https://netizen.org) for more information.
