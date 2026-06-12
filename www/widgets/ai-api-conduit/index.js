@@ -396,6 +396,7 @@ class AiApiConduit extends Widget {
     const rawInput = this.$('[name="user-input"]').value.trim()
     if (!rawInput) return this.convo('no-input')
 
+    if (window.plausible) window.plausible('llm_chat')
     const includedCode = this.getIncludedCode()
     const userInput = includedCode
       ? `${rawInput}\n\nHere is the code I'm working with:\n\n${includedCode}`

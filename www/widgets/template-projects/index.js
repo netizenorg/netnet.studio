@@ -261,6 +261,7 @@ class TemplateProjects extends Widget {
       this.state.convos = window.CONVOS[cn](this.state)
       // pre-guide convo passage
       this.convos = window.CONVOS[this.key](this)
+      if (window.plausible) window.plausible('template_start')
       window.convo = new Convo(this.convos, 'start-guide')
       // setup base path
       const multifile = template.data.files.length > 1
@@ -368,6 +369,7 @@ class TemplateProjects extends Widget {
 
   _typeTemplateCode (id) {
     // this runs on convo update
+    if (id === 'end-guide' && window.plausible) window.plausible('template_complete')
     NNE.spotlight(null)
     this.state.curPassage = id
 
@@ -535,6 +537,7 @@ class TemplateProjects extends Widget {
 
       if (res.success) {
         console.log('Repo created:', res.url)
+        if (window.plausible) window.plausible('new_project')
         this.cancel()
         this.close()
         WIDGETS.load('project-files', w => w.openProject(name))
