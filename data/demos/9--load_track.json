@@ -8,37 +8,35 @@
     "media"
   ],
   "layout": "dock-left",
-  "code": "#code/eJxdUNFOwzAMfN9XRLykndYEgRDStO0XeOEH0iRqDZldJe7QQPw7TscmhGTFzuUud/Kup3A+7OzSVrviM0ysSvb7u5F5KltrfUDzVkJMcMoGI9thtNLgMyLloY5SXWGHweXQJeizy2fbz5CCRTRHqPo7Mbn8frM5rJSyazUk6l1SiGptVwJ5wiIRaMag9gIbn6Pj2Gg3ByDdmhK5+RKiqjm36oIXG1P0nMF3Ezikzo+UQzHH6VFvFvKJ0nyMW3Vvnp8E+G7lkPpj0M/MhLpd6EZycERu9JTc+Qq6EF5JmLKuKzRRAQbClwwDYKO9iGL+/9qIzwcEHpVVD5vqOkYYRq7XXypVcQL/rjeqadX+cFmCqf5Nu8S97fAHuLSJ7g==",
+  "code": "#code/eJxdkEFOwzAQRfc5xYiNHamxWxBCqtKIG7DhAo49SgbScWRPigri7sgprRCr8Xx/+339to/h3LV2HVWbfaJZICd/uBtF5ry31gc2bzngRKdkGMUOo2UU+kSOaShHRmmyOA4uhWaiPrl0ft6ZrdnZfqEpWGZzpPLLXdfaC+MG6yoAHzkL5LhwgAMwG5/QCWrllkBR1Saj6K8KAEq0PVz0bHFCL4l8M5Pj2PgxppDNcX5Qm9V8itNyxD1szdNjBfBdVwAV/AX0i0hkVa924yMLsmg1T+58FV0Ir1Gr0tBVmmMmocgviQZirTyyYPp/q5nNBwUZwcL9plBHpGGUsv5aY3k8kX9XG9A1HLpLCabwdb3GvRX2Aw5+hmk=",
   "info": [
     {
       "focus": null,
-      "text": "In this demo we'll use the <a href=\"https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#netnet-standard-library\" target=\"_blank\">netnet-standard-library</a> (<code>nn.min.js</code>) to create a button that plays audio from a file. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJx9UkFqwzAQvOcVeym2IZEDJRSKEyght0Iv/YAsbRK1siSkdWgo/XtXthMaSgvGtnZmtDMrNa3X501TD59Zk1Q0gTYzgLoGFVESguy18YAWO3TEiPIuESTfOw1r0F71GRAjezfSymJQFRXzB6ZISE9E0bQ9YVmkqIo5jKRU896KIbUIRjq/UEcfdRJduP9Tf/KWu/IWS/GwqmY3fplB3v0y3JL7x+4oGvoxURB+0NY7YoxFRbDyXDB0VedxCRkCOr09GqtLFl1tMAEj0PFqhZ+8CvKATHlp3ziukCmZg8tCkehscQ6fDAIEnwwZ7x55PG3inMQ5B8Tinri6Wt5NBfLhdh2lS3sfO64O/5YjlgsmzCG/q5zh6+Izh5qOkQ1OVpU16n0agtR6d+IwzybxIDCWxYDy1MsK1pvJ73g8qo+Rqa+mQx7Y8geS25TV2LipLxfsG/4iyag=\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code.",
+      "text": "In this demo we'll use the <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">netnet-standard-library</a> (<code>nn.min.js</code>) to create a button that plays audio from a file. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJx9UkFqwzAQvOcVeym2IZEDJRSKEyght0Iv/YAsbRK1siSkdWgo/XtXthMaSgvGtnZmtDMrNa3X501TD59Zk1Q0gTYzgLoGFVESguy18YAWO3TEiPIuESTfOw1r0F71GRAjezfSymJQFRXzB6ZISE9E0bQ9YVmkqIo5jKRU896KIbUIRjq/UEcfdRJduP9Tf/KWu/IWS/GwqmY3fplB3v0y3JL7x+4oGvoxURB+0NY7YoxFRbDyXDB0VedxCRkCOr09GqtLFl1tMAEj0PFqhZ+8CvKATHlp3ziukCmZg8tCkehscQ6fDAIEnwwZ7x55PG3inMQ5B8Tinri6Wt5NBfLhdh2lS3sfO64O/5YjlgsmzCG/q5zh6+Izh5qOkQ1OVpU16n0agtR6d+IwzybxIDCWxYDy1MsK1pvJ73g8qo+Rqa+mQx7Y8geS25TV2LipLxfsG/4iyag=\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code.",
       "title": "getting started"
     },
     {
       "title": "script tags",
       "focus": [
         2,
-        3,
-        4,
-        18
+        3
       ],
-      "text": "In order to use the <code>nn</code> object, we'll first need to import the library using a <code>script</code> tag, then in a separate <code>script</code> element we'll write our code, starting first with the <code>/* global nn */</code> comment so netnet knows we've imported a new global variable in our imported library."
+      "text": "In order to use the <code>nn</code> object, we'll first need to import the library using a <code>script</code> tag, then in a separate <code>script</code> element we'll write our code."
     },
     {
       "title": "audio element",
       "focus": [
+        4,
+        5,
         6,
-        7,
-        8,
-        9
+        7
       ],
-      "text": "Here I've used the <code>nn.create()</code> method to create a new \"audio\" element and chained the <code>.set()</code> method to set that element's \"src\" and \"volume\" attributes. I'm storing the element in a new variable I've crated called <code>sound</code> so I can reference it below. The sound file itself was created by <a href=\"https://freesound.org/people/orangefreesounds/sounds/329855/\" target=\"_blank\">orangefreesounds</a>"
+      "text": "Here I've used the <code>nn.create()</code> method to create a new \"audio\" element and chained the <code>.set()</code> method to set that element's \"src\" and \"volume\" attributes. I'm storing the element in a new variable I've created called <code>sound</code> so I can reference it below. The sound file itself was created by <a href=\"https://freesound.org/people/orangefreesounds/sounds/329855/\" target=\"_blank\">orangefreesounds</a>"
     },
     {
       "title": "button element",
       "focus": [
-        11
+        9
       ],
       "text": "Here I've used the <code>nn.create()</code> method again to create a \"button\" element and chained a few functions."
     },
@@ -46,32 +44,32 @@
       "title": "content",
       "focus": [
         1,
-        11,
-        12,
-        13
+        9,
+        10,
+        11
       ],
       "text": "The <code>.content()</code> method changes the text content of the button and then <code>.addTo()</code> injects this button element into the body."
     },
     {
       "title": "position",
       "focus": [
+        9,
+        10,
         11,
         12,
-        13,
-        14,
-        15
+        13
       ],
       "text": "The <code>.positionOrigin()</code> method is used to set our origin point to the center of the button (rather than the top/left which is the default) so that when we set the <code>.position()</code> to the center of the screen (half the screen's width and height) the button also appears centered."
     },
     {
       "title": "click event",
       "focus": [
+        9,
+        10,
         11,
         12,
         13,
-        14,
-        15,
-        16
+        14
       ],
       "text": "Lastly, we attach an event listener to the button's \"click\" event, which calls the audio element's <code>.play()</code> method when we click the button."
     },

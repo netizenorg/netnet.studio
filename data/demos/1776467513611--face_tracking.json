@@ -10,7 +10,7 @@
     "pose"
   ],
   "layout": "dock-left",
-  "code": "#code/eJylVM1u2zAMvvsphF7sFI6dFeilaIttGHobUGC9FT0oFpOolSVPotO5RV9h5932inuEUaKTJl0H7AcwEon8SH780+ncqUEEHAycHcxlc7f0rrfqRNyvNMLB+WkdAefZaWi87lAE35wdrBC7cFLXjbLVbVBg9NpXFrBermr60w9gnV/GI33TgNIq6dXU6LmXfqjnvTaqtrZqdbSPQdj7n4axXVu/bUFp2ekO6s4F+EcnCDY4vzDuvsbFbZg2zv+/q2nrSBkSr6kChAa1s6+4Pc/qQ7E0bi6NsLYU0eDDBi8O6ywzgCJ5K8VaK3ClgNbd6iyTYbCNWPSWsX2nJIIoJuIxE8LD5x4CvrO6lVF94WULBWMmpKevrkUfgH0LdKLzVM4Ga6abmBCqcTbwJYgzIe+lHulU5D46h8uoKxK3yZ4B4ZPd9eyGI+qFKKKEKW6gBhY4Qqs7GDqnLYbro5tIMOlggB2418vVK/jjhGflvoEiME2a0gGL6K/6Uia/1VAyPgr4MEx27ALbtbIrVClmY/mre61wle5vjmeMTw2pQiMNFGFSETMda/4iWsQ+ZU+/NC4A9t2mb5QD31MwAQZasEgKvidGjQcqe5EnUc4UKqnUlSvyuKob0ZbHEZE9GrlW5L7g8gshe3SdkcOJQN9DOUrbHkHtiyIoaGu0hX1FQCLTnoyDQeRkuLtwvnhkwgwWTxz76XnyOMlUuJ0k+b6XpNLrTT7UFtowLPIf37993Qi56rPfVGE3WJra7YDi0G0GdLtv1ae+65yn7D+m9a3eG/mQ5ntrRr8LvSRDLqHvLS0B1STfvkU5lyY400eflxJXpP6bh2z0kPheEU0yX/TG5Gl+slGxXcb9DLhsfKc2xCzLkfQk2uJKh8pTnddAExc3Jp2pj9KjmPeIzhKMHwpGsEpuXhJhnOviGJOKo+0b7/SOJakRz81LYJa97FZFs5o3Rjd3eclNm2TbF/MntAEuyA==",
+  "code": "#code/eJylVM1u2zAMvvspiF7sAI6UFuglaIpuGHobUGC9FTsoFpOokSVNotO5Q19h5932inuEQZKdJl0H7Ocmkh/Jj3+6WFrZQ6Be4+JkKZrt2tvOyDk8bBThyeUFj4DL4iI0XjmC4JvFyYbIhTnnjTTsPkjUaueZQeLrDTdI6hGN9ev4NEjTQMJI4eVUq6UXvr86ZTN2yped0pIbw1oVo8RUOcefJjOu5VctSiWccsidDfiPQQhNsH6l7QOn1X2YNtb/f6hpayXqkHhNJRI2pKx5JexloZEgoWvYKYm2BmztvSoKEXrTwKozyRc6JwUhVBP4UgB4/NRhoDdGtSKar71oscqYSQFQAHAOXcAcG8iC8yhVQzzTgUitAGisCVkIsADxINRAh2GgGBxvoq1K3CZHDrDIfnezjzmjWkEVNZniCNW4ogHKttg7qwyFu7OPkWCyYY8HcK/Wm1fw5wmfjccOEhZgDJMqUBXjsc91isv6OuOjIj/6yYFfyH6tcJWsYTa0nz0oSZskn57PMj4NhIVGaKzChDkbVOz5i2wR+1Q8/TK4gNS5cW6cD3JKBqixRUMFDHJi1HgUhFWZVGWmwISUt7Yq40GOqj2Ps1kNZwNXFpCq3H4A0ZF1WvRzIN9hPWjbjlAeqyIoKKOVwWNDII+inQ+LYQwTYXtt/TG5p+eNy8Wlhh0Ul+Wj4qTajXU01hAaqsof3799HZW527PfVH+YLG3rfjGpd+Nivhvvjn3onLOeUL5PZ8neavGY9nrv1lizUmtYDJvrO0OqxTmU+z+mzC0JVncx5o2gzRzKv/mghgiJ723vYvRVp3WZ9qYYDPsjPK4gty3L1lexynogPYm+tFGBeWztDqtJupT0hkDCEyw7ImsKGD6RjMgmMf4goK11cX05h5zt2PlgdlmTBvE8vATOupfTYtZUZaNVsy3rPLRJsf8JfwLt9SLd",
   "info": [
     {
       "focus": null,
@@ -25,28 +25,30 @@
         4,
         5
       ],
-      "text": "We're importing four libraries. The first is the familiar <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">nn</a> library. The other three download the functions necessary for running BlazePose in your browser: the core <a href=\"https://www.tensorflow.org/js\" target=\"_blank\">TensorFlow.js</a> and accompanying libraries."
+      "text": "We're importing four libraries. The first is the familiar <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">nn</a> library. The other three download the functions necessary for running BlazePose in your browser: the core <a href=\"https://www.tensorflow.org/js\" target=\"_blank\">TensorFlow.js</a> and accompanying libraries."
     },
     {
       "title": "global vars",
       "focus": [
-        9
+        7
       ],
       "text": "We declare three variables at the top level: <code>model</code> will hold the loaded AI model, <code>video</code> will be the webcam feed element, and <code>emoji</code> will be the DOM element we move over the face. Making them global keeps them accessible across both the <code>setup</code> and <code>update</code> functions."
     },
     {
       "title": "the start button",
       "focus": [
+        58,
+        59,
         60,
-        61,
-        62,
-        63
+        61
       ],
       "text": "Rather than running immediately on page load, we create a <code>button</code> with the <code>nn</code> library and wire it to call <code>setup</code> on click. This matters because requesting webcam access, which happens inside <code>setup</code>, requires a user gesture in all modern browsers. The button provides that gesture."
     },
     {
       "title": "webcam video",
       "focus": [
+        25,
+        26,
         27,
         28,
         29,
@@ -56,86 +58,84 @@
         33,
         34,
         35,
-        36,
-        37,
-        57
+        55
       ],
       "text": "The <code>setup</code> function is <code>async</code> because it needs to <code>await</code> a few things. The first is creating a <code>video</code> element and feeding it a webcam stream using <code>nn.askFor()</code>, which prompts the browser's camera permission dialog and returns a <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/MediaStream\" target=\"_blank\">MediaStream</a>. We set <code>autoplay</code> and <code>muted</code> so the video plays immediately and silently, and <code>playsinline</code> to prevent mobile browsers from going full-screen."
     },
     {
       "title": "the emoji element",
       "focus": [
+        37,
+        38,
         39,
         40,
-        41,
-        42,
-        43
+        41
       ],
       "text": "We create a <code>div</code> element containing a sunglasses emoji and <code>.scale(0)</code> to shrink it to nothing so it doesn't appear until a face is detected. Once the update loop finds a pose it will scale and position this element over the face each frame."
     },
     {
       "title": "loading the model",
       "focus": [
+        43,
+        44,
         45,
         46,
         47,
         48,
         49,
-        50,
-        51,
-        53
+        51
       ],
       "text": "Next we load the pose-detection model, first by specifying the <code>type</code>, then a <code>config</code> object. Setting <code>runtime: 'mediapipe'</code> tells the library to use the native MediaPipe WASM runtime (faster than the pure TensorFlow.js one). The <code>solutionPath</code> points to the same CDN URL as our import on line 3, so the model weights load from there. Lastly, <code>.createDetector()</code> downloads and initializes everything, storing the result in our <code>model</code> variable."
     },
     {
       "title": "start the loop",
       "focus": [
-        55,
-        56,
-        57
+        53,
+        54,
+        55
       ],
       "text": "After everything is initialized, <code>this.remove()</code> deletes the start button from the page (<code>this</code> keyword refers to the button because that's what called <code>setup()</code>), and then <code>update()</code> is called once to kick off the render loop."
     },
     {
       "title": "the update loop",
       "focus": [
-        11,
-        12,
-        25
+        9,
+        10,
+        23
       ],
       "text": "The <code>update</code> function is also <code>async</code> because it awaits the model's inference (aka prediction) each frame. Calling <code>requestAnimationFrame(update)</code> tells the browser to call <code>update</code> recursively, roughly 60 times per second. This creates a continuous loop that keeps the face tracking live."
     },
     {
       "title": "estimatePoses",
       "focus": [
-        11,
+        9,
+        12,
+        13,
         14,
-        15,
-        16,
-        25
+        23
       ],
       "text": "We run <code>model.estimatePoses()</code>, passing it the current video frame. The model returns an array of detected poses, each representing a possible person in the frame. We grab the first one with <code>poses[0]</code>."
     },
     {
       "title": "eye keypoints",
       "focus": [
+        16,
+        17,
         18,
-        19,
-        20,
-        24
+        22
       ],
       "text": "If a pose is detected, we extract two keypoints from its <code>keypoints</code> array: index <code>2</code> is the left eye and index <code>5</code> is the right eye. Each keypoint has an <code>x</code> and <code>y</code> property giving its pixel coordinates on the video frame. The full <a href=\"https://camo.githubusercontent.com/64196944343f688567a83ae14b5ea8723b9d697a4248c343a1796b9c77557290/68747470733a2f2f73746f726167652e676f6f676c65617069732e636f6d2f6d65646961706970652f626c617a65706f73652d6b6579706f696e74732d757064617465642e706e67\" target=\"_blank\">33 point skeleton</a> covers the entire body, so you could track shoulders, wrists, hips and more."
     },
     {
       "title": "scale and position",
       "focus": [
+        16,
+        17,
         18,
         19,
         20,
         21,
-        22,
-        23,
-        24
+        22
       ],
       "text": "We use <code>nn.dist()</code> to get the pixel distance between the two eyes, which naturally grows as the face gets closer to the camera and shrinks as it moves away. <code>nn.map()</code> then remaps that distance from the range <code>0–video.width</code> to <code>0–150</code>, giving us a scale value we pass to <code>emoji.scale()</code>. We also call <code>.position(left.x, left.y)</code> to anchor the emoji to the left eye each frame."
     },
