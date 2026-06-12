@@ -10,7 +10,7 @@
     "api"
   ],
   "layout": "dock-left",
-  "code": "#code/eJxdUs2O1DAMvvcprL00s5pJEAghoZmRdkHiyAFeIE0yaaDrVIm73YL23XHazg8rVU1ifz+2k30T7XTcq3mp9tmk0BPkZA53LVGfPytlLMpf2bouPCeJjpRvFS/hj8OYfNnyt8uk0epkd11okk6TaobQWYUon0Lh37HJon6xOVYA6h58FxvdASLcK46YiJnA0AscAN0IY0AbR/kw2BC/RCT3QmJTMVDnCQ2cBjQUIkLf6elHHNCC2MBfzp+luBmWYkFpktPkHofTySWGJuNY6Qr0+B/umw645j1Kzyf5rLvBMeid/PRxTsw/NpCsgM6Q8HhhnENF0bpMAXUpdHMlLrbJZZbUow4EJ0emFbUuzWblOuanYHZ90Bh3po3JZvnUf6hvy9YpXfisJfmsp6VJcWs2l2GidfMov2rSgqFbEM2M3cDhuM5taWkJs/SyucnwXSdatV/L8lrNJnzZy+hE3QxEEdc6yyjIIYm6XNI5qK39GRnJL+8c6mMOZUbfU/A8/NowyaW3WcE+Y7DUgoL32+LauuBbKscVGgu5C+Z3vb0+jJKrLq/wHx6I7sY=",
+  "code": "#code/eJxdUk1v2zAMvftXEL1YARK53TAMGOKg+wB23KH7A7TE2FpdyqDoutnQ/z7IdtJsF0viI98jn7lvoj8d9tV8FPvkJAwKSVx906kO6VNVOc/2V/LUh2exTFq1XcWk4TdxlDZfmXSXFNmj+F0fGkE53d/ZW3tXNWPofcVsn0JmuTnsq0XjInYoAFzkpOD0BWpgmmAK7ONkP48+xK+RlV7UbIoCANOJHRxHdhoiw9Dj6SGO7MFs4E8BcKZK4qDOhNYJodKX8XgkeYijODKbq8SW/8n7joFXvGXbYmD7jP1IUMOt/fhhBuZPEmddZCanpuVLxTmUGT0lDYy50c1b4SIrlKAGnDAoHEldZ0rMw6aKenIqwe2GgBx3rovik30a3pfXbaPIpV4oWRTB0zKkuRab23DR02zlN1Q0KLIF08y5G6gPq2/LSEsYalguV0hSFF25X/PxWswizKt1pmxG1chrn9kKJVZT5p90DqL3P6Mp87adQ0NMIXv0Q0Ib2JSOWEn+Rw2znYLXDip4t82qHYW20/xcU2Mu7oN7LLdvi5Gx4rJzfwFNjutL",
   "info": [
     {
       "focus": null,
@@ -22,80 +22,78 @@
       "focus": [
         2,
         3,
-        4,
+        22,
         23,
         24,
         25,
         26,
-        27,
-        28,
-        30
+        27
       ],
-      "text": "I'm importing the <a href=\"https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#netnet-standard-library\" target=\"_blank\">netnet-standard-library</a> (<code>nn.min.js</code>) to make it easier to create and center a button element. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJxVU9uK2zAQfc9X6KVYBkdeKEuhZAPtdulLoQ/9grEkO9o6IyONN2tK/r0j+bIJGFuaOWfmzMWHxpvpeKjzZ3eIOriBjjshtMdIQtO7eBJoL+Li0PiL+jYa5589kn0nWTKOn7oWOlggK+hkRfQjGtGOqMl5ZDfECfVmEEMP05+MkaX4x/41Vwyac3FGNUf7PratDQwN2uZUK7DDO9xPcLj4O1Qd39Qb9KNl0IP68pgd+cUJFEdAq0l2uDFWU4pobCSHkISWH8Q5bbCRQ8IFHInWkj7JAlI3Ym175gen94MD9Ht98sFEdR4+F7eyIYSNz7EU32Gai5S3ybIM7Y3Nvf4BBJKhlZBNxpbi6bj0bS5pNnPo+XDjiQSBltjX9Lnu7sbVjEQ8EZZ/tkjb0BtKDTZej8m8dPllBsliJuXKGKjSIuR9QGJSkaZbsGtjp8VSMAwWzfPJ9UYyqVxlMICVp61ZpPCTbgN0liG/m1durIIYXYeJyBVNva2W8gcfXZrUV1FAE30/ki2q7OltS2x9fPi0GMgP9/cAGFsfzmzN555LlHsGVCK9y1TDddWZilr2mgUuUnXv9N+lCWDMyxsX88tFbgTPs8jeovrY9nJ3qNe/6z9UBxV9\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code."
+      "text": "I'm importing the <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">netnet-standard-library</a> (<code>nn.min.js</code>) to make it easier to create and center a button element. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJxVU9uK2zAQfc9X6KVYBkdeKEuhZAPtdulLoQ/9grEkO9o6IyONN2tK/r0j+bIJGFuaOWfmzMWHxpvpeKjzZ3eIOriBjjshtMdIQtO7eBJoL+Li0PiL+jYa5589kn0nWTKOn7oWOlggK+hkRfQjGtGOqMl5ZDfECfVmEEMP05+MkaX4x/41Vwyac3FGNUf7PratDQwN2uZUK7DDO9xPcLj4O1Qd39Qb9KNl0IP68pgd+cUJFEdAq0l2uDFWU4pobCSHkISWH8Q5bbCRQ8IFHInWkj7JAlI3Ym175gen94MD9Ht98sFEdR4+F7eyIYSNz7EU32Gai5S3ybIM7Y3Nvf4BBJKhlZBNxpbi6bj0bS5pNnPo+XDjiQSBltjX9Lnu7sbVjEQ8EZZ/tkjb0BtKDTZej8m8dPllBsliJuXKGKjSIuR9QGJSkaZbsGtjp8VSMAwWzfPJ9UYyqVxlMICVp61ZpPCTbgN0liG/m1durIIYXYeJyBVNva2W8gcfXZrUV1FAE30/ki2q7OltS2x9fPi0GMgP9/cAGFsfzmzN555LlHsGVCK9y1TDddWZilr2mgUuUnXv9N+lCWDMyxsX88tFbgTPs8jeovrY9nJ3qNe/6z9UBxV9\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code."
     },
     {
       "title": "AudioContext",
       "focus": [
-        5
+        4
       ],
       "text": "We start by creating an <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AudioContext\" target=\"_blank\">AudioContext</a>, which is the browser's audio engine. I've defined it globally in case I want to use it in other functions later on."
     },
     {
       "title": "playSound",
       "focus": [
-        7,
-        22
+        6,
+        21
       ],
       "text": "Then I'll create a function which will both load and play the sound. The function is marked <code>async</code> so we can <code>await</code> file loading before decoding and playing."
     },
     {
       "title": "Web Audio Nodes",
       "focus": [
+        6,
         7,
         8,
         9,
-        10,
-        22
+        21
       ],
       "text": "I'll use our AudioContext, which I named <code>ctx</code>, to create a <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode\" target=\"_blank\">BufferSource</a>, which I named <code>src</code>, that will hold decoded audio. I've also used the AudioContext to create a <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/GainNode\" target=\"_blank\">GainNode</a> to control volume."
     },
     {
       "title": "audio graph",
       "focus": [
-        7,
+        6,
+        11,
         12,
-        13,
-        22
+        21
       ],
       "text": "We connect the nodes to build an \"audio graph\", the <code>ctx.destination</code> will be whatever you have your computer's audio settings outputting to, likely your speakers or headphones, so the graph looks like this: <i>src → gn → output</i>. "
     },
     {
       "title": "fetch file",
       "focus": [
-        7,
+        6,
+        14,
         15,
-        16,
-        22
+        21
       ],
       "text": "We download the mp3 file, created by <a href=\"https://freesound.org/people/orangefreesounds/sounds/329855/\" target=\"_blank\">orangefreesounds</a>, using the browser's <code>fetch()</code> API and wait for it to finish. Then <code>res.arrayBuffer()</code> turns the file into raw bytes of data the decoder can understand.\n"
     },
     {
       "title": "decode and play",
       "focus": [
-        7,
+        6,
+        17,
         18,
         19,
         20,
-        21,
-        22
+        21
       ],
       "text": "The Web Audio API's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData\" target=\"_blank\">decodeAudioData()</a> method converts those bytes into an <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer\" target=\"_blank\">AudioBuffer</a>. Inside the callback we assign it to our <code>src</code> node's buffer property and call <code>src.start()</code> to begin playback.\n"
     },
     {
       "title": "user action",
       "focus": [
-        24,
-        29
+        23,
+        28
       ],
       "text": "Most browsers require a user action to start audio, which is why I'm calling <code>playSound()</code> from a click event."
     },

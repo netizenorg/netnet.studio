@@ -662,18 +662,10 @@ window.CONVOS['template-js-10print'] = (self) => {
     {
       id: 'nn-global',
       before: () => tenPrintGif.close(),
-      content: 'Now that the library is loaded, we can use the <code>nn</code> object in our code. First, we\'ll add a special comment at the top of our JavaScript to remind us (especially me) that there\'s a new global variable available.',
+      content: 'Now that the library is loaded, we can use the <code>nn</code> object in our code. There are loads of useful functions built into this <code>nn</code> object (also known as "methods"), you can learn all about them on the <a href="https://netizenorg.github.io/netnet-standard-library/" target="_blank">netnet-standard-library</a>\'s website, but I\'ll go over some of the most important onese here.',
       options: {
         'go on': (e) => e.goTo('nn-on'),
-        'go back': (e) => e.goTo('import-lib'),
-        'especially you?': (e) => e.goTo('linting')
-      }
-    },
-    {
-      id: 'linting',
-      content: 'As you probably already know, when I spot an issue with your code I\'ll leave a mark next to the line number to let you know. If you try to use a variable that isn\'t part of a browser API nor is it one you created yourself I\'ll warn you about it. This comment lets me know that even though you didn\'t create the <code>nn</code> variable yourself in this file, it is in fact a global variable you know you can use, in this case because you imported it with a library',
-      options: {
-        'I see': (e) => e.goTo('nn-on')
+        'go back': (e) => e.goTo('import-lib')
       }
     },
     {

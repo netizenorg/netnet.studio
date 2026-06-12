@@ -12,11 +12,11 @@
     "tone.js"
   ],
   "layout": "dock-left",
-  "code": "#code/eJx1UdFOwzAMfN9XRLy0nbYGgRAS2vaExCNI7AfSJLRmmV0lLtNA/DtOxxggkKImOd/lrvaiIbdfLfS4TRbJRuhZpWiXZx1zn260HrDftLWlrWZCfybkA+sfunVYPyfnA7zEGj3rttOywatHim0+yponNuhMdPMATTRxr5sBgtOI9Ray/g+b1UQpPVVtoMYEhThTa8mjplpwS5hYtQZQLRX63Viq7+RentfXV1XNdOsTAxoGwrL6kvTB7H38LnoYkbIwgwNK2gdvOYKd92CQ5raj6FK97S+LSnqCKNUy++YnZZm0R6ueBrTZaHz+kQZ0qqzUm9SFsTPABytpQuQxzA84kHHefeKHgEKl/jdyFL9P5COds9Eb9mXRDCyTKg7sHJI9cllk3RE0zq1JmDL1I9RTgpz5PkIrbSusiHz8XS3FZweOO6XVxSy7dh7ajvP1k0pZHMBuitnp/6vJaZ4fIkrLPw==",
+  "code": "#code/eJx1Uc1KAzEQvu9TDF42CzaxighSiwfBo4K+QJqMu2O3M0sya6niu0ta60/RU5Iv398ws4XEzXzmtkc1yyHRoJBTuDrqVId86dzIw7K1QVZOhfFoPnM71j/0ENk+54g9vSTLqK7tHKPSK7KktlwZdZLVc/QpTnpaJJ8211N7YqduMVIfHbNdUXH5I2xeAQThrNB6YrgCxjU8CqO99cTmxF6cN1blBrMSeyVh03xJht5vMP0U3W8RU/sxkmSHPQZNFCYDeZZJ6CTFbFfDWd3YIMwY1JTcYlkB+LzhAE8jhxK0tX+QkSOYBt4qAAC/9qS7qKw+6bbML7gXHzF+4ruCNqsMh8he/F5VAMw2JPSKpl6MqsL1jl1KKrKauuj2oI/xUUxddryHBslUOt8laolNHZAV0+GvYbZritqBg9PjktohtZ2W5ydVirinsKyPv+dvqu+9fQBQbsXi",
   "info": [
     {
       "focus": null,
-      "text": "In this demo we'll use the <a href=\"https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#netnet-standard-library\" target=\"_blank\">netnet-standard-library</a> along with the <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a> library to load and play an audio file. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJxVU9uK2zAQfc9X6KVYBkdeKEuhZAPtdulLoQ/9grEkO9o6IyONN2tK/r0j+bIJGFuaOWfmzMWHxpvpeKjzZ3eIOriBjjshtMdIQtO7eBJoL+Li0PiL+jYa5589kn0nWTKOn7oWOlggK+hkRfQjGtGOqMl5ZDfECfVmEEMP05+MkaX4x/41Vwyac3FGNUf7PratDQwN2uZUK7DDO9xPcLj4O1Qd39Qb9KNl0IP68pgd+cUJFEdAq0l2uDFWU4pobCSHkISWH8Q5bbCRQ8IFHInWkj7JAlI3Ym175gen94MD9Ht98sFEdR4+F7eyIYSNz7EU32Gai5S3ybIM7Y3Nvf4BBJKhlZBNxpbi6bj0bS5pNnPo+XDjiQSBltjX9Lnu7sbVjEQ8EZZ/tkjb0BtKDTZej8m8dPllBsliJuXKGKjSIuR9QGJSkaZbsGtjp8VSMAwWzfPJ9UYyqVxlMICVp61ZpPCTbgN0liG/m1durIIYXYeJyBVNva2W8gcfXZrUV1FAE30/ki2q7OltS2x9fPi0GMgP9/cAGFsfzmzN555LlHsGVCK9y1TDddWZilr2mgUuUnXv9N+lCWDMyxsX88tFbgTPs8jeovrY9nJ3qNe/6z9UBxV9\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code.",
+      "text": "In this demo we'll use the <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">netnet-standard-library</a> along with the <a href=\"https://tonejs.github.io/\" target=\"_blank\">Tone.js</a> library to load and play an audio file. Of course, you can <a href=\"https://netnet.studio/?layout=dock-left#code/eJxVU9uK2zAQfc9X6KVYBkdeKEuhZAPtdulLoQ/9grEkO9o6IyONN2tK/r0j+bIJGFuaOWfmzMWHxpvpeKjzZ3eIOriBjjshtMdIQtO7eBJoL+Li0PiL+jYa5589kn0nWTKOn7oWOlggK+hkRfQjGtGOqMl5ZDfECfVmEEMP05+MkaX4x/41Vwyac3FGNUf7PratDQwN2uZUK7DDO9xPcLj4O1Qd39Qb9KNl0IP68pgd+cUJFEdAq0l2uDFWU4pobCSHkISWH8Q5bbCRQ8IFHInWkj7JAlI3Ym175gen94MD9Ht98sFEdR4+F7eyIYSNz7EU32Gai5S3ybIM7Y3Nvf4BBJKhlZBNxpbi6bj0bS5pNnPo+XDjiQSBltjX9Lnu7sbVjEQ8EZZ/tkjb0BtKDTZej8m8dPllBsliJuXKGKjSIuR9QGJSkaZbsGtjp8VSMAwWzfPJ9UYyqVxlMICVp61ZpPCTbgN0liG/m1durIIYXYeJyBVNva2W8gcfXZrUV1FAE30/ki2q7OltS2x9fPi0GMgP9/cAGFsfzmzN555LlHsGVCK9y1TDddWZilr2mgUuUnXv9N+lCWDMyxsX88tFbgTPs8jeovrY9nJ3qNe/6z9UBxV9\" target=\"_blank\">do all of this</a> with the browser's native APIs, JavaScript libraries are just abstractions that reduce boilerplate and let us express our ideas with less code.",
       "title": "getting started"
     },
     {
@@ -25,80 +25,79 @@
         2,
         3,
         4,
-        5,
-        22
+        21
       ],
-      "text": "As with anytime we're using libraries, we'll first need to import them using <code>script</code> tags, then in another <code>script</code> tag we'll start with a global comment <code>/* global nn, Tone */</code> which just lets me know the names of the global variables being introduced by these libraries (so that I don't bug you about not having defined them yourself)."
+      "text": "As with anytime we're using libraries, we'll first need to import them using <code>script</code> tags, then in another <code>script</code> tag we'll write our code."
     },
     {
       "title": "Gain Node",
       "focus": [
-        6
+        5
       ],
       "text": "Here we'll use the Tone.js library to create a \"gain node\", essentialy a volume control, and set it to 75%. We'll use <code>.toDestination()</code> to connect it to your computer audio's output settings, likely your speaker or headphones."
     },
     {
       "title": "Audio Player",
       "focus": [
-        7
+        6
       ],
       "text": "This loads the audio file, by <a href=\"https://freesound.org/people/orangefreesounds/sounds/329855/\" target=\"_blank\">orangefreesounds</a>, into a Tone.js \"player\" and connect it to the gain node so the volume setting applies."
     },
     {
       "title": "play function",
       "focus": [
+        8,
         9,
         10,
         11,
         12,
-        13,
-        14
+        13
       ],
       "text": "We wrap the play logic in a function so we can call it later from a click. It's <code>async</code> because we'll wait for Tone.js to be ready and for the file to finish loading before triggering the play logic."
     },
     {
       "title": "unlock audio",
       "focus": [
-        10
+        9
       ],
       "text": "Browsers block audio until the user interacts with the page. This \"unlocks\" audio the first time you click."
     },
     {
       "title": "wait for file",
       "focus": [
-        11
+        10
       ],
       "text": "This waits until Tone.js has finished fetching and decoding the audio file so playback starts cleanly."
     },
     {
       "title": "play sound",
       "focus": [
-        12,
-        13
+        11,
+        12
       ],
       "text": "We stop first so the sound always restarts from the beginning each time you click."
     },
     {
       "title": "create button",
       "focus": [
+        15,
         16,
-        17,
-        18
+        17
       ],
       "text": "We create a <code>button</code> element with the nn.min.js library, set its text content to \"play,\" and add it to the <code>body</code> so it shows up on the page."
     },
     {
       "title": "position button",
       "focus": [
-        19,
-        20
+        18,
+        19
       ],
       "text": "By default, positions are measured from the top-left of the button. Switching the origin to the center makes centering math easier. We place the button at half the width and half the height of the window, which puts it in the center of the screen."
     },
     {
       "title": "play on click",
       "focus": [
-        21
+        20
       ],
       "text": "Modern browsers require a user action to start audio, which is why I'm calling <code>playSound()</code> from a click event."
     },

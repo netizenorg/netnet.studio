@@ -10,13 +10,13 @@
     "interactive"
   ],
   "layout": "dock-left",
-  "code": "#code/eJxlUTFu4zAQ7PWKTRpSgS32B5+rA1KmSZEraXItb05aClzKviTI37OUT05xgAAtljPD4cxOQqapgOTw8/5UyiQ/nAuRu1eJONA5d4zF9SenP3pHTrmvo35bKZ6jz3E70CH7/OYOMw3RMXcjVf79fueu6vtmtw4A7gH6IR38AMzw4HRznDkUSgwx+8sjHQVsCx96oGAHdIQxzYJAApwK2LsWpowiGCGmCwP+pXLTWFhKsXfVR+X9UkwLGcucedVM5YT5QoIbCBl9QfDAeIGejgtEude9NTT2pl2WAJ1gsUajMhswa1jXNDopc6Sk0XUq8s2YklD19ZSpJ7YmIBfM/5/b1e7LBtbx9w0VRKyZElXuFs+qIdUCJ8ZvKR/jc7LmkOLbsvxsmuWxYaDwB7Srmm//L0wfchIBzQG0GkS+YktaSljDAH094IBjvbFZclGrZpEY0xnVxNpZ29za/gL9TL73",
+  "code": "#code/eJxlUT2P2zAM3f0reLdIBhKptxa5Q4cCHbt0aEdHoh22NmWQdNxr0f9eyKlzQzeCel96PGkSmg1U0vPjxWzW9zGmzOG7ZhzpKoHR4nCJjEa/kIsMdWS0o1rHuZN8HOksnbx+eArvwlM8LzTmyBwmqiqPL6d483hpTvsA0C+cjApDlm79RL2Cb+F3AwAQI1APU1kUgRS4GPiHFmZBVcyQy8qAP8nuGhuLevAP1bXyPpaVWxC0RXjXLHZBWUnxAEmwM4QOGFcYqN8gzOG2946mwbXbEiAomncqyR3A7QXdGghqS6YSUw4D9W+MuSjVXJ+FBmLvErKh/P/u97hfD7CP3+6opOrdXKhyj3hFNq0RuDC+SXU5fynenUt+3ZZ/mmb7bBop/YCOc+13+Fdml6Sogl0QNAki37BWtiPsZQBNA+CIU3Vstl4Ke7dJTOWK7nC/Wdvcb/sXc/O7fA==",
   "info": [
     {
       "focus": [
         1
       ],
-      "text": "In this demo I’ve imported the <a href=\"https://github.com/netizenorg/netnet-standard-library\" target=\"_blank\">netnet standard library</a>, created by <a href=\"https://nickbriz.com/\" target=\"_blank\">Nick Briz</a> both for the purposes of creating this website (netnet.studio) but also to help teach basic web programming concepts to creatives.",
+      "text": "In this demo I’ve imported the <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">netnet standard library</a>, created by <a href=\"https://nickbriz.com/\" target=\"_blank\">Nick Briz</a> both for the purposes of creating this website (netnet.studio) but also to help teach basic web programming concepts to creatives.",
       "title": "getting started"
     },
     {
@@ -27,63 +27,64 @@
     {
       "title": "mousemove",
       "focus": [
-        4,
-        14,
-        18
+        3,
+        13,
+        17
       ],
       "text": "First we've created a function called <code>drawGifs</code> which we've attached to the window's <i>mousemove</i> event using the <code>.on()</code> method. This will call the function every time the mouse moves."
     },
     {
       "title": "mouse down",
       "focus": [
-        4,
-        6,
-        14
+        3,
+        5,
+        13
       ],
       "text": "Inside the function, the first line checks to see if the mouse is pressed down with <code>nn.mouseDown</code>. If the mouse is not currently pressed (the <code>!</code> means <i>not</i>), we <code>return</code> which means we exit out of the function and do nothing. If it is pressed, then we continue."
     },
     {
       "title": "create img",
       "focus": [
+        3,
         4,
         5,
         6,
         7,
-        8,
-        14
+        13
       ],
       "text": "When the mouse is down, we create a new image element with <code>nn.create('img')</code> and then configure it through a chain of calls."
     },
     {
       "title": "set src",
       "focus": [
+        3,
         4,
         5,
         6,
         7,
         8,
-        9,
-        14
+        13
       ],
       "text": " The first chained method call is <code>.set()</code> which we can use to change any of the elements HTML attributes. Here we're setting its <code>src</code> attribute to the URL of the animated gif we want to create."
     },
     {
       "title": "origin center",
       "focus": [
+        3,
         4,
         5,
         6,
         7,
         8,
         9,
-        10,
-        14
+        13
       ],
       "text": "The next chained method call is <code>.positionOrigin('center')</code> which sets the transform origin so positions are calculated from the image center rather than its top-left corner (which is the default way CSS positions elements)."
     },
     {
       "title": "position",
       "focus": [
+        3,
         4,
         5,
         6,
@@ -91,14 +92,14 @@
         8,
         9,
         10,
-        11,
-        14
+        13
       ],
       "text": "Next we call <code>.position()</code> passing <code>nn.mouseX</code> and <code>nn.mouseY</code> as it's position, which will place the image exactly under the cursor (relative to the center of the image)."
     },
     {
       "title": "no pointer",
       "focus": [
+        3,
         4,
         5,
         6,
@@ -107,14 +108,14 @@
         9,
         10,
         11,
-        12,
-        14
+        13
       ],
       "text": "Then <code>.css('pointer-events', 'none')</code> ensures the new image won’t block future mouse events as you draw. Remember, we're creating new img elements here, so clicking over an existing one will behave as images do by default, they might get selected (highlited) and be draggable, this removes all that. "
     },
     {
       "title": "css method",
       "focus": [
+        3,
         4,
         5,
         6,
@@ -123,14 +124,14 @@
         9,
         10,
         11,
-        12,
-        14
+        13
       ],
       "text": "We could modify any other CSS properties by either chaining more <code>.css()</code> calls or passing it an object with css properties and values."
     },
     {
       "title": "addTo body",
       "focus": [
+        3,
         4,
         5,
         6,
@@ -140,14 +141,14 @@
         10,
         11,
         12,
-        13,
-        14
+        13
       ],
       "text": "Lastly, we call <code>.addTo('body')</code> which inserts the element into the page."
     },
     {
       "title": "recap",
       "focus": [
+        3,
         4,
         5,
         6,
@@ -161,15 +162,14 @@
         14,
         15,
         16,
-        17,
-        18
+        17
       ],
       "text": "Together this acts like a simple GIF drawing tool, everytime the mouse moves we call our function, but only when the user is holding the mouse down do we create a new GIF and leave a trail.\n"
     },
     {
       "title": "lots more",
       "focus": null,
-      "text": "There's loads more you can do with this library, you can find a list of all it's methods on <a href=\"https://github.com/netizenorg/netnet-standard-library?tab=readme-ov-file#api--documentation\" target=\"_blank\">the GitHub repo</a> as well as plenty of other examples throughout this studio."
+      "text": "There's loads more you can do with this library, you can find a list of all it's methods on <a href=\"https://netizenorg.github.io/netnet-standard-library/docs/\" target=\"_blank\">the documentation page</a> as well as plenty of other examples throughout this studio."
     }
   ]
 }
