@@ -388,6 +388,7 @@ class HyperVideoPlayer extends Widget {
 
     this.video.oncanplay = () => {
       this.convos = window.CONVOS[this.key](this)
+      if (window.plausible) window.plausible('tutorial_start')
       window.convo = new Convo(this.convos, 'introducing-tutorial')
       this.renderKeyframe()
       this.open()
@@ -656,6 +657,7 @@ class HyperVideoPlayer extends Widget {
     })
 
     this.video.addEventListener('ended', () => {
+      if (window.plausible) window.plausible('tutorial_end')
       this._resetKeyframes(true)
       this.pause()
     })

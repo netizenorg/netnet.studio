@@ -90,6 +90,7 @@ class DemoToc extends Widget {
 
     this.demoType = type
     this.demoName = obj.name || 'untitled demo'
+    if (window.plausible) window.plausible('demo_load')
     this.demoKey = obj.key
     this.code = NNE._decode(obj.code.substr(6))
     this.codeLength = this.code.split('\n').length

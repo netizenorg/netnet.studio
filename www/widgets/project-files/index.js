@@ -699,6 +699,7 @@ class ProjectFiles extends Widget {
         window.convo = new Convo(this.convos, 'oh-no-error')
       } else {
         this.projectData.ghpages = res.data.html_url
+        if (window.plausible) window.plausible('published_project')
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'published-to-ghpages')
       }
@@ -1677,6 +1678,7 @@ class ProjectFiles extends Widget {
         window.convo = new Convo(this.convos, 'oh-no-error')
         setTimeout(() => nn.get('load-curtain').hide(), 500)
       } else { // otherwise let the user know it's all good!
+        if (window.plausible) window.plausible('new_project')
         if (NNW.layout === 'welcome') NNW.layout = 'dock-left'
         this.convos = window.CONVOS[this.key](this)
         window.convo = new Convo(this.convos, 'new-project-created')

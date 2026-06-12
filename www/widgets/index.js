@@ -257,6 +257,7 @@ class Widget {
       return
     }
     this._display('visible', () => {
+      if (window.plausible) window.plausible('widget_' + this.key)
       this.keepInFrame()
       this.events.open.forEach(cb => cb())
       if (func) return func(this)

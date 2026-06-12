@@ -600,6 +600,7 @@ window.utils = {
   },
 
   loadGHRedirect: () => {
+    if (window.plausible) window.plausible('github_auth')
     // code set by WIDGETS['student-session'].authGitHubSession()
     let code = window.localStorage.getItem('gh-auth-temp-code')
     // code might be an encoded hash, or a template or a gh root URL
