@@ -169,7 +169,7 @@ window.utils = {
       auto;
   }
 </style>
-<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js"></script>
 <script>
   /* global nn */
 
