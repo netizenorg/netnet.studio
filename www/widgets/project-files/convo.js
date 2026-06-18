@@ -296,7 +296,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'how-host',
-    content: 'While working on a project, you can eitehr select <i>web publish</i> from the git menu or open the <b>Coding Menu</b>, click on <i>my code</i> and select the <i>share</i> option. You\'ll be given the option to enable the ghpages web server. You only need to do this one time, once enabled all you need to do is "push" your updates to GitHub, and your public website will be updated within minutes.',
+    content: 'While working on a project, select the <i>web publish</i> option from the <i>git menu</i>. You\'ll be given the option to enable the ghpages web server. You only need to do this one time, once enabled all you need to do is "push" your updates to GitHub, and your public website will be updated within minutes.',
     options: {
       'got it': (e) => e.hide()
     }
@@ -396,26 +396,6 @@ window.CONVOS['project-files'] = (self) => {
     content: `Your project "<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}" target="_blank">${self.projectData.name}</a>" has been saved to <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}" target="_blank">your GitHub account</a>. You can now upload and create additional files as a part of this project.`,
     options: {
       'cool!': (e) => e.hide()
-    }
-  }, {
-    id: 'published-to-ghpages',
-    content: `Your project is live at <a href="${self.projectData.ghpages}" target="_blank">${self.projectData.ghpages}</a>. From now on everytime you "push" updates to your GitHub repo it will automatically update your published site as well. It usually takes a few minutes before the updates show up on the live site, you can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${self.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
-    options: {
-      'great!': (e) => e.hide(),
-      'can I create a custom URL?': (e) => e.goTo('custom-url')
-    }
-  }, {
-    id: 'custom-url',
-    content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
-    options: { 'ok, thanks!': (e) => e.hide() }
-  },
-  // -------------------------- publishing project --------------------------------
-  {
-    id: 'cant-publish-project',
-    content: 'You don\'t have a GitHub project open for me to publish. Do you want me to save a new project for you?',
-    options: {
-      'yes please': (e) => self.newProject(),
-      'no, never mind': (e) => e.hide()
     }
   },
   // -------------------------- opening project --------------------------------

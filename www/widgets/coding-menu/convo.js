@@ -333,16 +333,12 @@ window.CONVOS['coding-menu'] = (self) => {
     id: 'publish-to-web?',
     content: 'You could always <span class="link" onclick="WIDGETS[\'project-files\'].downloadProject()">download your project</span> and upload it to your preferred Web host. But, because you have your project saved on your GitHub I can also generate a public URL for you by enabling <a href="https://pages.github.com/" target="_blank">ghpages</a> on your repo. Would you like me to do that?',
     options: {
-      'yes, publish it!': (e) => WIDGETS['project-files'].publishProject(),
+      'yes, publish it!': (e) => { e.hide(); WIDGETS.open('web-publish', (w) => w.publish()) },
       'download it instead': (e) => {
         WIDGETS['project-files'].downloadProject()
       },
       'oh, no thanks': (e) => e.hide()
     }
-  }, {
-    id: 'custom-url',
-    content: 'Yes! As matter of fact you can, you\'ll first need to pay for and register a custom domain from a site like <a href="https://www.namecheap.com/" target="_blank">namecheap</a>, then you\'ll need to follow GitHub\'s instructions for <a href="https://docs.github.com/en/github/working-with-github-pages/configuring-a-custom-domain-for-your-github-pages-site" target="_blank">configuring your custom domain</a>.',
-    options: { 'ok, thanks!': (e) => e.hide() }
   }, {
     id: 'ok-processing',
     content: 'Ok ...processing...',

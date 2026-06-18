@@ -284,7 +284,7 @@ class ProjectFiles extends Widget {
         this._closeGitMenu()
         if (action === 'push') this._launchGit()
         else if (action === 'pull') this._launchGitPull()
-        else if (action === 'publish') this.publishProject()
+        else if (action === 'publish') WIDGETS.open('web-publish')
       })
     })
 
@@ -753,34 +753,6 @@ class ProjectFiles extends Widget {
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
     // close widget
     this.close()
-  }
-
-  publishProject () {
-    const ur = WIDGETS['student-session'].getData('owner')
-    const op = this.projectData.name
-    if (!op) {
-      window.convo = new Convo(this.convos, 'cant-publish-project')
-      return
-    }
-
-    nn.get('load-curtain').show('github.html', { filename: `${ur}/${op}` })
-    const data = {
-      owner: WIDGETS['student-session'].getData('owner'),
-      repo: this.projectData.name,
-      branch: this.projectData.branch
-    }
-    utils.post('./api/github/gh-pages', data, (res) => {
-      if (!res.success) {
-        nn.get('load-curtain').hide()
-        window.convo = new Convo(this.convos, 'oh-no-error')
-      } else {
-        this.projectData.ghpages = res.data.html_url
-        if (window.plausible) window.plausible('published_project')
-        this.convos = window.CONVOS[this.key](this)
-        window.convo = new Convo(this.convos, 'published-to-ghpages')
-      }
-      nn.get('load-curtain').hide()
-    })
   }
 
   // Fetch the latest files from GitHub and sync any that have *actually*

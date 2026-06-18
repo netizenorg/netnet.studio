@@ -1,0 +1,84 @@
+.web-publish__published {
+  display: none;
+}
+
+.web-publish__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.web-publish__url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.web-publish__status {
+  flex-shrink: 0;
+
+  padding: 2px 10px;
+  border-radius: 20px;
+
+  font-family: 'fira-mono-regular', monospace;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.web-publish__row .web-publish__status[data-status="building"] {
+  color: var(--bg-color);
+  background-color: var(--netizen-number);
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.web-publish__row .web-publish__status[data-status="built"] {
+  color: var(--bg-color);
+  background-color: var(--netizen-attribute);
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.web-publish__row .web-publish__status[data-status="errored"] {
+  color: var(--netizen-text);
+  background-color: red;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.web-publish__section {
+  position: relative;
+
+  margin: 10px 0;
+}
+
+.web-publish__section label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.web-publish__domain-section {
+  border-top: 2px dashed var(--netizen-comment);
+  padding-top: 10px;
+  margin-top: 20px;
+}
+
+
+.web-publish__domain-section input {
+  flex: 1;
+  min-width: 0;
+
+  padding: 6px;
+  border: none;
+  border-radius: 5px;
+
+  color: var(--netizen-hint-color);
+  background-color: var(--netizen-meta);
+
+  font-family: monospace;
+}

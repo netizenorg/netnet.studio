@@ -603,6 +603,40 @@ router.post('/api/github/gh-pages', (req, res) => {
   })
 })
 
+// READ-ONLY status check — used by the web-publish widget to poll build
+// status without ever creating/enabling a pages site as a side effect.
+router.get('/api/github/pages-status', (req, res) => {
+  decryptToken(req, res, (gh) => {
+    gh.request('GET /repos/{owner}/{repo}/pages', {
+      owner: req.query.owner,
+      repo: req.query.repo
+    }).then(gitRes => {
+      res.json({ success: true, enabled: true, data: gitRes.data })
+    }).catch(err => {
+      if (err.status === 404) return res.json({ success: true, enabled: false })
+      res.json({ success: false, message: 'error fetching pages status', error: err })
+    })
+  })
+})
+
+// https://docs.github.com/en/rest/reference/repos#update-information-about-a-github-pages-site
+// `cname` set to '' (or omitted) removes any existing custom domain.
+router.post('/api/github/pages-domain', (req, res) => {
+  const { owner, repo, cname } = req.body
+  decryptToken(req, res, (gh) => {
+    gh.request('PUT /repos/{owner}/{repo}/pages', {
+      owner,
+      repo,
+      cname: cname || null,
+      mediaType: { previews: ['switcheroo'] }
+    }).then(() => {
+      res.json({ success: true, message: 'domain updated' })
+    }).catch(err => {
+      res.json({ success: false, message: 'error updating custom domain', error: err })
+    })
+  })
+})
+
 // CREATE NEW REPO FROM TEMPLATE DATA
 router.post('/api/github/new-repo-from-template', (req, res) => {
   const { name, user, files, message } = req.body

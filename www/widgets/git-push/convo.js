@@ -168,7 +168,7 @@ window.CONVOS['git-push'] = (self) => {
     }
   }, {
     id: 'explain-publish',
-    content: `Of course! To publish your project on the World Wide Web, select <i>web publish</i> from the <i>git menu</i> or click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project (<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files'].projectData.name}/settings/pages" target="_blank">click here to check</a>) you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
+    content: `Of course! To publish your project on the World Wide Web, select <i>web publish</i> from the <i>git menu</i>. If you previously published your project (<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files'].projectData.name}/settings/pages" target="_blank">click here to check</a>) you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
     options: {
       'got it!': (e) => e.hide()
     }
