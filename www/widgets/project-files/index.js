@@ -42,9 +42,15 @@ class ProjectFiles extends Widget {
       stack: {}, redoStack: {}, max: 100, skipPush: false, debounce: 400, timer: null
     }
     this.lastCommitFiles = {} // for tracking changes
+    this.remoteShas = {} // { path: sha } — GitHub's blob sha as of last open/pull/push,
+    // used by pullProject() to tell whether a file has *actually* changed on
+    // GitHub since we last synced, independent of our own local edits
     this._uploadedFile = {}
     this._agreed2beta = false
     this.changes = [] // "change" objects ("create", "updated", "delete") since last git commit
+    this._pendingPull = null // { remoteParsed, remoteChangedPaths } awaiting conflict resolution
+    this._pullConflicts = null // paths shown to the user as in-conflict (read by git-push convo)
+    this._resumePullAfterPush = false // set when "push first" is chosen out of a pull conflict
 
     this.codeEdit = null // runs on code update when proj is open
 
@@ -95,6 +101,7 @@ class ProjectFiles extends Widget {
     }
 
     this._createContextMenu()
+    this._createGitMenu()
     this._createHTML()
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
@@ -154,7 +161,9 @@ class ProjectFiles extends Widget {
         <!-- if project is open -->
         <div class="proj-files__header">
           <!-- tabs to switch between, tree-view, finder-view && terminal-view -->
-          <div class="git-btn">git push</div>
+          <button class="git-menu-btn" type="button" aria-label="version control menu" aria-haspopup="true" aria-expanded="false">
+            <span class="git-menu-icon" title="git"></span>
+          </button>
         </div>
         <ul class="proj-files__list proj-files__tree-view">
           <!-- this._updateFilesGUI() populates this div -->
@@ -166,7 +175,23 @@ class ProjectFiles extends Widget {
 
     this.ele.querySelector('.widget__inner-html').style.height = 'calc(100% - 25px)'
 
-    this.ele.querySelector('.git-btn').addEventListener('click', () => this._launchGit())
+    const gitBtn = this.ele.querySelector('.git-menu-btn')
+    if (gitBtn) {
+      gitBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        if (this.gitMenu.dataset.open === 'true') this._closeGitMenu()
+        else this._openGitMenu(gitBtn)
+      })
+    }
+
+    // inline the icon (instead of <img src>) so CSS can target its path
+    // fill directly — keeps it in sync with --fg-color across theme changes
+    const gitIcon = this.ele.querySelector('.git-menu-icon')
+    if (gitIcon) {
+      utils.get('/assets/images/icons/git.svg', (svg) => {
+        if (typeof svg === 'string') gitIcon.innerHTML = svg
+      }, true)
+    }
   }
 
   _showHideDivs () {
@@ -209,8 +234,6 @@ class ProjectFiles extends Widget {
     this.changes = this.computeChanges()
     if (WIDGETS['git-push']) WIDGETS['git-push']._createHTML()
 
-    if (this.changes.length > 0) this.$('.git-btn').classList.add('changes')
-    else this.$('.git-btn').classList.remove('changes')
     const changeMap = new Map(this.changes.map(c => [c.path, c]))
     const clr = { create: '--netizen-attribute', update: '--netizen-number' }
     Array.from(this.$('.proj-files__list.proj-files__tree-view li'))
@@ -222,7 +245,7 @@ class ProjectFiles extends Widget {
       })
   }
 
-  _launchGit () {
+  _launchGit () { // to push
     const preConvo = (w) => {
       if (!w.convos) return setTimeout(preConvo, 100, w)
       window.convo = new Convo(w.convos, 'pre-start')
@@ -230,6 +253,63 @@ class ProjectFiles extends Widget {
     // instead of oppening widget, show it's pre-start convo
     if (this.changes.length > 0) WIDGETS.load('git-push', (w) => preConvo(w))
     else { window.convo = new Convo(this.convos, 'git-push-not-ready') }
+  }
+
+  _launchGitPull () { // to pull
+    const preConvo = (w) => {
+      if (!w.convos) return setTimeout(preConvo, 100, w)
+      window.convo = new Convo(w.convos, 'pull-explain')
+    }
+    WIDGETS.load('git-push', (w) => preConvo(w))
+  }
+
+  // .................................................... GIT MENU (hamburger) .
+
+  _createGitMenu () {
+    if (this.gitMenu) return
+    this.gitMenu = document.createElement('nav')
+    this.gitMenu.className = 'proj-files__git-menu'
+    this.gitMenu.style.display = 'none'
+    this.gitMenu.innerHTML = `
+      <div class="proj-files__git-menu-item" data-action="push">git push</div>
+      <div class="proj-files__git-menu-item" data-action="pull">git pull</div>
+      <div class="proj-files__git-menu-item" data-action="publish">web publish</div>
+    `
+    document.body.appendChild(this.gitMenu)
+
+    this.gitMenu.querySelectorAll('.proj-files__git-menu-item').forEach(div => {
+      div.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const action = div.dataset.action
+        this._closeGitMenu()
+        if (action === 'push') this._launchGit()
+        else if (action === 'pull') this._launchGitPull()
+        else if (action === 'publish') this.publishProject()
+      })
+    })
+
+    window.addEventListener('click', (e) => {
+      if (this.gitMenu.dataset.open !== 'true') return
+      if (this.gitMenu.contains(e.target)) return
+      if (e.target.closest('.git-menu-btn')) return
+      this._closeGitMenu()
+    })
+  }
+
+  _openGitMenu (btn) {
+    const rect = btn.getBoundingClientRect()
+    this.gitMenu.style.left = `${rect.left}px`
+    this.gitMenu.style.top = `${rect.bottom + 4}px`
+    this.gitMenu.style.display = 'block'
+    this.gitMenu.dataset.open = 'true'
+    btn.setAttribute('aria-expanded', 'true')
+  }
+
+  _closeGitMenu () {
+    this.gitMenu.style.display = 'none'
+    this.gitMenu.dataset.open = 'false'
+    const btn = this.ele.querySelector('.git-menu-btn')
+    if (btn) btn.setAttribute('aria-expanded', 'false')
   }
 
   _setupTreeView () {
@@ -521,33 +601,24 @@ class ProjectFiles extends Widget {
         // setup netitor's custom renderer to work with service worker
         this._setCustomRenderer()
 
-        // load all the data — suppress baselines writes during the loop
+        // load all the data, suppress baselines writes during the loop
         // since lastCommitFiles is empty until after the loop completes
         this._suppressBaselinesWrite = true
 
+        this.remoteShas = {}
         Object.entries(res.data).forEach((arr) => {
           const name = arr[0]
           const data = arr[1]
-          const mt = this._getMimeType(name)
-          const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
-          const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
           this.files[name] = { path: data.path }
-          let code // store plain-text/code
-          if (name.split('/').includes('.gitkeep') || isTxt) {
-            code = (data.content === '') ? data.download_url : utils.atob(data.content)
-            // exception for empty index.html files
-            if (name === 'index.html' && data.content === '') code = ''
-          } else { // otherwise assume binary file && store blob-url (or github URL)
-            // b/c github sends back empty strings for large binary files's content
-            code = (data.content === '')
-              ? data.download_url : this._base64ToBlob(data.content, mt)
-          }
+          const { code, sha } = this._parseRemoteFile(name, data)
+          this.remoteShas[name] = sha
           this._updateFile(name, code)
         })
 
         this._suppressBaselinesWrite = false
         this.lastCommitFiles = this._snapshotFiles(this.files)
         await this._saveBaselinesToIndexedDB()
+        await this._saveRemoteShasToIndexedDB()
 
         this._updateFilesGUI()
 
@@ -582,6 +653,7 @@ class ProjectFiles extends Widget {
     const filesDict = await this._loadFilesFromIndexedDB()
     const baselines = await this._loadBaselinesFromIndexedDB()
     const meta = await this._loadProjectMetaFromIndexedDB()
+    this.remoteShas = await this._loadRemoteShasFromIndexedDB()
 
     if (!meta || !filesDict || Object.keys(filesDict).length === 0) {
       // local data is incomplete somehow — fall back to GitHub
@@ -649,8 +721,12 @@ class ProjectFiles extends Widget {
     this.viewing = null
     this.rendering = null
     this.lastCommitFiles = {}
+    this.remoteShas = {}
     this.changes = []
     this.projectData = {}
+    this._pendingPull = null
+    this._pullConflicts = null
+    this._resumePullAfterPush = false
 
     if (dbName && !hasUnpushed) {
       // fire-and-forget; callers don't need to wait for the delete
@@ -705,6 +781,174 @@ class ProjectFiles extends Widget {
       }
       nn.get('load-curtain').hide()
     })
+  }
+
+  // Fetch the latest files from GitHub and sync any that have *actually*
+  // changed (compared against remoteShas, our last-known GitHub state) into
+  // the local working copy. Files only changed locally are left untouched;
+  // files changed both locally and remotely are real conflicts, handled via
+  // the git-push widget's 'pull-warn-unpushed' convo (see resolvePullKeepRemote
+  // / resolvePullKeepLocal below).
+  async pullProject () {
+    if (!this.projectData.name) return
+
+    nn.get('load-curtain').show('folder.html', { filename: this.projectData.name })
+
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = this.projectData.name
+
+    utils.post('./api/github/open-all-files', { repo, owner }, async (res) => {
+      if (!res || !res.success || !res.data) {
+        nn.get('load-curtain').hide()
+        return this._ohNoErr(res)
+      }
+
+      const remoteParsed = {}
+      Object.entries(res.data).forEach(([name, data]) => {
+        remoteParsed[name] = this._parseRemoteFile(name, data)
+      })
+
+      // which paths actually changed on GitHub since our last known sha?
+      const remoteChangedPaths = new Set()
+      Object.keys(remoteParsed).forEach(path => {
+        if (this.remoteShas[path] !== remoteParsed[path].sha) remoteChangedPaths.add(path)
+      })
+      Object.keys(this.remoteShas).forEach(path => {
+        if (!remoteParsed[path]) remoteChangedPaths.add(path) // deleted on GitHub
+      })
+
+      if (remoteChangedPaths.size === 0) {
+        nn.get('load-curtain').hide()
+        const gp = WIDGETS['git-push']
+        gp.convos = window.CONVOS['git-push'](gp)
+        window.convo = new Convo(gp.convos, 'pull-up-to-date')
+        return
+      }
+
+      // real conflicts = files changed locally AND changed remotely
+      const conflicts = this.computeChanges()
+        .map(c => c.path)
+        .filter(path => remoteChangedPaths.has(path))
+
+      if (conflicts.length > 0) {
+        this._pendingPull = { remoteParsed, remoteChangedPaths }
+        this._pullConflicts = conflicts
+        this._markConflicts(conflicts)
+        nn.get('load-curtain').hide()
+        const gp = WIDGETS['git-push']
+        gp.convos = window.CONVOS['git-push'](gp)
+        window.convo = new Convo(gp.convos, 'pull-warn-unpushed')
+        return
+      }
+
+      await this._applyPull(remoteParsed, remoteChangedPaths)
+      nn.get('load-curtain').hide()
+      const gp = WIDGETS['git-push']
+      gp.convos = window.CONVOS['git-push'](gp)
+      window.convo = new Convo(gp.convos, 'pull-complete')
+    })
+  }
+
+  // "pull anyway" — apply the pending pull, letting GitHub win for the
+  // conflicting files (local-only changes elsewhere are unaffected)
+  async resolvePullKeepRemote () {
+    if (!this._pendingPull) return
+    nn.get('load-curtain').show('folder.html', { filename: this.projectData.name })
+    await this._applyPull(this._pendingPull.remoteParsed, this._pendingPull.remoteChangedPaths)
+    this._pendingPull = null
+    this._pullConflicts = null
+    nn.get('load-curtain').hide()
+    const gp = WIDGETS['git-push']
+    gp.convos = window.CONVOS['git-push'](gp)
+    window.convo = new Convo(gp.convos, 'pull-complete')
+  }
+
+  // "push first" — abort the pull entirely, revert the red conflict marks
+  resolvePullKeepLocal () {
+    this._pendingPull = null
+    this._pullConflicts = null
+    this._colorizeChanges()
+  }
+
+  async _applyPull (remoteParsed, changedPaths) {
+    changedPaths.forEach(path => {
+      if (!remoteParsed[path]) { // deleted on GitHub
+        delete this.files[path]
+        delete this.lastCommitFiles[path]
+        delete this.remoteShas[path]
+        this._dropPathRefs(path)
+      } else {
+        const { code, sha } = remoteParsed[path]
+        this.files[path] = { path, code }
+        this.lastCommitFiles[path] = { path, code }
+        this.remoteShas[path] = sha
+      }
+    })
+
+    this._removeRedundantGitkeeps()
+    await this._saveFilesToIndexedDB()
+    await this._saveBaselinesToIndexedDB()
+    await this._saveRemoteShasToIndexedDB()
+
+    this._updateFilesGUI()
+
+    // reopen whatever file was being viewed (if it survived the pull),
+    // otherwise fall back to a sensible start file
+    if (this.viewing && this.files[this.viewing]) {
+      this.openFile(this.viewing, true) // skipSave — we already have the fresh content
+    } else {
+      const start = this._pickStartFile(Object.keys(this.files))
+      if (start) this.openFile(start, true)
+    }
+
+    // force the live preview to reflect the pull even if the rendered page
+    // (this.rendering) isn't the file currently open in the editor — the
+    // URL doesn't change so customRender would otherwise skip the reload
+    this._forceRender = true
+    NNE.update()
+  }
+
+  // Decode a single GitHub Contents-API file response into { code, sha }.
+  // Shared by the initial project load and pullProject() so both stay in sync.
+  _parseRemoteFile (name, data) {
+    const mt = this._getMimeType(name)
+    const textMimes = ['application/json', 'image/svg+xml', 'model/gltf+json']
+    const isTxt = mt.split('/')[0] === 'text' || textMimes.includes(mt)
+    let code
+    if (name.split('/').includes('.gitkeep') || isTxt) {
+      code = (data.content === '') ? data.download_url : utils.atob(data.content)
+      // exception for empty index.html files
+      if (name === 'index.html' && data.content === '') code = ''
+    } else { // otherwise assume binary file && store blob-url (or github URL)
+      code = (data.content === '')
+        ? data.download_url : this._base64ToBlob(data.content, mt)
+    }
+    return { code, sha: data.sha }
+  }
+
+  // Highlight files with a real push/pull conflict in red (overriding the
+  // usual yellow "changed" color) and open any parent folders so a nested
+  // conflicting file is actually visible in the tree.
+  _markConflicts (paths) {
+    paths.forEach(path => {
+      this._revealPath(path)
+      const li = this.$(`li[data-path="${path}"]`)
+      if (li) li.style.color = 'red'
+    })
+  }
+
+  _revealPath (path) {
+    const parts = path.split('/')
+    let acc = ''
+    for (let i = 0; i < parts.length - 1; i++) {
+      acc = acc ? `${acc}/${parts[i]}` : parts[i]
+      const folderLi = this.$(`li.folder[data-path="${acc}"]`)
+      const ul = folderLi?.querySelector('ul')
+      if (ul && !ul.classList.contains('active')) {
+        ul.classList.add('active')
+        ul.style.height = 'auto'
+      }
+    }
   }
 
   // Create and download a ZIP of the current project files
@@ -1290,22 +1534,29 @@ class ProjectFiles extends Widget {
   // baselines are advanced — unstaged files keep their pre-push baseline
   // so their unpushed local changes stay visible. Without an arg, all
   // baselines are reset (used by auto-commit which pushes everything).
-  async resetChanges (pushedItems) {
+  // `shaMap` ({path: sha}) comes from the push response — keeping remoteShas
+  // accurate post-push is what lets a later pull tell a real remote change
+  // apart from "stale because of my own push".
+  async resetChanges (pushedItems, shaMap = {}) {
     if (Array.isArray(pushedItems)) {
       for (const item of pushedItems) {
         if (item.action === 'delete') {
           delete this.lastCommitFiles[item.path]
+          delete this.remoteShas[item.path]
         } else {
           const curr = this.files[item.path]
           if (curr) {
             this.lastCommitFiles[item.path] = { path: item.path, code: curr.code }
+            if (shaMap[item.path]) this.remoteShas[item.path] = shaMap[item.path]
           }
         }
       }
     } else {
       this.lastCommitFiles = this._snapshotFiles(this.files)
+      Object.keys(shaMap).forEach(path => { this.remoteShas[path] = shaMap[path] })
     }
     await this._saveBaselinesToIndexedDB()
+    await this._saveRemoteShasToIndexedDB()
     this.changes = this.computeChanges()
     return this.changes
   }
@@ -1719,6 +1970,10 @@ class ProjectFiles extends Widget {
 
         // load all the data — suppress baselines writes during the loop
         this._suppressBaselinesWrite = true
+        // NOTE: /api/github/new-repo doesn't return per-file shas (unlike
+        // open-all-files/push), so remoteShas starts empty here. It gets
+        // populated correctly on the project's first push or pull.
+        this.remoteShas = {}
         res.data.forEach((arr) => {
           const name = arr[0]
           this.files[name] = { path: name }
@@ -2280,6 +2535,31 @@ class ProjectFiles extends Widget {
       const store = tx.objectStore(this.storeName)
       const req = store.get('baselines')
       req.onerror = () => resolve(null)
+      req.onsuccess = () => resolve(req.result || {})
+    })
+  }
+
+  // { path: sha } — GitHub's blob sha per file as of last open/pull/push.
+  // Kept separate from the (sparse) baselines map since this needs an
+  // entry for every file, including ones that haven't locally changed.
+  _saveRemoteShasToIndexedDB () {
+    if (!this.db) return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      store.put(this.remoteShas, 'remoteShas')
+      tx.oncomplete = () => resolve()
+      tx.onerror = (event) => reject(event.target.error)
+    })
+  }
+
+  _loadRemoteShasFromIndexedDB () {
+    if (!this.db) return Promise.resolve({})
+    return new Promise(resolve => {
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get('remoteShas')
+      req.onerror = () => resolve({})
       req.onsuccess = () => resolve(req.result || {})
     })
   }

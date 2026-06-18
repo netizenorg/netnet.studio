@@ -158,7 +158,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'save-reminder-b4-sketch',
-    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new sketch now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new sketch now, those changes will be lost. Click the <i>git</i> icon at the top-right of the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget and select <i>git push</i> to backup your work.`,
     options: {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {
@@ -168,7 +168,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'save-reminder-b4-proj',
-    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new project now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you start a new project now, those changes will be lost. Click the <i>git</i> icon at the top-right of the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget and select <i>git push</i> to backup your work.`,
     options: {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {
@@ -289,7 +289,7 @@ window.CONVOS['coding-menu'] = (self) => {
   },
   {
     id: 'save-reminder-b4-open',
-    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you open a new project now, those changes will be lost. Click the <code>git push</code> button in the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget to backup your work.`,
+    content: `It looks like ${WIDGETS['project-files']?.changes.length} of your files ${WIDGETS['project-files']?.changes.length > 1 ? 'have' : 'has'} been created or updated since you last "pushed" your files to GitHub. If you open a new project now, those changes will be lost. Click the <i>git</i> icon at the top-right of the <span class="link" onclick="WIDGETS.open('project-files')">Project Files</span> widget and select <i>git push</i> to backup your work.`,
     options: {
       'ok, I will': (e) => e.hide(),
       'that\'s ok, I don\'t need to save it.': (e) => {

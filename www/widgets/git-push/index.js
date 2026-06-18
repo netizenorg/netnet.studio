@@ -108,6 +108,17 @@ class GitPush extends Widget {
     })
   }
 
+  // runs after every successful push. If the student got here by choosing
+  // "push first" out of a pull conflict, offer to pick the pull back up
+  // now that their local changes are safely on GitHub.
+  _finishPush () {
+    this._nextCmd('finished')
+    if (WIDGETS['project-files']._resumePullAfterPush) {
+      WIDGETS['project-files']._resumePullAfterPush = false
+      window.convo = new Convo(this.convos, 'pushed-now-pull')
+    }
+  }
+
   _updateCommitMessage (e) {
     const v = nn.get('text-bubble input').value
     if (v.length < 1) e.goTo('message-too-short')
@@ -161,9 +172,9 @@ class GitPush extends Widget {
       this.convos = window.CONVOS[this.key](this)
       try {
         if (json.success) {
-          const changes = await WIDGETS['project-files'].resetChanges()
+          const changes = await WIDGETS['project-files'].resetChanges(undefined, json.shas)
           WIDGETS['project-files']._updateFilesGUI(changes)
-          this._nextCmd('finished')
+          this._finishPush()
         } else {
           console.log('GIT SERVER ERROR:', json)
           window.convo = new Convo(this.convos, 'oh-no-error')
@@ -243,9 +254,9 @@ class GitPush extends Widget {
               if (json.success) {
                 // pass the staged subset so unstaged files keep their pre-push
                 // baseline and their unpushed changes remain visible.
-                const changes = await WIDGETS['project-files'].resetChanges(this.include)
+                const changes = await WIDGETS['project-files'].resetChanges(this.include, json.shas)
                 WIDGETS['project-files']._updateFilesGUI(changes)
-                this._nextCmd('finished')
+                this._finishPush()
               } else {
                 console.log('GIT SERVER ERROR:', json)
                 window.convo = new Convo(this.convos, 'oh-no-error')

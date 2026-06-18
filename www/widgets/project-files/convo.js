@@ -142,7 +142,7 @@ window.CONVOS['project-files'] = (self) => {
       opts['what does the circle mean?'] = (e) => e.goTo('netnet-title-save')
     }
 
-    opts['what does "git push" mean?'] = (e) => e.goTo('explain-github')
+    opts['what\'s that Y icon below the X?'] = (e) => e.goTo('explain-github')
     return opts
   }
 
@@ -197,7 +197,14 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'auto-save',
-    content: `Technically I could, but then I'd be making you reliant on me. The reality is, once you start using professional code editors you will not only be expected to "save" to see your changes reflected, but you'll also have to manually create commits and push your code. That might seem tedious, but the convention ensures you maintain control over your code, and I'm here to help introduce you to these conventions and build good habits. So make sure to press <code>${hotkey}+S</code> to save and render your changes often, and press <b>git push</b> every time you've added new working feature to your site so you don't loose it.`,
+    content: `Technically I could, but then I'd be making you reliant on me. The reality is, once you start using professional code editors you will not only be expected to "save" to see your changes reflected, but you'll also have to manually create commits and push your code. That might seem tedious, but the convention ensures you maintain control over your code, and I'm here to help introduce you to these conventions and build good habits. So make sure to press <code>${hotkey}+S</code> to save and render your changes often, and select <b>git push</b> from the <b>git menu</b> every time you've added new working feature to your site so you don't loose it.`,
+    options: {
+      'got it.': (e) => e.hide(),
+      'git menu?': (e) => e.goTo('git-menu')
+    }
+  }, {
+    id: 'git-menu',
+    content: 'To ope the <i>git menu</i> click the git icon, the Y-looking shape at the top-right of the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget. There you can click the <i>git</i> icon and select <i>git push</i> to create a new "commit" (save point for recent changes) and send your updates to GitHub, <i>git pull</i> to download any updates on your GitHub repo locally here or <i>web publish</i> to publish your project on the web.',
     options: {
       'got it.': (e) => e.hide()
     }
@@ -231,10 +238,11 @@ window.CONVOS['project-files'] = (self) => {
     after: () => addCircleToBubble()
   }, {
     id: 'netnet-title-save',
-    content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code><br><br>Now remember, these changes are only being saved temporarily in your browser. To save changes permanently you'll also need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by pressing the "git push" button.`,
+    content: `If you see a circle next to the file's name that means that you have some unsaved changes in your code. When working on a "project" you need to manually save your changes in order to see the rendered results. You can do this by clicking "save changes" below or by using the shortcut <code>${hotkey}+S</code><br><br>Now remember, these changes are only being saved temporarily in your browser. To save changes permanently you'll also need to push them to your <a href="${gh.url}" target="_blank">GitHub repo</a> by selecting the the "git push" option in the <i>git menu</i>.`,
     options: {
       'got it': (e) => e.hide(),
       'can you auto save?': (e) => e.goTo('auto-save'),
+      'what\'s the git menu?': (e) => e.goTo('git-menu'),
       'ok, save changes now': (e) => {
         self.saveCurrentFile()
         e.goTo('netnet-title-save2')
@@ -273,14 +281,14 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'explain-github',
-    content: 'GitHub is an online platform where coders often store their work, functioning both as their code portfolio as well as a place to collaborate with others. It takes it\'s name from <a href="https://en.wikipedia.org/wiki/Git" target="_blank">git</a>, an open-source tool used by GitHub to "version" our progress, like creating save points in a video game. That\'s the first thing I\'ll guide you through when you press "git push". After creating that save point, or what we call a "commit", I\'ll send these updates to your GitHub account for storage and optional web hosting.',
+    content: 'GitHub is an online platform where coders share their projects and collaborate with others. It\'s named after <a href="https://en.wikipedia.org/wiki/Git" target="_blank">git</a>, the open-source tool GitHub uses to "version" your progress. After making a change to your code, select "git push" from that menu to create a "commit" (like a save-point in a video game) and then backup your changes to GitHub.',
     options: {
       'optional hosting?': (e) => e.goTo('hosting'),
       'got it': (e) => e.hide()
     }
   }, {
     id: 'hosting',
-    content: 'Put simply, a web "host" is a computer connected to the Internet running a web server with your project stored on it. When someone "visits" your website, their browser sends a request to the host\'s server which sends them your website in response. You can download your project and upload it to any web host you\'d like, you could even <a href="https://homebrewserver.club/" target="_blank">host it yourself</a>, the web is an open platform after all. But, because you have your project saved on your GitHub the easiest solution would be to use <a href="https://pages.github.com/" target="_blank">ghpages</a>, GitHub\'s free web hosting service which I can enable for you.',
+    content: 'A web "host" is just a computer connected to the Internet, running a server with your project on it. When someone visits your site, their browser asks that server for it, and gets your site back. You could host it anywhere, even <a href="https://homebrewserver.club/" target="_blank">yourself</a>, the web is an open platform after all, but since your project already lives on GitHub, the easiest option is <a href="https://pages.github.com/" target="_blank">ghpages</a>, GitHub\'s free hosting, which I can enable for you.',
     options: {
       'how do I host on GitHub?': (e) => e.goTo('how-host'),
       'download my project': (e) => self.downloadProject(),
@@ -288,7 +296,7 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'how-host',
-    content: 'While working on a project, open the <b>Coding Menu</b>, click on <i>my code</i> and select the <i>share</i> option. Once there you\'ll be given the option to enable the ghpages web server. You only need to do this one time, once enabled all you need to do is "push" your updates to GitHub, and your public website will be updated within minutes.',
+    content: 'While working on a project, you can eitehr select <i>web publish</i> from the git menu or open the <b>Coding Menu</b>, click on <i>my code</i> and select the <i>share</i> option. You\'ll be given the option to enable the ghpages web server. You only need to do this one time, once enabled all you need to do is "push" your updates to GitHub, and your public website will be updated within minutes.',
     options: {
       'got it': (e) => e.hide()
     }
@@ -328,9 +336,10 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'unsaved-changes-b4-new-proj',
-    content: `You've saved changes to your current project "${self.projectData.name}" which have not been backed up to GitHub. You should commit and "git push" those first.`,
+    content: `You've saved changes to your current project "${self.projectData.name}" which have not been backed up to GitHub. You should commit and push those first using the <i>git menu</i>.`,
     options: {
-      ok: (e) => WIDGETS.open('git-push'),
+      'ok, I will': (e) => e.hide(),
+      'git menu?': (e) => e.goTo('git-menu'),
       'no, I\'ll discard the changes': (e) => e.goTo('create-new-project'),
       'actually, I\'ll keep working on this': (e) => e.hide()
     }
