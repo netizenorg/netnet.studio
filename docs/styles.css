@@ -716,6 +716,31 @@ div > a:not(.pill-btn):not(.highlight):hover,
   border-radius: 25px;
 }
 
+.docs__viewer-inner blockquote {
+  margin: 1.5em 0;
+  padding: 0.5em var(--doc-padding);
+
+  border-left: 4px solid var(--netizen-hint-color);
+  background-color: rgba(81, 81, 153, 0.12);
+
+  font-style: italic;
+}
+
+.docs__viewer-inner blockquote + blockquote {
+  margin-top: -1em;
+}
+
+.docs__viewer-inner blockquote p {
+  margin: 0.75em 0;
+}
+
+/* this is for attribution line, ex "— Greg Smith, University of Waterloo" */
+.docs__viewer-inner blockquote p + p {
+  color: var(--netizen-comment);
+  font-style: normal;
+  font-size: 15px;
+}
+
 /*
  * docs viewer mobile
  */

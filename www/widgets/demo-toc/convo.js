@@ -35,7 +35,7 @@ window.CONVOS['demo-toc'] = (self) => {
       graph: { id: 5, x: 225, y: 100 },
       content: 'It looks like you\'re working on a project with unsaved changes. I\'ll need to close the project you\'re working on before opening this demo. I\'d recommend that you "git push" the changes you made before opening this demo.',
       options: {
-        'let\'s save it first': (e) => WIDGETS.open('git-push'),
+        'let\'s save it first': (e) => WIDGETS['project-files']._launchGit(),
         'I know, open the demo anyway': (e) => {
           WIDGETS['project-files'].closeProject()
           self._displayDemo()

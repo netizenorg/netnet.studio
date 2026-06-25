@@ -1,0 +1,184 @@
+/* global Widget, Convo, WIDGETS, nn, utils */
+class WebPublish extends Widget {
+  constructor (opts) {
+    super(opts)
+    this.key = 'web-publish'
+    this.keywords = ['publish', 'ghpages', 'server', 'host', 'deploy', 'domain', 'web']
+    this.title = 'Web Publish'
+    this.width = 480
+
+    this.pagesData = null // raw GitHub Pages API response, only set once enabled
+    this._pollTimer = null
+
+    Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
+
+    this._createHTML()
+
+    this.on('open', () => this._refreshStatus())
+    this.on('close', () => this._stopPolling())
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. GUI methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _createHTML () {
+    this.innerHTML = `
+      <div class="web-publish">
+        <div class="web-publish__not-published">
+          <p>Publish your project to the Web using <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>. This generates a public URL for your site. Once published, every time you "push" updates they'll automatically go live within a few minutes.</p>
+          <br>
+          <button class="pill-btn" name="publish">publish to the web</button>
+        </div>
+        <div class="web-publish__published">
+          <button class="pill-btn pill-btn--secondary" name="pub-info" style="float: right; position: relative; z-index: 2;">?</button>
+          <div class="web-publish__section">
+            <label>published URL</label>
+            <div class="web-publish__row">
+              <a href="#" target="_blank" name="published-url" class="web-publish__url"></a>
+              <a href="#" target="_blank" name="status" class="web-publish__status" title="view deployment log"></a>
+            </div>
+          </div>
+          <div class="web-publish__section web-publish__domain-section">
+            <label>custom domain setup</label>
+            <div class="web-publish__row">
+              <input type="text" name="domain-input" placeholder="yourdomain.com">
+              <button class="pill-btn pill-btn--secondary" name="save-domain">save</button>
+            </div>
+            <div class="web-publish__row">
+              <span class="link" name="remove-domain" style="display:none">remove custom domain</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+    this.$('[name="publish"]').addEventListener('click', () => this.publish())
+    this.$('[name="save-domain"]').addEventListener('click', () => this.saveDomain())
+    this.$('[name="remove-domain"]').addEventListener('click', () => this.removeDomain())
+    this.$('[name="pub-info"]').addEventListener('click', () => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'pub-info')
+    })
+  }
+
+  _render () {
+    const enabled = !!this.pagesData
+    this.$('.web-publish__not-published').style.display = enabled ? 'none' : 'block'
+    this.$('.web-publish__published').style.display = enabled ? 'block' : 'none'
+    if (!enabled) return
+
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    const url = this.pagesData.html_url
+    const status = this.pagesData.status || 'building'
+
+    const urlLink = this.$('[name="published-url"]')
+    urlLink.href = url
+    urlLink.textContent = url
+
+    const statusLabels = {
+      building: 'building…',
+      queued: 'building…',
+      built: 'live',
+      errored: 'build failed'
+    }
+    const statusEl = this.$('[name="status"]')
+    statusEl.textContent = statusLabels[status] || 'building…'
+    statusEl.dataset.status = (status === 'built' || status === 'errored') ? status : 'building'
+    statusEl.href = `https://github.com/${owner}/${repo}/actions`
+
+    const domainInput = this.$('[name="domain-input"]')
+    if (document.activeElement !== domainInput) domainInput.value = this.pagesData.cname || ''
+
+    this.$('[name="remove-domain"]').style.display = this.pagesData.cname ? 'inline' : 'none'
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. public methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  publish () {
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    if (!repo) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'cant-publish-project')
+      return
+    }
+    const branch = WIDGETS['project-files'].projectData.branch
+    nn.get('load-curtain').show('github.html', { filename: `${owner}/${repo}` })
+    utils.post('./api/github/gh-pages', { owner, repo, branch }, (res) => {
+      nn.get('load-curtain').hide()
+      this.convos = window.CONVOS[this.key](this)
+      if (!res.success) {
+        window.convo = new Convo(this.convos, 'oh-no-error')
+        return
+      }
+      if (window.plausible) window.plausible('published_project')
+      this.pagesData = res.data
+      this._render()
+      window.convo = new Convo(this.convos, 'first-published')
+      this._pollIfBuilding()
+    })
+  }
+
+  saveDomain () {
+    const value = this.$('[name="domain-input"]').value.trim()
+    if (!value) return
+    if (!value.includes('.') || /\s/.test(value)) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'domain-invalid')
+      return
+    }
+    this._putDomain(value, 'domain-saved')
+  }
+
+  removeDomain () {
+    this._putDomain('', 'domain-removed')
+  }
+
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. private methods
+  // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
+
+  _putDomain (cname, convoOnSuccess) {
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    if (!repo) return
+    utils.post('./api/github/pages-domain', { owner, repo, cname }, (res) => {
+      this.convos = window.CONVOS[this.key](this)
+      if (!res.success) {
+        window.convo = new Convo(this.convos, 'oh-no-error')
+        return
+      }
+      window.convo = new Convo(this.convos, convoOnSuccess)
+      this._refreshStatus()
+    })
+  }
+
+  _refreshStatus () {
+    const owner = WIDGETS['student-session'].getData('owner')
+    const repo = WIDGETS['project-files']?.projectData.name
+    if (!repo) return
+    utils.get(`./api/github/pages-status?owner=${owner}&repo=${repo}`, (res) => {
+      if (!res || !res.success) return
+      this.pagesData = res.enabled ? res.data : null
+      this._render()
+      this._pollIfBuilding()
+    })
+  }
+
+  _pollIfBuilding () {
+    this._stopPolling()
+    const status = this.pagesData?.status
+    if (status === 'built' || status === 'errored') return
+    this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
+  }
+
+  _stopPolling () {
+    if (this._pollTimer) clearTimeout(this._pollTimer)
+    this._pollTimer = null
+  }
+}
+
+window.WebPublish = WebPublish

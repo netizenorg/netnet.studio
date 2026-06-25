@@ -25,18 +25,66 @@
   justify-content: flex-end;
 }
 
-.git-btn {
-  border: 1px solid var(--netizen-meta);
-  padding: 3px 8px;
-  border-radius: 20px;
-  display: inline-block;
+.git-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+  border: none;
   margin-bottom: -30px;
-  opacity: 0.25;
+
+  background: none;
+
   cursor: pointer;
 }
 
-.git-btn.changes {
-  opacity: 1
+.git-menu-icon {
+  display: inline-flex;
+
+  opacity: 0.5;
+
+  transition: opacity var(--element-transition-time) ease-in-out;
+}
+
+.git-menu-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.git-menu-icon path {
+  fill: var(--fg-color);
+}
+
+.git-menu-btn:hover .git-menu-icon,
+.git-menu-btn[aria-expanded="true"] .git-menu-icon {
+  opacity: 1;
+}
+
+.proj-files__git-menu {
+  position: fixed;
+  z-index: 500;
+
+  font-family: 'fira-mono-regular', monospace;
+
+  color: var(--bg-color);
+  background-color: var(--netizen-meta);
+  border: 1px solid var(--bg-color);
+
+  padding: 10px;
+}
+
+.proj-files__git-menu-item {
+  padding: 2px;
+  cursor: pointer;
+}
+
+.proj-files__git-menu-item:hover {
+  background-color: var(--bg-color);
+  color: var(--netizen-meta);
 }
 
 .proj-files__tree-view {
