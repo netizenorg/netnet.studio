@@ -4,7 +4,7 @@ class WebPublish extends Widget {
     super(opts)
     this.key = 'web-publish'
     this.keywords = ['publish', 'ghpages', 'server', 'host', 'deploy', 'domain', 'web']
-    this.title = 'Web Publish'
+    this.title = 'Web Publish <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
     this.width = 480
 
     this.pagesData = null // raw GitHub Pages API response, only set once enabled
@@ -47,6 +47,7 @@ class WebPublish extends Widget {
             </div>
             <div class="web-publish__row">
               <span class="link" name="remove-domain" style="display:none">remove custom domain</span>
+              <a href="#" target="_blank" name="ghpages-settings" class="link" style="display:none">ghpages settings</a>
             </div>
           </div>
         </div>
@@ -87,10 +88,14 @@ class WebPublish extends Widget {
     statusEl.dataset.status = (status === 'built' || status === 'errored') ? status : 'building'
     statusEl.href = `https://github.com/${owner}/${repo}/actions`
 
+    this.$('[name="ghpages-settings"]').href = `https://github.com/${owner}/${repo}/settings/pages`
+
     const domainInput = this.$('[name="domain-input"]')
     if (document.activeElement !== domainInput) domainInput.value = this.pagesData.cname || ''
 
-    this.$('[name="remove-domain"]').style.display = this.pagesData.cname ? 'inline' : 'none'
+    const hasCname = !!this.pagesData.cname
+    this.$('[name="remove-domain"]').style.display = hasCname ? 'inline' : 'none'
+    this.$('[name="ghpages-settings"]').style.display = hasCname ? 'inline' : 'none'
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -152,7 +157,7 @@ class WebPublish extends Widget {
         return
       }
       window.convo = new Convo(this.convos, convoOnSuccess)
-      this._refreshStatus()
+      this._startRebuildPolling()
     })
   }
 
@@ -166,6 +171,14 @@ class WebPublish extends Widget {
       this._render()
       this._pollIfBuilding()
     })
+  }
+
+  _startRebuildPolling () {
+    if (!this.pagesData) return
+    this._stopPolling()
+    this.pagesData.status = 'building'
+    this._render()
+    this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
   }
 
   _pollIfBuilding () {
