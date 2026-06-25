@@ -142,7 +142,7 @@ window.CONVOS['project-files'] = (self) => {
       opts['what does the circle mean?'] = (e) => e.goTo('netnet-title-save')
     }
 
-    opts['what\'s that Y icon below the X?'] = (e) => e.goTo('explain-github')
+    opts['what\'s that Y icon below the X?'] = (e) => e.goTo('explain-git-menu')
     return opts
   }
 
@@ -278,6 +278,13 @@ window.CONVOS['project-files'] = (self) => {
         self.closeProject()
         e.hide()
       }
+    }
+  }, {
+    id: 'explain-git-menu',
+    content: 'When you click on the <img src="images/icons/git.png" class="proj-files__d-icons"> icon at the top-right of the <b>Project Files</b> widget it opens the "git menu", which you can use to push/pull commits to your GitHub as well as publish your project on the web using ghpages.',
+    options: {
+      'got it': (e) => e.hide(),
+      'GitHub?': (e) => e.goTo('explain-github')
     }
   }, {
     id: 'explain-github',

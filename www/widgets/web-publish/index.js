@@ -56,6 +56,10 @@ class WebPublish extends Widget {
     this.$('[name="publish"]').addEventListener('click', () => this.publish())
     this.$('[name="save-domain"]').addEventListener('click', () => this.saveDomain())
     this.$('[name="remove-domain"]').addEventListener('click', () => this.removeDomain())
+    this.$('[name="domain-input"]').addEventListener('focus', () => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'domain-input-focus')
+    })
     this.$('[name="pub-info"]').addEventListener('click', () => {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'pub-info')
@@ -83,9 +87,10 @@ class WebPublish extends Widget {
       built: 'live',
       errored: 'build failed'
     }
+    const resolvedStatus = (!status || status === 'built') ? 'built' : status
     const statusEl = this.$('[name="status"]')
-    statusEl.textContent = statusLabels[status] || 'building…'
-    statusEl.dataset.status = (status === 'built' || status === 'errored') ? status : 'building'
+    statusEl.textContent = statusLabels[resolvedStatus] || 'building…'
+    statusEl.dataset.status = (resolvedStatus === 'built' || resolvedStatus === 'errored') ? resolvedStatus : 'building'
     statusEl.href = `https://github.com/${owner}/${repo}/actions`
 
     this.$('[name="ghpages-settings"]').href = `https://github.com/${owner}/${repo}/settings/pages`
@@ -142,6 +147,13 @@ class WebPublish extends Widget {
     this._putDomain('', 'domain-removed')
   }
 
+  reset () {
+    this._stopPolling()
+    this.pagesData = null
+    this._render()
+    this.close()
+  }
+
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*•. private methods
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
@@ -157,6 +169,19 @@ class WebPublish extends Widget {
         return
       }
       window.convo = new Convo(this.convos, convoOnSuccess)
+      const pf = WIDGETS['project-files']
+      if (cname && pf) {
+        pf._updateFile('CNAME', cname).then(() => {
+          pf.lastCommitFiles['CNAME'] = { path: 'CNAME', code: cname }
+          pf._updateFilesGUI()
+          pf.changes = pf.computeChanges()
+        })
+      } else if (!cname && pf?.files?.CNAME) {
+        pf._postDeletion('CNAME').then(() => {
+          delete pf.lastCommitFiles['CNAME']
+          pf.changes = pf.computeChanges()
+        })
+      }
       this._startRebuildPolling()
     })
   }
@@ -184,7 +209,7 @@ class WebPublish extends Widget {
   _pollIfBuilding () {
     this._stopPolling()
     const status = this.pagesData?.status
-    if (status === 'built' || status === 'errored') return
+    if (!status || status === 'built' || status === 'errored') return
     this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
   }
 
