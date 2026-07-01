@@ -30,8 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.22.2",
     "marked": "^15.0.6",
-    "socket.io": "^4.8.3",
-    "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git"
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "standard": "^14.3.3"
