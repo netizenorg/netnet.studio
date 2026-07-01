@@ -14,6 +14,15 @@ function findActive () {
     })
 }
 
+function setupFolderToggles () {
+  nn.getAll('.docs__panel .docs__panel__list-item > a.header')
+    .forEach(link => {
+      link.addEventListener('click', () => {
+        link.closest('.docs__panel__list-item').classList.toggle('open')
+      })
+    })
+}
+
 function setupNetitors () {
   nn.getAll('pre > code')
     .forEach((ele, i) => {
@@ -48,27 +57,35 @@ function setupNetitors () {
 function filterResults (e) {
   const v = e.target.value.toLowerCase()
   const navItems = document.querySelectorAll('.docs__panel > .docs__panel__list .inline-link')
+
+  if (v === '') {
+    navItems.forEach(ele => ele.classList.remove('hide'))
+    // restore open state: close all, then re-open the folder containing the active link
+    document.querySelectorAll('.docs__panel .docs__panel__list-item').forEach(li => li.classList.remove('open'))
+    const activeLink = document.querySelector('.docs__panel .active')
+    if (activeLink) {
+      const li = activeLink.closest('.docs__panel__list-item')
+      const folderLi = li?.parentElement?.closest('.docs__panel__list-item')
+      if (folderLi) folderLi.classList.add('open')
+      else if (li) li.classList.add('open')
+    }
+    return
+  }
+
+  document.querySelectorAll('.docs__panel .docs__panel__list-item').forEach(li => li.classList.remove('open'))
+
   navItems.forEach(ele => {
-    if (v === '') ele.classList.remove('hide')
-    else {
-      let pass = false
-      let parent = false
-      let eleText = ele.textContent.toLowerCase()
-      let parentEle = ele.parentElement.parentElement.previousElementSibling
+    const eleText = ele.textContent.toLowerCase()
+    const parentEle = ele.parentElement.parentElement.previousElementSibling
 
-      if (eleText.trim().includes(v)) pass = true
-      if (pass) {
-        ele.classList.remove('hide')
-        if (parentEle.classList.contains('header')) parent = true
-        if (parent) {
-          parentEle.classList.remove('hide')
-        } else {
-          parentEle.classList.add('hide')
-        }
-      } else {
-        ele.classList.add('hide')
+    if (eleText.trim().includes(v)) {
+      ele.classList.remove('hide')
+      if (parentEle && parentEle.classList.contains('header')) {
+        parentEle.classList.remove('hide')
+        parentEle.closest('.docs__panel__list-item').classList.add('open')
       }
-
+    } else {
+      ele.classList.add('hide')
     }
   })
 }
@@ -98,6 +115,7 @@ function mobileMenu () {
 
 nn.on('load', () => {
   findActive()
+  setupFolderToggles()
   setupNetitors()
   setupSearch()
   mobileMenu()

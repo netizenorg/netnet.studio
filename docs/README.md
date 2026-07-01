@@ -1,23 +1,27 @@
-### netnet.studio is an open-source hypermedia cyberspace for fully realizing the Web’s creative potential.
+### <span style="color:var(--netizen-comment);font-size:1.5rem">netnet.studio</span> is an open-source browser-based hypermedia maker-space for fully realizing the Web’s creative potential!
 
 netnet's goal is to guide creatives in their journey, from curious beginners to creative code virtuosos, through interactive learning and experimental play with the medium itself. Our mission is to help artists, designers and other DIY makers reclaim the Internet as a hand-crafted space for self-expression.
+
+<br>
+
+![netnet intro](images/poster-netnet-intro.jpg)
+
+<p class="italic center">
+  netnet.studio is a free/libre open-source project. please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
+</p>
 
 <div id="donate-links">
   <div><a href="contributors/support.html">Donate 💰!</a></div>
   <div><a href="contributors/index.html">Donate ⏰!</a></div>
 </div>
 
-<p class="center italic">
-  netnet.studio is a free/libre open-source project. please <a href="contributors/support.html">consider supporting it</a> to keep it alive!
-</p>
-
 # Meet netnet ( ◕ ◞ ◕ )
 
 When you visit netnet.studio you'll be greeted by a friendly artificial intelligence teaching assistant (AI-TA) named netnet! As an AI-TA, netnet supports students of the Web by explaining code fragments, encouraging best practices, and correcting common mistakes. However, in these AI-times it's worth clarifying that netnet is not a "large language model" or any other kind of "machine learning", *it* (preferred pronoun) is a human-authored *classical AI* system, less like a corporate chat bot and more like the AI in a retro video game. Every word has been carefully considered and written by humans (that's us), therefore netnet will never "hallucinate" nor will it write all your code for you (though it will help with a snippet here or there).
 
-We're not entirely opposed to LLMs, we believe there's lots of unexplored possibilities in the ethical and artistic application of "artificial neural networks" (we're currently working on creative AI/LLM literacy tools and lessons). However, we do feel that the way they're currently being integrated into coding tools is designed more for "people who think to make" (folks with ideas they want someone or some*thing* to make for them) and less for those who "make to think", meaning those of us who discover, learn and grow our creative ideas through the process of making and writing code ourselves.
+We're not entirely opposed to LLMs, we believe there's lots of unexplored possibilities in the ethical and artistic application of "artificial neural networks" (netnet.studio includes AI/LLM literacy tools and lessons). However, we do feel that the way they're currently being integrated into coding tools is designed more for "people who think to make" (folks with ideas they want someone or some*thing* to make for them) and less for those who "make to think", meaning those of us who discover, learn and grow our creative ideas through the process of making and writing code ourselves.
 
-**If you're an aspiring student of the creative web, [start here](students/README.md)!**
+<strong style="font-size:1.25rem">If you're an aspiring student of the creative web, [start here](students/README.md)!</strong>
 
 # The Platform
 

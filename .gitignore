@@ -34,3 +34,6 @@ data/temp-gh-user-data/*
 
 # local audit/refactor scratchpads (not project history)
 **/AUDIT.md
+
+# ignoring custom widget made for announcement video
+www/widgets/intro-vid
