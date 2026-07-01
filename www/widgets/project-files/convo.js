@@ -461,6 +461,10 @@ window.CONVOS['project-files'] = (self) => {
       'beta?': (e) => e.goTo('beta')
     }
   }, {
+    id: 'project-open-another-tab',
+    content: 'Looks like this project is already open in another tab! Working on the same project in two tabs at once can cause conflicts with the local file storage.',
+    options: { ok: (e) => e.hide() }
+  }, {
     id: 'files-truncated',
     content: self.truncatedReason === 'depth'
       ? 'Sorry, I wasn\'t able to open this project because its folder structure is nested more than <b>5 levels deep</b>, which is beyond what I can safely work with here. You can still access and edit this project directly on GitHub, just keep in mind that deeply nested folders can make web projects tricky to manage. Consider reorganizing your project so there aren\'t as many folders in folders in folders.'

@@ -22,17 +22,17 @@ window.plausible.init = window.plausible.init || function (i) { plausible.o = i 
 plausible.init({ endpoint: '/api/event', autoCapturePageviews: false })
 
 ;(function () {
-  var p = new URLSearchParams(window.location.search)
-  var url = window.location.origin + window.location.pathname
-  var gh = p.get('gh')
-  var demo = p.get('demo') || p.get('ex')
-  var template = p.get('template')
-  var tutorial = p.get('tutorial')
-  var shortCode = p.get('c')
-  var widget = p.get('w')
-  if (tutorial) url += 'tutorial'
-  else if (gh) url += 'github'
-  else if (shortCode) url += 'shortcode'
+  const p = new URLSearchParams(window.location.search)
+  let url = window.location.origin + window.location.pathname
+  const gh = p.get('gh')
+  const demo = p.get('demo') || p.get('ex')
+  const template = p.get('template')
+  const tutorial = p.get('tutorial')
+  const shortCode = p.get('c')
+  const widget = p.get('w')
+  if (tutorial) url += 'tutorial/' + tutorial
+  else if (gh) url += 'github/' + gh
+  else if (shortCode) url += 'shortcode/' + shortCode
   else if (demo) url += 'demo/' + demo
   else if (template) url += 'template/' + template
   else if (widget) url += 'widget/' + widget
