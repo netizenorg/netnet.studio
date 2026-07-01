@@ -1,6 +1,6 @@
 # <img src="/images/menu/tutorials.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Learning Guide
 
-netnet’s **Learning Guide** is packed with educational content that starts from the basics and gradually builds toward more complex lessons and examples. You can follow the Learning Guide from start to finish for a traditional progression, or explore it non-linearly based on your own interests and needs. You can scroll through the Learning Guide, but you can also click on the Internet globe to jump to the "Hyperlinks", and from there you can click on any section to jump to it.
+netnet’s **Learning Guide** is packed with educational content that starts from the basics and gradually builds toward more complex lessons and examples. You can open the Learning Guide anytime by clicking on netnet's face and selecting it from the main menu, or by using the <b>{SUPER} + L</b> shortcut. You can follow the Learning Guide from start to finish for a traditional progression, or explore it non-linearly based on your own interests and needs. You can scroll through the Learning Guide, but you can also click on the Internet globe to jump to the "Hyperlinks", and from there you can click on any section to jump to it.
 
 ![netnet learning guide](../images/poster-learning-guide.jpg)
 
@@ -23,6 +23,7 @@ The Learning Guide also includes a variety of interactive lessons. Because every
 
 ![learning intros](../images/poster-learning-intros.jpg)
 
+Many of netnet's widgets also contain guides which often begin as soon as you open up the widget or when you press any of the <span class="q-mark">?</span> buttons within the widget. For example the <b>git push</b> widget not only allows you to create and push your git commits, it also introduces the concept of versioning and guides you through the commit process; the <b>web publish</b> widget not only allows you to publish your projects to the web, it also explains concepts like web hosting and DNS; etc.
 ### Annotated Demos
 
 A *demo* is an annotated *sketch* designed for learning through remixing and experimentation. Like any sketch in netnet, it's a single HTML file, but it includes a demo title and a **Guide** button at the top of the editor. Each note corresponds to a line or section of code; you can have netnet explain the entire demo sequentially or jump to a specific note by clicking its green dot or selecting it from the Guide Widget.

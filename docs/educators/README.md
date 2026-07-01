@@ -4,6 +4,12 @@ netnet.studio has been developed iteratively for the last 5 years (in beta from 
 
 By removing many of the technical hurdles beginners face, netnet.studio offers a smoother ramp into creative coding for the web, saving instructors hours in the classroom and reducing student frustration. Its self-revealing interface design also enables educators to introduce complex topics, like version control with Git, earlier than traditional tools allow, but no sooner than it's needed. The platform also provides tooling for instructors to create their own annotated demos, project templates, interactive tutorials and so much more!
 
+<div class="warning">
+
+If you find netnet.studio valuable in your classroom, consider asking your institution to enter into an [Institutional Support agreement](../contributors/institutional-support.md) with netizen.org. Supporting institutions receive priority support, curriculum consultation, and other benefits. This support also helps keep the platform free, open source, and actively maintained for everyone.
+
+</div>
+
 ## Using netnet as a Classroom Code Editor
 
 ![netnet menu](../images/poster-sketching.jpg)
@@ -82,8 +88,3 @@ The Learning Guide offers several **learning modes**, each supporting a differen
   Hypermedia lessons that blend video, text, and live code. Students can pause at any point to experiment with code or explore related widgets, making these ideal for self-paced or homework-based exploration. At the time of writing, these are all led by Nick Briz, but you can make your own hypermedia tutorials using the **Tutorial Maker** widget.
 
 To learn more about these features refer to the [Student's Learning Doc](../students/learning.md)
-
-
----
-
-*✏️ TODO: explain our syllabi review and classroom-consulting services (if you're reading this before we've added the details for this, email nick@netizen.org to inquire)*
