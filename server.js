@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const SocketsServer = require('socket.io')
-const ANALYTICS = require('stats-not-tracks')
+
 const utils = require('./my_modules/utils.js')
 const ROUTES = require('./my_modules/routes.js')
 const GITHUB = require('./my_modules/github.js')
@@ -55,18 +55,6 @@ limiters.forEach(([route, windowMs, max]) => {
   app.use(route, makeLimiter({ windowMs, max }))
 })
 
-// ANALYTICS SETUP
-// ---------------
-ANALYTICS.setup(app, {
-  path: `${__dirname}/data/analytics`,
-  admin: {
-    route: 'analytics',
-    dashboard: `${__dirname}/data/analytics`,
-    secret: process.env.ANALYTICS_SECRET,
-    hash: process.env.ANALYTICS_HASH
-  }
-})
-
 // CURTAIN SETUP (PAGE BLOCKER)
 // ---------------------------
 if (process.env.CURTAIN) {
@@ -113,4 +101,3 @@ const msg = `
 `
 httpServer.listen(PORT, () => console.log(msg))
 io.attach(httpServer)
-ANALYTICS.live(httpServer, io)
