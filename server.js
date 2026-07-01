@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 8001
 
 const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
+app.set('trust proxy', 1) // nginx sits in front and sets X-Forwarded-For
 app.use(cookieParser())
 
 /*
