@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const SocketsServer = require('socket.io')
-const ANALYTICS = require('stats-not-tracks')
+
 const utils = require('./my_modules/utils.js')
 const ROUTES = require('./my_modules/routes.js')
 const GITHUB = require('./my_modules/github.js')
@@ -12,10 +12,9 @@ const SOCKETS = require('./my_modules/sockets.js')
 const ERRORS = require('./my_modules/errors.js')
 const PORT = process.env.PORT || 8001
 
-const fs = require('fs')
-const path = require('path')
 const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
+app.set('trust proxy', 1) // nginx sits in front and sets X-Forwarded-For
 app.use(cookieParser())
 
 /*
@@ -55,26 +54,9 @@ limiters.forEach(([route, windowMs, max]) => {
   app.use(route, makeLimiter({ windowMs, max }))
 })
 
-// ANALYTICS SETUP
-// ---------------
-ANALYTICS.setup(app, {
-  path: `${__dirname}/data/analytics`,
-  admin: {
-    route: 'analytics',
-    dashboard: `${__dirname}/data/analytics`,
-    secret: process.env.ANALYTICS_SECRET,
-    hash: process.env.ANALYTICS_HASH
-  }
-})
-
-// CURTAIN SETUP (PAGE BLOCKER)
-// ---------------------------
-if (process.env.CURTAIN) {
-  app.get('/', (req, res) => {
-    const curtain = fs.readFileSync(path.join(__dirname, 'www', 'curtain.html'), 'utf8')
-    res.send(curtain.replace('{{MESSAGE}}', process.env.CURTAIN))
-  })
-}
+// CURTAIN SETUP (PAGE BLOCKER / LOGIN GATE)
+// ------------------------------------------
+if (process.env.CURTAIN) app.use(require('./my_modules/curtain.js'))
 
 // SECURITY HEADERS
 // ---------------
@@ -113,4 +95,3 @@ const msg = `
 `
 httpServer.listen(PORT, () => console.log(msg))
 io.attach(httpServer)
-ANALYTICS.live(httpServer, io)

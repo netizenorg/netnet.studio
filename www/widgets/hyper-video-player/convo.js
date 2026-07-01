@@ -35,14 +35,13 @@ window.CONVOS['hyper-video-player'] = (self) => {
   },
   {
     id: 'working-on-unsaved-project',
-    content: 'It looks like you\'re working on a project with unsaved changes. I\'ll need to close the project you\'re working on before opening this demo. I\'d recommend that you "git push" the changes you made before opening this demo.',
+    content: 'It looks like you\'re working on a project with unsaved changes. I\'ll need to close the project you\'re working on before opening this tutorial. I\'d recommend that you "git push" the changes you made first by clicking the <i>git</i> icon at the top-right of the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget',
     options: {
-      'let\'s save it first': (e) => WIDGETS.open('git-push'),
+      'let\'s save it first': (e) => WIDGETS['project-files']._launchGit(),
       'I know, load the tutorial anyway': (e) => {
         WIDGETS['project-files'].closeProject()
         self._loadTutorial()
-      },
-      'ok thanks': (e) => e.hide()
+      }
     }
   }, {
     id: 'introducing-tutorial',

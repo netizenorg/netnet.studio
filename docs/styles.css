@@ -345,8 +345,13 @@ div > a:not(.pill-btn):not(.highlight):hover,
 }
 
 .docs__panel__list-item > .docs__panel__list {
+  display: none;
   padding-left: 0;
   margin-top: 10px;
+}
+
+.docs__panel__list-item.open > .docs__panel__list {
+  display: block;
 }
 
 .docs__panel__list-item > .docs__panel__list a:before {
@@ -573,7 +578,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
 }
 
 .docs__viewer-inner h3 {
-  font-size: 24px;
+  font-size: 1.5rem;
+  line-height: 1.8rem;
 }
 
 .docs__viewer-inner h4 {
@@ -716,6 +722,31 @@ div > a:not(.pill-btn):not(.highlight):hover,
   border-radius: 25px;
 }
 
+.docs__viewer-inner blockquote {
+  margin: 1.5em 0;
+  padding: 0.5em var(--doc-padding);
+
+  border-left: 4px solid var(--netizen-hint-color);
+  background-color: rgba(81, 81, 153, 0.12);
+
+  font-style: italic;
+}
+
+.docs__viewer-inner blockquote + blockquote {
+  margin-top: -1em;
+}
+
+.docs__viewer-inner blockquote p {
+  margin: 0.75em 0;
+}
+
+/* this is for attribution line, ex "— Greg Smith, University of Waterloo" */
+.docs__viewer-inner blockquote p + p {
+  color: var(--netizen-comment);
+  font-style: normal;
+  font-size: 15px;
+}
+
 /*
  * docs viewer mobile
  */
@@ -743,8 +774,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 54px;
+  margin-bottom: 100px;
 }
 
 #donate-links div {

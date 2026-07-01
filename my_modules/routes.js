@@ -21,7 +21,6 @@ const aliasRoutes = [
   { url: '/audios/*', loc: '../www/assets/audios/' },
   { url: '/fonts/*', loc: '../www/assets/fonts/' },
   { url: '/videos/*', loc: '../www/assets/videos/' },
-  { url: '/snt-css.css', loc: '../data/analytics/snt-css.css' },
   { url: '/css/styles.css', loc: '../www/widgets/learning-guide/data/assets/styles.css' }
   // { url: '/templates/*', loc: '../data/templates/' }
 ]

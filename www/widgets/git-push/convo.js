@@ -32,6 +32,51 @@ window.CONVOS['git-push'] = (self) => {
       }
     }
   }, {
+    id: 'pull-explain',
+    content: 'If there were changes made to your project on GitHub, either by you or a collaborator, "pulling" will download those changes so you can continue to work and build on those here.',
+    options: {
+      'yes, pull': (e) => { e.hide(); WIDGETS['project-files'].pullProject() },
+      cancel: (e) => e.hide()
+    }
+  }, {
+    id: 'pull-warn-unpushed',
+    content: `You've made changes locally that will get replaced by changes from GitHub to the file${WIDGETS['project-files']._pullConflicts?.length > 1 ? 's' : ''} I've temporarily marked in red if we pull. Do you want to discard your local changes and pull from GitHub anyway, or would you like to push your changes first?`,
+    options: {
+      'pull anyway': (e) => { e.hide(); WIDGETS['project-files'].resolvePullKeepRemote() },
+      'push first': (e) => {
+        WIDGETS['project-files']._resumePullAfterPush = true
+        WIDGETS['project-files'].resolvePullKeepLocal()
+        e.goTo('pre-start')
+      },
+      abort: (e) => { WIDGETS['project-files'].resolvePullKeepLocal(); e.hide() }
+    }
+  }, {
+    id: 'pull-complete',
+    content: 'All done! Your project now matches what\'s on GitHub.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'pushed-now-pull',
+    content: 'Great, your changes are safely pushed to GitHub! Since you were originally trying to pull, would you like me to check for and pull in any other changes now?',
+    options: {
+      'yes, pull now': (e) => { e.hide(); WIDGETS['project-files'].pullProject() },
+      'no thanks': (e) => e.hide()
+    }
+  }, {
+    id: 'pull-up-to-date',
+    content: 'Looks like nothing has changed on your GitHub\'s "main" branch since you last synced. Your project is already up to date!',
+    options: {
+      ok: (e) => e.hide(),
+      'what\'s a branch?': (e) => e.goTo('explain-branch')
+    }
+  }, {
+    id: 'explain-branch',
+    content: `Git tracks changes on timelines called "branches." Every repo starts with one, called "main", and that's the only branch I can push/pull here. Collaborators often work on their own separate branches, like alternate timelines, so their changes don't collide, then "merge" them into main when ready. If you've got changes sitting on another branch, you'll need to open a <a href="${gh.url}/pulls" target="_blank">Pull Request</a> on GitHub to merge them into "main" before we can pull it here.`,
+    options: {
+      'I see': (e) => e.hide()
+    }
+  }, {
     id: 'start-not-ready',
     content: 'You\'ll need to create a new "project" before using this widget.',
     options: {
@@ -123,7 +168,7 @@ window.CONVOS['git-push'] = (self) => {
     }
   }, {
     id: 'explain-publish',
-    content: `Of course! To publish your project on the World Wide Web, click no my face to open the <b>Coding Menu > my code > share</b>. If you previously published your project (<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files'].projectData.name}/settings/pages" target="_blank">click here to check</a>) you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
+    content: `Of course! To publish your project on the World Wide Web, select <i>web publish</i> from the <i>git menu</i>. If you previously published your project (<a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files'].projectData.name}/settings/pages" target="_blank">click here to check</a>) you do not need to republish it, it will update automaticlly after a couple of minutes. You can <a href="https://github.com/${WIDGETS['student-session'].getData('owner')}/${WIDGETS['project-files']?.projectData.name}/actions" target="_blank">view the deployment progress here</a>.`,
     options: {
       'got it!': (e) => e.hide()
     }
@@ -147,7 +192,7 @@ window.CONVOS['git-push'] = (self) => {
     }
   }, {
     id: 'payload-too-large-auto',
-    content: `The changes you're trying to push total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Click <b>git push</b> again, and then <i>"show me how"</i> so you can manually stage and push your files in smaller batches.`,
+    content: `The changes you're trying to push total <b>${self.pushSizeMB}MB</b>, which is too large to push all at once. Click <i>git push</i> again, and then <i>"show me how"</i> so you can manually stage and push your files in smaller batches.`,
     options: {
       ok: (e) => e.hide()
     }

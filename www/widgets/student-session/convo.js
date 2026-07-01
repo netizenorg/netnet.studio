@@ -258,7 +258,7 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'classical-ai',
       graph: { id: 15, x: 1000, y: 300 },
-      content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI like Large Language Models (LLM). That\'s not how I was made though. My code was hand crafted, written line by line with love and care by the creative folks at <a href="http://netizen.org" target="_blank">netizen.org</a>!',
+      content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI like Large Language Models (LLM). I\'ve got <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.openDocs(\'ai\'))">Notes</span> on that sort of AI, but that\'s not how I was made. My code was hand crafted, written line by line with love and care by my creators!',
       options: {
         'oh, I see': (e) => e.goTo('return-student-no-greet'),
         'why not an LLM?': (e) => e.goTo('why-classical')

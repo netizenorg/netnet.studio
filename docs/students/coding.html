@@ -40,7 +40,7 @@
         <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
         <input id="search-input" class="search-input" placeholder="search">
       </div>
-      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
@@ -191,8 +191,9 @@
 </video></p>
 <p>When working on files in a project, netnet won&#39;t render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the <strong>X</strong>, the widget is closed by hitting the <strong>Esc</strong> key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking <em>Coding Menu &gt; my code &gt; save</em>, or in this case pressing <strong>Ctrl+S</strong>, or <strong>CMD+S</strong> on Mac) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.</p>
 <h3>Pushing (Uploading) to GitHub</h3>
-<p>Changes to a file (as well as creating or deleting a file) are saved &quot;locally&quot;, meaning that they&#39;re stored temporarily in your browser as you work. The <strong>Project Files</strong> widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files.</p>
-<p>In order to make these changes permanent you&#39;ll need to &quot;commit&quot; them to your GitHub repo. To do so you&#39;ll need to open the <strong>Version Control</strong> widget by pressing the <strong>git push</strong> button.</p>
+<p>Changes to a file (as well as creating or deleting a file) are saved &quot;locally&quot;, meaning that they&#39;re stored temporarily in your browser as you work. The <strong>Project Files</strong> widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes changes not yet backed up to GitHub.</p>
+<p>In order to back up those changes you&#39;ll need to &quot;commit&quot; them to your GitHub repo. A commit is like a save point in your project&#39;s timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the <strong>Project Files</strong> widget and choosing the <strong>git push</strong> option.</p>
+<p>netnet will give you the option to either have it create and push the commit for you or you can learn to use git yourself with netnet guiding you through the manual commit process using the <strong>Version Control</strong> widget.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/version-control.mp4"
   poster="../images/poster-version-control.jpg">

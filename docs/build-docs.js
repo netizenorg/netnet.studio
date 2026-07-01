@@ -28,6 +28,10 @@ function posterToVideoTag (src, alt = '') {
   const file = lastSlash >= 0 ? src.slice(lastSlash + 1) : src
   const base = file.replace(/^poster-/, '').replace(/\.[a-zA-Z0-9]+$/, '')
   const videoSrc = `${dir}${base}.mp4`
+  // exception for intro video
+  if (videoSrc.includes('netnet-intro.mp4')) {
+    return `<video style="display: block; margin: 0 auto; border: 4px solid var(--netizen-tag); border-radius: 25px 25px 1px 1px;" controls playsinline width="720"\n  src="${videoSrc}"\n  poster="${src}">\n</video>`
+  }
   return `<video autoplay loop muted playsinline width="720"\n  src="${videoSrc}"\n  poster="${src}">\n</video>`
 }
 
@@ -85,7 +89,7 @@ marked.setOptions({ renderer })
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~ create side-panel navigation <ul> ~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function generateNav (directory, basePath = '') {
+function generateNav (directory, basePath = '', activeFolder = '') {
   const folders = Object.keys(fldrDict)
   let items = fs.readdirSync(directory, { withFileTypes: true })
   // sort by order in folder array (rather than alphabetically)
@@ -116,9 +120,10 @@ function generateNav (directory, basePath = '') {
       const link = hasReadme
         ? path.join(relative, 'index.html').replace(/\\/g, '/')
         : '#'
-      nav += `<li class="docs__panel__list-item">
+      const isOpen = item.name === activeFolder
+      nav += `<li class="docs__panel__list-item${isOpen ? ' open' : ''}">
                 <a class="header inline-link" href="/docs/${link}">${fldrDict[item.name]}</a>
-                ${generateNav(itemPath, relative)}
+                ${generateNav(itemPath, relative, activeFolder)}
               </li>`
     } else if (path.extname(item.name) === '.md') { // Markdown File Links
       if (item.name.toLowerCase() !== 'readme.md') {
@@ -174,17 +179,20 @@ function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const baseDir = __dirname // in case this needs to change later
-const nav = generateNav(baseDir)
+const templatePath = path.join(baseDir, 'template.html')
 
-// Create home page
-const homeInput = path.join(baseDir, 'README.md')
-const homeOutput = path.join(baseDir, 'index.html')
-const homeTemplate = path.join(baseDir, 'template.html')
-convertMarkdownToHtml(homeInput, homeOutput, homeTemplate, nav)
+// Create home page (no folder pre-opened)
+convertMarkdownToHtml(
+  path.join(baseDir, 'README.md'),
+  path.join(baseDir, 'index.html'),
+  templatePath,
+  generateNav(baseDir, '', '')
+)
 
-// Create sub-pages
+// Create sub-pages (each folder gets its own nav with the right section pre-opened)
 Object.keys(fldrDict).forEach(folder => {
   const folderPath = path.join(baseDir, folder)
+  const folderNav = generateNav(baseDir, '', folder)
   fs.readdir(folderPath, (err, files) => {
     if (err) return console.error(` ✖ ᴖ ✖ ) Error reading folder ${folder}:`, err)
     files.forEach(file => {
@@ -193,8 +201,7 @@ Object.keys(fldrDict).forEach(folder => {
         const outputFileName = path.basename(file).toLowerCase() === 'readme.md'
           ? 'index.html' : `${path.basename(file, '.md')}.html`
         const outputFilePath = path.join(folderPath, outputFileName)
-        const templatePath = path.join(baseDir, 'template.html')
-        convertMarkdownToHtml(filePath, outputFilePath, templatePath, nav)
+        convertMarkdownToHtml(filePath, outputFilePath, templatePath, folderNav)
       }
     })
   })

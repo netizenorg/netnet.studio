@@ -1,7 +1,7 @@
 {
   "name": "netnet.studio",
-  "version": "0.3.0",
-  "description": "netnet.studio is a hypermedia higherEd cyberspace for fully realizing the Web's creative potential.",
+  "version": "0.4.0",
+  "description": "netnet.studio is an open-source browser-based hypermedia maker-space for fully realizing the Web’s creative potential!",
   "main": "server.js",
   "scripts": {
     "setup": "node my_modules/setup-script.js",
@@ -30,8 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.22.2",
     "marked": "^15.0.6",
-    "socket.io": "^4.8.3",
-    "stats-not-tracks": "git+https://github.com/nbriz/StatsNotTracks.git"
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "standard": "^14.3.3"

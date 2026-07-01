@@ -128,7 +128,7 @@ window.CONVOS['template-projects'] = (self) => {
       content: 'It appears you\'re working on a project and have some changes which have not been committed. Are you sure you don\'t want to push those changes to your GitHub first before opening this template?',
       options: {
         'yes, let\'s save it first': (e) => {
-          WIDGETS.open('git-push')
+          WIDGETS['project-files']._launchGit()
         },
         'no, we can discard my changes': (e) => {
           WIDGETS['project-files'].closeProject()
