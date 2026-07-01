@@ -96,6 +96,69 @@ function setupSearch () {
   searchInput.addEventListener('input', (e) => filterResults(e))
 }
 
+function setupAutoplayVideos () {
+  const videos = nn.getAll('video[autoplay]')
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.play().catch(() => { entry.target.controls = true })
+      } else {
+        entry.target.pause()
+      }
+    })
+  }, { threshold: 0.25 })
+  videos.forEach(v => observer.observe(v))
+}
+
+function setupQuoteCarousels () {
+  nn.getAll('.quote-carousel').forEach(carousel => {
+    const quotes = Array.from(carousel.querySelectorAll('blockquote'))
+    if (quotes.length < 2) return
+    let current = 0
+
+    const counter = document.createElement('span')
+    counter.className = 'quote-carousel__counter'
+
+    const prev = document.createElement('button')
+    prev.className = 'quote-carousel__btn'
+    prev.textContent = '←'
+
+    const next = document.createElement('button')
+    next.className = 'quote-carousel__btn'
+    next.textContent = '→'
+
+    const controls = document.createElement('div')
+    controls.className = 'quote-carousel__controls'
+    controls.append(prev, counter, next)
+    carousel.appendChild(controls)
+
+    function show (i) {
+      quotes.forEach((q, idx) => { q.style.display = idx === i ? '' : 'none' })
+      counter.textContent = `${i + 1} / ${quotes.length}`
+    }
+
+    prev.addEventListener('click', () => { current = (current - 1 + quotes.length) % quotes.length; show(current) })
+    next.addEventListener('click', () => { current = (current + 1) % quotes.length; show(current) })
+
+    show(0)
+  })
+}
+
+function replaceSuperKey () {
+  const isMac = nn.platformInfo().platform.includes('Mac')
+  const key = isMac ? 'CMD' : 'CTRL'
+  const viewer = document.querySelector('.docs__viewer-inner')
+  if (!viewer) return
+  const walker = document.createTreeWalker(viewer, NodeFilter.SHOW_TEXT)
+  const nodes = []
+  while (walker.nextNode()) nodes.push(walker.currentNode)
+  nodes.forEach(node => {
+    if (node.textContent.includes('{SUPER}')) {
+      node.textContent = node.textContent.replace(/\{SUPER\}/g, key)
+    }
+  })
+}
+
 function mobileMenu () {
   const hamburger = document.querySelector('#hamburger')
   const docsPanel = document.querySelector('.docs__panel')
@@ -119,4 +182,7 @@ nn.on('load', () => {
   setupNetitors()
   setupSearch()
   mobileMenu()
+  setupAutoplayVideos()
+  replaceSuperKey()
+  setupQuoteCarousels()
 })

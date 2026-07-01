@@ -4,7 +4,7 @@ As explained in the [introduction page](README.md) for students (review that fir
 
 ## <img src="/images/menu/code.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Coding Menu
 
-You can open the Coding Menu anytime by clicking on netnet's face and selecting it from the main menu. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet's code editor details like:
+You can open the Coding Menu anytime by clicking on netnet's face and selecting it from the main menu, or by using the <b>{SUPER} + ;</b> shortcut. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet's code editor details like:
 
 <div style="display: grid; grid-template-columns: 1fr 3fr;">
   <img src="../images/coding-menu-editor-settings.jpg"
@@ -12,13 +12,13 @@ You can open the Coding Menu anytime by clicking on netnet's face and selecting 
     style="margin-top: 30px">
   <ul>
     <li>
-      <b>auto-update</b>: netnet is a realtime code editor, changes you make appear instantly in the rendered output. This works well for HTML and CSS, but can cause issues with JavaScript. Set this to "false" to disable auto-update and use <b>CTRL+Enter</b> (or <b>CMD+Enter</b> on Mac) to manually render changes.
+      <b>auto-update</b>: netnet is a realtime code editor, changes you make appear instantly in the rendered output. This works well for HTML and CSS, but can cause issues with JavaScript. Set this to "false" to disable auto-update and use <b>{SUPER}+Enter</b> to manually render changes.
     </li>
     <li>
       <b>chattiness</b>: As mentioned in the Sketching section above, netnet often provides feedback, explaining code you double-click and marking detected issues. Adjust this setting if you’d prefer netnet say less.
     </li>
     <li>
-      <b>layout</b>: By default, netnet splits the screen, code on the left, output on the right, but you can choose from several layouts inspired by browser developer tools. You can also resize the editor by dragging its edge.
+      <b>layout</b>: By default, netnet splits the screen, code on the left, output on the right, but you can choose from several layouts inspired by browser developer tools. You can also resize the editor by dragging its edge. You can also use the <b>{SUPER} + &gt;</b> and <b>{SUPER} + &lt;</b> keys to switch between layouts quickly.
     </li>
     <li>
       <b>theme</b>: Change netnet’s color theme to your preference, light, dark, or anything in between.
@@ -46,19 +46,19 @@ The <b>my code</b> sub-menu contains options for the code your working on:
     style="margin-top: 30px">
   <ul>
     <li>
-      <b>save</b>: clicking this button prompts the same passage that <b>CTRL+S</b> (or <b>CMD+S</b> on Mac) does, where netnet offers you a set of different options for downloading and sharing your code (including creating a new <i>project</i> if/when you've connected netnet to your GitHub account).
+      <b>save</b>: clicking this button prompts the same passage that <b>{SUPER}+S</b> does, where netnet offers you a set of different options for downloading and sharing your code (including creating a new <i>project</i> if/when you've connected netnet to your GitHub account).
     </li>
     <li>
       <b>new</b>: Gives you the option to create a new <i>sketch</i> or <i>project</i>
     </li>
     <li>
-      <b>open</b>: Gives you the option to upload an HTML file from your computer, and if you're connected to a GitHub account you'll also have the option to open a project (ie. a GitHub repository).
+      <b>open</b>: Gives you the option to upload an HTML file from your computer, and if you're connected to a GitHub account you'll also have the option to open a project (ie. a GitHub repository). You can also use the <b>{SUPER}+O</b> shortcut.
     </li>
     <li>
       <b>share</b>: When working on a *sketch* this opens up the Share Sketch widget (to create a sharable URL), when working on a *project* this gives you the option to create a sharable netnet URL as well as the option to **publish** your project to the web (using ghpages) with a public facing URL.
     </li>
     <li>
-      <b>code review</b>: Opens the Code Review widget, which scans the code currently in the editor and lists any detected issues. When working with JavaScript, errors found by your browser’s developer tools (accessible with <b>Fn+F12</b> in most browsers) also appear here. Because standard error messages can be confusing for beginners, netnet translates them into clearer language when you click on them.
+      <b>code review</b>: Opens the Code Review widget, which scans the code currently in the editor and lists any detected issues. When working with JavaScript, errors found by your browser’s developer tools (accessible with **Fn+F12** in most browsers) also appear here. Because standard error messages can be confusing for beginners, netnet translates them into clearer language when you click on them.
     <li>
       <b>tidy code</b>: Automatically formats your code to improve readability and consistency. It adjusts indentation, spacing, and alignment based on standard web formatting rules, helping keep your code clean and easy to follow.
     </li>
@@ -69,7 +69,7 @@ The <b>my code</b> sub-menu contains options for the code your working on:
 
 When writing your own code in netnet, you're always working on either a **sketch** or a **project**:
 
-1. A **sketch** is a single HTML file in netnet.studio. Because HTML is a polyglot format (allowing you to mix HTML, CSS, JavaScript, and other languages) you can do a lot within one file (for example, all of netnet’s "demos" are single-file sketches). To save a sketch, press <b>CTRL+S</b> (or <b>CMD+S</b> on Mac). netnet will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL).
+1. A **sketch** is a single HTML file in netnet.studio. Because HTML is a polyglot format (allowing you to mix HTML, CSS, JavaScript, and other languages) you can do a lot within one file (for example, all of netnet’s "demos" are single-file sketches). To save a sketch, press <b>{SUPER}+S</b>. netnet will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL).
 
 2. A **project** is a full website that can include multiple HTML files, code files (CSS, JS, etc.), and other assets such as images, audio, video, or fonts. Projects are "versioned", meaning you can create save points as you work. They’re stored as repositories ("repos") in your personal GitHub account, which allows netnet to use Git for version control and GitHub’s free web hosting when you’re ready to publish your work to the Web. You don’t need to interact with Git or GitHub directly, netnet handles that for you, but since your code lives entirely on GitHub (never on our servers), you’re never locked in and can switch to another editor anytime.
 
@@ -98,7 +98,7 @@ When working on a **project**, netnet will display the path of the file you're c
 
 ![netnet menu](../images/poster-editing-files.jpg)
 
-When working on files in a project, netnet won't render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the **X**, the widget is closed by hitting the **Esc** key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking *Coding Menu > my code > save*, or in this case pressing **Ctrl+S**, or **CMD+S** on Mac) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.
+When working on files in a project, netnet won't render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the **X**, the widget is closed by hitting the **Esc** key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking *Coding Menu > my code > save*, or in this case pressing **{SUPER}+S**) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.
 
 ### Pushing (Uploading) to GitHub
 

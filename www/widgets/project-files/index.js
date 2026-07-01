@@ -51,6 +51,8 @@ class ProjectFiles extends Widget {
     this._pendingPull = null // { remoteParsed, remoteChangedPaths } awaiting conflict resolution
     this._pullConflicts = null // paths shown to the user as in-conflict (read by git-push convo)
     this._resumePullAfterPush = false // set when "push first" is chosen out of a pull conflict
+    this._projectLock = null // Web Locks promise — kept unresolved to hold the lock
+    this._projectLockRelease = null // resolves _projectLock, releasing the lock
 
     this.codeEdit = null // runs on code update when proj is open
 
@@ -539,7 +541,13 @@ class ProjectFiles extends Widget {
     utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
     const owner = WIDGETS['student-session'].getData('owner')
-    if (this.projectData.name) this.closeProject()
+    if (this.projectData.name) this.closeProject() // releases lock on current project
+    const locked = await this._acquireProjectLock(repo)
+    if (!locked) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'project-open-another-tab')
+      return
+    }
     nn.get('load-curtain').show('folder.html', { filename: repo })
     // calling open() on an already-open widget re-fires the 'explain'
     // convo via a 300ms setTimeout, which clobbers the convo we set
@@ -642,7 +650,13 @@ class ProjectFiles extends Widget {
   async _openFromLocal (repo) {
     utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
-    if (this.projectData.name) this.closeProject()
+    if (this.projectData.name) this.closeProject() // releases lock on current project
+    const locked = await this._acquireProjectLock(repo)
+    if (!locked) {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'project-open-another-tab')
+      return
+    }
     nn.get('load-curtain').show('folder.html', { filename: repo })
     this.open()
 
@@ -705,6 +719,7 @@ class ProjectFiles extends Widget {
   }
 
   closeProject () {
+    this._releaseProjectLock()
     // if there are no unpushed changes, drop the local DB on close —
     // the GitHub copy is the source of truth, the local copy is just
     // cache. Only projects with unpushed work are kept locally so the
@@ -2212,6 +2227,30 @@ class ProjectFiles extends Widget {
   // .....................
   // ..................... Initialize Service Worker
   // ...........................................................................
+  // Acquire an exclusive Web Lock for `repo` without waiting. Returns true if
+  // the lock was granted (no other tab has this project open), false if another
+  // tab already holds it. The lock is kept alive by an internal promise and
+  // auto-released by the browser if the tab closes unexpectedly.
+  _acquireProjectLock (repo) {
+    if (!navigator.locks) return Promise.resolve(true) // API unavailable — allow open
+    return new Promise(resolve => {
+      navigator.locks.request(`netnet-project-${repo}`, { ifAvailable: true }, (lock) => {
+        if (!lock) { resolve(false); return } // another tab holds it
+        this._projectLock = new Promise(r => { this._projectLockRelease = r })
+        resolve(true)
+        return this._projectLock // keep lock held until _releaseProjectLock()
+      })
+    })
+  }
+
+  _releaseProjectLock () {
+    if (this._projectLockRelease) {
+      this._projectLockRelease()
+      this._projectLockRelease = null
+      this._projectLock = null
+    }
+  }
+
   async _initServiceWorker () {
     if (!('serviceWorker' in navigator)) {
       console.error('ProjectFiles: no service worker support in this browser')

@@ -99,20 +99,20 @@
         <h1>Coding</h1>
 <p>As explained in the <a href="index.html">introduction page</a> for students (review that first if you haven&#39;t), netnet.studio is an interactive learning platform (see <a href="learning.html">Learning Guide</a> for more on that) where you learn not only by reading docs or watching videos but by making. That&#39;s why it&#39;s also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. The basic ideas are covered in <a href="index.html">introduction page</a>, here we&#39;ll get into the details of the <strong>Coding Menu</strong> as well as the difference between working on a <strong>sketch</strong> (a single HTML file) vs working on a <strong>project</strong> (a GitHub &quot;repo&quot; you can publish online).</p>
 <h2><img src="/images/menu/code.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Coding Menu</h2>
-<p>You can open the Coding Menu anytime by clicking on netnet&#39;s face and selecting it from the main menu. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet&#39;s code editor details like:</p>
+<p>You can open the Coding Menu anytime by clicking on netnet&#39;s face and selecting it from the main menu, or by using the <b>{SUPER} + ;</b> shortcut. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet&#39;s code editor details like:</p>
 <div style="display: grid; grid-template-columns: 1fr 3fr;">
   <img src="../images/coding-menu-editor-settings.jpg"
     alt="coding menu editor settings"
     style="margin-top: 30px">
   <ul>
     <li>
-      <b>auto-update</b>: netnet is a realtime code editor, changes you make appear instantly in the rendered output. This works well for HTML and CSS, but can cause issues with JavaScript. Set this to "false" to disable auto-update and use <b>CTRL+Enter</b> (or <b>CMD+Enter</b> on Mac) to manually render changes.
+      <b>auto-update</b>: netnet is a realtime code editor, changes you make appear instantly in the rendered output. This works well for HTML and CSS, but can cause issues with JavaScript. Set this to "false" to disable auto-update and use <b>{SUPER}+Enter</b> to manually render changes.
     </li>
     <li>
       <b>chattiness</b>: As mentioned in the Sketching section above, netnet often provides feedback, explaining code you double-click and marking detected issues. Adjust this setting if you’d prefer netnet say less.
     </li>
     <li>
-      <b>layout</b>: By default, netnet splits the screen, code on the left, output on the right, but you can choose from several layouts inspired by browser developer tools. You can also resize the editor by dragging its edge.
+      <b>layout</b>: By default, netnet splits the screen, code on the left, output on the right, but you can choose from several layouts inspired by browser developer tools. You can also resize the editor by dragging its edge. You can also use the <b>{SUPER} + &gt;</b> and <b>{SUPER} + &lt;</b> keys to switch between layouts quickly.
     </li>
     <li>
       <b>theme</b>: Change netnet’s color theme to your preference, light, dark, or anything in between.
@@ -139,19 +139,19 @@
     style="margin-top: 30px">
   <ul>
     <li>
-      <b>save</b>: clicking this button prompts the same passage that <b>CTRL+S</b> (or <b>CMD+S</b> on Mac) does, where netnet offers you a set of different options for downloading and sharing your code (including creating a new <i>project</i> if/when you've connected netnet to your GitHub account).
+      <b>save</b>: clicking this button prompts the same passage that <b>{SUPER}+S</b> does, where netnet offers you a set of different options for downloading and sharing your code (including creating a new <i>project</i> if/when you've connected netnet to your GitHub account).
     </li>
     <li>
       <b>new</b>: Gives you the option to create a new <i>sketch</i> or <i>project</i>
     </li>
     <li>
-      <b>open</b>: Gives you the option to upload an HTML file from your computer, and if you're connected to a GitHub account you'll also have the option to open a project (ie. a GitHub repository).
+      <b>open</b>: Gives you the option to upload an HTML file from your computer, and if you're connected to a GitHub account you'll also have the option to open a project (ie. a GitHub repository). You can also use the <b>{SUPER}+O</b> shortcut.
     </li>
     <li>
       <b>share</b>: When working on a *sketch* this opens up the Share Sketch widget (to create a sharable URL), when working on a *project* this gives you the option to create a sharable netnet URL as well as the option to **publish** your project to the web (using ghpages) with a public facing URL.
     </li>
     <li>
-      <b>code review</b>: Opens the Code Review widget, which scans the code currently in the editor and lists any detected issues. When working with JavaScript, errors found by your browser’s developer tools (accessible with <b>Fn+F12</b> in most browsers) also appear here. Because standard error messages can be confusing for beginners, netnet translates them into clearer language when you click on them.
+      <b>code review</b>: Opens the Code Review widget, which scans the code currently in the editor and lists any detected issues. When working with JavaScript, errors found by your browser’s developer tools (accessible with **Fn+F12** in most browsers) also appear here. Because standard error messages can be confusing for beginners, netnet translates them into clearer language when you click on them.
     <li>
       <b>tidy code</b>: Automatically formats your code to improve readability and consistency. It adjusts indentation, spacing, and alignment based on standard web formatting rules, helping keep your code clean and easy to follow.
     </li>
@@ -161,7 +161,7 @@
 <h2>Connecting to GitHub (Sketches vs Projects)</h2>
 <p>When writing your own code in netnet, you&#39;re always working on either a <strong>sketch</strong> or a <strong>project</strong>:</p>
 <ol>
-<li><p>A <strong>sketch</strong> is a single HTML file in netnet.studio. Because HTML is a polyglot format (allowing you to mix HTML, CSS, JavaScript, and other languages) you can do a lot within one file (for example, all of netnet’s &quot;demos&quot; are single-file sketches). To save a sketch, press <b>CTRL+S</b> (or <b>CMD+S</b> on Mac). netnet will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL).</p>
+<li><p>A <strong>sketch</strong> is a single HTML file in netnet.studio. Because HTML is a polyglot format (allowing you to mix HTML, CSS, JavaScript, and other languages) you can do a lot within one file (for example, all of netnet’s &quot;demos&quot; are single-file sketches). To save a sketch, press <b>{SUPER}+S</b>. netnet will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL).</p>
 </li>
 <li><p>A <strong>project</strong> is a full website that can include multiple HTML files, code files (CSS, JS, etc.), and other assets such as images, audio, video, or fonts. Projects are &quot;versioned&quot;, meaning you can create save points as you work. They’re stored as repositories (&quot;repos&quot;) in your personal GitHub account, which allows netnet to use Git for version control and GitHub’s free web hosting when you’re ready to publish your work to the Web. You don’t need to interact with Git or GitHub directly, netnet handles that for you, but since your code lives entirely on GitHub (never on our servers), you’re never locked in and can switch to another editor anytime.</p>
 </li>
@@ -189,7 +189,7 @@
   src="../images/editing-files.mp4"
   poster="../images/poster-editing-files.jpg">
 </video></p>
-<p>When working on files in a project, netnet won&#39;t render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the <strong>X</strong>, the widget is closed by hitting the <strong>Esc</strong> key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking <em>Coding Menu &gt; my code &gt; save</em>, or in this case pressing <strong>Ctrl+S</strong>, or <strong>CMD+S</strong> on Mac) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.</p>
+<p>When working on files in a project, netnet won&#39;t render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the <strong>X</strong>, the widget is closed by hitting the <strong>Esc</strong> key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking <em>Coding Menu &gt; my code &gt; save</em>, or in this case pressing <strong>{SUPER}+S</strong>) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.</p>
 <h3>Pushing (Uploading) to GitHub</h3>
 <p>Changes to a file (as well as creating or deleting a file) are saved &quot;locally&quot;, meaning that they&#39;re stored temporarily in your browser as you work. The <strong>Project Files</strong> widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes changes not yet backed up to GitHub.</p>
 <p>In order to back up those changes you&#39;ll need to &quot;commit&quot; them to your GitHub repo. A commit is like a save point in your project&#39;s timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the <strong>Project Files</strong> widget and choosing the <strong>git push</strong> option.</p>
