@@ -751,6 +751,8 @@ class ProjectFiles extends Widget {
     NNE.code = ''
     NNE.language = 'html'
     NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    // reset web-publish state for the closed project
+    WIDGETS['web-publish']?.reset()
     // close widget
     this.close()
   }

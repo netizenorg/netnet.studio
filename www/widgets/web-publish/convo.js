@@ -66,6 +66,14 @@ window.CONVOS['web-publish'] = (self) => {
       'I see': (e) => e.hide()
     }
   }, {
+    id: 'domain-input-focus',
+    content: 'If you\'ve bought your own custom domain name and setup its DNS to point to GitHub\'s IP addresses (where your project is hosted) you can add it here.',
+    options: {
+      ok: (e) => e.hide(),
+      'custom domain?': (e) => e.goTo('custom-domain'),
+      'what\'s DNS?': (e) => e.goTo('dns-records')
+    }
+  }, {
     id: 'oh-no-error',
     after: () => errorFace(),
     content: 'Oh dang! seems there was a server error... sorry about that...',

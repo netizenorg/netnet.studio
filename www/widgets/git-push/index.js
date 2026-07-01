@@ -118,7 +118,7 @@ class GitPush extends Widget {
       window.convo = new Convo(this.convos, 'pushed-now-pull')
     }
     // if web-publish is already open, rerun status indicator
-    if (WIDGETS['web-publish']?.opened) WIDGETS['web-publish']._refreshStatus()
+    if (WIDGETS['web-publish']?.opened) WIDGETS['web-publish']._startRebuildPolling()
   }
 
   _updateCommitMessage (e) {

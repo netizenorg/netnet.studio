@@ -32,9 +32,15 @@ class ColorWidget extends Widget {
       const color = NNE.cm.getSelection().toLowerCase()
       const c = nn.colorMatch(color)
       const k = NNE.edu.css.colors[color]
-      if (c) {
+      if (c && c[0] !== 'named') {
         this.updateColor(c)
         this._changeSubWin(c[0])
+      } else if (c && c[0] === 'named') {
+        const named = NNE.edu.css.colors[c[1]]
+        if (named) {
+          const o = nn.colorMatch(named.rgb)
+          if (o) { this.updateColor(o); this._changeSubWin('rgb') }
+        }
       } else if (k) {
         const o = nn.colorMatch(k.rgb)
         this.updateColor(o)
@@ -84,18 +90,18 @@ class ColorWidget extends Widget {
         this.alpha = this.alpha === 1 ? 1 : nn.hex2alpha(this.alpha)
         this._SubWin = 'hex'
         this._updateRGB()
-      } else if (c[0] === 'rgb') {
+      } else if (c[0] === 'rgb' || c[0] === 'rgba') {
         this.red = c[2]
         this.green = c[3]
         this.blue = c[4]
-        this.alpha = c[5]
+        this.alpha = c[5] !== undefined ? c[5] : 1
         this._SubWin = 'rgb'
         this._updateRGB()
-      } else if (c[0] === 'hsl') {
+      } else if (c[0] === 'hsl' || c[0] === 'hsla') {
         this.hue = c[2]
         this.sat = c[3]
         this.lit = c[4]
-        this.alpha = c[5]
+        this.alpha = c[5] !== undefined ? c[5] : 1
         this._SubWin = 'hsl'
         this._updateHSL()
       }
@@ -173,6 +179,8 @@ class ColorWidget extends Widget {
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.••.¸¸¸.•*• private methods
 
   _changeSubWin (type) {
+    if (type === 'rgba') type = 'rgb'
+    else if (type === 'hsla') type = 'hsl'
     // highlight button
     this.$('.clr-wig__sub-btn').forEach(b => {
       b.style.color = null; b.style.backgroundColor = null
