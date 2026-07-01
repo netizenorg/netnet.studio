@@ -99,6 +99,40 @@
         font-weight: 700;
         cursor: text;
       }
+
+      #curtain-login {
+        display: none;
+        padding: 0 16px 16px;
+      }
+
+      #curtain-login-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      #curtain-password {
+        position: relative;
+        width: 250px;
+        padding: 6px;
+        border: none;
+        border-radius: 5px;
+        margin: 0px 20px 0px 0px;
+        color: var(--netizen-hint-color);
+        background-color: var(--netizen-meta);
+        font-family: monospace;
+      }
+
+      #curtain-error {
+        position: relative;
+        display: none;
+        color: var(--fg-color);
+        font-family: 'fira-mono-regular', monospace;
+        font-size: 14px;
+        text-align: center;
+        padding: 0 6px;
+      }
     </style>
   </head>
   <body>
@@ -109,6 +143,13 @@
       </div>
       <div class="widget__inner-html">
         ( ◕ ◞ ◕ ) {{MESSAGE}}
+      </div>
+      <div id="curtain-login">
+        <div id="curtain-login-row">
+          <input type="password" id="curtain-password" placeholder="password" autocomplete="current-password">
+          <button class="pill-btn" id="curtain-submit">enter</button>
+        </div>
+        <div id="curtain-error">incorrect password</div>
       </div>
     </div>
 
@@ -122,6 +163,8 @@
     <!-- netizen.org libs -->
     <script src="/nn.min.js"></script>
     <script>
+      var CURTAIN_MODE = '{{MODE}}'
+
       function resize () {
         if (nn.width <= 530) {
           nn.get('.widget__inner-html').css('font-size', '1em')
@@ -140,7 +183,38 @@
         }
       }
 
-      nn.on('load', resize)
+      async function login () {
+        var errorEl = nn.get('#curtain-error')
+        errorEl.style.display = 'none'
+        var password = nn.get('#curtain-password').value
+        try {
+          var res = await fetch('/api/curtain-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+          })
+          var data = await res.json()
+          if (data.success) {
+            window.location.reload()
+          } else {
+            errorEl.style.display = 'block'
+          }
+        } catch (e) {
+          errorEl.textContent = 'server error'
+          errorEl.style.display = 'block'
+        }
+      }
+
+      nn.on('load', function () {
+        resize()
+        if (CURTAIN_MODE !== 'login') return
+        nn.get('#curtain-login').style.display = 'block'
+        nn.get('#curtain-submit').addEventListener('click', login)
+        nn.get('#curtain-password').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') login()
+        })
+      })
+
       nn.on('resize', resize)
     </script>
   </body>

@@ -12,8 +12,6 @@ const SOCKETS = require('./my_modules/sockets.js')
 const ERRORS = require('./my_modules/errors.js')
 const PORT = process.env.PORT || 8001
 
-const fs = require('fs')
-const path = require('path')
 const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 app.use(cookieParser())
@@ -55,14 +53,9 @@ limiters.forEach(([route, windowMs, max]) => {
   app.use(route, makeLimiter({ windowMs, max }))
 })
 
-// CURTAIN SETUP (PAGE BLOCKER)
-// ---------------------------
-if (process.env.CURTAIN) {
-  app.get('/', (req, res) => {
-    const curtain = fs.readFileSync(path.join(__dirname, 'www', 'curtain.html'), 'utf8')
-    res.send(curtain.replace('{{MESSAGE}}', process.env.CURTAIN))
-  })
-}
+// CURTAIN SETUP (PAGE BLOCKER / LOGIN GATE)
+// ------------------------------------------
+if (process.env.CURTAIN) app.use(require('./my_modules/curtain.js'))
 
 // SECURITY HEADERS
 // ---------------
