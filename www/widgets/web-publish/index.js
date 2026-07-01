@@ -1,4 +1,4 @@
-/* global Widget, Convo, WIDGETS, nn, utils */
+/* global Widget, Convo, WIDGETS, nn, utils, QRious */
 class WebPublish extends Widget {
   constructor (opts) {
     super(opts)
@@ -9,6 +9,7 @@ class WebPublish extends Widget {
 
     this.pagesData = null // raw GitHub Pages API response, only set once enabled
     this._pollTimer = null
+    this.qrcode = null
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
@@ -35,9 +36,13 @@ class WebPublish extends Widget {
           <div class="web-publish__section">
             <label>published URL</label>
             <div class="web-publish__row">
+              <button class="web-publish__qr-btn" name="qr-btn" title="show QR code">
+                <span class="web-publish__qr-icon"></span>
+              </button>
               <a href="#" target="_blank" name="published-url" class="web-publish__url"></a>
               <a href="#" target="_blank" name="status" class="web-publish__status" title="view deployment log"></a>
             </div>
+            <div name="pub-qr-code" class="web-publish__qr-code"></div>
           </div>
           <div class="web-publish__section web-publish__domain-section">
             <label>custom domain setup</label>
@@ -64,13 +69,24 @@ class WebPublish extends Widget {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'pub-info')
     })
+
+    this.$('[name="qr-btn"]').addEventListener('click', () => this._toggleQRCode())
+
+    const qrIcon = this.$('.web-publish__qr-icon')
+    utils.get('/assets/images/icons/qr-code.svg', (svg) => {
+      if (typeof svg === 'string') qrIcon.innerHTML = svg
+    }, true)
   }
 
   _render () {
     const enabled = !!this.pagesData
     this.$('.web-publish__not-published').style.display = enabled ? 'none' : 'block'
     this.$('.web-publish__published').style.display = enabled ? 'block' : 'none'
-    if (!enabled) return
+    if (!enabled) {
+      this.$('[name="pub-qr-code"]').style.display = 'none'
+      this.qrcode = null
+      return
+    }
 
     const owner = WIDGETS['student-session'].getData('owner')
     const repo = WIDGETS['project-files']?.projectData.name
@@ -80,6 +96,7 @@ class WebPublish extends Widget {
     const urlLink = this.$('[name="published-url"]')
     urlLink.href = url
     urlLink.textContent = url
+    if (this.qrcode) this.qrcode.value = url
 
     const statusLabels = {
       building: 'building…',
@@ -211,6 +228,30 @@ class WebPublish extends Widget {
     const status = this.pagesData?.status
     if (!status || status === 'built' || status === 'errored') return
     this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
+  }
+
+  _toggleQRCode () {
+    const container = this.$('[name="pub-qr-code"]')
+    const url = this.pagesData?.html_url || ''
+    if (!this.qrcode) {
+      this.qrcode = new QRious({
+        element: container,
+        background: '#ffffff',
+        backgroundAlpha: 0,
+        foreground: utils.getVal('--netizen-meta'),
+        foregroundAlpha: 1,
+        level: 'H',
+        size: 200,
+        value: url
+      })
+      if (!this.qrcode.canvas.parentElement) {
+        container.appendChild(this.qrcode.canvas)
+      }
+    } else {
+      this.qrcode.value = url
+    }
+    const visible = window.getComputedStyle(container).display !== 'none'
+    container.style.display = visible ? 'none' : 'flex'
   }
 
   _stopPolling () {

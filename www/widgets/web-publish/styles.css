@@ -69,6 +69,49 @@
 }
 
 
+.web-publish__qr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 22px;
+  height: 22px;
+
+  padding: 0;
+  border: none;
+
+  background: none;
+  opacity: 0.5;
+
+  cursor: pointer;
+  transition: opacity var(--element-transition-time) ease-in-out;
+}
+
+.web-publish__qr-btn:hover {
+  opacity: 1;
+}
+
+.web-publish__qr-icon {
+  display: inline-flex;
+}
+
+.web-publish__qr-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.web-publish__qr-icon rect,
+.web-publish__qr-icon path {
+  fill: var(--netizen-meta);
+}
+
+.web-publish__qr-code {
+  display: none;
+  justify-content: center;
+  padding: 10px 0;
+}
+
 .web-publish__domain-section input {
   flex: 1;
   min-width: 0;
