@@ -462,8 +462,18 @@ window.CONVOS['project-files'] = (self) => {
     }
   }, {
     id: 'project-open-another-tab',
-    content: 'Looks like this project is already open in another tab! Working on the same project in two tabs at once can cause conflicts with the local file storage.',
-    options: { ok: (e) => e.hide() }
+    content: 'Looks like this project is already open in another tab! Working on the same project in two tabs at once can cause conflicts with the local file storage. Close the other tab first, or open anyway if you\'re sure it\'s no longer active.',
+    options: {
+      'close other tab first': (e) => e.hide(),
+      'open anyway': (e) => {
+        e.hide()
+        const blocked = self._blockedOpenRepo
+        if (!blocked) return
+        self._blockedOpenRepo = null
+        if (blocked.source === 'local') self._openFromLocal(blocked.repo, true)
+        else self._openFromGitHub(blocked.repo, true)
+      }
+    }
   }, {
     id: 'files-truncated',
     content: self.truncatedReason === 'depth'

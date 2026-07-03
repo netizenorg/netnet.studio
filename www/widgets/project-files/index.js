@@ -537,13 +537,14 @@ class ProjectFiles extends Widget {
     await this._openFromGitHub(repo)
   }
 
-  async _openFromGitHub (repo) {
+  async _openFromGitHub (repo, force = false) {
     utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
     const owner = WIDGETS['student-session'].getData('owner')
     if (this.projectData.name) this.closeProject() // releases lock on current project
-    const locked = await this._acquireProjectLock(repo)
+    const locked = await this._acquireProjectLock(repo, force)
     if (!locked) {
+      this._blockedOpenRepo = { repo, source: 'github' }
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'project-open-another-tab')
       return
@@ -593,8 +594,12 @@ class ProjectFiles extends Widget {
         this.projectData = { url, branch, name: repo }
         this.dbName = repo
 
-        // wipe any stale local DB before re-init with fresh GitHub data
-        await this._destroyProjectDB(repo)
+        // wipe any stale local DB before re-init with fresh GitHub data.
+        // when force=true the other tab may still hold an IDB connection, so
+        // skip deleteDatabase (which would block open() behind it). the fresh
+        // GitHub data overwrites whatever is in the DB anyway.
+        if (force) this.files = {}
+        else await this._destroyProjectDB(repo)
         this._swControl = this._initServiceWorker() // setup service worker
         this.db = await this._initIndexedDB() // setup indexedDB
         await this._saveFilesToIndexedDB()
@@ -647,12 +652,13 @@ class ProjectFiles extends Widget {
   // Open a project from its local IDB (working copy + baselines + meta)
   // without touching GitHub. Used when the student has unpushed local
   // changes and chooses to keep working on them.
-  async _openFromLocal (repo) {
+  async _openFromLocal (repo, force = false) {
     utils.cancelAllNetitorUses('project-files')
     WIDGETS['student-session'].clearSaveState()
     if (this.projectData.name) this.closeProject() // releases lock on current project
-    const locked = await this._acquireProjectLock(repo)
+    const locked = await this._acquireProjectLock(repo, force)
     if (!locked) {
+      this._blockedOpenRepo = { repo, source: 'local' }
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'project-open-another-tab')
       return
@@ -2231,10 +2237,11 @@ class ProjectFiles extends Widget {
   // the lock was granted (no other tab has this project open), false if another
   // tab already holds it. The lock is kept alive by an internal promise and
   // auto-released by the browser if the tab closes unexpectedly.
-  _acquireProjectLock (repo) {
+  _acquireProjectLock (repo, force = false) {
     if (!navigator.locks) return Promise.resolve(true) // API unavailable — allow open
+    const opts = force ? { steal: true } : { ifAvailable: true }
     return new Promise(resolve => {
-      navigator.locks.request(`netnet-project-${repo}`, { ifAvailable: true }, (lock) => {
+      navigator.locks.request(`netnet-project-${repo}`, opts, (lock) => {
         if (!lock) { resolve(false); return } // another tab holds it
         this._projectLock = new Promise(r => { this._projectLockRelease = r })
         resolve(true)
