@@ -22,74 +22,84 @@
     <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
-    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro">
-        <a href="/">
-          ( ◕ ◞ ◕ )
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
           <span class="screen-reader-only">netnet.studio home</span>
         </a>
-        <span class="ver">v4.0</span>
-      </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
-        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
-      </button>
-      <div class="docs__panel__search">
-        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-input" class="search-input" placeholder="search">
       </div>
       <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
-                  coding
+                  coding in netnet
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/learning.html">
-                  learning
+                  the Learning Guide
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/ai-integration.html">
+                  connecting local LLM
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list" role="navigation"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/url-anatomy.html">
+                  netnet URLs
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/supporters/index.html">Dear Supporters</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/supporters/institutional-support.html">
+                  institutional support
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
-                  bug report
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/code-demos.html">
-                  code demos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
-                  contributor workflow
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
-                  editing convos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/institutional-support.html">
-                  institutional support
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
-                  manual setup
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/support.html">
-                  support
+                  0. Bug Reports
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
-                  the docs
+                  1. Editing these Docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  3. Code Demos
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
-                  tutorial maker
+                  4. Interactive Tutorials
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  2. Convos and Passages
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/widgets.html">
-                  widgets
-                </a></li></ul>
-              </li><li class="docs__panel__list-item">
-                <a class="header inline-link" href="/docs/#">Other Notes</a>
-                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/misc/ai-integration.html">
-                  ai integration
+                  5. Widgets
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/project-architecture.html">
+                  6. Core Components
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  TL;DR (for experienced devs)
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  Manual Setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/netnet-faces.html">
+                  netnet faces
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/dialogue-system.html">
+                  Dialogue System
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/css-styleguide.html">
+                  css styleguide
                 </a></li></ul>
               </li></ul>
     </div>
@@ -100,13 +110,13 @@
 <p>netnet’s <strong>Learning Guide</strong> is packed with educational content that starts from the basics and gradually builds toward more complex lessons and examples. You can open the Learning Guide anytime by clicking on netnet&#39;s face and selecting it from the main menu, or by using the <b>{SUPER} + L</b> shortcut. You can follow the Learning Guide from start to finish for a traditional progression, or explore it non-linearly based on your own interests and needs. You can scroll through the Learning Guide, but you can also click on the Internet globe to jump to the &quot;Hyperlinks&quot;, and from there you can click on any section to jump to it.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-guide.mp4"
-  poster="../images/poster-learning-guide.jpg">
+  poster="../images/learning-guide-poster.jpg">
 </video></p>
 <h2>Docs (the text books)</h2>
 <p>Throughout the Learning Guide, you’ll find links to <strong>Docs</strong>, texts contained in their own widgets. Sometimes these act like a textbook, with paragraphs, diagrams, and code examples you can read through. Other times they serve more like a reference or dictionary, helping you look up HTML elements, CSS properties, and other key concepts as you need them.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-docs.mp4"
-  poster="../images/poster-learning-docs.jpg">
+  poster="../images/learning-docs-poster.jpg">
 </video></p>
 <p><strong>NOTE</strong>: These are the same docs that pop-up when you double click a piece of code in the editor and ask netnet to <em>tell me more</em></p>
 <h2>Learning Modes (the interactive lessons)</h2>
@@ -115,36 +125,36 @@
 <p><em>Guided Intros</em> are Interactive introductions where netnet walks you through core web concepts, like HTML, CSS, or JavaScript, via short, conversational lessons. These use widgets that act like interactive slides and are navigated through passages (dialogues with netnet).</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-intros.mp4"
-  poster="../images/poster-learning-intros.jpg">
+  poster="../images/learning-intros-poster.jpg">
 </video></p>
 <p>Many of netnet&#39;s widgets also contain guides which often begin as soon as you open up the widget or when you press any of the <span class="q-mark">?</span> buttons within the widget. For example the <b>git push</b> widget not only allows you to create and push your git commits, it also introduces the concept of versioning and guides you through the commit process; the <b>web publish</b> widget not only allows you to publish your projects to the web, it also explains concepts like web hosting and DNS; etc.</p>
 <h3>Annotated Demos</h3>
 <p>A <em>demo</em> is an annotated <em>sketch</em> designed for learning through remixing and experimentation. Like any sketch in netnet, it&#39;s a single HTML file, but it includes a demo title and a <strong>Guide</strong> button at the top of the editor. Each note corresponds to a line or section of code; you can have netnet explain the entire demo sequentially or jump to a specific note by clicking its green dot or selecting it from the Guide Widget.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-demos.mp4"
-  poster="../images/poster-learning-demos.jpg">
+  poster="../images/learning-demos-poster.jpg">
 </video></p>
 <p>Demos appear throughout the Learning Guide, but you can also explore them all in the <em>Code Demos</em> widget.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-demos2.mp4"
-  poster="../images/poster-learning-demos2.jpg">
+  poster="../images/learning-demos2-poster.jpg">
 </video></p>
 <h3>Guided Templates</h3>
 <p>A <em>template</em> is a starter <em>project</em>, a set of files and folders you can build on. When you launch one, netnet can explain it line by line, writing and describing each part of the code as you go. Occasionally, it may ask for input through passages (almost like a coding mad-lib). You can skip the walkthrough if you just want to start coding, but the first time you open a template, it’s worth having netnet guide you.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-templates.mp4"
-  poster="../images/poster-learning-templates.jpg">
+  poster="../images/learning-templates-poster.jpg">
 </video></p>
 <p>Templates appear throughout the Learning Guide, but you can view them all in the <em>Template Starter Projects</em> widget.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-templates2.mp4"
-  poster="../images/poster-learning-templates2.jpg">
+  poster="../images/learning-templates2-poster.jpg">
 </video></p>
 <h3>Interactive Tutorials</h3>
 <p>A <em>tutorial</em> is an interactive, hypermedia lecture, similar to a video tutorial on YouTube, but fully interactive. You can pause at any point to explore widgets that appear or experiment with code in the editor. Tutorials often blend history, theory, and practice, and can be navigated through the video’s progress bar.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/learning-tutorial.mp4"
-  poster="../images/poster-learning-tutorial.jpg">
+  poster="../images/learning-tutorial-poster.jpg">
 </video></p>
 
       </div>
@@ -153,7 +163,6 @@
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
     <script src="/core/libs/fuse.js"></script>
-    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>

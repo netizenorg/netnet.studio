@@ -159,6 +159,31 @@ function replaceSuperKey () {
   })
 }
 
+function setupEyeAnimation () {
+  const eyes = nn.getAll('.eye')
+  let idleTimer = null
+
+  const blink = async () => {
+    eyes.forEach(e => { e.rotate(0); e.textContent = '-' })
+    await nn.sleep(250)
+    eyes.forEach(e => { e.textContent = '◕' })
+    idleTimer = setTimeout(blink, nn.random(5000, 10000))
+  }
+
+  nn.on('mousemove', () => {
+    clearTimeout(idleTimer)
+    idleTimer = setTimeout(blink, 5000)
+    eyes.forEach(eye => {
+      const cx = eye.left + eye.width / 2
+      const cy = eye.top + eye.height / 2
+      const deg = nn.radToDeg(nn.angleBtw(cx, cy, nn.mouseX, nn.mouseY)) + 130
+      eye.rotate(deg)
+    })
+  })
+
+  idleTimer = setTimeout(blink, nn.random(3000, 7000))
+}
+
 function mobileMenu () {
   const hamburger = document.querySelector('#hamburger')
   const docsPanel = document.querySelector('.docs__panel')
@@ -185,4 +210,5 @@ nn.on('load', () => {
   setupAutoplayVideos()
   replaceSuperKey()
   setupQuoteCarousels()
+  setupEyeAnimation()
 })

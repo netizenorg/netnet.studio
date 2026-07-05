@@ -6,7 +6,9 @@ function notFound (req, res, next) {
     return res.status(404).json({ error: 'not_found' })
   }
 
-  const file = path.join(__dirname, '..', 'www', '404.html')
+  const file = req.path.startsWith('/docs')
+    ? path.join(__dirname, '..', 'docs', '404.html')
+    : path.join(__dirname, '..', 'www', '404.html')
   res.status(404).format({
     html: () => res.sendFile(file),
     json: () => res.json({ error: 'not_found' }),

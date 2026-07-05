@@ -22,74 +22,84 @@
     <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
-    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro">
-        <a href="/">
-          ( ◕ ◞ ◕ )
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
           <span class="screen-reader-only">netnet.studio home</span>
         </a>
-        <span class="ver">v4.0</span>
-      </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
-        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
-      </button>
-      <div class="docs__panel__search">
-        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-input" class="search-input" placeholder="search">
       </div>
       <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
-                  coding
+                  coding in netnet
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/learning.html">
-                  learning
+                  the Learning Guide
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/ai-integration.html">
+                  connecting local LLM
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list" role="navigation"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/url-anatomy.html">
+                  netnet URLs
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/supporters/index.html">Dear Supporters</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/supporters/institutional-support.html">
+                  institutional support
+                </a></li></ul>
               </li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
-                  bug report
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/code-demos.html">
-                  code demos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
-                  contributor workflow
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
-                  editing convos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/institutional-support.html">
-                  institutional support
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
-                  manual setup
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/support.html">
-                  support
+                  0. Bug Reports
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
-                  the docs
+                  1. Editing these Docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  3. Code Demos
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
-                  tutorial maker
+                  4. Interactive Tutorials
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  2. Convos and Passages
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/widgets.html">
-                  widgets
-                </a></li></ul>
-              </li><li class="docs__panel__list-item">
-                <a class="header inline-link" href="/docs/#">Other Notes</a>
-                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/misc/ai-integration.html">
-                  ai integration
+                  5. Widgets
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/project-architecture.html">
+                  6. Core Components
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  TL;DR (for experienced devs)
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  Manual Setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/netnet-faces.html">
+                  netnet faces
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/dialogue-system.html">
+                  Dialogue System
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/css-styleguide.html">
+                  css styleguide
                 </a></li></ul>
               </li></ul>
     </div>
@@ -111,7 +121,6 @@ these docs are still in progress, if you can't find what you're looking for, or 
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
     <script src="/core/libs/fuse.js"></script>
-    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>

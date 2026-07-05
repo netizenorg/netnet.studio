@@ -1,4 +1,4 @@
-# Support netnet.studio
+# Dear Supporters,
 
 netnet.studio is a [netizen.org](http://netizen.org) project designed and developed by [Nick Briz](http://nickbriz.com/) and [Sarah Rooney](https://www.sarahrooney.net/) with help from a handful of [other contributors](https://github.com/netizenorg/netnet.studio/graphs/contributors). netnet.studio is free and open source, and always will be. If you find value in it, here's how you can help keep it going.
 

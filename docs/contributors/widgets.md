@@ -1,6 +1,6 @@
 # Widgets
 
-![netnet widgets](../images/poster-widget-intro.jpg)
+![netnet widgets](../images/widget-intro.jpg)
 
 Widgets are multi-purpose independent windows that can be thought of as "plugins" or "addons" for netnet.studio. They're used in a variety of contexts to provide functions, utilities, and information. For example, widgets can be used during tutorials to open up various media types (images, videos, gifs, audio, texts, 3D objects, etc). They can also be their own miscellaneous utilities, such as a widget that explains some concept using interactive graphics. Widgets can also be GUIs that interact with the netitor: for example, a widget that generates snippets of CSS code. The sky's the limit!
 
@@ -16,7 +16,7 @@ The docs below explain how to use netnet's Widget system for creating all sorts 
 
 All of the logic for netnet's Widget system can be found in [www/widgets/index.js](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/index.js), so any bug fixes or modifications to the Widget system itself would happen there. The system creates a global `WIDGETS` object. You can test this object in your browser's developer console. Copy+paste one of the following lines for a demo:
 
-```
+```js
 // Returns an array of all the files currently loaded into the system.
 // These are the actual JavaScript files used to generate different
 // sorts of widgets. These are essentially the various widget classes.
@@ -41,7 +41,7 @@ Widgets can be made by either using functionality provided in the `WIDGETS` obje
 
 To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
-```
+```js
 // to create the widget first run
 WIDGETS.create({
   key: 'welcome-widget',
@@ -62,7 +62,7 @@ WIDGETS.close('just-a-test')
 ### <a id="props"></a> Properties and Methods
 Widgets have various properties, all of which can be set in the constructor by passing any of the following options to the `.create()` method:
 
-```
+```js
 WIDGETS.create({
   type: 'Widget',         // type of widget
   key: 'my-new-widget',   // the widget's id
@@ -85,7 +85,7 @@ You can interact with any instantiated widget directly by calling `WIDGETS['my-n
 
 You can also call various methods on an instantiated widget, such as:
 
-```
+```js
 // to open and close the widget
 // similar to WIDGETS.open(id) and WIDGETS.close(id)
 WIDGETS['my-new-widget'].open()
@@ -119,7 +119,7 @@ WIDGETS['my-new-widget'].bring2front()
 
 Widgets also have an event system (like pretty much everything in netnet), which works like this:
 
-```
+```js
 // to register a new event listener
 WIDGETS['my-new-widget'].on(event, callback)
 
@@ -145,7 +145,7 @@ WIDGETS['my-new-widget'].emit('test', { data: 100 })
 
 ## <a id="custom"></a> Creating a Custom Widget
 
-![custom widget](../images/poster-creating-custom-widget.jpg)
+![custom widget](../images/creating-custom-widget-poster.jpg)
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
@@ -161,7 +161,7 @@ www/widgets/
 
  `index.js` should look something like this. Note the unique `key` for our new widget must match its parent folder's name, both in kebab case.
 
-```
+```js
 class ExampleWidget extends Widget {
   constructor (opts) {
     super(opts)
@@ -215,7 +215,7 @@ The widget system provides some extra methods intended to make the creation of c
 
 Like any other widget it begins with creating a new file for your custom widget in the www/js/widgets directory. Let's create a font size generator widget in this example.
 
-```
+```js
 // font-size-generator/index.js
 class FontSizeGenerator extends Widget {
   constructor (opts) {
@@ -286,7 +286,7 @@ This widget makes use of a few special methods built into the base Widget class 
 
 The options you can pass into the code field method are:
 
-```
+```js
 this.codeField = this.createCodeField({
   value: 'font-size: 12px', // the default value to display in the field
   readonly: false, // weather or not the user can change input field content
@@ -297,7 +297,7 @@ this.codeField = this.createCodeField({
 
 The options you can pass into the slider method are:
 
-```
+```js
 this.codeField = this.createSlider({
   value: 100, // the default value to set the slider to
   change: () => {/* function to run when the slider value changes */},
@@ -312,7 +312,7 @@ this.codeField = this.createSlider({
 
 It also makes use of a parseCSS() method which can take a CSS declaration as a string and returns an objects with the declarations property and value parsed out. Some examples of the sorts of objects it returns are:
 
-```
+```js
 this.parseCSS('font-size: 24px;')
 // returns: { property: 'font-size', value: ['24px'] }
 
