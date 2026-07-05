@@ -111,6 +111,7 @@ class JsReference extends Widget {
 
     const keywordMap = {
       variable: () => this.openDocs('mainOpts', 'variables'),
+      string: () => this.openDocs('mainOpts', 'variables'),
       var: () => this.openDocs('mainOpts', 'variables'),
       const: () => this.openDocs('mainOpts', 'variables'),
       let: () => this.openDocs('mainOpts', 'variables'),
