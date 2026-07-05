@@ -107,10 +107,23 @@ class JsReference extends Widget {
   }
 
   textBubble (eve) {
-    if (!eve || !eve.nfo) return
+    if (!eve) return
+
+    // check if this is a JS string literal containing a color value
+    const raw = eve.data || ''
+    const quotedMatch = /^(['"`])(.*)\1$/.exec(raw)
+    if (quotedMatch) {
+      const inner = quotedMatch[2].trim()
+      const c = nn.colorMatch(inner.toLowerCase())
+      const k = NNE.edu.css.colors[inner.toLowerCase()]
+      if (c || k) return this._colorStringBubble(inner, c, k)
+    }
+
+    if (!eve.nfo) return
 
     const keywordMap = {
       variable: () => this.openDocs('mainOpts', 'variables'),
+      string: () => this.openDocs('mainOpts', 'variables'),
       var: () => this.openDocs('mainOpts', 'variables'),
       const: () => this.openDocs('mainOpts', 'variables'),
       let: () => this.openDocs('mainOpts', 'variables'),
@@ -321,6 +334,86 @@ class JsReference extends Widget {
       const convo = this.$('code-trace').dataset.convo
       window.convo = new Convo(this.convos, convo || key)
     })
+  }
+
+  _colorStringBubble (val, c, k) {
+    const r = { hex: null, rgb: null, hsl: null }
+    let type, alpha
+
+    if (k) {
+      type = 'keyword'
+      r.hex = k.hex
+      r.rgb = k.rgb
+      const hsl = nn.toHSL(k.hex)
+      r.hsl = `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`
+    } else {
+      type = c[0]
+      if (type === 'hex') {
+        r.hex = c[1].length > 7 ? c[1].substring(0, 7) : c[1]
+        alpha = c[1].length === 9 ? c[1].substring(7) : c[1].length === 5 ? c[1].substring(4) : null
+      } else if (type === 'rgb' || type === 'rgba') {
+        r.hex = nn.toHex({ r: parseInt(c[2]), g: parseInt(c[3]), b: parseInt(c[4]) })
+        alpha = c[5] || null
+      } else if (type === 'hsl' || type === 'hsla') {
+        r.hex = nn.toHex({ h: parseInt(c[2]), s: parseInt(c[3]), l: parseInt(c[4]) })
+        alpha = c[5] || null
+      }
+
+      const rgb = nn.toRGB(r.hex)
+      r.rgb = alpha
+        ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+        : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+
+      const hsl = nn.toHSL(r.hex)
+      r.hsl = alpha
+        ? `hsla(${hsl.h}, ${hsl.s}, ${hsl.l}, ${alpha})`
+        : `hsl(${hsl.h}, ${hsl.s}, ${hsl.l})`
+    }
+
+    const clrURL = {
+      keyword: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords',
+      rgb: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#RGB_colors',
+      rgba: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#RGB_colors',
+      hsl: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#HSL_colors',
+      hsla: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#HSL_colors',
+      hex: 'https://www.w3schools.com/colors/colors_hexadecimal.asp'
+    }
+
+    let clr = '<span style="color: hsl(0, 80%, 68%);">C</span><span style="color: hsl(62, 80%, 68%);">O</span><span style="color: hsl(120, 80%, 68%);">L</span><span style="color: hsl(239, 80%, 68%);">O</span>'
+    clr += '<span style="color: hsl(296, 80%, 68%);">R</span>'
+
+    let s = `<p>This is a ${clr} code, `
+    s += (type === 'keyword')
+      ? `this specific color <code>${val}</code> is defined using a color <a href="${clrURL[type]}" target="_blank">${type}</a>.`
+      : `this specific color <code>${val}</code> is defined using ${type === 'hex' ? 'a' : 'an'} <a href="${clrURL[type]}" target="_blank">${type}</a> color ${type === 'hex' ? 'code' : '<a href="https://css-tricks.com/complete-guide-to-css-functions/#aa-color-functions" target="_blank">function</a>'}.`
+
+    const ix = `written as a <i>hex</i> code it would be <code>${r.hex}</code>`
+    const ir = `written as an <i>rgb</i> code it would be <code>${r.rgb}</code>`
+    const ih = `written as an <i>hsl</i> code it would be <code>${r.hsl}</code>`
+
+    if (type === 'keyword') s += ` If this were ${ix}, ${ir}, ${ih}.</p>`
+    else if (type === 'hex') s += ` If this were ${ir}, ${ih}.</p>`
+    else if (type === 'rgb' || type === 'rgba') s += ` If this were ${ix}, ${ih}.</p>`
+    else if (type === 'hsl' || type === 'hsla') s += ` If this were ${ix}, ${ir}.</p>`
+
+    if (type === 'hex') {
+      setTimeout(() => {
+        const from = NNE.cm.getCursor('from')
+        const to = NNE.cm.getCursor('to')
+        const line = NNE.cm.getLine(from.line)
+        if (line[from.ch - 1] === '#') {
+          NNE.cm.setSelection({ line: from.line, ch: from.ch - 1 }, to)
+        }
+      }, 100)
+    }
+
+    window.convo = new Convo({
+      content: s,
+      options: {
+        'open Color Widget': () => WIDGETS.open('color-widget'),
+        ok: (e) => { e.hide() }
+      }
+    }, null, true)
   }
 
   _loadCodeExamples (type, ele) {
