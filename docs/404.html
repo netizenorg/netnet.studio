@@ -62,7 +62,7 @@
                   <a class="inline-link" href="/docs/supporters/institutional-support.html">
                   institutional support
                 </a></li></ul>
-              </li><li class="docs__panel__list-item open">
+              </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
@@ -104,94 +104,40 @@
               </li></ul>
     </div>
 
-    <div class="docs__viewer">
+    <div class="docs__viewer docs__viewer--404">
       <div class="docs__viewer-inner">
-        <h1>Bug Reports</h1>
-<h3>filing an issue</h3>
-<p>If something in netnet.studio didn’t work the way you expected, we want to hear about it! This document explains how to file a helpful bug report with enough detail for us to reproduce the issue on our end and fix it. Because different devices, operating systems, browsers, settings, or even small differences in the steps taken can lead to different results, sharing your setup and exactly what you did gives us the best chance to reproduce the bug on our end so we can fix it!</p>
-<h2>Where to report</h2>
-<p>We use GitHub to track all of our <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issues</a>, you can report a new one in the link below. Dont&#39; forget, as mentioned in the <a href="index.html">contributors page</a>, you&#39;ll need to create a free GitHub account before you can contribute:</p>
-<ul>
-<li><h3><a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">https://github.com/netizenorg/netnet.studio/issues/new</a></h3>
-</li>
-</ul>
-<div class="warning">
-🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things.
+        
+<style>
+  .docs__viewer--404 { display: flex; align-items: center; justify-content: center; height: 100%; }
+  .docs__404 { max-width: 480px; width: 100%; text-align: center; }
+  .docs__404__face { font-size: 2rem; margin-bottom: 12px; }
+  .docs__404__label {
+    font-family: 'fira-mono-regular', monospace; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--netizen-comment); margin-bottom: 12px;
+  }
+  .docs__404__msg { font-size: 18px; color: var(--netizen-comment); line-height: 1.5em; margin: 0 0 8px; }
+  .docs__404__url {
+    font-family: 'fira-mono-regular', monospace; font-size: 13px;
+    color: var(--netizen-comment); margin: 0 0 28px; word-break: break-all;
+  }
+  .docs__404__home {
+    font-family: 'fira-mono-regular', monospace; font-size: 13px;
+    color: var(--netizen-comment); text-decoration: none;
+    transition: color var(--element-transition-time) ease;
+  }
+  .docs__404__home:hover { color: var(--netizen-def); }
+</style>
+<div class="docs__404">
+  <div class="docs__404__face">( &#9685; &#9694; &#9685; )</div>
+  <div class="docs__404__label">404 — page not found</div>
+  <p class="docs__404__msg">The page <span class="docs__404__url" id="missing-url"></span> doesn't exist. Use the search on the left to find what you were looking for.</p>
+  <a href="/docs/" class="docs__404__home">← or go back to the main page</a>
 </div>
-
-<h2>What to include</h2>
-<ul>
-<li><p>Platform details</p>
-<ul>
-<li>Device: laptop/desktop/tablet and model (ex: MacBook Air M1)</li>
-<li>Operating System and version (ex: macOS 14.2, Windows 11 23H2, iOS 17.2, etc)</li>
-<li>Browser and version (ex: Chrome 120, Firefox 121, Safari 17, etc)</li>
-<li>Any unusual browser extensions you have installed or privacy settings you think might matter</li>
-</ul>
-</li>
-<li><p>What you expected vs. what happened</p>
-<ul>
-<li>Expected: what you thought would happen</li>
-<li>Actual: what actually happened (include any error messages)</li>
-</ul>
-</li>
-<li><p>Where it happened</p>
-<ul>
-<li>Share the URL you had in the address bar when the issue occured (netnet uses URLs in different ways which effect how it behaves)</li>
-<li>Where you working on a sketch or project? Did this occur during a tutorial/lesson?</li>
-<li>Was the bug associated with a specific widget or feature?</li>
-</ul>
-</li>
-<li><p>Steps to reproduce (what you did)</p>
-<ul>
-<li>Try to retrace your steps and reproduce the issue yourself until it happens consistently (if it only happens sometimes, let us know when/how often) this is exactly how experienced bug reporters track down problems</li>
-<li>List the steps in order, one step per line</li>
-<li>Be specific: which button you clicked, which file you opened, and what you typed</li>
-<li>If you can’t reproduce the issue consistently, that’s okay, please still report it and let us know that you weren’t able to make it happen again</li>
-</ul>
-</li>
-</ul>
-<p><strong>Optional but super helpful</strong></p>
-<ul>
-<li>Screenshots or a short screen recording</li>
-<li>Any messages from the browser Console<ul>
-<li>Open Developer Tools (press F12 or Fn+F12 on Mac), go to Console, copy+paste the errors you see there</li>
-</ul>
-</li>
-</ul>
-<h2>New Issue Template</h2>
-<p>Here&#39;s a template you can copy+paste into a <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">new issue</a>, It&#39;s okay you don&#39;t have every detail, anything you share can help!</p>
-<p><strong>Title</strong></p>
-<p>A very brief summary of the problem (take a look at <a href="https://github.com/netizenorg/netnet.studio/issues?q=is%3Aissue" target="_blank">previous issues</a> for examples)</p>
-<p><strong>Description</strong></p>
-<pre><code>Platform
-- Device:
-- OS + version:
-- Browser + version:
-- Extensions/privacy settings (if any):
-
-Expected result:
-
-Actual result:
-
-Where it happened
-- Widget/feature:
-- URL (if relevant):
-
-Steps to reproduce
-1.
-2.
-3.
-
-
-Frequency
-- [ ] Always  - [ ] Sometimes  - [ ] Happened once
-
-Extra context
-- Screenshots/video:
-- Console errors (copy/paste):</code></pre>
-<p>Thank you for taking the time to report a bug!</p>
-
+<script>
+  const el = document.getElementById('missing-url')
+  if (el) el.textContent = window.location.pathname
+</script>
       </div>
     </div>
 

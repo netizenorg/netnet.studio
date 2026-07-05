@@ -22,23 +22,21 @@
     <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
-    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro">
-        <a href="/">
-          ( ◕ ◞ ◕ )
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
           <span class="screen-reader-only">netnet.studio home</span>
         </a>
-        <span class="ver">v4.0</span>
-      </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
-        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
-      </button>
-      <div class="docs__panel__search">
-        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-input" class="search-input" placeholder="search">
       </div>
       {{nav}}
     </div>
@@ -52,7 +50,6 @@
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
     <script src="/core/libs/fuse.js"></script>
-    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>

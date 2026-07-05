@@ -6,11 +6,11 @@ If you're new to code and want to learn how to craft your own corner of the web,
 
 netnet.studio is an interactive learning platform (see the <b>Learning Guide</b> section below) where you learn not only by reading docs or watching videos but by making. It's also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. Let netnet know you want to code as soon as it loads, or jump straight to a blank sketch by navigating to [netnet.studio/sketch](https://netnet.studio/sketch).
 
-![netnet menu](../images/poster-sketching.jpg)
+![netnet menu](../images/sketching-poster.jpg)
 
 The code editor is intentionally simple, but has unique features designed specifically for creative folks learning to code for the first time. As shown in the video above, it provides familiar tools like syntax highlighting, line numbers, and auto-complete, along with a few extras designed to support learning. For instance, double-clicking any piece of code brings up an explanation and relevant documentation. If netnet detects a possible issue, it marks the line with an orange (warning) or red (error) dot that you can click to read more. There are a number of other widgets which netnet opens (or suggests) for you to use when it's relevant as it did with the Color Widget in the video above.
 
-![netnet menu](../images/poster-saving-sketch.jpg)
+![netnet menu](../images/saving-sketch-poster.jpg)
 
  You can think of [netnet.studio/sketch](https://netnet.studio/sketch) as an infinite sticky pad, pressing <b>CTRL+S</b> (or <b>CMD+S</b> on Mac) will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL). Sharing your code as a URL is like pulling a sticky note off the pad, you need to decide where to stick it: send it to a friend, post it online, or save it somewhere safe. Once it's pulled off, it's no longer part of the pad, so if you lose that link, you lose the sketch (we don't record/save what you make on netnet, your code is compressed into the URL itself). If you want to keep something you made long-term, save the share URL somewhere safe or download it as an HTML file (you can turn it into an online **project**, more on that below).
 
@@ -19,7 +19,7 @@ The code editor is intentionally simple, but has unique features designed specif
 
 You can open the menu at anytime by clicking on netnet's face...
 
-![netnet menu](../images/poster-netnet-menu.jpg)
+![netnet menu](../images/netnet-menu-poster.jpg)
 
 
 | Main Menu Shortcuts | Action |

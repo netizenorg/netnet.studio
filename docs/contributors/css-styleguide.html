@@ -106,91 +106,98 @@
 
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
-        <h1>Bug Reports</h1>
-<h3>filing an issue</h3>
-<p>If something in netnet.studio didn’t work the way you expected, we want to hear about it! This document explains how to file a helpful bug report with enough detail for us to reproduce the issue on our end and fix it. Because different devices, operating systems, browsers, settings, or even small differences in the steps taken can lead to different results, sharing your setup and exactly what you did gives us the best chance to reproduce the bug on our end so we can fix it!</p>
-<h2>Where to report</h2>
-<p>We use GitHub to track all of our <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issues</a>, you can report a new one in the link below. Dont&#39; forget, as mentioned in the <a href="index.html">contributors page</a>, you&#39;ll need to create a free GitHub account before you can contribute:</p>
-<ul>
-<li><h3><a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">https://github.com/netizenorg/netnet.studio/issues/new</a></h3>
-</li>
-</ul>
-<div class="warning">
-🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things.
-</div>
+        <h1>CSS styleguide</h1>
+<p>As mentioned previously, styles are written using <a href="https://getbem.com/introduction/" target="_blank">BEM</a> as a class-naming methodology. Declarations are loosely based on <a href="https://github.com/necolas/idiomatic-css" target="_blank">Idiomatic CSS</a>.</p>
+<p>Don&#39;t worry if these concepts are unfamiliar! These aren&#39;t strict rules -- but having these systems as guidelines may make it easier to write or find CSS in the repository if you&#39;re a new or returning contributor.</p>
+<h2>BEM</h2>
+<p>BEM stands for <strong>Block</strong>, <strong>Element</strong>, <strong>Modifier</strong>. It is a methodology of writing class names.</p>
+<p>A <strong>block</strong> is something unique on the page that is independent and meaningful on its own. It can be used in one or more locations across the site. A block is an opportunity to straightforwardly name something with a descriptive class, and should be written in kebob case.</p>
+<p>An example would be <code>.pill-btn</code> taken from <code>core/styles/buttons.css</code>. Pills, a rounded design for buttons, are used in multiple places across netnet.</p>
+<pre><code class="css">.pill-btn {
+  position: relative;
 
-<h2>What to include</h2>
-<ul>
-<li><p>Platform details</p>
-<ul>
-<li>Device: laptop/desktop/tablet and model (ex: MacBook Air M1)</li>
-<li>Operating System and version (ex: macOS 14.2, Windows 11 23H2, iOS 17.2, etc)</li>
-<li>Browser and version (ex: Chrome 120, Firefox 121, Safari 17, etc)</li>
-<li>Any unusual browser extensions you have installed or privacy settings you think might matter</li>
-</ul>
-</li>
-<li><p>What you expected vs. what happened</p>
-<ul>
-<li>Expected: what you thought would happen</li>
-<li>Actual: what actually happened (include any error messages)</li>
-</ul>
-</li>
-<li><p>Where it happened</p>
-<ul>
-<li>Share the URL you had in the address bar when the issue occured (netnet uses URLs in different ways which effect how it behaves)</li>
-<li>Where you working on a sketch or project? Did this occur during a tutorial/lesson?</li>
-<li>Was the bug associated with a specific widget or feature?</li>
-</ul>
-</li>
-<li><p>Steps to reproduce (what you did)</p>
-<ul>
-<li>Try to retrace your steps and reproduce the issue yourself until it happens consistently (if it only happens sometimes, let us know when/how often) this is exactly how experienced bug reporters track down problems</li>
-<li>List the steps in order, one step per line</li>
-<li>Be specific: which button you clicked, which file you opened, and what you typed</li>
-<li>If you can’t reproduce the issue consistently, that’s okay, please still report it and let us know that you weren’t able to make it happen again</li>
-</ul>
-</li>
-</ul>
-<p><strong>Optional but super helpful</strong></p>
-<ul>
-<li>Screenshots or a short screen recording</li>
-<li>Any messages from the browser Console<ul>
-<li>Open Developer Tools (press F12 or Fn+F12 on Mac), go to Console, copy+paste the errors you see there</li>
-</ul>
-</li>
-</ul>
-<h2>New Issue Template</h2>
-<p>Here&#39;s a template you can copy+paste into a <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">new issue</a>, It&#39;s okay you don&#39;t have every detail, anything you share can help!</p>
-<p><strong>Title</strong></p>
-<p>A very brief summary of the problem (take a look at <a href="https://github.com/netizenorg/netnet.studio/issues?q=is%3Aissue" target="_blank">previous issues</a> for examples)</p>
-<p><strong>Description</strong></p>
-<pre><code>Platform
-- Device:
-- OS + version:
-- Browser + version:
-- Extensions/privacy settings (if any):
+  padding: 5px 15px;
+  border: none;
+  border-radius: 25px;
+  margin-right: 0 5px 0 0;
 
-Expected result:
+  color: var(--bg-color);
+  background: var(--fg-color);
 
-Actual result:
+  ...
+}</code></pre>
+<p>An <strong>element</strong>, on the other hand, is entirely dependent on an established block. In other words, it denotes a part of a block that is inside of -- and only meaningful within -- its parent. In the context of cascading styles, <strong>elements</strong> don&#39;t inherit their parent block&#39;s styles; rather, they are are semantically tied to their parent blocks due to their specificity. They are written using two underscores to denote its element status: <code>[parent-block]__[child-element]</code>.</p>
+<p>Good examples of <strong>elements</strong> can be found in <code>widgets/styles.css</code>.</p>
+<pre><code class="css">.widget {
+  position: absolute;
 
-Where it happened
-- Widget/feature:
-- URL (if relevant):
+  min-width: 200px;
+  min-height: 150px;
 
-Steps to reproduce
-1.
-2.
-3.
+  ...
+}
 
+.widget__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-Frequency
-- [ ] Always  - [ ] Sometimes  - [ ] Happened once
+  ...
+}</code></pre>
+<p>While <code>.widget</code> is a block declaring general styles for widgets, <code>.widget__top</code> is an <strong>element</strong> that declares styles only for the top bar of a widget. It&#39;s not used anywhere on netnet besides on the inside of a widget.</p>
+<p>Now, onto <strong>modifiers</strong>! Once a block or element is established, there may be variations of it for altered use across the site. This is where <strong>modifiers</strong> come in, distinguished by adding a <code>--[modifier]</code> flag to the class name. <strong>Modifiers</strong> can be used on a block or element class to change an aspect of its base behavior. They are additive, meaning one block or element can take many modifiers, if necessary. Modifier classes should declare only what it intends to change about its parent class.</p>
+<p>An example would be <code>.pill-btn</code>&#39;s <code>--secondary</code> state, which features alternative colors and slightly different sizing, used in various cases across netnet (to denote a different meaning or to maintain visibility).</p>
+<pre><code class="css">.pill-btn--secondary {
+  display: inline-block;
 
-Extra context
-- Screenshots/video:
-- Console errors (copy/paste):</code></pre>
-<p>Thank you for taking the time to report a bug!</p>
+  padding: 5px 10px;
+  border: 1px solid var(--netizen-meta);
+
+  color: var(--netizen-meta);
+  background-color: var(--bg-color);
+
+  ...
+}</code></pre>
+<p>When writing HTML, modified classes should be used succeeding their base classes, offering various ways to mix and match core design elements with modified states. <code>[class] [class]--[modifier]</code>. Using the above example to create a secondary pill button would look like this in HTML:</p>
+<pre><code class="html">&lt;button class="pill-btn pill-btn--secondary"&gt;&lt;/button&gt;</code></pre>
+<h2>Idiomatic CSS</h2>
+<p>Right now, the only aspect of <a href="https://github.com/necolas/idiomatic-css" target="_blank">Idiomatic CSS</a> we&#39;re adopting is a consistent declaration order format. We&#39;ll likely adopt more in the future.</p>
+<p>We&#39;re writing declarations in <a href="https://github.com/necolas/idiomatic-css?tab=readme-ov-file#declaration-order" target="_blank">order of related properties</a>. Positioning -&gt; Display -&gt; Box Model (<a href="https://every-layout.dev/rudiments/boxes/#the-box-model" target="_blank">from outside in</a>) -&gt; Color -&gt; Type -&gt; Animation. These are loose rules to adopt going forward with the intention of fleshing out stricter rules as we go!</p>
+<pre><code class="css">.selector {
+    /* Positioning */
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* Display */
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
+    visibility: visible;
+    opacity: 1;
+
+    /* Box Model */
+    margin: 10px;
+    outline: 1px solid #000;
+    border: 10px solid #333;
+    padding: 10px;
+
+    /* Color */
+    color: #fff;
+    background: #000;
+
+    /* Type */
+    font-family: sans-serif;
+    font-size: 16px;
+    text-align: right;
+    white-space: nowrap;
+
+    /* Animation */
+    transition: color .1s ease;
+}</code></pre>
 
       </div>
     </div>

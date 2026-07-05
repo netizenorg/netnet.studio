@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>docs.netnet.studio</title>
+    <meta property="og:title" content="netnet.studio">
+    <meta property="og:description" content="(&#9685; &#9694; &#9685;) netnet.studio docs for developers and contributors">
+    <meta property="og:image" content="https://netnet.studio/imags/netnet.png">
+    <meta property="og:url" content="https://netnet.studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="netnet.studio">
+    <meta name="twitter:site" content="@netizenorg">
+
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="/js/visits.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init({ endpoint: '/api/event' })
+    </script>
+
+    <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
+    <link rel="stylesheet" href="/core/styles.css">
+    <link rel="stylesheet" href="/docs/styles.css">
+  </head>
+  <body class="docs">
+    <div class="docs__panel">
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
+          <span class="screen-reader-only">netnet.studio home</span>
+        </a>
+      </div>
+      <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/coding.html">
+                  coding in netnet
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/learning.html">
+                  the Learning Guide
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/ai-integration.html">
+                  connecting local LLM
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/url-anatomy.html">
+                  netnet URLs
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/supporters/index.html">Dear Supporters</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/supporters/institutional-support.html">
+                  institutional support
+                </a></li></ul>
+              </li><li class="docs__panel__list-item open">
+                <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/bug-report.html">
+                  0. Bug Reports
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/the-docs.html">
+                  1. Editing these Docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  3. Code Demos
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
+                  4. Interactive Tutorials
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  2. Convos and Passages
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/widgets.html">
+                  5. Widgets
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/project-architecture.html">
+                  6. Core Components
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  TL;DR (for experienced devs)
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  Manual Setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/netnet-faces.html">
+                  netnet faces
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/dialogue-system.html">
+                  Dialogue System
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/css-styleguide.html">
+                  css styleguide
+                </a></li></ul>
+              </li></ul>
+    </div>
+
+    <div class="docs__viewer">
+      <div class="docs__viewer-inner">
+        <h1>Project Architecture</h1>
+<p>netnet.studio is a Single Page Application (SPA) built with vanilla HTML, CSS, and JavaScript: no framework, no bundler, no transpiler. The code is deliberately transparent. Like the web-days of yore, you can <em>view-source</em> on it and read what&#39;s happening. The only compiled dependencies are two submodules maintained separately: the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a> (the code editor) and the <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library</a> (<code>nn</code>), both bundled into <a href="https://github.com/netizenorg/netnet.studio/tree/main/www" target="_blank">www</a> as <strong>netitor.min.js</strong> and <strong>nn.min.js</strong>.</p>
+<h2>Directory Structure</h2>
+<pre><code>netnet.studio/
+├── server.js              # backend entry point (minimal by design)
+├── my_modules/            # server-side modules
+│   ├── routes.js          # API route handlers
+│   ├── github.js          # GitHub API integration
+│   ├── utils.js           # server-side utilities
+│   ├── errors.js          # 404 / error middleware
+│   └── sockets.js         # Socket.io (inactive, for future ideas)
+│
+├── www/                   # client-side code (statically served at /)
+│   ├── index.html         # single HTML page (loads everything)
+│   ├── core/              # core JS classes and utilities
+│   │   ├── main.js        # boot script (more info below)
+│   │   ├── NetNet.js      # netnet window (see NNW below)
+│   │   ├── NetNetFaceMenu.js  # main menu (the face and passages)
+│   │   ├── Convo.js       # dialogue system (more info below)
+│   │   ├── utils.js       # general purpose utilities
+│   │   ├── utils-convo.js # shared dialogue passages
+│   │   ├── analytics.js   # Plausible pageview logic
+│   │   ├── styles/        # core CSS (more info below)
+│   │   ├── libs/          # couple 3rd party libs (Fuse.js, qrious)
+│   │   ├── netitor/       # Netitor submodule (netitor.min.js)
+│   │   └── netnet-standard-library/  # nn submodule (nn.min.js)
+│   │
+│   ├── widgets/           # the widgets (each in its own folder)
+│   │   ├── index.js       # WIDGETS manager/base-class (info below)
+│   │   └── {widget-name}/
+│   │       ├── index.js   # widget definition
+│   │       ├── convo.js   # optional dialogue passages
+│   │       └── styles.css # optional widget-specific styles
+│   │
+│   ├── custom-elements/   # web components (info below)
+│   │   ├── misc/          # general-purpose elements
+│   │   ├── svg-diagrams/  # annotated SVG diagrams
+│   │   └── bi-directional-editing/  # for code injection widgets
+│   │
+│   ├── tutorials/         # tutorial content (see below)
+│   │   └── {id}/
+│   │       ├── tutorial.json  # lesson data + metadata
+│   │       ├── {id}.mp4       # main video
+│   │       ├── {id}.jpg       # main thumbnail
+│   │       └── init.js        # optional timecode hooks
+│   │
+│   ├── assets/            # images, fonts, audio, video
+│   └── files-db-service-worker.js  # for projects (see below)
+│
+├── data/                  # static database
+│   ├── demos/             # annotated demo JSON files
+│   ├── templates/         # starter project template JSON files
+│   └── shortened-urls.json  # URL shortcode database
+│
+└── docs/                  # all the static docs
+    ├── build-docs.js      # converts markdown to HTML
+    ├── template.html      # HTML template for all generated pages
+    ├── scripts.js         # JS logic for docs
+    ├── styles.css         # CSS styles for docs
+    └── {section}/         # docs sub-directory
+        ├── README.md      # section index page
+        └── *.md           # individual doc pages</code></pre>
+<h2>the Backend</h2>
+<p><code>server.js</code> is deliberately minimal. All the details and routing logic lives in <a href="https://github.com/netizenorg/netnet.studio/tree/main/my_modules" target="_blank">my_modules</a>. The server handles serving static files (<em>www</em> and <em>docs</em>) and a small API surface for GitHub operations, demo/template data, and URL shortening. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.</p>
+<p>All user data (username, preferences, save state, LLM API keys) is stored in <code>localStorage</code> on the client via the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session" target="_blank">student-session</a> widget. The server stores nothing about individual users, except for shortened sketches if/when users opt-in to the URL shortener.</p>
+<p>The <a href="https://github.com/netizenorg/netnet.studio/tree/main/my_modules" target="_blank">my_modules</a> directory also contains some dev scripts (see <a href="https://github.com/netizenorg/netnet.studio/blob/main/package.json" target="_blank">package.json</a>)</p>
+<hr>
+<h2>the Frontend</h2>
+<h3>HTML (structure)</h3>
+<p>The literal &quot;single page&quot; in this SPA that brings all the styles and logic together is <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/index.html" target="_blank">www/index.html</a>. Apart from this page, the only HTML pages in the root <a href="https://github.com/netizenorg/netnet.studio/blob/main/www" target="_blank">www</a> folder are the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/404.html" target="_blank">404.html</a> page and the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/curtain.html" target="_blank">curtain.html</a> page, which is used if/when we need to temporarily place the app behind a login page or maintaince message.</p>
+<div id="support-info">
+  <div>
+    <h3>CSS (styles)</h3>
+    <p>
+      The CSS follows the <a href="https://getbem.com/" target="_blank">BEM</a> (block, element, modifier) methodology for class naming. Declarations within rules follow a consistent order based on <a href="https://github.com/necolas/idiomatic-css" target="_blank">Idiomatic CSS</a>: Positioning; Display; Box Model; Color; Typography; Animation.
+    </p>
+    <p>
+      CSS variables are defined in the <code>:root</code> rule of <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/styles.css" target="_blank">core/styles.css</a> and referenced throughout via <code>var(--variable-name)</code>. When you need to read or write a CSS variable from JavaScript, use <code>utils.getVal('--variable-name')</code> and <code>utils.setVal('--variable-name', value)</code>.
+    </p>
+    <p>
+      See the <a href="css-styleguide.html">CSS Styleguide doc</a> for more info.
+    </p>
+  </div>
+  <div>
+    <h3>JS (logic)</h3>
+    <p>
+      We intentionally avoid buisiness/enterprise software patterns. Our goal is to create a codebase a curious person can read from top to bottom. No TypeScript, no transpilation, no module bundler. The less obfuscation the better.
+    </p>
+    <p>
+      All JavaScript is written in the <a href="https://standardjs.com" target="_blank">StandardJS</a> style.  Run <code>npm run lint</code> to check that your code conforms to the style, or better yet, install a StandardJS plugin in your editor so you can catch style mistakes as you code.
+    </p>
+    <p>
+      The <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js" target="_blank">www/core/main.js</a> is the entry point, it boots everything up and instantiates the global variables.
+    </p>
+  </div>
+</div>
+
+<hr>
+<h2>Global Variables</h2>
+<p>All globals live on <code>window</code>. Their definition order is fixed by the boot sequence defined in the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/index.html" target="_blank">index.html</a> page and its <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js" target="_blank">main.js</a> file.</p>
+<table>
+<thead>
+<tr>
+<th>Global</th>
+<th>Defined in</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nn</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/tree/main/www/core" target="_blank">nn.min.js</a></td>
+<td>utility library, DOM helpers, math, browser/platform detection</td>
+</tr>
+<tr>
+<td><code>Netitor</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/tree/main/www/core" target="_blank">netitor.min.js</a></td>
+<td>code editor class (instantiated as NNE)</td>
+</tr>
+<tr>
+<td><code>WIDGETS</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js" target="_blank">widgets/index.js</a></td>
+<td>widget manager and registry</td>
+</tr>
+<tr>
+<td><code>Widget</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js" target="_blank">widgets/index.js</a></td>
+<td>base class all widgets extend</td>
+</tr>
+<tr>
+<td><code>Convo</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js" target="_blank">core/Convo.js</a></td>
+<td>dialogue runtime class</td>
+</tr>
+<tr>
+<td><code>CONVOS</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js" target="_blank">core/Convo.js</a></td>
+<td>registry of loaded dialogue passage arrays</td>
+</tr>
+<tr>
+<td><code>NetNet</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/NetNet.js" target="_blank">core/NetNet.js</a></td>
+<td>window/layout controller class (instantiated as NNW)</td>
+</tr>
+<tr>
+<td><code>utils</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils.js" target="_blank">core/utils.js</a></td>
+<td>misc utility functions (fetch, CSS vars, URL routing, etc.)</td>
+</tr>
+<tr>
+<td><code>NNE</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js" target="_blank">core/main.js</a></td>
+<td>the main Netitor instance (the code editor)</td>
+</tr>
+<tr>
+<td><code>NNW</code></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js" target="_blank">core/main.js</a></td>
+<td>the NetNet instance (the window/face/layout)</td>
+</tr>
+<tr>
+<td><code>convo</code></td>
+<td>set at runtime</td>
+<td>current active Convo instance</td>
+</tr>
+</tbody></table>
+<div id="support-info">
+  <div>
+    <h3>NNW (the netnet window)</h3>
+    <p>
+      <code>NNW</code> is the single instance of <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/NetNet.js" target="_blank">core/NetNet.js</a>. It controls the <code>NNW.layout</code> and <code>NNW.theme</code> (both getter/setter) and provides access to the main DOM elements <code>NNW.edtr</code> and <code>NNW.rndr</code> (logic controlled via <code>NNE</code>)
+    </p>
+    <p>
+      It also provides access to netnet's face/menu/text bubble via <code>NNW.menu</code>, the single instance of <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/NetNetFaceMenu.js" target="_blank">core/NetNetFaceMenu.js</a>, the convo passage DOM element is accessible via <code>NNW.menu.textBubble</code>, the state is managed via <code>convo</code> see below).
+    </p>
+  </div>
+  <div>
+    <h3>NNE (the editor)</h3>
+    <p>
+      <code>NNE</code> is the main instance of the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a> sub-module (there can be others, see <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/demo-sketches" target="_blank">demo-sketches</a> widget). It renders output to an <code>iframe</code> inside <code>div#nn-output</code> in the main page.
+    </p>
+    <p>
+      Most of the time netnet changes code in the editor it's done via <code>NNE.code = '...'</code>, learn more about the instance's methods/properties and events in the <a href="https://github.com/netizenorg/netitor" target="_blank">netitor</a>'s documentation.
+    </p>
+  </div>
+</div>
+
+<h3>utility modules</h3>
+<p>There are a whole host of utility methods shared across core components (like <code>NNW</code>) and many of the widgets. These are all found in one of two globabl variables.</p>
+<div id="support-info">
+  <div>
+    <h3>nn</h3>
+    <p>
+      The <a href="https://github.com/netizenorg/netnet-standard-library" target="_blank">netnet-standard-library.js</a> is not only a core utility library for the platform (handling things like DOM manipulation, device detection, color maths and other functions), it's also used by students in many of the netnet demos and templates. You'll see it used throughout the codebase, best way to learn how it works is to review the <b>nn.min.js</b> <a href="https://netizenorg.github.io/netnet-standard-library/" target="_blank">documentation page</a>.
+    </p>
+  </div>
+  <div>
+    <h3>utils</h3>
+    <p>
+      The <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils.js" target="_blank">core/utils.js</a> collects other functions, which wouldn't make sense in <code>nn</code> but are also used across widgets and core components, for example <code>utils.get()</code> and <code>utils.post()</code> requests, <code>utils.getVal()</code> and <code>utils.setVal()</code> for accessing CSS variables, <code>utils.hotKey()</code> and many others. The best way to become familiar with it is to read through the source code.
+    </p>
+  </div>
+</div>
+
+<p><em>✏️ it&#39;s on our TODO list to better document utils.js, likely this will require splitting some of it&#39;s logic out, currently it handles all the <code>utils.checkURL()</code> loading logic (which may make better sense in a separate file) and <code>utils.cancelAllNetitorUses()</code> which might make sense to handle differently at some point as well</em></p>
+<hr>
+<h2>The Widget System</h2>
+<p>Widgets are multi-purpose independent windows that can be thought of as &quot;plugins&quot; or &quot;addons&quot; for netnet.studio. They&#39;re used in a variety of contexts to provide functions, utilities, and information. Apart from the core netnet window and dialogue system, everything in netnet is handled through widgets.</p>
+<p>These are managed by the global <code>WIDGETS</code> object:</p>
+<pre><code class="javascript">WIDGETS.list()                 // returns all Widget instances
+WIDGETS.load('widget-key', cb) // load the JS file only
+WIDGETS.open('widget-key', cb) // load + instantiate if needed, then open
+WIDGETS['widget-key']          // direct instance access</code></pre>
+<p>Widgets can be simple one-off widgets, like the ones used during tutorials to open up various media types (images, videos, gifs, audio, texts, 3D objects, etc).</p>
+<pre><code class="javascript">// to create the widget first run
+WIDGETS.create({
+  key: 'welcome-widget',
+  title: 'Welcome to netnet.studio!',
+  innerHTML: 'by &lt;a href="https://netizen.org" target="_blank"&gt;netizen&lt;/a&gt;'
+})
+
+// then to open the widget run
+WIDGETS.open('welcome-widget')
+// you can also close it by calling
+WIDGETS.close('welcome-widget')</code></pre>
+<h3>Creating a widget</h3>
+<p>For more complex widgets meant to be permanent additions to the studio, there is a base <code>Widget</code> class provide which all other widgets extend from. This base class provides: <code>open()</code>, <code>close()</code>, <code>update(opts, time)</code>, <code>$(selector)</code> (scoped querySelector), <code>on(event, cb)</code>, <code>emit(event, data)</code>, <code>keepInFrame()</code>, <code>createCodeField(opts)</code>, <code>createSlider(opts)</code> and more. See <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js" target="_blank">widgets/index.js</a> for details.</p>
+<p>Widgets are created as folders (with at least a <code>index.js</code> file) in the <em>widgets</em> directory. Widget folder names and <code>key</code> properties are <strong>kebab-case</strong>. The class name is <strong>PascalCase</strong>, where each hyphen-separated segment is independently capitalized. The <code>WIDGETS</code> loader derives the class name from the folder name, so this convention is <strong>mandatory</strong>, deviating from it breaks the loader.</p>
+<table>
+<thead>
+<tr>
+<th>folder</th>
+<th>class</th>
+<th>key</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>my-cool-widget</td>
+<td>MyCoolWidget</td>
+<td>&#39;my-cool-widget&#39;</td>
+</tr>
+</tbody></table>
+<pre><code class="javascript">// www/widgets/my-cool-widget/index.js
+class MyCoolWidget extends Widget {
+  constructor (opts) {
+    super(opts)
+    this.key = 'my-cool-widget' // must match folder name
+    this.title = 'My Cool Widget'
+    this.innerHTML = `&lt;div&gt;...&lt;/div&gt;`
+  }
+}
+window.MyCoolWidget = MyCoolWidget // required, manager reads window[ClassName]</code></pre>
+<h3>Widget Dialogue Passages (convo.js)</h3>
+<p>If a widget has dialogue, its passages live in <code>www/widgets/my-widget/convo.js</code>:</p>
+<pre><code class="javascript">window.CONVOS['my-widget'] = (self) =&gt; [
+  {
+    id: 'greet',
+    content: 'Hello!',
+    options: {
+      'help!': (e) =&gt; e.goTo('explain'),
+      'never mind': (e) =&gt; e.hide()
+    }
+  }, {
+    id: 'explain',
+    content: 'Here\'s how this widget works!',
+    options: { 'ok': (e) =&gt; e.hide() }
+  }
+]</code></pre>
+<p>Load it with:</p>
+<pre><code class="javascript">Convo.load(this.key, () =&gt; {
+  this.convos = window.CONVOS[this.key](this)
+})</code></pre>
+<p>Always re-derive the passages array <code>this.convos = window.CONVOS[this.key](this)</code> after any state changes, like <code>student-session</code> state change, especially if/when the passages contain template strings with variables that change.</p>
+<p>Then trigger a widget&#39;s convo by doing:</p>
+<pre><code class="javascript">window.convo = new Convo(this.convos, 'greet')</code></pre>
+<p><strong>For more info on widgets see the dedicated <a href="widgets.html">Widget Docs Page</a></strong></p>
+<hr>
+<h2>The Convo System</h2>
+<p>Netnet&#39;s dialogue passages are hand-authored data, not generated text. Every word is written by a human. The <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js" target="_blank">Convo</a> class renders these passages into netnet&#39;s text bubble and manages navigation between them.</p>
+<pre><code class="javascript">window.convo = new Convo(passages, 'start-id')</code></pre>
+<p>A passage looks like:</p>
+<pre><code class="javascript">{
+  id: 'passage-id',
+  content: 'HTML string shown in the text bubble',
+  options: { 'button label': (e) =&gt; e.hide() },  // e is the Convo instance
+  layout: 'dock-left',   // optionally switch layout when this passage shows
+  code: '&lt;h1&gt;hi&lt;/h1&gt;',   // optionally inject code into NNE
+  highlight: [1, 5],     // highlight these line numbers in the editor
+  before: (convo) =&gt; {}, // runs synchronously before the bubble updates
+  after:  (convo) =&gt; {}  // runs after the fade-in animation completes
+}</code></pre>
+<p>Only one <code>Convo</code> instance is active at a time (<code>window.convo</code>). <code>before</code> is synchronous; <code>after</code> fires after the bubble animates in, don&#39;t put layout-dependent DOM measurements in <code>before</code>.</p>
+<p><strong>For more info on editing passages see the <a href="editing-convos.html">Editing Convos</a> doc spage.</strong></p>
+<p><strong>For more info on the dialogue system itself see the <a href="dialogue-system.html">Dialogue System</a> doc spage.</strong></p>
+
+      </div>
+    </div>
+
+    <script src="/netitor.min.js"></script>
+    <script src="/nn.min.js"></script>
+    <script src="/core/libs/fuse.js"></script>
+    <script src="/docs/scripts.js"></script>
+  </body>
+</html>
