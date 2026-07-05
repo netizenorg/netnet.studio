@@ -50,7 +50,7 @@ body {
 .inline-link,
 p > a:not(.pill-btn):not(.highlight),
 strong > a:not(.pill-btn):not(.highlight),
-div > a:not(.pill-btn):not(.highlight),
+div > a:not(.pill-btn):not(.highlight):not(a.docs__panel__face),
 .text-bubble-content > a:not(.pill-btn):not(.highlight) {
   color: var(--netizen-hint-color);
 
@@ -60,7 +60,7 @@ div > a:not(.pill-btn):not(.highlight),
 .inline-link:hover,
 p > a:not(.pill-btn):not(.highlight):hover,
 strong > a:not(.pill-btn):not(.highlight):hover,
-div > a:not(.pill-btn):not(.highlight):hover,
+div > a:not(.pill-btn):not(.highlight):not(a.docs__panel__face):hover,
 .text-bubble-content > a:not(.pill-btn):not(.highlight):hover {
   color: var(--netizen-comment);
 }
@@ -74,8 +74,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
 .docs {
   width: 100%;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(180deg, var(--netizen-def) 80%, var(--netizen-comment) 160%);
 
   padding: 0;
@@ -98,12 +97,17 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
   min-width: 300px;
   max-width: 430px;
-  height: calc(100vh - calc(var(--doc-padding) * 2));
+
+  /* commenting this out for now to mimic netnet styles more */
+  /* height: calc(100vh - calc(var(--doc-padding) * 2)); */
 
 	padding: var(--doc-padding);
-  margin-top: var(--doc-padding);
-  margin-left: var(--doc-padding);
-	border-radius: 25px;
+
+  /* commenting these out for now to mimic netnet styles more */
+  /* margin-top: var(--doc-padding);
+  margin-left: var(--doc-padding); */
+
+  border-radius: 25px;
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	box-shadow: 0 0 14px 0 #c3c3db6e;
@@ -125,45 +129,39 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
 
 /*
- * docs panel > intro
+ * docs panel > header (face + search)
  */
-.docs__panel__intro {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: space-between;
-  align-items: baseline;
+.docs__panel__header {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: var(--doc-padding);
 
   padding: 0 0 calc(var(--doc-padding) * 0.75);
-	border-bottom: 1px solid var(--netizen-def);
-	margin: 0;
+  border-bottom: 1px solid var(--netizen-def);
 }
 
-.docs__panel__intro a {
+a.docs__panel__face {
   position: relative;
+  flex-shrink: 0;
 
-	margin: 0;
-
-  color: var(--netizen-def);
+  color: var(--netizen-def) !important;
 
   font-family: 'fira-mono-regular', monospace;
   font-size: 20px;
-  text-decoration: none;
-  text-transform: uppercase;
+  text-decoration: none !important;
   text-shadow: 0px 2px 2px var(--bg-color);
 
   transition: text-shadow 0.3s ease;
 }
 
-.docs__panel__intro a:hover {
+a.docs__panel__face:hover {
   text-shadow: rgba(230, 219, 111, 0.6) -1px -1px 6px, rgba(195, 195, 219, 0.6) 1px 1px 6px;
 }
 
-.docs__panel__intro .ver {
-  font-family: 'fira-mono-regular', monospace;
-  font-size: 14px;
-  line-height: 1.2em;
-
-  opacity: 0.8;
+a.docs__panel__face .eye {
+  display: inline-block;
+  font-size: 22px;
 }
 
 
@@ -173,9 +171,8 @@ div > a:not(.pill-btn):not(.highlight):hover,
 .docs__panel__search {
   position: relative;
 
-  width: 100%;
+  flex: 1;
 
-  margin: calc(var(--doc-padding) * 0.75) 0 0;
   padding: 5px 0;
 
   cursor: pointer;
@@ -383,21 +380,16 @@ div > a:not(.pill-btn):not(.highlight):hover,
     padding-top: calc(var(--doc-padding) * .75);
     padding-bottom: calc(var(--doc-padding) * .75);
 
-    .docs__panel__intro {
-      justify-content: flex-start;
+    .docs__panel__header {
+      justify-content: space-between;
       border-bottom: none;
       padding-bottom: 0;
-
-      .ver {
-        margin-left: calc(var(--doc-padding) * .5);
-      }
+      gap: 0;
     }
 
     .docs__panel__hamburger {
       display: block;
-      position: fixed;
-      top: calc(var(--doc-padding) * .75);
-      right: var(--doc-padding);
+      position: relative;
 
       width: 22px;
       height: 22px;
@@ -450,7 +442,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
     }
   }
 
-  .docs__panel > .docs__panel__search,
+  .docs__panel .docs__panel__search,
   .docs__panel > .docs__panel__list {
     visibility: hidden;
     display: block;
@@ -463,7 +455,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
     transition: transform .3s ease-in-out, visibility .3s ease-in-out;
   }
 
-  .docs__panel > .docs__panel__search {
+  .docs__panel .docs__panel__search {
     top: 53px;
     width: 55vw;
     max-width: 380px;
@@ -471,12 +463,12 @@ div > a:not(.pill-btn):not(.highlight):hover,
     z-index: 1;
   }
 
-  .docs__panel > .docs__panel__search:before {
+  .docs__panel .docs__panel__search:before {
     right: calc(var(--doc-padding) * .5);
     left: calc(var(--doc-padding) *  .5);
   }
 
-  .docs__panel > .docs__panel__search .search-icon {
+  .docs__panel .docs__panel__search .search-icon {
     width: 28px;
     height: 28px;
     margin-left: calc(var(--doc-padding) * .5);
@@ -508,7 +500,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
     }
   }
 
-  .docs__panel.open > .docs__panel__search,
+  .docs__panel.open .docs__panel__search,
   .docs__panel.open > .docs__panel__list {
     visibility: visible;
     right: 0;
@@ -539,7 +531,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
 
 	overflow-y: auto;
 
-	height: 100vh;
+	height: 100%;
   width: 100%;
 }
 
@@ -656,6 +648,14 @@ div > a:not(.pill-btn):not(.highlight):hover,
   border: none;
 
   background: linear-gradient(90deg, var(--bg-color) 0%, var(--netizen-comment) 50%, var(--netizen-comment) 100%);
+}
+
+.docs__viewer-inner code {
+  padding: 2px 8px;
+  border-radius: 5px;
+
+  background-color: var(--netizen-hint-color);
+  color: var(--netizen-text);
 }
 
 /* codemirror */
@@ -871,6 +871,7 @@ div > a:not(.pill-btn):not(.highlight):hover,
 }
 
 /* for suport page */
+/* NOTE: project-architecture page also uses this id */
 
 #support-info {
   display: flex;

@@ -1,0 +1,5 @@
+[
+  { "file": "coding.md", "name": "coding in netnet" },
+  { "file": "learning.md", "name": "the Learning Guide" },
+  { "file": "ai-integration.md", "name": "connecting local LLM" }
+]

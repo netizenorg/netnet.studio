@@ -22,74 +22,84 @@
     <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
-    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro">
-        <a href="/">
-          ( ◕ ◞ ◕ )
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
           <span class="screen-reader-only">netnet.studio home</span>
         </a>
-        <span class="ver">v4.0</span>
-      </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
-        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
-      </button>
-      <div class="docs__panel__search">
-        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-input" class="search-input" placeholder="search">
       </div>
       <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
-                  coding
+                  coding in netnet
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/learning.html">
-                  learning
+                  the Learning Guide
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/ai-integration.html">
+                  connecting local LLM
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list" role="navigation"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/url-anatomy.html">
+                  netnet URLs
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/supporters/index.html">Dear Supporters</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/supporters/institutional-support.html">
+                  institutional support
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
-                  bug report
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/code-demos.html">
-                  code demos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
-                  contributor workflow
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
-                  editing convos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/institutional-support.html">
-                  institutional support
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
-                  manual setup
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/support.html">
-                  support
+                  0. Bug Reports
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
-                  the docs
+                  1. Editing these Docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  3. Code Demos
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
-                  tutorial maker
+                  4. Interactive Tutorials
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  2. Convos and Passages
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/widgets.html">
-                  widgets
-                </a></li></ul>
-              </li><li class="docs__panel__list-item">
-                <a class="header inline-link" href="/docs/#">Other Notes</a>
-                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/misc/ai-integration.html">
-                  ai integration
+                  5. Widgets
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/project-architecture.html">
+                  6. Core Components
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  TL;DR (for experienced devs)
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  Manual Setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/netnet-faces.html">
+                  netnet faces
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/dialogue-system.html">
+                  Dialogue System
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/css-styleguide.html">
+                  css styleguide
                 </a></li></ul>
               </li></ul>
     </div>
@@ -97,7 +107,7 @@
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
         <h1>Coding</h1>
-<p>As explained in the <a href="index.html">introduction page</a> for students (review that first if you haven&#39;t), netnet.studio is an interactive learning platform (see <a href="learning.html">Learning Guide</a> for more on that) where you learn not only by reading docs or watching videos but by making. That&#39;s why it&#39;s also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. The basic ideas are covered in <a href="index.html">introduction page</a>, here we&#39;ll get into the details of the <strong>Coding Menu</strong> as well as the difference between working on a <strong>sketch</strong> (a single HTML file) vs working on a <strong>project</strong> (a GitHub &quot;repo&quot; you can publish online).</p>
+<p>As explained in the <a href="index.html">introduction page</a> for students (review that first if you haven&#39;t), netnet.studio is an interactive learning platform (see <a href="learning.html">Learning Guide</a> for more on that) where you learn not only by reading docs or watching videos but by making. That&#39;s why it&#39;s also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. The basic ideas are covered in <a href="index.html">introduction page</a>, here we&#39;ll get into the details of the <strong>Coding Menu</strong> as well as the difference between working on a <strong>sketch</strong> (a single HTML file) vs working on a <strong>project</strong> (a multi-file GitHub &quot;repo&quot; you can publish online).</p>
 <h2><img src="/images/menu/code.png" alt="Hi" style="width:50px; transform: translateY(10px);"> The Coding Menu</h2>
 <p>You can open the Coding Menu anytime by clicking on netnet&#39;s face and selecting it from the main menu, or by using the <b>{SUPER} + ;</b> shortcut. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet&#39;s code editor details like:</p>
 <div style="display: grid; grid-template-columns: 1fr 3fr;">
@@ -171,7 +181,7 @@
 <p>When working on a <strong>project</strong>, netnet will display the path of the file you&#39;re currently working in on the top of it&#39;s editor. Next to that you&#39;ll find a <strong>Files</strong> button, clicking on this opens the <strong>Project Files</strong> widget, where you can upload, create and edit new folders/files.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/project-files.mp4"
-  poster="../images/poster-project-files.jpg">
+  poster="../images/project-files-poster.jpg">
 </video></p>
 <p><strong>Clicking</strong> on a folder will toggle (open/close) it&#39;s contents, clicking on a file will open that file in the editor. If the file is a media asset (like an image or video) it will open it in a separate widget. If you click on an HTML file specifically you will notice that it gets a label &quot;rendering&quot; placed beside it, this indicates which file is currently being rendered in netnet&#39;s output.</p>
 <p><strong>Right-clicking</strong> on a file or folder gives you the following options:</p>
@@ -187,26 +197,31 @@
 <h3>Editing Files</h3>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/editing-files.mp4"
-  poster="../images/poster-editing-files.jpg">
+  poster="../images/editing-files-poster.jpg">
 </video></p>
 <p>When working on files in a project, netnet won&#39;t render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the <strong>X</strong>, the widget is closed by hitting the <strong>Esc</strong> key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking <em>Coding Menu &gt; my code &gt; save</em>, or in this case pressing <strong>{SUPER}+S</strong>) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.</p>
-<h3>Pushing (Uploading) to GitHub</h3>
-<p>Changes to a file (as well as creating or deleting a file) are saved &quot;locally&quot;, meaning that they&#39;re stored temporarily in your browser as you work. The <strong>Project Files</strong> widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes changes not yet backed up to GitHub.</p>
-<p>In order to back up those changes you&#39;ll need to &quot;commit&quot; them to your GitHub repo. A commit is like a save point in your project&#39;s timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the <strong>Project Files</strong> widget and choosing the <strong>git push</strong> option.</p>
-<p>netnet will give you the option to either have it create and push the commit for you or you can learn to use git yourself with netnet guiding you through the manual commit process using the <strong>Version Control</strong> widget.</p>
+<h3>Backing up files to GitHub</h3>
+<p>Changes to a file (as well as creating or deleting a file) are saved &quot;locally&quot;, meaning that they&#39;re stored temporarily in your browser as you work. The <strong>Project Files</strong> widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes locally saved changes that have not yet been backed up to GitHub.</p>
+<p>In order to back up (aka &quot;push&quot;) those changes you&#39;ll need to &quot;commit&quot; them to your GitHub repo. A commit is like a save point in your project&#39;s timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the <strong>Project Files</strong> widget and choosing the <strong>git push</strong> option.</p>
+<p><video autoplay loop muted playsinline width="720"
+  src="../images/backup-files.mp4"
+  poster="../images/backup-files-poster.jpg">
+</video></p>
+<p>netnet will give you the option to either have it create and push the commit for you (as seen in the video above) or you can learn to use git yourself with netnet guiding you through the manual commit process using the <strong>Version Control</strong> widget.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/version-control.mp4"
-  poster="../images/poster-version-control.jpg">
+  poster="../images/version-control-poster.jpg">
 </video></p>
 <p>This widget will walk you through the process of creating a new &quot;commit&quot; (a versioned &quot;save point&quot;) and pushing (aka uploading) that to your GitHub repository. It has a terminal which displays the actual git commands you would have to run if you were working in any terminal, except that rather than typing the terminal commands yourself, netnet will write them for you and walk through it step by step. If you&#39;re new to version control it&#39;s worth reading the netnet passages to better understand what&#39;s going on at each step.</p>
 <p><strong>PRO TIP</strong>: Once you get the hang of it, you can <em>speed run</em> the process by pressing, <em>Enter &gt; Enter &gt; typing your commit message &gt; Enter &gt; Enter &gt; Enter</em></p>
 <h3>Publishing Your Website</h3>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/publish-project.mp4"
-  poster="../images/poster-publish-project.jpg">
+  poster="../images/publish-project-poster.jpg">
 </video></p>
-<p>When you&#39;re ready to publish your project to the World Wide Web you can click on netnet&#39;s face to open the main menu, then <em>Coding Menu &gt; my code &gt; share</em>, netnet explains that it will use the &quot;ghpages&quot; service provided by GitHub to launch a web server on GitHub for your project. It then generates a publicly accessible URL you can share with anyone, your work is now live on the Web!</p>
-<p>Once you publish a project you don&#39;t ever need to re-publish it, every time you make a new commit your live website gets updated as well (NOTE: as netnet explains, it does take a minute or two before you see those updates on the published website).</p>
+<p>When you&#39;re ready to publish your project to the World Wide Web you can click the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the <strong>Project Files</strong> widget and choose the <strong>web publish</strong> option. This will open the <strong>Web Publish</strong> widget, netnet explains that it will use the &quot;ghpages&quot; service provided by GitHub to launch a web server on GitHub for your project. It then generates a publicly accessible URL you can share with anyone, your work is now live on the Web!</p>
+<p>As netnet explains, it does take a minute or two before you see those updates on the published website. The status indicator in the <strong>Web Publish</strong> will say <em>building</em> at first, once it changes to <em>live</em> your site is officially published on the web.</p>
+<p>Once you publish a project you don&#39;t ever need to re-publish it, every time you make a new commit, it will trigger a rebuild and your live website gets updated as well.</p>
 
       </div>
     </div>
@@ -214,7 +229,6 @@
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
     <script src="/core/libs/fuse.js"></script>
-    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>

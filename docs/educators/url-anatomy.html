@@ -50,7 +50,7 @@
                   <a class="inline-link" href="/docs/students/ai-integration.html">
                   connecting local LLM
                 </a></li></ul>
-              </li><li class="docs__panel__list-item">
+              </li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/educators/url-anatomy.html">
@@ -62,7 +62,7 @@
                   <a class="inline-link" href="/docs/supporters/institutional-support.html">
                   institutional support
                 </a></li></ul>
-              </li><li class="docs__panel__list-item open">
+              </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
@@ -106,91 +106,32 @@
 
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
-        <h1>Bug Reports</h1>
-<h3>filing an issue</h3>
-<p>If something in netnet.studio didn’t work the way you expected, we want to hear about it! This document explains how to file a helpful bug report with enough detail for us to reproduce the issue on our end and fix it. Because different devices, operating systems, browsers, settings, or even small differences in the steps taken can lead to different results, sharing your setup and exactly what you did gives us the best chance to reproduce the bug on our end so we can fix it!</p>
-<h2>Where to report</h2>
-<p>We use GitHub to track all of our <a href="https://github.com/netizenorg/netnet.studio/issues" target="_blank">issues</a>, you can report a new one in the link below. Dont&#39; forget, as mentioned in the <a href="index.html">contributors page</a>, you&#39;ll need to create a free GitHub account before you can contribute:</p>
+        <h1>Anatomy of a netnet URL</h1>
+<p>While visiting <a href="https://netnet.studio" target="_blank">https://netnet.studio</a> is the common starting point, you can actually navigate to specific content directly using <a href="https://en.wikipedia.org/wiki/Query_string" target="_blank">URL parameters</a> (the <code>?key=value</code> part of a URL) and <a href="https://en.wikipedia.org/wiki/URI_fragment" target="_blank">URL hashes</a> (the <code>#value</code> part). You can also combine URL parameters and URL hashes, so long as the hash is written after the URL params, for example <a href="https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/?layout=dock-left#code/eJyzSU7NK...</a></p>
+<p>This is one of the most useful features for educators, rather than telling students &quot;open the Learning Guide, find the HTML section, click on the third demo,&quot; you can simply post a link in your course notes that opens netnet with that demo already loaded. The same goes for your own annotated examples or github starter projects.</p>
+<p><img src="../images/url.svg" alt="netnet URL" /></p>
+<p>Below is a breakdown of the different URL parameters and hashes netnet supports.</p>
+<h2>URL Params</h2>
+<p>a netnet URL does not necessarily need to contain any URL parameters, but it can contain different combinations of any of the following:</p>
 <ul>
-<li><h3><a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">https://github.com/netizenorg/netnet.studio/issues/new</a></h3>
+<li><code>?tutorial=[...]</code> the value of this param is the name of a tutorial to automatically load, for example <a href="https://netnet.studio/?tutorial=orientation" target="_blank">https://netnet.studio/?tutorial=orientation</a> you can also start the tutorial at a particular time point by specifying a value in seconds using the <strong>t</strong> param, for example: <a href="https://netnet.studio/?tutorial=orientatione&t=60" target="_blank">https://netnet.studio/?tutorial=orientatione&t=60</a> (this will start the tutorial 1min in)</li>
+<li><code>?demo=[...]</code> the value of this param is the id of a demo (annotated code example) in netnet&#39;s database, for instance: <a href="https://netnet.studio/?demo=49" target="_blank">https://netnet.studio/?demo=49</a></li>
+<li><code>?template=[...]</code> the value of this param is the name of a template project to automatically load, for example: <a href="https://netnet.studio/?template=css-art" target="_blank">https://netnet.studio/?template=css-art</a></li>
+<li><code>?w=[...]</code> the value of this param is the key name of any netnet widget you want automatically opened as soon as netnet loads, for example: <a href="https://netnet.studio/?w=learning-guide" target="_blank">https://netnet.studio/?w=learning-guide</a></li>
+<li><code>?c=[...]</code> the value of this param is a shortcode, a reference to an entry in netnet&#39;s database for a CODE_HASH a student chose to shorten to avoid having such a long URL, for example: <a href="https://netnet.studio/?c=6" target="_blank">https://netnet.studio/?c=6</a></li>
+<li><code>?layout=[...]</code> the value of this param is the type of layout netnet should display on load, options include: welcome, separate-window, dock-left, dock-bottom, full-screen. It assumes you are also sharing a sketch (either via a short <strong>c</strong> code or a <strong>#code/</strong> hash) for example: <a href="https://netnet.studio/?c=6&layout=dock-left" target="_blank">https://netnet.studio/?c=6&layout=dock-left</a></li>
+<li><code>?gh=[...]</code> the value of this param contains info for a project hosted on GitHub. It should include the GitHub username and repository name separated by <strong>/</strong>, with an optional branch name (defaults to <strong>main</strong> if omitted), for example <a href="https://netnet.studio/?gh=netizenorg/artware-workshop/master" target="_blank">https://netnet.studio/?gh=netizenorg/artware-workshop/master</a></li>
+</ul>
+<h2>URL Hashes</h2>
+<p>netnet hashes are one way to pass your own data into the netnet editor. These hashes must always come at the end of the URL, which means if URL parameters are present, the hash must be written after the URL query params.</p>
+<ul>
+<li><p><code>#sketch</code> adding the <strong>#sketch</strong> hash to netnet&#39;s URL will automatically load netnet to it&#39;s &#39;dock-left&#39; display with a blank file and skips the default greeting process, so you can jump right into coding, for example: <a href="https://netnet.studio/#sketch" target="_blank">https://netnet.studio/#sketch</a> (this is what <a href="http://netnet.studio/sketch" target="_blank">http://netnet.studio/sketch</a> maps to)</p>
+</li>
+<li><p><code>#code/[...]</code> the code present in this hash is the compressed contents of the HTML/CSS/JS code that was in netnet&#39;s editor at the time a share link was generated. It always begins with <strong>#code/</strong> followed by the compressed code, for example: <a href="https://netnet.studio/#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/#code/eJyzSU7NK0kt...</a>. This code can get pretty long, which is why there&#39;s also an option to create a short code URL (see the <strong>c</strong> URL param above). By default netnet displays sketches fullscreen, but you can optionally include the <strong>layout</strong> param to display the editor, for example: <a href="https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0kt...</a></p>
+</li>
+<li><p><code>#demo/[...]</code> similar to <strong>#code/</strong>, except the compressed data also includes code annotations created with the <strong>Demo Maker</strong> widget. When loaded, netnet displays the annotated sketch and steps through the annotations automatically. For example: <a href="https://netnet.studio/#demo/eJw9jcsKwjAQRX8ljtuIaIiPgAtBN/6CuIjptA1JEzATtJT+u4kLh4GBew9nJnA4gtrsD2K7k1JIcZQcgh4QFAAH0l0CFbL3HLweY6aSN9G4lceWCmBiU9FlvWu8vS/n31xPpbOhjaDuE7TR5L+G8FMl1NvEymr29Do4lhyS6Rf1pyVfnR0S2dCxRPpF2MD8mL8EWTdJ" target="_blank">https://netnet.studio/#demo/eJw9jcsKw...</a></p>
 </li>
 </ul>
-<div class="warning">
-🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things.
-</div>
-
-<h2>What to include</h2>
-<ul>
-<li><p>Platform details</p>
-<ul>
-<li>Device: laptop/desktop/tablet and model (ex: MacBook Air M1)</li>
-<li>Operating System and version (ex: macOS 14.2, Windows 11 23H2, iOS 17.2, etc)</li>
-<li>Browser and version (ex: Chrome 120, Firefox 121, Safari 17, etc)</li>
-<li>Any unusual browser extensions you have installed or privacy settings you think might matter</li>
-</ul>
-</li>
-<li><p>What you expected vs. what happened</p>
-<ul>
-<li>Expected: what you thought would happen</li>
-<li>Actual: what actually happened (include any error messages)</li>
-</ul>
-</li>
-<li><p>Where it happened</p>
-<ul>
-<li>Share the URL you had in the address bar when the issue occured (netnet uses URLs in different ways which effect how it behaves)</li>
-<li>Where you working on a sketch or project? Did this occur during a tutorial/lesson?</li>
-<li>Was the bug associated with a specific widget or feature?</li>
-</ul>
-</li>
-<li><p>Steps to reproduce (what you did)</p>
-<ul>
-<li>Try to retrace your steps and reproduce the issue yourself until it happens consistently (if it only happens sometimes, let us know when/how often) this is exactly how experienced bug reporters track down problems</li>
-<li>List the steps in order, one step per line</li>
-<li>Be specific: which button you clicked, which file you opened, and what you typed</li>
-<li>If you can’t reproduce the issue consistently, that’s okay, please still report it and let us know that you weren’t able to make it happen again</li>
-</ul>
-</li>
-</ul>
-<p><strong>Optional but super helpful</strong></p>
-<ul>
-<li>Screenshots or a short screen recording</li>
-<li>Any messages from the browser Console<ul>
-<li>Open Developer Tools (press F12 or Fn+F12 on Mac), go to Console, copy+paste the errors you see there</li>
-</ul>
-</li>
-</ul>
-<h2>New Issue Template</h2>
-<p>Here&#39;s a template you can copy+paste into a <a href="https://github.com/netizenorg/netnet.studio/issues/new" target="_blank">new issue</a>, It&#39;s okay you don&#39;t have every detail, anything you share can help!</p>
-<p><strong>Title</strong></p>
-<p>A very brief summary of the problem (take a look at <a href="https://github.com/netizenorg/netnet.studio/issues?q=is%3Aissue" target="_blank">previous issues</a> for examples)</p>
-<p><strong>Description</strong></p>
-<pre><code>Platform
-- Device:
-- OS + version:
-- Browser + version:
-- Extensions/privacy settings (if any):
-
-Expected result:
-
-Actual result:
-
-Where it happened
-- Widget/feature:
-- URL (if relevant):
-
-Steps to reproduce
-1.
-2.
-3.
-
-
-Frequency
-- [ ] Always  - [ ] Sometimes  - [ ] Happened once
-
-Extra context
-- Screenshots/video:
-- Console errors (copy/paste):</code></pre>
-<p>Thank you for taking the time to report a bug!</p>
 
       </div>
     </div>

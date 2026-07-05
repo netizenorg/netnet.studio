@@ -9,7 +9,9 @@ We use GitHub to track all of our [issues](https://github.com/netizenorg/netnet.
 
 - ### [https://github.com/netizenorg/netnet.studio/issues/new](https://github.com/netizenorg/netnet.studio/issues/new)
 
-
+<div class="warning">
+🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things.
+</div>
 
 ## What to include
 

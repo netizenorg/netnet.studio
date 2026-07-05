@@ -22,74 +22,84 @@
     <link rel="icon" type="image/png" href="/images/favicons/learning-guide.png">
     <link rel="stylesheet" href="/core/styles.css">
     <link rel="stylesheet" href="/docs/styles.css">
-    <link rel="stylesheet" href="/custom-elements/misc/search-bar/styles.css">
   </head>
   <body class="docs">
     <div class="docs__panel">
-      <span class="docs__panel__intro">
-        <a href="/">
-          ( ◕ ◞ ◕ )
+      <div class="docs__panel__header">
+        <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
+          <div><span class="screen-reader-only">Open/close mobile menu</span></div>
+        </button>
+        <div class="docs__panel__search">
+          <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
+          <input id="search-input" class="search-input" placeholder="search">
+        </div>
+        <a href="/" class="docs__panel__face">
+          <span class="eye">◕</span> <span class="mouth">◞</span> <span class="eye">◕</span>
           <span class="screen-reader-only">netnet.studio home</span>
         </a>
-        <span class="ver">v4.0</span>
-      </span>
-      <button id="hamburger" class="docs__panel__hamburger" aria-expanded="false" role="navigation">
-        <div><span class="screen-reader-only">Open/close mobile menu</span></div>
-      </button>
-      <div class="docs__panel__search">
-        <img src="/images/menu/search.png" alt="Search icon" class="search-icon">
-        <input id="search-input" class="search-input" placeholder="search">
       </div>
       <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li><li class="docs__panel__list-item open">
                 <a class="header inline-link" href="/docs/students/index.html">Dear Students</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/coding.html">
-                  coding
+                  coding in netnet
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/students/learning.html">
-                  learning
+                  the Learning Guide
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/students/ai-integration.html">
+                  connecting local LLM
                 </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
-                <ul class="docs__panel__list" role="navigation"></ul>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/url-anatomy.html">
+                  netnet URLs
+                </a></li></ul>
+              </li><li class="docs__panel__list-item">
+                <a class="header inline-link" href="/docs/supporters/index.html">Dear Supporters</a>
+                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/supporters/institutional-support.html">
+                  institutional support
+                </a></li></ul>
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/contributors/index.html">Dear Contributors</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/bug-report.html">
-                  bug report
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/code-demos.html">
-                  code demos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
-                  contributor workflow
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
-                  editing convos
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/institutional-support.html">
-                  institutional support
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
-                  manual setup
-                </a></li><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/contributors/support.html">
-                  support
+                  0. Bug Reports
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/the-docs.html">
-                  the docs
+                  1. Editing these Docs
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/code-demos.html">
+                  3. Code Demos
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/tutorial-maker.html">
-                  tutorial maker
+                  4. Interactive Tutorials
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/editing-convos.html">
+                  2. Convos and Passages
                 </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/contributors/widgets.html">
-                  widgets
-                </a></li></ul>
-              </li><li class="docs__panel__list-item">
-                <a class="header inline-link" href="/docs/#">Other Notes</a>
-                <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
-                  <a class="inline-link" href="/docs/misc/ai-integration.html">
-                  ai integration
+                  5. Widgets
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/project-architecture.html">
+                  6. Core Components
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/contributor-workflow.html">
+                  TL;DR (for experienced devs)
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/manual-setup.html">
+                  Manual Setup
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/netnet-faces.html">
+                  netnet faces
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/dialogue-system.html">
+                  Dialogue System
+                </a></li><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/contributors/css-styleguide.html">
+                  css styleguide
                 </a></li></ul>
               </li></ul>
     </div>
@@ -102,19 +112,19 @@
 <p>netnet.studio is an interactive learning platform (see the <b>Learning Guide</b> section below) where you learn not only by reading docs or watching videos but by making. It&#39;s also designed to act as a web-coding sketchbook, if you have an idea, the goal is to get you into a live editor with minimal friction so you can capture it in code before it’s lost. Let netnet know you want to code as soon as it loads, or jump straight to a blank sketch by navigating to <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a>.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/sketching.mp4"
-  poster="../images/poster-sketching.jpg">
+  poster="../images/sketching-poster.jpg">
 </video></p>
 <p>The code editor is intentionally simple, but has unique features designed specifically for creative folks learning to code for the first time. As shown in the video above, it provides familiar tools like syntax highlighting, line numbers, and auto-complete, along with a few extras designed to support learning. For instance, double-clicking any piece of code brings up an explanation and relevant documentation. If netnet detects a possible issue, it marks the line with an orange (warning) or red (error) dot that you can click to read more. There are a number of other widgets which netnet opens (or suggests) for you to use when it&#39;s relevant as it did with the Color Widget in the video above.</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/saving-sketch.mp4"
-  poster="../images/poster-saving-sketch.jpg">
+  poster="../images/saving-sketch-poster.jpg">
 </video></p>
 <p> You can think of <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a> as an infinite sticky pad, pressing <b>CTRL+S</b> (or <b>CMD+S</b> on Mac) will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL). Sharing your code as a URL is like pulling a sticky note off the pad, you need to decide where to stick it: send it to a friend, post it online, or save it somewhere safe. Once it&#39;s pulled off, it&#39;s no longer part of the pad, so if you lose that link, you lose the sketch (we don&#39;t record/save what you make on netnet, your code is compressed into the URL itself). If you want to keep something you made long-term, save the share URL somewhere safe or download it as an HTML file (you can turn it into an online <strong>project</strong>, more on that below).</p>
 <h2>The Menu</h2>
 <p>You can open the menu at anytime by clicking on netnet&#39;s face...</p>
 <p><video autoplay loop muted playsinline width="720"
   src="../images/netnet-menu.mp4"
-  poster="../images/poster-netnet-menu.jpg">
+  poster="../images/netnet-menu-poster.jpg">
 </video></p>
 <table>
 <thead>
@@ -173,7 +183,6 @@
     <script src="/netitor.min.js"></script>
     <script src="/nn.min.js"></script>
     <script src="/core/libs/fuse.js"></script>
-    <script src="/custom-elements/misc/search-bar/index.js"></script>
     <script src="/docs/scripts.js"></script>
   </body>
 </html>
