@@ -8,7 +8,7 @@
   { "file": "project-architecture.md", "name": "6. Core Components" },
   { "file": "contributor-workflow.md", "name": "TL;DR (for experienced devs)" },
   { "file": "manual-setup.md", "name": "Manual Setup" },
-  { "file": "dialogue-system.md", "name": "Dialogue System" },
+  { "file": "css-styleguide.md", "name": "CSS Styleguide" },
   { "file": "netnet-faces.md", "name": "netnet faces" },
   { "file": "dialogue-system.md", "name": "Dialogue System" }
 ]
