@@ -107,31 +107,83 @@
     <div class="docs__viewer">
       <div class="docs__viewer-inner">
         <h1>Anatomy of a netnet URL</h1>
-<p>While visiting <a href="https://netnet.studio" target="_blank">https://netnet.studio</a> is the common starting point, you can actually navigate to specific content directly using <a href="https://en.wikipedia.org/wiki/Query_string" target="_blank">URL parameters</a> (the <code>?key=value</code> part of a URL) and <a href="https://en.wikipedia.org/wiki/URI_fragment" target="_blank">URL hashes</a> (the <code>#value</code> part). You can also combine URL parameters and URL hashes, so long as the hash is written after the URL params, for example <a href="https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/?layout=dock-left#code/eJyzSU7NK...</a></p>
-<p>This is one of the most useful features for educators, rather than telling students &quot;open the Learning Guide, find the HTML section, click on the third demo,&quot; you can simply post a link in your course notes that opens netnet with that demo already loaded. The same goes for your own annotated examples or github starter projects.</p>
+<p>While visiting <a href="https://netnet.studio" target="_blank">https://netnet.studio</a> is the common starting point, you can actually navigate to specific content directly using <a href="https://en.wikipedia.org/wiki/Query_string" target="_blank">URL parameters</a> (the <code>?key=value</code> part of a URL) and <a href="https://en.wikipedia.org/wiki/URI_fragment" target="_blank">URL hashes</a> (the <code>#value</code> part). Below you&#39;ll find a breakdown of the different URL parameters and hashes netnet supports, as well as a usage examples for educators.</p>
 <p><img src="../images/url.svg" alt="netnet URL" /></p>
-<p>Below is a breakdown of the different URL parameters and hashes netnet supports.</p>
 <h2>URL Params</h2>
-<p>a netnet URL does not necessarily need to contain any URL parameters, but it can contain different combinations of any of the following:</p>
-<ul>
-<li><code>?tutorial=[...]</code> the value of this param is the name of a tutorial to automatically load, for example <a href="https://netnet.studio/?tutorial=orientation" target="_blank">https://netnet.studio/?tutorial=orientation</a> you can also start the tutorial at a particular time point by specifying a value in seconds using the <strong>t</strong> param, for example: <a href="https://netnet.studio/?tutorial=orientatione&t=60" target="_blank">https://netnet.studio/?tutorial=orientatione&t=60</a> (this will start the tutorial 1min in)</li>
-<li><code>?demo=[...]</code> the value of this param is the id of a demo (annotated code example) in netnet&#39;s database, for instance: <a href="https://netnet.studio/?demo=49" target="_blank">https://netnet.studio/?demo=49</a></li>
-<li><code>?template=[...]</code> the value of this param is the name of a template project to automatically load, for example: <a href="https://netnet.studio/?template=css-art" target="_blank">https://netnet.studio/?template=css-art</a></li>
-<li><code>?w=[...]</code> the value of this param is the key name of any netnet widget you want automatically opened as soon as netnet loads, for example: <a href="https://netnet.studio/?w=learning-guide" target="_blank">https://netnet.studio/?w=learning-guide</a></li>
-<li><code>?c=[...]</code> the value of this param is a shortcode, a reference to an entry in netnet&#39;s database for a CODE_HASH a student chose to shorten to avoid having such a long URL, for example: <a href="https://netnet.studio/?c=6" target="_blank">https://netnet.studio/?c=6</a></li>
-<li><code>?layout=[...]</code> the value of this param is the type of layout netnet should display on load, options include: welcome, separate-window, dock-left, dock-bottom, full-screen. It assumes you are also sharing a sketch (either via a short <strong>c</strong> code or a <strong>#code/</strong> hash) for example: <a href="https://netnet.studio/?c=6&layout=dock-left" target="_blank">https://netnet.studio/?c=6&layout=dock-left</a></li>
-<li><code>?gh=[...]</code> the value of this param contains info for a project hosted on GitHub. It should include the GitHub username and repository name separated by <strong>/</strong>, with an optional branch name (defaults to <strong>main</strong> if omitted), for example <a href="https://netnet.studio/?gh=netizenorg/artware-workshop/master" target="_blank">https://netnet.studio/?gh=netizenorg/artware-workshop/master</a></li>
-</ul>
+<p>A netnet URL does not necessarily need to contain any URL parameters, but it can contain different combinations of any of the following:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>?tutorial=[name]</code></td>
+<td>Name of a tutorial to automatically load, e.g. <a href="https://netnet.studio/?tutorial=orientation" target="_blank">https://netnet.studio/?tutorial=orientation</a>. You can also start at a specific point using <code>&amp;t=[seconds]</code>, e.g. <a href="https://netnet.studio/?tutorial=orientation&t=60" target="_blank">https://netnet.studio/?tutorial=orientation&t=60</a> starts 1 minute in.</td>
+</tr>
+<tr>
+<td><code>?demo=[id]</code></td>
+<td>ID of a demo (annotated code example) in netnet&#39;s database, e.g. <a href="https://netnet.studio/?demo=49" target="_blank">https://netnet.studio/?demo=49</a></td>
+</tr>
+<tr>
+<td><code>?template=[name]</code></td>
+<td>Name of a template project to automatically load, e.g. <a href="https://netnet.studio/?template=css-art" target="_blank">https://netnet.studio/?template=css-art</a></td>
+</tr>
+<tr>
+<td><code>?w=[key]</code></td>
+<td>Key name of any netnet widget to open automatically on load, e.g. <a href="https://netnet.studio/?w=learning-guide" target="_blank">https://netnet.studio/?w=learning-guide</a></td>
+</tr>
+<tr>
+<td><code>?c=[shortcode]</code></td>
+<td>A shortcode referencing a compressed sketch URL in netnet&#39;s database (a shorter alternative to <code>#code/</code>), e.g. <a href="https://netnet.studio/?c=6" target="_blank">https://netnet.studio/?c=6</a></td>
+</tr>
+<tr>
+<td><code>?layout=[type]</code></td>
+<td>Layout to display on load: <code>welcome</code>, <code>separate-window</code>, <code>dock-left</code>, <code>dock-bottom</code>, or <code>full-screen</code>. Intended to be combined with a <code>?c=</code> or <code>#code/</code> sketch, e.g. <a href="https://netnet.studio/?c=6&layout=dock-left" target="_blank">https://netnet.studio/?c=6&layout=dock-left</a></td>
+</tr>
+<tr>
+<td><code>?gh=[user/repo]</code></td>
+<td>GitHub username and repository name separated by <code>/</code>, with an optional branch (defaults to <code>main</code>), e.g. <a href="https://netnet.studio/?gh=netizenorg/artware-workshop/master" target="_blank">https://netnet.studio/?gh=netizenorg/artware-workshop/master</a></td>
+</tr>
+</tbody></table>
 <h2>URL Hashes</h2>
 <p>netnet hashes are one way to pass your own data into the netnet editor. These hashes must always come at the end of the URL, which means if URL parameters are present, the hash must be written after the URL query params.</p>
-<ul>
-<li><p><code>#sketch</code> adding the <strong>#sketch</strong> hash to netnet&#39;s URL will automatically load netnet to it&#39;s &#39;dock-left&#39; display with a blank file and skips the default greeting process, so you can jump right into coding, for example: <a href="https://netnet.studio/#sketch" target="_blank">https://netnet.studio/#sketch</a> (this is what <a href="http://netnet.studio/sketch" target="_blank">http://netnet.studio/sketch</a> maps to)</p>
-</li>
-<li><p><code>#code/[...]</code> the code present in this hash is the compressed contents of the HTML/CSS/JS code that was in netnet&#39;s editor at the time a share link was generated. It always begins with <strong>#code/</strong> followed by the compressed code, for example: <a href="https://netnet.studio/#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/#code/eJyzSU7NK0kt...</a>. This code can get pretty long, which is why there&#39;s also an option to create a short code URL (see the <strong>c</strong> URL param above). By default netnet displays sketches fullscreen, but you can optionally include the <strong>layout</strong> param to display the editor, for example: <a href="https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0kt...</a></p>
-</li>
-<li><p><code>#demo/[...]</code> similar to <strong>#code/</strong>, except the compressed data also includes code annotations created with the <strong>Demo Maker</strong> widget. When loaded, netnet displays the annotated sketch and steps through the annotations automatically. For example: <a href="https://netnet.studio/#demo/eJw9jcsKwjAQRX8ljtuIaIiPgAtBN/6CuIjptA1JEzATtJT+u4kLh4GBew9nJnA4gtrsD2K7k1JIcZQcgh4QFAAH0l0CFbL3HLweY6aSN9G4lceWCmBiU9FlvWu8vS/n31xPpbOhjaDuE7TR5L+G8FMl1NvEymr29Do4lhyS6Rf1pyVfnR0S2dCxRPpF2MD8mL8EWTdJ" target="_blank">https://netnet.studio/#demo/eJw9jcsKw...</a></p>
-</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Hash</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#sketch</code></td>
+<td>Loads netnet in <code>dock-left</code> layout with a blank file, skipping the default greeting so you can jump straight into coding. Also accessible via <a href="http://netnet.studio/sketch" target="_blank">http://netnet.studio/sketch</a>.</td>
+</tr>
+<tr>
+<td><code>#code/...</code></td>
+<td>Compressed HTML/CSS/JS code from netnet&#39;s editor. This can get quite long, which is why the <code>?c=</code> shortcode param exists. By default netnet displays the sketch fullscreen, but you can combine with <code>?layout=</code> to show the editor, e.g. <a href="https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0ktsuNSUPBIzcnJVwjPL8pJUQjPTElVCE9NUuSy0YeqAAAk0A2e" target="_blank">https://netnet.studio/?layout=dock-left#code/eJyzSU7NK0kt...</a></td>
+</tr>
+<tr>
+<td><code>#demo/...</code></td>
+<td>Like <code>#code/</code> but the compressed data also includes code annotations created with the <strong>Demo Maker</strong> widget. Loads as an annotated sketch that steps through the annotations automatically, e.g. <a href="https://netnet.studio/#demo/eJw9jcsKwjAQRX8ljtuIaIiPgAtBN/6CuIjptA1JEzATtJT+u4kLh4GBew9nJnA4gtrsD2K7k1JIcZQcgh4QFAAH0l0CFbL3HLweY6aSN9G4lceWCmBiU9FlvWu8vS/n31xPpbOhjaDuE7TR5L+G8FMl1NvEymr29Do4lhyS6Rf1pyVfnR0S2dCxRPpF2MD8mL8EWTdJ" target="_blank">https://netnet.studio/#demo/eJw9jcsKw...</a></td>
+</tr>
+</tbody></table>
+<h2>Examples for Educators</h2>
+<p>This is one of the most useful features for educators, rather than telling students &quot;open the Learning Guide, find the HTML section, click on the third demo,&quot; you can simply post a link in your course notes that opens netnet with that demo already loaded. The same goes for your own annotated examples or github starter projects. Here are some examples...</p>
+<h3>1. sharing a sketch</h3>
+<p>You can quickly open a blank sketch on netnet by navigating to <a href="http://netnet.studio/sketch" target="_blank">http://netnet.studio/sketch</a> which actually subtly redirects to <a href="https://netnet.studio/#sketch" target="_blank">https://netnet.studio/#sketch</a> (with the <code>#sketch</code>). Once there you can create an example or starter sketch for your students, then hit <b>{SUPER}+S</b> and choose the <em>share sketch as netnet URL</em> option in the passage. This will generate a link with the sketch&#39;s coded embedded into the <code>#code</code> URL hash, like <a href="https://netnet.studio/?layout=dock-left#code/eJzLSM3JyQcABiwCFQ==" target="_blank">https://netnet.studio/?layout=dock-left#code/eJzLSM3JyQcABiwCFQ==</a>. Sharing or linking to that URL will launch netnet with your sketch opened up automatically (no intro conversation, no hunting through menus).</p>
+<p>You might also notice that in addition to the <code>#code</code> hash, the <strong>Share Sketch Widget</strong> also adds the <code>?layout=dock-left</code> URL parameter. You can combine URL parameters and URL hashes, so long as the hash is written after the URL params. You can change or remove that parameter from the URL manually (which will render the sketch fullscreen and keep netnet hidden), but you can also use the widget&#39;s <em>layout</em> dropdown menu to change the URL parameter as well.</p>
+<h3>2. sharing annotated demos</h3>
+<p>An annotated demo is what we call a sketch (single HTML file) that has built in netnet passages which explain different parts of the code. These are linked throughout netnet, in the <a href="https://netnet.studio/?w=demo-sketches" target="_blank">Demo Sketches</a> widget, but also in the <a href="https://netnet.studio/?w=learning-guide" target="_blank">Learning Guide</a>, the <a href="https://netnet.studio/?w=learning-guide/ai" target="_blank">Notes on AI</a>, etc. Anytime you open one, you&#39;ll notice your browser&#39;s URL changes to something like <a href="https://netnet.studio/?demo=4" target="_blank">https://netnet.studio/?demo=4</a>. The <code>?demo=</code> URL parameter is how you can link directly to a specific netnet demo.</p>
+<p>You could also create your own annotated demos! Use netnet&#39;s search bar to find the &quot;<em>Demo Maker</em>&quot;, this is one of a handful of meta-widgets for creating netnet content. Select <em>new</em> in the Demo Maker and you&#39;ll be given a blank sketch, create your sketch and then use the Demo Maker to annotate it with your own notes. Then click the <em>shareable link</em> option and it will create a link with the <code>#demo/...</code> URL hash with your sketch as well as your notes encoded into the URL. You can then share/link this with your students and it will take them directly to that annotated demo.</p>
+<p>If you create an annotated demo you think the broader netnet community can benefit from, consider pressing the <em>download</em> button as well, that will generate a <code>.json</code> file which <a href="/docs/contributors/code-demos.html">you can submit as a PR</a> for inclusion in netnet.studio!</p>
+<h3>3. sharing your repos</h3>
+<p>netnet integrates with GitHub, so you can create and open projects directly in the editor. If you&#39;ve built a starter project or example repo and want students to work from it, you can link to it using the <code>?gh=[username/repository]</code> URL parameter, for example <a href="https://netnet.studio/?gh=netizenorg/artware-workshop/master" target="_blank">https://netnet.studio/?gh=netizenorg/artware-workshop</a>. The repo needs to have an HTML file at its root to render correctly in the editor.</p>
+<p>What makes this especially useful for teaching is how netnet handles ownership. When you navigate to your own repo, netnet gives you the option to open and edit it directly. When a <em>student</em> navigates to the same URL, netnet instead gives them the option to <em>fork</em> it, creating their own copy on their GitHub account. This means you can use any repo you&#39;ve created as a live starter template: share the <code>?gh=</code> link in your course notes and students each get their own independent fork to work from. Since those forks are real GitHub repositories, this also opens the door to teaching git workflows, pull requests, and collaboration between students.</p>
+<h3>4. linking to netnet tutorials + notes</h3>
+<p>If there&#39;s a specific tutorial you want students to work through, you can link directly to it using the <code>?tutorial=[name]</code> parameter, for example <a href="https://netnet.studio/?tutorial=orientation" target="_blank">https://netnet.studio/?tutorial=orientation</a>. You can even link to a specific moment within a tutorial by adding a second parameter <code>&amp;t=[seconds]</code>; note the <code>&amp;</code> instead of <code>?</code>, which is how you chain multiple URL parameters together. So <a href="https://netnet.studio/?tutorial=orientation&t=120" target="_blank">https://netnet.studio/?tutorial=orientation&t=120</a> would drop students in two minutes into the orientation tutorial.</p>
+<p>You can also link directly to any widget using <code>?w=[key]</code>, which is handy if you want students to open a specific reference or tool right away, for example <a href="https://netnet.studio/?w=css-reference" target="_blank">https://netnet.studio/?w=css-reference</a>. The Learning Guide is a special case, it also supports linking to specific sub-sections within the guide, for example <a href="https://netnet.studio/?w=learning-guide/ai" target="_blank">https://netnet.studio/?w=learning-guide/ai</a> opens directly to the Notes on AI section.</p>
 
       </div>
     </div>
