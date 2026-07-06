@@ -32,6 +32,10 @@ While netnet supports the creation of full web **projects** (more on that below)
 
 You can use these as links in class notes, as well as to quickly send a student an example or snippet in response to a question. In fact sending sketches back and fourth is a quick and easy way to asynchronously write code with someone without loosing the history (each link retains it's own state).
 
+<br>
+<strong style="font-size:1.25rem">You can link directly to specific sketches, demos, projects, tutorials and widgets, learn how in the <a href="url-anatomy.html">Anatomy of a netnet URL</a> doc!</strong>
+<br>
+
 ### Annotate your sketch
 
 You can also **annotate a sketch** using the **Demo Maker** widget. This tool lets you highlight specific lines of code and attach notes to them directly within the sketch. Once annotated, you can generate a **shareable URL** where netnet explains each highlighted line through its conversational passages.
