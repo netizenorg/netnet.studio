@@ -91,6 +91,33 @@ window.CONVOS['utils-misc'] = (self) => {
       'cool!': (e) => e.hide()
     }
   }, {
+    id: 'fullscreen-layout-info',
+    content: 'In my "full-screen" layout the code is placed over the rendered page, which might seem strange at first but actually has a couple of advantages. It\'s great for live-coding, and because the rendered page is also full-screen you can use it to test what your page looks like on its own.',
+    options: {
+      ok: (e) => e.hide(),
+      'live coding?': (e) => e.goTo('fullscreen-live-coding'),
+      'test my page?': (e) => e.goTo('fullscreen-test-page')
+    }
+  }, {
+    id: 'fullscreen-live-coding',
+    content: 'Live coding means writing code while the result plays out in real time, it\'s used in performance contexts like <a href="https://en.wikipedia.org/wiki/Algorave" target="_blank">algoraves</a>, where artists code visuals or music in front of an audience. The opacity slider lets you dial in how visible the editor is over your sketch. If you pull it all the way down to zero, the editor disappears entirely. My color theme is important here: pick a light theme if your page has a bright background, or a dark theme if it leans dark, so the text stays readable.',
+    options: {
+      ok: (e) => e.hide(),
+      'change theme?': (e) => e.goTo('fullscreen-change-theme')
+    }
+  }, {
+    id: 'fullscreen-change-theme',
+    content: 'To change my color theme, click on my face to open the <b>Coding Menu</b>, then choose <b>editor settings</b>. From there you\'ll find a theme selector where you can switch between dark, light, monokai, and a few others.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'fullscreen-test-page',
+    content: 'Testing your page at full-screen is much harder in the other layouts since the rendered output is always sharing space with the editor. Here, your page fills the entire screen just like it would for a real visitor. When you click the "hide netnet" button to hide the editor, it turns into a barely visible "show netnet" button that you can click to bring the editor back.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
     id: 'oh-no-error',
     after: () => errorFace(),
     content: 'Oh dang! seems there was a server error... sorry about that...',

@@ -14,6 +14,16 @@ in indexedDB via the project-files widget.
                          |_______________|
 
 // NOTE: for debug console visit "about:debugging" in Firefox
+
+// NOTE: kill service worker chrome (copy+paste into web console)
+;(async () => {
+  const regs = await navigator.serviceWorker.getRegistrations()
+  for (const r of regs) await r.unregister()
+  const keys = await caches.keys()
+  await Promise.all(keys.map(k => caches.delete(k)))
+  location.reload()
+})()
+
 */
 
 // NOTE: these must match values in project-files + tut maker's file-manager.js
