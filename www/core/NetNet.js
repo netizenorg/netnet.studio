@@ -764,6 +764,14 @@ class NetNet {
           this.win.style.display = 'block'
         }
       }).addTo('body')
+    // help button ....
+    this.fsh = nn.create('button')
+      .content('?')
+      .set('class', 'pill-btn pill-btn--secondary')
+      .position(248, 14)
+      .css({ display: 'none', zIndex: 3 })
+      .on('click', () => window.utils._Convo('fullscreen-layout-info'))
+    this.win.prepend(this.fsh)
     return fst
   }
 
@@ -779,6 +787,7 @@ class NetNet {
       this.fss.style.display = 'block'
       if (hasBG) NNE.background = false
       this.fst.style.display = 'block'
+      this.fsh.style.display = 'block'
     } else { // revert to normal
       this.canv.style.display = 'block'
       this.fsb.style.background = bgClr
@@ -786,6 +795,7 @@ class NetNet {
       this.fss.style.display = 'none'
       if (hasBG) NNE.background = true
       this.fst.style.display = 'none'
+      this.fsh.style.display = 'none'
     }
   }
 
