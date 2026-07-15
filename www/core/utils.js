@@ -613,22 +613,28 @@ window.utils = {
       window.utils.loadGithub(code, window.utils.url.layout)
       window.localStorage.removeItem('gh-auth-temp-code')
     } else {
-      // if they had some code they were working on in the editor
-      // before they got redirected over to GitHub to auth...
-      const decoded = NNE._decode(code.substr(6))
-      window.utils.setCustomRenderer(null)
-      NNE.iframe.removeAttribute('sandbox')
-      NNE.code = decoded
-      NNW.layout = 'dock-left'
-      window.utils.afterLayoutTransition(() => {
-        setTimeout(() => {
-          NNE.cm.refresh()
-          if (!NNE.autoUpdate) NNE.update()
-        }, 10)
-        window.utils.fadeOutLoader(false)
-        window.localStorage.removeItem('gh-auth-temp-code')
-        window.utils._Convo('gh-redirected')
-      })
+      // remove immediately so a failed decode can't cause an infinite stuck-loader loop
+      window.localStorage.removeItem('gh-auth-temp-code')
+      try {
+        // if they had some code they were working on in the editor
+        // before they got redirected over to GitHub to auth...
+        const decoded = NNE._decode(code.substr(6))
+        window.utils.setCustomRenderer(null)
+        NNE.iframe.removeAttribute('sandbox')
+        NNE.code = decoded
+        NNW.layout = 'dock-left'
+        window.utils.afterLayoutTransition(() => {
+          setTimeout(() => {
+            NNE.cm.refresh()
+            if (!NNE.autoUpdate) NNE.update()
+          }, 10)
+          window.utils.fadeOutLoader(false)
+          window.utils._Convo('gh-redirected')
+        })
+      } catch (e) {
+        console.error('loadGHRedirect: failed to restore pre-auth code', e)
+        window.utils.loadDefault()
+      }
     }
   },
 
