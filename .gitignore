@@ -37,3 +37,6 @@ data/temp-gh-user-data/*
 
 # ignoring custom widget made for announcement video
 www/widgets/intro-vid
+
+# ignoring local dev utility widget (for testing)
+www/widgets/dev-shortcuts
