@@ -39,4 +39,4 @@ data/temp-gh-user-data/*
 www/widgets/intro-vid
 
 # ignoring local dev utility widget (for testing)
-www/widgets/dev-shortcuts
+www/widgets/dev-cam

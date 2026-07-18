@@ -187,6 +187,12 @@ class HyperVideoPlayer extends Widget {
     this.$('.hvp-toggle > span').classList.add('play')
     this.video.pause()
 
+    if (!this.making && this.data) {
+      const name = this.data.metadata.id
+      const t = Math.floor(this.video.currentTime)
+      utils.updateURL(`?tutorial=${name}&t=${t}`)
+    }
+
     this._tempCode = NNE.code
     setTimeout(() => { this._tempCode = NNE.code }, NNE.updateDelay)
 
@@ -277,6 +283,9 @@ class HyperVideoPlayer extends Widget {
       // POSITION HYPER VIDEO PLAYER
       if (this._vidPositionNeedsUpdate(kf.video)) {
         const obj = JSON.parse(JSON.stringify(kf.video))
+        // HACK: for some reason vid/widgets all seem to be a little shorter
+        // when played back compared to when created in tutorial maker
+        obj.height += 15 // adjusting as a temporary HACK
         this.update(obj, this._tt)
       }
 
