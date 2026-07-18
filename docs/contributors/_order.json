@@ -1,9 +1,9 @@
 [
   { "file": "bug-report.md", "name": "0. Bug Reports" },
   { "file": "the-docs.md", "name": "1. Editing these Docs" },
+  { "file": "editing-convos.md", "name": "2. Convos and Passages" },
   { "file": "code-demos.md", "name": "3. Code Demos" },
   { "file": "tutorial-maker.md", "name": "4. Interactive Tutorials" },
-  { "file": "editing-convos.md", "name": "2. Convos and Passages" },
   { "file": "widgets.md", "name": "5. Widgets" },
   { "file": "project-architecture.md", "name": "6. Core Components" },
   { "file": "contributor-workflow.md", "name": "TL;DR (for experienced devs)" },

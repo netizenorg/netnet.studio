@@ -119,8 +119,15 @@ class CodingMenu extends Widget {
         window.convo = new Convo(this.convos, 'unsaved-changes-b4-fork-proj-logged-out')
       }
     } else if (WIDGETS['template-projects']?.state.name) { // working on template
+      const loggedIn = WIDGETS['student-session'].getData('owner')
       const convos = WIDGETS['template-projects'].convos
-      window.convo = new Convo(convos, 'new-project-from-template')
+      if (loggedIn) {
+        window.convo = new Convo(convos, 'new-project-from-template')
+      } else {
+        const files = WIDGETS['template-projects'].state.files
+        const multifile = files && Object.keys(files).length > 1
+        window.convo = new Convo(convos, multifile ? 'new-proj-multi-file-no-auth' : 'new-proj-single-file-no-auth')
+      }
     } else { // working on a sketch
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'session-saved')
