@@ -68,7 +68,7 @@
     {
       "title": "next media element",
       "focus": null,
-      "text": "Feel free to experiment with this demo, when you're ready for the next one click on the \"Notes\" button at the top to open up this guide again and we can move onto the the <span class=\"link\" onclick=\"utils.loadDemo(2)\">video</span> element. If you experiment too much, the \"Notes\" button may disappear, but you could always press <code>${utils.hotKey()}+Z</code> to undo your changes and return to the original demo with the \"Notes\" button."
+      "text": "Feel free to experiment with this demo, when you're ready for the next one click on the \"Guide\" button at the top to open up this guide again and we can move onto the the <span class=\"link\" onclick=\"utils.loadDemo(2)\">video</span> element. If you experiment too much, the \"Guide\" button may disappear, but you could always press <code>${utils.hotKey()}+Z</code> to undo your changes and return to the original demo with the \"Guide\" button."
     }
   ]
 }
