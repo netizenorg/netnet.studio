@@ -6,7 +6,7 @@ In these docs we'll explain how to edit "passages" (netnet's speech bubbles) as 
 2. You've created a "[fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)" of the [netnet.studio repo](https://github.com/netizenorg/netnet.studio)
 3. You understand how to create a PR (pull request)
 
-If you're an experienced open source developer and have already [setup a local development environment](contributor-workflow.md), you can alternatively create and/or edit these files in your code editor, refer instead to the [Convo System](convo-system.md) docs.
+If you're an experienced open source developer and have already [setup a local development environment](contributor-workflow.md), you can alternatively create and/or edit these files in your code editor, refer instead to the [Convo System](dialogue-system.md) docs.
 
 ## Finding a passage in the code
 

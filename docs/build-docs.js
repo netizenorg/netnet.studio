@@ -98,11 +98,13 @@ function generateNav (directory, basePath = '', activeFolder = '') {
   const fileOrder = fs.existsSync(orderFile)
     ? JSON.parse(fs.readFileSync(orderFile, 'utf8'))
     : []
-  // build lookup maps: filename → index and filename → display name override
+  // build lookup maps: filename → index, display name override, and divider positions
   const fileOrderIndex = {}
   const fileNameOverride = {}
+  const dividerIndices = new Set()
   fileOrder.forEach((entry, i) => {
     const filename = typeof entry === 'string' ? entry : entry.file
+    if (filename === '/' || filename === '---') { dividerIndices.add(i); return }
     fileOrderIndex[filename] = i
     if (entry.name) fileNameOverride[filename] = entry.name
   })
@@ -135,7 +137,15 @@ function generateNav (directory, basePath = '', activeFolder = '') {
   if (/\/docs\/?$/.test(directory)) {
     nav += '<li class="docs__panel__list-item"><a class="inline-link" href="/docs/">README</a></li>'
   }
+  let prevOrderIndex = -1
   items.forEach(item => {
+    const curOrderIndex = fileOrderIndex[item.name] ?? Infinity
+    for (const di of dividerIndices) {
+      if (di > prevOrderIndex && di < curOrderIndex) {
+        nav += '<li class="docs__panel__list-item docs__panel__divider"></li>'
+      }
+    }
+    prevOrderIndex = curOrderIndex
     const itemPath = path.join(directory, item.name)
     const relative = path.join(basePath, item.name)
     if (item.isDirectory() && !skipFldrs.includes(item.name)) { // Folder Links
