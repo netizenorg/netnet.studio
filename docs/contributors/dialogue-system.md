@@ -1,4 +1,4 @@
-# netnet's Dialogue System
+# Convos: netnet's Dialogue System
 
 In the interest of keeping things modular and avoiding conflicts between folks fixing grammar/spelling in the dialogue system and those working on the rest of the code, most dialogue related files are kept separate from the parts of the code that actually invoke the dialogue bubbles. **Most** of the general dialogue, as well as dialogue related to any of the Widgets, can be found in the [www/convos/](https://github.com/netizenorg/netnet.studio/tree/dev/www/convos) folder (this will also make it easier for us to add "localization", if/when we get contributions who can translate netnet's dialogue into other languages).
 

@@ -299,6 +299,11 @@ a.docs__panel__face .eye {
   margin: 8px 0;
 }
 
+.docs__panel__divider {
+  border-top: 1px solid var(--netizen-hint-shadow);
+  margin: 16px 0;
+}
+
 .docs__panel__list-item a {
 	position: relative;
 
