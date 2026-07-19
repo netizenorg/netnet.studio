@@ -6,9 +6,10 @@
   { "file": "tutorial-maker.md", "name": "4. Interactive Tutorials" },
   { "file": "widgets.md", "name": "5. Widgets" },
   { "file": "project-architecture.md", "name": "6. Core Components" },
+  { "file": "/", "name": "----" },
   { "file": "contributor-workflow.md", "name": "TL;DR (for experienced devs)" },
   { "file": "manual-setup.md", "name": "Manual Setup" },
   { "file": "css-styleguide.md", "name": "CSS Styleguide" },
-  { "file": "netnet-faces.md", "name": "netnet faces" },
-  { "file": "dialogue-system.md", "name": "Dialogue System" }
+  { "file": "netnet-faces.md", "name": " ◕ ◞ ◕ netnet faces" },
+  { "file": "dialogue-system.md", "name": "Convos: the Dialogue System" }
 ]
