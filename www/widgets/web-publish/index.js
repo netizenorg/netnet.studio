@@ -208,7 +208,10 @@ class WebPublish extends Widget {
     const repo = WIDGETS['project-files']?.projectData.name
     if (!repo) return
     utils.get(`./api/github/pages-status?owner=${owner}&repo=${repo}`, (res) => {
-      if (!res || !res.success) return
+      if (!res || !res.success) {
+        this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
+        return
+      }
       this.pagesData = res.enabled ? res.data : null
       this._render()
       this._pollIfBuilding()
@@ -225,8 +228,9 @@ class WebPublish extends Widget {
 
   _pollIfBuilding () {
     this._stopPolling()
-    const status = this.pagesData?.status
-    if (!status || status === 'built' || status === 'errored') return
+    if (!this.pagesData) return
+    const status = this.pagesData.status
+    if (status === 'built' || status === 'errored') return
     this._pollTimer = setTimeout(() => this._refreshStatus(), 6000)
   }
 
