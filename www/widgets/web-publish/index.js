@@ -4,7 +4,7 @@ class WebPublish extends Widget {
     super(opts)
     this.key = 'web-publish'
     this.keywords = ['publish', 'ghpages', 'server', 'host', 'deploy', 'domain', 'web']
-    this.title = 'Web Publish <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
+    this.title = 'Web Publish'
     this.width = 480
 
     this.pagesData = null // raw GitHub Pages API response, only set once enabled

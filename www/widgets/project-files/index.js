@@ -21,7 +21,8 @@ class ProjectFiles extends Widget {
     super(opts)
     this.key = 'project-files'
     this.keywords = ['assets', 'upload', 'github', 'files', 'project', 'finder']
-    this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
+    // this.title = 'Project Files <span style="opacity:0.5;padding-left:10px;">(BETA 1.0)</span>'
+    this.title = 'Project Files'
     this.width = 450
     // this.shaDict = {}
 
