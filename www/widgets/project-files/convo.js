@@ -158,25 +158,26 @@ window.CONVOS['project-files'] = (self) => {
     content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder',
     options: {
       cool: (e) => e.hide(),
-      'how?': (e) => e.goTo('explain2'),
-      'beta?': (e) => e.goTo('beta')
+      'how?': (e) => e.goTo('explain2')
+      // 'beta?': (e) => e.goTo('beta')
     }
   }, {
     id: 'explain2',
     content: 'For example, you could upload additional assets to your project. In the <b>Project Files</b> widget, right-click the folder where you want the file to live and choose the option to create or upload a file. Say you have an image called <code>cat.jpg</code> on your computer, you could upload that file to include it in your project, and then in your HTML code you could write something like <code>&lt;img src="cat.jpg"&gt;</code> to embed that image into your page.',
     options: {
-      'I see': (e) => e.hide(),
-      'beta?': (e) => e.goTo('beta')
+      'I see': (e) => e.hide()
+      // 'beta?': (e) => e.goTo('beta')
     }
   },
   // ------------- explain title bar
   {
     id: 'netnet-title-bar',
-    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder. <b style="color:var(--netizen-variable)">Keep in mind, this widget is still in <i>beta</i> (there may be bugs! we\'re still working on it).</b>',
+    content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder.',
+    // content: 'The <b>Project Files</b> widget let\'s you manage all the individual files in your project. Click a folder to expand it, click a file to open it. To create or upload a new file, right-click the folder where you want the file to live and choose the option to upload or create a new file or folder. <b style="color:var(--netizen-variable)">Keep in mind, this widget is still in <i>beta</i> (there may be bugs! we\'re still working on it).</b>',
     options: {
       ok: (e) => e.hide(),
       'help, I\'m confused!': (e) => e.goTo('help-info'),
-      'what does "beta" mean?': (e) => e.goTo('beta'),
+      // 'what does "beta" mean?': (e) => e.goTo('beta'),
       'download this project': (e) => self.downloadProject(),
       'quit this project': (e) => quitProject(e)
     }
@@ -457,8 +458,8 @@ window.CONVOS['project-files'] = (self) => {
     id: 'project-opened',
     content: 'Here ya go! Use the <span class="link" onclick="WIDGETS.open(\'project-files\')">Project Files</span> widget to manage your project, including creating or uploading new files (images, fonts, etc) to use in your project. Don\'t forget to save your progress as you work! Feel free to close this widget and re-open it anytime by clicking the "Files" button in the title bar.',
     options: {
-      ok: (e) => e.hide(),
-      'beta?': (e) => e.goTo('beta')
+      ok: (e) => e.hide()
+      // 'beta?': (e) => e.goTo('beta')
     }
   }, {
     id: 'project-open-another-tab',
