@@ -232,6 +232,17 @@ class KeyboardShortcuts extends Widget {
           NNW.menu.search.open()
           return false
         }
+      },
+      { // NOTE: this is for quickly opening the "dev-cam" used in Nick's YT screen recordings
+        hidden: true,
+        key: `${utils.hotKey()} + \\`,
+        nfo: 'open dev-cam',
+        category: 'coding',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === '\\',
+        callback: (e) => {
+          e.preventDefault()
+          WIDGETS.open('dev-cam')
+        }
       }
     ]
 
