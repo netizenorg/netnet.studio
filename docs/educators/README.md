@@ -1,9 +1,25 @@
 # Dear Educators,
 
-netnet.studio has been developed iteratively for the last 5 years (in beta from 2020-2025),  alongside creative coding educators and students. It has been successfully used by hundreds of students across universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo among others.
 
-By removing many of the technical hurdles beginners face, netnet.studio offers a smoother ramp into creative coding for the web, saving instructors hours in the classroom and reducing student frustration. Its self-revealing interface design also enables educators to introduce complex topics, like version control with Git, earlier than traditional tools allow, but no sooner than it's needed. The platform also provides tooling for instructors to create their own annotated demos, project templates, interactive tutorials and so much more!
 
+<div id="support-info">
+  <div>
+    <p>
+      netnet.studio has been developed iteratively for the last 5 years (in beta from 2020-2025),  alongside creative coding educators and students. It has been successfully used by hundreds of students across universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo among others.
+    </p>
+    <p>
+      By removing many of the technical hurdles beginners face, netnet.studio offers a smoother ramp into creative coding for the web, saving instructors hours in the classroom and reducing student frustration. Its self-revealing interface design also enables educators to introduce complex topics, like version control with Git, earlier than traditional tools allow, but no sooner than it's needed. The platform also provides tooling for instructors to create their own annotated demos, project templates, interactive tutorials and so much more!
+    </p>
+  </div>
+  <div>
+    <img src="../images/noschool.jpg" alt="a student using netnet on their laptop, working on GIF drawing app in a garden in Nevers France as part of the NO SCHOOL program" style="border-radius: 10px; border: 4px solid var(--netizen-hint-color);">
+    <p style="font-style: italic; opacity: 0.7; font-size: 0.8rem;">
+      A student at the <a href="https://noschoolnevers.com/" target="_blank">NØ SCHOOL</a> (2026) program in Nevers France working on a GIF drawing app using netnet.studio
+    </p>
+  </div>
+</div>
+
+<br><br>
 <div class="warning">
 
 🙏 If you find netnet.studio valuable in your classroom, consider asking your institution to enter into an [Institutional Support agreement](../supporters/institutional-support.md) with netizen.org. Supporting institutions receive priority support, curriculum consultation, and other benefits. This support also helps keep the platform free, open source, and actively maintained for everyone.
