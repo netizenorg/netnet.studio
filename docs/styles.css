@@ -849,11 +849,11 @@ a.docs__panel__face .eye {
   margin: 0 8px;
   border: 2px solid #40407b;
   border-radius: 68px;
-  padding: 10px 30px;
+  padding: clamp(0.5rem, 1.4vw, 24px) clamp(1rem, 2.4vw, 40px);
   background: var(--netizen-def);
 
   text-decoration: none;
-  font-size: 16px;
+  font-size: clamp(1rem, 2.4vw, 40px);
   font-weight: 600;
   font-family: monospace;
   text-transform: uppercase;
@@ -871,30 +871,37 @@ a.docs__panel__face .eye {
 
 @media (max-width: 768px) {
    #donate-links a  {
-       font-size: 14px;
+     padding: 15px 30px;
+     font-size: 16px;
    }
+}
+
+@media (max-width: 450px) {
+  #donate-links {
+    flex-direction: column;
+  }
 }
 
 /* for suport page */
 /* NOTE: project-architecture page also uses this id */
 
-#support-info {
+.two-col {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 40px;
 }
 
-#support-info > div {
+.two-col > div {
   flex: 1;
 }
 
-#support-info > * {
+.two-col > * {
   margin: 0 10px;
 }
 
 @media (max-width: 768px) {
-   #support-info {
+   .two-col {
     flex-direction: column;
    }
 }

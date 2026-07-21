@@ -2,7 +2,7 @@
 
 
 
-<div id="support-info">
+<div class="two-col">
   <div>
     <p>
       netnet.studio has been developed iteratively for the last 5 years (in beta from 2020-2025),  alongside creative coding educators and students. It has been successfully used by hundreds of students across universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo among others.
