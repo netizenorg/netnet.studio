@@ -14,6 +14,11 @@
     "definition": "A piece of HTML code wrapped in angle brackets (like <code>&lt;p&gt;</code>) that tells the browser how to display or structure content. Tags usually come in pairs, an opening tag like <code>&lt;p&gt;</code> and a closing tag like <code>&lt;/p&gt;</code>, though some tags like <code>&lt;img&gt;</code> are self-closing.",
     "see": ["element"]
   },
+  "void-element": {
+    "name": "Void Element",
+    "definition": "Also called a <b>singleton</b>, a void element is an HTML element that can't contain any content and therefore doesn't need a closing tag. Common examples include <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;hr&gt;</code>, and <code>&lt;meta&gt;</code>. You may sometimes see them written with a self-closing slash like <code>&lt;img /&gt;</code>, which was required in XHTML but is optional in modern HTML.",
+    "see": ["tag", "element"]
+  },
   "element": {
     "name": "Element",
     "definition": "A complete HTML component made up of an opening tag, content, and a closing tag, like <code>&lt;p&gt;Hello!&lt;/p&gt;</code>. Elements are the building blocks of web pages, everything you see on a page (paragraphs, images, buttons, etc.) is an element. Some elements can contain other elements nested inside them.",
@@ -180,5 +185,21 @@
   "vibe-coding": {
     "name": "Vibe Coding",
     "definition": "A style of programming where you describe what you want in plain language and let an AI generate the code for you. Instead of writing every line yourself, you guide the AI by explaining your vision, reviewing what it produces, and nudging it in the right direction. It lowers the barrier to creating software, but skipping the fundamentals means becoming dependent on the AI, not just technically (even simple bugs can be hard to fix), but conceptually as well. You can only “vibe code” what you can describe, and your ideas are shaped by your understanding of the medium (or lack thereof)."
+  },
+  "artivist": {
+    "name": "Artivist",
+    "definition": "A portmanteau of <strong>artist</strong> and <strong>activist</strong>, describing someone who uses creative expression as a vehicle for social or political change. The term was first coined in the late 90s, often attributed to Chicano artists from East Los Angeles and members of the Zapatista movement from Chiapas, Mexico. In the <strong>net.art movement</strong> of the late 1990s, the concept traveled across borders through collectives like <strong>Electronic Disturbance Theater (EDT)</strong> who created <code>FloodNet</code>, a \"virtual sit-in\" DDoS tool that disrupted websites supporting Mexican government positions on the EZLN conflict. European net.artists like <strong>Heath Bunting</strong> (co-founder of irational.org) also embraced the label, extending it to hacks, border interventions, and code-based critiques.",
+    "see": ["hacktivist", "ddos"]
+  },
+  "hacktivist": {
+    "name": "Hacktivist",
+    "definition": "A portmanteau of <strong>hacker</strong> and <strong>activist</strong>. Someone who uses computer-based disruption (website defacement, DDoS, data leaks) as civil disobedience for political or social causes. The term was coined in <strong>1994</strong> by <strong>Omega</strong> of <strong>Cult of the Dead Cow (cDc)</strong>. Overlaps with net.art through collectives like Electronic Disturbance Theater (<code>FloodNet</code>) and Heath Bunting's border interventions.",
+    "see": ["artivist", "ddos"],
+    "doc": ["open", "hacktivism-history"]
+  },
+  "ddos": {
+    "name": "DDoS Attack",
+    "definition": "<strong>Distributed Denial-of-Service</strong>. Flooding a target with traffic from many sources to make it unavailable. The first documented DDoS incident was in 1996 (Panix ISP). However, <code>FloodNet</code> by the net.art collective Electronic Disturbance Theater (1998) was the first DDoS tool for political protest, a voluntary 'virtual sit-in' that blurred activist demonstration with attack technique. Other hacktivist groups like Anonymous have since carried out similar campaigns.",
+    "see": ["hacktivist", "artivist"]
   }
 }

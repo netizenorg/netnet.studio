@@ -306,7 +306,7 @@ class CssReference extends Widget {
     let alpha = null
     const r = { hex: null, hsl: null, rgb: null }
     const clrURL = {
-      keyword: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords',
+      keyword: 'https://www.w3schools.com/colors/colors_names.asp',
       rgb: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#RGB_colors',
       hsl: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#HSL_colors',
       hex: 'https://www.w3schools.com/colors/colors_hexadecimal.asp'
