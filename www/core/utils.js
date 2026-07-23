@@ -793,8 +793,47 @@ window.utils = {
     }
   },
 
-  // main.js listens for these errors + sends them to 'code-review' widget
+  // this helps keep the iframe scrollbar consistent betnween re-renders
+  // if stduent is working on a long page, and they're currently scrolled
+  // well into the middle somewhere, rather than the page scrolling back
+  // up to the top on re-render, it'll replace the scrollbar where it last
+  // left off.
+  _iframeScrollX: 0,
+  _iframeScrollY: 0,
+  _iframeScrollReady: false,
+  resetOutputScroll: () => {
+    window.utils._iframeScrollX = 0
+    window.utils._iframeScrollY = 0
+  },
+  setupOutputScrollTracking: () => {
+    if (window.utils._iframeScrollReady) return
+    window.utils._iframeScrollReady = true
+    let _lastSrc = null
+    NNE.iframe.addEventListener('load', () => {
+      // check if iframe navigated to diff URL (diff file in a project)
+      const src = NNE.iframe.src
+      if (src && _lastSrc) {
+        try {
+          if (new URL(src).pathname !== new URL(_lastSrc).pathname) window.utils.resetOutputScroll()
+        } catch (e) {}
+      }
+      _lastSrc = src
+      // reset iframe scroll bar to last position it was in
+      try {
+        const x = window.utils._iframeScrollX
+        const y = window.utils._iframeScrollY
+        NNE.iframe.contentWindow.scrollTo(x, y)
+        NNE.iframe.contentWindow.addEventListener('scroll', () => {
+          window.utils._iframeScrollX = NNE.iframe.contentWindow.scrollX || 0
+          window.utils._iframeScrollY = NNE.iframe.contentWindow.scrollY || 0
+        }, { passive: true })
+      } catch (e) {}
+    })
+  },
+
   setCustomRenderer: (base, proxy) => {
+    window.utils.resetOutputScroll()
+    // main.js listens for these errors + sends them to 'code-review' widget
     const errMsgr = `<script>
       window.addEventListener('error', function (e) {
         if (e.message) window.parent.postMessage({ type: 'iframe-error', message: e.message, source: e.filename, lineno: e.lineno }, '*')
