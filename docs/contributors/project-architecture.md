@@ -82,7 +82,7 @@ The [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_module
 
 The literal "single page" in this SPA that brings all the styles and logic together is [www/index.html](https://github.com/netizenorg/netnet.studio/blob/main/www/index.html). Apart from this page, the only HTML pages in the root <a href="https://github.com/netizenorg/netnet.studio/blob/main/www" target="_blank">www</a> folder are the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/404.html" target="_blank">404.html</a> page and the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/curtain.html" target="_blank">curtain.html</a> page, which is used if/when we need to temporarily place the app behind a login page or maintaince message.
 
-<div id="support-info">
+<div class="two-col">
   <div>
     <h3>CSS (styles)</h3>
     <p>
@@ -130,7 +130,7 @@ All globals live on `window`. Their definition order is fixed by the boot sequen
 | `convo` | set at runtime | current active Convo instance |
 
 
-<div id="support-info">
+<div class="two-col">
   <div>
     <h3>NNW (the netnet window)</h3>
     <p>
@@ -155,7 +155,7 @@ All globals live on `window`. Their definition order is fixed by the boot sequen
 
 There are a whole host of utility methods shared across core components (like <code>NNW</code>) and many of the widgets. These are all found in one of two globabl variables.
 
-<div id="support-info">
+<div class="two-col">
   <div>
     <h3>nn</h3>
     <p>

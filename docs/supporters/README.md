@@ -4,14 +4,14 @@ netnet.studio is a [netizen.org](http://netizen.org) project designed and develo
 
 ---
 
-<div id="support-info">
+<div class="two-col">
   <div>
     <h3>How can individuals support?</h3>
     <p>
-      The best way to support netnet.studio is through our Patreon (✏️COMING SOON). Patreon supporters help fund ongoing development and get access to early features, behind-the-scenes content, monthly office hours, and more depending on the tier.
+      The best way to support netnet.studio is through our <a href="https://patreon.com/netnetstudio" target="_blank" style="font-weight: bold">Patreon</a>. Patreon supporters help fund ongoing development and get access to early features and community chat ($5/mo), voting in feature prioritization polls ($15/mo), monthly "office hours" QA live streams with the creators ($35/mo) and other behind-the-scenes content!
     </p>
     <p>
-      If you'd prefer a one-time or larger tax-deductible contribution, netizen.org, our 501(c)3 nonprofit fiscal sponsor, can accept direct donations. Get in touch at <b>hi@netizen.org</b> to make arrangements.  
+      If you'd prefer to give a one-time larger tax-deductible contribution, <a href="https://netizen.org/" target="_blank">netizen.org</a>, our 501(c)3 nonprofit fiscal sponsor (EIN: 81<span>-</span>2445<span></span>948), can accept direct donations. Get in touch at <b>hi@netizen.org</b> to make arrangements.  
     </p>
   </div>
   <div>

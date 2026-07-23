@@ -24,6 +24,10 @@ const initWidgets = [
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*
 // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•* EVENT LISTENERS
 
+NNE.on('code-update', () => {
+  if (NNE.iframe) utils.setupOutputScrollTracking()
+})
+
 NNE.on('cursor-activity', (e) => {
   if (NNE._spotlighting) {
     NNE.spotlight(null)
