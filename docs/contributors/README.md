@@ -83,6 +83,7 @@ The **nn** object sprinkled throughout netnet's code base, also known as the [ne
 
 The [netitor](https://github.com/netizenorg/netitor) is the core code editor used in netnet.studio. What makes the netitor unique to other code editors is that it's made specifically for beginners learning/experimenting with web code (HTML, SVG, CSS and JavaScript). For this reason (in addition to the usual code editor features like syntax highlighting and code hinting) it has some extra features designed to help beginners like friendly error messages and built-in edu info (you can double click on any piece of code in the editor to learn more about it). As an online + realtime editor it's purpose is not so much to replace professional code editors used to create larger projects, but rather quickly experiment, demonstrate concepts and share ideas.
 
+0. netnet-*lite*, navigating to [netnet.studio/lite](https://netnet.studio/lite) will re-direct you to the netitor repo's demo app.
 1. [README](https://github.com/netizenorg/netitor): a general introduction to the library
 2. [contributor notes](https://github.com/netizenorg/netitor/wiki/Development-Notes): here you'll find the general process/notes for contributors
 3. [creating color themes](https://github.com/netizenorg/netitor/wiki/Creating-Custom-Themes): we've got a theme-editor you can use to create new syntax highlighting themes. This is also where netnet derives it's color scheme from.
