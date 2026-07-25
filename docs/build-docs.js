@@ -8,7 +8,7 @@ const fldrDict = {
   supporters: 'Dear Supporters',
   contributors: 'Dear Contributors'
 }
-const skipFldrs = ['images']
+const skipFldrs = ['assets']
 
 // update some of the "marked" library's rendering behavior
 // ........................................................
@@ -27,7 +27,8 @@ function posterToVideoTag (src, alt = '') {
   const dir = lastSlash >= 0 ? src.slice(0, lastSlash + 1) : ''
   const file = lastSlash >= 0 ? src.slice(lastSlash + 1) : src
   const base = file.replace(/-poster\.[a-zA-Z0-9]+$/, '')
-  const videoSrc = `${dir}${base}.mp4`
+  const videoDir = dir.replace(/\/images\/$/, '/videos/')
+  const videoSrc = `${videoDir}${base}.mp4`
   // exception for intro video
   if (base === 'netnet-intro') {
     return `<video style="display: block; margin: 0 auto; border: 4px solid var(--netizen-tag); border-radius: 25px 25px 1px 1px;" controls playsinline width="720"\n  src="${videoSrc}"\n  poster="${src}">\n</video>`
@@ -176,20 +177,41 @@ function generateNav (directory, basePath = '', activeFolder = '') {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~ post-processors ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// transforms numbered ### headings into styled chapter dividers
+// used on the contributors README so the HTML looks like the AI Notes
+// chapters in the learning guide widget, without changing the .md source
+function styleContributorChapters (html) {
+  return html.replace(
+    /<h3>(\d+)\. ([^<]+)<\/h3>/g,
+    (_, num, title) =>
+      `<div class="docs__chapter-divider">Chapter ${num}</div>\n<h2 class="docs__chapter-title">${title}</h2>`
+  )
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~ MD to HTML function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav) {
+function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav, postProcess) {
   fs.readFile(inputFile, 'utf8', (err, markdown) => {
     if (err) {
       console.error(` ✖ ᴖ ✖ ) Error reading file ${inputFile}:`, err)
       return
     }
-    const htmlContent = marked(markdown)
+    let htmlContent = marked(markdown)
+    if (postProcess) htmlContent = postProcess(htmlContent)
     let finalHtml = htmlContent
     if (templatePath) {
       try {
         const template = fs.readFileSync(templatePath, 'utf8')
         finalHtml = template.replace('{{content}}', htmlContent).replace('{{nav}}', nav)
+        if (htmlContent.includes('<lappy-vid')) {
+          const loaderShim = '    <script>;(function(){var O=THREE.Loader;THREE.Loader=function(m){this.manager=m||THREE.DefaultLoadingManager;this.crossOrigin=\'anonymous\';this.withCredentials=false;this.path=\'\';this.resourcePath=\'\';this.requestHeader={}};THREE.Loader.prototype=O.prototype})();</script>\n'
+          const threeScripts = '    <script src="/core/libs/three.min.js"></script>\n' + loaderShim + '    <script src="/core/libs/GLTFLoader.js"></script>\n    <script src="/docs/assets/misc/LappyVid.js"></script>\n'
+          finalHtml = finalHtml.replace('    <script src="/netitor.min.js">', threeScripts + '    <script src="/netitor.min.js">')
+        }
       } catch (templateErr) {
         console.error(` ✖ ᴖ ✖ ) Error reading template ${templatePath}:`, templateErr)
         return
@@ -281,7 +303,9 @@ Object.keys(fldrDict).forEach(folder => {
         const outputFileName = path.basename(file).toLowerCase() === 'readme.md'
           ? 'index.html' : `${path.basename(file, '.md')}.html`
         const outputFilePath = path.join(folderPath, outputFileName)
-        convertMarkdownToHtml(filePath, outputFilePath, templatePath, folderNav)
+        const isContribReadme = folder === 'contributors' && path.basename(file).toLowerCase() === 'readme.md'
+        const postProcess = isContribReadme ? styleContributorChapters : null
+        convertMarkdownToHtml(filePath, outputFilePath, templatePath, folderNav, postProcess)
       }
     })
   })

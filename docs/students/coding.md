@@ -7,7 +7,7 @@ As explained in the [introduction page](README.md) for students (review that fir
 You can open the Coding Menu anytime by clicking on netnet's face and selecting it from the main menu, or by using the <b>{SUPER} + ;</b> shortcut. It has a couple of sub-menus, like the <b>editor settings</b>, where you can adjust some of netnet's code editor details like:
 
 <div style="display: grid; grid-template-columns: 1fr 3fr;">
-  <img src="../images/coding-menu-editor-settings.jpg"
+  <img src="../assets/images/coding-menu-editor-settings.jpg"
     alt="coding menu editor settings"
     style="margin-top: 30px">
   <ul>
@@ -41,7 +41,7 @@ You can open the Coding Menu anytime by clicking on netnet's face and selecting 
 The <b>my code</b> sub-menu contains options for the code your working on:
 
 <div style="display: grid; grid-template-columns: 1fr 3fr;">
-  <img src="../images/coding-menu-my-code.jpg"
+  <img src="../assets/images/coding-menu-my-code.jpg"
     alt="coding menu my code"
     style="margin-top: 30px">
   <ul>
@@ -65,6 +65,22 @@ The <b>my code</b> sub-menu contains options for the code your working on:
   </ul>
 </div>
 
+
+| Coding Shortcuts | Action |
+|---|---|
+| **{SUPER} + ;** (semicolon) | Open / close the Coding Menu |
+| **{SUPER} + >** | Switch to next layout |
+| **{SUPER} + <** | Switch to previous layout |
+| **{SUPER} + Enter** | Manually render changes (when auto-update is off) |
+| **{SUPER} + S** | Save, download, or share your code |
+| **{SUPER} + O** | Open a file or project |
+| **{SUPER} + G** | Git push (backup your project code to GitHub) |
+| **{SUPER} + '** (quote) | Open search bar (quickly find anything, like "tidy code") |
+<!-- | **{SUPER} + ;** (semicolon) | Open / close the Coding Menu | -->
+
+<br><br>
+<br><br>
+
 ## Connecting to GitHub (Sketches vs Projects)
 
 When writing your own code in netnet, you're always working on either a **sketch** or a **project**:
@@ -80,7 +96,7 @@ To work on a **project** (a GitHub repository), first connect netnet to your Git
 
 When working on a **project**, netnet will display the path of the file you're currently working in on the top of it's editor. Next to that you'll find a **Files** button, clicking on this opens the **Project Files** widget, where you can upload, create and edit new folders/files.
 
-![netnet menu](../images/project-files-poster.jpg)
+![netnet menu](../assets/images/project-files-poster.jpg)
 
 **Clicking** on a folder will toggle (open/close) it's contents, clicking on a file will open that file in the editor. If the file is a media asset (like an image or video) it will open it in a separate widget. If you click on an HTML file specifically you will notice that it gets a label "rendering" placed beside it, this indicates which file is currently being rendered in netnet's output.
 
@@ -96,7 +112,7 @@ When working on a **project**, netnet will display the path of the file you're c
 
 ### Editing Files
 
-![netnet menu](../images/editing-files-poster.jpg)
+![netnet menu](../assets/images/editing-files-poster.jpg)
 
 When working on files in a project, netnet won't render the output until you save your changes locally. In the video above a CSS file is selected from the Project Files widget (instead of pressing the **X**, the widget is closed by hitting the **Esc** key, which can be quicker). After editing the CSS file a <span style="color:yellow">yellow dot</span> appears next to the file name at the top of the editor. This indicates a change has been made that has not yet been saved locally. Once saved (either by clicking *Coding Menu > my code > save*, or in this case pressing **{SUPER}+S**) the dot will disappear, indicating the changes have been saved locally and the rendered output should update.
 
@@ -104,13 +120,13 @@ When working on files in a project, netnet won't render the output until you sav
 
 Changes to a file (as well as creating or deleting a file) are saved "locally", meaning that they're stored temporarily in your browser as you work. The **Project Files** widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes locally saved changes that have not yet been backed up to GitHub.
 
-In order to back up (aka "push") those changes you'll need to "commit" them to your GitHub repo. A commit is like a save point in your project's timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the **Project Files** widget and choosing the **git push** option.
+In order to back up (aka "push") those changes you'll need to "commit" them to your GitHub repo. A commit is like a save point in your project's timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the **Project Files** widget and choosing the **git push** option (or using the <b>{SUPER} + G</b> shortcut).
 
-![netnet menu](../images/backup-files-poster.jpg)
+![netnet menu](../assets/images/backup-files-poster.jpg)
 
 netnet will give you the option to either have it create and push the commit for you (as seen in the video above) or you can learn to use git yourself with netnet guiding you through the manual commit process using the **Version Control** widget.
 
-![netnet menu](../images/version-control-poster.jpg)
+![netnet menu](../assets/images/version-control-poster.jpg)
 
 This widget will walk you through the process of creating a new "commit" (a versioned "save point") and pushing (aka uploading) that to your GitHub repository. It has a terminal which displays the actual git commands you would have to run if you were working in any terminal, except that rather than typing the terminal commands yourself, netnet will write them for you and walk through it step by step. If you're new to version control it's worth reading the netnet passages to better understand what's going on at each step.
 
@@ -119,7 +135,7 @@ This widget will walk you through the process of creating a new "commit" (a vers
 
 ### Publishing Your Website
 
-![netnet menu](../images/publish-project-poster.jpg)
+![netnet menu](../assets/images/publish-project-poster.jpg)
 
 When you're ready to publish your project to the World Wide Web you can click the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the **Project Files** widget and choose the **web publish** option. This will open the **Web Publish** widget, netnet explains that it will use the "ghpages" service provided by GitHub to launch a web server on GitHub for your project. It then generates a publicly accessible URL you can share with anyone, your work is now live on the Web!
 

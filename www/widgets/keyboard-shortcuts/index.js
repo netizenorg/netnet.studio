@@ -184,6 +184,18 @@ class KeyboardShortcuts extends Widget {
         }
       },
       {
+        key: `${utils.hotKey()} + G`,
+        nfo: 'git push (backup code to GitHub)',
+        category: 'netnet',
+        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'g',
+        callback: (e) => {
+          e.preventDefault()
+          if (WIDGETS['project-files']) {
+            WIDGETS['project-files']._launchGit()
+          }
+        }
+      },
+      {
         key: 'Esc',
         nfo: 'close widget / close search',
         category: 'netnet',
@@ -206,17 +218,6 @@ class KeyboardShortcuts extends Widget {
           if (element.requestFullscreen) element.requestFullscreen()
           else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen()
           else if (element.msRequestFullscreen) element.msRequestFullscreen()
-        }
-      },
-      {
-        hidden: true,
-        key: `${utils.hotKey()} + G`,
-        nfo: 'open git version control',
-        category: 'netnet',
-        condition: (e) => (e.ctrlKey || e.metaKey) && e.key === 'g',
-        callback: (e) => {
-          e.preventDefault()
-          WIDGETS.open('git-push')
         }
       },
       {

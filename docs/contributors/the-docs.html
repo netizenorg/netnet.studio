@@ -120,7 +120,7 @@
 <p>Once you&#39;ve forked the repo, the main page for your fork will list the root directory&#39;s file structure. There you should see a folder called &quot;docs&quot;, click on that folder to navigate into it, and then click on any sub-folder until you find the file you want to edit.</p>
 <p>You may notice that there are two files for every doc, the <code>.md</code> file and the <code>.html</code> file. These have the same name (except for the starting page in any folder, which would be called <code>README.md</code> and <code>index.html</code> respectively). What you want to edit are the <code>.md</code> files. The <code>.html</code> files get generated with a special script (which we&#39;ll return to later).</p>
 <p>Once you find the doc you want to edit, clidk on it&#39;s <code>.md</code> file to view it in it&#39;s own page. Once there, you should see a pencil icon towards the top-right of the file, once you click on that you&#39;ll go into edit mode.</p>
-<p><img src="../images/git-edit.jpg" alt="edit pencil" /></p>
+<p><img src="../assets/images/git-edit.jpg" alt="edit pencil" /></p>
 <p>The first thing you&#39;ll notice is that the docs are written in a language called &quot;markdown&quot;, you can <a href="https://markdownguide.offshoot.io/basic-syntax/" target="_blank">learn the syntax here</a>, but here&#39;s the basic idea:</p>
 <pre><code class="markdown"># headers start with a hash-symbol
 ### sub-headers have more hash-symbols
@@ -135,17 +135,17 @@ And if you want a bulleted list you can use dashes:
 <p>This is a very common language for writing code documentation. If you&#39;ve made a project with netnet you might recognize this syntax from the projects&#39; &quot;README&quot; file.</p>
 <h2>Creating a new file</h2>
 <p>To create a new doc, navigate to the folder you want to create it in (either the &quot;docs&quot; folder or one of it&#39;s sub-folders) and press the <strong>Add file</strong> button towards the top-right. Here you will have the option to upload a file (like images for example) or create a new file. <strong>NOTE</strong> we manage video files separately (to avoid bloating the repo with too many large video files), if you&#39;d like to add a new video file to the docs reach out to us directly so we can upload it to our server.</p>
-<p><img src="../images/git-add.jpg" alt="add button" /></p>
+<p><img src="../assets/images/git-add.jpg" alt="add button" /></p>
 <p>When creating a new file, you&#39;ll need to give it a name, make sure it&#39;s all lower-case , no spaces (use dashes instead) and ends with a <code>.md</code> extension. Then write the file&#39;s content in <a href="https://markdownguide.offshoot.io/basic-syntax/" target="_blank">markdown syntax</a> and commit your file.</p>
 <h2>Commiting your changes</h2>
 <p>Just as we &quot;commit&quot; changes in netnet when working on a project, we&#39;ll need to commit changes here on GitHub after editing any of the <code>.md</code> files. To do so you&#39;ll click the green <b style="color: green">Commit Changes</b> button towards the top-right. This will open up a modal asking you to leave a commit message.</p>
-<p><img src="../images/git-commit.jpg" alt="commit button" /></p>
+<p><img src="../assets/images/git-commit.jpg" alt="commit button" /></p>
 <h2>Creating a &quot;pull request&quot;</h2>
 <p>After you&#39;ve made all the necessary commits and you&#39;re ready to submit this back to the main code base you can create a &quot;pull request&quot;. This is a <em>request</em> for us (the &quot;maintainers&quot; of the netnet.studio repository) to review your code, and if everything looks good to <em>pull</em> your changes into our main code base.</p>
 <p>To create a new PR (short for &quot;pull request&quot;) click on the &quot;Pull requests&quot; tab in the top menu and then the green <b style="color: green">New pull request</b> button</p>
-<p><img src="../images/git-pr1.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr1.jpg" alt="pr button" /></p>
 <p>On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing <em>from</em> your fork and <em>to</em> ours.</p>
-<p><img src="../images/git-pr2.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr2.jpg" alt="pr button" /></p>
 <p>You may see an additional drop-down list next to the repository names, usually with the label &quot;main&quot;. This refers to the &quot;branch&quot; of code, a concept we&#39;ll cover in a later doc, for now just know that it should say &quot;main&quot; on both sides. When we discuss more complex contributes later on we&#39;ll discuss how we&#39;ll be using different branches to ensure the process stays organized.</p>
 <h2>Code Review</h2>
 <p>Once the PR (pull request) is open we&#39;ll get a notification to review your request. If we notice any issues or have any feedback for you, we&#39;ll leave a comment on the PR page with instructions. If it&#39;s not clear you can respond to us and we can start a conversation on the PR page. Once you&#39;ve addressed our feedback you won&#39;t need to create another PR, any time you commit a new change it will automatically get added to the open PR. When those changes are ready for us to re-review, simply leave a comment on the PR letting us know!</p>

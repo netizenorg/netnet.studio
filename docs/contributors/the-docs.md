@@ -18,7 +18,7 @@ You may notice that there are two files for every doc, the `.md` file and the `.
 
 Once you find the doc you want to edit, clidk on it's `.md` file to view it in it's own page. Once there, you should see a pencil icon towards the top-right of the file, once you click on that you'll go into edit mode.
 
-![edit pencil](../images/git-edit.jpg)
+![edit pencil](../assets/images/git-edit.jpg)
 
 The first thing you'll notice is that the docs are written in a language called "markdown", you can [learn the syntax here](https://markdownguide.offshoot.io/basic-syntax/), but here's the basic idea:
 
@@ -41,7 +41,7 @@ This is a very common language for writing code documentation. If you've made a 
 
 To create a new doc, navigate to the folder you want to create it in (either the "docs" folder or one of it's sub-folders) and press the **Add file** button towards the top-right. Here you will have the option to upload a file (like images for example) or create a new file. **NOTE** we manage video files separately (to avoid bloating the repo with too many large video files), if you'd like to add a new video file to the docs reach out to us directly so we can upload it to our server.
 
-![add button](../images/git-add.jpg)
+![add button](../assets/images/git-add.jpg)
 
 When creating a new file, you'll need to give it a name, make sure it's all lower-case , no spaces (use dashes instead) and ends with a `.md` extension. Then write the file's content in [markdown syntax](https://markdownguide.offshoot.io/basic-syntax/) and commit your file.
 
@@ -51,7 +51,7 @@ When creating a new file, you'll need to give it a name, make sure it's all lowe
 
 Just as we "commit" changes in netnet when working on a project, we'll need to commit changes here on GitHub after editing any of the `.md` files. To do so you'll click the green <b style="color: green">Commit Changes</b> button towards the top-right. This will open up a modal asking you to leave a commit message.
 
-![commit button](../images/git-commit.jpg)
+![commit button](../assets/images/git-commit.jpg)
 
 ## Creating a "pull request"
 
@@ -59,11 +59,11 @@ After you've made all the necessary commits and you're ready to submit this back
 
 To create a new PR (short for "pull request") click on the "Pull requests" tab in the top menu and then the green <b style="color: green">New pull request</b> button
 
-![pr button](../images/git-pr1.jpg)
+![pr button](../assets/images/git-pr1.jpg)
 
 On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing *from* your fork and *to* ours.
 
-![pr button](../images/git-pr2.jpg)
+![pr button](../assets/images/git-pr2.jpg)
 
 You may see an additional drop-down list next to the repository names, usually with the label "main". This refers to the "branch" of code, a concept we'll cover in a later doc, for now just know that it should say "main" on both sides. When we discuss more complex contributes later on we'll discuss how we'll be using different branches to ensure the process stays organized.
 

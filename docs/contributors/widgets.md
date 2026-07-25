@@ -1,6 +1,6 @@
 # Widgets
 
-![netnet widgets](../images/widget-intro.jpg)
+![netnet widgets](../assets/images/widget-intro.jpg)
 
 Widgets are multi-purpose independent windows that can be thought of as "plugins" or "addons" for netnet.studio. They're used in a variety of contexts to provide functions, utilities, and information. For example, widgets can be used during tutorials to open up various media types (images, videos, gifs, audio, texts, 3D objects, etc). They can also be their own miscellaneous utilities, such as a widget that explains some concept using interactive graphics. Widgets can also be GUIs that interact with the netitor: for example, a widget that generates snippets of CSS code. The sky's the limit!
 
@@ -37,7 +37,7 @@ Widgets can be made by either using functionality provided in the `WIDGETS` obje
 
 ## <a id="simple"></a> Creating a Simple Widget
 
-![simple widget](../images/simple-widget-ex.png)
+![simple widget](../assets/images/simple-widget-ex.png)
 
 To create a new widget, use the `WIDGETS`'s `.create()` method. `.create()` takes an object that requires a `key` property with a unique id that isn't being used by another widget, in addition to any number of optional properties. You can use `WIDGETS.instantiated` to reference a list of unique keys for all currently instantiated widgets, and your key can be anything other than those. To test this out, try copy+pasting the following into the browser's developer console:
 
@@ -145,7 +145,7 @@ WIDGETS['my-new-widget'].emit('test', { data: 100 })
 
 ## <a id="custom"></a> Creating a Custom Widget
 
-![custom widget](../images/creating-custom-widget-poster.jpg)
+![custom widget](../assets/images/creating-custom-widget-poster.jpg)
 
 When the options and functionality provided above aren't enough for what you need to do with a widget, maybe because you need a method or property that doesn't exist yet, you can create your own custom widget by extending the `Widget` base class.
 
@@ -280,7 +280,7 @@ window.FontSizeGenerator = FontSizeGenerator
 ```
 
 This widget would end up looking something like this:
-![font size generator](../images/font-gen.png)
+![font size generator](../assets/images/font-gen.png)
 
 This widget makes use of a few special methods built into the base Widget class for creating a couple of different custom elements: `<code-field>` and `<code-slider>`, which are used to render the input field and slider seen in the above example.
 

@@ -14,6 +14,11 @@ window.CONVOS['keyboard-shortcuts'] = (self) => {
       options: { thanks: (e) => e.hide() }
     },
     {
+      id: 'hotkey-g',
+      content: 'This shortcut is an alias for "git push" (in the <b>Project Files</b> widget), it let\'s me know that you want to backup changes you made to a project locally by "pushing" (uploading) those updates to your GitHub.',
+      options: { thanks: (e) => e.hide() }
+    },
+    {
       id: 'hotkey-enter',
       content: 'When you\'re working on a "sketch" (a single HTML file) I will render your code as soon as it changes, unless you disable the <b>auto-update</b> in the <img src="images/menu/code.png" class="keyboard-shortcuts__icon"> <b>Coding Menu > editor settings</b>. When auto-update is disabled you decide when you want to run and render your code using this shortcut key.',
       options: { thanks: (e) => e.hide() }
