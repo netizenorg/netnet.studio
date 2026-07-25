@@ -21,7 +21,9 @@ When you visit netnet.studio you'll be greeted by a friendly artificial intellig
 
 We're not entirely opposed to LLMs, we believe there's lots of unexplored possibilities in the ethical and artistic application of "artificial neural networks" (netnet.studio includes AI/LLM literacy tools and lessons). However, we do feel that the way they're currently being integrated into coding tools is designed more for "people who think to make" (folks with ideas they want someone or some*thing* to make for them) and less for those who "make to think", meaning those of us who discover, learn and grow our creative ideas through the process of making and writing code ourselves.
 
-<strong style="font-size:1.25rem">If you're an aspiring student of the creative web, [start here](students/README.md)!</strong>
+<strong style="font-size:1.25rem; color: var(--netizen-comment);">If you're an aspiring student of the creative web, [start here](students/README.md)!</strong>
+<br><br>
+<br><br>
 
 # The Platform
 
@@ -29,7 +31,9 @@ The [first web browser](https://www.youtube.com/watch?v=3c3Rt6QbHDw) was both a 
 
 Unlike most web-based products of [surveillance capitalism](https://www.youtube.com/watch?v=hIXhnWUmMvw) (the dominant business model of big tech today) netnet.studio is not here to collect and profit off your data. The studio is carefully designed to be a privacy-focused safe space for creative experimentation (You can read our [privacy policy](https://netnet.studio/?w=privacy-policy) at the studio). While netnet is modeled on modern code editors and does integrate with other third party tools like GitHub (for the purpose of teaching students the conventions and tooling of the day) we go to great lengths to make this all secure and extremely transparent while remaining accessible.
 
-<strong style="font-size:1.25rem">If you're an educator interested in leveraging netnet in your classroom, [start here](educators/README.md)!</strong>
+<strong style="font-size:1.25rem; color: var(--netizen-comment);">If you're an educator interested in leveraging netnet in your classroom, [start here](educators/README.md)!</strong>
+<br><br>
+<br><br>
 
 # Our Mission
 
@@ -39,4 +43,6 @@ Today, the Web's core values of openness, transparency, decentralization, access
 
 But this re-writing of history could not be farther from [the truth](https://coolguy.website/introduction/). The Web was designed to be [hand-crafted](https://luckysoap.com/statements/handmadeweb.html) by anyone interested enough to take the time to learn a few basics and indeed, [in the early days it was](https://www.youtube.com/watch?v=2LzyRcLJdlg). While we're inspired by the hand made web of the 1990s, this project is not about nostalgia, netnet.studio encourages others to explore (and is itself created with) modern and cutting-edge web technologies. The Web has never had more creative potential and netnet.studio is a platform to help you decide [what the web of tomorrow should be](https://laurelschwulst.com/e/my-website-is-a-shifting-house/)!
 
-<strong style="font-size:1.25rem">If you believe in our mission and what to contribute time to the project, [start here](contributors/README.md)!</strong>
+<strong style="font-size:1.25rem; color: var(--netizen-comment);">If you believe in our mission and what to contribute time to the project, [start here](contributors/README.md)!</strong>
+<br><br>
+<br><br>

@@ -65,6 +65,22 @@ The <b>my code</b> sub-menu contains options for the code your working on:
   </ul>
 </div>
 
+
+| Coding Shortcuts | Action |
+|---|---|
+| **{SUPER} + ;** (semicolon) | Open / close the Coding Menu |
+| **{SUPER} + >** | Switch to next layout |
+| **{SUPER} + <** | Switch to previous layout |
+| **{SUPER} + Enter** | Manually render changes (when auto-update is off) |
+| **{SUPER} + S** | Save, download, or share your code |
+| **{SUPER} + O** | Open a file or project |
+| **{SUPER} + G** | Git push (backup your project code to GitHub) |
+| **{SUPER} + '** (quote) | Open search bar (quickly find anything, like "tidy code") |
+<!-- | **{SUPER} + ;** (semicolon) | Open / close the Coding Menu | -->
+
+<br><br>
+<br><br>
+
 ## Connecting to GitHub (Sketches vs Projects)
 
 When writing your own code in netnet, you're always working on either a **sketch** or a **project**:
@@ -104,7 +120,7 @@ When working on files in a project, netnet won't render the output until you sav
 
 Changes to a file (as well as creating or deleting a file) are saved "locally", meaning that they're stored temporarily in your browser as you work. The **Project Files** widget will color code any changed files: <span style="color: green">green</span> for new files and <span style="color: yellow">yellow</span> for edited files. The colors help you identify which parts of your project includes locally saved changes that have not yet been backed up to GitHub.
 
-In order to back up (aka "push") those changes you'll need to "commit" them to your GitHub repo. A commit is like a save point in your project's timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the **Project Files** widget and choosing the **git push** option.
+In order to back up (aka "push") those changes you'll need to "commit" them to your GitHub repo. A commit is like a save point in your project's timeline. You can commit changes by pressing the <img src="/images/icons/git.svg" alt="git icon" style="width: 18px; filter: hue-rotate(307deg) saturate(0.47) brightness(1.25);"> button in the **Project Files** widget and choosing the **git push** option (or using the <b>{SUPER} + G</b> shortcut).
 
 ![netnet menu](../images/backup-files-poster.jpg)
 

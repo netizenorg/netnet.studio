@@ -2,54 +2,73 @@
 
 If you want to donate some time to helping improve netnet.studio, whether that be something large or small, then these are the docs for you!
 
+- **If you're a seasoned open source contributor** and want to dive right in check out our [contributor workflow doc](contributor-workflow.md) and then review our [project architecture](project-architecture.md) docs for a general orientation of the project architecture. However, if you're new to open source development you can...
+<br>
+
+# ...learn to contribute to an open source project by contributing to netnet.studio!
+
+Contributing to open source can feel intimidating, even for experienced developers. netnet.studio’s docs break it down into manageable steps, starting with small changes (like correcting a type-o) and gradually moving into more complex contributions (like creating your own widget). Each stage guides you through our codebase and the wider open source contribution process on GitHub.
+
+- **If this is your first time contributing to an open source project** you'll need to start by [creating a GitHub account](https://github.com/signup), if you've already got one make sure you're [logged in](https://github.com/login) before starting the chapters below.
+
+<br><br>
 <div class="warning">
 ⚠️ <b>UNDER CONSTRUCTION</b> ⚠️
 <br>
 these docs are still in progress, if you can't find what you're looking for, or something seems out of date, please <a href="https://netent.studio/docs/contributors/bug-report.html" target="_blank">open an issue</a> (or feel free to fix it yourself! See "The Docs" section below)
 </div>
-<br><br>  
+<br><br>
 
-Contributing to open source can feel intimidating, even for experienced developers. netnet.studio’s docs break it down into manageable steps, starting with small changes (like correcting a type-o) and gradually moving into more complex contributions (like creating your own widget). Each stage guides you through our codebase and the wider open source contribution process on GitHub.
+### 0. Bug Reports
 
-- **If this is your first time contributing to an open source project** you'll need to start by [creating a GitHub account](https://github.com/signup), if you've already got one make sure you're [logged in](https://github.com/login) before staring section 1 below.
-- **If you're a seasoned open source contributor** and want to dive right in check out our [contributor workflow doc](contributor-workflow.md) and then review our [project architecture](project-architecture.md) docs for a general orientation of the project architecture.
+If you came across a bug or some sort of problem you think we should know about, let us know by creating a new issue on our GitHub repo, you'll find instructions for this on the [Bug Reports](bug-report.md) page.
 
-### 0. [Bug Reports](bug-report.md)
+### 1. The Docs
 
-If you came across a bug or some sort of issue you think we should know about please tell us about it! We just ask that you file an issue following the format explained at the link above.
+netnet is constantly changing, which means our docs always need lots of editing to keep up! Making an edit to these docs is something you can do entirely on GitHub and is a great way to get familiar with the basics of contributing to an open source project, learn how on [The Docs](the-docs.md) page.
 
-### 1. [The Docs](the-docs.md)
+### 2. Convos and Passages
 
-netnet is constantly changing, which means our docs always need lots of editing to keep up! Making an edit to these docs is something you can do entirely on GitHub and is a great way to get familiar with the basics of contributing to an open source project.
+Central to netnet's "hypermedia" navigation system are the conversation passages that appear in netnet's speech bubbles. In these docs we'll explain how this system works as well as how to use netnet's "Convo Maker Widget" to either edit a passage in an existing conversation file or create your own, learn more on [the Convos and Passages](editing-convos.md) page.
 
-### 2. [Convos and Passages](editing-convos.md)
+### 3. Code Demos
 
-Central to netnet's "hypermedia" navigation system are the conversation passages that appear in netnet's speech bubbles. In these docs we'll explain how this system works as well as how to use netnet's "Convo Maker Widget" to either edit a passage in an existing conversation file or create your own.
+Anyone can create and share "sketches" (single file web sites) in netnet by writing some code in netnet's editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become "demos", with annotations explaining how different parts of the code works, and added to netnet's "Code Demos" widget, learn how on [the Code Demos](code-demos.md) page.
 
-### 3. [Code Demos](code-demos.md)
+### 4. Interactive Tutorials
 
-Anyone can create and share "sketches" (single file web sites) in netnet by writing some code in netnet's editor and then saving it (either as a sharable URL or downloadable html file). These sketches can also become "demos", with annotations explaining how different parts of the code works, and added to netnet's "Code Demos" widget.
+One of netnet.studio's most dynamic educational components are the interactive tutorials, like this [Orientation Tutorial](https://dev.netnet.studio/?tutorial=orientation) made by Nick Briz for example. You can create your own interactive tutorials using netnet's Tutorial Maker widget, as explained on [the Interactive Tutorials](tutorial-maker.md) page.
 
-### 4. [Interactive Tutorials](tutorial-maker.md)
+### 5. Widgets
 
-One of netnet.studio's most dynamic educational components are the interactive tutorials, like this [Orientation Tutorial](https://dev.netnet.studio/?tutorial=orientation) made by Nick Briz for example. You can create your own interactive tutorials using our "Tutorial Maker" widget.
+The vast majority of netnet's features exist in "widgets", these are the moveable windows that pop up to do all the various things artists can do in netnet beyond coding, learn how to build one on [the Widgets](widgets.md) page.
 
-### 5. [Widgets](widgets.md)
+### 6. Core Components & Architecture
 
-The vast majority of netnet's features exist in "widgets", these are the moveable windows that pop up to do all the various things artists can do in netnet beyond coding.
+Underneath all the convos, demos, tutorials and widgets are netnet's "core" components, the foundational code controlling how netnet looks and how it functions. This part of our system doesn't change often, but if you notice any bugs or have ideas for some fundamental improvements, these are the docs for you. These are the most complex contributions, so it would be wise to have gone through some of the steps above before diving in. Assuming you have, take a look at the additional docs below, starting with [the Project Architecture](project-architecture.md) page for an overview.
 
-### 6. [Core Components & Architecture](project-architecture.md)
+<br><br>
 
-Underneath all the convos, demos, tutorials and widgets are netnet's "core" components, the foundational code controlling how netnet looks and how it functions. This part of our system doesn't change often, but if you notice any bugs or have ideas for some fundamental improvements, these are the docs for you. These are the most complex contributions, so it would be wise to have gone through some of the steps above before diving into the depths of netnet's codebase.
+### Additional Contributor Docs
 
-- [Project Architecture](project-architecture.md)
-- [CSS Styleguide](css-styleguide.md)
-- [Dialogue System](dialogue-system.md)
+<div class="two-col" style="border: 1px solid var(--netizen-comment); margin-top: 20px; border-left: none; border-right: none;">
+  <div>
+    <ul>
+      <li><a href="project-architecture.html">Project Architecture</a></li>
+      <li><a href="css-styleguide.html">CSS Styleguide</a></li>
+      <li><a href="dialogue-system.html">Dialogue System</a></li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><a href="netnet-faces.html">netent's face</a></li>
+      <li><a href="../educators/url-anatomy.html">Anatomy of a netnet URL</a></li>
+      <li><a href="../students/ai-integration.html">LLM Integration</a></li>
+    </ul>
+  </div>
+</div>
 
-**other misc notes**
-- [netent's face](netnet-faces.md)
-- [Anatomy of a netnet URL](../educators/url-anatomy.md)
-- [LLM Integration](../students/ai-integration.md)
+<br><br><br>
 
 # Sub-Modules
 

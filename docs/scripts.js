@@ -2,7 +2,7 @@
 
 const netitors = [] // netitor instances
 
-const copySvg = `<svg viewBox="0 0 16 16" version="1.1" height="16" width="16">
+const copySvg = `<svg viewBox="0 0 16 16" version="1.1" height="16" width="16" fill="currentColor">
     <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
 </svg>`
 
@@ -44,13 +44,15 @@ function setupNetitors () {
       if (lang === 'markdown') ne.cm.setOption('lineNumbers', false)
       netitors.push(ne)
 
-      // create copy symbol element
+      // create copy symbol element — inject into .CodeMirror so it's
+      // positioned relative to the visible editor area, not the <pre>
       const cp = nn.create('div')
         .set('class', 'copy-code')
         .content(copySvg)
         .on('click', () => navigator.clipboard.writeText(ne.code))
-      const pn = ele.parentNode
-      pn.insertBefore(cp, ele)
+      const cmDiv = ele.querySelector('.CodeMirror')
+      if (cmDiv) cmDiv.appendChild(cp)
+      else ele.parentNode.insertBefore(cp, ele)
     })
 }
 
@@ -144,6 +146,47 @@ function setupQuoteCarousels () {
   })
 }
 
+function setupUserGuideCarousel () {
+  nn.getAll('.user-guide-carousel').forEach(container => {
+    const paras = Array.from(container.querySelectorAll('[data-user-guide]'))
+    if (paras.length < 2) return
+    let current = 0
+
+    const lappyVid = document.querySelector('lappy-vid')
+
+    const label = document.createElement('span')
+    label.className = 'user-guide-carousel__label'
+
+    const prev = document.createElement('button')
+    prev.className = 'quote-carousel__btn'
+    prev.textContent = '←'
+
+    const next = document.createElement('button')
+    next.className = 'quote-carousel__btn'
+    next.textContent = '→'
+
+    const controls = document.createElement('div')
+    controls.className = 'user-guide-carousel__controls'
+    controls.append(prev, label, next)
+    container.prepend(controls)
+
+    function show (i) {
+      paras.forEach((p, idx) => { p.style.display = idx === i ? '' : 'none' })
+      const para = paras[i]
+      label.textContent = para.getAttribute('name') || `${i + 1} / ${paras.length}`
+      if (lappyVid) {
+        const vid = para.getAttribute('data-video')
+        if (vid) lappyVid.setAttribute('src', vid)
+      }
+    }
+
+    prev.addEventListener('click', () => { current = (current - 1 + paras.length) % paras.length; show(current) })
+    next.addEventListener('click', () => { current = (current + 1) % paras.length; show(current) })
+
+    show(0)
+  })
+}
+
 function replaceSuperKey () {
   const isMac = nn.platformInfo().platform.includes('Mac')
   const key = isMac ? 'CMD' : 'CTRL'
@@ -210,5 +253,6 @@ nn.on('load', () => {
   setupAutoplayVideos()
   replaceSuperKey()
   setupQuoteCarousels()
+  setupUserGuideCarousel()
   setupEyeAnimation()
 })
