@@ -60,12 +60,12 @@ Students have responded overwhelmingly positively in anonymous evaluations. Here
 
 The initial beta versions of netnet were made possible thanks to financial support from the [Clinic for Open Source Arts](http://clinicopensourcearts.com/) and the [Contemporary Practices Department at the School of the Art Institute of Chicago](https://www.saic.edu/academics/departments/contemporary-practices).
 
-| [![saic](../images/saic.png)](https://www.saic.edu/academics/departments/contemporary-practices) | [![cosa](../images/cosa.png)](http://clinicopensourcearts.com/) |
+| [![saic](../assets/images/saic.png)](https://www.saic.edu/academics/departments/contemporary-practices) | [![cosa](../assets/images/cosa.png)](http://clinicopensourcearts.com/) |
 |:---:|:---:|
 
 ### Institutional Support
 
 Current institutional support provided by [Media Arts and Design at the University of Chicago](https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design)
 
-| [![uchicago](../images/uchicago.png)](https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design) |
+| [![uchicago](../assets/images/uchicago.png)](https://cms.uchicago.edu/undergraduate/major-minor/minor-media-arts-and-design) |
 |:---:|

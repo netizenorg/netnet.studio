@@ -3,27 +3,27 @@
 If you're new to code and want to learn how to craft your own corner of the web, then netnet.studio is for you! You can start by going straight to [netnet.studio](https://netnet.studio) and introducing yourself to netnet, you don't really need to read any of the stuff below (you'll learn it all on netnet.studio as you go). That said, if you're looking for a **User Guide** style manual, you'll find that here.
 
 
-<lappy-vid src="../images/sketching.mp4" grad-alpha="0.4" mouse osc="0.05" pos-z="0.7" pos-x="1" pos-y="0.1" style="border-bottom: 1px solid var(--netizen-comment);"></lappy-vid>
+<lappy-vid src="../assets/videos/sketching.mp4" grad-alpha="0.4" mouse osc="0.05" pos-z="0.7" pos-x="1" pos-y="0.1" style="border-bottom: 1px solid var(--netizen-comment);"></lappy-vid>
 
 <div class="user-guide-carousel">
-  <p data-user-guide="1" name="[0] welcome to the studio" data-video="../images/learning-tutorial.mp4">
+  <p data-user-guide="1" name="[0] welcome to the studio" data-video="../assets/videos/learning-tutorial.mp4">
     netnet.studio is an interactive learning platform where you learn not only by reading docs or watching videos but by making. For example, the video above shows a <a href="https://netnet.studio/?tutorial=orientation" target="_blank">netnet tutorial</a> which you can interact with as you watch. The platform is also designed to act as a web-coding sketchbook, anytime you have an idea you can dive right into a live code editor with minimal friction (no login, no setup). Let netnet know you want to code as soon as it loads, or jump straight to a blank sketch by navigating to <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a>.
   </p>
-  <p data-user-guide="2" name="[1] coding with netnet" data-video="../images/sketching.mp4">
+  <p data-user-guide="2" name="[1] coding with netnet" data-video="../assets/videos/sketching.mp4">
     The code editor is intentionally simple, but has unique features designed specifically for creative folks learning to code for the first time. As shown in the video above, it provides familiar tools like syntax highlighting, line numbers, and auto-complete, along with a few extras designed to support learning. For instance, double-clicking any piece of code brings up an explanation and relevant documentation. If netnet detects a possible issue, it marks the line with an orange (warning) or red (error) dot that you can click to read more. There are a number of other widgets which netnet opens (or suggests) for you to use when it's relevant as it did with the Color Widget in the video above.
   </p>
-  <p data-user-guide="3" name="[2] saving your work" data-video="../images/saving-sketch.mp4">
+  <p data-user-guide="3" name="[2] saving your work" data-video="../assets/videos/saving-sketch.mp4">
     You can think of <a href="https://netnet.studio/sketch" target="_blank">netnet.studio/sketch</a> as an infinite sticky pad, pressing <b>{SUPER} + S</b> will prompt you to either download your sketch (as an HTML file) or share it (as a netnet URL). Sharing your code as a URL is like pulling a sticky note off the pad, you need to decide where to stick it: send it to a friend, post it online, or save it somewhere safe. Once it's pulled off, it's no longer part of the pad, so if you lose that link, you lose the sketch (we don't record/save what you make on netnet, your code is compressed into the URL itself). If you want to keep something you made long-term, it's best to download it as an HTML file (you can also turn it into an online <strong>project</strong>, more on that below).
   </p>
-  <p data-user-guide="4" name="[3] the Learning Guide" data-video="../images/learning-guide.mp4">
+  <p data-user-guide="4" name="[3] the Learning Guide" data-video="../assets/videos/learning-guide.mp4">
     netnet’s <b>Learning Guide</b> is packed with educational content that starts from the basics and gradually builds toward more complex lessons and examples. You can open the Learning Guide anytime by clicking on netnet's face and selecting it from the main menu, or by using the <b>{SUPER} + L</b> shortcut. You can follow the Learning Guide from start to finish for a traditional progression, or explore it non-linearly based on your own interests and needs. You can scroll through the Learning Guide, but you can also click on the Internet globe to jump to the "Hyperlinks", and from there you can click on any section to jump to it.
   </p>
 </div>
 
 
 
-<!-- ![netnet menu](../images/sketching-poster.jpg) -->
-<!-- ![netnet menu](../images/saving-sketch-poster.jpg) -->
+<!-- ![netnet menu](../assets/images/sketching-poster.jpg) -->
+<!-- ![netnet menu](../assets/images/saving-sketch-poster.jpg) -->
 
 
 <br><br>
@@ -33,7 +33,7 @@ If you're new to code and want to learn how to craft your own corner of the web,
 
 You can open the menu at anytime by clicking on netnet's face...
 
-![netnet menu](../images/netnet-menu-poster.jpg)
+![netnet menu](../assets/images/netnet-menu-poster.jpg)
 
 
 | Main Menu Shortcuts | Action |

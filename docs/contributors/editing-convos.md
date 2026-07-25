@@ -75,7 +75,7 @@ Maybe you noticed a type-o in one of netnet's passage, or maybe you just think t
 
 The easiest way to find a passage in netnet's code base is by **using your GitHub's repo search bar** to find the file that contains the line of dialogue you're trying to edit. We recommend placing your search withing quote marks `" "` to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:
 
-![example netnet passage with markup in it](../images/convo-ex1.png)
+![example netnet passage with markup in it](../assets/images/convo-ex1.png)
 
 This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case `<code>` tags around the words "run" and "git status". Additionally, because most of the passage's text are stored as JavaScript strings in the code, often when a word has an apostrophe like the first word in this passage, "Let's" it needs to be *escaped* in the code, which means it actually looks like this: `Let\'s`. Here is how that passage actually appears in netnet's code:
 
@@ -99,11 +99,11 @@ You could theoretically edit the `convo.js` file directly on GitHub, just like y
 
 To find it, search for "Convo Maker" in netnet's search bar. The widget should open up in it's own pop-up window (outside of netnet), it will be empty by default, but you can click on the "edit" button in the menu to find the specific `convo.js` file you're looking for and open it.
 
-![convo maker](../images/convo-maker1.jpg)
+![convo maker](../assets/images/convo-maker1.jpg)
 
 The **Convo Maker** displays all the passages in a conversation file on a two-dimensional grid, with connections between them illustrating which passages link to others. You can use the trackpad to scroll around in the space and can also pinch-to-zoom (or use the zoom slider) to zoom in/out. Clicking on a passage *selects* it, after selecting on a passage you can move it around or delete it. To edit a passage you must double-click it.
 
-![convo maker](../images/convo-maker2.jpg)
+![convo maker](../assets/images/convo-maker2.jpg)
 
 This will open up a passage window, there you can edit the text and have the option to write HTML markup and call JavaScript functions.
 
@@ -175,11 +175,11 @@ As discussed in the section which covers editing [these Docs](the-docs.md) thems
 
 Then, to create a new PR click on the "Pull requests" tab in the top menu and then the green <b style="color: green">New pull request</b> button
 
-![pr button](../images/git-pr1.jpg)
+![pr button](../assets/images/git-pr1.jpg)
 
 On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing *from* your fork and *to* ours.
 
-![pr button](../images/git-pr2-b.jpg)
+![pr button](../assets/images/git-pr2-b.jpg)
 
 **⚠️ NOTE:** Updates to convos are something we'll want to test on our dev server before deploying to the main public server, for this reason you'll want to make sure to select **base: dev** next to the *netizenorg/netnet.studio* repo, so that the request comes to our *dev* branch and not our *main* branch. The branch selected next to your forked repo should be whichever branch you committed this new change to (likely your *main*).
 

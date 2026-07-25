@@ -101,9 +101,6 @@
                   <a class="inline-link" href="/docs/contributors/dialogue-system.html">
                   Convos: the Dialogue System
                 </a></li></ul>
-              </li><li class="docs__panel__list-item">
-                <a class="header inline-link" href="/docs/#">undefined</a>
-                <ul class="docs__panel__list" role="navigation"></ul>
               </li></ul>
     </div>
 
@@ -207,7 +204,7 @@
 <h2>Finding a passage in the code</h2>
 <p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. The &quot;expert system&quot; dialogue above provides a general map with links to the different parts of the code base where netent&#39;s passages live.</p>
 <p>The easiest way to find a passage in netnet&#39;s code base is by <strong>using your GitHub&#39;s repo search bar</strong> to find the file that contains the line of dialogue you&#39;re trying to edit. We recommend placing your search withing quote marks <code>&quot; &quot;</code> to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:</p>
-<p><img src="../images/convo-ex1.png" alt="example netnet passage with markup in it" /></p>
+<p><img src="../assets/images/convo-ex1.png" alt="example netnet passage with markup in it" /></p>
 <p>This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case <code>&lt;code&gt;</code> tags around the words &quot;run&quot; and &quot;git status&quot;. Additionally, because most of the passage&#39;s text are stored as JavaScript strings in the code, often when a word has an apostrophe like the first word in this passage, &quot;Let&#39;s&quot; it needs to be <em>escaped</em> in the code, which means it actually looks like this: <code>Let\&#39;s</code>. Here is how that passage actually appears in netnet&#39;s code:</p>
 <pre><code class="javascript">content: 'Let\'s version our changes by creating a new "commit"! Click the &lt;code&gt;run&lt;/code&gt; button in the Terminal of the Version Control widget to run &lt;code&gt;git status&lt;/code&gt;. This will list all the files which have changed since your last commit.',</code></pre>
 <p>For this reason it&#39;s best to search for small snippets of text from a passage and avoid including any of the marked-up text (like code blocks and links) as well as any text with apostrophes in it.</p>
@@ -221,9 +218,9 @@
 <h2>Editing Passages</h2>
 <p>You could theoretically edit the <code>convo.js</code> file directly on GitHub, just like you do with <a href="the-docs.html">the docs</a>, but since these are <code>.js</code> files (not <code>.md</code> files) the stakes are a little higher. For example, if you make a &quot;syntax error&quot; in JavaScript (like forgetting the <code>\</code> before any apostrophes) it might not be immediately obvious on GitHub and thus could cause an error in the convo logic. It&#39;s also difficult to understand which passages connect to which other passages when viewing them in these linear JavaScript files. For these reasons we&#39;ve created a special widget in netnet called the <strong>Convo Maker</strong> which is used to create and edit these convo files.</p>
 <p>To find it, search for &quot;Convo Maker&quot; in netnet&#39;s search bar. The widget should open up in it&#39;s own pop-up window (outside of netnet), it will be empty by default, but you can click on the &quot;edit&quot; button in the menu to find the specific <code>convo.js</code> file you&#39;re looking for and open it.</p>
-<p><img src="../images/convo-maker1.jpg" alt="convo maker" /></p>
+<p><img src="../assets/images/convo-maker1.jpg" alt="convo maker" /></p>
 <p>The <strong>Convo Maker</strong> displays all the passages in a conversation file on a two-dimensional grid, with connections between them illustrating which passages link to others. You can use the trackpad to scroll around in the space and can also pinch-to-zoom (or use the zoom slider) to zoom in/out. Clicking on a passage <em>selects</em> it, after selecting on a passage you can move it around or delete it. To edit a passage you must double-click it.</p>
-<p><img src="../images/convo-maker2.jpg" alt="convo maker" /></p>
+<p><img src="../assets/images/convo-maker2.jpg" alt="convo maker" /></p>
 <p>This will open up a passage window, there you can edit the text and have the option to write HTML markup and call JavaScript functions.</p>
 <ul>
 <li><strong>HTML Markup</strong>: like the word <code>&lt;i&gt;classical&lt;/i&gt;</code> for example, written inside the <code>&lt;i&gt;</code> element</li>
@@ -274,9 +271,9 @@
 <li>Leave a commit message and click the green <b style="color: green">Commit Changes</b> button to officially add it to your fork.</li>
 </ol>
 <p>Then, to create a new PR click on the &quot;Pull requests&quot; tab in the top menu and then the green <b style="color: green">New pull request</b> button</p>
-<p><img src="../images/git-pr1.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr1.jpg" alt="pr button" /></p>
 <p>On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing <em>from</em> your fork and <em>to</em> ours.</p>
-<p><img src="../images/git-pr2-b.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr2-b.jpg" alt="pr button" /></p>
 <p><strong>⚠️ NOTE:</strong> Updates to convos are something we&#39;ll want to test on our dev server before deploying to the main public server, for this reason you&#39;ll want to make sure to select <strong>base: dev</strong> next to the <em>netizenorg/netnet.studio</em> repo, so that the request comes to our <em>dev</em> branch and not our <em>main</em> branch. The branch selected next to your forked repo should be whichever branch you committed this new change to (likely your <em>main</em>).</p>
 <h2>Code Review</h2>
 <p>Once the PR (pull request) is open we&#39;ll get a notification to review your request. If we notice any issues or have any feedback for you, we&#39;ll leave a comment on the PR page with instructions. If it&#39;s not clear you can respond to us and we can start a conversation on the PR page. Once you&#39;ve addressed our feedback you won&#39;t need to create another PR, any time you commit a new change it will automatically get added to the open PR. When those changes are ready for us to re-review, simply leave a comment on the PR letting us know!</p>

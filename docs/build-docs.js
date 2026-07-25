@@ -8,7 +8,7 @@ const fldrDict = {
   supporters: 'Dear Supporters',
   contributors: 'Dear Contributors'
 }
-const skipFldrs = ['images']
+const skipFldrs = ['assets']
 
 // update some of the "marked" library's rendering behavior
 // ........................................................
@@ -27,7 +27,8 @@ function posterToVideoTag (src, alt = '') {
   const dir = lastSlash >= 0 ? src.slice(0, lastSlash + 1) : ''
   const file = lastSlash >= 0 ? src.slice(lastSlash + 1) : src
   const base = file.replace(/-poster\.[a-zA-Z0-9]+$/, '')
-  const videoSrc = `${dir}${base}.mp4`
+  const videoDir = dir.replace(/\/images\/$/, '/videos/')
+  const videoSrc = `${videoDir}${base}.mp4`
   // exception for intro video
   if (base === 'netnet-intro') {
     return `<video style="display: block; margin: 0 auto; border: 4px solid var(--netizen-tag); border-radius: 25px 25px 1px 1px;" controls playsinline width="720"\n  src="${videoSrc}"\n  poster="${src}">\n</video>`
@@ -208,7 +209,7 @@ function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav, postPr
         finalHtml = template.replace('{{content}}', htmlContent).replace('{{nav}}', nav)
         if (htmlContent.includes('<lappy-vid')) {
           const loaderShim = '    <script>;(function(){var O=THREE.Loader;THREE.Loader=function(m){this.manager=m||THREE.DefaultLoadingManager;this.crossOrigin=\'anonymous\';this.withCredentials=false;this.path=\'\';this.resourcePath=\'\';this.requestHeader={}};THREE.Loader.prototype=O.prototype})();</script>\n'
-          const threeScripts = '    <script src="/core/libs/three.min.js"></script>\n' + loaderShim + '    <script src="/core/libs/GLTFLoader.js"></script>\n    <script src="/docs/misc/LappyVid.js"></script>\n'
+          const threeScripts = '    <script src="/core/libs/three.min.js"></script>\n' + loaderShim + '    <script src="/core/libs/GLTFLoader.js"></script>\n    <script src="/docs/assets/misc/LappyVid.js"></script>\n'
           finalHtml = finalHtml.replace('    <script src="/netitor.min.js">', threeScripts + '    <script src="/netitor.min.js">')
         }
       } catch (templateErr) {
