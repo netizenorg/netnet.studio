@@ -2,7 +2,7 @@
 
 While visiting [https://netnet.studio](https://netnet.studio) is the common starting point, you can actually navigate to specific content directly using [URL parameters](https://en.wikipedia.org/wiki/Query_string) (the `?key=value` part of a URL) and [URL hashes](https://en.wikipedia.org/wiki/URI_fragment) (the `#value` part). Below you'll find a breakdown of the different URL parameters and hashes netnet supports, as well as a usage examples for educators.
 
-![netnet URL](../images/url.svg)
+![netnet URL](../assets/images/url.svg)
 
 
 

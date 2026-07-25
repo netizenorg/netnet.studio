@@ -111,28 +111,116 @@
 <ol>
 <li>You have <a href="https://github.com/signup" target="_blank">created a GitHub account</a> and you&#39;re currently <a href="https://github.com/login" target="_blank">logged in</a> to your account.</li>
 <li>You&#39;ve created a &quot;<a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo" target="_blank">fork</a>&quot; of the <a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio repo</a></li>
-<li>You understand how to create a PR (pull request)</li>
+<li>You understand how to create a <a href="#pull-request">PR (pull request)</a></li>
 </ol>
-<p>If you&#39;re an experienced open source developer and have already <a href="contributor-workflow.html">setup a local development environment</a>, you can alternatively create and/or edit these files in your code editor, refer instead to the <a href="dialogue-system.html">Convo System</a> docs.</p>
+<p>If you&#39;re an experienced open source developer and have already <a href="contributor-workflow.html">setup a local development environment</a>, you can alternatively create and/or edit these files in your code editor, refer instead to the <a href="dialogue-system.html">Convo System</a> docs.
+<br><br></p>
+<h2>netnet&#39;s &quot;expert system&quot; diagram</h2>
+<p>We consider netnet an <strong>AI-TA (artificial intelligence teaching assistant)</strong>, meaning it is not a <em>teacher</em> but rather a system designed to <em>assist</em> in educational contexts. Another point worth clarifying is that netnet&#39;s AI system is <strong>not</strong> a neural-network (like a large language model) which synthesizes text based on statistical probabilities (which may or may not be factually accurate); netnet has a <em><a href="https://en.wikipedia.org/wiki/Symbolic_artificial_intelligence" target="_blank">classical</a></em> AI system, meaning everything it says is the result of a rule-based system pulling from an internal database written/coded by hand. You could call it an &quot;<a href="https://en.wikipedia.org/wiki/Expert_system" target="_blank">expert system</a>&quot;, the diagram below is a very high-level map of this system.
+<br><br></p>
+<pre style="width;100%; overflow-x: scroll;">
+╔════════════════════╗    ┌────────────────────────────────────┐
+║ within the netitor ║━┳━►│       <a href="https://github.com/netizenorg/netitor/tree/master/src/linters" target="_blank">friendly error system</a>        │
+╚════════════════════╝ ┃  ├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+          ▲            ┃  │ 3rd party linters: HTML + CSS + JS │
+          ┆            ┃  │ validate HTML + CSS (selectors)    │
+      ╭───────╮        ┃  | friendly translate lint errors     │
+      │ ◕ ◞ ◕ │        ┃  | synonym check + spell check        │━━┓
+      └───────┘        ┃  └────────────────────────────────────┘  ┃
+          ┆            ┃  ┌──────────────────────────────────┐    ┃
+          ┆            ┗━►│        <a href="https://github.com/netizenorg/netitor/tree/master/src/edu-data" target="_blank">dbl-click edu info</a>        |    ┃
+          ┆               ├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤    ┃
+          ┆               │ database of HTML + CSS + JS info |    ┃
+          ┆               | (HTML elements, CSS props, etc)  |━━┓ ┃
+          ┆               └──────────────────────────────────┘  ┃ ┃
+          ┆                                                     ┃ ┃
+          ┆                 ┌─────────────────────────────┐     ┃ ┃
+          ┆              ┏━►│ <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils-convo.js" target="_blank">www/core/utils-convo.js</a>     │     ┃ ┃
+          ▼              ┃  └─────────────────────────────┘     ┃ ┃
+╔══════════════════════╗ ┃  ┌──────────────────────────────────┐┃ ┃
+║ within netnet.studio ║━╋━►│            <b>widget system</b>         │┃ ┃
+╚══════════════════════╝ ┃  ├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤┃ ┃
+                         ┃  │ www/widgets/{lang}-reference/ ┏━━━┛ ┃
+                         ┃  │┌──────────────┴───────────────┸─┐│  ┃
+                         ┃  ││{html}/data/<a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/html-reference/data/edu-supplement.json" target="_blank">edu-supplement.json</a> ││  ┃
+                         ┃  ││{css}/data/<a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/css-reference/data/edu-supplement.json" target="_blank">edu-supplement.json</a>  ││  ┃
+                         ┃  ││{js}/data/<a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/js-reference/data/edu-supplement.json" target="_blank">edu-supplement.json</a>   ││  ┃
+                         ┃  │└────────────────────────────────┘│  ┃
+                         ┃  │ www/widgets/{*}/convo.js         │  ┃
+                         ┃  │ www/widgets/code-review/index.js ◀━━┛
+                         ┃  │                       ./convo.js │
+┌────────────────────┐   ┃  │ www/widgets/{*}/convo.js         │
+│ Annotated Demos    │◀━━┻┓ │ www/widgets/{*}/convo.js         │
+│ <a href="https://github.com/netizenorg/netnet.studio/tree/main/data/demos" target="_blank">/data/demos/</a>*.json │    ┃ │ etc...                           │
+└────────────────────┘    ┃ └──────────────────────────────────┘
+┌─────────────────────────▼──┐
+│ Guided Templates           │
+│ <a href="https://github.com/netizenorg/netnet.studio/tree/main/data/templates" target="_blank">/data/templates/</a>*/convo.js │
+└────────────────────────────┘
+</pre>
+
+<p><br><br></p>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>location</th>
+<th>details</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/netizenorg/netitor/" target="_blank">netitor</a></td>
+<td><a href="https://github.com/netizenorg/netitor/tree/master/src/linters" target="_blank">src/linters</a></td>
+<td>all the logic/data files for netnet&#39;s friendly error messages. <strong>NOTE</strong> netnet&#39;s error messages are sometimes augmented by the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/code-review/index.js" target="_blank">code-review</a> widget.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netizenorg/netitor/" target="_blank">netitor</a></td>
+<td><a href="https://github.com/netizenorg/netitor/tree/master/src/edu-data" target="_blank">src/edu-data</a></td>
+<td>all the logic/data files for netnet&#39;s double-click code-info, these should be edited using netitor&#39;s <a href="https://netizenorg.github.io/netitor/copy-editor/" target="_blank">copy editor</a>, review <a href="https://github.com/netizenorg/netitor/wiki/Editing-Edu-Data-Copy" target="_blank">these docs</a>. <strong>NOTE</strong> netnet&#39;s edu info are sometimes augmented by the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/html-reference" target="_blank">html</a>/<a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/css-reference" target="_blank">css</a>/<a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/js-reference" target="_blank">js</a>-reference widgets and their corresponding <code>data/edu-supplement.json</code> files.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio</a></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/tree/main/data/demos" target="_blank">data/demos</a></td>
+<td>any passage appearing as part of an <strong>Annotated Demo</strong> walkthrough can be found in that demo&#39;s json file.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio</a></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/tree/main/data/templates" target="_blank">data/templates</a></td>
+<td>any passage appearing as part of a <strong>Guided Template</strong> walkthrough can be found in that template&#39;s <code>convo.js</code> file.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio</a></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">www/widgets</a></td>
+<td>any passage appearing as part of interacting with a particular widget can be found in that widget&#39;s <code>convo.js</code> file. <strong>NOTE</strong>: all of these files can be edited using the <strong>Convo Maker</strong> widget (explained below).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netizenorg/netnet.studio" target="_blank">netnet.studio</a></td>
+<td><a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils-convo.js" target="_blank">www/core/utils-convo.js</a></td>
+<td>any other miscellaneous passages will likely be found in the <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils-convo.js" target="_blank">utils-convo.js</a>.</td>
+</tr>
+</tbody></table>
+<p><br><br>
+<br><br></p>
 <h2>Finding a passage in the code</h2>
-<p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. All of netnet&#39;s passage&#39;s are part of of a <code>convo.js</code> file associated with one of netnet&#39;s <em>Widgets</em>, which can all be found in the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets" target="_blank">`www/widgets`</a> folder, or part of one of netnet&#39;s <em>Guided Templates</em> found in <a href="https://github.com/netizenorg/netnet.studio/tree/main/data/templates" target="_blank">`data/templates`</a> . With a couple of exceptions:</p>
-<ul>
-<li>any passage where netent explains a piece of code that you double-clicked on, these are part of the netitor sub-module.</li>
-<li>any passage where netnet explains an issue or error that appear when you click on an error marker in the line-number gutters, these are also part of the netitor sub-module</li>
-</ul>
-<p><em>✏️ TODO: link to netitor sub-module docs when ready</em></p>
-<p>It might be immediately obvious which widget the passage you want to edit is a part of, but if not you can always <strong>use GitHub&#39;s repo search bar</strong> to find the file that contains the line of dialogue you&#39;re trying to edit. We recommend placing your search withing quote marks <code>&quot; &quot;</code> to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:</p>
-<p><img src="../images/convo-ex1.png" alt="example netnet passage with markup in it" /></p>
-<p>This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case <code>&lt;code&gt;</code> tags around the words &quot;run&quot; and &quot;git status&quot;. Additionally, because most of the passage&#39;s text are stored as JavaScript strings in the code, often when a word has an apostraphe like the first word in this passage, &quot;Let&#39;s&quot; it needs to be <em>escaped</em> in the code, which means it acctually looks like this: <code>Let\&#39;s</code>. Here is how that passage actually appears in netnet&#39;s code:</p>
+<p>Maybe you noticed a type-o in one of netnet&#39;s passage, or maybe you just think there&#39;s something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. The &quot;expert system&quot; dialogue above provides a general map with links to the different parts of the code base where netent&#39;s passages live.</p>
+<p>The easiest way to find a passage in netnet&#39;s code base is by <strong>using your GitHub&#39;s repo search bar</strong> to find the file that contains the line of dialogue you&#39;re trying to edit. We recommend placing your search withing quote marks <code>&quot; &quot;</code> to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:</p>
+<p><img src="../assets/images/convo-ex1.png" alt="example netnet passage with markup in it" /></p>
+<p>This passage contains a couple of pink code blocks, this is because the passage contains markup, in this case <code>&lt;code&gt;</code> tags around the words &quot;run&quot; and &quot;git status&quot;. Additionally, because most of the passage&#39;s text are stored as JavaScript strings in the code, often when a word has an apostrophe like the first word in this passage, &quot;Let&#39;s&quot; it needs to be <em>escaped</em> in the code, which means it actually looks like this: <code>Let\&#39;s</code>. Here is how that passage actually appears in netnet&#39;s code:</p>
 <pre><code class="javascript">content: 'Let\'s version our changes by creating a new "commit"! Click the &lt;code&gt;run&lt;/code&gt; button in the Terminal of the Version Control widget to run &lt;code&gt;git status&lt;/code&gt;. This will list all the files which have changed since your last commit.',</code></pre>
-<p>For this reason it&#39;s best to search for small snippets of text from a passage and avoid including any of the markuped text (like code blocks and links) as well as any text with apostraphes in it.</p>
-<p>⚠️ <strong>NOTE</strong>: if you have trouble searching your fork of the repo, because GitHub hasn&#39;t yet indexed your code for example, you can always <a href="https://github.com/search?q=repo%3Anetizenorg%2Fnetnet.studio&type=code" target="_blank">search our main repo</a> instead. Your fork should be more or less an exact copy of ours (until you start to make changes) so the convo file should be in the same place.</p>
-<h2>Editing a passage</h2>
+<p>For this reason it&#39;s best to search for small snippets of text from a passage and avoid including any of the marked-up text (like code blocks and links) as well as any text with apostrophes in it.</p>
+<div class="warning">
+🔎 <b>GITHUB SEARCH</b>: if you have trouble searching your fork of the repo, because GitHub hasn't yet indexed your code for example, you can always <a href="https://github.com/search?q=repo%3Anetizenorg%2Fnetnet.studio&type=code" target="_blank">search our main netnet.studio repo</a> instead (remember, some passages are part of the <a href="https://github.com/search?q=repo%3Anetizenorg%2Fnetitor&type=code" target="_blank">netitor repo which you can also search</a>). Your fork should be more or less an exact copy of ours (until you start to make changes) so the convo file should be in the same place.
+</div>
+
+
+<p><br><br>
+<br><br></p>
+<h2>Editing Passages</h2>
 <p>You could theoretically edit the <code>convo.js</code> file directly on GitHub, just like you do with <a href="the-docs.html">the docs</a>, but since these are <code>.js</code> files (not <code>.md</code> files) the stakes are a little higher. For example, if you make a &quot;syntax error&quot; in JavaScript (like forgetting the <code>\</code> before any apostrophes) it might not be immediately obvious on GitHub and thus could cause an error in the convo logic. It&#39;s also difficult to understand which passages connect to which other passages when viewing them in these linear JavaScript files. For these reasons we&#39;ve created a special widget in netnet called the <strong>Convo Maker</strong> which is used to create and edit these convo files.</p>
 <p>To find it, search for &quot;Convo Maker&quot; in netnet&#39;s search bar. The widget should open up in it&#39;s own pop-up window (outside of netnet), it will be empty by default, but you can click on the &quot;edit&quot; button in the menu to find the specific <code>convo.js</code> file you&#39;re looking for and open it.</p>
-<p><img src="../images/convo-maker1.jpg" alt="convo maker" /></p>
+<p><img src="../assets/images/convo-maker1.jpg" alt="convo maker" /></p>
 <p>The <strong>Convo Maker</strong> displays all the passages in a conversation file on a two-dimensional grid, with connections between them illustrating which passages link to others. You can use the trackpad to scroll around in the space and can also pinch-to-zoom (or use the zoom slider) to zoom in/out. Clicking on a passage <em>selects</em> it, after selecting on a passage you can move it around or delete it. To edit a passage you must double-click it.</p>
-<p><img src="../images/convo-maker2.jpg" alt="convo maker" /></p>
+<p><img src="../assets/images/convo-maker2.jpg" alt="convo maker" /></p>
 <p>This will open up a passage window, there you can edit the text and have the option to write HTML markup and call JavaScript functions.</p>
 <ul>
 <li><strong>HTML Markup</strong>: like the word <code>&lt;i&gt;classical&lt;/i&gt;</code> for example, written inside the <code>&lt;i&gt;</code> element</li>
@@ -172,7 +260,9 @@
 }</code></pre>
 <h2>Download the convo.js file</h2>
 <p>When you&#39;re finished working on the passage, or simply want to save your changes locally, you can click the <strong>download</strong> button in the main menu. This will download a file called <code>convo.js</code> with all of the conversion data (all the passages, options, code, etc). When you want to keep working on that convo later you can visit netnet.studio, open the <strong>Convo Maker</strong> widget and click <strong>upload</strong> to load up the <code>convo.js</code> file you downloaded and had been previously working on.</p>
-<h2>Creating a PR (pull request)</h2>
+<p><br><br>
+<br><br></p>
+<h2><span id="pull-request"></span> Creating a PR (pull request)</h2>
 <p>As discussed in the section which covers editing <a href="the-docs.html">these Docs</a> themselves, when you want to share any updates/changes you&#39;ve made with us you&#39;ll need to create a &quot;pull request&quot; on GitHub, letting us know that there are some updates in your &quot;fork&quot; ready for us to review and considering merging into netnet&#39;s main code base. But before you do that, you&#39;ll need to include these changes in your fork:</p>
 <ol>
 <li>Login to your GitHub account and navigate to your fork of the netnet.studio repo.</li>
@@ -181,9 +271,9 @@
 <li>Leave a commit message and click the green <b style="color: green">Commit Changes</b> button to officially add it to your fork.</li>
 </ol>
 <p>Then, to create a new PR click on the &quot;Pull requests&quot; tab in the top menu and then the green <b style="color: green">New pull request</b> button</p>
-<p><img src="../images/git-pr1.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr1.jpg" alt="pr button" /></p>
 <p>On the next page make sure that the repo listed on the right side of the arrow is yours (yourname/netnet.studio) and on the left side of the arrows is ours (netizenorg/netnet.studio). The arrow between the repos should be pointing <em>from</em> your fork and <em>to</em> ours.</p>
-<p><img src="../images/git-pr2-b.jpg" alt="pr button" /></p>
+<p><img src="../assets/images/git-pr2-b.jpg" alt="pr button" /></p>
 <p><strong>⚠️ NOTE:</strong> Updates to convos are something we&#39;ll want to test on our dev server before deploying to the main public server, for this reason you&#39;ll want to make sure to select <strong>base: dev</strong> next to the <em>netizenorg/netnet.studio</em> repo, so that the request comes to our <em>dev</em> branch and not our <em>main</em> branch. The branch selected next to your forked repo should be whichever branch you committed this new change to (likely your <em>main</em>).</p>
 <h2>Code Review</h2>
 <p>Once the PR (pull request) is open we&#39;ll get a notification to review your request. If we notice any issues or have any feedback for you, we&#39;ll leave a comment on the PR page with instructions. If it&#39;s not clear you can respond to us and we can start a conversation on the PR page. Once you&#39;ve addressed our feedback you won&#39;t need to create another PR, any time you commit a new change it will automatically get added to the open PR. When those changes are ready for us to re-review, simply leave a comment on the PR letting us know!</p>

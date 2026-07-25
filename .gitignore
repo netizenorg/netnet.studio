@@ -22,7 +22,8 @@ www/tutorials/*
 !www/tutorials/list.json
 
 # ignoring videos in docs (should be uploaded separately)
-docs/images/*.mp4
+docs/assets/videos/*
+!docs/assets/videos/.gitkeep
 
 # ignoring local temp gh user data
 data/temp-gh-user-data/*

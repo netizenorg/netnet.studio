@@ -27,7 +27,7 @@ If you choose to record a video, rather than uploading one you previously create
 
 ## keyframes
 
-![tutorial-maker-timline](../images/tutorial-maker-timeline.png)
+![tutorial-maker-timline](../assets/images/tutorial-maker-timeline.png)
 
 ✏️ TODO: explain keframes
 
