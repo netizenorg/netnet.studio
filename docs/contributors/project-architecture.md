@@ -118,14 +118,14 @@ All globals live on `window`. Their definition order is fixed by the boot sequen
 | Global | Defined in | Role |
 |--------|-----------|------|
 | `nn` | [nn.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | utility library, DOM helpers, math, browser/platform detection |
-| `Netitor` | [netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | code editor class (instantiated as NNE) |
+| `Netitor` | [netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | code editor class (instantiated as NNE), also used to create other netitor instances (ex: Code Demos widget) |
 | `WIDGETS` | [widgets/index.js](https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js) | widget manager and registry |
 | `Widget` | [widgets/index.js](https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js) | base class all widgets extend |
 | `Convo` | [core/Convo.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js) | dialogue runtime class |
 | `CONVOS` | [core/Convo.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js) | registry of loaded dialogue passage arrays |
 | `NetNet` | [core/NetNet.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/NetNet.js) | window/layout controller class (instantiated as NNW) |
 | `utils` | [core/utils.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils.js) | misc utility functions (fetch, CSS vars, URL routing, etc.) |
-| `NNE` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the main Netitor instance (the code editor) |
+| `NNE` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the main Netitor instance (the code editor),  |
 | `NNW` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the NetNet instance (the window/face/layout) |
 | `convo` | set at runtime | current active Convo instance |
 

@@ -77,7 +77,7 @@ We use GitHub to track all of our [issues](https://github.com/netizenorg/netnet.
     <p class="bug-report-form__hint">📎 Once you open the issue on GitHub, you can drag and drop <strong>screenshots</strong> or <strong>screen recordings</strong> directly into the text field, this is extremely helpful for us!</p>
     <div class="bug-report-form__field">
       <label for="br-console">Console errors</label>
-      <textarea id="br-console" placeholder="Open DevTools (F12 or Fn+F12), go to Console, paste any errors here"></textarea>
+      <textarea id="br-console" placeholder="Open DevTools (F12 or Fn+F12), go to Console, copy+paste any errors here"></textarea>
     </div>
   </fieldset>
 
@@ -127,10 +127,9 @@ function copyBugReport () {
 
 
 <div class="warning">
-🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things.
+🙏 Opening an issue is the start of a conversation between you and us. Please keep an eye on it, as we may ask clarifying questions to help fix things. Thank you for taking the time to report a bug!
 </div>
 
-Thank you for taking the time to report a bug!
 
 
 <br><br><br>
