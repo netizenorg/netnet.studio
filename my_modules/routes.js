@@ -397,6 +397,22 @@ router.get('/api/demos', (req, res) => {
   res.json({ success: 'success', data: dict })
 })
 
+let _tutMetaCache = null
+router.get('/api/tutorials/metadata', (req, res) => {
+  if (_tutMetaCache) return res.json(_tutMetaCache)
+  const listPath = path.join(__dirname, '../www/tutorials/list.json')
+  const tutList = JSON.parse(fs.readFileSync(listPath, 'utf8'))
+  const result = {}
+  Object.entries(tutList).forEach(([section, ids]) => {
+    result[section] = ids.map(id => {
+      const p = path.join(__dirname, `../www/tutorials/${id}/tutorial.json`)
+      return JSON.parse(fs.readFileSync(p, 'utf8')).metadata
+    })
+  })
+  _tutMetaCache = result
+  res.json(result)
+})
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES
 
 async function listFilesRecursive (dir, root = dir) {
