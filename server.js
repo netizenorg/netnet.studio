@@ -73,9 +73,12 @@ app.use((req, res, next) => {
 app.use('/api', utils.corsMiddleware)
 app.use(ROUTES)
 app.use(GITHUB)
-const staticCORS = (res) => res.setHeader('Access-Control-Allow-Origin', '*')
-app.use(express.static(`${__dirname}/www`, { setHeaders: staticCORS }))
-app.use('/docs', express.static(`${__dirname}/docs`, { setHeaders: staticCORS }))
+const staticHeaders = (res, filePath) => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Cache-Control', /\.(js|css|html)$/.test(filePath) ? 'no-cache' : 'public, max-age=86400')
+}
+app.use(express.static(`${__dirname}/www`, { setHeaders: staticHeaders }))
+app.use('/docs', express.static(`${__dirname}/docs`, { setHeaders: staticHeaders }))
 app.use(ERRORS.notFound)
 app.use(ERRORS.errorHandler)
 

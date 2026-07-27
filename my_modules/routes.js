@@ -43,6 +43,7 @@ aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
       res.setHeader('Access-Control-Allow-Origin', '*')
+      res.set('Cache-Control', /\.(js|css)$/.test(req.params[0]) ? 'no-cache' : 'public, max-age=86400')
       res.sendFile(req.params[0], { root: path.join(__dirname, dep.loc) }, (err) => {
         if (err) res.status(404).end()
       })
@@ -50,6 +51,7 @@ aliasRoutes.forEach(dep => {
   } else { // for exact routes
     router.get(dep.url, (req, res) => {
       res.setHeader('Access-Control-Allow-Origin', '*')
+      res.set('Cache-Control', /\.(js|css)$/.test(dep.url) ? 'no-cache' : 'public, max-age=86400')
       res.sendFile(path.join(__dirname, dep.loc))
     })
   }
