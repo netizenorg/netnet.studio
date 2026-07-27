@@ -34,7 +34,7 @@ We consider netnet an <strong>AI-TA (artificial intelligence teaching assistant)
           ┆              ┏━►│ <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils-convo.js" target="_blank">www/core/utils-convo.js</a>     │     ┃ ┃
           ▼              ┃  └─────────────────────────────┘     ┃ ┃
 ╔══════════════════════╗ ┃  ┌──────────────────────────────────┐┃ ┃
-║ within netnet.studio ║━╋━►│            <b>widget system</b>         │┃ ┃
+║ within netnet.studio ║━╋━►│            <a href="https://github.com/netizenorg/netnet.studio/blob/main/www/widgets" target="_blank">widget system</a>         │┃ ┃
 ╚══════════════════════╝ ┃  ├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤┃ ┃
                          ┃  │ www/widgets/{lang}-reference/ ┏━━━┛ ┃
                          ┃  │┌──────────────┴───────────────┸─┐│  ┃
