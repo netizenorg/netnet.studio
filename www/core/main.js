@@ -77,9 +77,8 @@ nn.on('beforeunload', (e) => {
 })
 
 nn.on('load', async () => {
-  await utils.loaderSetup(initWidgets)
+  const elements = await utils.loaderSetup(initWidgets)
   // load custom elements
-  const elements = await utils.getSync('/api/custom-elements')
   elements.forEach(ele => {
     utils.loadFile(`/custom-elements/${ele.path}/index.js`)
     if (ele.css) utils.loadStyleSheet(`/custom-elements/${ele.path}/styles.css`)

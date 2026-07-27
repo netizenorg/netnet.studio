@@ -320,6 +320,7 @@ window.utils = {
     window.loading.anim = setInterval(animFace, 150)
     window.utils.registerColor('--load-bg1', '#fff')
     window.utils.registerColor('--load-bg2', '#fff')
+    return data
   },
 
   loaderUpdate: (msg) => {
