@@ -215,7 +215,12 @@ router.get('/api/face-assets', (req, res) => {
   })
 })
 
+// Caches for static content that only changes on deploy (pm2 restart clears them)
+let _widgetsCache = null
+let _convosCache = null
+
 router.get('/api/widgets', (req, res) => {
+  if (_widgetsCache) return res.json(_widgetsCache)
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
@@ -245,11 +250,13 @@ router.get('/api/widgets', (req, res) => {
         wigs.push(data)
       }
     })
-    res.json(wigs)
+    _widgetsCache = wigs
+    res.json(_widgetsCache)
   })
 })
 
 router.get('/api/convos', (req, res) => {
+  if (_convosCache) return res.json(_convosCache)
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
@@ -275,19 +282,27 @@ router.get('/api/convos', (req, res) => {
         if (data.key !== 'example-widget') wigs.push(data)
       }
     })
-    res.json(wigs)
+    _convosCache = wigs
+    res.json(_convosCache)
   })
 })
+
+const _geoCache = new Map()
+const _GEO_CACHE_TTL = 60 * 60 * 1000 // 1 hour
 
 router.get('/api/user-geo', async (req, res) => {
   const raw = req.headers['x-forwarded-for'] || req.connection.remoteAddress
   const ip = raw ? raw.split(',')[0].trim() : ''
   const validIP = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^[0-9a-fA-F:]+$/.test(ip)
   if (!validIP) return res.json({ success: false, error: 'invalid IP' })
+  const cached = _geoCache.get(ip)
+  if (cached && Date.now() - cached.ts < _GEO_CACHE_TTL) return res.json(cached.result)
   try {
     const r = await fetch(`http://ip-api.com/json/${ip}`)
     const data = await r.json()
-    res.json({ success: true, data })
+    const result = { success: true, data }
+    _geoCache.set(ip, { result, ts: Date.now() })
+    res.json(result)
   } catch (err) {
     res.json({ success: false, error: err.message })
   }
@@ -348,28 +363,35 @@ router.post('/api/expand-url', (req, res) => {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
-router.get('/api/demo/:num', (req, res) => {
-  const num = req.params.num
+let _demosCache = null // { byNum: { '1': obj, ... }, list: [obj, ...] }
+
+function _buildDemosCache () {
   const exPath = path.join(__dirname, '../data/demos')
-  const files = fs.readdirSync(exPath)
-  const file = files.filter(f => f.indexOf(`${num}--`) === 0)[0]
-  const str = fs.readFileSync(`${exPath}/${file}`)
-  const obj = JSON.parse(str)
-  obj.success = 'success'
-  if (typeof obj.code === 'string') res.json(obj)
-  else res.json({ error: `demo ${num} is not in the database.` })
+  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
+  const byNum = {}
+  const list = []
+  files.forEach(file => {
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    const num = file.split('--')[0]
+    byNum[num] = d
+    list.push(d)
+  })
+  _demosCache = { byNum, list }
+}
+
+router.get('/api/demo/:num', (req, res) => {
+  if (!_demosCache) _buildDemosCache()
+  const d = _demosCache.byNum[req.params.num]
+  if (!d || typeof d.code !== 'string') return res.json({ error: `demo ${req.params.num} is not in the database.` })
+  res.json({ ...d, success: 'success' })
 })
 
 router.get('/api/demos', (req, res) => {
+  if (!_demosCache) _buildDemosCache()
   const dict = {}
-  const exPath = path.join(__dirname, '../data/demos')
-  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
-  files.forEach(file => {
-    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+  _demosCache.list.forEach(d => {
     if (d.hide !== true) {
-      dict[d.key] = {
-        key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
-      }
+      dict[d.key] = { key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array }
     }
   })
   res.json({ success: 'success', data: dict })
