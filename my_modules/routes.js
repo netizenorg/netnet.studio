@@ -43,6 +43,7 @@ aliasRoutes.forEach(dep => {
   if (dep.url.includes('*')) { // for routes with wildcards
     router.get(dep.url, (req, res) => { // req.params[0] contains the wildcard path
       res.setHeader('Access-Control-Allow-Origin', '*')
+      res.set('Cache-Control', /\.(js|css)$/.test(req.params[0]) ? 'no-cache' : 'public, max-age=86400')
       res.sendFile(req.params[0], { root: path.join(__dirname, dep.loc) }, (err) => {
         if (err) res.status(404).end()
       })
@@ -50,6 +51,7 @@ aliasRoutes.forEach(dep => {
   } else { // for exact routes
     router.get(dep.url, (req, res) => {
       res.setHeader('Access-Control-Allow-Origin', '*')
+      res.set('Cache-Control', /\.(js|css)$/.test(dep.url) ? 'no-cache' : 'public, max-age=86400')
       res.sendFile(path.join(__dirname, dep.loc))
     })
   }
@@ -213,7 +215,12 @@ router.get('/api/face-assets', (req, res) => {
   })
 })
 
+// Caches for static content that only changes on deploy (pm2 restart clears them)
+let _widgetsCache = null
+let _convosCache = null
+
 router.get('/api/widgets', (req, res) => {
+  if (_widgetsCache) return res.json(_widgetsCache)
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
@@ -243,11 +250,13 @@ router.get('/api/widgets', (req, res) => {
         wigs.push(data)
       }
     })
-    res.json(wigs)
+    _widgetsCache = wigs
+    res.json(_widgetsCache)
   })
 })
 
 router.get('/api/convos', (req, res) => {
+  if (_convosCache) return res.json(_convosCache)
   fs.readdir(path.join(__dirname, '../www/widgets'), (err, list) => {
     if (err) return console.log(err)
     const wigs = []
@@ -273,104 +282,90 @@ router.get('/api/convos', (req, res) => {
         if (data.key !== 'example-widget') wigs.push(data)
       }
     })
-    res.json(wigs)
+    _convosCache = wigs
+    res.json(_convosCache)
   })
 })
+
+const _geoCache = new Map()
+const _GEO_CACHE_TTL = 60 * 60 * 1000 // 1 hour
 
 router.get('/api/user-geo', async (req, res) => {
   const raw = req.headers['x-forwarded-for'] || req.connection.remoteAddress
   const ip = raw ? raw.split(',')[0].trim() : ''
   const validIP = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^[0-9a-fA-F:]+$/.test(ip)
   if (!validIP) return res.json({ success: false, error: 'invalid IP' })
+  const cached = _geoCache.get(ip)
+  if (cached && Date.now() - cached.ts < _GEO_CACHE_TTL) return res.json(cached.result)
   try {
     const r = await fetch(`http://ip-api.com/json/${ip}`)
     const data = await r.json()
-    res.json({ success: true, data })
+    const result = { success: true, data }
+    _geoCache.set(ip, { result, ts: Date.now() })
+    res.json(result)
   } catch (err) {
     res.json({ success: false, error: err.message })
   }
 })
 
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
-
-function shortenURL (req, res, dbPath) {
-  let urlsDict
-  try {
-    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  } catch (err) {
-    return res.json({ success: false, error: 'failed to read URL database' })
-  }
-  const index = Object.keys(urlsDict).length
-  const key = (index === 0) ? '0' : utils.b10tob64(index)
-  let repeatEntry = false
-  for (const key in urlsDict) {
-    if (urlsDict[key] === req.body.hash) { repeatEntry = key; break }
-  }
-  if (repeatEntry) {
-    const url = `https://netnet.studio/?c=${repeatEntry}`
-    res.json({ success: true, url, key: repeatEntry })
-  } else {
-    urlsDict[key] = req.body.hash
-    fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
-      if (err) res.json({ success: false, error: err })
-      else {
-        const url = `https://netnet.studio/?c=${key}`
-        res.json({ success: true, url, key })
-      }
-    })
-  }
-}
-
-router.post('/api/shorten-url', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  utils.checkForJSONFile(req, res, dbPath, () => {
-    shortenURL(req, res, dbPath)
-  })
-})
-
-router.post('/api/expand-url', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  let urlsDict
-  try {
-    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  } catch (err) {
-    return res.json({ error: 'failed to read URL database' })
-  }
-  const hash = urlsDict[req.body.key]
-  if (typeof hash === 'string') {
-    res.json({ success: 'success', hash })
-  } else {
-    res.json({ error: `${req.body.key} is not in the database.` })
-  }
-})
-
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
-router.get('/api/demo/:num', (req, res) => {
-  const num = req.params.num
+let _demosCache = null // { byNum: { '1': obj, ... }, list: [obj, ...] }
+
+function _buildDemosCache () {
   const exPath = path.join(__dirname, '../data/demos')
-  const files = fs.readdirSync(exPath)
-  const file = files.filter(f => f.indexOf(`${num}--`) === 0)[0]
-  const str = fs.readFileSync(`${exPath}/${file}`)
-  const obj = JSON.parse(str)
-  obj.success = 'success'
-  if (typeof obj.code === 'string') res.json(obj)
-  else res.json({ error: `demo ${num} is not in the database.` })
+  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
+  const byNum = {}
+  const list = []
+  files.forEach(file => {
+    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+    const num = file.split('--')[0]
+    byNum[num] = d
+    list.push(d)
+  })
+  _demosCache = { byNum, list }
+}
+
+router.get('/api/demo/:num', (req, res) => {
+  if (!_demosCache) _buildDemosCache()
+  const d = _demosCache.byNum[req.params.num]
+  if (!d || typeof d.code !== 'string') return res.json({ error: `demo ${req.params.num} is not in the database.` })
+  res.json({ ...d, success: 'success' })
 })
 
 router.get('/api/demos', (req, res) => {
+  if (!_demosCache) _buildDemosCache()
   const dict = {}
-  const exPath = path.join(__dirname, '../data/demos')
-  const files = fs.readdirSync(exPath).filter(f => f !== '.DS_Store')
-  files.forEach(file => {
-    const d = JSON.parse(fs.readFileSync(`${exPath}/${file}`))
+  _demosCache.list.forEach(d => {
     if (d.hide !== true) {
-      dict[d.key] = {
-        key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array
-      }
+      dict[d.key] = { key: d.key, name: d.name, tags: d.tags, info: d.info instanceof Array }
     }
   })
   res.json({ success: 'success', data: dict })
+})
+
+let _tutMetaCache = null
+router.get('/api/tutorials/metadata', (req, res) => {
+  if (_tutMetaCache) return res.json(_tutMetaCache)
+  // mirror the /tutorials/* subdomain logic: on dev/staging, read from production filesystem
+  const host = req.hostname
+  const tutRoot = host.endsWith('.netnet.studio')
+    ? path.resolve(__dirname, '../../netnet.studio/www/tutorials')
+    : path.join(__dirname, '../www/tutorials')
+  try {
+    const tutList = JSON.parse(fs.readFileSync(path.join(tutRoot, 'list.json'), 'utf8'))
+    const result = {}
+    Object.entries(tutList).forEach(([section, ids]) => {
+      result[section] = ids.map(id => {
+        const p = path.join(tutRoot, `${id}/tutorial.json`)
+        return JSON.parse(fs.readFileSync(p, 'utf8')).metadata
+      })
+    })
+    _tutMetaCache = result
+    res.json(result)
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES

@@ -13,7 +13,7 @@
   </div>
   <div>
     <img src="../assets/images/noschool.jpg" alt="a student using netnet on their laptop, working on GIF drawing app in a garden in Nevers France as part of the NO SCHOOL program" style="border-radius: 10px; border: 4px solid var(--netizen-hint-color);">
-    <p style="font-style: italic; opacity: 0.7; font-size: 0.8rem;">
+    <p class="tiny-text">
       A student at the <a href="https://noschoolnevers.com/" target="_blank">NØ SCHOOL</a> (2026) program in Nevers France working on a GIF drawing app using netnet.studio
     </p>
   </div>

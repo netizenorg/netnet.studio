@@ -53,8 +53,7 @@ netnet.studio/
 │
 ├── data/                  # static database
 │   ├── demos/             # annotated demo JSON files
-│   ├── templates/         # starter project template JSON files
-│   └── shortened-urls.json  # URL shortcode database
+│   └── templates/         # starter project template JSON files
 │
 └── docs/                  # all the static docs
     ├── build-docs.js      # converts markdown to HTML
@@ -68,9 +67,9 @@ netnet.studio/
 
 ## the Backend
 
-`server.js` is deliberately minimal. All the details and routing logic lives in [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules). The server handles serving static files (*www* and *docs*) and a small API surface for GitHub operations, demo/template data, and URL shortening. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.
+`server.js` is deliberately minimal. All the details and routing logic lives in [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules). The server handles serving static files (*www* and *docs*) and a small API surface for GitHub operations and demo/template data. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.
 
-All user data (username, preferences, save state, LLM API keys) is stored in `localStorage` on the client via the [student-session](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session) widget. The server stores nothing about individual users, except for shortened sketches if/when users opt-in to the URL shortener.
+All user data (username, preferences, save state, LLM API keys) is stored in `localStorage` on the client via the [student-session](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session) widget. The server stores nothing about individual users.
 
 The [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules) directory also contains some dev scripts (see [package.json](https://github.com/netizenorg/netnet.studio/blob/main/package.json))
 
@@ -118,14 +117,14 @@ All globals live on `window`. Their definition order is fixed by the boot sequen
 | Global | Defined in | Role |
 |--------|-----------|------|
 | `nn` | [nn.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | utility library, DOM helpers, math, browser/platform detection |
-| `Netitor` | [netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | code editor class (instantiated as NNE) |
+| `Netitor` | [netitor.min.js](https://github.com/netizenorg/netnet.studio/tree/main/www/core) | code editor class (instantiated as NNE), also used to create other netitor instances (ex: Code Demos widget) |
 | `WIDGETS` | [widgets/index.js](https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js) | widget manager and registry |
 | `Widget` | [widgets/index.js](https://github.com/netizenorg/netnet.studio/blob/main/www/widgets/index.js) | base class all widgets extend |
 | `Convo` | [core/Convo.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js) | dialogue runtime class |
 | `CONVOS` | [core/Convo.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/Convo.js) | registry of loaded dialogue passage arrays |
 | `NetNet` | [core/NetNet.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/NetNet.js) | window/layout controller class (instantiated as NNW) |
 | `utils` | [core/utils.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/utils.js) | misc utility functions (fetch, CSS vars, URL routing, etc.) |
-| `NNE` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the main Netitor instance (the code editor) |
+| `NNE` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the main Netitor instance (the code editor),  |
 | `NNW` | [core/main.js](https://github.com/netizenorg/netnet.studio/blob/main/www/core/main.js) | the NetNet instance (the window/face/layout) |
 | `convo` | set at runtime | current active Convo instance |
 

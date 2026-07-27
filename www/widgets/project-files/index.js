@@ -777,6 +777,7 @@ class ProjectFiles extends Widget {
     WIDGETS['web-publish']?.reset()
     // close widget
     this.close()
+    NNE.update()
   }
 
   // Fetch the latest files from GitHub and sync any that have *actually*

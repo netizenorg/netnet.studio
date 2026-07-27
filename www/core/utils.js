@@ -320,6 +320,7 @@ window.utils = {
     window.loading.anim = setInterval(animFace, 150)
     window.utils.registerColor('--load-bg1', '#fff')
     window.utils.registerColor('--load-bg2', '#fff')
+    return data
   },
 
   loaderUpdate: (msg) => {
@@ -524,10 +525,8 @@ window.utils = {
   },
 
   loadShortCode: (code, layout) => {
-    window.utils.post('./api/expand-url', { key: code }, (json) => {
-      window.location.hash = json.hash
-      window.utils.loadFromCodeHash(layout)
-    })
+    window.utils.fadeOutLoader(false)
+    window.utils._Convo('shortener-retired-nav')
   },
 
   loadCustomDemo: (layout) => {

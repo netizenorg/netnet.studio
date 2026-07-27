@@ -260,9 +260,21 @@ router.get('/api/github/client-id', (req, res) => {
   res.json({ success: true, message: process.env.GITHUB_CLIENT_ID, state })
 })
 
+const _authCache = new Map()
+const _AUTH_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
 router.get('/api/github/auth-status', async (req, res) => {
   const token = req.cookies.AuthTok
   if (!token) return res.json({ success: false, message: 'no access token' })
+
+  // Cache keyed by a hash of the encrypted cookie — never the token itself.
+  // Sign-out clears the cookie so the cache entry becomes unreachable.
+  const cacheKey = crypto.createHash('sha256').update(token).digest('hex')
+  const cached = _authCache.get(cacheKey)
+  if (cached && Date.now() - cached.ts < _AUTH_CACHE_TTL) {
+    return res.json(cached.result)
+  }
+
   // Decrypt and verify the token is still valid on GitHub's side.
   // A corrupt/undecryptable cookie is definitely invalid; a GitHub network
   // error is not — don't log the user out if GitHub is temporarily down.
@@ -282,7 +294,9 @@ router.get('/api/github/auth-status', async (req, res) => {
       }
     })
     if (r.status === 401) return res.json({ success: false, message: 'token revoked' })
-    return res.json({ success: true, message: 'token valid' })
+    const result = { success: true, message: 'token valid' }
+    _authCache.set(cacheKey, { result, ts: Date.now() })
+    return res.json(result)
   } catch (e) {
     // Network error — treat as still logged in rather than falsely clearing the session
     return res.json({ success: true, message: 'token unverified' })

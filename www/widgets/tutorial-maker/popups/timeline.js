@@ -5,7 +5,7 @@ const timeline = {
   onScrub: null,
 
   init: () => {
-    const svg = nn.get('svg#timeline')
+    const svg = document.querySelector('svg#timeline')
     const scrub = nn.get('#playhead-marker')
 
     const toSvgX = clientX => {
@@ -57,6 +57,11 @@ const timeline = {
     timeline.updateMarkers()
     timeline.placeLabels()
     timeline.updatePlayhead(0)
+
+    window.addEventListener('resize', () => {
+      timeline.updateMarkers()
+      timeline.placeLabels()
+    })
   },
 
   blockScrub: () => {
@@ -73,18 +78,18 @@ const timeline = {
   },
 
   placeLabels: () => {
-    const svg = nn.get('svg#timeline')
-    const vb = svg.viewBox.baseVal
-    const sy = svg.clientHeight / vb.height
+    const svg = document.querySelector('svg#timeline')
+    const [,, vbW, vbH] = svg.getAttribute('viewBox').split(' ').map(Number)
+    const sy = svg.clientHeight / vbH
     nn.get('.labels > div:nth-child(1)').css({ top: 30 * sy })
     nn.get('.labels > div:nth-child(2)').css({ top: 60 * sy })
   },
 
   updateMarkers: () => {
-    const svg = nn.get('svg#timeline')
-    const vb = svg.viewBox.baseVal
-    const sx = svg.clientWidth / vb.width
-    const sy = svg.clientHeight / vb.height
+    const svg = document.querySelector('svg#timeline')
+    const [,, vbW, vbH] = svg.getAttribute('viewBox').split(' ').map(Number)
+    const sx = svg.clientWidth / vbW
+    const sy = svg.clientHeight / vbH
 
     svg.querySelectorAll(timeline.mkrs).forEach(u => {
       const x = parseFloat(u.dataset.x || '0')
@@ -103,7 +108,7 @@ const timeline = {
   },
 
   clearSelections: (a) => {
-    const svg = nn.get('svg#timeline')
+    const svg = document.querySelector('svg#timeline')
     svg.querySelectorAll(timeline.mkrs).forEach(u => {
       u.setAttribute('fill', 'var(--bg-color)')
     })
@@ -122,14 +127,14 @@ const timeline = {
     // if there's a sibling frame, keep that selected too
     const s = a[0] === 'keyframe' ? 'keylog' : 'keyframe'
     const c = s === 'keyframe' ? 'var(--netizen-tag)' : 'var(--netizen-attribute)'
-    const sibling = nn.get('svg#timeline').querySelector(`[name="${s}-${a[1]}"]`)
+    const sibling = document.querySelector('svg#timeline').querySelector(`[name="${s}-${a[1]}"]`)
     if (sibling) sibling.setAttribute('fill', c)
 
     if (callback) callback(e, parseFloat(a[1]))
   },
 
   createMarker: (x, t, type, callback) => {
-    const svg = nn.get('svg#timeline')
+    const svg = document.querySelector('svg#timeline')
     const SVG = 'http://www.w3.org/2000/svg'
     const XLINK = 'http://www.w3.org/1999/xlink'
     const y = type === 'keyframe' ? 30 : 60
@@ -151,7 +156,7 @@ const timeline = {
   },
 
   getAllMarkers: (type) => {
-    const svg = nn.get('svg#timeline')
+    const svg = document.querySelector('svg#timeline')
     let arr = [...svg.querySelectorAll(timeline.mkrs)]
     arr = arr.map(u => {
       const n = u.getAttribute('name').split('-')

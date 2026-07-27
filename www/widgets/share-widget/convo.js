@@ -13,38 +13,24 @@ window.CONVOS['share-widget'] = (self) => {
       'great, thanks!': (e) => e.hide()
     }
   }, {
-    id: 'why-so-long',
-    content: 'You may have noticed the share URL is fairly long. That\'s because it contains a compressed version of all the code you\'ve typed into my editor, that way I can decode and inject it back into my editor when you share it with someone else. But I can shorten it for you if you\'d like?',
+    id: 'shortener-retired',
+    content: 'In earlier "beta" versions I would optionally shorten URLs, but this required storing user sketches in a database of shortcodes. Call us extreme, but when it comes to <span class="link" onclick="WIDGETS.open(\'privacy-policy\')">user privacy</span> we\'d prefer not to store any user data, and instead let you decide where/when and with who to share your data, including these sketches.',
     options: {
-      'let\'s shorten it!': (e) => e.goTo('confirm-shorten-url'),
-      'no thanks': (e) => e.hide()
+      'got it, thanks': (e) => e.hide(),
+      'what about my old short-URLs?': (e) => e.goTo('shortener-archive'),
+      'what if I need it shorter?': (e) => e.goTo('shortener-alternative')
     }
   }, {
-    id: 'confirm-shorten-url',
-    content: 'In order for me to shorten the URL I need to store your code on my server\'s database which means the folks at <a href="http://netizen.org" target="_blank">netizen.org</a> will be able to see it and share it with others. But it\'ll be saved anonymously, the only thing I technically need to store in order for the shortener to work is the code itself.',
+    id: 'shortener-archive',
+    content: 'Your work is not lost! If you\'re looking for a sketch you previously shared with a shortened link, email us at <a href="mailto:hi@netizen.org">hi@netizen.org</a> with your short code and we\'ll manually look it up from our private off-line archive.',
     options: {
-      'fine with me, let\'s shorten it!': (e) => self._shortenURL(),
-      'what if i want to be credited?': (e) => e.goTo('what-if-i-want-credit'),
-      'oh, never mind then': (e) => e.hide()
+      'got it, thanks': (e) => e.hide()
     }
   }, {
-    id: 'what-if-i-want-credit',
-    content: 'Just leave a comment in your source code with your attribution!',
+    id: 'shortener-alternative',
+    content: 'Fortunetly, there are loads of third-party URL shorteners, like <a href="https://is.gd/" target="_blank">is.gd</a>, you could use instead.',
     options: {
-      'oh yea! just did, let\'s shorten that URL': (e) => self._shortenURL(),
-      'can you show me how?': (e) => self._demonstrateCreditComment()
-    }
-  }, {
-    id: 'show-me-how-to-comment',
-    content: 'Sure thing! I\'ve just added a comment at the to of your sketch, feel free to change it to whatever you\'d like.',
-    options: {
-      'thanks! let\'s shorten that URL now!': (e) => self._shortenURL()
-    }
-  }, {
-    id: 'shorten-url',
-    content: 'Great! I\'ve generated a shortened URL for you. Click the URL in the <b>Share Sketch Widget</b> to copy it and share it with others.',
-    options: {
-      'got it, thanks!': (e) => e.hide()
+      'got it, thanks': (e) => e.hide()
     }
   }, {
     id: 'layout-info',

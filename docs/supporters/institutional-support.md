@@ -39,7 +39,7 @@ Payment is made to **netizen.org** via vendor invoice. As a 501(c)3 nonprofit, n
 The following addresses common institutional IT questions directly, if you have additional questions contact [hi@netizen.org](mailto:hi@netizen.org).
 
 ### Data, Privacy and Encryption
-netnet.studio is served exclusively over HTTPS (TLS encryption). All student work is processed locally in the user's browser: no code, files, or personal data is stored on netnet.studio servers during typical use. On rare occasions, students may opt in to our URL shortener, which stores the code to a sketch on our server to generate a shorter link; students are notified and must confirm each time before any data is stored. There is nothing to encrypt on the institution's end because nothing passes through institutional infrastructure.
+netnet.studio is served exclusively over HTTPS (TLS encryption). All student work is processed locally in the user's browser: no code, files, or personal data is ever stored on netnet.studio servers. There is nothing to encrypt on the institution's end because nothing passes through institutional infrastructure.
 
 netnet.studio has no user accounts and collects no personal data. Students do not register, log in, or create profiles. The only optional third-party connection is GitHub: students may connect their own personal GitHub account to save and version their work, this uses their own credentials and is entirely under their control.
 

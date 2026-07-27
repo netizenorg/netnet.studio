@@ -251,7 +251,6 @@ class LearningGuide extends Widget {
 
     this.slide.updateSlide(this.mainOpts)
 
-    // this._highlightTitles()
     this._createTutorialCards()
     this._createDemoTemplateCards()
     this._enableSubPagesLinks()
@@ -333,7 +332,6 @@ class LearningGuide extends Widget {
 
   _createTutorialCards () {
     this.tutorials = {}
-    const promises = []
 
     // ........................
     // next|title|prev control functions
@@ -427,19 +425,12 @@ class LearningGuide extends Widget {
     // ........................
     // Load all the Tutorial Data the Learning Guide needs
     // ........................
-    utils.get('tutorials/list.json', (json) => {
+    utils.get('/api/tutorials/metadata', (json) => {
       if (json.success === false) return utils._Convo('oh-no-error', json)
       Object.entries(json).forEach(([key, val]) => {
-        this.tutorials[key] = []
-        val.forEach(n => {
-          promises.push(new Promise(resolve => {
-            utils.get(`tutorials/${n}/tutorial.json`, t => {
-              this.tutorials[key].push(t.metadata); resolve()
-            })
-          }))
-        })
+        this.tutorials[key] = val
       })
-      Promise.all(promises).then(ready)
+      ready()
     })
   }
 

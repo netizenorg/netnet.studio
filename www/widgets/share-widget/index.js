@@ -10,6 +10,7 @@ class ShareWidget extends Widget {
 
     this.shortCode = null
     this.layoutsSel = null
+    this.qrcode = null
     this._createHTML(opts)
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
@@ -23,14 +24,16 @@ class ShareWidget extends Widget {
     this.on('open', (eve) => {
       firstConvo()
       this.layoutsSel.value = NNW.layout
-      this._toggleQRCode('none')
+      this.$('[name="sketch-qr-code"]').style.display = 'none'
+      this.qrcode = null
       this.$('[name="share-url"]').value = this._shareURL(true)
     })
 
     NNE.on('code-update', () => {
       if (this._codeUpdate) clearTimeout(this._codeUpdate)
       this._codeUpdate = setTimeout(() => {
-        this._toggleQRCode('none')
+        this.$('[name="sketch-qr-code"]').style.display = 'none'
+        this.qrcode = null
         this.$('[name="share-url"]').value = this._shareURL(true)
       }, 1000)
     })
@@ -50,8 +53,10 @@ class ShareWidget extends Widget {
         <p>Click the encoded URL below to copy it to your clipboard.</p>
         <input name="share-url" value="${this._shareURL()}" style="display: inline-block; width: 100%" onclick="WIDGETS['share-widget']._copyURL()" readonly="readonly">
         <div class="share-widget__section">
+          <button class="share-widget__qr-btn" name="qr-btn" title="show QR code">
+            <span class="share-widget__qr-icon"></span>
+          </button>
           <button class="pill-btn pill-btn--secondary" name="shorten-url">Shorten URL</button>
-          <button class="pill-btn pill-btn--secondary" name="url-shortner">?</button>
         </div>
         <div class="share-widget__section">
           <label style="margin-left: 65px;">
@@ -60,32 +65,17 @@ class ShareWidget extends Widget {
           </label>
           <button class="pill-btn pill-btn--secondary" name="layout-info">?</button>
         </div>
-        <br><br>
-        <p>
-          <span class="inline-link">Generate a QRCode</span> to easily view it on a mobile device.
-        </p>
-        <div class="qr-code" name="sketch-qr-code" style="display:none;">
-          <p name="qr-warning"><b>NOTE:</b> There may be too much data in this QR code for your phone camera to decode, try shortening the URL to generate a simpler QR code<p>
-        </div>
+        <div name="sketch-qr-code" class="share-widget__qr-code"></div>
+        <p name="qr-warning" style="display:none; font-size: 0.85em; text-align: center;"><b>NOTE:</b> There may be too much data in this QR code for your phone camera to decode.</p>
       </div>
     `
-    this.qrcode = new QRious({
-      element: this.$('[name="sketch-qr-code"]'),
-      background: '#ffffff',
-      backgroundAlpha: 0,
-      foreground: utils.getVal('--netizen-meta'),
-      foregroundAlpha: 1,
-      level: 'H',
-      size: 256,
-      value: this.$('[name="share-url"]').value
-    })
 
-    if (!this.qrcode.canvas.parentElement) {
-      // BUG: QRious doesn't seem to be adding the QR code to the parnet elment?
-      this.qrcode.element.appendChild(this.qrcode.canvas)
-    }
+    this.$('[name="qr-btn"]').addEventListener('click', () => this._toggleQRCode())
 
-    this.$('.inline-link').addEventListener('click', () => this._toggleQRCode())
+    const qrIcon = this.$('.share-widget__qr-icon')
+    utils.get('/assets/images/icons/qr-code.svg', (svg) => {
+      if (typeof svg === 'string') qrIcon.innerHTML = svg
+    }, true)
 
     this.layoutsSel = this.$('[name="share-layout-select"]')
     NNW.layouts.forEach(l => this._creatOption(l, this.layoutsSel))
@@ -97,30 +87,38 @@ class ShareWidget extends Widget {
     })
 
     this.$('button').forEach(b => b.addEventListener('click', (e) => {
-      if (e.target.name === 'url-shortner') {
-        window.convo = new Convo(this.convos, 'why-so-long')
-      } else if (e.target.name === 'shorten-url') {
-        window.convo = new Convo(this.convos, 'confirm-shorten-url')
+      if (e.target.name === 'shorten-url') {
+        window.convo = new Convo(this.convos, 'shortener-retired')
       } else if (e.target.name === 'layout-info') {
         window.convo = new Convo(this.convos, 'layout-info')
       }
     }))
   }
 
-  _toggleQRWarning (url) {
-    url = url || this.$('[name="share-url"]').value
-    if (url.length > 100) {
-      this.$('[name="qr-warning"]').style.display = 'block'
+  _toggleQRCode () {
+    const container = this.$('[name="sketch-qr-code"]')
+    const url = this.$('[name="share-url"]').value
+    if (!this.qrcode) {
+      this.qrcode = new QRious({
+        element: container,
+        background: '#ffffff',
+        backgroundAlpha: 0,
+        foreground: utils.getVal('--netizen-meta'),
+        foregroundAlpha: 1,
+        level: 'H',
+        size: 200,
+        value: url
+      })
+      if (!this.qrcode.canvas.parentElement) {
+        container.appendChild(this.qrcode.canvas)
+      }
     } else {
-      this.$('[name="qr-warning"]').style.display = 'none'
+      this.qrcode.value = url
     }
-  }
-
-  _toggleQRCode (state) {
-    const qr = this.$('[name="sketch-qr-code"]')
-    if (state) qr.style.display = state
-    else qr.style.display = (qr.style.display === 'none') ? 'flex' : 'none'
-    this._toggleQRWarning()
+    const visible = window.getComputedStyle(container).display !== 'none'
+    container.style.display = visible ? 'none' : 'flex'
+    const warning = this.$('[name="qr-warning"]')
+    if (warning) warning.style.display = (!visible && url.length > 100) ? 'block' : 'none'
   }
 
   _copyURL () {
@@ -145,48 +143,10 @@ class ShareWidget extends Widget {
       url = `${root}/?c=${this.shortCode}`
     } else url = `${root}/${hash}`
 
-    if (this.qrcode) {
-      this.qrcode.value = url
-      this._toggleQRWarning(url)
-    }
-
     this._lastHash = hash
     return url
   }
 
-  _shortenURL (layout) {
-    NNE.spotlight(null)
-    NNW.menu.switchFace('processing')
-    window.convo = new Convo(this.convos, 'ok-processing')
-    const time = utils.getVal('--layout-transition-time')
-    setTimeout(() => {
-      const data = { hash: NNE.generateHash() }
-      utils.post('./api/shorten-url', data, (res) => {
-        if (!res.success) {
-          NNW.menu.switchFace('upset')
-          console.error(res.error)
-          window.convo = new Convo(this.convos, 'oh-no-error')
-        } else {
-          NNW.menu.switchFace('default')
-          this.shortCode = res.key
-          this.$('[name="share-url"]').value = this._shareURL()
-          this.convos = window.CONVOS['share-widget'](this)
-          window.convo = new Convo(this.convos, 'shorten-url')
-        }
-      })
-    }, time)
-  }
-
-  _demonstrateCreditComment () {
-    const name = WIDGETS['student-session'].getData('username') || 'me'
-    const credit = `<!-- this code was hand crafted by ${name} -->\n`
-    NNE.cm.setSelection({ line: 0, ch: 0 })
-    NNE.cm.replaceSelection(credit)
-    setTimeout(() => {
-      NNE.spotlight(1)
-      window.convo = new Convo(this.convos, 'show-me-how-to-comment')
-    }, utils.getVal('--menu-fades-time'))
-  }
 }
 
 window.ShareWidget = ShareWidget
