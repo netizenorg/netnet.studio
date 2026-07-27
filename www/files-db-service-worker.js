@@ -536,32 +536,34 @@ self.addEventListener('fetch', (event) => {
   const reqUrl = new URL(event.request.url)
   if ((reqUrl.hostname === 'localhost' || reqUrl.hostname === '127.0.0.1') && reqUrl.port === '11434') return
 
+  // only intercept GET requests
+  if (event.request.method !== 'GET') return
+
+  const filePath = normalizePath(reqUrl.pathname)
+
+  // bypass sockets
+  const accept = event.request.headers.get('accept') || ''
+  const isRealtime = reqUrl.pathname === '/socket.io' ||
+    reqUrl.pathname.startsWith('/socket.io/') ||
+    accept.includes('text/event-stream')
+  if (isRealtime) return
+
+  // only intercept TUTORIAL_MAKER and PROJ__ paths — everything else is
+  // handled natively by the browser (HTTP cache, ETags, 304s, etc.)
+  const isTutMaker = filePath.startsWith(TUT_PREFIX + '/')
+  const proj = parseProjectPath(filePath)
+  if (!isTutMaker && !proj) return
+
+  const isNav = event.request.mode === 'navigate'
+  const opts = isNav ? { timeoutMs: 1500 } : undefined
+
   event.respondWith((async () => {
     try {
       const request = event.request
 
-      // bypass not GET requests
-      if (request.method !== 'GET') return fetch(request)
-      if (request.method !== 'GET' && LOG) console.log('[SW] bypass non-GET', request.url)
-
-      const url = new URL(request.url)
-      const filePath = normalizePath(url.pathname)
-
-      // bypass sockets && analytics
-      const accept = request.headers.get('accept') || ''
-      const isRealtimeOrAnalytics = url.pathname === '/socket.io' ||
-          url.pathname.startsWith('/socket.io/') ||
-          url.pathname.startsWith('/snt-api/') ||
-          accept.includes('text/event-stream')
-      if (isRealtimeOrAnalytics) return fetch(request)
-      if (isRealtimeOrAnalytics && LOG) console.log('[SW] bypass SNT/socket.io ', url.pathname)
-
-      const isNav = event.request.mode === 'navigate'
-      const opts = isNav ? { timeoutMs: 1500 } : undefined
-
       // .......................................................................
       // ------------------------------------------------- TUTORIAL_MAKER lookup
-      if (filePath.startsWith(TUT_PREFIX + '/')) {
+      if (isTutMaker) {
         if (LOG) console.log('[SW] checking TUT:', filePath)
         const fileData = await getFileFromIndexedDB('tutorialMakerDB', filePath, opts)
         if (fileData && LOG) console.log('[SW] TUT data found!')
@@ -572,100 +574,92 @@ self.addEventListener('fetch', (event) => {
       // .......................................................................
       // ----------------------------------------------------- PROJ-FILES lookup
       if (LOG) console.log('[SW] checking path:', filePath)
-      const proj = parseProjectPath(filePath)
+      const { dbName, innerPath } = proj
+      const lookup = innerPath || 'index.html'
 
-      if (proj) {
-        const { dbName, innerPath } = proj
-        const lookup = innerPath || 'index.html'
+      if (LOG) console.log('[SW] looking for file in PROJ:', dbName)
+      let fileData = await getFileFromIndexedDB(dbName, lookup, opts)
 
-        if (LOG) console.log('[SW] looking for file in PROJ:', dbName)
-        let fileData = await getFileFromIndexedDB(dbName, lookup, opts)
+      // --------------------------- ABSOLUTE URL passthrough (ex: raw GitHub)
+      // now resolves seeking rquests on http://raw.github... vids as well
+      const rangeHdr = request.headers.get('Range')
+      const isMediaPath = /\.(mp4|webm|ogv|mp3|wav|weba|ogg|oga)$/i.test(lookup)
+      const isBinary =
+        fileData instanceof Blob ||
+        fileData instanceof ArrayBuffer ||
+        fileData instanceof Uint8Array
 
-        // --------------------------- ABSOLUTE URL passthrough (ex: raw GitHub)
-        // now resolves seeking rquests on http://raw.github... vids as well
-        const rangeHdr = request.headers.get('Range')
-        const isMediaPath = /\.(mp4|webm|ogv|mp3|wav|weba|ogg|oga)$/i.test(lookup)
-        const isBinary =
-          fileData instanceof Blob ||
-          fileData instanceof ArrayBuffer ||
-          fileData instanceof Uint8Array
+      // local media (bytes in IDB): serve a range slice (for video seeking)
+      if (rangeHdr && isMediaPath && isBinary) {
+        const mt = getMimeType(lookup) || 'application/octet-stream'
+        return respondWithRange(lookup, fileData, rangeHdr, mt)
+      }
+      // otherwise handle absolute URL (string, ie. http://raw.github...)
+      if (typeof fileData === 'string' && fileData.startsWith('http')) {
+        // For media and all other absolute URLs, proxy them so we can
+        // normalize headers (e.g., proper Content-Type) and preserve Range.
+        return handleProxyRequest(fileData, rangeHdr)
+      }
 
-        // local media (bytes in IDB): serve a range slice (for video seeking)
-        if (rangeHdr && isMediaPath && isBinary) {
-          const mt = getMimeType(lookup) || 'application/octet-stream'
-          return respondWithRange(lookup, fileData, rangeHdr, mt)
-        }
-        // otherwise handle absolute URL (string, ie. http://raw.github...)
-        if (typeof fileData === 'string' && fileData.startsWith('http')) {
-          // For media and all other absolute URLs, proxy them so we can
-          // normalize headers (e.g., proper Content-Type) and preserve Range.
-          return handleProxyRequest(fileData, rangeHdr)
-        }
-
-        // ------------------------------------------ FOLDER index.html fallback
-        // ex: request is for a directory; check if dir has an index file in DB
-        let indexPath
-        if (!fileData && innerPath && !innerPath.includes('.')) {
-          indexPath = innerPath + '/index.html'
-          fileData = await getFileFromIndexedDB(dbName, indexPath, opts)
-          if (fileData) {
-            const body = `⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, but you forgot to specify index.html in your linked path, try writing: ${indexPath}`
-            // NOTE: this wouldn't be a problem in publshed www, but it is here
-            // b/c SW needs a filepath (not dir only) to lokkup + return DB data
-            return generateResponse(indexPath, body)
-          }
-        }
-
-        // ---------------------------------------------------- BAD PATHS helper
-        // ex: trying to link (src, href, ) to a local file that does not exist
-        if (!fileData) {
-          const bads = await findFileReferences(dbName, lookup)
-          if (bads && Object.keys(bads).length > 0) await postMessage('BAD_PATHS', bads)
-        }
-
-        // ------------------------------------------------ SERVE FROM IndexedDB
+      // ------------------------------------------ FOLDER index.html fallback
+      // ex: request is for a directory; check if dir has an index file in DB
+      let indexPath
+      if (!fileData && innerPath && !innerPath.includes('.')) {
+        indexPath = innerPath + '/index.html'
+        fileData = await getFileFromIndexedDB(dbName, indexPath, opts)
         if (fileData) {
-          if (LOG) console.log('[SW] serving:', lookup, ' :: from :', dbName)
-          let body = fileData
-          if (filePath.endsWith('.html')) {
-            body = `<script>
+          const body = `⚠️ OOPS: it appears you clicked on a link navigating to a folder containing an index.html file, but you forgot to specify index.html in your linked path, try writing: ${indexPath}`
+          // NOTE: this wouldn't be a problem in publshed www, but it is here
+          // b/c SW needs a filepath (not dir only) to lokkup + return DB data
+          return generateResponse(indexPath, body)
+        }
+      }
+
+      // ---------------------------------------------------- BAD PATHS helper
+      // ex: trying to link (src, href, ) to a local file that does not exist
+      if (!fileData) {
+        const bads = await findFileReferences(dbName, lookup)
+        if (bads && Object.keys(bads).length > 0) await postMessage('BAD_PATHS', bads)
+      }
+
+      // ------------------------------------------------ SERVE FROM IndexedDB
+      if (fileData) {
+        if (LOG) console.log('[SW] serving:', lookup, ' :: from :', dbName)
+        let body = fileData
+        if (filePath.endsWith('.html')) {
+          body = `<script>
               window.onerror = function (message, source, lineno) {
                 window.parent.postMessage({ type: 'iframe-error', message, source, lineno }, '*')
               }
             </script>` + body
-          } else if (filePath.endsWith('.md')) {
-            body = markdownToHtml(body)
-          }
-          return generateResponse(lookup, body)
+        } else if (filePath.endsWith('.md')) {
+          body = markdownToHtml(body)
         }
+        return generateResponse(lookup, body)
+      }
 
-        // miss inside project → return a real 404 instead of letting the
-        // request fall through to the dev server, which would respond with
-        // the SPA's index.html and silently fail to parse as CSS / JS / an
-        // image. Surfacing a 404 puts a clear error in DevTools and, for
-        // HTML navigations, renders a helpful page in the iframe.
-        const missExt = lookup.split('.').pop().toLowerCase()
-        const isHtmlLike = missExt === 'html' || missExt === 'htm' || missExt === 'md'
-        const safe = String(lookup)
-          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        const missBody = isHtmlLike
-          ? `<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5">
+      // miss inside project → return a real 404 instead of letting the
+      // request fall through to the dev server, which would respond with
+      // the SPA's index.html and silently fail to parse as CSS / JS / an
+      // image. Surfacing a 404 puts a clear error in DevTools and, for
+      // HTML navigations, renders a helpful page in the iframe.
+      const missExt = lookup.split('.').pop().toLowerCase()
+      const isHtmlLike = missExt === 'html' || missExt === 'htm' || missExt === 'md'
+      const safe = String(lookup)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      const missBody = isHtmlLike
+        ? `<!doctype html><html><body style="font-family:system-ui;padding:2rem;line-height:1.5">
                <h1>⚠️ 404: file not found</h1>
                <p>The file <code>${safe}</code> isn't in this project.</p>
                <p>Check your Project Files tree and the path in your code.</p>
              </body></html>`
-          : `Not found in project: ${lookup}`
-        return new Response(missBody, {
-          status: 404,
-          headers: {
-            'Content-Type': (isHtmlLike ? 'text/html' : 'text/plain') + '; charset=utf-8'
-          }
-        })
-      }
-
-      // ------------------------------------------- else, pass request through
-      if (LOG) console.warn('[SW] not PROJ; falling back to network:', filePath)
-      return fetch(request, { cache: 'no-store' })
+        : `Not found in project: ${lookup}`
+      return new Response(missBody, {
+        status: 404,
+        headers: {
+          'Content-Type': (isHtmlLike ? 'text/html' : 'text/plain') + '; charset=utf-8'
+        }
+      })
     } catch (err) {
       console.error('[SW] fetch error:', err)
       return new Response('File not found or failed to load', { status: 404 })

@@ -57,7 +57,6 @@ function openTutorial () {
     // create timeline markers for keyframes && keylogs
     tut.keyframes.forEach(kf => addMarker(kf, 'keyframe'))
     tut.keylogs.forEach(kl => addMarker(kl, 'keylog'))
-    timeline.updateMarkers()
 
     tut.videoBlob = FILES.readFile(metadata.id + '.mp4')
     if (!tut.videoBlob) tut.videoBlob = FILES.readFile(metadata.id + '.webm')
@@ -70,7 +69,12 @@ function openTutorial () {
 
     lockMetadataID()
 
-    overlay(null) // remove overlay
+    overlay(null) // remove overlay — resizes window to 1000x280
+    // update markers after the window has resized and laid out
+    requestAnimationFrame(() => {
+      timeline.updateMarkers()
+      timeline.placeLabels()
+    })
   })
 }
 
@@ -118,7 +122,8 @@ function openMetadata (metadata) {
   const except = ['thumbnails', 'duration', 'jsfile'] // upated another way
   for (const key in metadata) {
     if (!except.includes(key)) {
-      nn.get(q(key)).value = metadata[key]
+      const el = nn.get(q(key))
+      if (el) el.value = metadata[key]
     }
   }
   overlay('#metadata')
