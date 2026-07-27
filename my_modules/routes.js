@@ -309,41 +309,8 @@ router.get('/api/user-geo', async (req, res) => {
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
-
-function shortenURL (req, res, dbPath) {
-  let urlsDict
-  try {
-    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  } catch (err) {
-    return res.json({ success: false, error: 'failed to read URL database' })
-  }
-  const index = Object.keys(urlsDict).length
-  const key = (index === 0) ? '0' : utils.b10tob64(index)
-  let repeatEntry = false
-  for (const key in urlsDict) {
-    if (urlsDict[key] === req.body.hash) { repeatEntry = key; break }
-  }
-  if (repeatEntry) {
-    const url = `https://netnet.studio/?c=${repeatEntry}`
-    res.json({ success: true, url, key: repeatEntry })
-  } else {
-    urlsDict[key] = req.body.hash
-    fs.writeFile(dbPath, JSON.stringify(urlsDict, null, 2), (err) => {
-      if (err) res.json({ success: false, error: err })
-      else {
-        const url = `https://netnet.studio/?c=${key}`
-        res.json({ success: true, url, key })
-      }
-    })
-  }
-}
-
-router.post('/api/shorten-url', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  utils.checkForJSONFile(req, res, dbPath, () => {
-    shortenURL(req, res, dbPath)
-  })
-})
+// URL shortening retired 2026-07-27 (zero usage). Existing shortened URLs
+// are preserved in off-line archive (ask Nick)
 
 router.post('/api/expand-url', (req, res) => {
   const dbPath = path.join(__dirname, '../data/shortened-urls.json')
@@ -395,6 +362,22 @@ router.get('/api/demos', (req, res) => {
     }
   })
   res.json({ success: 'success', data: dict })
+})
+
+let _tutMetaCache = null
+router.get('/api/tutorials/metadata', (req, res) => {
+  if (_tutMetaCache) return res.json(_tutMetaCache)
+  const listPath = path.join(__dirname, '../www/tutorials/list.json')
+  const tutList = JSON.parse(fs.readFileSync(listPath, 'utf8'))
+  const result = {}
+  Object.entries(tutList).forEach(([section, ids]) => {
+    result[section] = ids.map(id => {
+      const p = path.join(__dirname, `../www/tutorials/${id}/tutorial.json`)
+      return JSON.parse(fs.readFileSync(p, 'utf8')).metadata
+    })
+  })
+  _tutMetaCache = result
+  res.json(result)
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES

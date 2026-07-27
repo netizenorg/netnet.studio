@@ -730,6 +730,12 @@ a.docs__panel__face .eye {
   border-radius: 25px;
 }
 
+.docs__viewer-inner .tiny-text {
+  font-style: italic;
+  opacity: 0.7;
+  font-size: 0.8rem;
+}
+
 .docs__viewer-inner blockquote {
   margin: 1.5em 0;
   padding: 0.5em var(--doc-padding);

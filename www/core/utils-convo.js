@@ -137,5 +137,20 @@ window.CONVOS['utils-misc'] = (self) => {
         NNW.menu.switchFace('default')
       }
     }
+  }, {
+    after: () => {
+      NNW.menu.updateFace({
+        leftEye: 'ŏ',
+        mouth: '.',
+        rightEye: 'ŏ',
+        lookAtCursor: false,
+        animation: 'duck-down'
+      })
+    },
+    id: 'shortener-retired-nav',
+    content: 'Oh dear, it looks like you followed one of our old shortened URLs. Our URL shortener has been retired, but don\'t worry, the archive of shortened URLs still exists! If you\'re trying to find a sketch you shared, email us at <a href="mailto:hi@netizen.org">hi@netizen.org</a> with the short code URL and we\'ll look it up for you.',
+    options: {
+      'got it, thanks': (e) => WIDGETS['student-session'].greetStudent()
+    }
   }]
 }

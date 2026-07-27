@@ -53,6 +53,9 @@
               </li><li class="docs__panel__list-item">
                 <a class="header inline-link" href="/docs/educators/index.html">Dear Educators</a>
                 <ul class="docs__panel__list" role="navigation"><li class="docs__panel__list-item">
+                  <a class="inline-link" href="/docs/educators/testimonial.html">
+                  Professor Testimonial
+                </a></li><li class="docs__panel__list-item">
                   <a class="inline-link" href="/docs/educators/url-anatomy.html">
                   netnet URLs
                 </a></li></ul>
@@ -157,8 +160,7 @@
 │
 ├── data/                  # static database
 │   ├── demos/             # annotated demo JSON files
-│   ├── templates/         # starter project template JSON files
-│   └── shortened-urls.json  # URL shortcode database
+│   └── templates/         # starter project template JSON files
 │
 └── docs/                  # all the static docs
     ├── build-docs.js      # converts markdown to HTML
@@ -169,8 +171,8 @@
         ├── README.md      # section index page
         └── *.md           # individual doc pages</code></pre>
 <h2>the Backend</h2>
-<p><code>server.js</code> is deliberately minimal. All the details and routing logic lives in <a href="https://github.com/netizenorg/netnet.studio/tree/main/my_modules" target="_blank">my_modules</a>. The server handles serving static files (<em>www</em> and <em>docs</em>) and a small API surface for GitHub operations, demo/template data, and URL shortening. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.</p>
-<p>All user data (username, preferences, save state, LLM API keys) is stored in <code>localStorage</code> on the client via the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session" target="_blank">student-session</a> widget. The server stores nothing about individual users, except for shortened sketches if/when users opt-in to the URL shortener.</p>
+<p><code>server.js</code> is deliberately minimal. All the details and routing logic lives in <a href="https://github.com/netizenorg/netnet.studio/tree/main/my_modules" target="_blank">my_modules</a>. The server handles serving static files (<em>www</em> and <em>docs</em>) and a small API surface for GitHub operations and demo/template data. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.</p>
+<p>All user data (username, preferences, save state, LLM API keys) is stored in <code>localStorage</code> on the client via the <a href="https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session" target="_blank">student-session</a> widget. The server stores nothing about individual users.</p>
 <p>The <a href="https://github.com/netizenorg/netnet.studio/tree/main/my_modules" target="_blank">my_modules</a> directory also contains some dev scripts (see <a href="https://github.com/netizenorg/netnet.studio/blob/main/package.json" target="_blank">package.json</a>)</p>
 <hr>
 <h2>the Frontend</h2>

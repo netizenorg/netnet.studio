@@ -3,12 +3,6 @@ package-lock.json
 **/.DS_Store
 .env
 
-data/shortened-urls.json
-data/analytics/*.sqlite
-data/analytics/*.json
-data/bug-reports
-data/feedback-reports
-
 # ignoring large media files
 data/videos/*
 
