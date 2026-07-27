@@ -526,6 +526,11 @@ window.utils = {
 
   loadShortCode: (code, layout) => {
     window.utils.post('./api/expand-url', { key: code }, (json) => {
+      if (!json.hash) {
+        window.utils.fadeOutLoader(false)
+        window.utils._Convo('shortener-retired-nav')
+        return
+      }
       window.location.hash = json.hash
       window.utils.loadFromCodeHash(layout)
     })

@@ -53,8 +53,7 @@ netnet.studio/
 │
 ├── data/                  # static database
 │   ├── demos/             # annotated demo JSON files
-│   ├── templates/         # starter project template JSON files
-│   └── shortened-urls.json  # URL shortcode database
+│   └── templates/         # starter project template JSON files
 │
 └── docs/                  # all the static docs
     ├── build-docs.js      # converts markdown to HTML
@@ -68,9 +67,9 @@ netnet.studio/
 
 ## the Backend
 
-`server.js` is deliberately minimal. All the details and routing logic lives in [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules). The server handles serving static files (*www* and *docs*) and a small API surface for GitHub operations, demo/template data, and URL shortening. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.
+`server.js` is deliberately minimal. All the details and routing logic lives in [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules). The server handles serving static files (*www* and *docs*) and a small API surface for GitHub operations and demo/template data. GitHub OAuth flow exchanges code for token, encrypts it with AES-256-GCM, stores in HTTP-only cookie, the raw token never reaches the client.
 
-All user data (username, preferences, save state, LLM API keys) is stored in `localStorage` on the client via the [student-session](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session) widget. The server stores nothing about individual users, except for shortened sketches if/when users opt-in to the URL shortener.
+All user data (username, preferences, save state, LLM API keys) is stored in `localStorage` on the client via the [student-session](https://github.com/netizenorg/netnet.studio/tree/main/www/widgets/student-session) widget. The server stores nothing about individual users.
 
 The [my_modules](https://github.com/netizenorg/netnet.studio/tree/main/my_modules) directory also contains some dev scripts (see [package.json](https://github.com/netizenorg/netnet.studio/blob/main/package.json))
 
