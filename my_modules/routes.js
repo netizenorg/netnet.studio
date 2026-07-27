@@ -308,26 +308,6 @@ router.get('/api/user-geo', async (req, res) => {
   }
 })
 
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //   URL SHORTENER
-// URL shortening retired 2026-07-27 (zero usage). Existing shortened URLs
-// are preserved in off-line archive (ask Nick)
-
-router.post('/api/expand-url', (req, res) => {
-  const dbPath = path.join(__dirname, '../data/shortened-urls.json')
-  let urlsDict
-  try {
-    urlsDict = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-  } catch (err) {
-    return res.json({ error: 'failed to read URL database' })
-  }
-  const hash = urlsDict[req.body.key]
-  if (typeof hash === 'string') {
-    res.json({ success: 'success', hash })
-  } else {
-    res.json({ error: `${req.body.key} is not in the database.` })
-  }
-})
-
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  CODE EXAMPLES
 
 let _demosCache = null // { byNum: { '1': obj, ... }, list: [obj, ...] }
@@ -367,17 +347,25 @@ router.get('/api/demos', (req, res) => {
 let _tutMetaCache = null
 router.get('/api/tutorials/metadata', (req, res) => {
   if (_tutMetaCache) return res.json(_tutMetaCache)
-  const listPath = path.join(__dirname, '../www/tutorials/list.json')
-  const tutList = JSON.parse(fs.readFileSync(listPath, 'utf8'))
-  const result = {}
-  Object.entries(tutList).forEach(([section, ids]) => {
-    result[section] = ids.map(id => {
-      const p = path.join(__dirname, `../www/tutorials/${id}/tutorial.json`)
-      return JSON.parse(fs.readFileSync(p, 'utf8')).metadata
+  // mirror the /tutorials/* subdomain logic: on dev/staging, read from production filesystem
+  const host = req.hostname
+  const tutRoot = host.endsWith('.netnet.studio')
+    ? path.resolve(__dirname, '../../netnet.studio/www/tutorials')
+    : path.join(__dirname, '../www/tutorials')
+  try {
+    const tutList = JSON.parse(fs.readFileSync(path.join(tutRoot, 'list.json'), 'utf8'))
+    const result = {}
+    Object.entries(tutList).forEach(([section, ids]) => {
+      result[section] = ids.map(id => {
+        const p = path.join(tutRoot, `${id}/tutorial.json`)
+        return JSON.parse(fs.readFileSync(p, 'utf8')).metadata
+      })
     })
-  })
-  _tutMetaCache = result
-  res.json(result)
+    _tutMetaCache = result
+    res.json(result)
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //  PROJ TEMPLATES
