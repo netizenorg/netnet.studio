@@ -1,6 +1,6 @@
 ### <span style="color:var(--netizen-comment);font-size:1.5rem">netnet.studio</span> is an open-source browser-based hypermedia maker-space for fully realizing the Web’s creative potential!
 
-netnet's goal is to guide creatives in their journey, from curious beginners to creative code virtuosos, through interactive learning and experimental play with the medium itself. Our mission is to help artists, designers and other DIY makers reclaim the Internet as a hand-crafted space for self-expression.
+netnet's goal is to guide creatives in their journey, from coding-curious beginners to creative code virtuosos, through interactive learning and experimental play with the medium itself. Our mission is to help artists, designers and other DIY makers reclaim the Internet as a hand-crafted space for self-expression.
 
 <br>
 

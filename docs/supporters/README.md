@@ -31,12 +31,16 @@ netnet.studio is a [netizen.org](http://netizen.org) project designed and develo
 
 For the past six years (2020–2026), netnet.studio has been in beta, developed iteratively alongside creative coding educators and students using it in the classroom. It has been used by hundreds of students across multiple universities including the School of the Art Institute of Chicago, the University of Chicago, and the University of Waterloo, among others.
 
-> I'm once again using netnet in my web design class! I've had 120 UWaterloo students happily working with it this semester and 60 more slated for the winter. It's going really well, and I can't stress enough how netnet makes my life a little easier! 🙂 [...] THANK YOU AGAIN FOR MAKING THIS GREAT TOOL! Please pass my gratitude on to your team.
+> September 2026 will mark my fourth year using netnet in my classroom. I've now overseen about 450 students learning HTML and CSS from zero experience to building their own sites in a 12-weeks. Many make the generic, corporate-friendly “Hi, I’m Jasmine, a UX designer” page to help them land co-op placements, but plenty make something fun and strange—K-pop fan sites, an insect bestiary, fashion lookbooks—and they do it with a real measure of confidence. Netnet isn’t the final destination. Most of these students will graduate into professional-grade editors, and that’s exactly the point: it’s the bridge that gets them there.<br><br>
+> The tool matters to me for another reason, one I find myself explaining to students every year. Netnet isn’t made by Apple or Adobe. There's no product-manager-and-focus-group provenance, no features sanded down until all the personality is gone. It’s open source, built by a small team of educators and designers who care about the craft of web design and the pedagogy of teaching the internet as something that is open, free, and hands-on. Despite learning p5.js in a CS context before they get to web design, my students arrive with almost no exposure to what open source is. Netnet gives me a way into that conversation about how not all software is rent-seeking and that there are software relationships where the user is not a consumer.
 >
-> — Greg Smith, University of Waterloo
+> — Greg J. Smith, University of Waterloo
 
+<!-- > I'm once again using netnet in my web design class! I've had 120 UWaterloo students happily working with it this semester and 60 more slated for the winter. It's going really well, and I can't stress enough how netnet makes my life a little easier! 🙂 [...] THANK YOU AGAIN FOR MAKING THIS GREAT TOOL! Please pass my gratitude on to your team.
+>
+> — Greg Smith, University of Waterloo -->
 
-Students have responded overwhelmingly positively in anonymous evaluations. Here's what some of them had to say:
+You can read Prof. Greg J Smith's [full testimonial here](/docs/educators/testimonial.md). Students have responded overwhelmingly positively in anonymous evaluations. Here's what some of them had to say:
 <br>
 <div class="quote-carousel">
 
