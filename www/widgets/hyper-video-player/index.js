@@ -409,7 +409,13 @@ class HyperVideoPlayer extends Widget {
       this.open()
 
       setTimeout(() => {
-        if (time) this.seek(time)
+        if (time) {
+          // set position directly — avoid seek(), since seek() calls play() (which browsers no-like)
+          this.video.currentTime = Number(time)
+          this._updateProgressBar()
+          this._resetKeyframes()
+          this._tempCode = NNE.code
+        }
         this.video.oncanplay = null
         nn.get('load-curtain').hide()
       }, utils.getVal('--layout-transition-time'))
@@ -577,6 +583,7 @@ class HyperVideoPlayer extends Widget {
 
     this.video = nn.create('video')
       .set('preload', 'auto')
+      .set('crossorigin', 'anonymous')
       .css({ display: 'block', width: '100%', borderRadius: 10 })
       .on('loadeddata', () => {
         this.keepInFrame()
