@@ -10,6 +10,9 @@ class HyperVideoPlayer extends Widget {
     this.data = null
     this.making = false // set to true when using Tutorial Maker
 
+    // storage bucket
+    this.sb = 'https://netnet-bucket.nyc3.digitaloceanspaces.com'
+
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
     this._boundEditWatcher = this._editWatcher.bind(this)
@@ -104,7 +107,10 @@ class HyperVideoPlayer extends Widget {
   // ----------------------------- video controls ------------------------------
 
   updateVideo (name, folder) {
-    const path = folder ? `tutorials/${folder}` : 'videos'
+    const onNetnet = window.location.hostname === 'netnet.studio' || window.location.hostname.endsWith('.netnet.studio')
+    const path = folder
+      ? (onNetnet ? `${this.sb}/tutorials` : `tutorials/${folder}`)
+      : 'videos'
 
     const updateMetadata = () => {
       this._videoMetaDataListener = true
