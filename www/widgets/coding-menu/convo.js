@@ -44,11 +44,11 @@ window.CONVOS['coding-menu'] = (self) => {
 
   const sessionSaveOpts = () => {
     const opts = {
-      'download sketch as HTML file': (e) => {
+      'download as an HTML file': (e) => {
         e.hide()
         self.downloadCode()
       },
-      'share sketch as a netnet URL': (e) => WIDGETS.open('share-widget')
+      'share as a netnet URL': (e) => WIDGETS.open('share-widget')
     }
     if (window.localStorage.getItem('owner')) {
       opts['create a new GitHub project'] = () => self._newProject()
@@ -76,7 +76,7 @@ window.CONVOS['coding-menu'] = (self) => {
     }
   }, {
     id: 'session-saved',
-    content: 'I can save this code for you a few different ways, which would you prefer?',
+    content: 'I can save this code sketch for you a few different ways, which would you prefer?',
     options: sessionSaveOpts()
   }, {
     id: 'chatty-level-low',

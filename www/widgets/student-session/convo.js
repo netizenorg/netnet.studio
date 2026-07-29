@@ -73,6 +73,7 @@ window.CONVOS['student-session'] = (self) => {
     },
     {
       id: 'return-student-no-greet',
+      before: () => NNW.menu.switchFace('default'),
       graph: { id: 4, x: 800, y: 450 },
       content: 'Shall we get started?',
       options: firstOpts('no-greet')
@@ -258,6 +259,15 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'classical-ai',
       graph: { id: 15, x: 1000, y: 300 },
+      before: () => {
+        NNW.menu.updateFace({
+          leftEye: '⌄',
+          mouth: '_',
+          rightEye: '⌄',
+          lookAtCursor: false,
+          animation: 'shake'
+        })
+      },
       content: 'AI has been getting a lot of hype these days because of a new approach known as "machine learning" where large amounts of data are used to "train" AI like Large Language Models (LLM). I\'ve got <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.openDocs(\'ai\'))">Notes</span> on that sort of AI, but that\'s not how I was made. My code was hand crafted, written line by line with love and care by my creators!',
       options: {
         'oh, I see': (e) => e.goTo('return-student-no-greet'),
@@ -267,6 +277,7 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'why-classical',
       graph: { id: 16, x: 1100, y: 450 },
+      before: () => NNW.menu.switchFace('default'),
       content: 'Modern "AI" is very powerful and something we\'ll discuss in more depth, but it can also be inaccurate and unpredictable. To ensure the specific learning goals and carefully designed pedagogical style of this studio remain intact, my creators felt it best that I be a reflection of the same hand-crafted hypertext I\'m designed to teach you to create yourself.',
       options: {
         oh: (e) => e.goTo('why-classical2')
@@ -275,6 +286,15 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'why-classical2',
       graph: { id: 17, x: 1000, y: 600 },
+      before: () => {
+        NNW.menu.updateFace({
+          leftEye: '◠',
+          mouth: '﹏',
+          rightEye: '◠',
+          lookAtCursor: false,
+          animation: 'big-nod'
+        })
+      },
       content: 'That said, the synthesized, hallucinatory sorcery behind modern "AI" can be quite exciting when applied to creative contexts, but learning to use it effectively and responsibly requires a bit of literacy first. You\'ll find helpful notes and tools on this topic in the <img src="images/menu/tutorials.png" class="student-session__d-icons"> <b>Learning Guide</b>, which you can access anytime by clicking on my face.',
       options: {
         'I see': (e) => e.goTo('return-student-no-greet')

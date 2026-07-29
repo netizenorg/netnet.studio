@@ -40,7 +40,7 @@ For the past six years (2020–2026), netnet.studio has been in beta, developed 
 >
 > — Greg Smith, University of Waterloo -->
 
-You can read Prof. Greg J Smith's [full testimonial here](/docs/educators/testimonial.md). Students have responded overwhelmingly positively in anonymous evaluations. Here's what some of them had to say:
+You can read Prof. Greg J Smith's [full testimonial here](/docs/educators/testimonial.md). Students have also responded overwhelmingly positively in anonymous evaluations. Here's what some of them had to say:
 <br>
 <div class="quote-carousel">
 

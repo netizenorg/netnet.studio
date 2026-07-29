@@ -46,6 +46,7 @@ Each character maps to an SVG file in `www/images/faces/`. Only these characters
 | `◑` | Half-filled circle |
 | `ŏ` | Wide-open surprised eye |
 | `ᴖ` | Closed/happy eye |
+| `^` | Caret up |
 | `-` | Blink eye (closed line) |
 | `⇀` | Arrow right, upset left-eye |
 | `↼` | Arrow left, upset right-eye |
@@ -61,7 +62,6 @@ Each character maps to an SVG file in `www/images/faces/`. Only these characters
 | `‸` | Caret / inverted V |
 | `⌄` | Downward chevron |
 | `_` | Flat line |
-| `^` | Caret up |
 | `ᗜ` | Wide smile |
 | `ᴗ` | Tight smile |
 | `.` | Dot (mouth-dot.svg) |
