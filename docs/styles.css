@@ -690,6 +690,12 @@ a.docs__panel__face .eye {
   opacity: 1;
 }
 
+.docs__viewer-inner footer {
+  text-align: center;
+  border-top: 4px dotted var(--fg-color);
+  padding-top: 20px;
+}
+
 .docs__viewer-inner table {
   width: 100%;
   border-collapse: collapse;
@@ -954,6 +960,10 @@ a.docs__panel__face .eye {
 @media (max-width: 768px) {
    .docs__viewer {
      padding-top: calc(var(--doc-padding) * 4.5);
+   }
+
+   .docs__viewer-inner .mobile-hide {
+     display: none;
    }
 }
 

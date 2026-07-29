@@ -46,3 +46,14 @@ But this re-writing of history could not be farther from [the truth](https://coo
 <strong style="font-size:1.25rem; color: var(--netizen-comment);">If you believe in our mission and what to contribute time to the project, [start here](contributors/README.md)!</strong>
 <br><br>
 <br><br>
+
+<footer>
+Support netnet.studio on <a href="https://www.patreon.com/netnetstudio" target="_blank">Patreon</a> 💸
+&& follow <a href="https://bsky.app/profile/netnet.studio" target="_blank">@netnet.studio</a> 🦋 on BlueSky.
+<br class="mobile-hide">
+Subscribe to the <a href="https://buttondown.com/netizen.org" target="_blank">netizen.org newsletter</a> 📬 for netnet + other netizen.org monthly updates.
+<br class="mobile-hide">
+Subscribe to <a href="https://www.youtube.com/@NickBriz" target="_blank">Nick's YouTube</a> 📺 for weekly netnet tutorials and walkthroughs.
+<br>
+◕ ◞ ◕
+</footer>
