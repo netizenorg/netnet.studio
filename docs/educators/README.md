@@ -32,7 +32,7 @@
 
 <br><br>
 <div class="warning">
-🙏 If you find netnet.studio valuable in your classroom, consider asking your institution to enter into an [Institutional Support agreement](../supporters/institutional-support.md) with netizen.org. Supporting institutions receive priority support, curriculum consultation, and other benefits. This support also helps keep the platform free, open source, and actively maintained for everyone.
+🙏 If you find netnet.studio valuable in your classroom, consider asking your institution to enter into an <a href="../supporters/institutional-support.html">Institutional Support agreement</a> with netizen.org. Supporting institutions receive priority support, curriculum consultation, and other benefits. This support also helps keep the platform free, open source, and actively maintained for everyone.
 </div>
 
 <br><br>
