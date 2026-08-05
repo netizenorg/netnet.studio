@@ -145,14 +145,14 @@ const eduBase = path.join(ROOT, 'www/core/netitor/src/edu-data')
 const linterBase = path.join(ROOT, 'www/core/netitor/src/linters')
 
 const cssFiles = [
-  { file: 'css/at-rules.json',        fn: extractDescriptionText },
-  { file: 'css/data-types.json',      fn: extractDescriptionText },
-  { file: 'css/display.json',         fn: extractDescriptionText },
-  { file: 'css/functions.json',       fn: extractTopLevelText },
-  { file: 'css/properties.json',      fn: extractDescriptionText },
-  { file: 'css/pseudo-classes.json',  fn: extractDescriptionText },
+  { file: 'css/at-rules.json', fn: extractDescriptionText },
+  { file: 'css/data-types.json', fn: extractDescriptionText },
+  { file: 'css/display.json', fn: extractDescriptionText },
+  { file: 'css/functions.json', fn: extractTopLevelText },
+  { file: 'css/properties.json', fn: extractDescriptionText },
+  { file: 'css/pseudo-classes.json', fn: extractDescriptionText },
   { file: 'css/pseudo-elements.json', fn: extractDescriptionText },
-  { file: 'css/units.json',           fn: extractTopLevelText }
+  { file: 'css/units.json', fn: extractTopLevelText }
   // css/colors.json intentionally skipped — no description text
 ]
 
@@ -163,9 +163,9 @@ for (const { file, fn } of cssFiles) {
 }
 
 const htmlFiles = [
-  { file: 'html/elements.json',       fn: extractDescriptionText },
-  { file: 'html/attributes.json',     fn: extractDescriptionText },
-  { file: 'html/svg-elements.json',   fn: extractDescriptionText },
+  { file: 'html/elements.json', fn: extractDescriptionText },
+  { file: 'html/attributes.json', fn: extractDescriptionText },
+  { file: 'html/svg-elements.json', fn: extractDescriptionText },
   { file: 'html/svg-attributes.json', fn: extractDescriptionText }
 ]
 
@@ -254,15 +254,15 @@ console.log('netnet.studio educational content word count')
 console.log('─'.repeat(colW + 10))
 
 const grouped = [
-  { heading: 'CSS edu-data',              prefix: 'css/' },
-  { heading: 'HTML edu-data',             prefix: 'html/' },
-  { heading: 'JS edu-data',               prefix: 'js/' },
-  { heading: 'Custom docs',               prefix: 'custom/' },
-  { heading: 'Friendly error messages',   prefix: 'linters/' },
-  { heading: 'Widget conversations',      prefix: 'convos/widgets/' },
-  { heading: 'Core conversations',        prefix: 'convos/core/' },
-  { heading: 'Demo step explanations',    prefix: 'demos/' },
-  { heading: 'Template conversations',    prefix: 'convos/templates/' }
+  { heading: 'CSS edu-data', prefix: 'css/' },
+  { heading: 'HTML edu-data', prefix: 'html/' },
+  { heading: 'JS edu-data', prefix: 'js/' },
+  { heading: 'Custom docs', prefix: 'custom/' },
+  { heading: 'Friendly error messages', prefix: 'linters/' },
+  { heading: 'Widget conversations', prefix: 'convos/widgets/' },
+  { heading: 'Core conversations', prefix: 'convos/core/' },
+  { heading: 'Demo step explanations', prefix: 'demos/' },
+  { heading: 'Template conversations', prefix: 'convos/templates/' }
 ]
 
 for (const { heading, prefix } of grouped) {
