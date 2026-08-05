@@ -4,8 +4,8 @@
   "description": "netnet.studio is an open-source browser-based hypermedia maker-space for fully realizing the Web’s creative potential!",
   "main": "server.js",
   "scripts": {
-    "setup": "node my_modules/setup-script.js",
-    "prestart": "node my_modules/clean-up-script.js",
+    "setup": "node my_modules/scripts/setup-script.js",
+    "prestart": "node my_modules/scripts/clean-up-script.js",
     "start": "node server.js",
     "lint": "standard *.js my_modules/* www/core/* www/core/widgets/*",
     "pull-modules": "git submodule update --init --recursive && (cd www/core/netnet-standard-library && git pull origin main) && (cd www/core/netitor && git pull origin master)",
