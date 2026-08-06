@@ -101,6 +101,8 @@ div > a:not(.pill-btn):not(.highlight):not(a.docs__panel__face):hover,
   /* commenting this out for now to mimic netnet styles more */
   /* height: calc(100vh - calc(var(--doc-padding) * 2)); */
 
+  height: 100vh;
+
 	padding: var(--doc-padding);
 
   /* commenting these out for now to mimic netnet styles more */
@@ -116,17 +118,7 @@ div > a:not(.pill-btn):not(.highlight):not(a.docs__panel__face):hover,
 	background-color: var(--netizen-hint-color);
 
 	z-index: 2;
-
-	overflow-y: auto;
 }
-
-/* .docs__panel__section {
-	display: block;
-  position: sticky;
-  top: 0;
-	margin: calc(var(--doc-padding) * 2) 0;
-} */
-
 
 /*
  * docs panel > header (face + search)
@@ -283,11 +275,23 @@ a.docs__panel__face .eye {
  * docs panel > list
  */
 .docs__panel > .docs__panel__list {
+  height: 100%;
+
   margin: var(--doc-padding) 0;
+
+  overflow-y: auto;
+}
+
+.docs__panel > .docs__panel__list::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .docs__panel > .docs__panel__list > .docs__panel__list-item {
   margin: 0 0 16px;
+}
+
+.docs__panel > .docs__panel__list > .docs__panel__list-item:last-of-type {
+  padding-bottom: 60px;
 }
 
 .docs__panel__list {
@@ -409,11 +413,11 @@ a.docs__panel__face .eye {
       content: '';
 
       position: fixed;
-      top: 52px;
+      top: 61px;
       right: 0;
       left: 0;
 
-      height: calc(100vh - 52px);
+      height: calc(100vh - 61px);
 
       background: rgba(0,0,0,0.25);
 
@@ -461,8 +465,8 @@ a.docs__panel__face .eye {
   }
 
   .docs__panel .docs__panel__search {
-    top: 53px;
-    width: 55vw;
+    top: 61px;
+    width: 60vw;
     max-width: 380px;
     margin-top: 0;
     z-index: 1;
@@ -480,12 +484,13 @@ a.docs__panel__face .eye {
   }
 
   .docs__panel > .docs__panel__list {
-    top: 53px;
-    height: calc(100vh - 53px);
-    width: 55vw;
+    top: 61px;
+    height: calc(100vh - 61px);
+    width: 60vw;
     max-width: 380px;
     margin: 0;
     padding: 60px calc(var(--doc-padding) * 2) 0;
+    overscroll-behavior: none;
   }
 
   .docs__panel.open {
