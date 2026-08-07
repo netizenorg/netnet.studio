@@ -238,7 +238,7 @@ function displayKeyframeData (kf) {
   // update timecode
   nn.get('#kf-timecode').content(kf.timecode)
   // update netitor options
-  if (kf.netitor.code) {
+  if (kf.netitor.code != null) {
     const n = kf.netitor
     nn.getAll('.netitor-set').forEach(s => s.css('opacity', 1))
     nn.get('[name="include-netitor"]').checked = true

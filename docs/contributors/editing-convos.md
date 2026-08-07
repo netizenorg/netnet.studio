@@ -71,7 +71,7 @@ We consider netnet an <strong>AI-TA (artificial intelligence teaching assistant)
 
 ## Finding a passage in the code
 
-Maybe you noticed a type-o in one of netnet's passage, or maybe you just think there's something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. The "expert system" dialogue above provides a general map with links to the different parts of the code base where netent's passages live.
+There are over 164,000 words of dialogue in netnet, it's not uncommon to come across passages that could use some editing. Maybe you noticed a type-o in one of netnet's passage, or maybe you just think there's something that could be worded in a clearer way. In any case, the first step is finding that passage in the code base. The "expert system" dialogue above provides a general map with links to the different parts of the code base where netent's passages live.
 
 The easiest way to find a passage in netnet's code base is by **using your GitHub's repo search bar** to find the file that contains the line of dialogue you're trying to edit. We recommend placing your search withing quote marks `" "` to limit the search results to match the exact phrase. However, If you type the entire quoted passage into the GitHub search bar you might not be able to find it, this is because the way the passage appears in the code may not exactly match what you see in netnet, consider this example:
 

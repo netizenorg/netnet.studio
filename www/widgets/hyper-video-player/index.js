@@ -289,9 +289,6 @@ class HyperVideoPlayer extends Widget {
       // POSITION HYPER VIDEO PLAYER
       if (this._vidPositionNeedsUpdate(kf.video)) {
         const obj = JSON.parse(JSON.stringify(kf.video))
-        // HACK: for some reason vid/widgets all seem to be a little shorter
-        // when played back compared to when created in tutorial maker
-        obj.height += 15 // adjusting as a temporary HACK
         this.update(obj, this._tt)
       }
 
@@ -326,12 +323,12 @@ class HyperVideoPlayer extends Widget {
       // ...code
       const c = kf.netitor.code === 'DEFAULT'
         ? utils.starterCode() : kf.netitor.code
-      if (c && c !== NNE.code) {
+      if (c != null && c !== NNE.code) {
         this._updateCode(c, kf.netitor.autoType)
         this._updateScrollBar(kf.scrollTo) // TODO check if working correctly
-      } else if (!c) {
+      } else if (c == null) {
         const recentWithCode = this.data.keyframes
-          .filter(f => this.currentTime >= f.timecode && f.netitor.code)
+          .filter(f => this.currentTime >= f.timecode && f.netitor.code != null)
           .sort((a, b) => b.timecode - a.timecode)[0]
         if (recentWithCode) {
           const rc = recentWithCode.netitor.code === 'DEFAULT'
