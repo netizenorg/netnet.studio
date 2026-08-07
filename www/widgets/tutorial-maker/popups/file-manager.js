@@ -187,9 +187,10 @@ const FILES = {
   },
 
   _saveFilesToIndexedDB: () => {
+    if (!FILES.db) return Promise.resolve()
     const filesDict = {}
     Object.values(FILES.files).forEach(file => {
-      if (file.code) filesDict[file.path] = file.code
+      if (file.code != null) filesDict[file.path] = file.code
     })
 
     return new Promise((resolve, reject) => {

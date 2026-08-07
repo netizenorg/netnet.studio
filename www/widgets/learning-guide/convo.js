@@ -22,7 +22,7 @@ window.CONVOS['learning-guide'] = (self) => {
     {
       id: 'toc',
       graph: { id: 2, x: 200, y: 25 },
-      content: 'The <b>Hyperlinks</b> section is a the Learning Guie\'s <i>table of Contents</i>. Click on any item to jump to it, you can also scroll through the guide to explore each section.',
+      content: 'The <b>Hyperlinks</b> section is the Learning Guide\'s <i>table of Contents</i>. Click on any item to jump to it, you can also scroll through the guide to explore each section.',
       options: {
         'thanks!': (e) => e.hide(),
         'how does this work?': (e) => e.goTo('explain')
