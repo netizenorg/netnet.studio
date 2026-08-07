@@ -148,7 +148,7 @@ class TutorialMaker extends Widget {
   }
 
   _updateVideo (blob) {
-    if (this.hvp.video.src.includes('videos/screen-saver')) {
+    if (!this.hvp.data.videoBlob) {
       // then we can assume this is the first time we're updating the video
       this.hvp.video.on('loadeddata', () => {
         this._messagePopup('tut-mkr-video-duration', this.hvp.duration)
@@ -225,7 +225,7 @@ class TutorialMaker extends Widget {
   }
 
   _addKeyLog () {
-    if (this.hvp.src.includes('screen-saver')) {
+    if (!this.hvp.data.videoBlob) {
       const timecode = (Date.now() - this.logStart) / 1000
       this.hvp.data.keylogs.push({ timecode, code: NNE.code })
     } else {

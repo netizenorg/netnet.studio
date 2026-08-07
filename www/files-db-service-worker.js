@@ -139,7 +139,7 @@ async function getFileFromIndexedDB (dbName, filePath, opts) {
 
     return new Promise((resolve, reject) => {
       getRequest.onsuccess = (event) => {
-        if (getRequest.result && getRequest.result[filePath]) {
+        if (getRequest.result && getRequest.result[filePath] != null) {
           resolve(getRequest.result[filePath]) // File exists
         } else {
           resolve(false) // File does not exist
@@ -566,8 +566,8 @@ self.addEventListener('fetch', (event) => {
       if (isTutMaker) {
         if (LOG) console.log('[SW] checking TUT:', filePath)
         const fileData = await getFileFromIndexedDB('tutorialMakerDB', filePath, opts)
-        if (fileData && LOG) console.log('[SW] TUT data found!')
-        if (fileData) return generateResponse(filePath, fileData)
+        if (fileData !== false && LOG) console.log('[SW] TUT data found!')
+        if (fileData !== false) return generateResponse(filePath, fileData)
         return fetch(request, { cache: 'no-store' })
       }
 
