@@ -1,0 +1,129 @@
+{
+  "key": "1785789128057-p1",
+  "name": "An Experimental Audio Instrument (step by step) \u2014 Part 1: Adding Audio Files + Looping",
+  "tags": [
+    "audio",
+    "HTML",
+    "javascript",
+    "music",
+    "randomness",
+    "performance"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJzdVE1r3DAQve+vmAZCD8Ur2wuBeB1BLrk00P4FWZJtEX0hyelul/73jmV7W3II5NJDTx7NaN57M0+4HZPRdAfQjpKJOcAwqaQlfZbpcwTDXiQwC/LkZVBG2sQ0mCkqjl9lYwrTnPzUkqVrQYjpvMUAbBLKXX4okcYGqrK8Pf5aK1HypJy9GBYGZRs4lP50BM+EUHbYjp0LQgY8+RNEp5WAIcjzli8CE2qK18uMvwzBTVYU3GmHbVoNY8odG+tYXZI8pYJhCUk5ypfhT7Ve5RTJ+QbKI7x3OVy13838W96/xxAN0/rSO5uKqH5K5NjfSbOWW3LdXUs2T9rOiTPdZZuqDxuDLQu0p62ibUe/s5CgAtfDPTRI09HHvHF4nJ2CJ6VlhC/w7JzH7CoLO4nPGmYVYVGzGrjijzXNCHOjDFidB6Wv1b7EqXKMYuoNIz8LiIE/3Iwp+dgQ0iPzfmDoqyWsf+KH+6r/Vve+6r86gotWpmNFxAFl4Xhir7LQSLU3/nADHPcZnI7IkZGXDV4F7j6quv6nqmFO/S39/6R6YwhZ3jXuN/+FfgO/bnSo",
+  "info": [
+    {
+      "focus": null,
+      "text": "Let's make an <b>experimental musical instrument!</b>",
+      "title": "Getting Started"
+    },
+    {
+      "title": "Adding CSS",
+      "focus": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "text": "Before we get started, I'm going to just add a bit of CSS to make things look nice..."
+    },
+    {
+      "title": "Adding an Audio File",
+      "focus": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "text": "For version 1, let's start simple by just adding an audio file..."
+    },
+    {
+      "title": "The Audio Tag",
+      "focus": [
+        25
+      ],
+      "text": "Let's create an <code>audio</code> tag. <br/> Inside of this tag, we'll add <b>two attributes</b>:<br/><br/>\n<ul>\n  <li><code style=\"color: var(--netizen-attribute)\">src</code>, which is the URL to your audio file, and </li>\n<li><code style=\"color: var(--netizen-attribute)\">controls</code>, which displays the browser's built-in play/pause/volume controls on the page.</li>\n</ul>"
+    },
+    {
+      "title": "Multiple Files and Looping",
+      "focus": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "text": "We're off to a good start, now in <b>Version 2</b>, we'll add <b>multiple sources</b>, and make them <b>loop</b>."
+    },
+    {
+      "title": "The First Audio Element",
+      "focus": [
+        33
+      ],
+      "text": "let's take our first <code>audio</code> element..."
+    },
+    {
+      "title": "Adding More Elements",
+      "focus": [
+        34,
+        35
+      ],
+      "text": "...and add two more! (in this demo, the files are the same, but you can use any sources you'd like)"
+    },
+    {
+      "title": "The Loop Attribute",
+      "focus": [
+        33,
+        34,
+        35
+      ],
+      "text": "By default, your <code>audio</code> files will stop playing once they reach the end. <br/><br/>Let's fix this by adding a <code style=\"color: var(--netizen-attribute)\">loop</code> attribute to our 3 files."
+    },
+    {
+      "title": "Looping Forever",
+      "focus": [
+        33,
+        34,
+        35
+      ],
+      "text": "Now, the audio elements will loop forever once they get to the end."
+    },
+    {
+      "title": "A Phasing Effect",
+      "focus": [
+        33,
+        34,
+        35
+      ],
+      "text": "The looping elements will phase in and out of one another, creating an evolving, generative soundscape!"
+    },
+    {
+      "title": "You Built an Instrument!",
+      "focus": [
+        33,
+        34,
+        35
+      ],
+      "text": "<b>And just like that,</b> you've created an experimental audio controller! <b>Congrats!</b>"
+    },
+    {
+      "title": "Outro",
+      "focus": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "text": "Feel free to pause this demo to play around with the looping audio by pressing the [done] button. When you're ready to continue, head over to <a href=\"#\" target=\"_blank\">Part 2</a>, where we'll give each track a unique ID and wire up a \"Play All\" button."
+    }
+  ]
+}
