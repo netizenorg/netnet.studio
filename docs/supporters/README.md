@@ -44,17 +44,33 @@ You can read Prof. Greg J Smith's [full testimonial here](/docs/educators/testim
 <br>
 <div class="quote-carousel">
 
+> [netnet] was a great tool for me to get into making websites, I really loved it [...]. With the experience I gained from netnet [...], I ended up working at a company called teamLab after graduation doing web engineering, making websites for clients like banks and recruitment platforms. I'm now starting a new position in web SWE at Canonical (the company behind Ubuntu), and I really credit [your work] for sparking my interest in web engineering.
+>
+> — Marina Takara, University of Chicago (B.A. in Computer Science and B.A. in Media Arts and Design, 2025)
+
 > netnet is awesome and really thoughtfully built.
+>
+> — anonymous student evaluation
 
 > Since it's a browser-based platform, I didn't have to worry about setting up a local development environment or dealing with installations, which made it much easier to focus on learning HTML and CSS right away.
+>
+> — anonymous student evaluation
 
 > [netnet] was one of the coolest parts of the class. I really appreciated the interactivity of the software, as it allowed me to learn by doing as well as listening.
+>
+> — anonymous student evaluation
 
 > Coding on netnet really highlights the creative aspect of coding and obscures the more boring technical parts like git and version control. I think it's great for beginners and super user-friendly.
+>
+> — anonymous student evaluation
 
 > netnet was great because I could see all of my changes take place immediately — this allowed me to experiment more.
+>
+> — anonymous student evaluation
 
 > My favorite aspect of this course was NetNet! I loved the lectures, tutorials, etc. There's limitless information to be found and explored on that website.
+>
+> — anonymous student evaluation
 
 </div>
 
