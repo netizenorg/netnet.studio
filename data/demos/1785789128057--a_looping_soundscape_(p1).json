@@ -1,0 +1,126 @@
+{
+  "key": 1785789128057,
+  "name": "A Looping Soundscape (p1)",
+  "tags": [
+    "audio",
+    "HTML",
+    "javascript",
+    "music",
+    "randomness",
+    "performance"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJzdU0FuwyAQvOcVKFKPGNuRItVxLfXSSyv1DQSwjYJZBCRNGvXvXRPbrXrrpYfeBnZ3Zhig7uNgmhUhda+4HAHCEC9G3TAh/Cg1XN+0jH1Fijy/231MlaBE1GCvA/edthXZ5O68I45LqW03L/fgpfK4cmcSwGhJOq8u8z71XOpjWJq5OHQejlZSAQZwzOiuj2liVu3LSZBGcBXJdySqc6QcO9GDUDYq/9XsF3fbUWGxPnBjri3YSIN+V0iTbdUwlWu2BFCzOZZ6D/LSrEY0nXsKqy+bxzGiFwCnPFZH6uZUZDnyJIwkZZrE7pQmCV48rPsYXagYa7VRWccxDst4+yQ290X7WrauaJ+BoXs97DkNghtFQUR+UtSgVDa4zZoIPIEHE1AjMd88LwbTvfpfuC7/1DUZt75b/59SPy6E3V4S5pu+3ieEriCd",
+  "info": [
+    {
+      "focus": null,
+      "text": "Let's use looping audio tracks to create an <b>experimental musical instrument</b> for making ambient generative soundscapes!",
+      "title": "Getting Started"
+    },
+    {
+      "title": "Adding CSS",
+      "focus": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "text": "Before we get started, I'm just going to add a bit of (optional) CSS to make things look nice..."
+    },
+    {
+      "title": "Adding an Audio File",
+      "focus": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "text": "For version 1, we'll start simple by adding just a single audio file..."
+    },
+    {
+      "title": "The Audio Tag",
+      "focus": [
+        16
+      ],
+      "text": "Let's create an <code>&lt;audio&gt;</code> tag. <br/> Inside the opening tag, we'll add <b>two <span style=\"color: var(--netizen-attribute)\">attributes</span></b>:<br/><br/>\n<ul>\n  <li><code style=\"color: var(--netizen-attribute)\">src</code>, which is the URL to your audio file, and </li>\n<li><code style=\"color: var(--netizen-attribute)\">controls</code>, which displays the browser's built-in play/pause/volume controls on the page.</li>\n</ul>"
+    },
+    {
+      "title": "Multiple Files and Looping",
+      "focus": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "text": "We're off to a good start. Now in <b>Version 2</b>, we'll add <b>multiple audio tracks</b>, and make them <b>loop</b>."
+    },
+    {
+      "title": "The First Audio Element",
+      "focus": [
+        24
+      ],
+      "text": "let's take our first <code>&lt;audio&gt;</code> element..."
+    },
+    {
+      "title": "Adding More Elements",
+      "focus": [
+        25,
+        26
+      ],
+      "text": "...and add two more! (in this demo the files are the same, but you can use any sources you'd like)"
+    },
+    {
+      "title": "The Loop Attribute",
+      "focus": [
+        24,
+        25,
+        26
+      ],
+      "text": "By default, your <code>&lt;audio&gt;</code> files will stop playing once they reach the end. <br/><br/>Let's fix this by adding a <code style=\"color: var(--netizen-attribute)\">loop</code> attribute to our 3 files."
+    },
+    {
+      "title": "Looping Forever",
+      "focus": [
+        24,
+        25,
+        26
+      ],
+      "text": "Now the audio elements will loop forever once they get to the end."
+    },
+    {
+      "title": "A Phasing Effect",
+      "focus": [
+        24,
+        25,
+        26
+      ],
+      "text": "The looping elements will phase in and out of one another, creating an evolving, generative soundscape!"
+    },
+    {
+      "title": "You Built an Instrument!",
+      "focus": [
+        24,
+        25,
+        26
+      ],
+      "text": "<b>And just like that,</b> you've created an experimental audio controller! <b>Congrats!</b>"
+    },
+    {
+      "title": "Outro",
+      "focus": null,
+      "text": "You're following in the footsteps of sound artists like <a href=\"https://en.wikipedia.org/wiki/Steve_Reich\" target=\"_blank\">Steve Reich</a>, <a href=\"https://en.wikipedia.org/wiki/William_Basinski\" target=\"_blank\">William Basinski</a>, and <a href=\"https://en.wikipedia.org/wiki/Terry_Riley\" target=\"_blank\">Terry Riley</a> (+ many others) who used looping and phasing to create ambient soundscapes."
+    },
+    {
+      "title": "Next Steps",
+      "focus": null,
+      "text": "Feel free to pause this demo to play around with the looping audio by pressing the [done] button.<br><br> When you're ready to continue, head over to <a href=\"#\" target=\"_blank\">Part 2</a>, where we'll give each track a unique ID and wire up a \"Play All\" button."
+    }
+  ]
+}
