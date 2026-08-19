@@ -666,21 +666,28 @@ a.docs__panel__face .eye {
 
   background-color: var(--netizen-hint-color);
   color: var(--netizen-text);
+
+  box-decoration-break: clone;
 }
 
 /* codemirror */
+.docs__viewer-inner code[class*="code-"] {
+  background-color: transparent;
+}
+
 .docs__viewer-inner pre {
   position: relative;
 }
 
 .docs__viewer-inner pre code .CodeMirror-wrap {
-  padding-right: 26px;
+  border-radius: 5px;
+  padding: 8px 28px 8px 4px;
 }
 
 .docs__viewer-inner pre .copy-code {
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 8px;
+  top: 8px;
   z-index: 10;
   color: var(--netizen-def);
 }
@@ -689,6 +696,7 @@ a.docs__panel__face .eye {
   cursor: pointer;
   opacity: 0.5;
   display: block;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .docs__viewer-inner pre .copy-code svg:hover {
