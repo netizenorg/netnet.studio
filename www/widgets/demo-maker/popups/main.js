@@ -201,7 +201,7 @@ function deleteNote (idx) {
 function updateNoteTitle () {
   const note = DEMO.info[curNoteIdx]
   note.title = nn.get('#note-title').value
-  nn.get('#note-list').updateStep(note)
+  nn.get('#note-list').updateStep({ ...note, id: curNoteIdx })
   updateWidget()
 }
 

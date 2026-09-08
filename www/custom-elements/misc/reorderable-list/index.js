@@ -130,11 +130,13 @@ class ReorderableList extends HTMLElement {
       info.querySelector('.rl-info-menu').style.paddingLeft = '0'
     })
 
-    step.querySelector('.rl-down-p').addEventListener('click', () => {
+    step.querySelector('.rl-down-p').addEventListener('click', (e) => {
+      e.stopPropagation()
       this.moveSteps(step)
     })
 
-    step.querySelector('.rl-up-p').addEventListener('click', () => {
+    step.querySelector('.rl-up-p').addEventListener('click', (e) => {
+      e.stopPropagation()
       this.moveSteps(step, 'up')
     })
 
@@ -173,7 +175,6 @@ class ReorderableList extends HTMLElement {
   }
 
   updateStep (data, remove) {
-    const ss = this.querySelector('.rl-h-text') // selected step
     if (remove === 'uploading') {
       const step = this.querySelector(`.rl-step:nth-of-type(${data})`)
       step.remove()
@@ -185,20 +186,24 @@ class ReorderableList extends HTMLElement {
           ? this.querySelector(`.rl-step:nth-of-type(${data + 1})`)
           : this.querySelector(`.rl-step:nth-of-type(${data})`)
       this.updateList()
-      this.selectStep(newStep, ss)
+      this.selectStep(newStep, this.querySelector('.rl-h-text'))
     } else {
       data.title =
         data.title.length > 40
           ? data.title.substring(0, 40) + ' ...'
           : data.title
-      const step = this.querySelector(`li[data-id="${data.id}"]`)
-      console.log(step);
-      step.querySelector('.rl-s-i').textContent = data.id
-      step.dataset.id = data.id
-      step.querySelector('.rl-s-t').textContent = data.title
-      step.dataset.title = data.title
-      ss.querySelector('.rl-s-i').textContent = data.id
-      ss.querySelector('.rl-s-t').textContent = data.title
+
+      // update reorderable-list step's data
+      const listStep = this.querySelector(`li[data-id="${data.id}"]`)
+      listStep.dataset.id = data.id
+      listStep.dataset.title = data.title
+      listStep.querySelector('.rl-s-i').textContent = data.id
+      listStep.querySelector('.rl-s-t').textContent = data.title
+
+      // update selected step data
+      const selectedStep = this.querySelector('.rl-h-text')
+      selectedStep.querySelector('.rl-s-i').textContent = data.id
+      selectedStep.querySelector('.rl-s-t').textContent = data.title
     }
   }
 
