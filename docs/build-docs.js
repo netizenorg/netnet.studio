@@ -192,6 +192,49 @@ function styleContributorChapters (html) {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~ pre-processors (update .md source files) ~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// regenerates the CSS variables table (between the netitor-themes-table
+// comments) from the netitor's theme files, so it stays in sync whenever
+// theme colors are added or changed in the netitor
+function updateThemesTable (mdFile) {
+  const start = '<!-- netitor-themes-table -->'
+  const end = '<!-- /netitor-themes-table -->'
+  const themesPath = path.join(__dirname, '../www/core/netitor/src/css/themes/index.js')
+  if (!fs.existsSync(themesPath)) {
+    return console.error(` ✖ ᴖ ✖ ) couldn't find netitor themes (try: npm run pull-modules), skipping ${mdFile}`)
+  }
+  const md = fs.readFileSync(mdFile, 'utf8')
+  const a = md.indexOf(start)
+  const b = md.indexOf(end)
+  if (a === -1 || b < a) return console.error(` ✖ ᴖ ✖ ) couldn't find netitor-themes-table comments in ${mdFile}`)
+
+  const themes = require(themesPath)
+  const names = Object.keys(themes)
+  const keys = Object.keys(themes[names[0]]).filter(k => k !== 'metadata')
+  // these are used as background colors, so display them as filled swatches
+  const fills = ['background', 'active_line_bg', 'selected', 'hint_bg', 'hint_shadow', 'match_border']
+  const swatch = (theme, key) => {
+    const color = theme[key]
+    if (!color) return '—'
+    const style = fills.includes(key)
+      ? `display:inline-block;width:2.4em;height:1.3em;vertical-align:middle;border-radius:4px;border:3px solid ${theme.background};outline:1px solid #8888;background:${color}`
+      : `display:inline-block;padding:0 8px;border-radius:4px;outline:1px solid #8888;background:${theme.background};color:${color}`
+    return `<span title="${color}" style="${style}">${fills.includes(key) ? '' : 'Aa'}</span>`
+  }
+  const header = `| variable | ${names.join(' | ')} |\n|${'---|'.repeat(names.length + 1)}`
+  const rows = keys.map(k => `| \`--netizen-${k.replace(/_/g, '-')}\` | ${names.map(n => swatch(themes[n], k)).join(' | ')} |`)
+  const table = [header, ...rows].join('\n')
+
+  const updated = `${md.slice(0, a + start.length)}\n\n${table}\n\n${md.slice(b)}`
+  if (updated !== md) {
+    fs.writeFileSync(mdFile, updated, 'utf8')
+    console.log(`( ◕ ◞ ◕ ) updated themes table in docs/${mdFile.split('/docs/')[1]}`)
+  }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~ MD to HTML function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav, postProcess) {
@@ -237,6 +280,9 @@ function convertMarkdownToHtml (inputFile, outputFile, templatePath, nav, postPr
 
 const baseDir = __dirname // in case this needs to change later
 const templatePath = path.join(baseDir, 'template.html')
+
+// update any generated sections of the .md files before converting them
+updateThemesTable(path.join(baseDir, 'contributors', 'voice-style-guide.md'))
 
 // Create 404 page (reuses template + nav so the panel search works out of the box)
 ;(function () {
