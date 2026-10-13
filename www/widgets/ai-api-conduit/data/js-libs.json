@@ -37,7 +37,7 @@
     "src": "https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js",
     "docs": [
       "https://github.com/netizenorg/netnet-standard-library/blob/main/README.md",
-      "https://github.com/netizenorg/netnet-standard-library/blob/main/docs/examples.md"
+      "https://github.com/netizenorg/netnet-standard-library/blob/main/nn-context.md"
     ]
   },
   "p5.js": {
