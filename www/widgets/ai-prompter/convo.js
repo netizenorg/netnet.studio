@@ -10,14 +10,14 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'choose',
-    content: 'AI assistants plug into coding workflows in different ways: in-editor auto-completion (ex: GitHub Copilot) writes directly into your files; terminal/IDE "agent" tools (ex: Claude Code, Codex) can run commands and even refactor entire projects; and chatbots (ex: <a href="https://chatgpt.com/" target="_blank">ChatGPT</a>, <a href="https://claude.ai/" target="_blank">Claude</a>, <a href="https://gemini.google.com/" target="_blank">Gemini</a>) live in a separate tab where you discuss code and get explanations, which is what we want.',
+    content: 'AI assistants plug into coding workflows in different ways: in-editor auto-completion (ex: GitHub Copilot) writes directly into your files; terminal/IDE "agent" tools (ex: Claude Code, Codex) can run commands and even refactor entire projects; and chatbots (ex: <a href="https://chatgpt.com/" target="_blank">ChatGPT</a>, <a href="https://claude.ai/" target="_blank">Claude</a>, <a href="https://gemini.google.com/" target="_blank">Gemini</a> or the privacy-concious <a href="https://lumo.proton.me/guest" target="_blank">Lumo</a>) live in a separate tab where you discuss code and get explanations, which is what we want.',
     options: {
       'Why chatbots and not agents?': (e) => e.goTo('why-chat'),
       'How should I prompt it?': (e) => e.goTo('prompts')
     }
   }, {
     id: 'why-chat',
-    content: 'Our aim is AI literacy that supports learning, not automation that replaces it. A coding agent works great for experienced coders, but for those of us still learning, conversational models (like chatbots, which operate outside your coding environment) usually provide more context and less autocompletion. You also don\'t need to install anything on your computer; you can use them just by opening a new tab.',
+    content: 'Our aim is AI literacy that supports learning, not automation that replaces it. A coding agents work great for experienced coders, but for those of us still learning, conversational models (like chatbots, which operate outside your coding environment) usually provide more context and less autocompletion. You also don\'t need to install anything on your computer; you can use them just by opening a new tab.',
     options: {
       'Then I copy the code?': (e) => e.goTo('transcribe1'),
       'How should I prompt it?': (e) => e.goTo('prompts')
@@ -56,7 +56,7 @@ window.CONVOS['ai-prompter'] = (self) => {
     }
   }, {
     id: 'struggle3',
-    content: 'Have you heard of <a href="http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html" target="_blank">rubber duck debugging</a>? It\'s exactly as it sounds: you\'re explaining what your code does line by line to a nonjudgemental third party (in this case, a rubber duck). Much like code isolation, but a bit less conversational than AI, the idea is that by vocalizing your problem, you may just come a conclusion on your own.',
+    content: 'Have you heard of <a href="http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html" target="_blank">rubber duck debugging</a>? It\'s exactly as it sounds: you\'re explaining what your code does line by line to a nonjudgemental third party (in this case, a rubber duck). Much like code isolation, but a bit less conversational than AI, the idea is that by vocalizing your problem, you might actually arrive at a conclusion on your own.',
     options: {
       'Cool, but I\'m ready to prompt!': (e) => e.hide()
     }

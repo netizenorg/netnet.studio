@@ -14,6 +14,9 @@ body {
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
 
 .menu {
   width: 100%;
@@ -49,23 +52,85 @@ main .input {
 
 main {
   background-color: var(--netizen-meta);
-  padding: 10px;
-}
-
-main::before {
-  content: "note settings";
-  font-family: 'fira-sans-regular';
-  color: var(--bg-color);
-  transform: translate(10px, 5px);
-  display: inline-block;
+  padding: 18px 10px 10px 10px;
 }
 
 main > div {
   margin: 10px;
 }
 
-#note-nums {
-  width: 460px;
+.note-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+#preview, .note-title-wrap, .note-focus {
+  position: relative;
+}
+
+/* main::before { */
+#preview::before,
+.note-title-wrap::before,
+.note-focus::before {
+  font-family: 'fira-sans-regular';
+  color: var(--bg-color);
+  top: -20px;
+  left: 0;
+  display: inline-block;
+  position: absolute;
+}
+
+#preview::before {
+  content: "current note";
+}
+
+.note-title-wrap::before {
+  content: "title";
+}
+
+.note-focus::before {
+  content: "code spotlight";
+}
+
+
+.note-focus {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.note-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+#note-focus-warn {
+  color: #e0b400;
+  border-color: #e0b400;
+}
+
+#note-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 10px 10px;
+  padding: 10px;
+  color: var(--netizen-meta);
+  font-family: 'fira-sans-mono', sans-serif;
+  font-size: 0.85em;
+}
+
+#note-info-bar-text {
+  flex: 1;
 }
 
 #note-info {
@@ -119,4 +184,58 @@ main > div {
 
 @media (max-width: 500px) {
   #modal > div { max-width: 80% }
+}
+
+/* NOTE LIST MODAL */
+
+#note-list-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(28, 28, 54, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#note-list-modal > div {
+  background: var(--bg-color);
+  font-family: 'fira-sans-mono', sans-serif;
+  color: var(--netizen-meta);
+  padding: 20px;
+  border: 3px solid var(--fg-color);
+  border-radius: 5px;
+  width: 90%;
+  height: 90%;
+  max-width: 700px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.note-list-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.note-list-modal-header h3 {
+  margin: 0;
+  color: var(--fg-color);
+}
+
+#note-list-modal reorderable-list {
+  width: 100%;
+}
+
+#note-list-modal .rl-highlight {
+  display: none;
+}
+
+#note-list-modal .rl-list {
+  max-height: none !important;
+  overflow: visible;
 }

@@ -1,5 +1,8 @@
 /* global Netitor, nn */
 
+// for new notes, must match the one in index.js
+const NOTE_PLACEHOLDER = 'This is the note\'s content, you can use simple HTML, like <b>bold</b>, <i>italic</i>, or a <a href="#" target="_blank">link</a>.'
+
 let curNoteIdx = 0
 let demos = []
 const DEMO = { key: null, info: [] }
@@ -119,12 +122,15 @@ function newNoteList (demo = {}) {
       nn.get('#note-list').addStep(note)
     })
   } else {
-    const note = { id: 0, focus: null, text: '...', title: 'getting started' }
+    const note = { id: 0, focus: null, text: NOTE_PLACEHOLDER, title: 'getting started' }
     DEMO.info = [note]
     nn.get('#note-list').addStep(note)
   }
   // setup event listeners
-  nn.get('#note-list').on('selected', (e) => loadNote(e.detail.id))
+  nn.get('#note-list').on('selected', (e) => {
+    loadNote(e.detail.id)
+    closeNoteListModal()
+  })
   nn.get('#note-list').on('remove', (e) => deleteNote(e.detail.id))
   nn.get('#note-list').on('reordered', (e) => reorderNotes(e.detail))
   nn.get('#note-list').on('opened', async () => {
@@ -143,9 +149,10 @@ function loadNote (idx) {
   curNoteIdx = idx
   const note = DEMO.info[curNoteIdx] || {}
   nn.get('#note-title').value = note.title || ''
-  nn.get('#note-nums').value = note.focus ? note.focus.join(', ') : ''
   nn.get('#note-list').selectStep(curNoteIdx)
-  ne.code = note.text || '...'
+  ne.code = note.text || NOTE_PLACEHOLDER
+  hideInfoBar()
+  updateWarningIcon()
   MSG('demo-mkr-loaded-note', curNoteIdx)
 }
 
@@ -172,6 +179,14 @@ function closeNotesList () {
   }
 }
 
+function openNoteListModal () {
+  nn.get('#note-list-modal').css({ display: 'flex' })
+}
+
+function closeNoteListModal () {
+  nn.get('#note-list-modal').css({ display: 'none' })
+}
+
 function deleteNote (idx) {
   if (DEMO.info.length < 2) return window.modal.open('need-one-note')
   // update DEMO.info array...
@@ -190,24 +205,82 @@ function updateNoteTitle () {
   updateWidget()
 }
 
-function updateNoteFocus () {
-  const note = DEMO.info[curNoteIdx]
-  let val = nn.get('#note-nums').value.trim()
-  const lastChar = val.slice(-1)
-  if (lastChar === ',') val = val.slice(0, -1)
-  if (val === '') note.focus = null
-  else {
-    note.focus = val.split(',').flatMap(f => {
-      if (f.includes('-')) {
-        const [start, end] = f.split('-').map(n => Number(n))
-        return Array.from({ length: end - start + 1 }, (_, i) => start + i)
-      } else {
-        return Number(f)
-      }
-    })
+function addFocusFromSelection () {
+  MSG('demo-mkr-get-selection', null)
+}
+
+function describeFocusItems (items) {
+  if (items.length === 1) {
+    const item = items[0]
+    return typeof item === 'object'
+      ? `added part of line ${item.line} to spotlight list`
+      : `added line ${item} to spotlight list`
   }
+  const allWholeLines = items.every(i => typeof i === 'number')
+  return allWholeLines
+    ? `added lines ${items.join(', ')} to spotlight list`
+    : `added ${items.length} selections to spotlight list`
+}
+
+function describeLostFocus (lost) {
+  const n = lost.length
+  return n === 1
+    ? 'this note\'s spotlight lost track of 1 location — the code it pointed to may have been edited or removed.'
+    : `this note's spotlight lost track of ${n} locations — the code they pointed to may have been edited or removed.`
+}
+
+// ....................................................... INFO BAR (below main)
+
+let infoBarFadeTimeout
+function showInfoBar (text, opts = {}) {
+  clearTimeout(infoBarFadeTimeout)
+  const bar = nn.get('#note-info-bar')
+  bar.style.transition = 'none'
+  bar.style.opacity = 1
+  bar.hidden = false
+  nn.get('#note-info-bar-text').textContent = text
+  nn.get('#note-info-bar-dismiss').hidden = !opts.dismissible
+  bar.dataset.noteIdx = opts.noteIdx != null ? String(opts.noteIdx) : ''
+}
+
+function hideInfoBar () {
+  clearTimeout(infoBarFadeTimeout)
+  const bar = nn.get('#note-info-bar')
+  bar.hidden = true
+  bar.style.opacity = ''
+  bar.style.transition = ''
+  nn.get('#note-info-bar-text').textContent = ''
+}
+
+function showFocusFeedback (msg) {
+  showInfoBar(msg)
+  const bar = nn.get('#note-info-bar')
+  infoBarFadeTimeout = setTimeout(() => {
+    bar.style.transition = 'opacity 800ms ease'
+    bar.style.opacity = 0
+    infoBarFadeTimeout = setTimeout(() => hideInfoBar(), 800)
+  }, 3000)
+}
+
+function updateWarningIcon () {
+  const note = DEMO.info[curNoteIdx]
+  const hasWarning = !!(note && note._warning && note._warning.length > 0)
+  const dismissed = hasWarning && note._warningDismissed === JSON.stringify(note._warning)
+  nn.get('#note-focus-warn').hidden = !(hasWarning && !dismissed)
+}
+
+function clearNoteFocus () {
+  const note = DEMO.info[curNoteIdx]
+  const hadFocus = note.focus && note.focus.length > 0
+  note.focus = null
+  note._focusFids = null
+  note._warning = null
+  note._warningDismissed = null
   nn.get('#note-list').updateStep(note)
   updateWidget()
+  updateWarningIcon()
+  MSG('demo-mkr-spotlight', null)
+  showFocusFeedback(hadFocus ? 'cleared spotlight list' : 'spotlight list already empty')
 }
 
 // ----------------------------------------------------------------------- SETUP
@@ -231,6 +304,14 @@ nn.get('#new').on('click', newNote)
 
 nn.get('#preview').on('click', () => MSG('demo-mkr-preview', curNoteIdx))
 
+nn.get('#note-prev').on('click', () => loadNote(curNoteIdx - 1))
+
+nn.get('#note-next').on('click', () => loadNote(curNoteIdx + 1))
+
+nn.get('#note-view-all').on('click', openNoteListModal)
+
+nn.get('#note-list-modal-close').on('click', closeNoteListModal)
+
 nn.get('#delete').on('click', () => deleteNote(curNoteIdx))
 
 // ..................................................
@@ -238,12 +319,30 @@ nn.get('#delete').on('click', () => deleteNote(curNoteIdx))
 nn.get('#note-title').on('input', updateNoteTitle)
 nn.get('#note-title').on('focus', closeNotesList)
 
-nn.get('#note-nums').on('input', updateNoteFocus)
-nn.get('#note-nums').on('focus', closeNotesList)
+nn.get('#note-focus-add').on('click', addFocusFromSelection)
+nn.get('#note-focus-clear').on('click', clearNoteFocus)
+
+nn.get('#note-focus-warn').on('click', () => {
+  const note = DEMO.info[curNoteIdx]
+  if (!note || !note._warning) return
+  showInfoBar(describeLostFocus(note._warning), { dismissible: true, noteIdx: curNoteIdx })
+})
+
+nn.get('#note-info-bar-dismiss').on('click', () => {
+  const idx = nn.get('#note-info-bar').dataset.noteIdx
+  if (idx !== '') {
+    const note = DEMO.info[Number(idx)]
+    // remember exactly *what* was dismissed, so a further change to the
+    // spotlight (a different lost-items set) still re-triggers the warning
+    if (note && note._warning) note._warningDismissed = JSON.stringify(note._warning)
+    if (Number(idx) === curNoteIdx) updateWarningIcon()
+  }
+  hideInfoBar()
+})
 
 const ne = new Netitor({
   ele: '#note-info',
-  code: '...',
+  code: NOTE_PLACEHOLDER,
   wrap: true,
   hint: false,
   lint: false,
@@ -255,7 +354,7 @@ ne.cm.on('blur', () => {
   updateWidget()
 })
 ne.cm.on('focus', () => {
-  if (ne.code === '...') ne.cm.execCommand('selectAll')
+  if (ne.code === NOTE_PLACEHOLDER) ne.cm.execCommand('selectAll')
   closeNotesList()
 })
 
@@ -289,6 +388,35 @@ nn.on('message', (e) => {
     }
   } else if (type === 'generated-url') {
     window.modal.open('new-url', payload)
+  } else if (type === 'demo-mkr-selection') {
+    const { items, fids } = payload || {}
+    if (!items || items.length === 0) return
+    const note = DEMO.info[curNoteIdx]
+    if (!note.focus) note.focus = []
+    if (!note._focusFids) note._focusFids = []
+    const added = []
+    items.forEach((item, i) => {
+      const exists = note.focus.some(f => JSON.stringify(f) === JSON.stringify(item))
+      if (!exists) {
+        note.focus.push(item)
+        note._focusFids.push(fids[i])
+        added.push(item)
+      }
+    })
+    if (added.length > 0) {
+      note._warningDismissed = null
+      updateWarningIcon()
+    }
+    nn.get('#note-list').updateStep(note)
+    updateWidget()
+    MSG('demo-mkr-spotlight', note.focus)
+    showFocusFeedback(added.length > 0 ? describeFocusItems(added) : 'already in spotlight list')
+  } else if (type === 'demo-mkr-focus-status') {
+    const { noteIdx, lost } = payload || {}
+    const note = DEMO.info[noteIdx]
+    if (!note) return
+    note._warning = lost && lost.length > 0 ? lost : null
+    if (noteIdx === curNoteIdx) updateWarningIcon()
   }
 })
 

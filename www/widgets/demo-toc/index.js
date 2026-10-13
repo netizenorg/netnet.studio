@@ -235,10 +235,7 @@ class DemoToc extends Widget {
     // window.convo = new Convo({ content: `${idx + 1}: ${o.text}`, options })
     window.convo = new Convo({ content: `${o.text}`, options })
 
-    if (o.focus instanceof Array) {
-      utils.scrollToLines(o.focus)
-      setTimeout(() => NNE.spotlight(o.focus), 500)
-    } else NNE.spotlight(null)
+    NNE.spotlight(o.focus instanceof Array ? o.focus : null)
   }
 
   _editorChange () {

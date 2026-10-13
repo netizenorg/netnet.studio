@@ -21,24 +21,7 @@
   </div>
 </div>
 
-<main style="opacity: 0.1">
-  <div>
-    <input class="input" id="note-title" placeholder="note title">
-    <input class="input" id="note-nums" placeholder="focus (comma separated numbers and dashed ranges)">
-    <button class="pill-btn pill-btn--secondary" name="note-info">?</button>
-  </div>
-  <div id="note-info"></div>
-</main>
-
 <div id="demo-settings" class="menu" style="opacity: 0.1">
-  <div style="align-items: flex-start;">
-    <button id="new" class="pill-btn pill-btn--secondary" title="create a new annotation">+ New Note</button>
-    <button id="preview" class="pill-btn pill-btn--secondary" title="preview this annotation">💬 Preview Note</button>
-    <reorderable-list id="note-list"></reorderable-list>
-    <button id="delete" class="pill-btn pill-btn--secondary" title="delete selected annotation(s)">
-      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete Note
-    </button>
-  </div>
   <div>
     <div>
       <input class="input" id="demo-name" placeholder="demo name">
@@ -58,8 +41,50 @@
   </div>
 </div>
 
+<main style="opacity: 0.1">
+  <div class="note-header-row">
+    <button id="preview" class="pill-btn pill-btn--secondary" title="preview this annotation">💬 Preview Note</button>
+    <span class="note-title-wrap">
+      <input class="input" id="note-title" placeholder="note title">
+    </span>
+    <span class="note-focus">
+      <button class="pill-btn pill-btn--secondary" id="note-focus-add" title="spotlight whatever is currently selected in the editor">+ add selection</button>
+      <button class="pill-btn pill-btn--secondary" id="note-focus-clear" title="clear this note's spotlight">clear</button>
+      <button class="pill-btn pill-btn--secondary" id="note-focus-warn" title="this note's spotlight may need attention" hidden>⚠️</button>
+    </span>
+    <button class="pill-btn pill-btn--secondary" name="note-info" style="margin-left:auto">?</button>
+  </div>
+  <div id="note-info"></div>
+  <div class="note-nav-row">
+    <button id="new" class="pill-btn pill-btn--secondary" title="create a new annotation">+ New Note</button>
+    <span class="note-nav-group">
+      <button id="note-prev" class="pill-btn pill-btn--secondary" title="previous note">← prev</button>
+      <button id="note-view-all" class="pill-btn pill-btn--secondary" title="view and reorder all notes">view all notes</button>
+      <button id="note-next" class="pill-btn pill-btn--secondary" title="next note">next →</button>
+    </span>
+    <button id="delete" class="pill-btn pill-btn--secondary" title="delete selected annotation(s)">
+      <img style="width: 14px;" src="/images/widgets/trash-meta-color.svg"> Delete Note
+    </button>
+  </div>
+</main>
+
+<div id="note-info-bar" hidden>
+  <span id="note-info-bar-text"></span>
+  <button class="pill-btn pill-btn--secondary" id="note-info-bar-dismiss" hidden>dismiss warning</button>
+</div>
+
 <div id="modal">
   <div></div>
+</div>
+
+<div id="note-list-modal">
+  <div>
+    <div class="note-list-modal-header">
+      <h3>All Notes</h3>
+      <button class="pill-btn pill-btn--secondary" id="note-list-modal-close">close</button>
+    </div>
+    <reorderable-list id="note-list"></reorderable-list>
+  </div>
 </div>
 
 <script src="/custom-elements/misc/reorderable-list/index.js"></script>
