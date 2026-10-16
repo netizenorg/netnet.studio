@@ -41,7 +41,7 @@ window.CONVOS['project-files'] = (self) => {
   const repoSelectionList = (() => {
     const ss = WIDGETS['student-session']
     if (ss && ss.data.github.repos) {
-      let str = '<select class="dropdown dropdown--invert">'
+      let str = '<select name="repo-list" class="dropdown dropdown--invert">'
       const list = ss.data.github.repos.split(', ')
       list.forEach(r => { str += `<option value="${r}">${r}</option>` })
       str += '</select>'

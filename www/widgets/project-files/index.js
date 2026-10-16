@@ -109,6 +109,15 @@ class ProjectFiles extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
+    // if they tab back to netnet while looking at the list of their projects
+    // (ex: after creating a new repo on github.com) refresh that list
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return
+      if (!window.convo || window.convo.id !== 'open-project') return
+      if (!NNW.menu.textBubble.opened) return
+      this._refreshRepoSelection()
+    })
+
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
@@ -525,6 +534,7 @@ class ProjectFiles extends Widget {
     if (!repo) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
+      this._refreshRepoSelection()
       return
     }
 
@@ -1326,6 +1336,34 @@ class ProjectFiles extends Widget {
     } else window.convo = new Convo(this.convos, 'move-no-other-path')
   }
 
+  // the cached repo list can be stale (ex: repo created on github.com since
+  // the page loaded), so fetch a fresh one && swap it into the open-project
+  // menu (if it's still open) without making the student wait for it
+  _refreshRepoSelection () {
+    WIDGETS['student-session'].refreshRepos(names => {
+      const swap = (tries) => {
+        if (!window.convo || window.convo.id !== 'open-project') return
+        const sel = NNW.menu.textBubble.querySelector('select[name="repo-list"]')
+        if (!sel) { // text bubble may still be fading in the menu
+          if (tries > 0) setTimeout(() => swap(tries - 1), 100)
+          return
+        }
+        // only keep their choice if they actually changed it, otherwise
+        // default to the top of the fresh list (their newest repo)
+        const picked = sel.selectedIndex > 0 ? sel.value : null
+        sel.innerHTML = ''
+        names.forEach(name => {
+          const opt = document.createElement('option')
+          opt.value = name
+          opt.textContent = name
+          sel.appendChild(opt)
+        })
+        if (names.includes(picked)) sel.value = picked
+      }
+      swap(10)
+    })
+  }
+
   newProject () {
     if (typeof window.CONVOS[this.key] !== 'function') {
       setTimeout(() => this.newProject(), 100); return
@@ -1936,11 +1974,7 @@ class ProjectFiles extends Widget {
         window.convo = new Convo(this.convos, 'new-project-created')
 
         // ... upldate list of repos...
-        utils.get('/api/github/saved-projects', (json) => {
-          if (!json.data) return
-          const names = json.data.map(o => o.name)
-          WIDGETS['student-session'].setData('repos', names.join(', '))
-        })
+        WIDGETS['student-session'].refreshRepos()
 
         this._setupCodeUpdateListener()
 
