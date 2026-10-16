@@ -776,7 +776,7 @@ class ProjectFiles extends Widget {
     NNE.customRender = null
     NNE.code = ''
     NNE.language = 'html'
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
     // reset web-publish state for the closed project
     WIDGETS['web-publish']?.reset()
     // close widget
@@ -1250,7 +1250,7 @@ class ProjectFiles extends Widget {
     } else {
       NNE.language = 'html'
     }
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
 
     if (this.history.stack[filepath]?.length === 0) {
       this.history.stack[filepath] = [NNE.code]

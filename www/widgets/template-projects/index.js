@@ -59,8 +59,7 @@ class TemplateProjects extends Widget {
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
     NNE.language = 'html'
-    const ssWrap = WIDGETS['student-session'].getData('wrap')
-    NNE.wrap = ssWrap || ssWrap === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
     NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
     if (WIDGETS['template-toc']) {
       WIDGETS['template-toc'].updateView()
@@ -328,7 +327,7 @@ class TemplateProjects extends Widget {
     this._prevWrap = NNE.wrap
     NNE.readOnly = false
     NNE.autoUpdate = WIDGETS['student-session'].getData('auto-update') === 'true'
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
   }
 
   _continueGuide () {
