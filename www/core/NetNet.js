@@ -659,15 +659,19 @@ class NetNet {
       e.metaKey = event.metaKey
       NNE.iframe.dispatchEvent(e)
     }
-    NNE.iframe.contentWindow
-      .addEventListener('mousemove', (e) => callback(e, 'mousemove'))
-    NNE.iframe.contentWindow
-      .addEventListener('mouseup', (e) => callback(e, 'mouseup'))
-    NNE.iframe.contentWindow
-      .addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) e.preventDefault()
-        callback(e, 'keydown')
-      })
+    // a sandboxed iframe (ex: sketch loaded from a shared #code/ URL) is
+    // cross-origin, so we can't reach into it, skip rather than throw
+    try {
+      NNE.iframe.contentWindow
+        .addEventListener('mousemove', (e) => callback(e, 'mousemove'))
+      NNE.iframe.contentWindow
+        .addEventListener('mouseup', (e) => callback(e, 'mouseup'))
+      NNE.iframe.contentWindow
+        .addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) e.preventDefault()
+          callback(e, 'keydown')
+        })
+    } catch (err) { return }
     // match the page's background color to that of the iframe's backgroundColor
     // w/out it the netnet's rounded border's create a white space
     const iframeBody = NNE.iframe.contentDocument.body

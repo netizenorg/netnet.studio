@@ -470,7 +470,10 @@ class ProjectFiles extends Widget {
     window.addEventListener('keyup', () => close())
     NNE.on('render-update', () => {
       NNE.iframe.addEventListener('click', () => close())
-      NNE.iframe.contentWindow.addEventListener('click', () => close())
+      // sandboxed iframe (ex: shared #code/ URL sketch) is cross-origin
+      try {
+        NNE.iframe.contentWindow.addEventListener('click', () => close())
+      } catch (err) { }
     })
   }
 
@@ -758,7 +761,8 @@ class ProjectFiles extends Widget {
     utils.updateURL()
     NNW.updateTitleBar(null)
     // remove code update event listener
-    NNE.off('code-update', this.codeEdit)
+    // NOTE: off() w/out a callback removes *all* code-update listeners
+    if (this.codeEdit) NNE.off('code-update', this.codeEdit)
     this.codeEdit = null
     // remove custom shorcuts
     const CM = NNE.cm.constructor

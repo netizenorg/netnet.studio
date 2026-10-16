@@ -368,7 +368,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'create-new-project',
     before: () => {
-      self.closeProject()
+      // if closeProject throws partway through (after clearing the editor)
+      // we still need to restore the student's code below
+      try { self.closeProject() } catch (err) { console.error(err) }
       NNW.menu.switchFace('default')
       if (self._keepCode) NNE.code = self._keepCode
       self._keepCode = null

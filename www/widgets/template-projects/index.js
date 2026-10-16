@@ -54,7 +54,8 @@ class TemplateProjects extends Widget {
     NNE.marker(null)
     this.state = {}
     NNE.update(NNE.code)
-    NNE.off('code-update', this.codeEdit)
+    // NOTE: off() w/out a callback removes *all* code-update listeners
+    if (this.codeEdit) NNE.off('code-update', this.codeEdit)
     NNE.readOnly = false
     NNE.cm.off('keydown', this._boundEditWatcher)
     NNE.language = 'html'
