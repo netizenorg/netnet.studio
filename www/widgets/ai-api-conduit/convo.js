@@ -4,7 +4,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     const dict = {
       openai: 'OpenAI',
       anthropic: 'Anthropic',
-      'local-ollama': 'Ollama'
+      ollama: 'Ollama'
     }
 
     return self.provider === 'disabled'
@@ -75,7 +75,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       thanks: (e) => e.hide()
     }
   }, {
-    id: 'create-local-ollama-key',
+    id: 'create-ollama-key',
     content: 'If you have <a href="https://ollama.com/" target="_blank">Ollama</a> installed and currently running on your computer with the API configured properly I\'ll be able to connect to it. Keep in mind, smaller LLMs might not perform as well as larger ones.',
     options: {
       'how do i run it?': (e) => e.goTo('ollama2'),
@@ -158,7 +158,38 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     options: {
       'got it': (e) => e.hide(),
       'model?': (e) => e.goTo('req-model'),
-      'temperature?': (e) => e.goTo('req-temperature')
+      ...(self.provider !== 'anthropic' && { 'temperature?': (e) => e.goTo('req-temperature') }),
+      ...(self.provider === 'ollama' && {
+        'think?': (e) => e.goTo('req-think'),
+        'num_ctx?': (e) => e.goTo('req-num-ctx')
+      })
+    }
+  }, {
+    id: 'req-think',
+    content: 'Some open models, like <a href="https://ollama.com/library/gemma4" target="_blank">Gemma 4</a>, can "think" before they reply, meaning they first write out their reasoning step by step and then write their answer. Setting <code>think</code> to <code>true</code> turns this on, which can lead to better answers, but it takes longer and uses up more of the context window. Not every model can do this, if yours can\'t, Ollama will send back an error, so set it back to <code>false</code>.',
+    options: {
+      'got it': (e) => e.hide(),
+      'it thinks?': (e) => e.goTo('req-think2')
+    }
+  }, {
+    id: 'req-think2',
+    content: 'Not the way you or I do. Its "thinking" is just more generated text, tokens predicted to look like <a href="https://en.wikipedia.org/wiki/Reasoning_model" target="_blank">reasoning</a>. Because that text then becomes part of what the model reads before writing its answer, it often helps, but it\'s no guarantee the answer will be correct.',
+    options: {
+      'I see': (e) => e.hide(),
+      'what\'s num_ctx?': (e) => e.goTo('req-num-ctx')
+    }
+  }, {
+    id: 'req-num-ctx',
+    content: 'The <code>num_ctx</code> setting is the size of the model\'s "context window", how many tokens it can consider at once. That includes everything we send it (the system prompt, your question and your code) as well as everything it writes back (including its "thinking"). If the window fills up, the model stops mid-reply.',
+    options: {
+      'got it': (e) => e.hide(),
+      'why not make it huge?': (e) => e.goTo('req-num-ctx2')
+    }
+  }, {
+    id: 'req-num-ctx2',
+    content: 'Because a bigger window needs more of your computer\'s memory. Ollama runs the model on your own computer, so if it gets slow or fails to load, try a smaller number. Just keep in mind that the more code you include with your question, the more room it needs.',
+    options: {
+      ok: (e) => e.hide()
     }
   }, {
     id: 'req-model',

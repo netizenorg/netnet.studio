@@ -33,8 +33,15 @@ window.CONVOS['student-session'] = (self) => {
   const postLLM = (e, o) => {
     const q = o.querySelector('input').value.trim()
     if (!q) return e.goTo('ask-llm-missing')
-    WIDGETS['ai-api-conduit']._pendingQuery = q
-    e.goTo('confirm-llm')
+    const w = WIDGETS['ai-api-conduit']
+    w.$('[name="user-input"]').value = q
+    w._sendRequest()
+  }
+
+  const editLLM = (e, o) => {
+    // open the conduit with their question (if any) already filled in
+    WIDGETS['ai-api-conduit']._pendingQuery = o.querySelector('input').value.trim()
+    WIDGETS.open('ai-api-conduit')
   }
 
   return [
@@ -90,6 +97,7 @@ window.CONVOS['student-session'] = (self) => {
       content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. Would you like me to pass a query along to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
       options: {
         send: (e, o) => postLLM(e, o),
+        'edit API settings': (e, o) => editLLM(e, o),
         'never mind': (e) => e.hide()
       }
     },
@@ -98,6 +106,7 @@ window.CONVOS['student-session'] = (self) => {
       content: 'The <b class="link" onclick="WIDGETS.open(\'ai-api-conduit\')">LLM-API Conduit</b> widget needs some user input before it can post a request. Type something below.<br><input style="width:350px" placeholder="ask an LLM a question">',
       options: {
         send: (e, o) => postLLM(e, o),
+        'edit API settings': (e, o) => editLLM(e, o),
         'never mind': (e) => e.hide()
       }
     },
@@ -106,22 +115,8 @@ window.CONVOS['student-session'] = (self) => {
       content: 'Try restating your question another way. <br><input style="width:350px" placeholder="ask an LLM a question">',
       options: {
         send: (e, o) => postLLM(e, o),
+        'edit API settings': (e, o) => editLLM(e, o),
         'never mind': (e) => e.hide()
-      }
-    },
-    {
-      id: 'confirm-llm',
-      content: 'Would you like to edit any of the <b>LLM-API Conduit</b> widget settings like model settings or attached files first?',
-      options: {
-        'no, send now': (e) => {
-          const w = WIDGETS['ai-api-conduit']
-          w.$('[name="user-input"]').value = w._pendingQuery
-          w._pendingQuery = null
-          w._sendRequest()
-        },
-        'yes, let\'s edit first': (e) => {
-          WIDGETS.open('ai-api-conduit')
-        }
       }
     },
     {

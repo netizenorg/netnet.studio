@@ -10,11 +10,16 @@ class AiApiConduit extends Widget {
     this.width = 638
     this.height = 535
 
-    this.provider = 'openai' // or 'anthropic'
+    this.provider = 'openai' // or 'anthropic', 'ollama', 'disabled'
     this.useSchema = false // no schema by default
     this.systemPrompt = '' // see data/system-prompt.txt
     this.schema = null // see data/schema.json
     this.nnDocs = null // see data/nn-docs-for-llm.md
+
+    // the current settings, loaded from (&& saved to) student-session
+    // by _loadSettings() && _saveSetting(), see _settingsKeys()
+    this.settings = { key: null, model: null, temperature: 0.4, maxTokens: 4096, numCtx: 32768, think: false }
+    this.adapters = this._createAdapters()
 
     this._setupConvoListener()
 
@@ -47,13 +52,12 @@ class AiApiConduit extends Widget {
     this.schema = await utils.getSync(`/widgets/${w}/data/schema.json`)
     this.nnDocs = await utils.getSync(`/widgets/${w}/data/nn-docs-for-llm.md`, true)
     this._setupTabs()
-    this._setupProviderToggle()
     // restore useSchema before _setupRequestBody so the body renders correctly
     const storedSchema = WIDGETS['student-session'].getData('llm-use-schema')
     if (storedSchema !== null) this.useSchema = storedSchema !== 'false'
+    this._setupProviderToggle()
+    this._setupApiKey()
     this._setupRequestBody()
-    this._loadStoredSettings()
-    this._setupSettingsSync()
     this._populateSystemPrompt()
     this._populateSchema()
     this._populateIncludeCode()
@@ -74,14 +78,14 @@ class AiApiConduit extends Widget {
         }
         if (label.dataset.tab === 'include-code') this._populateIncludeCode()
         this.switchTab(label.dataset.tab)
-        window.convo = new Convo(this.convos, label.dataset.tab)
+        this.convo(label.dataset.tab, true)
       })
     })
   }
 
   _toggleApiKeySection () {
-    const hideKey = this.provider === 'local-ollama' || this.provider === 'disabled'
-    this.$('[name="api-key-section"]').style.display = hideKey ? 'none' : ''
+    const needsKey = this.adapters[this.provider]?.needsKey
+    this.$('[name="api-key-section"]').style.display = needsKey ? '' : 'none'
   }
 
   _setupProviderToggle () {
@@ -95,98 +99,316 @@ class AiApiConduit extends Widget {
       select.value = storedProvider
     }
 
+    this._loadSettings()
     this._toggleApiKeySection()
 
     select.addEventListener('change', () => {
       this.provider = select.value
       ss.setData('llm-provider', select.value)
+      this._loadSettings()
       this._toggleApiKeySection()
       this._setupRequestBody()
-      this.$('[name="api-key"]').value = ''
-      this._loadStoredSettings()
-      this._setupSettingsSync()
+      this.$('[name="api-key"]').value = this.settings.key || ''
       window.convo = new Convo(this.convos, `create-${select.value}-key`)
     })
   }
 
-  _setupRequestBody () {
-    const pre = this.$('[name="request-body"]')
-    if (this.provider === 'openai') {
-      pre.innerHTML = this.useSchema ? `{
-  model: <input type="text" name="model" value="gpt-5.4-mini" placeholder="model-name">,
-  instructions: <span class="link" data-tab="system">systemPrompt</span>,
-  input: <span class="link" data-tab="post">userInput</span>,
+  _setupApiKey () {
+    const input = this.$('[name="api-key"]')
+    input.value = this.settings.key || ''
+
+    input.addEventListener('click', async (e) => {
+      this.convos = window.CONVOS[this.key](this)
+      window.convo = new Convo(this.convos, 'paste-key')
+      await nn.sleep(utils.getVal('--menu-fades-time'))
+      input.focus()
+    })
+
+    input.addEventListener('change', (e) => {
+      this._saveSetting('key', e.target.value.trim())
+    })
+  }
+
+  // ...........................................................................
+  // settings: anything the student sets is stored locally via student-session
+
+  _settingsKeys () {
+    // the student-session (localStorage) key for each setting
+    return {
+      key: `llm-key-${this.provider}`,
+      model: `llm-model-${this.provider}`,
+      temperature: 'llm-temperature',
+      maxTokens: 'llm-max-tokens',
+      numCtx: 'llm-num-ctx',
+      think: 'llm-think'
+    }
+  }
+
+  _loadSettings () {
+    const ss = WIDGETS['student-session']
+    const keys = this._settingsKeys()
+    const a = this.adapters[this.provider]
+    const num = (v, def) => isNaN(parseFloat(v)) ? def : parseFloat(v)
+    this.settings = {
+      key: a?.needsKey ? ss.getData(keys.key) || null : null,
+      model: ss.getData(keys.model) || a?.model || null,
+      temperature: num(ss.getData(keys.temperature), 0.4),
+      maxTokens: num(ss.getData(keys.maxTokens), 4096),
+      numCtx: num(ss.getData(keys.numCtx), 32768),
+      think: ss.getData(keys.think) === 'true'
+    }
+  }
+
+  _saveSetting (name, value) {
+    // an empty value removes it from student-session (&& reverts to default)
+    const empty = value === '' || value === null || Number.isNaN(value)
+    WIDGETS['student-session'].setData(this._settingsKeys()[name], empty ? null : String(value))
+    this._loadSettings()
+  }
+
+  // ...........................................................................
+  // provider adapters: each LLM provider's API "dialect"
+  // model: default model, needsKey: whether it requires an API key
+  // request(o): builds the { url, method, headers, body } sent to the API
+  // reply(data): finds the text of the reply in the API's response
+  // display(h): the request body as rendered in the "Request Body" tab
+
+  _createAdapters () {
+    return {
+      openai: {
+        model: 'gpt-5.4-mini',
+        needsKey: true,
+        request: (o) => {
+          const body = { model: o.model, instructions: o.system, input: o.input, temperature: o.temperature }
+          if (o.schema) {
+            body.text = {
+              format: {
+                type: 'json_schema',
+                name: 'coding_tutor_response',
+                schema: o.schema,
+                strict: true
+              }
+            }
+          }
+          return {
+            url: 'https://api.openai.com/v1/responses',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${o.key}`
+            },
+            body
+          }
+        },
+        reply: (data) => {
+          if (data.error) throw new Error(data.error.message)
+          const msg = data.output.find(item => item.type === 'message')
+          if (!msg?.content?.[0]) throw new Error('Unexpected OpenAI response structure')
+          const content = msg.content[0]
+          if (content.type !== 'output_text') throw new Error(`Expected output_text, got ${content.type}`)
+          return content.text
+        },
+        display: (h) => this.useSchema ? `{
+  model: ${h.model},
+  instructions: ${h.system},
+  input: ${h.input},
   text: {
     format: {
       type: 'json_schema',
       name: 'coding_tutor_response',
-      schema: <span class="link" data-tab="schema">schema</span>,
+      schema: ${h.schema},
       strict: true
     }
   },
-  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+  temperature: ${h.temperature}
 }` : `{
-  model: <input type="text" name="model" value="gpt-5.4-mini" placeholder="model-name">,
-  instructions: <span class="link" data-tab="system">systemPrompt</span>,
-  input: <span class="link" data-tab="post">userInput</span>,
-  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+  model: ${h.model},
+  instructions: ${h.system},
+  input: ${h.input},
+  temperature: ${h.temperature}
 }`
-    } else if (this.provider === 'anthropic') {
-      pre.innerHTML = this.useSchema ? `{
-  model: <input type="text" name="model" value="claude-haiku-4-5" placeholder="model-name">,
-  system: <span class="link" data-tab="system">systemPrompt</span>,
+      },
+
+      anthropic: {
+        // NOTE: no temperature, Anthropic's newer models reject it
+        model: 'claude-haiku-4-5',
+        needsKey: true,
+        request: (o) => {
+          const body = {
+            model: o.model,
+            system: o.system,
+            messages: [{ role: 'user', content: o.input }],
+            max_tokens: parseInt(o.maxTokens) || 4096
+          }
+          if (o.schema) {
+            body.output_config = {
+              format: { type: 'json_schema', schema: o.schema }
+            }
+          }
+          return {
+            url: 'https://api.anthropic.com/v1/messages',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': o.key,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body
+          }
+        },
+        reply: (data) => {
+          if (data.error) throw new Error(data.error.message)
+          if (data.type === 'error') throw new Error(data.error?.message || 'Unknown error')
+          // the reply can contain other types of blocks, so join the text ones
+          const text = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('')
+          if (!text && data.stop_reason === 'max_tokens') {
+            throw new Error('The model reached the max_tokens limit before it finished replying. Try a larger max_tokens.')
+          }
+          if (!text) throw new Error(`Unexpected Anthropic response structure (stop_reason: ${data.stop_reason})`)
+          return text
+        },
+        display: (h) => this.useSchema ? `{
+  model: ${h.model},
+  system: ${h.system},
   messages: [
-    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
+    { role: 'user', content: ${h.input} }
   ],
-  max_tokens: <input type="number" name="max-tokens" min="1" max="8192" step="1" value="4096">,
+  max_tokens: ${h.maxTokens},
   output_config: {
     format: {
       type: 'json_schema',
-      schema: <span class="link" data-tab="schema">schema</span>
+      schema: ${h.schema}
     }
-  },
-  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
-}` : `{
-  model: <input type="text" name="model" value="claude-haiku-4-5" placeholder="model-name">,
-  system: <span class="link" data-tab="system">systemPrompt</span>,
-  messages: [
-    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
-  ],
-  max_tokens: <input type="number" name="max-tokens" min="1" max="8192" step="1" value="4096">,
-  temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
-}`
-    } else if (this.provider === 'local-ollama') {
-      pre.innerHTML = this.useSchema ? `{
-  model: <input type="text" name="model" value="gemma4:e4b" placeholder="model-name">,
-  messages: [
-    { role: 'system', content: <span class="link" data-tab="system">systemPrompt</span> },
-    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
-  ],
-  stream: false,
-  format: <span class="link" data-tab="schema">schema</span>,
-  options: {
-    temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
   }
 }` : `{
-  model: <input type="text" name="model" value="gemma4:e4b" placeholder="model-name">,
+  model: ${h.model},
+  system: ${h.system},
   messages: [
-    { role: 'system', content: <span class="link" data-tab="system">systemPrompt</span> },
-    { role: 'user', content: <span class="link" data-tab="post">userInput</span> }
+    { role: 'user', content: ${h.input} }
+  ],
+  max_tokens: ${h.maxTokens}
+}`
+      },
+
+      ollama: {
+        model: 'gemma4:e2b',
+        needsKey: false,
+        request: (o) => {
+          const body = {
+            model: o.model,
+            messages: [
+              { role: 'system', content: o.system },
+              { role: 'user', content: o.input }
+            ],
+            stream: false,
+            think: o.think,
+            options: { temperature: o.temperature, num_ctx: parseInt(o.numCtx) || 32768 }
+          }
+          if (o.schema) body.format = o.schema
+          return {
+            url: 'http://localhost:11434/api/chat',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body
+          }
+        },
+        reply: (data) => {
+          if (data.error) throw new Error(data.error)
+          if (!data.message?.content && data.done_reason === 'length') {
+            throw new Error(`The model ran out of room in its context window (num_ctx: ${this.settings.numCtx} tokens) before it finished replying. Try a larger num_ctx or attach fewer files.`)
+          }
+          if (!data.message?.content) throw new Error('Unexpected Ollama response structure')
+          return typeof data.message.content === 'object'
+            ? JSON.stringify(data.message.content)
+            : data.message.content
+        },
+        display: (h) => this.useSchema ? `{
+  model: ${h.model},
+  messages: [
+    { role: 'system', content: ${h.system} },
+    { role: 'user', content: ${h.input} }
   ],
   stream: false,
+  think: ${h.think},
+  format: ${h.schema},
   options: {
-    temperature: <input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="0.4">
+    temperature: ${h.temperature},
+    num_ctx: ${h.numCtx}
+  }
+}` : `{
+  model: ${h.model},
+  messages: [
+    { role: 'system', content: ${h.system} },
+    { role: 'user', content: ${h.input} }
+  ],
+  stream: false,
+  think: ${h.think},
+  options: {
+    temperature: ${h.temperature},
+    num_ctx: ${h.numCtx}
   }
 }`
-    } else if (this.provider === 'disabled') {
-      pre.innerHTML = ''
+      }
     }
+  }
+
+  _buildRequest (input) {
+    const a = this.adapters[this.provider]
+    return a.request({
+      key: this.settings.key,
+      model: this.settings.model || a.model,
+      system: this.systemPrompt,
+      input,
+      temperature: this.settings.temperature,
+      maxTokens: this.settings.maxTokens,
+      numCtx: this.settings.numCtx,
+      think: this.settings.think,
+      schema: this.useSchema ? this.schema : null
+    })
+  }
+
+  // ...........................................................................
+
+  _setupRequestBody () {
+    const pre = this.$('[name="request-body"]')
+    const a = this.adapters[this.provider]
+    if (!a) { pre.innerHTML = ''; return }
+
+    const s = this.settings
+    // the editable parts of the request && links to the other tabs
+    pre.innerHTML = a.display({
+      model: `<input type="text" name="model" value="${s.model || ''}" placeholder="model-name">`,
+      temperature: `<input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="${s.temperature}">`,
+      maxTokens: `<input type="number" name="max-tokens" min="1" max="8192" step="1" value="${s.maxTokens}">`,
+      numCtx: `<input type="number" name="num-ctx" min="2048" max="262144" step="1024" value="${s.numCtx}">`,
+      think: `<select name="think"><option value="false">false</option><option value="true"${s.think ? ' selected' : ''}>true</option></select>`,
+      system: '<span class="link" data-tab="system">systemPrompt</span>',
+      input: '<span class="link" data-tab="post">userInput</span>',
+      schema: '<span class="link" data-tab="schema">schema</span>'
+    })
+
     pre.querySelectorAll('.link').forEach(link => {
       link.addEventListener('click', () => {
         this.switchTab(link.dataset.tab)
-        window.convo = new Convo(this.convos, link.dataset.tab)
+        this.convo(link.dataset.tab, true)
       })
     })
+
+    const model = pre.querySelector('[name="model"]')
+    model.addEventListener('change', (e) => this._saveSetting('model', e.target.value.trim()))
+
+    const temp = pre.querySelector('[name="temperature"]')
+    if (temp) temp.addEventListener('change', (e) => this._saveSetting('temperature', parseFloat(e.target.value)))
+
+    const max = pre.querySelector('[name="max-tokens"]')
+    if (max) max.addEventListener('change', (e) => this._saveSetting('maxTokens', parseInt(e.target.value)))
+
+    const ctx = pre.querySelector('[name="num-ctx"]')
+    if (ctx) ctx.addEventListener('change', (e) => this._saveSetting('numCtx', parseInt(e.target.value)))
+
+    const think = pre.querySelector('[name="think"]')
+    if (think) think.addEventListener('change', (e) => this._saveSetting('think', e.target.value))
   }
 
   _populateSystemPrompt () {
@@ -317,69 +539,6 @@ class AiApiConduit extends Widget {
     return parts.length > 0 ? parts.join('\n\n') : ''
   }
 
-  _loadStoredSettings () {
-    const ss = WIDGETS['student-session']
-
-    const storedSchema = ss.getData('llm-use-schema')
-    if (storedSchema !== null) this.useSchema = storedSchema !== 'false'
-
-    const key = this.provider !== 'local-ollama' && this.provider !== 'disabled'
-      ? ss.getData(`llm-key-${this.provider}`) : null
-    if (key) this.$('[name="api-key"]').value = key
-
-    if (this.provider !== 'disabled') {
-      const modelEl = this.$('[name="model"]')
-      const storedModel = ss.getData(`llm-model-${this.provider}`)
-      if (storedModel) modelEl.value = storedModel
-      else ss.setData(`llm-model-${this.provider}`, modelEl.value)
-
-      const tempEl = this.$('[name="temperature"]')
-      const storedTemp = ss.getData('llm-temperature')
-      if (storedTemp) tempEl.value = storedTemp
-      else ss.setData('llm-temperature', tempEl.value)
-
-      const maxEl = this.ele.querySelector('[name="max-tokens"]')
-      if (maxEl) {
-        const storedMax = ss.getData('llm-max-tokens')
-        if (storedMax) maxEl.value = storedMax
-        else ss.setData('llm-max-tokens', maxEl.value)
-      }
-    }
-  }
-
-  _setupSettingsSync () {
-    const ss = WIDGETS['student-session']
-
-    this.$('[name="api-key"]').addEventListener('click', async (e) => {
-      this.convos = window.CONVOS[this.key](this)
-      window.convo = new Convo(this.convos, 'paste-key')
-      await nn.sleep(utils.getVal('--menu-fades-time'))
-      this.$('[name="api-key"]').focus()
-    })
-
-    this.$('[name="api-key"]').addEventListener('change', (e) => {
-      const val = e.target.value.trim()
-      ss.setData(`llm-key-${this.provider}`, val || null)
-    })
-
-    if (this.provider !== 'disabled') {
-      this.$('[name="model"]').addEventListener('change', (e) => {
-        ss.setData(`llm-model-${this.provider}`, e.target.value.trim() || null)
-      })
-
-      this.$('[name="temperature"]').addEventListener('change', (e) => {
-        ss.setData('llm-temperature', e.target.value || null)
-      })
-
-      const maxEl = this.ele.querySelector('[name="max-tokens"]')
-      if (maxEl) {
-        maxEl.addEventListener('change', (e) => {
-          ss.setData('llm-max-tokens', e.target.value || null)
-        })
-      }
-    }
-  }
-
   _setupSendButton () {
     this.$('[name="send-btn"]').addEventListener('click', () => this._sendRequest())
   }
@@ -388,10 +547,10 @@ class AiApiConduit extends Widget {
     const pconvo = this.useSchema ? 'llm-possessed-takeover' : 'llm-possessed-processing'
     window.convo = new Convo(this.convos, pconvo)
 
-    if (this.provider === 'disabled') return this.convo('provider-disabled')
+    const a = this.adapters[this.provider]
+    if (!a) return this.convo('provider-disabled')
 
-    const apiKey = this.$('[name="api-key"]').value.trim()
-    if (!apiKey && this.provider !== 'local-ollama') return this.convo('no-key')
+    if (a.needsKey && !this.settings.key) return this.convo('no-key')
 
     const rawInput = this.$('[name="user-input"]').value.trim()
     if (!rawInput) return this.convo('no-input')
@@ -402,10 +561,6 @@ class AiApiConduit extends Widget {
       ? `${rawInput}\n\nHere is the code I'm working with:\n\n${includedCode}`
       : rawInput
 
-    const systemPrompt = this.$('[name="system-prompt"]').textContent
-    const model = this.$('[name="model"]').value
-    const temperature = parseFloat(this.$('[name="temperature"]').value)
-
     const btn = this.$('[name="send-btn"]')
     btn.textContent = 'sending...'
     btn.disabled = true
@@ -413,94 +568,20 @@ class AiApiConduit extends Widget {
     this.$('[name="response-display"]').textContent = 'waiting for response...'
 
     try {
-      let url, headers, body
-
-      if (this.provider === 'openai') {
-        url = 'https://api.openai.com/v1/responses'
-        headers = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`
-        }
-        body = { model, instructions: systemPrompt, input: userInput, temperature }
-        if (this.useSchema) {
-          body.text = {
-            format: {
-              type: 'json_schema',
-              name: 'coding_tutor_response',
-              schema: this.schema,
-              strict: true
-            }
-          }
-        }
-      } else if (this.provider === 'anthropic') {
-        url = 'https://api.anthropic.com/v1/messages'
-        headers = {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        }
-        const maxTokens = parseInt(this.$('[name="max-tokens"]').value) || 4096
-        body = {
-          model,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: userInput }],
-          max_tokens: maxTokens,
-          temperature
-        }
-        if (this.useSchema) {
-          body.output_config = {
-            format: { type: 'json_schema', schema: this.schema }
-          }
-        }
-      } else if (this.provider === 'local-ollama') {
-        url = 'http://localhost:11434/api/chat'
-        headers = { 'Content-Type': 'application/json' }
-        body = {
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userInput }
-          ],
-          stream: false,
-          options: { temperature }
-        }
-        if (this.useSchema) body.format = this.schema
-      }
-
-      const response = await window.fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+      const req = this._buildRequest(userInput)
+      const response = await window.fetch(req.url, {
+        method: req.method,
+        headers: req.headers,
+        body: JSON.stringify(req.body)
       })
 
       const data = await response.json()
-      let rawText
-
-      if (this.provider === 'openai') {
-        if (data.error) throw new Error(data.error.message)
-        const msg = data.output.find(item => item.type === 'message')
-        if (!msg?.content?.[0]) throw new Error('Unexpected OpenAI response structure')
-        const content = msg.content[0]
-        if (content.type !== 'output_text') throw new Error(`Expected output_text, got ${content.type}`)
-        rawText = content.text
-      } else if (this.provider === 'anthropic') {
-        if (data.error) throw new Error(data.error.message)
-        if (data.type === 'error') throw new Error(data.error?.message || 'Unknown error')
-        const content = data.content?.[0]
-        if (!content || content.type !== 'text') throw new Error('Unexpected Anthropic response structure')
-        rawText = content.text
-      } else if (this.provider === 'local-ollama') {
-        if (data.error) throw new Error(data.error)
-        if (!data.message?.content) throw new Error('Unexpected Ollama response structure')
-        rawText = typeof data.message.content === 'object'
-          ? JSON.stringify(data.message.content)
-          : data.message.content
-      }
+      const rawText = a.reply(data)
 
       this.$('[name="response-display"]').textContent = rawText
 
       if (this.useSchema) {
+        const model = req.body.model
         const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
         let result
         try {
@@ -519,7 +600,7 @@ class AiApiConduit extends Widget {
     } catch (err) {
       this.$('[name="response-display"]').textContent = `Error: ${err.message}`
       console.error('ŏ︵ŏ error from LLM provider:', err)
-      if (this.provider === 'local-ollama' && err.message.includes('Failed to fetch')) {
+      if (this.provider === 'ollama' && err.message.includes('Failed to fetch')) {
         const isChrome = nn.browserInfo().name === 'Chrome'
         window.convo = new Convo(this.convos, isChrome ? 'ollama-cors-error-chrome' : 'ollama-cors-error')
       } else {

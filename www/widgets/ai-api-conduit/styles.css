@@ -16,7 +16,8 @@
 .ai-api-conduit__main textarea,
 .ai-api-conduit__main input[type="text"],
 .ai-api-conduit__main input[type="number"],
-.ai-api-conduit__main input[type="password"] {
+.ai-api-conduit__main input[type="password"],
+.ai-api-conduit__main pre select {
   font-size: 1em;
   line-height: 1.5em;
   font-family: 'FiraMono', inconsolata, monospace;
@@ -28,7 +29,8 @@
 
 .ai-api-conduit__main input[type="text"],
 .ai-api-conduit__main input[type="number"],
-.ai-api-conduit__main input[type="password"] {
+.ai-api-conduit__main input[type="password"],
+.ai-api-conduit__main pre select {
   background: transparent;
   border: 1px solid var(--netizen-attribute);
 }
