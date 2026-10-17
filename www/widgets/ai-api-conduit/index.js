@@ -14,7 +14,7 @@ class AiApiConduit extends Widget {
     this.useSchema = false // no schema by default
     this.systemPrompt = '' // see data/system-prompt.txt
     this.schema = null // see data/schema.json
-    this.nnDocs = null // see data/nn-docs-for-llm.md
+    this.nnDocs = null // see core/netnet-standard-library/nn-context.md
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
@@ -50,7 +50,7 @@ class AiApiConduit extends Widget {
     this.systemPromptSketchPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch-plain.txt`, true)
     this.systemPromptProjectPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-project-plain.txt`, true)
     this.schema = await utils.getSync(`/widgets/${w}/data/schema.json`)
-    this.nnDocs = await utils.getSync(`/widgets/${w}/data/nn-docs-for-llm.md`, true)
+    this.nnDocs = await utils.getSync('/core/netnet-standard-library/nn-context.md', true)
     this._setupTabs()
     // restore useSchema before _setupRequestBody so the body renders correctly
     const storedSchema = WIDGETS['student-session'].getData('llm-use-schema')
@@ -504,8 +504,7 @@ class AiApiConduit extends Widget {
   }
 
   _usesNnLib () {
-    const nnSrc = 'cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js'
-    return NNE.code.includes(nnSrc)
+    return utils.usesLib('https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js')
   }
 
   getIncludedCode () {

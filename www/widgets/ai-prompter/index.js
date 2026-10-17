@@ -153,7 +153,7 @@ When you do give me code:
     const checkForLibs = () => {
       const matches = []
       for (const [name, lib] of Object.entries(this.libs)) {
-        if (NNE.code.includes(lib.src)) matches.push(name)
+        if (utils.usesLib(lib.src)) matches.push(name)
       }
       return matches
     }
