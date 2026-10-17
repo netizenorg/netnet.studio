@@ -198,16 +198,22 @@ class StudentSession extends Widget {
         if (json.data) this.setData('owner', json.data.login)
         WIDGETS['coding-menu'].gitHubUpdated(true)
       })
-      utils.get('/api/github/saved-projects', (json) => {
-        if (!json.data) return
-        const names = json.data.map(o => o.name)
-        this.setData('repos', names.join(', '))
-        this.convos = window.CONVOS[this.key](this) // to redo repoSelectionList
-      })
+      this.refreshRepos()
     } else {
       this.authStatus = false
       WIDGETS['coding-menu'].gitHubUpdated(false)
     }
+  }
+
+  // fetch the student's current list of GitHub repos && update the cached copy
+  refreshRepos (callback) {
+    utils.get('/api/github/saved-projects', (json) => {
+      if (!json || !json.data) return
+      const names = json.data.map(o => o.name)
+      this.setData('repos', names.join(', '))
+      this.convos = window.CONVOS[this.key](this) // to redo repoSelectionList
+      if (callback) callback(names)
+    })
   }
 
   // •.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*•.¸¸¸.•*

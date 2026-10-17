@@ -41,7 +41,7 @@ window.CONVOS['project-files'] = (self) => {
   const repoSelectionList = (() => {
     const ss = WIDGETS['student-session']
     if (ss && ss.data.github.repos) {
-      let str = '<select class="dropdown dropdown--invert">'
+      let str = '<select name="repo-list" class="dropdown dropdown--invert">'
       const list = ss.data.github.repos.split(', ')
       list.forEach(r => { str += `<option value="${r}">${r}</option>` })
       str += '</select>'
@@ -80,11 +80,14 @@ window.CONVOS['project-files'] = (self) => {
     const a = v.split('.')
     const e = a[a.length - 1]
     const validExt = Object.keys(self.mimeTypes).includes(e)
+    // markdown files are conventionally uppercase (ex: README.md, LICENSE.md)
+    // so they're exempt from the lowercase rule
+    const isMarkdown = f === 'file' && a.length > 1 && e === 'md'
 
     if (v.length < 1) c.goTo(f + '-name-blank')
     else if (v.length > 72) c.goTo(f + '-name-too-long')
     else if (v.includes(' ')) c.goTo(f + '-name-has-spaces')
-    else if (v.match(/[A-Z]/) instanceof Array) c.goTo(f + '-name-has-uppercase')
+    else if (!isMarkdown && v.match(/[A-Z]/) instanceof Array) c.goTo(f + '-name-has-uppercase')
     else if (f === 'folder' && v.includes('.')) {
       if (v.indexOf('.') === 0) c.goTo('folder-hidden')
       else if (v.indexOf('.') > 0) c.goTo('folder-dot')
@@ -368,7 +371,9 @@ window.CONVOS['project-files'] = (self) => {
   }, {
     id: 'create-new-project',
     before: () => {
-      self.closeProject()
+      // if closeProject throws partway through (after clearing the editor)
+      // we still need to restore the student's code below
+      try { self.closeProject() } catch (err) { console.error(err) }
       NNW.menu.switchFace('default')
       if (self._keepCode) NNE.code = self._keepCode
       self._keepCode = null

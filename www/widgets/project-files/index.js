@@ -109,6 +109,15 @@ class ProjectFiles extends Widget {
 
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
 
+    // if they tab back to netnet while looking at the list of their projects
+    // (ex: after creating a new repo on github.com) refresh that list
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return
+      if (!window.convo || window.convo.id !== 'open-project') return
+      if (!NNW.menu.textBubble.opened) return
+      this._refreshRepoSelection()
+    })
+
     this.on('open', () => {
       if (window.convo && window.convo.id && window.convo.id.includes('title-bar')) return
       window.convo = new Convo(this.convos, 'explain')
@@ -470,7 +479,10 @@ class ProjectFiles extends Widget {
     window.addEventListener('keyup', () => close())
     NNE.on('render-update', () => {
       NNE.iframe.addEventListener('click', () => close())
-      NNE.iframe.contentWindow.addEventListener('click', () => close())
+      // sandboxed iframe (ex: shared #code/ URL sketch) is cross-origin
+      try {
+        NNE.iframe.contentWindow.addEventListener('click', () => close())
+      } catch (err) { }
     })
   }
 
@@ -522,6 +534,7 @@ class ProjectFiles extends Widget {
     if (!repo) {
       this.convos = window.CONVOS[this.key](this)
       window.convo = new Convo(this.convos, 'open-project')
+      this._refreshRepoSelection()
       return
     }
 
@@ -758,7 +771,8 @@ class ProjectFiles extends Widget {
     utils.updateURL()
     NNW.updateTitleBar(null)
     // remove code update event listener
-    NNE.off('code-update', this.codeEdit)
+    // NOTE: off() w/out a callback removes *all* code-update listeners
+    if (this.codeEdit) NNE.off('code-update', this.codeEdit)
     this.codeEdit = null
     // remove custom shorcuts
     const CM = NNE.cm.constructor
@@ -772,7 +786,7 @@ class ProjectFiles extends Widget {
     NNE.customRender = null
     NNE.code = ''
     NNE.language = 'html'
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
     // reset web-publish state for the closed project
     WIDGETS['web-publish']?.reset()
     // close widget
@@ -1246,7 +1260,7 @@ class ProjectFiles extends Widget {
     } else {
       NNE.language = 'html'
     }
-    NNE.wrap = WIDGETS['student-session'].getData('wrap') === 'true'
+    NNE.wrap = String(WIDGETS['student-session'].getData('wrap')) !== 'false'
 
     if (this.history.stack[filepath]?.length === 0) {
       this.history.stack[filepath] = [NNE.code]
@@ -1320,6 +1334,34 @@ class ProjectFiles extends Widget {
     if (Object.keys(this.files).filter(path => path.includes('/')).length > 0) {
       window.convo = new Convo(this.convos, 'move-update-path')
     } else window.convo = new Convo(this.convos, 'move-no-other-path')
+  }
+
+  // the cached repo list can be stale (ex: repo created on github.com since
+  // the page loaded), so fetch a fresh one && swap it into the open-project
+  // menu (if it's still open) without making the student wait for it
+  _refreshRepoSelection () {
+    WIDGETS['student-session'].refreshRepos(names => {
+      const swap = (tries) => {
+        if (!window.convo || window.convo.id !== 'open-project') return
+        const sel = NNW.menu.textBubble.querySelector('select[name="repo-list"]')
+        if (!sel) { // text bubble may still be fading in the menu
+          if (tries > 0) setTimeout(() => swap(tries - 1), 100)
+          return
+        }
+        // only keep their choice if they actually changed it, otherwise
+        // default to the top of the fresh list (their newest repo)
+        const picked = sel.selectedIndex > 0 ? sel.value : null
+        sel.innerHTML = ''
+        names.forEach(name => {
+          const opt = document.createElement('option')
+          opt.value = name
+          opt.textContent = name
+          sel.appendChild(opt)
+        })
+        if (names.includes(picked)) sel.value = picked
+      }
+      swap(10)
+    })
   }
 
   newProject () {
@@ -1932,11 +1974,7 @@ class ProjectFiles extends Widget {
         window.convo = new Convo(this.convos, 'new-project-created')
 
         // ... upldate list of repos...
-        utils.get('/api/github/saved-projects', (json) => {
-          if (!json.data) return
-          const names = json.data.map(o => o.name)
-          WIDGETS['student-session'].setData('repos', names.join(', '))
-        })
+        WIDGETS['student-session'].refreshRepos()
 
         this._setupCodeUpdateListener()
 

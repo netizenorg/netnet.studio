@@ -64,6 +64,8 @@ class DemoToc extends Widget {
       NNW.updateTitleBar(null)
       NNE.spotlight(null)
       NNE.marker(null)
+      this._markers = []
+      this._diverged = false
 
       this.close()
     }
@@ -121,6 +123,8 @@ class DemoToc extends Widget {
   _displayDemo () {
     utils.cancelAllNetitorUses('demo-toc')
 
+    this._markers = [] // replacing the code clears the old gutter markers
+    this._diverged = false
     NNE.code = this.code
 
     const needsTransition = (this.layout && NNW.layout !== this.layout) ||
@@ -180,20 +184,9 @@ class DemoToc extends Widget {
       nn.get('.demo-toc-progress .bar').style = '--progress: 0'
       nn.get('.demo-toc-note-title').content(this.info[0].title)
 
-      // add netitor markers
-      const occupiedLines = []
-      const addMarker = (o, i) => {
-        const l = (i === 0 && !o.focus) ? 1 : o.focus ? o.focus[0] : null
-        if (l && !occupiedLines.includes(l)) {
-          const m = NNE.marker(l, 'green', () => this._explainerClick(o))
-          m.setAttribute('title', o.title)
-          occupiedLines.push(l)
-        }
-      }
       // start function for annotated demos
       startDemo = () => {
-        this.info.forEach((o, i) => addMarker(o, i))
-        WIDGETS['code-review'].addIssueMarkers()
+        this._addMarkers()
         if (!this.opened) this.open()
         window.convo = new Convo(this.convos, 'loaded-annotated-demo')
       }
@@ -207,7 +200,41 @@ class DemoToc extends Widget {
     else utils.afterLayoutTransition(() => startDemo())
   }
 
+  // green netitor gutter markers, one per annotated note
+  _addMarkers () {
+    this._removeMarkers()
+    const occupiedLines = []
+    this.info.forEach((o, i) => {
+      const f = o.focus ? o.focus[0] : null
+      // focus items can be a line number or a { line, startCol, endCol }
+      const fl = f && typeof f === 'object' ? f.line : f
+      const l = (i === 0 && !o.focus) ? 1 : fl
+      if (typeof l === 'number' && !occupiedLines.includes(l)) {
+        const m = NNE.marker(l, 'green', () => this._explainerClick(o))
+        m.setAttribute('title', o.title)
+        this._markers.push({ el: m, line: NNE.cm.getLineHandle(l - 1) })
+        occupiedLines.push(l)
+      }
+    })
+    // (re)place any code-review issue markers that share the same gutter
+    WIDGETS['code-review'].addIssueMarkers()
+  }
+
+  // removes only our markers (NNE.marker(null) would also clear code-review's)
+  _removeMarkers () {
+    (this._markers || []).forEach(({ el, line }) => {
+      try { // the line may have been deleted, or its marker replaced
+        const info = NNE.cm.lineInfo(line)
+        const cur = info && info.gutterMarkers && info.gutterMarkers['gutter-marker']
+        if (cur === el) NNE.cm.setGutterMarker(line, 'gutter-marker', null)
+      } catch (err) { }
+    })
+    this._markers = []
+  }
+
   _explainerClick (o) {
+    // once lines have been added/removed the notes no longer line up
+    if (this._diverged) return
     const idx = this.info.indexOf(o)
 
     this.selected = idx
@@ -247,6 +274,17 @@ class DemoToc extends Widget {
     const B = diffC && !diffL ? 'block' : 'none'
     const C = diffL ? 'block' : 'none'
     const D = diffL ? 'none' : 'block'
+    // remove the green markers while the line count differs from the demo,
+    // && put them back if they undo their way back to the original
+    if (this.info) {
+      if (diffL && !this._diverged) {
+        this._diverged = true
+        this._removeMarkers()
+      } else if (!diffL && this._diverged) {
+        this._diverged = false
+        this._addMarkers()
+      }
+    }
     if (!this.$('.demo-toc-progress')) return
     // this.$('.demo-toc--ex-intro').style.display = A
     this.$('.demo-toc--ex-edit1').style.display = B
