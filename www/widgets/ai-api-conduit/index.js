@@ -10,7 +10,7 @@ class AiApiConduit extends Widget {
     this.width = 638
     this.height = 535
 
-    this.provider = 'openai' // or 'anthropic', 'ollama', 'disabled'
+    this.provider = 'gemini' // or 'openai', 'anthropic', 'ollama', 'disabled'
     this.useSchema = false // no schema by default
     this.systemPrompt = '' // see data/system-prompt.txt
     this.schema = null // see data/schema.json
@@ -18,7 +18,7 @@ class AiApiConduit extends Widget {
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
-    this.settings = { key: null, model: null, temperature: 0.4, maxTokens: 4096, numCtx: 32768, think: false }
+    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false }
     this.adapters = this._createAdapters()
 
     this._setupConvoListener()
@@ -137,7 +137,7 @@ class AiApiConduit extends Widget {
     return {
       key: `llm-key-${this.provider}`,
       model: `llm-model-${this.provider}`,
-      temperature: 'llm-temperature',
+      temperature: `llm-temperature-${this.provider}`,
       maxTokens: 'llm-max-tokens',
       numCtx: 'llm-num-ctx',
       think: 'llm-think'
@@ -152,7 +152,7 @@ class AiApiConduit extends Widget {
     this.settings = {
       key: a?.needsKey ? ss.getData(keys.key) || null : null,
       model: ss.getData(keys.model) || a?.model || null,
-      temperature: num(ss.getData(keys.temperature), 0.4),
+      temperature: num(ss.getData(keys.temperature), a?.temperature ?? 0.4),
       maxTokens: num(ss.getData(keys.maxTokens), 4096),
       numCtx: num(ss.getData(keys.numCtx), 32768),
       think: ss.getData(keys.think) === 'true'
@@ -168,30 +168,89 @@ class AiApiConduit extends Widget {
 
   // ...........................................................................
   // provider adapters: each LLM provider's API "dialect"
-  // model: default model, needsKey: whether it requires an API key
+  // model, temperature: defaults, needsKey: whether it requires an API key
+  // timeout: seconds to wait for a reply before giving up (default 90)
   // request(o): builds the { url, method, headers, body } sent to the API
   // reply(data): finds the text of the reply in the API's response
   // display(h): the request body as rendered in the "Request Body" tab
 
   _createAdapters () {
     return {
-      openai: {
-        model: 'gpt-5.4-mini',
+      gemini: {
+        model: 'gemini-3.5-flash-lite',
+        temperature: 1, // Google recommends keeping Gemini 3 models at 1
         needsKey: true,
         request: (o) => {
-          const body = { model: o.model, instructions: o.system, input: o.input, temperature: o.temperature }
+          const body = {
+            systemInstruction: { parts: [{ text: o.system }] },
+            contents: [
+              { role: 'user', parts: [{ text: o.input }] }
+            ],
+            generationConfig: { temperature: o.temperature }
+          }
           if (o.schema) {
-            body.text = {
-              format: {
-                type: 'json_schema',
-                name: 'coding_tutor_response',
-                schema: o.schema,
-                strict: true
-              }
+            body.generationConfig.responseMimeType = 'application/json'
+            body.generationConfig.responseJsonSchema = o.schema
+          }
+          return {
+            // NOTE: Gemini is the only provider that puts the model in the URL
+            url: `https://generativelanguage.googleapis.com/v1beta/models/${o.model}:generateContent`,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': o.key
+            },
+            body
+          }
+        },
+        reply: (data) => {
+          if (data.error) throw new Error(data.error.message)
+          const candidate = data.candidates?.[0]
+          if (!candidate) {
+            const reason = data.promptFeedback?.blockReason
+            throw new Error(reason ? `Request blocked by Gemini (${reason})` : 'Unexpected Gemini response structure')
+          }
+          // join the text parts (skipping any "thought" parts)
+          const parts = candidate.content?.parts || []
+          const text = parts.filter(p => p.text && !p.thought).map(p => p.text).join('')
+          if (!text) throw new Error(`Gemini returned no text (finishReason: ${candidate.finishReason})`)
+          return text
+        },
+        display: (h) => `POST .../models/${h.model}:generateContent
+{
+  systemInstruction: { parts: [{ text: ${h.system} }] },
+  contents: [
+    { role: 'user', parts: [{ text: ${h.input} }] }
+  ],
+  generationConfig: {
+    temperature: ${h.temperature}${this.useSchema ? `,
+    responseMimeType: 'application/json',
+    responseJsonSchema: ${h.schema}` : ''}
+  }
+}`
+      },
+
+      openai: {
+        model: 'gpt-5.4-mini',
+        temperature: 0.4,
+        needsKey: true,
+        request: (o) => {
+          const body = {
+            model: o.model,
+            messages: [
+              { role: 'system', content: o.system },
+              { role: 'user', content: o.input }
+            ],
+            temperature: o.temperature
+          }
+          if (o.schema) {
+            body.response_format = {
+              type: 'json_schema',
+              json_schema: { name: 'coding_tutor_response', schema: o.schema, strict: true }
             }
           }
           return {
-            url: 'https://api.openai.com/v1/responses',
+            url: 'https://api.openai.com/v1/chat/completions',
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -202,19 +261,21 @@ class AiApiConduit extends Widget {
         },
         reply: (data) => {
           if (data.error) throw new Error(data.error.message)
-          const msg = data.output.find(item => item.type === 'message')
-          if (!msg?.content?.[0]) throw new Error('Unexpected OpenAI response structure')
-          const content = msg.content[0]
-          if (content.type !== 'output_text') throw new Error(`Expected output_text, got ${content.type}`)
-          return content.text
+          const msg = data.choices?.[0]?.message
+          if (!msg) throw new Error('Unexpected OpenAI response structure')
+          if (msg.refusal) throw new Error(`The model refused: ${msg.refusal}`)
+          if (!msg.content) throw new Error(`OpenAI returned no text (finish_reason: ${data.choices[0].finish_reason})`)
+          return msg.content
         },
         display: (h) => this.useSchema ? `{
   model: ${h.model},
-  instructions: ${h.system},
-  input: ${h.input},
-  text: {
-    format: {
-      type: 'json_schema',
+  messages: [
+    { role: 'system', content: ${h.system} },
+    { role: 'user', content: ${h.input} }
+  ],
+  response_format: {
+    type: 'json_schema',
+    json_schema: {
       name: 'coding_tutor_response',
       schema: ${h.schema},
       strict: true
@@ -223,8 +284,10 @@ class AiApiConduit extends Widget {
   temperature: ${h.temperature}
 }` : `{
   model: ${h.model},
-  instructions: ${h.system},
-  input: ${h.input},
+  messages: [
+    { role: 'system', content: ${h.system} },
+    { role: 'user', content: ${h.input} }
+  ],
   temperature: ${h.temperature}
 }`
       },
@@ -293,6 +356,8 @@ class AiApiConduit extends Widget {
 
       ollama: {
         model: 'gemma4:e2b',
+        temperature: 0.4,
+        timeout: 300, // local models can be slow on less powerful computers
         needsKey: false,
         request: (o) => {
           const body = {
@@ -566,14 +631,27 @@ class AiApiConduit extends Widget {
 
     this.$('[name="response-display"]').textContent = 'waiting for response...'
 
+    let status = null
+    // if the provider is slow to reply, let the student know what's going on,
+    // && give up (or let them cancel) if it takes too long
+    this._request = new window.AbortController()
+    this._request.timedOut = false
+    const slowTimer = setTimeout(() => this.convo('llm-slow', true), 20 * 1000)
+    const timeout = setTimeout(() => {
+      this._request.timedOut = true
+      this._request.abort()
+    }, (a.timeout || 90) * 1000)
+
     try {
       const req = this._buildRequest(userInput)
       const response = await window.fetch(req.url, {
         method: req.method,
         headers: req.headers,
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(req.body),
+        signal: this._request.signal
       })
 
+      status = response.status
       const data = await response.json()
       const rawText = a.reply(data)
 
@@ -597,9 +675,19 @@ class AiApiConduit extends Widget {
         this._showRawReply(rawText)
       }
     } catch (err) {
-      this.$('[name="response-display"]').textContent = `Error: ${err.message}`
+      const aborted = err.name === 'AbortError'
+      const msg = aborted && this._request.timedOut
+        ? `No reply after ${a.timeout || 90} seconds.`
+        : aborted ? 'Request canceled.' : err.message
+      this.$('[name="response-display"]').textContent = `Error: ${msg}`
       console.error('ŏ︵ŏ error from LLM provider:', err)
-      if (this.provider === 'ollama' && err.message.includes('Failed to fetch')) {
+      this.lastError = msg
+      if (aborted && !this._request.timedOut) {
+        // canceled by the student (see the llm-slow convo)
+      } else if (aborted || [429, 503, 529].includes(status)) {
+        // timed out, rate limited (429) or the servers are overloaded (503, 529)
+        this.convo('llm-busy', true)
+      } else if (this.provider === 'ollama' && err.message.includes('Failed to fetch')) {
         const isChrome = nn.browserInfo().name === 'Chrome'
         window.convo = new Convo(this.convos, isChrome ? 'ollama-cors-error-chrome' : 'ollama-cors-error')
       } else {
@@ -607,6 +695,8 @@ class AiApiConduit extends Widget {
       }
     }
 
+    clearTimeout(slowTimer)
+    clearTimeout(timeout)
     btn.textContent = 'send request'
     btn.disabled = false
   }

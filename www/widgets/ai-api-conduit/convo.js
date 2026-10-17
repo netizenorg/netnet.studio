@@ -2,6 +2,7 @@
 window.CONVOS['ai-api-conduit'] = (self) => {
   const providerInfo = () => {
     const dict = {
+      gemini: 'Google Gemini',
       openai: 'OpenAI',
       anthropic: 'Anthropic',
       ollama: 'Ollama'
@@ -35,13 +36,13 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'api-steps',
-    content: 'To connect me to one, first choose your preferred LLM provider from the drop-down list, this could be a company, like <a href="https://platform.openai.com/" target="_blank">OpenAI</a> or <a href="https://platform.anthropic.com/" target="_blank">Anthropic</a>, running models in their "cloud" but I could also connect to a model running locally on your computer using <a href="https://ollama.com/" target="_blank">Ollama</a>.',
+    content: 'To connect me to one, first choose your preferred LLM provider from the drop-down list, this could be a company, like <a href="https://aistudio.google.com/" target="_blank">Google</a>, <a href="https://platform.openai.com/" target="_blank">OpenAI</a> or <a href="https://platform.anthropic.com/" target="_blank">Anthropic</a>, running models in their "cloud" but I could also connect to a model running locally on your computer using <a href="https://ollama.com/" target="_blank">Ollama</a>.',
     options: {
       'I see': (e) => e.goTo('choose-provider')
     }
   }, {
     id: 'choose-provider',
-    content: 'Choosing a cloud provider is easiest, but it will require creating an API key, which means you\'ll first need to create an account on their platform and prepay for credits, corporate LLMs aren\'t free. On the other hand, running a model locally requires a bit more setup, but it\'s free, private and energy efficient because it all runs on your computer. ',
+    content: 'Choosing a cloud provider is easiest, but it will require creating an API key, which means you\'ll first need to create an account on their platform. Most of them also require you to prepay for credits, though Google offers a limited free tier. On the other hand, running a model locally requires a bit more setup, but it\'s free, private and energy efficient because it all runs on your computer.',
     options: {
       ok: (e) => e.hide()
     }
@@ -53,6 +54,26 @@ window.CONVOS['ai-api-conduit'] = (self) => {
         if (self.provider === 'disabled') e.hide()
         else e.goTo(`create-${self.provider}-key`)
       }
+    }
+  }, {
+    id: 'create-gemini-key',
+    content: 'To use Google Gemini as a provider, sign in to <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> with a Google account and click <b>Create API key</b>. You don\'t need a credit card to use their free tier, but it limits how many requests you can send per minute and per day.',
+    options: {
+      ok: (e) => e.hide(),
+      'free? what\'s the catch?': (e) => e.goTo('gemini-free')
+    }
+  }, {
+    id: 'gemini-free',
+    content: 'Good question! Just because you\'re not paying with money, doesn\'t mean there isn\'t an exchange. According to Google\'s <a href="https://ai.google.dev/gemini-api/terms" target="_blank">terms</a>, they use what you send to the free tier (and what the model sends back) to improve their products, and human reviewers may read it. So don\'t send anything personal or sensitive.',
+    options: {
+      'I see': (e) => e.goTo('gemini-free2')
+    }
+  }, {
+    id: 'gemini-free2',
+    content: 'If you set up billing in your Google account, they say they won\'t use your data that way (unless you\'re in the EU, Switzerland or the UK, where those protections apply to the free tier too). Their terms also say you must be 18 or older to use their API.',
+    options: {
+      'got it': (e) => e.hide(),
+      'what if I pay?': (e) => e.goTo('api-cost')
     }
   }, {
     id: 'create-openai-key',
@@ -128,7 +149,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'pay-to-play',
-    content: 'Unfortunately, while there are some free REST APIs out there (for accessing data like weather or news), LLMs are costly to run and maintain, so these companies charge for the service. But I\'m not here to promote these companies, you don\'t have to integrate either of their LLMs.',
+    content: 'There are lots of free REST APIs out there (for accessing data like weather or news), but LLMs are costly to run and maintain, so most of these companies charge for the service. Google offers a limited free tier, but "free" services are usually paid for some other way, often with your data. And I\'m not here to promote these companies, you don\'t have to integrate any of their LLMs.',
     options: {
       'no?': (e) => e.goTo('no-pay')
     }
@@ -140,7 +161,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'paste-key',
-    content: 'Paste your API key here. Like other personal data, this is saved locally in your browser and never leaves your computer except when sent in the request\'s Authorization header to the provider\'s API. We do not store any of your personal data on our server.',
+    content: 'Paste your API key here. Like other personal data, this is saved locally in your browser and never leaves your computer except when sent in the request\'s headers to the provider\'s API. We do not store any of your personal data on our server.',
     options: {
       'got it': (e) => e.goTo('post-key'),
       'my API key?': (e) => e.goTo(`create-${self.$('[name="provider"]').value}-key`),
@@ -158,11 +179,18 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     options: {
       'got it': (e) => e.hide(),
       'model?': (e) => e.goTo('req-model'),
+      ...(self.provider === 'gemini' && { 'why\'s the model up top?': (e) => e.goTo('req-gemini-url') }),
       ...(self.provider !== 'anthropic' && { 'temperature?': (e) => e.goTo('req-temperature') }),
       ...(self.provider === 'ollama' && {
         'think?': (e) => e.goTo('req-think'),
         'num_ctx?': (e) => e.goTo('req-num-ctx')
       })
+    }
+  }, {
+    id: 'req-gemini-url',
+    content: 'Most providers expect the name of the model in the request\'s body, but Gemini expects it in the URL we send the request to. It also wraps text in <code>parts</code> and calls the system prompt a <code>systemInstruction</code>. Different providers often have different ways of articulating the same ideas.',
+    options: {
+      'I see': (e) => e.hide()
     }
   }, {
     id: 'req-think',
@@ -193,7 +221,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'req-model',
-    content: 'Each of these providers offer different LLMs to choose from, visit <a href="https://ollama.com/search" target="_blank">Ollama</a>\'s docs for a list of all the compatiable open source models for download or <a href="https://developers.openai.com/api/docs/models/all" target="_blank">OpenAI</a>\'s and <a href="https://platform.claude.com/docs/en/about-claude/models" target="_blank">Anthropic</a>\'s docs for the full list of their proprietary models.',
+    content: 'Each of these providers offer different LLMs to choose from, visit <a href="https://ollama.com/search" target="_blank">Ollama</a>\'s docs for a list of all the compatiable open source models for download or <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank">Google</a>\'s, <a href="https://developers.openai.com/api/docs/models/all" target="_blank">OpenAI</a>\'s and <a href="https://platform.claude.com/docs/en/about-claude/models" target="_blank">Anthropic</a>\'s docs for the full list of their proprietary models.',
     options: {
       'got it': (e) => e.hide(),
       'and temperature?': (e) => e.goTo('req-temperature'),
@@ -215,7 +243,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'req-temperature',
-    content: 'The "temperature" is a setting that controls how predictable the output is: a low temperature makes the model stick to the most likely, safe answers, while a high temperature lets it take more risks, producing more imaginative (or less reliable) responses.',
+    content: `The "temperature" is a setting that controls how predictable the output is: a low temperature makes the model stick to the most likely, safe answers, while a high temperature lets it take more risks, producing more imaginative (or less reliable) responses.${self.provider === 'gemini' ? ' Google recommends keeping their Gemini 3 models at <code>1</code>, which is why I set it to that by default.' : ''}`,
     options: {
       'got it': (e) => e.hide(),
       'less reliable?': (e) => e.goTo('req-temperature2')
@@ -337,7 +365,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
   }, {
     id: 'no-key',
     before: () => NNW.menu.switchFace('upset'),
-    content: 'Looks like you haven\'t entered your API key yet! You\'ll need one from your chosen provider (OpenAI or Anthropic) to make requests. Paste it into the "Your API Key" field up top.',
+    content: 'Looks like you haven\'t entered your API key yet! You\'ll need one from your chosen provider (Google, OpenAI or Anthropic) to make requests. Paste it into the "Your API Key" field up top.',
     options: {
       ok: (e) => e.hide()
     }
@@ -395,6 +423,43 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     id: 'ollama-cors-error',
     before: () => NNW.menu.switchFace('upset'),
     content: 'I wasn\'t able to reach your local Ollama server. This might be a browser security restriction blocking requests from HTTPS pages to local addresses. Try a different browser, or check that Ollama is running and configured to allow requests from this origin.',
+    options: {
+      ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
+    }
+  }, {
+    id: 'provider-disabled',
+    before: () => NNW.menu.switchFace('default'),
+    content: 'The LLM integration is currently disabled. Choose an LLM provider from the drop down list at the top of this widget first.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'llm-busy',
+    before: () => NNW.menu.switchFace('upset'),
+    content: `Hmm, your LLM provider didn't answer this time. Either their servers are too busy right now or you've hit your account's rate limit, which is how many requests you're allowed to send in a given amount of time. Here's what happened: <i>${String(self.lastError || '').replace(/</g, '&lt;')}</i>`,
+    options: {
+      'ok, I\'ll try again in a bit': (e) => { e.hide(); NNW.menu.switchFace('default') },
+      'can I do anything else?': (e) => e.goTo('llm-busy2')
+    }
+  }, {
+    id: 'llm-slow',
+    before: () => NNW.menu.switchFace('default'),
+    content: self.provider === 'ollama'
+      ? 'This is taking a while. Models running locally can be slow, especially the first time they\'re loaded or on a less powerful computer. I\'ll keep waiting for up to 5 minutes.'
+      : 'This is taking a while. Your LLM provider\'s servers might be busy right now. I\'ll keep waiting for up to a minute and a half, but you can also cancel and try again later.',
+    options: {
+      'ok, I\'ll wait': (e) => {
+        e.hide()
+        self._getPossessed()
+      },
+      'cancel the request': (e) => {
+        if (self._request) self._request.abort()
+        e.hide()
+      }
+    }
+  }, {
+    id: 'llm-busy2',
+    content: 'You could wait a minute and try again, or try a different (often smaller) model in the <b>Request Body</b> tab. Free tiers, like Google\'s, have stricter limits, so this will happen more often there.',
     options: {
       ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
     }

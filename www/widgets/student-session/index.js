@@ -38,12 +38,16 @@ class StudentSession extends Widget {
       },
       llm: {
         provider: ls.getItem('llm-provider'),
+        keyGemini: ls.getItem('llm-key-gemini'),
         keyOpenai: ls.getItem('llm-key-openai'),
         keyAnthropic: ls.getItem('llm-key-anthropic'),
+        modelGemini: ls.getItem('llm-model-gemini'),
         modelOpenai: ls.getItem('llm-model-openai'),
         modelAnthropic: ls.getItem('llm-model-anthropic'),
         modelOllama: ls.getItem('llm-model-ollama'),
-        temperature: ls.getItem('llm-temperature'),
+        tempGemini: ls.getItem('llm-temperature-gemini'),
+        tempOpenai: ls.getItem('llm-temperature-openai'),
+        tempOllama: ls.getItem('llm-temperature-ollama'),
         maxTokens: ls.getItem('llm-max-tokens'),
         numCtx: ls.getItem('llm-num-ctx'),
         think: ls.getItem('llm-think'),
@@ -414,50 +418,27 @@ class StudentSession extends Widget {
           <span>LLM API Settings</span>
           <button class="pill-btn pill-btn--secondary" name="llm-data">?</button>
         </h2>
+        ${[
+          ['provider', 'provider'],
+          ['Gemini key', 'keyGemini', true],
+          ['OpenAI key', 'keyOpenai', true],
+          ['Anthropic key', 'keyAnthropic', true],
+          ['Gemini model', 'modelGemini'],
+          ['OpenAI model', 'modelOpenai'],
+          ['Anthropic model', 'modelAnthropic'],
+          ['Ollama model', 'modelOllama'],
+          ['Gemini temperature', 'tempGemini'],
+          ['OpenAI temperature', 'tempOpenai'],
+          ['Ollama temperature', 'tempOllama'],
+          ['max tokens', 'maxTokens'],
+          ['Ollama context (num_ctx)', 'numCtx'],
+          ['Ollama think', 'think'],
+          ['use schema', 'useSchema']
+        ].map(([label, prop, pass]) => `
         <div>
-          provider:
-          <input value="${this.data.llm.provider || ''}" readonly="readonly">
-        </div>
-        <div>
-          OpenAI key:
-          <input type="password" value="${this.data.llm.keyOpenai || ''}" readonly="readonly">
-        </div>
-        <div>
-          Anthropic key:
-          <input type="password" value="${this.data.llm.keyAnthropic || ''}" readonly="readonly">
-        </div>
-        <div>
-          OpenAI model:
-          <input value="${this.data.llm.modelOpenai || ''}" readonly="readonly">
-        </div>
-        <div>
-          Anthropic model:
-          <input value="${this.data.llm.modelAnthropic || ''}" readonly="readonly">
-        </div>
-        <div>
-          Ollama model:
-          <input value="${this.data.llm.modelOllama || ''}" readonly="readonly">
-        </div>
-        <div>
-          temperature:
-          <input value="${this.data.llm.temperature || ''}" readonly="readonly">
-        </div>
-        <div>
-          max tokens:
-          <input value="${this.data.llm.maxTokens || ''}" readonly="readonly">
-        </div>
-        <div>
-          Ollama context (num_ctx):
-          <input value="${this.data.llm.numCtx || ''}" readonly="readonly">
-        </div>
-        <div>
-          Ollama think:
-          <input value="${this.data.llm.think || ''}" readonly="readonly">
-        </div>
-        <div>
-          use schema:
-          <input value="${this.data.llm.useSchema !== null ? this.data.llm.useSchema : ''}" readonly="readonly">
-        </div>
+          ${label}:
+          <input${pass ? ' type="password"' : ''} value="${this.data.llm[prop] || ''}" readonly="readonly">
+        </div>`).join('')}
       </div>
     `
 
