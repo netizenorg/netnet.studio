@@ -261,8 +261,11 @@ class NetNet {
     // because when the mouse moves over an iframe it gets resizing stuck
     if (msg === 'remove') {
       if (this.blocker) this.blocker.remove()
+      this.blocker = null
       return
     } else if (msg === 'create') {
+      // in case a mouseup was missed, never leave an orphaned blocker behind
+      if (this.blocker) this.blocker.remove()
       const output = document.querySelector('#nn-output')
       const computedStyle = window.getComputedStyle(output)
       const zIndex = Number(computedStyle.zIndex) + 1
@@ -315,6 +318,9 @@ class NetNet {
   }
 
   _mouseDown (e) {
+    // right-clicks (&& ctrl-click on mac) open the context menu, which
+    // swallows the mouseup, so don't let them start a drag/resize
+    if (e.button !== 0 || e.ctrlKey) return
     const mw = (this.layout === 'separate-window' || this.layout === 'welcome')
     if (e.target.id === 'nn-window') this._updateMouseDown(true)
     else if (e.target.id === 'nn-menu' && mw) {

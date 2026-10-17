@@ -580,8 +580,11 @@ class Widget {
     // because when the mouse moves over an iframe it gets resizing stuck
     if (msg === 'remove') {
       if (this.blocker) this.blocker.remove()
+      this.blocker = null
       return
     } else if (msg === 'create') {
+      // in case a mouseup was missed, never leave an orphaned blocker behind
+      if (this.blocker) this.blocker.remove()
       const output = document.querySelector('#nn-output')
       const computedStyle = window.getComputedStyle(output)
       const zIndex = Number(computedStyle.zIndex) + 1
@@ -602,6 +605,9 @@ class Widget {
 
   _mouseDown (e) {
     const self = e.target.parentNode === this.ele || e.target === this.ele
+    // right-clicks (&& ctrl-click on mac) open the context menu, which
+    // swallows the mouseup, so don't let them start a drag/resize
+    if (self && (e.button !== 0 || e.ctrlKey)) return this.bring2front()
     if (self) {
       this.mousedown = e.target.className
       if (e.target.className === 'widget__top') {
