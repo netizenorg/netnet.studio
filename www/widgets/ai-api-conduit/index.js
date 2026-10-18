@@ -1,4 +1,4 @@
-/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn */
+/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn, marked */
 class AiApiConduit extends Widget {
   constructor (opts) {
     super(opts)
@@ -680,10 +680,66 @@ class AiApiConduit extends Widget {
   }
 
   _showRawReply (text) {
-    WIDGETS.open('ai-llm-reply', (w) => {
-      w.loadReply(text)
-      window.convo = new Convo(this.convos, 'llm-reply-wig')
+    this.loadMarked(() => {
+      WIDGETS.open('ai-llm-reply', (w) => {
+        w.loadReply(text)
+        window.convo = new Convo(this.convos, 'llm-reply-wig')
+      })
     })
+  }
+
+  // ...........................................................................
+  // markdown: LLMs (almost always) format their replies as markdown
+
+  loadMarked (callback) {
+    // the markdown parser (core/libs/marked.min.js), loaded only when needed
+    if (window.marked) return callback()
+    utils.loadFile('/core/libs/marked.min.js', callback)
+  }
+
+  _escapeHTML (str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  }
+
+  _markdownParser (blocks) {
+    // a marked parser which displays any HTML in the reply (rather than
+    // rendering it), opens links in a new tab && collects code blocks into
+    // the blocks array (leaving a placeholder where each one was)
+    const esc = (s) => this._escapeHTML(s)
+    const safeURL = (href) => /^(https?:|mailto:|#|\/)/i.test(href || '')
+    const md = new marked.Marked({ gfm: true, breaks: true })
+    md.use({
+      renderer: {
+        html ({ text }) { return esc(text) },
+        code ({ text, lang }) {
+          blocks.push({ code: text, lang: (lang || '').trim().split(/\s+/)[0] })
+          return `<span data-block="${blocks.length - 1}"></span>`
+        },
+        link ({ href, tokens }) {
+          const text = this.parser.parseInline(tokens)
+          if (!safeURL(href)) return text
+          return `<a href="${esc(href)}" target="_blank">${text}</a>`
+        },
+        image ({ href, text }) {
+          if (!safeURL(href)) return esc(text || '')
+          return `<a href="${esc(href)}" target="_blank">${esc(text || href)}</a>`
+        }
+      }
+    })
+    return md
+  }
+
+  renderMarkdown (text) {
+    // returns the reply as HTML, with placeholders for its code blocks
+    // (<span data-block="0"></span>) && the list of those blocks: [{ code, lang }]
+    const blocks = []
+    const html = this._markdownParser(blocks).parse(text)
+    return { html, blocks }
   }
 
   _getPossessed () {

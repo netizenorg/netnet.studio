@@ -1,4 +1,4 @@
-/* global Widget, Convo, utils, navigator */
+/* global WIDGETS, Widget, Convo, utils, navigator */
 class AiLlmReply extends Widget {
   constructor (opts) {
     super(opts)
@@ -9,10 +9,13 @@ class AiLlmReply extends Widget {
     this._rawHtml = ''
     Convo.load(this.key, () => { this.convos = window.CONVOS[this.key](this) })
     this.on('open', () => this._render())
+    // wrapped lines change when the widget's width does
+    this.on('resize', () => this._fitTraces())
   }
 
   loadReply (text) {
-    const { html, blocks } = this._markdownToHtml(text)
+    // see ai-api-conduit's renderMarkdown()
+    const { html, blocks } = WIDGETS['ai-api-conduit'].renderMarkdown(text)
     this._rawHtml = '<br>' + html
     this._blocks = blocks
     if (this.opened) this._render()
@@ -34,8 +37,8 @@ class AiLlmReply extends Widget {
       const block = this._blocks[i]
       if (!block) return
 
-      const lineCount = block.code.split('\n').length
-      const height = lineCount * 22 + 16
+      // a first estimate, until the code has rendered (see _fitTrace)
+      const height = block.code.split('\n').length * 22 + 16
 
       const wrapper = document.createElement('div')
       wrapper.className = 'ai-llm-reply__block'
@@ -59,10 +62,30 @@ class AiLlmReply extends Widget {
 
       // set code after element is in DOM
       window.requestAnimationFrame(() => {
-        trace.language = block.lang
+        trace.language = this._mapLang(block.lang)
         trace.code = block.code
+        this._fitTrace(trace)
       })
     })
+  }
+
+  _fitTrace (trace) {
+    // size the code-trace to fit its code, including lines that wrap
+    const cm = trace._base && trace._base.cm
+    if (!cm) return window.requestAnimationFrame(() => this._fitTrace(trace))
+    window.requestAnimationFrame(() => {
+      cm.refresh()
+      const h = cm.getScrollInfo().height
+      if (!h) return
+      trace.style.height = `${h}px`
+      const container = trace.querySelector('.code-trace')
+      if (container) container.style.height = `${h}px`
+    })
+  }
+
+  _fitTraces () {
+    this.ele.querySelectorAll('.ai-llm-reply__block code-trace')
+      .forEach(trace => this._fitTrace(trace))
   }
 
   _copyCode (trace) {
@@ -72,11 +95,20 @@ class AiLlmReply extends Widget {
       navigator.clipboard.writeText(check.baseCode)
       window.convo = new Convo(this.convos, 'reply-copied')
     } else if (check.overlayCode === '') {
+      this._untracedTrace = trace // for the "copy anyway" option
       window.convo = new Convo(this.convos, 'reply-no-code')
     } else {
       trace.showDiff('rgba(255, 0, 0, 0.4)')
       window.convo = new Convo(this.convos, 'reply-not-copied')
     }
+  }
+
+  _copyAnyway () {
+    // copies a code block without tracing it first (see 'reply-no-code' convo)
+    if (!this._untracedTrace) return
+    navigator.clipboard.writeText(this._untracedTrace.check().baseCode)
+    this._untracedTrace = null
+    window.convo = new Convo(this.convos, 'reply-copied')
   }
 
   // ............................................................................
@@ -88,57 +120,6 @@ class AiLlmReply extends Widget {
     if (['markdown', 'md'].includes(l)) return 'markdown'
     if (l === 'htmlmixed') return 'htmlmixed'
     return 'html'
-  }
-
-  _markdownToHtml (md) {
-    const blocks = []
-
-    // extract fenced code blocks first
-    md = md.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
-      blocks.push({ code: code.trimEnd(), lang: this._mapLang(lang) })
-      return `\x00block${blocks.length - 1}\x00`
-    })
-
-    // inline code — uses .reference-widget__slide code CSS
-    md = md.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`)
-
-    // headers
-    md = md.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    md = md.replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    md = md.replace(/^# (.+)$/gm, '<h1>$1</h1>')
-
-    // bold + italic
-    md = md.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    md = md.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    md = md.replace(/\*(.+?)\*/g, '<em>$1</em>')
-
-    // unordered lists
-    md = md.replace(/((?:^[ \t]*[-*+] .+\n?)+)/gm, match => {
-      const items = match.trim().split('\n')
-        .map(l => `<li>${l.replace(/^[ \t]*[-*+] /, '')}</li>`).join('')
-      return `<ul>${items}</ul>`
-    })
-
-    // ordered lists
-    md = md.replace(/((?:^\d+\. .+\n?)+)/gm, match => {
-      const items = match.trim().split('\n')
-        .map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('')
-      return `<ol>${items}</ol>`
-    })
-
-    // paragraphs
-    md = md.split(/\n{2,}/).map(para => {
-      para = para.trim()
-      if (!para) return ''
-      if (/^<[huo]|^\x00block/.test(para)) return para
-      return `<p>${para.replace(/\n/g, '<br>')}</p>`
-    }).join('\n')
-
-    // restore code blocks as placeholder spans
-    md = md.replace(/\x00block(\d+)\x00/g, (_, i) =>
-      `<span data-block="${i}"></span>`)
-
-    return { html: md, blocks }
   }
 }
 
