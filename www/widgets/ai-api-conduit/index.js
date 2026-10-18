@@ -19,6 +19,10 @@ class AiApiConduit extends Widget {
     this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false, integration: 'widget' }
     this.adapters = this._createAdapters()
 
+    // the current conversation, in nn.prompt()'s format (kept in memory):
+    // [{ role: 'user', content, files }, { role: 'model', content }, ...]
+    this.history = []
+
     this._setupConvoListener()
 
     this.on('open', () => this._createHTML(opts))
@@ -189,6 +193,11 @@ class AiApiConduit extends Widget {
   //             when "show extended options" is checked (they're always sent)
 
   _createAdapters () {
+    // our messages use nn.prompt()'s roles: 'user' && 'model',
+    // most providers call the model's role 'assistant' (Gemini uses 'model')
+    const as = (messages, word) => messages.map(m => ({
+      role: m.role === 'model' ? word : m.role, content: m.content
+    }))
     return {
       gemini: {
         model: 'gemini-3.5-flash-lite',
@@ -205,9 +214,7 @@ class AiApiConduit extends Widget {
           },
           body: {
             systemInstruction: { parts: [{ text: o.system }] },
-            contents: [
-              { role: 'user', parts: [{ text: o.input }] }
-            ],
+            contents: o.messages.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
             generationConfig: { temperature: o.temperature }
           }
         }),
@@ -227,7 +234,7 @@ class AiApiConduit extends Widget {
         display: (h) => `{
   systemInstruction: { parts: [{ text: ${h.system} }] },
   contents: [
-    { role: 'user', parts: [{ text: ${h.input} }] }
+${h.history}    { role: 'user', parts: [{ text: ${h.input} }] }
   ],
   generationConfig: {
     temperature: ${h.temperature}
@@ -251,7 +258,7 @@ class AiApiConduit extends Widget {
             model: o.model,
             messages: [
               { role: 'system', content: o.system },
-              { role: 'user', content: o.input }
+              ...as(o.messages, 'assistant')
             ],
             temperature: o.temperature
           }
@@ -268,7 +275,7 @@ class AiApiConduit extends Widget {
   model: ${h.model},
   messages: [
     { role: 'system', content: ${h.system} },
-    { role: 'user', content: ${h.input} }
+${h.history}    { role: 'user', content: ${h.input} }
   ],
   temperature: ${h.temperature}
 }`
@@ -291,7 +298,7 @@ class AiApiConduit extends Widget {
           body: {
             model: o.model,
             system: o.system,
-            messages: [{ role: 'user', content: o.input }],
+            messages: as(o.messages, 'assistant'),
             max_tokens: parseInt(o.maxTokens) || 4096
           }
         }),
@@ -310,7 +317,7 @@ class AiApiConduit extends Widget {
   model: ${h.model},
   system: ${h.system},
   messages: [
-    { role: 'user', content: ${h.input} }
+${h.history}    { role: 'user', content: ${h.input} }
   ],
   max_tokens: ${h.maxTokens}
 }`,
@@ -330,7 +337,7 @@ class AiApiConduit extends Widget {
             model: o.model,
             messages: [
               { role: 'system', content: o.system },
-              { role: 'user', content: o.input }
+              ...as(o.messages, 'assistant')
             ],
             stream: false,
             think: o.think,
@@ -349,7 +356,7 @@ class AiApiConduit extends Widget {
   model: ${h.model},
   messages: [
     { role: 'system', content: ${h.system} },
-    { role: 'user', content: ${h.input} }
+${h.history}    { role: 'user', content: ${h.input} }
   ],
   stream: false,
   think: ${h.think},
@@ -365,13 +372,44 @@ class AiApiConduit extends Widget {
     }
   }
 
-  _buildRequest (input) {
+  _requestMessages () {
+    // the history as it gets sent: only the newest question carries the
+    // attached files (older ones get a placeholder, so the model isn't
+    // confused by old versions of the code)
+    const last = this.history.length - 1
+    return this.history.map((m, i) => {
+      if (m.role !== 'user' || !m.files) return { role: m.role, content: m.content }
+      const files = i === last
+        ? `Here is the code I'm working with:\n\n${m.files}`
+        : '[files omitted: see the latest message for the current version]'
+      return { role: 'user', content: `${m.content}\n\n${files}` }
+    })
+  }
+
+  contextSize () {
+    // a rough estimate of the conversation's size (~4 characters per token)
+    const chars = this._requestMessages().reduce((n, m) => n + m.content.length, 0) +
+      (this.systemPrompt || '').length
+    return { messages: this.history.length, tokens: Math.round(chars / 4) }
+  }
+
+  clearHistory () {
+    this.history = []
+    this._refreshRequestBody()
+  }
+
+  _refreshRequestBody () {
+    if (this.$('[name="request-body"]')) this._setupRequestBody()
+  }
+
+  _buildRequest (messages) {
+    // messages: [{ role: 'user' || 'model', content }] (see _requestMessages)
     const a = this.adapters[this.provider]
     return a.request({
       key: this.settings.key,
       model: this.settings.model || a.model,
       system: this.systemPrompt,
-      input,
+      messages,
       temperature: this.settings.temperature,
       maxTokens: this.settings.maxTokens,
       numCtx: this.settings.numCtx,
@@ -396,7 +434,10 @@ class AiApiConduit extends Widget {
       think: `<select name="think"><option value="false">false</option><option value="true"${s.think ? ' selected' : ''}>true</option></select>`,
       system: '<span class="link" data-tab="system">systemPrompt</span>',
       input: '<span class="link" data-tab="test">userInput</span>' +
-        (s.attach ? ' + <span class="link" data-tab="attach">attachedFiles</span>' : '')
+        (s.attach ? ' + <span class="link" data-tab="attach">attachedFiles</span>' : ''),
+      // the earlier messages in this conversation (if any)
+      history: this.history.length === 0 ? ''
+        : `    ...<span class="link" data-convo="req-history">history</span>, <span style="opacity: 0.5">// ${this.history.length} earlier messages</span> (<span class="link" data-action="clear-history">clear</span>)\n`
     }
     pre.innerHTML = s.mode === 'library' ? this._libraryDisplay(a, h) : this._vanillaDisplay(a, h)
 
@@ -406,6 +447,7 @@ class AiApiConduit extends Widget {
 
     pre.querySelectorAll('.link').forEach(link => {
       link.addEventListener('click', () => {
+        if (link.dataset.action === 'clear-history') return this.convo('clear-history', true)
         if (link.dataset.convo) return this.convo(link.dataset.convo, true)
         this.switchTab(link.dataset.tab)
         this.convo(link.dataset.tab, true)
@@ -433,7 +475,7 @@ class AiApiConduit extends Widget {
     // match what's sent), with the key && model swapped for placeholders
     const KEY = '\u0000KEY\u0000'
     const MODEL = '\u0000MODEL\u0000'
-    const req = a.request({ ...this.settings, key: KEY, model: MODEL, system: '', input: '' })
+    const req = a.request({ ...this.settings, key: KEY, model: MODEL, system: '', messages: [] })
     const keyLink = '<span class="link" data-convo="mode-key">KEY</span>'
     const url = req.url.replace(MODEL, h.model)
     const headers = Object.entries(req.headers).map(([name, value]) => {
@@ -456,7 +498,7 @@ class AiApiConduit extends Widget {
       ...(a.needsKey ? ['key: <span class="link" data-convo="mode-key">KEY</span>'] : []),
       `system: ${h.system}`,
       `messages: [
-    { role: 'user', content: ${h.input} }
+${h.history}    { role: 'user', content: ${h.input} }
   ]`,
       ...(typeof a.temperature === 'number' ? [`temperature: ${h.temperature}`] : []),
       ...(a.library && this.settings.extended ? a.library(h) : [])
@@ -611,7 +653,9 @@ class AiApiConduit extends Widget {
     this.$('[name="send-btn"]').addEventListener('click', () => this._sendRequest())
   }
 
-  async _sendRequest () {
+  async _sendRequest (question, newConversation) {
+    // question: if not passed, uses the one in the Test tab
+    // newConversation: if true, clears the history first (ex: "ask an LLM")
     window.convo = new Convo(this.convos, 'llm-possessed-processing')
 
     const a = this.adapters[this.provider]
@@ -619,14 +663,15 @@ class AiApiConduit extends Widget {
 
     if (a.needsKey && !this.settings.key) return this.convo('no-key')
 
-    const rawInput = this.$('[name="user-input"]').value.trim()
+    const rawInput = (question || this.$('[name="user-input"]').value).trim()
     if (!rawInput) return this.convo('no-input')
+    this.$('[name="user-input"]').value = rawInput
 
     if (window.plausible) window.plausible('llm_chat')
-    const includedCode = this.settings.attach ? this.getIncludedCode() : ''
-    const userInput = includedCode
-      ? `${rawInput}\n\nHere is the code I'm working with:\n\n${includedCode}`
-      : rawInput
+    this._lastSend = { question: rawInput, newConversation } // for "try again"
+    if (newConversation) this.history = []
+    const files = this.settings.attach ? this.getIncludedCode() : ''
+    this.history.push({ role: 'user', content: rawInput, files })
 
     const btn = this.$('[name="send-btn"]')
     btn.textContent = 'sending...'
@@ -646,7 +691,7 @@ class AiApiConduit extends Widget {
     }, (a.timeout || 90) * 1000)
 
     try {
-      const req = this._buildRequest(userInput)
+      const req = this._buildRequest(this._requestMessages())
       const response = await window.fetch(req.url, {
         method: req.method,
         headers: req.headers,
@@ -659,10 +704,13 @@ class AiApiConduit extends Widget {
       const rawText = a.reply(data)
 
       this.$('[name="response-display"]').textContent = rawText
+      this.history.push({ role: 'model', content: rawText })
+      this._refreshRequestBody()
 
       if (this.settings.integration === 'possessed') this._showSteps(rawText)
       else this._showRawReply(rawText)
     } catch (err) {
+      this.history.pop() // remove the question that failed (try again resends it)
       const aborted = err.name === 'AbortError'
       const msg = aborted && this._request.timedOut
         ? `No reply after ${a.timeout || 90} seconds.`
@@ -689,8 +737,40 @@ class AiApiConduit extends Widget {
 
     clearTimeout(slowTimer)
     clearTimeout(timeout)
+    this._refreshRequestBody()
     btn.textContent = 'send request'
     btn.disabled = false
+  }
+
+  retry () {
+    // resend the last question (see the llm-network-error convo)
+    if (this._lastSend) this._sendRequest(this._lastSend.question, this._lastSend.newConversation)
+    else this._sendRequest()
+  }
+
+  // ...........................................................................
+  // follow up questions (in the last bubble of a reply)
+
+  followUpHTML () {
+    return '<br><input name="llm-follow-up" style="width:350px" placeholder="reply to the LLM">'
+  }
+
+  setupFollowUp (convo) {
+    // pressing Enter in the follow up input also sends it
+    if (window.convo !== convo) return // in case it's been replaced
+    const input = NNW.menu.textBubble.querySelector('[name="llm-follow-up"]')
+    if (!input) return
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.sendFollowUp()
+    })
+  }
+
+  sendFollowUp () {
+    const input = NNW.menu.textBubble.querySelector('[name="llm-follow-up"]')
+    const q = input ? input.value.trim() : ''
+    if (!q) return input && input.focus()
+    if (WIDGETS['ai-code-tracer']?.opened) WIDGETS['ai-code-tracer'].close()
+    this._sendRequest(q)
   }
 
   _showRawReply (text) {
@@ -888,9 +968,10 @@ class AiApiConduit extends Widget {
     const last = idx === steps.length - 1
 
     const options = {}
+    if (last) options.send = () => this.sendFollowUp()
     if (!last) options.next = () => this._goToStep(idx + 1)
     if (!first) options.previous = () => this._goToStep(idx - 1)
-    if (block) options['view code'] = () => this._showStepCode(block)
+    if (block) options['open code snippet'] = () => this._showStepCode(block)
     if (first || last) options['show full reply'] = () => this._endSteps(true)
     options.done = () => this._endSteps()
 
@@ -901,7 +982,8 @@ class AiApiConduit extends Widget {
         if (block) this._showStepCode(block)
         else if (WIDGETS['ai-code-tracer']?.opened) WIDGETS['ai-code-tracer'].close()
       },
-      content: step.html,
+      after: (c) => { if (last) this.setupFollowUp(c) },
+      content: last ? step.html + this.followUpHTML() : step.html,
       options
     })
   }

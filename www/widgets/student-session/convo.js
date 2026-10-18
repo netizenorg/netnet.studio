@@ -34,8 +34,7 @@ window.CONVOS['student-session'] = (self) => {
     const q = o.querySelector('input').value.trim()
     if (!q) return e.goTo('ask-llm-missing')
     const w = WIDGETS['ai-api-conduit']
-    w.$('[name="user-input"]').value = q
-    w._sendRequest()
+    w._sendRequest(q, true) // a new conversation
   }
 
   const enterToSendLLM = (e) => {
@@ -48,6 +47,26 @@ window.CONVOS['student-session'] = (self) => {
       if (ev.key === 'Enter') postLLM(e, tb)
     })
     input.focus()
+  }
+
+  const continueLLM = (e, o) => {
+    // continue the current conversation, but warn about long contexts first
+    const q = o.querySelector('input').value.trim()
+    if (!q) return e.goTo('ask-llm-missing')
+    const w = WIDGETS['ai-api-conduit']
+    w._pendingQuery = q
+    w.convo('llm-context-warning', true)
+  }
+
+  const llmOpts = () => {
+    // "send (current context)" is only offered while there's a conversation
+    const hasHistory = WIDGETS['ai-api-conduit']?.history?.length > 0
+    const o = {}
+    o[hasHistory ? 'send (new context)' : 'send'] = (e, o) => postLLM(e, o)
+    if (hasHistory) o['send (current context)'] = (e, o) => continueLLM(e, o)
+    o['edit API settings'] = (e, o) => editLLM(e, o)
+    o['never mind'] = (e) => e.hide()
+    return o
   }
 
   const editLLM = (e, o) => {
@@ -107,22 +126,14 @@ window.CONVOS['student-session'] = (self) => {
     {
       id: 'ask-llm',
       after: (e) => enterToSendLLM(e),
-      content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. Would you like me to pass a query along to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
-      options: {
-        send: (e, o) => postLLM(e, o),
-        'edit API settings': (e, o) => editLLM(e, o),
-        'never mind': (e) => e.hide()
-      }
+      content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. What would you like me to send to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
+      options: llmOpts()
     },
     {
       id: 'ask-llm-missing',
       after: (e) => enterToSendLLM(e),
       content: 'The <b class="link" onclick="WIDGETS.open(\'ai-api-conduit\')">LLM-API Conduit</b> widget needs some user input before it can post a request. Type something below.<br><input style="width:350px" placeholder="ask an LLM a question">',
-      options: {
-        send: (e, o) => postLLM(e, o),
-        'edit API settings': (e, o) => editLLM(e, o),
-        'never mind': (e) => e.hide()
-      }
+      options: llmOpts()
     },
     {
       id: 'prior-github-login',

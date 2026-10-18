@@ -284,6 +284,50 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       'got it': (e) => e.hide()
     }
   }, {
+    id: 'clear-history',
+    content: `This will clear the <code>history</code> of our conversation (${self.history.length} earlier messages), which means the next question you send will start a brand new conversation. The LLM won't "remember" anything we said before.`,
+    options: {
+      'yes, clear it': (e) => {
+        self.clearHistory()
+        e.goTo('history-cleared')
+      },
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'history-cleared',
+    content: 'Done, the next question you send will start a new conversation.',
+    options: {
+      ok: (e) => e.hide()
+    }
+  }, {
+    id: 'llm-context-warning',
+    content: (() => {
+      const { messages, tokens } = self.contextSize()
+      return `We've exchanged ${messages} messages so far in this conversation (about ${tokens.toLocaleString()} tokens). Keep in mind, the longer a conversation's context gets, the more a model can drift, losing track of details and getting less reliable (researchers have found models are especially likely to <a href="https://arxiv.org/abs/2307.03172" target="_blank">overlook things in the middle</a> of a long context). Each request also costs more as the conversation grows. Would you like to continue this conversation anyway, or start a new one?`
+    })(),
+    options: {
+      'yes, continue it': (e) => {
+        const q = self._pendingQuery
+        self._pendingQuery = null
+        self._sendRequest(q)
+      },
+      'start a new one': (e) => {
+        const q = self._pendingQuery
+        self._pendingQuery = null
+        self._sendRequest(q, true)
+      },
+      'never mind': (e) => {
+        self._pendingQuery = null
+        e.hide()
+      }
+    }
+  }, {
+    id: 'req-history',
+    content: 'LLMs don\'t remember anything. To have a conversation, I resend everything we\'ve said so far (the <code>history</code> of our messages) along with each new question. That\'s why each request gets bigger (and costs a bit more) the longer a conversation goes on.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
     id: 'req-think',
     content: 'Some open models, like <a href="https://ollama.com/library/gemma4" target="_blank">Gemma 4</a>, can "think" before they reply, meaning they first write out their reasoning step by step and then write their answer. Setting <code>think</code> to <code>true</code> turns this on, which can lead to better answers, but it takes longer and uses up more of the context window. Not every model can do this, if yours can\'t, Ollama will send back an error, so set it back to <code>false</code>.',
     options: {
@@ -472,8 +516,10 @@ window.CONVOS['ai-api-conduit'] = (self) => {
   }, {
     id: 'llm-reply-wig',
     before: () => NNW.menu.switchFace('default'),
-    content: 'Here\'s the synthesized reply from, your chosen LLM provider.',
+    after: (e) => self.setupFollowUp(e),
+    content: 'Here\'s the synthesized reply from your chosen LLM provider. If you want to reply, type below.' + self.followUpHTML(),
     options: {
+      send: (e) => self.sendFollowUp(),
       ok: (e) => e.hide()
     }
   }, {
@@ -553,7 +599,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     options: {
       'try again': (e) => {
         NNW.menu.switchFace('default')
-        self._sendRequest()
+        self.retry()
       },
       'what if it keeps happening?': (e) => e.goTo('llm-network-error2')
     }
