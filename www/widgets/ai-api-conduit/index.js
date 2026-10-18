@@ -16,7 +16,7 @@ class AiApiConduit extends Widget {
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
-    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true }
+    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false }
     this.adapters = this._createAdapters()
 
     this._setupConvoListener()
@@ -133,7 +133,9 @@ class AiApiConduit extends Widget {
       maxTokens: 'llm-max-tokens',
       numCtx: 'llm-num-ctx',
       think: 'llm-think',
-      attach: 'llm-attach-files'
+      attach: 'llm-attach-files',
+      mode: 'llm-mode',
+      extended: 'llm-extended-options'
     }
   }
 
@@ -149,7 +151,9 @@ class AiApiConduit extends Widget {
       maxTokens: num(ss.getData(keys.maxTokens), 4096),
       numCtx: num(ss.getData(keys.numCtx), 32768),
       think: ss.getData(keys.think) === 'true',
-      attach: ss.getData(keys.attach) !== 'false' // on by default
+      attach: ss.getData(keys.attach) !== 'false', // on by default
+      mode: ss.getData(keys.mode) === 'vanilla' ? 'vanilla' : 'library',
+      extended: ss.getData(keys.extended) === 'true'
     }
   }
 
@@ -167,7 +171,9 @@ class AiApiConduit extends Widget {
   // status: the provider's status page (for when their servers have issues)
   // request(o): builds the { url, method, headers, body } sent to the API
   // reply(data): finds the text of the reply in the API's response
-  // display(h): the request body as rendered in the "Request Body" tab
+  // display(h): the request body as rendered in the "API Request" tab
+  // library(h): extra nn.prompt() options shown in "library" mode (if any)
+  //             when "show extended options" is checked (they're always sent)
 
   _createAdapters () {
     return {
@@ -205,8 +211,7 @@ class AiApiConduit extends Widget {
           if (!text) throw new Error(`Gemini returned no text (finishReason: ${candidate.finishReason})`)
           return text
         },
-        display: (h) => `POST .../models/${h.model}:generateContent
-{
+        display: (h) => `{
   systemInstruction: { parts: [{ text: ${h.system} }] },
   contents: [
     { role: 'user', parts: [{ text: ${h.input} }] }
@@ -295,7 +300,8 @@ class AiApiConduit extends Widget {
     { role: 'user', content: ${h.input} }
   ],
   max_tokens: ${h.maxTokens}
-}`
+}`,
+        library: (h) => [`max_tokens: ${h.maxTokens}`]
       },
 
       ollama: {
@@ -338,7 +344,10 @@ class AiApiConduit extends Widget {
     temperature: ${h.temperature},
     num_ctx: ${h.numCtx}
   }
-}`
+}`,
+        library: (h) => [`think: ${h.think}`, `options: {
+    num_ctx: ${h.numCtx}
+  }`]
       }
     }
   }
@@ -366,7 +375,7 @@ class AiApiConduit extends Widget {
 
     const s = this.settings
     // the editable parts of the request && links to the other tabs
-    pre.innerHTML = a.display({
+    const h = {
       model: `<input type="text" name="model" value="${s.model || ''}" placeholder="model-name">`,
       temperature: `<input type="number" name="temperature" min="0.0" max="2.0" step="0.01" value="${s.temperature}">`,
       maxTokens: `<input type="number" name="max-tokens" min="1" max="8192" step="1" value="${s.maxTokens}">`,
@@ -375,10 +384,16 @@ class AiApiConduit extends Widget {
       system: '<span class="link" data-tab="system">systemPrompt</span>',
       input: '<span class="link" data-tab="test">userInput</span>' +
         (s.attach ? ' + <span class="link" data-tab="attach">attachedFiles</span>' : '')
-    })
+    }
+    pre.innerHTML = s.mode === 'library' ? this._libraryDisplay(a, h) : this._vanillaDisplay(a, h)
+
+    // only offer "extended options" in library mode, for providers that have any
+    const ext = this.ele.querySelector('[name="extended-option"]')
+    if (ext) ext.style.display = s.mode === 'library' && a.library ? '' : 'none'
 
     pre.querySelectorAll('.link').forEach(link => {
       link.addEventListener('click', () => {
+        if (link.dataset.convo) return this.convo(link.dataset.convo, true)
         this.switchTab(link.dataset.tab)
         this.convo(link.dataset.tab, true)
       })
@@ -400,8 +415,61 @@ class AiApiConduit extends Widget {
     if (think) think.addEventListener('change', (e) => this._saveSetting('think', e.target.value))
   }
 
+  _vanillaDisplay (a, h) {
+    // the URL && headers come from the adapter's actual request (so they always
+    // match what's sent), with the key && model swapped for placeholders
+    const KEY = '\u0000KEY\u0000'
+    const MODEL = '\u0000MODEL\u0000'
+    const req = a.request({ ...this.settings, key: KEY, model: MODEL, system: '', input: '' })
+    const keyLink = '<span class="link" data-convo="mode-key">KEY</span>'
+    const url = req.url.replace(MODEL, h.model)
+    const headers = Object.entries(req.headers).map(([name, value]) => {
+      const v = value === KEY ? keyLink
+        : value.includes(KEY) ? `'${value.replace(KEY, '')}' + ${keyLink}`
+          : `'${value}'`
+      return `  '${name}': ${v}`
+    })
+    return `<span class="link" data-convo="req-method">${req.method}</span> ${url}\n\n` +
+      `<span class="link" data-convo="req-headers">headers</span>: {\n${headers.join(',\n')}\n}\n\n` +
+      `body: ${a.display(h)}`
+  }
+
+  _libraryDisplay (a, h) {
+    // the request as the options object passed to nn.prompt()
+    // (from the netnet-machine-learning library: src/nn-prompt.js)
+    const opts = [
+      `provider: '${this.provider}'`,
+      `model: ${h.model}`,
+      ...(a.needsKey ? ['key: <span class="link" data-convo="mode-key">KEY</span>'] : []),
+      `system: ${h.system}`,
+      `messages: [
+    { role: 'user', content: ${h.input} }
+  ]`,
+      ...(typeof a.temperature === 'number' ? [`temperature: ${h.temperature}`] : []),
+      ...(a.library && this.settings.extended ? a.library(h) : [])
+    ]
+    return `{\n  ${opts.join(',\n  ')}\n}`
+  }
+
   _setupOptionsBar () {
-    // options at the top of the Request Body tab
+    // options at the top of the API Request tab
+    this.$('[name="mode"]').forEach(radio => {
+      radio.checked = radio.value === this.settings.mode
+      radio.addEventListener('change', () => {
+        this._saveSetting('mode', radio.value)
+        this._setupRequestBody()
+        this.convo(`mode-${radio.value}`, true)
+      })
+    })
+
+    const extended = this.$('[name="extended"]')
+    extended.checked = this.settings.extended
+    extended.addEventListener('change', () => {
+      this._saveSetting('extended', String(extended.checked))
+      this._setupRequestBody()
+      if (extended.checked) this.convo('extended-on', true)
+    })
+
     const attach = this.$('[name="attach-files"]')
     attach.checked = this.settings.attach
     this._toggleAttachTab()

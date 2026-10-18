@@ -20,7 +20,7 @@
 
   <div class="ai-api-conduit__tabs">
     <div class="ai-api-conduit__tab-labels">
-      <span class="ai-api-conduit__tab-label active" data-tab="request">Request Body</span>
+      <span class="ai-api-conduit__tab-label active" data-tab="request">API Request</span>
       <span class="ai-api-conduit__tab-label" data-tab="system">System Prompt</span>
       <span class="ai-api-conduit__tab-label" data-tab="attach">Attach Files</span>
       <span class="ai-api-conduit__tab-label" data-tab="test">Test</span>
@@ -28,7 +28,17 @@
 
     <div class="ai-api-conduit__tab" data-tab="request">
       <div class="ai-api-conduit__options">
-        <label><input type="checkbox" name="attach-files"> attach files from my sketch or project</label>
+        <div>
+          structure code for
+          <label><input type="radio" name="mode" value="library"> <code>nn.prompt()</code> library</label>, or plain
+          <label><input type="radio" name="mode" value="vanilla"> <i>vanilla</i> JS</label>
+        </div>
+        <div name="extended-option">
+          <label><input type="checkbox" name="extended"> show extended options</label>
+        </div>
+        <div>
+          <label><input type="checkbox" name="attach-files"> attach files from my sketch or project</label>
+        </div>
       </div>
       <pre name="request-body"></pre>
     </div>

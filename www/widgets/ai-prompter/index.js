@@ -1,4 +1,4 @@
-/* global NNE, WIDGETS, Widget, Convo, utils, nn */
+/* global WIDGETS, Widget, Convo, utils, nn */
 class AiPrompter extends Widget {
   constructor (opts) {
     super(opts)

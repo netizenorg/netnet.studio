@@ -169,17 +169,20 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'post-key',
-    content: 'Once you\'ve added your key click on each section\'s tab starting with <b>Request Body</b> to learn how this all works.',
+    content: 'Once you\'ve added your key click on each section\'s tab starting with <b>API Request</b> to learn how this all works.',
     options: {
       ok: (e) => e.hide()
     }
   }, {
     id: 'request',
-    content: 'This is the <b>Request\'s Body</b>, it\'s the <span class="link" onclick="WIDGETS.open(\'lingo-glossary\', w => w.showVocab(\'json\'))">JSON</span> data we send to the LLM provider\'s API. You can edit parts, like the name of the <span style="color:var(--netizen-attribute)">model</span> you want to use and the <span style="color:var(--netizen-attribute)">temperature</span> value, other parts like the <span style="color:var(--fg-color)">systemPrompt</span> and <span style="color:var(--fg-color)">userInput</span> are set in the other tabs (click on them to see).',
+    content: (self.settings.mode === 'library'
+      ? 'This is the <b>Request</b>, written as the <code>nn.prompt()</code> code you could use to send it yourself (switch to "vanilla JS" to see exactly what gets sent). '
+      : 'This is the <b>API Request</b>, exactly as I send it: the URL it gets sent to, its <span style="color:var(--fg-color)">headers</span>, and its body, the <span class="link" onclick="WIDGETS.open(\'lingo-glossary\', w => w.showVocab(\'json\'))">JSON</span> data we send to the LLM provider\'s API. ') +
+      'You can edit parts, like the name of the <span style="color:var(--netizen-attribute)">model</span> you want to use and the <span style="color:var(--netizen-attribute)">temperature</span> value, other parts like the <span style="color:var(--fg-color)">systemPrompt</span> and <span style="color:var(--fg-color)">userInput</span> are set in the other tabs (click on them to see).',
     options: {
       'got it': (e) => e.hide(),
       'model?': (e) => e.goTo('req-model'),
-      ...(self.provider === 'gemini' && { 'why\'s the model up top?': (e) => e.goTo('req-gemini-url') }),
+      ...(self.settings.mode === 'vanilla' && { 'headers?': (e) => e.goTo('req-headers') }),
       ...(self.provider !== 'anthropic' && { 'temperature?': (e) => e.goTo('req-temperature') }),
       ...(self.provider === 'ollama' && {
         'think?': (e) => e.goTo('req-think'),
@@ -187,10 +190,98 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       })
     }
   }, {
-    id: 'req-gemini-url',
-    content: 'Most providers expect the name of the model in the request\'s body, but Gemini expects it in the URL we send the request to. It also wraps text in <code>parts</code> and calls the system prompt a <code>systemInstruction</code>. Different providers often have different ways of articulating the same ideas.',
+    id: 'mode-library',
+    content: 'Now I\'m showing you this request as the code you\'d write using <code>nn.prompt()</code>, a function from my <a href="https://github.com/netizenorg/netnet-machine-learning/blob/main/docs/prompt.md" target="_blank">netnet-machine-learning</a> library. It takes care of the "plumbing" for you, so the code looks nearly the same no matter which provider you choose.',
+    options: {
+      'got it': (e) => e.hide(),
+      'plumbing?': (e) => e.goTo('mode-plumbing')
+    }
+  }, {
+    id: 'mode-vanilla',
+    content: 'Now I\'m showing you the request exactly as it gets sent to the provider\'s API, written in plain (aka "vanilla") JavaScript, without any libraries. If you use <code>nn.prompt()</code> in your own code, you can see this same thing by logging <code>reply.request</code>.',
+    options: {
+      'got it': (e) => e.hide(),
+      'why are they different?': (e) => e.goTo('mode-plumbing')
+    }
+  }, {
+    id: 'mode-plumbing',
+    content: 'Each provider expects requests in its own format, with different names and structures for the same ideas. Switch between the two options with different providers selected to compare. <code>nn.prompt()</code> translates our code into each provider\'s format for us. That\'s what libraries do, they hide tedious details so we can focus on what we\'re making.',
     options: {
       'I see': (e) => e.hide()
+    }
+  }, {
+    id: 'extended-on',
+    content: 'These are extra settings specific to the provider you\'ve chosen. I always send them (switch to "vanilla JS" to see them in the request), but most of the time you won\'t need to change them. <code>nn.prompt()</code> passes any option it doesn\'t recognize straight through to the provider, so you can add these to your own code too.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'mode-key',
+    content: '<code>KEY</code> is a variable, which is where you\'d store your API key in your own code. I\'m not showing your actual key here because you should never write it directly in code you share or publish, otherwise anyone could use it (and you\'d pay for it).',
+    options: {
+      'got it': (e) => e.hide(),
+      'where should I put it?': (e) => e.goTo('key-storage')
+    }
+  }, {
+    id: 'key-storage',
+    content: 'Here on netnet, when you paste your key into the "Your API Key" field, I store it locally in this browser (using its <code>localStorage</code>), so it never leaves your computer except when it\'s sent in a request\'s headers to your provider. You can see (and delete) it anytime in my <span class="link" onclick="WIDGETS.open(\'student-session\')">Session Data</span> widget.',
+    options: {
+      'got it': (e) => e.hide(),
+      'what about my own projects?': (e) => e.goTo('key-storage-own')
+    }
+  }, {
+    id: 'key-storage-own',
+    content: 'You can follow the same pattern in your own code: create an input box where people paste their own API key, then save it to <code>localStorage</code> so they don\'t have to paste it in every time they visit. That way everyone uses their own key, and it never ends up in your code. Check out this <a href="/?demo=1792342439404" target="_blank">demo</a> to see how.',
+    options: {
+      'got it': (e) => e.hide(),
+      'is that the only way?': (e) => e.goTo('key-storage-server')
+    }
+  }, {
+    id: 'key-storage-server',
+    content: 'No, it\'s also possible to store keys securely on a server, which sends requests to the LLM provider on behalf of your visitors, so the key never reaches their browser at all. But that involves back-end programming, which is a bit beyond what we\'re learning here, creating stuff on the front-end.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'req-method',
+    content: 'There are a few different types (or "methods") of requests we can send to a server. The most common are <code>GET</code>, which asks a server to send us something (like when your browser loads a web page), and <code>POST</code>, which sends data to a server to do something with. Here, we\'re sending our settings and messages to the LLM provider\'s server so it can generate a reply.',
+    options: {
+      'got it': (e) => e.hide(),
+      'what\'s the rest of that line?': (e) => e.goTo('req-url')
+    }
+  }, {
+    id: 'req-url',
+    content: 'That\'s the URL, or "endpoint", we send the request to. Each provider has its own, and some have different endpoints for different things (like generating text vs images). Google even puts the name of the model in theirs.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'req-headers',
+    content: 'Headers are extra information sent along with a request, separate from its body. They describe the request, like what format the body is in (<code>Content-Type</code>), and they\'re often how APIs know who\'s asking. That\'s why the API key goes here: the provider checks it before reading anything else in the request.',
+    options: {
+      'got it': (e) => e.hide(),
+      'they\'re all different?': (e) => e.goTo('req-headers2')
+    }
+  }, {
+    id: 'req-headers2',
+    content: `Yup! Each provider decided on its own name for the key's header: Google uses <code>x-goog-api-key</code>, Anthropic uses <code>x-api-key</code>, and OpenAI uses the more standard <code>Authorization</code> header, with the word "Bearer" before the key. Ollama runs on your own computer, so it doesn't need a key at all.${self.provider === 'anthropic' ? ' Anthropic also asks for a couple of extra headers.' : ''}`,
+    options: {
+      'I see': (e) => e.hide(),
+      ...(self.provider === 'anthropic' && { 'extra headers?': (e) => e.goTo('req-headers-anthropic') }),
+      'and with nn.prompt()?': (e) => e.goTo('req-headers-library')
+    }
+  }, {
+    id: 'req-headers-anthropic',
+    content: '<code>anthropic-version</code> makes clear which API version we\'re using in our code (becasue these chaange). <code>anthropic-dangerous-direct-browser-access</code>, is us confirming that we know we\'re sending the key directly from a web page, where it could be seen. That\'s fine for your own key in your own browser, but it\'s another reason never to put your key in code you share.',
+    options: {
+      'got it': (e) => e.hide(),
+      'where should I keep my key?': (e) => e.goTo('key-storage')
+    }
+  }, {
+    id: 'req-headers-library',
+    content: 'When you use <code>nn.prompt()</code> you just pass it your <code>key</code>, and it puts it in the right header for whichever provider you choose. Switch between the two options at the top of this tab to compare.',
+    options: {
+      'got it': (e) => e.hide()
     }
   }, {
     id: 'req-think',
@@ -327,7 +418,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'attach',
-    content: 'When the "attach files" option is checked in the <b>Request Body</b> tab, I\'ll add the code from your sketch (or the project files you choose here) to the end of your question, so the LLM has more context. If your code uses my nn.js library, I can also attach its documentation, so the model knows how it works.',
+    content: 'When the "attach files" option is checked in the <b>API Request</b> tab, I\'ll add the code from your sketch (or the project files you choose here) to the end of your question, so the LLM has more context. If your code uses my nn.js library, I can also attach its documentation, so the model knows how it works.',
     options: {
       'got it': (e) => e.hide(),
       'why would I not attach them?': (e) => e.goTo('attach2')
@@ -455,7 +546,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'llm-busy2',
-    content: 'You could wait a minute and try again, or try a different (often smaller) model in the <b>Request Body</b> tab. Free tiers, like Google\'s, have stricter limits, so this will happen more often there.',
+    content: 'You could wait a minute and try again, or try a different (often smaller) model in the <b>API Request</b> tab. Free tiers, like Google\'s, have stricter limits, so this will happen more often there.',
     options: {
       ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
     }

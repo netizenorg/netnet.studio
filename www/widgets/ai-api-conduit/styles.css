@@ -128,6 +128,13 @@
 }
 
 .ai-api-conduit__options {
+  /* stays visible while scrolling through long requests */
+  position: sticky;
+  top: -5px; /* the tab's padding */
+  z-index: 1;
+  background: var(--bg-color);
+  padding-top: 5px;
+  margin-top: -5px;
   padding-bottom: 5px;
   margin-bottom: 5px;
   border-bottom: 1px dashed var(--netizen-meta);
