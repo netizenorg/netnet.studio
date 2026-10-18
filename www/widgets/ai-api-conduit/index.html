@@ -22,12 +22,14 @@
     <div class="ai-api-conduit__tab-labels">
       <span class="ai-api-conduit__tab-label active" data-tab="request">Request Body</span>
       <span class="ai-api-conduit__tab-label" data-tab="system">System Prompt</span>
-      <span class="ai-api-conduit__tab-label" data-tab="schema">Schema</span>
-      <span class="ai-api-conduit__tab-label" data-tab="include-code">Include Code</span>
-      <span class="ai-api-conduit__tab-label" data-tab="post">POST Request</span>
+      <span class="ai-api-conduit__tab-label" data-tab="attach">Attach Files</span>
+      <span class="ai-api-conduit__tab-label" data-tab="test">Test</span>
     </div>
 
     <div class="ai-api-conduit__tab" data-tab="request">
+      <div class="ai-api-conduit__options">
+        <label><input type="checkbox" name="attach-files"> attach files from my sketch or project</label>
+      </div>
       <pre name="request-body"></pre>
     </div>
 
@@ -35,20 +37,13 @@
       <pre name="system-prompt"></pre>
     </div>
 
-    <div class="ai-api-conduit__tab" data-tab="schema" style="display:none;">
-      <label class="ai-api-conduit__file-item" style="margin-bottom:12px;display:block">
-        <input type="checkbox" name="use-schema" checked> include schema in request (<i>experimental</i>)
-      </label>
-      <pre name="schema-display"></pre>
+    <div class="ai-api-conduit__tab" data-tab="attach" style="display:none;">
+      <div name="attach-content"></div>
     </div>
 
-    <div class="ai-api-conduit__tab" data-tab="include-code" style="display:none;">
-      <div name="include-code-content"></div>
-    </div>
-
-    <div class="ai-api-conduit__tab" data-tab="post" style="display:none;">
+    <div class="ai-api-conduit__tab" data-tab="test" style="display:none;">
       <textarea name="user-input" placeholder="type your question or prompt for the LLM here..." spellcheck="false"></textarea>
-      <div class="ai-api-conduit__post-actions">
+      <div class="ai-api-conduit__test-actions">
         <button class="pill-btn" name="send-btn">send request</button>
       </div>
       <pre name="response-display"></pre>

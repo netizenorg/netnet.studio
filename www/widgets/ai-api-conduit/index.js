@@ -11,14 +11,12 @@ class AiApiConduit extends Widget {
     this.height = 535
 
     this.provider = 'gemini' // or 'openai', 'anthropic', 'ollama', 'disabled'
-    this.useSchema = false // no schema by default
-    this.systemPrompt = '' // see data/system-prompt.txt
-    this.schema = null // see data/schema.json
+    this.systemPrompt = '' // see data/system-prompt-sketch.txt (or -project.txt)
     this.nnDocs = null // see core/netnet-standard-library/nn-context.md
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
-    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false }
+    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true }
     this.adapters = this._createAdapters()
 
     this._setupConvoListener()
@@ -47,19 +45,13 @@ class AiApiConduit extends Widget {
     this.innerHTML = await utils.getSync(`/widgets/${w}/index.html`, true)
     this.systemPromptSketch = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch.txt`, true)
     this.systemPromptProject = await utils.getSync(`/widgets/${w}/data/system-prompt-project.txt`, true)
-    this.systemPromptSketchPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-sketch-plain.txt`, true)
-    this.systemPromptProjectPlain = await utils.getSync(`/widgets/${w}/data/system-prompt-project-plain.txt`, true)
-    this.schema = await utils.getSync(`/widgets/${w}/data/schema.json`)
     this.nnDocs = await utils.getSync('/core/netnet-standard-library/nn-context.md', true)
     this._setupTabs()
-    // restore useSchema before _setupRequestBody so the body renders correctly
-    const storedSchema = WIDGETS['student-session'].getData('llm-use-schema')
-    if (storedSchema !== null) this.useSchema = storedSchema !== 'false'
     this._setupProviderToggle()
     this._setupApiKey()
+    this._setupOptionsBar()
     this._setupRequestBody()
     this._populateSystemPrompt()
-    this._populateSchema()
     this._populateIncludeCode()
     this._setupSendButton()
     this.$('[name="help-btn"]').addEventListener('click', () => this.convo('start'))
@@ -73,10 +65,10 @@ class AiApiConduit extends Widget {
   _setupTabs () {
     this.$('.ai-api-conduit__tab-label').forEach(label => {
       label.addEventListener('click', () => {
-        if (label.dataset.tab === 'include-code' || label.dataset.tab === 'system') {
+        if (label.dataset.tab === 'attach' || label.dataset.tab === 'system') {
           this._populateSystemPrompt()
         }
-        if (label.dataset.tab === 'include-code') this._populateIncludeCode()
+        if (label.dataset.tab === 'attach') this._populateIncludeCode()
         this.switchTab(label.dataset.tab)
         this.convo(label.dataset.tab, true)
       })
@@ -140,7 +132,8 @@ class AiApiConduit extends Widget {
       temperature: `llm-temperature-${this.provider}`,
       maxTokens: 'llm-max-tokens',
       numCtx: 'llm-num-ctx',
-      think: 'llm-think'
+      think: 'llm-think',
+      attach: 'llm-attach-files'
     }
   }
 
@@ -155,7 +148,8 @@ class AiApiConduit extends Widget {
       temperature: num(ss.getData(keys.temperature), a?.temperature ?? 0.4),
       maxTokens: num(ss.getData(keys.maxTokens), 4096),
       numCtx: num(ss.getData(keys.numCtx), 32768),
-      think: ss.getData(keys.think) === 'true'
+      think: ss.getData(keys.think) === 'true',
+      attach: ss.getData(keys.attach) !== 'false' // on by default
     }
   }
 
@@ -170,6 +164,7 @@ class AiApiConduit extends Widget {
   // provider adapters: each LLM provider's API "dialect"
   // model, temperature: defaults, needsKey: whether it requires an API key
   // timeout: seconds to wait for a reply before giving up (default 90)
+  // status: the provider's status page (for when their servers have issues)
   // request(o): builds the { url, method, headers, body } sent to the API
   // reply(data): finds the text of the reply in the API's response
   // display(h): the request body as rendered in the "Request Body" tab
@@ -180,29 +175,23 @@ class AiApiConduit extends Widget {
         model: 'gemini-3.5-flash-lite',
         temperature: 1, // Google recommends keeping Gemini 3 models at 1
         needsKey: true,
-        request: (o) => {
-          const body = {
+        status: 'https://aistudio.google.com/status',
+        request: (o) => ({
+          // NOTE: Gemini is the only provider that puts the model in the URL
+          url: `https://generativelanguage.googleapis.com/v1beta/models/${o.model}:generateContent`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': o.key
+          },
+          body: {
             systemInstruction: { parts: [{ text: o.system }] },
             contents: [
               { role: 'user', parts: [{ text: o.input }] }
             ],
             generationConfig: { temperature: o.temperature }
           }
-          if (o.schema) {
-            body.generationConfig.responseMimeType = 'application/json'
-            body.generationConfig.responseJsonSchema = o.schema
-          }
-          return {
-            // NOTE: Gemini is the only provider that puts the model in the URL
-            url: `https://generativelanguage.googleapis.com/v1beta/models/${o.model}:generateContent`,
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-goog-api-key': o.key
-            },
-            body
-          }
-        },
+        }),
         reply: (data) => {
           if (data.error) throw new Error(data.error.message)
           const candidate = data.candidates?.[0]
@@ -223,9 +212,7 @@ class AiApiConduit extends Widget {
     { role: 'user', parts: [{ text: ${h.input} }] }
   ],
   generationConfig: {
-    temperature: ${h.temperature}${this.useSchema ? `,
-    responseMimeType: 'application/json',
-    responseJsonSchema: ${h.schema}` : ''}
+    temperature: ${h.temperature}
   }
 }`
       },
@@ -234,8 +221,15 @@ class AiApiConduit extends Widget {
         model: 'gpt-5.4-mini',
         temperature: 0.4,
         needsKey: true,
-        request: (o) => {
-          const body = {
+        status: 'https://status.openai.com',
+        request: (o) => ({
+          url: 'https://api.openai.com/v1/chat/completions',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${o.key}`
+          },
+          body: {
             model: o.model,
             messages: [
               { role: 'system', content: o.system },
@@ -243,22 +237,7 @@ class AiApiConduit extends Widget {
             ],
             temperature: o.temperature
           }
-          if (o.schema) {
-            body.response_format = {
-              type: 'json_schema',
-              json_schema: { name: 'coding_tutor_response', schema: o.schema, strict: true }
-            }
-          }
-          return {
-            url: 'https://api.openai.com/v1/chat/completions',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${o.key}`
-            },
-            body
-          }
-        },
+        }),
         reply: (data) => {
           if (data.error) throw new Error(data.error.message)
           const msg = data.choices?.[0]?.message
@@ -267,22 +246,7 @@ class AiApiConduit extends Widget {
           if (!msg.content) throw new Error(`OpenAI returned no text (finish_reason: ${data.choices[0].finish_reason})`)
           return msg.content
         },
-        display: (h) => this.useSchema ? `{
-  model: ${h.model},
-  messages: [
-    { role: 'system', content: ${h.system} },
-    { role: 'user', content: ${h.input} }
-  ],
-  response_format: {
-    type: 'json_schema',
-    json_schema: {
-      name: 'coding_tutor_response',
-      schema: ${h.schema},
-      strict: true
-    }
-  },
-  temperature: ${h.temperature}
-}` : `{
+        display: (h) => `{
   model: ${h.model},
   messages: [
     { role: 'system', content: ${h.system} },
@@ -296,30 +260,23 @@ class AiApiConduit extends Widget {
         // NOTE: no temperature, Anthropic's newer models reject it
         model: 'claude-haiku-4-5',
         needsKey: true,
-        request: (o) => {
-          const body = {
+        status: 'https://status.claude.com',
+        request: (o) => ({
+          url: 'https://api.anthropic.com/v1/messages',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': o.key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: {
             model: o.model,
             system: o.system,
             messages: [{ role: 'user', content: o.input }],
             max_tokens: parseInt(o.maxTokens) || 4096
           }
-          if (o.schema) {
-            body.output_config = {
-              format: { type: 'json_schema', schema: o.schema }
-            }
-          }
-          return {
-            url: 'https://api.anthropic.com/v1/messages',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': o.key,
-              'anthropic-version': '2023-06-01',
-              'anthropic-dangerous-direct-browser-access': 'true'
-            },
-            body
-          }
-        },
+        }),
         reply: (data) => {
           if (data.error) throw new Error(data.error.message)
           if (data.type === 'error') throw new Error(data.error?.message || 'Unknown error')
@@ -331,20 +288,7 @@ class AiApiConduit extends Widget {
           if (!text) throw new Error(`Unexpected Anthropic response structure (stop_reason: ${data.stop_reason})`)
           return text
         },
-        display: (h) => this.useSchema ? `{
-  model: ${h.model},
-  system: ${h.system},
-  messages: [
-    { role: 'user', content: ${h.input} }
-  ],
-  max_tokens: ${h.maxTokens},
-  output_config: {
-    format: {
-      type: 'json_schema',
-      schema: ${h.schema}
-    }
-  }
-}` : `{
+        display: (h) => `{
   model: ${h.model},
   system: ${h.system},
   messages: [
@@ -359,8 +303,11 @@ class AiApiConduit extends Widget {
         temperature: 0.4,
         timeout: 300, // local models can be slow on less powerful computers
         needsKey: false,
-        request: (o) => {
-          const body = {
+        request: (o) => ({
+          url: 'http://localhost:11434/api/chat',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: {
             model: o.model,
             messages: [
               { role: 'system', content: o.system },
@@ -370,38 +317,16 @@ class AiApiConduit extends Widget {
             think: o.think,
             options: { temperature: o.temperature, num_ctx: parseInt(o.numCtx) || 32768 }
           }
-          if (o.schema) body.format = o.schema
-          return {
-            url: 'http://localhost:11434/api/chat',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body
-          }
-        },
+        }),
         reply: (data) => {
           if (data.error) throw new Error(data.error)
           if (!data.message?.content && data.done_reason === 'length') {
             throw new Error(`The model ran out of room in its context window (num_ctx: ${this.settings.numCtx} tokens) before it finished replying. Try a larger num_ctx or attach fewer files.`)
           }
           if (!data.message?.content) throw new Error('Unexpected Ollama response structure')
-          return typeof data.message.content === 'object'
-            ? JSON.stringify(data.message.content)
-            : data.message.content
+          return data.message.content
         },
-        display: (h) => this.useSchema ? `{
-  model: ${h.model},
-  messages: [
-    { role: 'system', content: ${h.system} },
-    { role: 'user', content: ${h.input} }
-  ],
-  stream: false,
-  think: ${h.think},
-  format: ${h.schema},
-  options: {
-    temperature: ${h.temperature},
-    num_ctx: ${h.numCtx}
-  }
-}` : `{
+        display: (h) => `{
   model: ${h.model},
   messages: [
     { role: 'system', content: ${h.system} },
@@ -428,8 +353,7 @@ class AiApiConduit extends Widget {
       temperature: this.settings.temperature,
       maxTokens: this.settings.maxTokens,
       numCtx: this.settings.numCtx,
-      think: this.settings.think,
-      schema: this.useSchema ? this.schema : null
+      think: this.settings.think
     })
   }
 
@@ -449,8 +373,8 @@ class AiApiConduit extends Widget {
       numCtx: `<input type="number" name="num-ctx" min="2048" max="262144" step="1024" value="${s.numCtx}">`,
       think: `<select name="think"><option value="false">false</option><option value="true"${s.think ? ' selected' : ''}>true</option></select>`,
       system: '<span class="link" data-tab="system">systemPrompt</span>',
-      input: '<span class="link" data-tab="post">userInput</span>',
-      schema: '<span class="link" data-tab="schema">schema</span>'
+      input: '<span class="link" data-tab="test">userInput</span>' +
+        (s.attach ? ' + <span class="link" data-tab="attach">attachedFiles</span>' : '')
     })
 
     pre.querySelectorAll('.link').forEach(link => {
@@ -476,33 +400,32 @@ class AiApiConduit extends Widget {
     if (think) think.addEventListener('change', (e) => this._saveSetting('think', e.target.value))
   }
 
-  _populateSystemPrompt () {
-    const isProject = !!WIDGETS['project-files']?.projectData?.name
-    if (this.useSchema) {
-      this.systemPrompt = isProject ? this.systemPromptProject : this.systemPromptSketch
-    } else {
-      this.systemPrompt = isProject ? this.systemPromptProjectPlain : this.systemPromptSketchPlain
-    }
-    this.$('[name="system-prompt"]').textContent = this.systemPrompt
-  }
-
-  _populateSchema () {
-    const display = this.$('[name="schema-display"]')
-    display.textContent = JSON.stringify(this.schema, null, 2)
-    display.style.display = this.useSchema ? '' : 'none'
-    const cb = this.$('[name="use-schema"]')
-    cb.checked = this.useSchema
-    cb.addEventListener('change', () => {
-      this.useSchema = cb.checked
-      display.style.display = this.useSchema ? '' : 'none'
-      WIDGETS['student-session'].setData('llm-use-schema', String(cb.checked))
-      this._populateSystemPrompt()
+  _setupOptionsBar () {
+    // options at the top of the Request Body tab
+    const attach = this.$('[name="attach-files"]')
+    attach.checked = this.settings.attach
+    this._toggleAttachTab()
+    attach.addEventListener('change', () => {
+      this._saveSetting('attach', String(attach.checked))
+      this._toggleAttachTab()
       this._setupRequestBody()
+      if (attach.checked) this.convo('attach-on', true)
     })
   }
 
+  _toggleAttachTab () {
+    const label = this.ele.querySelector('.ai-api-conduit__tab-label[data-tab="attach"]')
+    label.style.display = this.settings.attach ? '' : 'none'
+  }
+
+  _populateSystemPrompt () {
+    const isProject = !!WIDGETS['project-files']?.projectData?.name
+    this.systemPrompt = isProject ? this.systemPromptProject : this.systemPromptSketch
+    this.$('[name="system-prompt"]').textContent = this.systemPrompt
+  }
+
   _populateIncludeCode () {
-    const container = this.$('[name="include-code-content"]')
+    const container = this.$('[name="attach-content"]')
     const projectName = WIDGETS['project-files']?.projectData?.name
     const isSketch = !projectName && NNE.code !== utils.starterCode()
 
@@ -608,8 +531,7 @@ class AiApiConduit extends Widget {
   }
 
   async _sendRequest () {
-    const pconvo = this.useSchema ? 'llm-possessed-takeover' : 'llm-possessed-processing'
-    window.convo = new Convo(this.convos, pconvo)
+    window.convo = new Convo(this.convos, 'llm-possessed-processing')
 
     const a = this.adapters[this.provider]
     if (!a) return this.convo('provider-disabled')
@@ -620,7 +542,7 @@ class AiApiConduit extends Widget {
     if (!rawInput) return this.convo('no-input')
 
     if (window.plausible) window.plausible('llm_chat')
-    const includedCode = this.getIncludedCode()
+    const includedCode = this.settings.attach ? this.getIncludedCode() : ''
     const userInput = includedCode
       ? `${rawInput}\n\nHere is the code I'm working with:\n\n${includedCode}`
       : rawInput
@@ -657,23 +579,7 @@ class AiApiConduit extends Widget {
 
       this.$('[name="response-display"]').textContent = rawText
 
-      if (this.useSchema) {
-        const model = req.body.model
-        const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
-        let result
-        try {
-          result = JSON.parse(cleaned)
-        } catch (e) {
-          throw new Error(`The model "${model}" did not return valid JSON. Try disabling the schema for this model.`)
-        }
-        if (typeof result.restatement !== 'string' || !Array.isArray(result.snippets) || result.snippets.length === 0) {
-          console.warn('[llm] unexpected result structure:', result)
-          throw new Error(`The model "${model}" returned JSON but did not follow the required schema. Try disabling the schema for this model.`)
-        }
-        this._shareResult(result)
-      } else {
-        this._showRawReply(rawText)
-      }
+      this._showRawReply(rawText)
     } catch (err) {
       const aborted = err.name === 'AbortError'
       const msg = aborted && this._request.timedOut
@@ -687,9 +593,13 @@ class AiApiConduit extends Widget {
       } else if (aborted || [429, 503, 529].includes(status)) {
         // timed out, rate limited (429) or the servers are overloaded (503, 529)
         this.convo('llm-busy', true)
-      } else if (this.provider === 'ollama' && err.message.includes('Failed to fetch')) {
-        const isChrome = nn.browserInfo().name === 'Chrome'
-        window.convo = new Convo(this.convos, isChrome ? 'ollama-cors-error-chrome' : 'ollama-cors-error')
+      } else if (err instanceof TypeError && status === null) {
+        // fetch couldn't reach the server at all (no response, so no status),
+        // browsers report these as "NetworkError" or "Failed to fetch" errors
+        if (this.provider === 'ollama') {
+          const isChrome = nn.browserInfo().name === 'Chrome'
+          window.convo = new Convo(this.convos, isChrome ? 'ollama-cors-error-chrome' : 'ollama-cors-error')
+        } else this.convo('llm-network-error', true)
       } else {
         window.convo = new Convo(this.convos, 'oh-no-error')
       }
@@ -705,48 +615,6 @@ class AiApiConduit extends Widget {
     WIDGETS.open('ai-llm-reply', (w) => {
       w.loadReply(text)
       window.convo = new Convo(this.convos, 'llm-reply-wig')
-    })
-  }
-
-  _shareResult (json) {
-    if (!this._possessed) this._getPossessed()
-
-    const escapeHtml = (str) => {
-      const escaped = str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-      return escaped.replace(/`([^`]+)`/g, '<code>$1</code>')
-    }
-
-    const displaySnippets = () => {
-      WIDGETS.open('ai-code-tracer', (w) => {
-        if (this.opened) this.close()
-        w.loadSnippets(json.snippets)
-      })
-    }
-
-    const askAgain = () => {
-      NNW.menu.switchFace('default')
-      if (this.opened) {
-        this.switchTab('post')
-        window.convo = new Convo(this.convos, 'restate-query')
-      } else {
-        const ssConvos = WIDGETS['student-session'].convos
-        window.convo = new Convo(ssConvos, 'ask-llm-restate')
-      }
-    }
-
-    // restate question to confirm understanding
-    window.convo = new Convo({
-      id: 'llm-possessed-restatement',
-      content: escapeHtml(json.restatement),
-      options: {
-        yes: () => displaySnippets(),
-        no: () => askAgain()
-      }
     })
   }
 

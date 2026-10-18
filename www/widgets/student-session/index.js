@@ -50,8 +50,7 @@ class StudentSession extends Widget {
         tempOllama: ls.getItem('llm-temperature-ollama'),
         maxTokens: ls.getItem('llm-max-tokens'),
         numCtx: ls.getItem('llm-num-ctx'),
-        think: ls.getItem('llm-think'),
-        useSchema: ls.getItem('llm-use-schema')
+        think: ls.getItem('llm-think')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -432,8 +431,7 @@ class StudentSession extends Widget {
           ['Ollama temperature', 'tempOllama'],
           ['max tokens', 'maxTokens'],
           ['Ollama context (num_ctx)', 'numCtx'],
-          ['Ollama think', 'think'],
-          ['use schema', 'useSchema']
+          ['Ollama think', 'think']
         ].map(([label, prop, pass]) => `
         <div>
           ${label}:

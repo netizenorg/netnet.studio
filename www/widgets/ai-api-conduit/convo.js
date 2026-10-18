@@ -175,7 +175,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'request',
-    content: 'This is the <b>Request\'s Body</b>, it\'s the <span class="link" onclick="WIDGETS.open(\'lingo-glossary\', w => w.showVocab(\'json\'))">JSON</span> data we send to the LLM provider\'s API. You can edit parts, like the name of the <span style="color:var(--netizen-attribute)">model</span> you want to use and the <span style="color:var(--netizen-attribute)">temperature</span> value, other parts like the <span style="color:var(--fg-color)">systemPrompt</span> and <span style="color:var(--fg-color)">schema</span> I\'ve set myself in the other tabs.',
+    content: 'This is the <b>Request\'s Body</b>, it\'s the <span class="link" onclick="WIDGETS.open(\'lingo-glossary\', w => w.showVocab(\'json\'))">JSON</span> data we send to the LLM provider\'s API. You can edit parts, like the name of the <span style="color:var(--netizen-attribute)">model</span> you want to use and the <span style="color:var(--netizen-attribute)">temperature</span> value, other parts like the <span style="color:var(--fg-color)">systemPrompt</span> and <span style="color:var(--fg-color)">userInput</span> are set in the other tabs (click on them to see).',
     options: {
       'got it': (e) => e.hide(),
       'model?': (e) => e.goTo('req-model'),
@@ -262,7 +262,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'req-temperature4',
-    content: 'That\'s because we\'re also defining a system prompt and output format which tries to enforce a specific structure and output, so even at a high temperature in this case it\'s not likely to get too wacky. You can click on those tabs to learn more about that.',
+    content: 'That\'s because we\'re also defining a system prompt, which asks the model to reply in a specific tone and format, so even at a high temperature in this case it\'s not likely to get too wacky. You can click on the System Prompt tab to learn more about that.',
     options: {
       'got it': (e) => e.hide(),
       'what if I want wacky?': (e) => e.goTo('req-temperature5')
@@ -314,51 +314,50 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'sys-hopefullly',
-    content: 'That\'s were our System Prompt and Schema come in. The LLM should respond as a "tutor" and any code it suggests will get rendered in a widget called <b>LLM Code Snippets</b> with <i>traceable</i> code I can explain. But remember we can\'t ever guarantee the output of an LLM, we can only pass input we hope will influence the output a certain way.',
+    content: 'That\'s where our System Prompt comes in. The LLM should respond as a "tutor" and any code it suggests will be displayed as <i>traceable</i> code. But remember we can\'t ever guarantee the output of an LLM, we can only pass input we hope will influence the output a certain way.',
     options: {
       'got it': (e) => e.hide(),
       'traceable?': (e) => e.goTo('sys-traceable')
     }
   }, {
     id: 'sys-traceable',
-    content: 'Once you\'re a pro, it\'s best to copy+paste code snippets to save time, but while you\'re learning it\'s important to type code out yourself, even if that\'s code you\'re copying from somewhere else, this has been proven to help you retain core concepts better. The <b>LLM Code Snippets</b> widget allows you to copy+paste a code snippet <i>only after</i> you\'ve re-typed or "traced" over it.',
+    content: 'Once you\'re a pro, it\'s best to copy+paste code snippets to save time, but while you\'re learning it\'s important to type code out yourself, even if that\'s code you\'re copying from somewhere else, this has been proven to help you retain core concepts better. That\'s why I\'ll only let you copy+paste the LLM\'s code <i>after</i> you\'ve re-typed or "traced" over it.',
     options: {
       'got it': (e) => e.hide()
     }
   }, {
-    id: 'schema',
-    content: 'There are a couple of ways I can share the LLM\'s response: either display everything in a widget, or walk you through it step-by-step with code shown separately. To do the latter, the API needs to respond to us in a specific format.',
+    id: 'attach',
+    content: 'When the "attach files" option is checked in the <b>Request Body</b> tab, I\'ll add the code from your sketch (or the project files you choose here) to the end of your question, so the LLM has more context. If your code uses my nn.js library, I can also attach its documentation, so the model knows how it works.',
     options: {
-      'go on': (e) => e.goTo('schema2')
+      'got it': (e) => e.hide(),
+      'why would I not attach them?': (e) => e.goTo('attach2')
     }
   }, {
-    id: 'schema2',
-    content: 'This schema defines that format, letting me explain things in my speech bubbles while showing code separately. Smaller local models may struggle with this, so you might want to keep it disabled when using Ollama.',
-    options: {
-      ok: (e) => e.hide(),
-      'is schema better?': (e) => e.goTo('schema3')
-    }
-  }, {
-    id: 'schema3',
-    content: 'Not exactly, it just changes how the models output is presented here. With the schema, I\'ll display instructions in my speech bubbles and code in a separate widget. Without it, the full response appears in a single widget, like typical LLM output.',
+    id: 'attach2',
+    content: 'Sometimes your question has nothing to do with your code. Also, everything you attach gets sent to the LLM provider\'s servers, and it makes the request bigger, which means it costs more and takes longer to process. So it\'s worth thinking about what you actually need to send.',
     options: {
       'got it': (e) => e.hide()
     }
   }, {
-    id: 'include-code',
-    content: 'When you\'re working on a sketch or project I\'ll send along the sketch or file your working on to the LLM accompanying your question, so it has more context. However, if for some reason you don\'t want to do that you\'ll be able to adjust that setting here before each time you send a query to the API.',
+    id: 'attach-on',
+    content: 'Ok, I\'ll attach your code to your questions. You can choose which files to attach in the <b>Attach Files</b> tab.',
     options: {
-      'got it': (e) => e.hide()
+      'got it': (e) => e.hide(),
+      'show me': (e) => {
+        e.hide()
+        self.switchTab('attach')
+        self._populateIncludeCode()
+      }
     }
   }, {
-    id: 'post',
+    id: 'test',
     content: 'Once you\'ve picked your provider, added your API key (if required) and chosen your settings the LLM conduit is ready to go! You can close this widget and start working on code. Anytime after that you can click on my face and say "Hi", I\'ll give you the option to "ask an LLM" a question. Then, using these settings, I\'ll send your question along to the LLM\'s API.',
     options: {
-      'I see': (e) => e.goTo('post2')
+      'I see': (e) => e.goTo('test2')
     }
   }, {
-    id: 'post2',
-    content: 'So you don\'t need to keep this widget open to start sending questions to an LLM. You only need to open it back up when you want to change any of these settings. This "Post Request" tab is really just a place to test and make sure responses are coming back as you expect.',
+    id: 'test2',
+    content: 'So you don\'t need to keep this widget open to start sending questions to an LLM. You only need to open it back up when you want to change any of these settings. This "Test" tab is really just a place to test and make sure responses are coming back as you expect.',
     options: {
       'got it': (e) => e.hide()
     }
@@ -372,11 +371,11 @@ window.CONVOS['ai-api-conduit'] = (self) => {
   }, {
     id: 'no-input',
     before: () => NNW.menu.switchFace('upset'),
-    content: 'You haven\'t written anything in the <b>POST Request</b> tab yet! That\'s where you type the question or prompt you want to send to the LLM. Switch to the <b>POST Request</b> tab and write something first.',
+    content: 'You haven\'t written anything in the <b>Test</b> tab yet! That\'s where you type the question or prompt you want to send to the LLM. Switch to the <b>Test</b> tab and write something first.',
     options: {
       ok: (e) => {
         e.hide()
-        self.switchTab('post')
+        self.switchTab('test')
       }
     }
   }, {
@@ -387,31 +386,11 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       ok: (e) => e.hide()
     }
   }, {
-    id: 'llm-possessed-takeover',
-    content: '...LLM taking over...',
-    after: () => self._getPossessed(),
-    options: {}
-  }, {
     id: 'llm-possessed-processing',
     content: '...communicating with LLM...',
-    after: () => self._getPossessed(),
+    // only if it's still the current convo (a fast error may have replaced it)
+    after: (c) => { if (window.convo === c) self._getPossessed() },
     options: {}
-  }, {
-    id: 'restate-query',
-    content: 'Try restating your question differently in the <b>Post Request</b> tab, then press "send request" to try agian.',
-    options: {
-      ok: (e) => e.hide()
-    }
-  }, {
-    id: 'ollama-cors-error',
-    before: () => NNW.menu.switchFace('upset'),
-    content: 'I wasn\'t able to reach your local Ollama server. This is a known limitation in Chrome — it blocks requests from HTTPS pages to local addresses for security reasons. Try using <b>Firefox</b> instead, which doesn\'t have this restriction.',
-    options: {
-      ok: (e) => {
-        e.hide()
-        NNW.menu.switchFace('default')
-      }
-    }
   }, {
     id: 'ollama-cors-error-chrome',
     before: () => NNW.menu.switchFace('upset'),
@@ -456,6 +435,23 @@ window.CONVOS['ai-api-conduit'] = (self) => {
         if (self._request) self._request.abort()
         e.hide()
       }
+    }
+  }, {
+    id: 'llm-network-error',
+    before: () => NNW.menu.switchFace('upset'),
+    content: 'Hmm, I couldn\'t reach your LLM provider\'s servers, the request never got an answer. This happens from time to time, it could be a hiccup in your internet connection or an issue on their end.',
+    options: {
+      'try again': (e) => {
+        NNW.menu.switchFace('default')
+        self._sendRequest()
+      },
+      'what if it keeps happening?': (e) => e.goTo('llm-network-error2')
+    }
+  }, {
+    id: 'llm-network-error2',
+    content: `Check that you're connected to the internet${self.adapters?.[self.provider]?.status ? `, then check your provider's <a href="${self.adapters[self.provider].status}" target="_blank">status page</a> to see if they're having issues` : ''}. Otherwise, wait a bit and try again later, or try a different provider.`,
+    options: {
+      ok: (e) => { e.hide(); NNW.menu.switchFace('default') }
     }
   }, {
     id: 'llm-busy2',
