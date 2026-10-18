@@ -128,7 +128,8 @@ function newNoteList (demo = {}) {
   }
   // setup event listeners
   nn.get('#note-list').on('selected', (e) => {
-    loadNote(e.detail.id)
+    if (noteNeedsTitle()) nn.get('#note-list').selectStep(curNoteIdx)
+    else loadNote(e.detail.id)
     closeNoteListModal()
   })
   nn.get('#note-list').on('remove', (e) => deleteNote(e.detail.id))
@@ -156,7 +157,21 @@ function loadNote (idx) {
   MSG('demo-mkr-loaded-note', curNoteIdx)
 }
 
+// notes need a title (demo-toc uses them), so a note without one can't be left
+// until it gets one (or is deleted), returns true if the current note needs one
+function noteNeedsTitle () {
+  const note = DEMO.info[curNoteIdx]
+  if (!note || (note.title && note.title.trim() !== '')) return false
+  window.modal.open('missing-note-title')
+  return true
+}
+
+function goToNote (idx) {
+  if (!noteNeedsTitle()) loadNote(idx)
+}
+
 function newNote () {
+  if (noteNeedsTitle()) return
   const note = { title: null, focus: null, text: null }
   note.id = DEMO.info.length
   DEMO.info.push(note)
@@ -304,9 +319,9 @@ nn.get('#new').on('click', newNote)
 
 nn.get('#preview').on('click', () => MSG('demo-mkr-preview', curNoteIdx))
 
-nn.get('#note-prev').on('click', () => loadNote(curNoteIdx - 1))
+nn.get('#note-prev').on('click', () => goToNote(curNoteIdx - 1))
 
-nn.get('#note-next').on('click', () => loadNote(curNoteIdx + 1))
+nn.get('#note-next').on('click', () => goToNote(curNoteIdx + 1))
 
 nn.get('#note-view-all').on('click', openNoteListModal)
 
@@ -370,10 +385,10 @@ nn.get('#gen-link').on('click', generateURL)
 
 nn.on('keydown', (e) => {
   const onBody = e.target === document.body
-  if (onBody && e.key === 'ArrowLeft') loadNote(curNoteIdx - 1)
-  else if (onBody && e.key === 'ArrowRight') loadNote(curNoteIdx + 1)
-  else if (onBody && e.key === 'ArrowDown') loadNote(curNoteIdx + 1)
-  else if (onBody && e.key === 'ArrowUp') loadNote(curNoteIdx - 1)
+  if (onBody && e.key === 'ArrowLeft') goToNote(curNoteIdx - 1)
+  else if (onBody && e.key === 'ArrowRight') goToNote(curNoteIdx + 1)
+  else if (onBody && e.key === 'ArrowDown') goToNote(curNoteIdx + 1)
+  else if (onBody && e.key === 'ArrowUp') goToNote(curNoteIdx - 1)
 })
 
 nn.on('message', (e) => {
