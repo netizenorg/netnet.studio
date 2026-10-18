@@ -16,7 +16,7 @@ class AiApiConduit extends Widget {
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
-    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false }
+    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false, integration: 'widget' }
     this.adapters = this._createAdapters()
 
     this._setupConvoListener()
@@ -49,6 +49,7 @@ class AiApiConduit extends Widget {
     this._setupTabs()
     this._setupProviderToggle()
     this._setupApiKey()
+    this._setupIntegration()
     this._setupOptionsBar()
     this._setupRequestBody()
     this._populateSystemPrompt()
@@ -105,6 +106,16 @@ class AiApiConduit extends Widget {
     })
   }
 
+  _setupIntegration () {
+    // how netnet shares the LLM's reply: 'widget' or 'possessed' (convo)
+    const select = this.$('[name="integration"]')
+    select.value = this.settings.integration
+    select.addEventListener('change', () => {
+      this._saveSetting('integration', select.value)
+      this.convo(`integration-${select.value}`, true)
+    })
+  }
+
   _setupApiKey () {
     const input = this.$('[name="api-key"]')
     input.value = this.settings.key || ''
@@ -135,7 +146,8 @@ class AiApiConduit extends Widget {
       think: 'llm-think',
       attach: 'llm-attach-files',
       mode: 'llm-mode',
-      extended: 'llm-extended-options'
+      extended: 'llm-extended-options',
+      integration: 'llm-integration'
     }
   }
 
@@ -153,7 +165,8 @@ class AiApiConduit extends Widget {
       think: ss.getData(keys.think) === 'true',
       attach: ss.getData(keys.attach) !== 'false', // on by default
       mode: ss.getData(keys.mode) === 'vanilla' ? 'vanilla' : 'library',
-      extended: ss.getData(keys.extended) === 'true'
+      extended: ss.getData(keys.extended) === 'true',
+      integration: ss.getData(keys.integration) === 'possessed' ? 'possessed' : 'widget'
     }
   }
 
@@ -647,7 +660,8 @@ class AiApiConduit extends Widget {
 
       this.$('[name="response-display"]').textContent = rawText
 
-      this._showRawReply(rawText)
+      if (this.settings.integration === 'possessed') this._showSteps(rawText)
+      else this._showRawReply(rawText)
     } catch (err) {
       const aborted = err.name === 'AbortError'
       const msg = aborted && this._request.timedOut
@@ -742,6 +756,172 @@ class AiApiConduit extends Widget {
     return { html, blocks }
   }
 
+  // ...........................................................................
+  // "possessed convo" integration: the LLM's reply, one speech bubble at a time
+
+  toSteps (text, maxWords = 60) {
+    // splits a reply's markdown into steps: [{ html, block }], where html is
+    // the content of a speech bubble && block is the index of the code block
+    // (in the blocks list) shown alongside it, or null. returns { steps, blocks }
+    const blocks = []
+    const md = this._markdownParser(blocks)
+    const tokens = md.lexer(text)
+    const words = (str) => str.trim().split(/\s+/).filter(w => w).length
+    const steps = []
+    let heading = null // headings get added to the start of the next step
+
+    const addStep = (html, isCode) => {
+      if (heading) { html = `<b>${heading}</b><br>${html}`; heading = null }
+      steps.push({ html, block: null, isCode: !!isCode })
+    }
+
+    // splits a long paragraph at the end of sentences (never in the middle of
+    // one, or inside `inline code`), adding … where it was split
+    const splitParagraph = (src) => {
+      const sentences = src.split(/(?<=[.!?:])\s+(?=\S)/)
+      const merged = [] // re-join sentences split inside `inline code`
+      sentences.forEach(s => {
+        const prev = merged[merged.length - 1]
+        const openCode = prev && (prev.match(/`/g) || []).length % 2 === 1
+        if (openCode) merged[merged.length - 1] += ' ' + s
+        else merged.push(s)
+      })
+      const chunks = []
+      merged.forEach(s => {
+        const last = chunks[chunks.length - 1]
+        if (last && words(last) + words(s) <= maxWords) chunks[chunks.length - 1] += ' ' + s
+        else chunks.push(s)
+      })
+      return chunks.map((c, i) => {
+        const html = md.parseInline(c)
+        const start = i > 0 ? '…' : ''
+        const end = i < chunks.length - 1 ? '…' : ''
+        return start + html + end
+      })
+    }
+
+    tokens.forEach(t => {
+      if (t.type === 'space' || t.type === 'hr') return
+      if (t.type === 'heading') {
+        heading = md.parseInline(t.text)
+      } else if (t.type === 'paragraph') {
+        splitParagraph(t.text).forEach(html => addStep(html))
+      } else if (t.type === 'code') {
+        md.parser([t]) // adds it to the blocks list
+        const block = blocks.length - 1
+        // the step just before a code block introduces it, if there isn't
+        // one (or it already introduces another block) add a short one
+        const prev = steps[steps.length - 1]
+        if (!prev || prev.isCode || heading) addStep(prev && prev.isCode ? 'Here\'s some more code:' : 'Here\'s some code:')
+        const intro = steps[steps.length - 1]
+        intro.block = block
+        intro.isCode = true
+      } else if (t.type === 'list') {
+        // keep lists together, unless they're too long
+        let items = []
+        let start = t.start || 1
+        const flush = () => {
+          if (items.length === 0) return
+          addStep(md.parser([{ ...t, start, items }]))
+          start += items.length
+          items = []
+        }
+        t.items.forEach(item => {
+          const count = items.reduce((n, it) => n + words(it.text), 0)
+          if (items.length > 0 && count + words(item.text) > maxWords) flush()
+          items.push(item)
+        })
+        flush()
+      } else {
+        // blockquotes, tables, etc
+        addStep(md.parser([t]))
+      }
+    })
+    if (heading) addStep('')
+
+    // a code block stays open after the step that introduced it, but only
+    // while the following steps are still talking about that code
+    const common = ['nn', 'const', 'let', 'var', 'function', 'return', 'this',
+      'true', 'false', 'null', 'undefined', 'new', 'async', 'await', 'document',
+      'window', 'console', 'log', 'amp', 'quot', 'lt', 'gt']
+    const names = (str) => (str.match(/[A-Za-z_$][\w$]*/g) || [])
+      .filter(n => n.length > 1 && !common.includes(n))
+    const inlineCode = (html) => (html.match(/<code>[\s\S]*?<\/code>/g) || []).join(' ')
+    let open = null
+    let after = 0
+    steps.forEach(s => {
+      if (s.isCode) { open = s.block; after = 0; return }
+      if (open === null) return
+      after++
+      const newSection = /^(<b>|<strong>|<h\d)/.test(s.html)
+      const code = inlineCode(s.html)
+      const blockNames = names(blocks[open].code)
+      const related = names(code).some(n => blockNames.includes(n))
+      // the step right after a block is usually explaining it, unless its
+      // inline code is about something else, later steps need to mention it
+      const explains = after === 1 && code === ''
+      if (!newSection && (related || explains)) s.block = open
+      else open = null
+    })
+
+    return { steps: steps.map(s => ({ html: s.html, block: s.block })), blocks }
+  }
+
+  _showSteps (text) {
+    this.loadMarked(() => {
+      const { steps, blocks } = this.toSteps(text)
+      // (only if a reply had nothing but ex: a horizontal rule)
+      if (steps.length === 0) return this._showRawReply(text)
+      this._steps = { text, steps, blocks, idx: 0 }
+      this._getPossessed()
+      this._goToStep(0)
+    })
+  }
+
+  _goToStep (idx) {
+    // creates the possessed convo for the given step of the current reply
+    const { steps, blocks } = this._steps
+    this._steps.idx = idx
+    const step = steps[idx]
+    const block = step.block !== null ? blocks[step.block] : null
+    const first = idx === 0
+    const last = idx === steps.length - 1
+
+    const options = {}
+    if (!last) options.next = () => this._goToStep(idx + 1)
+    if (!first) options.previous = () => this._goToStep(idx - 1)
+    if (block) options['view code'] = () => this._showStepCode(block)
+    if (first || last) options['show full reply'] = () => this._endSteps(true)
+    options.done = () => this._endSteps()
+
+    window.convo = new Convo({
+      id: `llm-possessed-step-${idx}`,
+      before: () => {
+        this._getPossessed()
+        if (block) this._showStepCode(block)
+        else if (WIDGETS['ai-code-tracer']?.opened) WIDGETS['ai-code-tracer'].close()
+      },
+      content: step.html,
+      options
+    })
+  }
+
+  _showStepCode (block) {
+    WIDGETS.open('ai-code-tracer', (w) => w.showBlock(block))
+  }
+
+  resumeSteps () {
+    // back to the current step (ex: after the code widget's copy convos)
+    if (this._steps) this._goToStep(this._steps.idx)
+  }
+
+  _endSteps (showFullReply) {
+    if (WIDGETS['ai-code-tracer']?.opened) WIDGETS['ai-code-tracer'].close()
+    this._unpossess()
+    if (showFullReply) this._showRawReply(this._steps.text)
+    else window.convo.hide()
+  }
+
   _getPossessed () {
     // add LLM possessed look
     NNW.menu.updateFace({
@@ -752,8 +932,16 @@ class AiApiConduit extends Widget {
     this._possessed = true
   }
 
-  _setupConvoListener () {
+  _unpossess () {
     // remove LLM possessed look
+    this._possessed = false
+    nn.get('.text-bubble').classList.remove('text-bubble-llm')
+    nn.get('.text-bubble-triangle').classList.remove('text-bubble-triangle-llm')
+    NNW.menu.switchFace('default')
+  }
+
+  _setupConvoListener () {
+    // remove LLM possessed look when any other convo is displayed
     let _convo = window.convo
     const self = this
     const obj = {
@@ -761,10 +949,7 @@ class AiApiConduit extends Widget {
       set (convo) {
         _convo = convo
         if (convo.id.indexOf('llm-possessed') !== 0 && self._possessed) {
-          self._possessed = false
-          nn.get('.text-bubble').classList.remove('text-bubble-llm')
-          nn.get('.text-bubble-triangle').classList.remove('text-bubble-triangle-llm')
-          NNW.menu.switchFace('default')
+          self._unpossess()
         }
       }
     }

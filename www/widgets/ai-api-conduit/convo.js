@@ -477,6 +477,25 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       ok: (e) => e.hide()
     }
   }, {
+    id: 'integration',
+    content: 'This is how I\'ll share the LLM\'s reply with you. I can display the whole reply in an <b>output widget</b>, like most chatbots do, or I can let the LLM "possess" me and walk you through its reply one piece at a time in my speech bubbles, with any code it writes displayed in its own widget.',
+    options: {
+      'got it': (e) => e.hide(),
+      'possessed?': (e) => e.goTo('integration-possessed')
+    }
+  }, {
+    id: 'integration-widget',
+    content: 'Ok, I\'ll display the LLM\'s full reply in the <b>LLM Response</b> widget, any code it writes will be displayed as <i>traceable</i> code.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'integration-possessed',
+    content: 'When I\'m "possessed" you\'ll notice my face and speech bubble change, that\'s how you\'ll know it\'s the LLM talking and not me. I\'ll break the reply up into small pieces you can step through, and any code will show up in its own widget as we go. You can always choose to see the full reply instead.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
     id: 'llm-possessed-processing',
     content: '...communicating with LLM...',
     // only if it's still the current convo (a fast error may have replaced it)
