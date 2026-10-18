@@ -57,6 +57,7 @@ class AiApiConduit extends Widget {
     this._setupOptionsBar()
     this._setupRequestBody()
     this._populateSystemPrompt()
+    this._setupSystemPrompt()
     this._populateIncludeCode()
     this._setupSendButton()
     this.$('[name="help-btn"]').addEventListener('click', () => this.convo('start'))
@@ -541,10 +542,47 @@ ${h.history}    { role: 'user', content: ${h.input} }
     label.style.display = this.settings.attach ? '' : 'none'
   }
 
-  _populateSystemPrompt () {
+  _defaultSystemPrompt () {
+    // one for sketches && one for projects, see data/system-prompt-*.txt
     const isProject = !!WIDGETS['project-files']?.projectData?.name
-    this.systemPrompt = isProject ? this.systemPromptProject : this.systemPromptSketch
-    this.$('[name="system-prompt"]').textContent = this.systemPrompt
+    return isProject ? this.systemPromptProject : this.systemPromptSketch
+  }
+
+  _populateSystemPrompt () {
+    // a student's custom system prompt (if they've edited it) or the default
+    const custom = WIDGETS['student-session'].getData('llm-system-prompt')
+    this.systemPrompt = custom || this._defaultSystemPrompt()
+    const textarea = this.$('[name="system-prompt"]')
+    if (!textarea) return
+    if (document.activeElement !== textarea) textarea.value = this.systemPrompt
+    const isProject = !!WIDGETS['project-files']?.projectData?.name
+    this.$('[name="system-prompt-status"]').textContent = custom
+      ? 'your custom system prompt'
+      : `my default system prompt (for ${isProject ? 'projects' : 'sketches'})`
+    this.$('[name="system-prompt-reset"]').style.display = custom ? '' : 'none'
+  }
+
+  _setupSystemPrompt () {
+    const textarea = this.$('[name="system-prompt"]')
+    textarea.addEventListener('input', () => {
+      const ss = WIDGETS['student-session']
+      const wasCustom = !!ss.getData('llm-system-prompt')
+      // saved as custom, unless it's empty or the same as the default
+      const val = textarea.value
+      const isDefault = val.trim() === '' || val === this._defaultSystemPrompt()
+      ss.setData('llm-system-prompt', isDefault ? null : val)
+      this._populateSystemPrompt()
+      if (!wasCustom && !isDefault) this.convo('sys-custom', true)
+    })
+    this.$('[name="system-prompt-reset"]').addEventListener('click', () => {
+      this.convo('sys-reset-confirm', true)
+    })
+  }
+
+  resetSystemPrompt () {
+    WIDGETS['student-session'].setData('llm-system-prompt', null)
+    this.$('[name="system-prompt"]').value = this._defaultSystemPrompt()
+    this._populateSystemPrompt()
   }
 
   _populateIncludeCode () {
@@ -668,6 +706,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
     this.$('[name="user-input"]').value = rawInput
 
     if (window.plausible) window.plausible('llm_chat')
+    this._populateSystemPrompt() // in case they've opened a project since
     this._lastSend = { question: rawInput, newConversation } // for "try again"
     if (newConversation) this.history = []
     const files = this.settings.attach ? this.getIncludedCode() : ''

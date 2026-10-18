@@ -51,7 +51,11 @@
     </div>
 
     <div class="ai-api-conduit__tab" data-tab="system" style="display:none;">
-      <pre name="system-prompt"></pre>
+      <div class="ai-api-conduit__options ai-api-conduit__system-status">
+        <span>using <span name="system-prompt-status"></span></span>
+        <button class="pill-btn pill-btn--secondary" name="system-prompt-reset">reset to default</button>
+      </div>
+      <textarea name="system-prompt" spellcheck="false"></textarea>
     </div>
 
     <div class="ai-api-conduit__tab" data-tab="attach" style="display:none;">

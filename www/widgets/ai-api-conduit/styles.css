@@ -103,9 +103,21 @@
   scrollbar-width: thin;
 }
 
-.ai-api-conduit__tab[data-tab="test"] {
+.ai-api-conduit__tab[data-tab="test"],
+.ai-api-conduit__tab[data-tab="system"] {
   display: flex;
   flex-direction: column;
+}
+
+.ai-api-conduit__system-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-api-conduit__tab[data-tab="system"] textarea {
+  flex: 1;
+  min-height: 0;
 }
 
 .ai-api-conduit__tab[data-tab="test"] textarea {

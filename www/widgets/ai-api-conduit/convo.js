@@ -413,7 +413,7 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     content: 'Like temperature, the system prompt is another setting that influences a model\'s output, one you typically can\'t control in a consumer chatbot (because it\'s set for you), but you can when using the API. It\'s a set of instructions given to the model before your prompt that tells it how to respond by defining things like tone and role.',
     options: {
       'why not in my prompt?': (e) => e.goTo('sys-not-prompt'),
-      'why can\'t I edit here?': (e) => e.goTo('sys-no-edit')
+      'can I change it?': (e) => e.goTo('sys-edit')
     }
   }, {
     id: 'sys-not-prompt',
@@ -434,11 +434,40 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       'got it': (e) => e.hide()
     }
   }, {
-    id: 'sys-no-edit',
-    content: 'When working with the API directly you can, that\'s something I\'ll show you how to implement yourself in Ch.4 of my <span class="link" onclick="WIDGETS.open(\'learning-guide\', w => w.openDocs(\'ai\'))">Notes on AI</span>, but in this widget I\'ve hard-coded this System Prompt to ensure it integrates into our widgets in a way that guarantees our learning goals.',
+    id: 'sys-edit',
+    content: 'Yes! I\'ve written a default system prompt, but you can edit it right here and see how it changes the replies you get. Once you do, I\'ll use your version until you press "reset to default". Like your other settings, it\'s saved locally in your browser.',
     options: {
       'got it': (e) => e.hide(),
-      'learning goals?': (e) => e.goTo('sys-learning-goals')
+      'any tips?': (e) => e.goTo('sys-edit-tips')
+    }
+  }, {
+    id: 'sys-edit-tips',
+    content: 'Try changing the tone or the role it plays, or loosening some of the rules, and compare the replies. Keep in mind the "HOW TO FORMAT YOUR REPLIES" part helps me break replies up into my speech bubbles when I\'m "possessed", so if you change it, replies might not display as nicely. Most importantly, notice that we can\'t guarantee what an LLM says, we can only influence it.',
+    options: {
+      'got it': (e) => e.hide(),
+      'what were the defaults for?': (e) => e.goTo('sys-learning-goals')
+    }
+  }, {
+    id: 'sys-custom',
+    content: 'I\'ll save your custom system prompt and use it instead of my default one. You can always go back to mine by pressing "reset to default".',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'sys-reset-confirm',
+    content: 'Are you sure you want to replace your custom system prompt with my default one? Your version will be gone for good.',
+    options: {
+      'yes, reset it': (e) => {
+        self.resetSystemPrompt()
+        e.goTo('sys-reset')
+      },
+      'never mind': (e) => e.hide()
+    }
+  }, {
+    id: 'sys-reset',
+    content: 'Ok, I\'m back to using my default system prompt.',
+    options: {
+      ok: (e) => e.hide()
     }
   }, {
     id: 'sys-learning-goals',

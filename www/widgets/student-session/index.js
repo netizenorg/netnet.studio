@@ -50,7 +50,8 @@ class StudentSession extends Widget {
         tempOllama: ls.getItem('llm-temperature-ollama'),
         maxTokens: ls.getItem('llm-max-tokens'),
         numCtx: ls.getItem('llm-num-ctx'),
-        think: ls.getItem('llm-think')
+        think: ls.getItem('llm-think'),
+        systemPrompt: ls.getItem('llm-system-prompt')
       },
       lastSave: {
         sketch: ls.getItem('last-saved-sketch'),
@@ -431,11 +432,12 @@ class StudentSession extends Widget {
           ['Ollama temperature', 'tempOllama'],
           ['max tokens', 'maxTokens'],
           ['Ollama context (num_ctx)', 'numCtx'],
-          ['Ollama think', 'think']
+          ['Ollama think', 'think'],
+          ['custom system prompt', 'systemPrompt']
         ].map(([label, prop, pass]) => `
         <div>
           ${label}:
-          <input${pass ? ' type="password"' : ''} value="${this.data.llm[prop] || ''}" readonly="readonly">
+          <input${pass ? ' type="password"' : ''} value="${String(this.data.llm[prop] || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}" readonly="readonly">
         </div>`).join('')}
       </div>
     `
