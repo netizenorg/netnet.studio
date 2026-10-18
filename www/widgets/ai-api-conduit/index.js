@@ -880,9 +880,13 @@ ${h.history}    { role: 'user', content: ${h.input} }
       })
     }
 
-    tokens.forEach(t => {
+    const addToken = (t) => {
       if (t.type === 'space' || t.type === 'hr') return
-      if (t.type === 'heading') {
+      if (t.type === 'blockquote') {
+        // treat a quote's contents as ordinary paragraphs (some models
+        // put their whole reply, or parts of it, in quotes)
+        t.tokens.forEach(addToken)
+      } else if (t.type === 'heading') {
         heading = md.parseInline(t.text)
       } else if (t.type === 'paragraph') {
         splitParagraph(t.text).forEach(html => addStep(html))
@@ -913,10 +917,11 @@ ${h.history}    { role: 'user', content: ${h.input} }
         })
         flush()
       } else {
-        // blockquotes, tables, etc
+        // tables, etc
         addStep(md.parser([t]))
       }
-    })
+    }
+    tokens.forEach(addToken)
     if (heading) addStep('')
 
     // a code block stays open after the step that introduced it, but only
