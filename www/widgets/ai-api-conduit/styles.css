@@ -152,6 +152,10 @@
   border-bottom: 1px dashed var(--netizen-meta);
 }
 
+.ai-api-conduit__copy-code {
+  float: right;
+}
+
 .ai-api-conduit__options label {
   cursor: pointer;
 }

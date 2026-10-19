@@ -216,6 +216,41 @@ window.CONVOS['ai-api-conduit'] = (self) => {
       'got it': (e) => e.hide()
     }
   }, {
+    id: 'copied-code',
+    content: (self.settings.mode === 'library'
+      ? 'I\'ve copied this request to your clipboard as a <code>send()</code> function you can paste into your own code. It uses <code>nn.prompt()</code>, so make sure your page loads <code>nn.min.js</code> and then the <code>nn-prompt.js</code> library first (see its <a href="https://github.com/netizenorg/netnet-machine-learning/blob/main/docs/prompt.md" target="_blank">documentation</a>). '
+      : 'I\'ve copied this request to your clipboard as a <code>send()</code> function you can paste into your own code, written in plain JavaScript using <code>fetch()</code>. ') +
+      (self.history.length > 0 ? 'Since this request includes a conversation\'s history, I\'ve also declared a <code>contextHistory</code> array above the function, which it uses to keep track of the conversation. ' : '') +
+      (self.adapters[self.provider]?.needsKey ? 'Remember to replace <code>\'YOUR-API-KEY-HERE\'</code> with your API key.' : ''),
+    options: {
+      'got it': (e) => e.hide(),
+      ...(self.adapters[self.provider]?.needsKey && { 'why not include my key?': (e) => e.goTo('copied-code-key') }),
+      // only for sketches (we don't want to replace a project's files)
+      ...(!WIDGETS['project-files']?.projectData?.name && { 'what can I do with it?': (e) => e.goTo('copied-code-use') })
+    }
+  }, {
+    id: 'copied-code-use',
+    content: 'You can paste it into any sketch or project and call it with a message, for example <code>const text = await send(\'hello\')</code> (inside an <code>async</code> function). If you\'d like, I can replace the code in your current sketch with a small example page that\'s ready for your <code>send()</code> function. Keep in mind, you\'ll lose the code currently in your sketch.',
+    options: {
+      'yes, replace my sketch': (e) => {
+        self.loadSendExample()
+        e.goTo('copied-code-example')
+      },
+      'no thanks': (e) => e.hide()
+    }
+  }, {
+    id: 'copied-code-example',
+    content: 'Done! Now paste your <code>send()</code> function where it says "PASTE YOUR SEND FUNCTION HERE" (it\'s still on your clipboard)' + (self.adapters[self.provider]?.needsKey ? ', and remember to replace <code>\'YOUR-API-KEY-HERE\'</code> with your API key.' : '.'),
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
+    id: 'copied-code-key',
+    content: 'Because you should never share or publish code with your actual API key in it, otherwise anyone could use it (and you\'d pay for it). If you want to share your project, a better pattern is to let people paste their own key into an input and store it in their browser, check out this <a href="/?demo=1792342439404" target="_blank">demo</a> to review how that works.',
+    options: {
+      'got it': (e) => e.hide()
+    }
+  }, {
     id: 'mode-key',
     content: '<code>KEY</code> is a variable, which is where you\'d store your API key in your own code. I\'m not showing your actual key here because you should never write it directly in code you share or publish, otherwise anyone could use it (and you\'d pay for it).',
     options: {

@@ -1,4 +1,4 @@
-/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn, marked */
+/* global NNE, NNW, WIDGETS, Widget, Convo, utils, nn, marked, navigator */
 class AiApiConduit extends Widget {
   constructor (opts) {
     super(opts)
@@ -192,6 +192,8 @@ class AiApiConduit extends Widget {
   // display(h): the request body as rendered in the "API Request" tab
   // library(h): extra nn.prompt() options shown in "library" mode (if any)
   //             when "show extended options" is checked (they're always sent)
+  // libraryOpts(s): those same options for copied code (see sendFunctionCode)
+  // replyCode: where the reply's text is in the response (for copied code)
 
   _createAdapters () {
     // our messages use nn.prompt()'s roles: 'user' && 'model',
@@ -232,6 +234,7 @@ class AiApiConduit extends Widget {
           if (!text) throw new Error(`Gemini returned no text (finishReason: ${candidate.finishReason})`)
           return text
         },
+        replyCode: 'data.candidates[0].content.parts[0].text',
         display: (h) => `{
   systemInstruction: { parts: [{ text: ${h.system} }] },
   contents: [
@@ -272,6 +275,7 @@ ${h.history}    { role: 'user', parts: [{ text: ${h.input} }] }
           if (!msg.content) throw new Error(`OpenAI returned no text (finish_reason: ${data.choices[0].finish_reason})`)
           return msg.content
         },
+        replyCode: 'data.choices[0].message.content',
         display: (h) => `{
   model: ${h.model},
   messages: [
@@ -314,6 +318,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
           if (!text) throw new Error(`Unexpected Anthropic response structure (stop_reason: ${data.stop_reason})`)
           return text
         },
+        replyCode: 'data.content.find(block => block.type === \'text\').text',
         display: (h) => `{
   model: ${h.model},
   system: ${h.system},
@@ -322,7 +327,8 @@ ${h.history}    { role: 'user', content: ${h.input} }
   ],
   max_tokens: ${h.maxTokens}
 }`,
-        library: (h) => [`max_tokens: ${h.maxTokens}`]
+        library: (h) => [`max_tokens: ${h.maxTokens}`],
+        libraryOpts: (s) => ({ max_tokens: s.maxTokens })
       },
 
       ollama: {
@@ -353,6 +359,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
           if (!data.message?.content) throw new Error('Unexpected Ollama response structure')
           return data.message.content
         },
+        replyCode: 'data.message.content',
         display: (h) => `{
   model: ${h.model},
   messages: [
@@ -366,6 +373,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
     num_ctx: ${h.numCtx}
   }
 }`,
+        libraryOpts: (s) => ({ think: s.think, options: { num_ctx: s.numCtx } }),
         library: (h) => [`think: ${h.think}`, `options: {
     num_ctx: ${h.numCtx}
   }`]
@@ -509,6 +517,8 @@ ${h.history}    { role: 'user', content: ${h.input} }
 
   _setupOptionsBar () {
     // options at the top of the API Request tab
+    this.$('[name="copy-code"]').addEventListener('click', () => this.copyCode())
+
     this.$('[name="mode"]').forEach(radio => {
       radio.checked = radio.value === this.settings.mode
       radio.addEventListener('change', () => {
@@ -819,6 +829,154 @@ ${h.history}    { role: 'user', content: ${h.input} }
         window.convo = new Convo(this.convos, 'llm-reply-wig')
       })
     })
+  }
+
+  // ...........................................................................
+  // copy code: the current request as a send() function students can use in
+  // their own code (nn.prompt() in "library" mode, fetch() in "vanilla" mode)
+
+  copyCode () {
+    const code = this.sendFunctionCode()
+    navigator.clipboard.writeText(code)
+    this.convo('copied-code', true)
+  }
+
+  sendFunctionCode () {
+    const a = this.adapters[this.provider]
+    if (!a) return ''
+    const s = this.settings
+    const hasHistory = this.history.length > 0
+    const KEY = 'YOUR-API-KEY-HERE'
+    // placeholders, replaced with code by _toJS
+    const MSG = '\u0000message\u0000'
+    const REPLY = '\u0000reply\u0000'
+    const SYS = '\u0000system\u0000'
+    const ctx = {
+      hasHistory,
+      MSG,
+      code: {
+        [MSG]: 'message',
+        [REPLY]: 'text',
+        [SYS]: '"You\'re a friendly assistant"'
+      }
+    }
+    const js = (v, indent) => this._toJS(v, indent, ctx)
+    const lines = []
+    if (hasHistory) lines.push('const contextHistory = [] // the conversation', '')
+    lines.push('async function send (message) {')
+
+    if (s.mode === 'library') {
+      const opts = {
+        provider: this.provider,
+        model: s.model || a.model,
+        ...(a.needsKey ? { key: KEY } : {}),
+        system: SYS,
+        messages: [{ role: 'user', content: MSG }],
+        ...(typeof a.temperature === 'number' ? { temperature: s.temperature } : {}),
+        ...(a.libraryOpts ? a.libraryOpts(s) : {})
+      }
+      if (hasHistory) lines.push('  contextHistory.push({ role: \'user\', content: message })')
+      lines.push(`  const reply = await nn.prompt(${js(opts, 1)})`)
+      if (hasHistory) lines.push('  contextHistory.push({ role: \'model\', content: reply.text })')
+      lines.push('  return reply.text')
+    } else {
+      const build = (messages) => a.request({ ...s, key: KEY, model: s.model || a.model, system: SYS, messages })
+      const req = build([{ role: 'user', content: MSG }])
+      // the user's && model's messages in this provider's format (for the history)
+      const find = (body, marker) => Object.values(body)
+        .filter(v => Array.isArray(v)).flat()
+        .find(m => JSON.stringify(m).includes(JSON.stringify(marker).slice(1, -1)))
+      const userMsg = find(req.body, MSG)
+      const modelMsg = find(build([{ role: 'model', content: REPLY }]).body, REPLY)
+      const options = {
+        method: req.method,
+        headers: req.headers,
+        body: { _js: (indent) => `JSON.stringify(${js(req.body, indent)})` }
+      }
+      if (hasHistory) lines.push(`  contextHistory.push(${js(userMsg, 1)})`)
+      lines.push(`  const response = await fetch('${req.url}', ${js(options, 1)})`)
+      lines.push('  const data = await response.json()')
+      lines.push('  if (!response.ok) throw new Error(data.error?.message || data.error)')
+      lines.push(`  const text = ${a.replyCode}`)
+      if (hasHistory) lines.push(`  contextHistory.push(${js(modelMsg, 1)})`)
+      lines.push('  return text')
+    }
+
+    lines.push('}')
+    return lines.join('\n')
+  }
+
+  loadSendExample () {
+    // replaces the current sketch with a small page that uses a send() function
+    const lib = this.settings.mode === 'library'
+      ? '\n<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-machine-learning@0.1.0/src/nn-prompt.js"></script>'
+      : ''
+    NNE.code = `<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js"></script>${lib}
+<script>
+  let input, output
+
+  function setup () {
+    input = nn.create('input')
+      .set('placeholder', 'ask me anything')
+      .addTo('body')
+
+    nn.create('button')
+      .content('send')
+      .addTo('body')
+      .on('click', async () => {
+        output.content('...thinking...')
+        const text = await send(input.value)
+        output.content(text)
+      })
+
+    output = nn.create('p').addTo('body')
+  }
+
+  // ... PASTE YOUR SEND FUNCTION HERE...
+
+  nn.on('load', setup)
+</script>
+`
+  }
+
+  _templateLiteral (str) {
+    const escaped = String(str)
+      .replace(/\\/g, '\\\\')
+      .replace(/`/g, '\\`')
+      .replace(/\$\{/g, '\\${')
+    return '`' + escaped + '`'
+  }
+
+  _toJS (v, indent, ctx) {
+    // writes a value as JavaScript code (in netnet's code style)
+    const pad = '  '.repeat(indent)
+    const inner = '  '.repeat(indent + 1)
+    if (v && typeof v._js === 'function') return v._js(indent)
+    if (typeof v === 'string') {
+      if (ctx.code[v]) return ctx.code[v]
+      return `'${v.replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/\n/g, '\\n')}'`
+    }
+    if (Array.isArray(v)) {
+      // in a conversation, the user's message (in the list of messages) is
+      // replaced by the history
+      const hasMsg = (m) => m && typeof m === 'object' && 'role' in m &&
+        JSON.stringify(m).includes(JSON.stringify(ctx.MSG).slice(1, -1))
+      if (ctx.hasHistory && v.length === 1 && hasMsg(v[0])) return 'contextHistory'
+      const items = v.map(m => ctx.hasHistory && hasMsg(m) ? '...contextHistory' : this._toJS(m, indent + 1, ctx))
+      const oneLine = `[${items.join(', ')}]`
+      if (oneLine.length < 60 && !oneLine.includes('\n')) return oneLine
+      return `[\n${inner}${items.join(`,\n${inner}`)}\n${pad}]`
+    }
+    if (v && typeof v === 'object') {
+      const key = (k) => /^[A-Za-z_$][\w$]*$/.test(k) ? k : `'${k}'`
+      const items = Object.entries(v)
+        .filter(([k, val]) => val !== undefined)
+        .map(([k, val]) => `${key(k)}: ${this._toJS(val, indent + 1, ctx)}`)
+      const oneLine = `{ ${items.join(', ')} }`
+      if (oneLine.length < 60 && !oneLine.includes('\n')) return oneLine
+      return `{\n${inner}${items.join(`,\n${inner}`)}\n${pad}}`
+    }
+    return String(v)
   }
 
   // ...........................................................................
