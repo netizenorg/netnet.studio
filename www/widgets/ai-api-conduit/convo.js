@@ -588,14 +588,14 @@ window.CONVOS['ai-api-conduit'] = (self) => {
     }
   }, {
     id: 'integration',
-    content: 'This is how I\'ll share the LLM\'s reply with you. I can display the whole reply in an <b>output widget</b>, like most chatbots do, or I can let the LLM "possess" me and walk you through its reply one piece at a time in my speech bubbles, with any code it writes displayed in its own widget.',
+    content: 'This is how I\'ll share the LLM\'s reply with you. I can display the whole conversation in a <b>context widget</b>, like most chatbots do, or I can let the LLM "possess" me and walk you through its reply one piece at a time in my speech bubbles, with any code it writes displayed in its own widget.',
     options: {
       'got it': (e) => e.hide(),
       'possessed?': (e) => e.goTo('integration-possessed')
     }
   }, {
     id: 'integration-widget',
-    content: 'Ok, I\'ll display the LLM\'s full reply in the <b>LLM Response</b> widget, any code it writes will be displayed as <i>traceable</i> code.',
+    content: 'Ok, I\'ll display the LLM\'s full reply in the <b>LLM Context</b> widget, any code it writes will be displayed as <i>traceable</i> code.',
     options: {
       'got it': (e) => e.hide()
     }

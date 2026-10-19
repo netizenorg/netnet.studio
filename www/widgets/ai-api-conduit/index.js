@@ -16,7 +16,7 @@ class AiApiConduit extends Widget {
 
     // the current settings, loaded from (&& saved to) student-session
     // by _loadSettings() && _saveSetting(), see _settingsKeys()
-    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false, integration: 'widget' }
+    this.settings = { key: null, model: null, temperature: 1, maxTokens: 4096, numCtx: 32768, think: false, attach: true, mode: 'library', extended: false, integration: 'possessed' }
     this.adapters = this._createAdapters()
 
     // the current conversation, in nn.prompt()'s format (kept in memory):
@@ -171,7 +171,7 @@ class AiApiConduit extends Widget {
       attach: ss.getData(keys.attach) !== 'false', // on by default
       mode: ss.getData(keys.mode) === 'vanilla' ? 'vanilla' : 'library',
       extended: ss.getData(keys.extended) === 'true',
-      integration: ss.getData(keys.integration) === 'possessed' ? 'possessed' : 'widget'
+      integration: ss.getData(keys.integration) === 'widget' ? 'widget' : 'possessed' // the default
     }
   }
 
@@ -405,6 +405,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
   clearHistory () {
     this.history = []
     this._refreshRequestBody()
+    if (WIDGETS['ai-llm-reply']?.opened) WIDGETS['ai-llm-reply'].loadConversation()
   }
 
   _refreshRequestBody () {
@@ -825,7 +826,7 @@ ${h.history}    { role: 'user', content: ${h.input} }
   _showRawReply (text) {
     this.loadMarked(() => {
       WIDGETS.open('ai-llm-reply', (w) => {
-        w.loadReply(text)
+        w.loadConversation() // the whole conversation (see this.history)
         window.convo = new Convo(this.convos, 'llm-reply-wig')
       })
     })
