@@ -248,6 +248,13 @@ window.utils = {
     return nn.platformInfo().platform.includes('Mac') ? 'CMD' : 'CTRL'
   },
 
+  usesLib: (src, code = NNE.code) => {
+    // checks if the code loads a library's src URL, regardless of version
+    // (ex: .../netnet-standard-library/build/nn.min.js or ...library@1.0.1/build/nn.min.js)
+    const noVersion = str => str.replace(/@[\w.~^-]+(?=[/"'\s>]|$)/g, '')
+    return noVersion(code).includes(noVersion(src))
+  },
+
   _Convo: (id, err) => {
     if (id === 'oh-no-error') console.error(err)
     Convo.load('/core/utils-convo.js', () => {

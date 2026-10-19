@@ -1,4 +1,4 @@
-/* global nn demos MSG newDemo, utils */
+/* global nn demos MSG newDemo, utils, deleteNote, curNoteIdx */
 
 function uploadJSON () {
   let filePicked = false
@@ -55,6 +55,24 @@ window.modal = {
         <button class="pill-btn pill-btn--secondary" id="c">cancel</button>
       `
       nn.get('#modal #u').on('click', uploadJSON)
+    } else if (type === 'missing-note-title') { // ............................
+      nn.get('#modal > div').innerHTML = `
+        <p style=" margin-top: 0;">
+          This note needs a title before you can create a new note or move on
+          to another one. Give it a title, or delete this note.
+        </p>
+        <button class="pill-btn pill-btn--secondary" id="t">add a title</button>
+        <button class="pill-btn pill-btn--secondary" id="d">delete this note</button>
+      `
+      nn.get('#modal #t').on('click', () => {
+        window.modal.close()
+        nn.get('#note-title').focus()
+      })
+      nn.get('#modal #d').on('click', () => {
+        window.modal.close()
+        deleteNote(curNoteIdx)
+      })
+      return
     } else if (type === 'need-one-note') { // ..................................
       nn.get('#modal > div').innerHTML = `
         <p style=" margin-top: 0;">

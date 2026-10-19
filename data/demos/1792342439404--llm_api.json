@@ -1,0 +1,256 @@
+{
+  "key": 1792342439404,
+  "name": "LLM API",
+  "tags": [
+    "ai",
+    "llm",
+    "api",
+    "gemini",
+    "model"
+  ],
+  "layout": "dock-left",
+  "code": "#code/eJydVG1P2zAQ/t5fceKLU6l1YBNfqhaBBJqqMYEA7bsbH4lX147sCywD/vsuSZu+ANI0KZIT39vzPHeXacyCKQliyGZHBVEZJ2maaSd/RY3WPAXpkNK8SPkwf9D5kDev/IwjKadV0GNrFkGF+vxEHsuTdFEZq1Pn5Mo0WY7OpmlX42ww/f9iK5UVxuHYogrOuPycS8njlDNxqXEZ/Kqkj6udDQAsEtze3fycX17dwQxEjgzOiLXlx83l1fX2evxVno4frYoFMyPceC2xnruyohGY7vAV8Tlg82PlMjLeQUSqSkiG8MK30IdwbtYjC6gIE9GGi2HrASA5JhFUlyhGIEoV47MP+sBcWpVh4a3GsPYihNpXAb55n1uEizncU6WNh4vbeVN3myCLMRHPRlPBoV9Oj3uD0vrBJ2Lh9Y63dxuAI4jkA37H+tpnytp6ONgjJZ+UrZCp2cZ8z74qR5kjzQlXyUbLFgq8voIQ0MXvKLEIYngAo3Ux/ybagSoqLmGFoFxNPCq5+IToOxAVkXc7enlH6Dh9RKc/S7KjVmZNtmzUYvd19m4y9gmU76gCvO0Pz77c2zHaEzh+IPDooCl9bhVrl+2Op9PbtB3KLV8pZSPckrXj141SzegHLBnPDNSzMtSQ6vYteVnrwJ9Phrsw6ZdstLasPC/2pNuwzR1jnRwA7t0xRiY56Sags7Wmtz1le8wtMEn4m3rKjK7pivVKt03hhRwO+p/CXysqh1Q=",
+  "info": [
+    {
+      "focus": null,
+      "text": "In this demo we'll learn how to create a basic front end for an LLM (large language model) running in the \"cloud\", by which I mean a data center owned and operated by another company.",
+      "title": "getting started"
+    },
+    {
+      "title": "libraries",
+      "focus": [
+        1,
+        2
+      ],
+      "text": "First I've loaded a couple of libraries, my <a href=\"https://netizenorg.github.io/netnet-standard-library/\" target=\"_blank\">netnet-standard-library</a> (or <code>nn</code> for short) as well as an extention called <code>nn.prompt</code>, which is a function we'll use to send messages to LLMs hosted elsewhere."
+    },
+    {
+      "title": "global variables",
+      "focus": [
+        4,
+        5,
+        6
+      ],
+      "text": "The first thing we'll include in our code is a few global variables, <code>PROVIDER</code> which will store the name of the LLM provider we want to use, <code>MODEL</code> which is the name of the specific LLM we want to use and then three more which will become references to elements we'll create in our first function."
+    },
+    {
+      "title": "setup function",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "text": "Our sketch has three functions, the first is our <code>setup</code> function which we'll be using to create all the HTML UI (user interface) elements on our page."
+    },
+    {
+      "title": "load event",
+      "focus": [
+        49
+      ],
+      "text": "The last line in our demo, which runs after we've defined all our functions, is an <a class=\"link\" onclick=\"WIDGETS.open('lingo-glossary', w => w.showVocab('event'))\">event listener</a> which is going to run our <code>setup</code> function as soon as the page loads."
+    },
+    {
+      "title": "API key input field",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        30
+      ],
+      "text": "The first thing our <code>setup</code> function creates is an input field for the user to place their API key. Cloud-based LLM providers require that you create an account on their platform in order to generate an API key. These usually require up-front payment, but Google's Gemini does provide a free tier. "
+    },
+    {
+      "title": "front-end vs back-end",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        30
+      ],
+      "text": "When integrating a third-party provider's LLM into your own app like this, it is possible to store your own API key on your sever, in which case you'd be paying for everyone who uses your app. In this demo, we're keeping everything client-side or \"front end\", we're not writing any code or storing any data server-side on the \"back end\"."
+    },
+    {
+      "title": "user keys",
+      "focus": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        30
+      ],
+      "text": "Because it's not safe to include private API keys in your font-end code (because it is visible to anyone who views your source), our sketch asks the user to insert their own key. This has the added benefit of not having to pay for all your user's queries, anyone using your app is responsible for registering their own key."
+    },
+    {
+      "title": "key input event",
+      "focus": [
+        9,
+        14,
+        15
+      ],
+      "text": "Notice that the input element we created also has its own <a class=\"link\" onclick=\"WIDGETS.open('lingo-glossary', w => w.showVocab('event'))\">event listener</a> attached. It runs a function called <code>storeKeyLocally</code> anytime the user <i>inputs</i> text into the field."
+    },
+    {
+      "title": "key storing function",
+      "focus": [
+        32,
+        33,
+        34
+      ],
+      "text": "If we take a look at the <code>storeKeyLocally</code> function defined below, you'll notice it contains a single line of code which takes the <code>value</code> currently stored in the <code>keyInput</code> element and stores it in the browser's <code>localStorage</code> under the arbitrary name \"gemini-key\"."
+    },
+    {
+      "title": "load previously stored key",
+      "focus": [
+        16
+      ],
+      "text": "Back in our setup function, right after we create that input field we're checking to see if there's currently an item stored in the user's browser's local storage under the name \"gemini-key\". If so, we're automatically setting the input field's value to whatever they had previously input, this way they don't have to input their key each time they load our app. <i>Otherwise</i>, (that's what <code>||</code> means here) we'll default to an empty string <code>''</code>, meaning the field remains empty."
+    },
+    {
+      "title": "saftey and convenience",
+      "focus": null,
+      "text": "While it's not <i>technically</i> necessary to store the user's key locally in their browser, not having to insert their API key everytime they open your page makes for a more pleasant user experience. The browser's localStorage is also a safe place to put their key because only the user with access to this browser will be able to access it."
+    },
+    {
+      "title": "prompt input",
+      "focus": [
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "text": "Moving on, the next element this function creates is a <code>br</code> (or line break) before creating another <code>input</code> field, this time for the text prompt we want to send to the LLM."
+    },
+    {
+      "title": "send button",
+      "focus": [
+        24,
+        25,
+        26,
+        27,
+        29,
+        30
+      ],
+      "text": "The last thing we create is a <code>p</code> element we call <code>ouput</code>, because it's where we're going to display the LLM's output when we receive it. Just before that though, we create a <code>button</code> which also has an event listener attached, this one runs a function called <code>send</code> as soon as the user <i>clicks</i> the button."
+    },
+    {
+      "title": "send function",
+      "focus": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "text": "Let's take a look at what that <code>send</code> function does. First, notice that this function is declared with the <code>async</code> keyword. That's because sending a request to a third-party API always takes some time to receive a reply, which means we need to <code>await</code> for that reply, making this an <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function\" target=\"_blank\">asynchronous</a> function."
+    },
+    {
+      "title": "\"thinking\"",
+      "focus": [
+        36,
+        37,
+        47
+      ],
+      "text": "As soon as the user clicks \"send\" the first thing we do is display some feedback, we update our <code>p</code> element's content to display the text <i>...thinking...</i>, this lets the user know that we've sent their prompt to the API and are awaiting a response."
+    },
+    {
+      "title": "nn.prompt",
+      "focus": [
+        36,
+        {
+          "line": 39,
+          "startCol": 22,
+          "endCol": 33
+        },
+        40,
+        41,
+        42,
+        43,
+        44,
+        47
+      ],
+      "text": "Immediately after, we run <code>nn.prompt</code> the special function we use to send a request to an LLM provider. We pass the name of the provider we're using, <i>'gemini'</i>, the model we want to run, <i>'gemini-3.5-flash-lite'</i>, the API key our user provided in the <b>keyInput</b> field as well as the <code>message</code> they wrote in the <b>input</b> text field."
+    },
+    {
+      "title": "await",
+      "focus": [
+        {
+          "line": 39,
+          "startCol": 16,
+          "endCol": 33
+        }
+      ],
+      "text": "Remember, because it takes time to receive the response from the provider's API, we have to place the <code>await</code> keyword before the function call. "
+    },
+    {
+      "title": "reply object",
+      "focus": [
+        39
+      ],
+      "text": "Once the response is received, we'll store all the data the provider's API sent us back in a variable we've named <code>reply</code>. This variable now becomes an object with lots of data stored inside, you can inspect the full response sent back by logging <code>reply.raw</code> to your web console."
+    },
+    {
+      "title": "output text",
+      "focus": [
+        36,
+        46,
+        47
+      ],
+      "text": "That said, the only piece of data we care about for this demo is the text the LLM synthesized in response to our user's input message prompt, which we can access via the <code>reply.text</code> property. The last line of our <code>send</code> function uses that text to update our <code>output</code> element's content so the user can see the reply."
+    },
+    {
+      "title": "other providers",
+      "focus": null,
+      "text": "That's the core logic required for creating your own AI-UI. Keep in mind you can use other providers as well, each of which has their own list of models, including <a href=\"https://platform.openai.com/\" target=\"_blank\">OpenAI</a> and <a href=\"https://platform.anthropic.com/\" target=\"_blank\">Anthropic</a>."
+    },
+    {
+      "title": "local models",
+      "focus": null,
+      "text": "We chose <a href=\"https://aistudio.google.com/\" target=\"_blank\">Google</a>, for this demo because their API provides a free tier. OpenAI and Anthropic both require a credit card to get started. But you don't have to use any of these providers,  depending on your use case you could also run open models locally on your comptuer with an app like <a href=\"https://ollama.com/\" target=\"_blank\">Ollama</a>."
+    },
+    {
+      "title": "nn.prompt docs",
+      "focus": null,
+      "text": "To learn more about the <code>nn.prompt</code> function including how to use it to send requests to other providers and local models, check out its <a href=\"https://github.com/netizenorg/netnet-machine-learning/blob/main/docs/prompt.md\" target=\"_blank\">documentation page</a> on the library's GitHub."
+    }
+  ]
+}

@@ -13,6 +13,21 @@
 .ai-llm-reply__main ul,
 .ai-llm-reply__main ol { margin: 6px 0; padding-left: 20px; }
 
+/* inline code, styled like the code in netnet's text bubbles */
+.ai-llm-reply__main code {
+  position: relative;
+  top: -0.1em;
+  padding: .1em 0.3em 0.2em;
+  border-radius: 6px;
+  color: var(--bg-color);
+  background-color: var(--fg-color);
+  font-family: "fira-code", inconsolata, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: 700;
+  text-shadow: none;
+}
+
 .ai-llm-reply__block {
   margin: 12px 0;
 }
@@ -22,6 +37,64 @@
 }
 
 .ai-llm-reply__copy {
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* the conversation */
+
+.ai-llm-reply__msg {
+  margin: 10px 0 18px;
+}
+
+.ai-llm-reply__msg--user {
+  margin-left: 15%;
+  padding: 6px 12px 10px;
+  border: 1px solid var(--netizen-meta);
+  border-radius: 8px;
+}
+
+.ai-llm-reply__msg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.ai-llm-reply__msg:hover .ai-llm-reply__msg-header {
+  opacity: 1;
+}
+
+.ai-llm-reply__icon {
+  /* the svg icons are used as masks, so they're filled with the theme's color */
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: var(--fg-color);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.ai-llm-reply__icon--edit { --icon: url('/assets/images/widgets/pencil.svg'); }
+.ai-llm-reply__icon--delete { --icon: url('/assets/images/widgets/trash.svg'); }
+
+.ai-llm-reply__edit textarea {
+  width: 100%;
+  min-height: 80px;
+  box-sizing: border-box;
+  background: transparent;
+  color: var(--netizen-text);
+  border: 1px solid var(--netizen-meta);
+  font: inherit;
+  resize: vertical;
+}
+
+.ai-llm-reply__edit-actions {
   margin-top: 6px;
   text-align: right;
 }
