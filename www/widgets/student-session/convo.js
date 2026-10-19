@@ -23,7 +23,7 @@ window.CONVOS['student-session'] = (self) => {
       o['let\'s code!'] = letsCode
       o['who? what?'] = (e) => e.goTo('confirm-diff-user')
     } else {
-      o['I need help!'] = (e) => e.goTo('i-need-help')
+      o['where do I start?'] = (e) => e.goTo('where-do-i-start')
       if (hasLLM) o['ask an LLM'] = (e) => self.askAnLLM()
       o['never mind'] = (e) => e.hide()
     }
@@ -33,8 +33,46 @@ window.CONVOS['student-session'] = (self) => {
   const postLLM = (e, o) => {
     const q = o.querySelector('input').value.trim()
     if (!q) return e.goTo('ask-llm-missing')
-    WIDGETS['ai-api-conduit']._pendingQuery = q
-    e.goTo('confirm-llm')
+    const w = WIDGETS['ai-api-conduit']
+    w._sendRequest(q, true) // a new conversation
+  }
+
+  const enterToSendLLM = (e) => {
+    // pressing Enter in the question's input also sends it
+    if (window.convo !== e) return // in case it's been replaced by another convo
+    const tb = NNW.menu.textBubble
+    const input = tb.querySelector('input')
+    if (!input) return
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') postLLM(e, tb)
+    })
+    input.focus()
+  }
+
+  const continueLLM = (e, o) => {
+    // continue the current conversation, but warn about long contexts first
+    const q = o.querySelector('input').value.trim()
+    if (!q) return e.goTo('ask-llm-missing')
+    const w = WIDGETS['ai-api-conduit']
+    w._pendingQuery = q
+    w.convo('llm-context-warning', true)
+  }
+
+  const llmOpts = () => {
+    // "send (current context)" is only offered while there's a conversation
+    const hasHistory = WIDGETS['ai-api-conduit']?.history?.length > 0
+    const o = {}
+    o[hasHistory ? 'send (new context)' : 'send'] = (e, o) => postLLM(e, o)
+    if (hasHistory) o['send (current context)'] = (e, o) => continueLLM(e, o)
+    o['edit API settings'] = (e, o) => editLLM(e, o)
+    o['never mind'] = (e) => e.hide()
+    return o
+  }
+
+  const editLLM = (e, o) => {
+    // open the conduit with their question (if any) already filled in
+    WIDGETS['ai-api-conduit']._pendingQuery = o.querySelector('input').value.trim()
+    WIDGETS.open('ai-api-conduit')
   }
 
   return [
@@ -79,50 +117,23 @@ window.CONVOS['student-session'] = (self) => {
       options: firstOpts('no-greet')
     },
     {
-      id: 'i-need-help',
-      content: 'I\'m here to help! Double-click any piece of code and I\'ll explain it. If I spot an issue, I\'ll mark the line with a <span class="student-session__red-dot"></span> red or <span class="student-session__org-dot"></span> orange dot you can click for info. You can also click on my face to open the <img src="images/menu/code.png" class="student-session__d-icons"> <b>Coding Menu</b> to save or start new code, or the <img src="images/menu/tutorials.png" class="student-session__d-icons"> <b>Learning Guide</b> to explore different topics and learn something new!',
+      id: 'where-do-i-start',
+      content: 'Just start typing into my editor! Double-click any piece of code and I\'ll explain it. If I spot an issue, I\'ll mark the line with a <span class="student-session__red-dot"></span> red or <span class="student-session__org-dot"></span> orange dot you can click for info. You can also click on my face at any time to open the <img src="images/menu/code.png" class="student-session__d-icons"> <b>Coding Menu</b> to save or start new code, or the <img src="images/menu/tutorials.png" class="student-session__d-icons"> <b>Learning Guide</b> to explore different topics and learn something new!',
       options: {
         ok: (e) => e.hide()
       }
     },
     {
       id: 'ask-llm',
-      content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. Would you like me to pass a query along to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
-      options: {
-        send: (e, o) => postLLM(e, o),
-        'never mind': (e) => e.hide()
-      }
+      after: (e) => enterToSendLLM(e),
+      content: `You currently have ${WIDGETS['ai-api-conduit']?.provider} set as your third-party provider in the <b class="link" onclick="WIDGETS.open('ai-api-conduit')">LLM-API Conduit</b> widget. What would you like me to send to their servers?<br><input style="width:350px" placeholder="ask an LLM a question">`,
+      options: llmOpts()
     },
     {
       id: 'ask-llm-missing',
+      after: (e) => enterToSendLLM(e),
       content: 'The <b class="link" onclick="WIDGETS.open(\'ai-api-conduit\')">LLM-API Conduit</b> widget needs some user input before it can post a request. Type something below.<br><input style="width:350px" placeholder="ask an LLM a question">',
-      options: {
-        send: (e, o) => postLLM(e, o),
-        'never mind': (e) => e.hide()
-      }
-    },
-    {
-      id: 'ask-llm-restate',
-      content: 'Try restating your question another way. <br><input style="width:350px" placeholder="ask an LLM a question">',
-      options: {
-        send: (e, o) => postLLM(e, o),
-        'never mind': (e) => e.hide()
-      }
-    },
-    {
-      id: 'confirm-llm',
-      content: 'Would you like to edit any of the <b>LLM-API Conduit</b> widget settings like model settings or attached files first?',
-      options: {
-        'no, send now': (e) => {
-          const w = WIDGETS['ai-api-conduit']
-          w.$('[name="user-input"]').value = w._pendingQuery
-          w._pendingQuery = null
-          w._sendRequest()
-        },
-        'yes, let\'s edit first': (e) => {
-          WIDGETS.open('ai-api-conduit')
-        }
-      }
+      options: llmOpts()
     },
     {
       id: 'prior-github-login',

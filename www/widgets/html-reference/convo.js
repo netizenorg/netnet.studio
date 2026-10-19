@@ -60,7 +60,7 @@ window.CONVOS['html-reference'] = (self) => {
       before: () => {
         self.$('svg-tag-presentation').updateHTML(1)
       },
-      code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>\n<script>\n/* global nn */\n\nfunction animate () {\n  setTimeout(animate, 100)\n  const hrs = nn.getAll(\'hr\').length\n  if (hrs < nn.height / 11) nn.create(\'hr\').addTo(\'body\')\n}\nnn.on(\'load\', animate)\n\n</script>',
+      code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js"></script>\n<script>\n/* global nn */\n\nfunction animate () {\n  setTimeout(animate, 100)\n  const hrs = nn.getAll(\'hr\').length\n  if (hrs < nn.height / 11) nn.create(\'hr\').addTo(\'body\')\n}\nnn.on(\'load\', animate)\n\n</script>',
       edit: true,
       content: 'One example of a real element is the <code>hr</code> element, or the "horizontal rule", which creates a horizontal line across the page. Each new <code>hr</code> you add to your code creates a new line. I just added a whole bunch behind me!',
       options: {
@@ -161,7 +161,7 @@ window.CONVOS['html-reference'] = (self) => {
         self.$('svg-tag-presentation').updateHTML(9)
         setTimeout(() => self.$('svg-tag-presentation').updateHTML(10), 1000)
       },
-      code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>\n<script>\n  /* global nn */\n\n  function animate() {\n    setTimeout(animate, 100)\n    const types = [\'text\', \'number\', \'color\', \'range\', \'checkbox\', \'radio\']\n    const t = nn.random(types)\n    const x = nn.random(nn.width - 100)\n    const y = nn.random(nn.height - 50)\n    const e = nn.create(\'input\')\n      .set(\'type\', t)\n      .css(\'width\', 50)\n      .position(x, y)\n      .addTo(\'body\')\n    if (t !== \'color\' && nn.random() > 0.5) e.click()\n  }\n  nn.on(\'load\', animate)\n</script>',
+      code: '<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js"></script>\n<script>\n  /* global nn */\n\n  function animate() {\n    setTimeout(animate, 100)\n    const types = [\'text\', \'number\', \'color\', \'range\', \'checkbox\', \'radio\']\n    const t = nn.random(types)\n    const x = nn.random(nn.width - 100)\n    const y = nn.random(nn.height - 50)\n    const e = nn.create(\'input\')\n      .set(\'type\', t)\n      .css(\'width\', 50)\n      .position(x, y)\n      .addTo(\'body\')\n    if (t !== \'color\' && nn.random() > 0.5) e.click()\n  }\n  nn.on(\'load\', animate)\n</script>',
       edit: true,
       content: 'We can change this default <i>type</i> by assigning different values to the <code>input</code> element\'s <code>type</code> attribute. I\'m adding lots more <code>input</code> elements to the page behind me with a different <code>type</code> each time.',
       options: {
