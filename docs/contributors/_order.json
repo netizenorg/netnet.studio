@@ -11,5 +11,6 @@
   { "file": "manual-setup.md", "name": "Manual Setup" },
   { "file": "css-styleguide.md", "name": "CSS Styleguide" },
   { "file": "netnet-faces.md", "name": " ◕ ◞ ◕ netnet faces" },
+  { "file": "voice-style-guide.md", "name": "Voice Style Guide" },
   { "file": "dialogue-system.md", "name": "Convos: the Dialogue System" }
 ]

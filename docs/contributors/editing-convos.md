@@ -7,6 +7,8 @@ In these docs we'll explain how to edit "passages" (netnet's speech bubbles) as 
 3. You understand how to create a [PR (pull request)](#pull-request)
 
 If you're an experienced open source developer and have already [setup a local development environment](contributor-workflow.md), you can alternatively create and/or edit these files in your code editor, refer instead to the [Convo System](dialogue-system.md) docs.
+
+**NOTE:** these docs cover the *mechanics* of editing passages. Before writing or editing any of netnet's dialogue, make sure to review the [Voice Style Guide](voice-style-guide.md) for guidelines on how to write in netnet's voice.
 <br><br>
 
 ## netnet's "expert system" diagram
